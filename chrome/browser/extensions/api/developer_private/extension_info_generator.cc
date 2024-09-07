@@ -358,31 +358,37 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
   permissions->can_access_site_data =
       CanAccessSiteData(permissions_manager, extension);
 
-  bool enable_runtime_host_permissions =
-      permissions_manager->CanAffectExtension(extension);
-
-  if (!enable_runtime_host_permissions) {
-    // Without runtime host permissions, everything goes into
-    // simple_permissions.
-    permissions->simple_permissions = get_permission_messages(
-        extension.permissions_data()->GetPermissionMessages());
-    return;
-  }
-
-  // With runtime host permissions, we separate out API permission messages
-  // from host permissions.
   // Use granted permissions here to ensure that the info is populated with all
   // the permissions which, although not active, would be implicitly granted to
   // the extension if ever requested.
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
   std::unique_ptr<const PermissionSet> granted_permissions =
       extension_prefs->GetGrantedPermissions(extension.id());
+
+  const PermissionMessageProvider* message_provider =
+      PermissionMessageProvider::Get();
+
+  bool enable_runtime_host_permissions =
+      permissions_manager->CanAffectExtension(extension);
+
+  if (!enable_runtime_host_permissions) {
+    // TODO(crbug.com/362536398)
+    // Without runtime host permissions, everything goes into
+    // simple_permissions.
+    PermissionMessages all_messages = message_provider->GetPermissionMessages(
+        message_provider->GetAllPermissionIDs(*granted_permissions,
+                                              extension.GetType()));
+    permissions->simple_permissions = get_permission_messages(all_messages);
+    return;
+  }
+
+  // With runtime host permissions, we separate out API permission messages
+  // from host permissions.
   PermissionSet non_host_permissions(
       granted_permissions->apis().Clone(),
       granted_permissions->manifest_permissions().Clone(), URLPatternSet(),
       URLPatternSet());
-  const PermissionMessageProvider* message_provider =
-      PermissionMessageProvider::Get();
+
   // Generate the messages for just the API (and manifest) permissions.
   PermissionMessages api_messages = message_provider->GetPermissionMessages(
       message_provider->GetAllPermissionIDs(non_host_permissions,
