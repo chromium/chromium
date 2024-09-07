@@ -41,8 +41,10 @@
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/permission_set.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/url_pattern_set.h"
 
 using content::RenderProcessHost;
 using extensions::permissions_api_helpers::PackPermissionSet;
@@ -341,8 +343,13 @@ void PermissionsUpdater::RevokeOptionalPermissions(
       PermissionSet::CreateDifference(
           extension.permissions_data()->active_permissions(), permissions);
 
+  // Since this adjusts the active(desired) permissions and is usually done by
+  // the extension, we need not withhold the optional permissions.
+  constexpr bool withhold_optional_permissions = false;
+
   RemovePermissionsImpl(extension, std::move(new_active_permissions),
                         permissions, permissions_store_mask,
+                        withhold_optional_permissions,
                         std::move(completion_callback));
 }
 
@@ -427,6 +434,7 @@ void PermissionsUpdater::RevokeRuntimePermissions(
   constexpr int permissions_store_mask = kRuntimeGrantedPermissions;
   RemovePermissionsImpl(extension, std::move(new_active_permissions),
                         permissions, permissions_store_mask,
+                        /*withhold_optional_permissions=*/true,
                         std::move(completion_callback));
 }
 
@@ -498,7 +506,8 @@ void PermissionsUpdater::RemovePermissionsUnsafe(
   ExtensionPrefs::Get(browser_context_)
       ->SetDesiredActivePermissions(extension->id(), *total);
 
-  SetPermissions(extension, std::move(total));
+  SetPermissions(extension, std::move(total),
+                 /*withhold_optional_permissions=*/true);
   NetworkPermissionsUpdateHelper::UpdatePermissions(
       browser_context_, REMOVED, extension, *successfully_removed,
       base::DoNothing());
@@ -576,7 +585,8 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
     ApplyPolicyHostRestrictions(*extension);
   }
 
-  SetPermissions(extension, std::move(granted_permissions));
+  SetPermissions(extension, std::move(granted_permissions),
+                 /*withhold_optional_permissions=*/true);
 }
 
 void PermissionsUpdater::AddPermissionsForTesting(
@@ -588,11 +598,19 @@ void PermissionsUpdater::AddPermissionsForTesting(
 
 void PermissionsUpdater::SetPermissions(
     const Extension* extension,
-    std::unique_ptr<const PermissionSet> new_active) {
-  // Calculate the withheld permissions as any permissions that were required,
-  // but are not in the active set.
+    std::unique_ptr<const PermissionSet> new_active,
+    bool withhold_optional_permissions) {
+  // Calculate the withheld permissions as any permissions that were required
+  // or were active and granted via the Permissions API, but are not in the
+  // active set.
   const PermissionSet& required =
       PermissionsParser::GetRequiredPermissions(extension);
+  const PermissionSet& optional =
+      PermissionsParser::GetOptionalPermissions(extension);
+  std::unique_ptr<const PermissionSet> desired_permissions =
+      PermissionsManager::Get(browser_context_)
+          ->GetDesiredActivePermissionsFromPrefs(*extension);
+  bool has_optional_permissions = !optional.IsEmpty();
   // TODO(crbug.com/41405109): Currently, withheld permissions should only
   // contain permissions withheld by the runtime host permissions feature.
   // However, there could possibly be API permissions that were removed from the
@@ -604,11 +622,25 @@ void PermissionsUpdater::SetPermissions(
   // set of runtime-hosts-withheld permissions, we just look at the delta in the
   // URLPatternSets. However, this is very fragile, and should be dealt with
   // more robustly.
+  URLPatternSet desired_explicit_hosts;
+  if (has_optional_permissions && desired_permissions &&
+      withhold_optional_permissions) {
+    // We need to consider withholding desired optional hosts when the user
+    // chooses to revoke an optional permission by updating site access.
+    std::unique_ptr<const PermissionSet> desired_optional_permissions =
+        PermissionSet::CreateIntersection(*desired_permissions, optional);
+    desired_explicit_hosts = URLPatternSet::CreateUnion(
+        desired_optional_permissions->explicit_hosts().Clone(),
+        required.explicit_hosts().Clone());
+  } else {
+    desired_explicit_hosts = required.explicit_hosts().Clone();
+  }
+  URLPatternSet scriptable_hosts = required.scriptable_hosts().Clone();
   std::unique_ptr<const PermissionSet> new_withheld =
       PermissionSet::CreateDifference(
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        required.explicit_hosts().Clone(),
-                        required.scriptable_hosts().Clone()),
+                        std::move(desired_explicit_hosts),
+                        std::move(scriptable_hosts)),
           *new_active);
 
   extension->permissions_data()->SetPermissions(std::move(new_active),
@@ -746,7 +778,8 @@ void PermissionsUpdater::AddPermissionsImpl(
       active_permissions_to_add,
       extension.permissions_data()->active_permissions());
 
-  SetPermissions(&extension, std::move(new_active));
+  SetPermissions(&extension, std::move(new_active),
+                 /*withhold_optional_permissions=*/true);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   if ((prefs_permissions_store_mask & kActivePermissions) != 0) {
@@ -773,8 +806,10 @@ void PermissionsUpdater::RemovePermissionsImpl(
     std::unique_ptr<const PermissionSet> new_active_permissions,
     const PermissionSet& permissions_to_remove_from_prefs,
     int prefs_permissions_store_mask,
+    bool withhold_optional_permissions,
     base::OnceClosure completion_callback) {
-  SetPermissions(&extension, std::move(new_active_permissions));
+  SetPermissions(&extension, std::move(new_active_permissions),
+                 withhold_optional_permissions);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   if ((prefs_permissions_store_mask & kActivePermissions) != 0) {

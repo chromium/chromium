@@ -1,0 +1,16 @@
+{
+  "name": "Optional Host Permissions with site access changes",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": [
+    "scripting",
+    "webNavigation",
+    "tabs"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"

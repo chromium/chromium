@@ -251,16 +251,18 @@ class PermissionsManager : public KeyedService {
   bool HasActiveTabAndCanAccess(const Extension& extension,
                                 const GURL& url) const;
 
-  // Returns the effective list of runtime-granted permissions for a given
-  // `extension` from its prefs. ExtensionPrefs doesn't store the valid schemes
-  // for URLPatterns, which results in the chrome:-scheme being included for
-  // <all_urls> when retrieving it directly from the prefs; this then causes
-  // CHECKs to fail when validating that permissions being revoked are present
-  // (see https://crbug.com/930062).
-  // Returns null if there are no stored runtime-granted permissions.
+  // Returns the effective list of runtime-granted/desired-active permissions
+  // for a given `extension` from its prefs. ExtensionPrefs doesn't store the
+  // valid schemes for URLPatterns, which results in the chrome:-scheme being
+  // included for <all_urls> when retrieving it directly from the prefs; this
+  // then causes CHECKs to fail when validating that permissions being revoked
+  // are present (see https://crbug.com/930062). Returns null if there are no
+  // stored runtime-granted/desired-active permissions.
   // TODO(crbug.com/41441259): ExtensionPrefs should return
   // properly-bounded permissions.
   std::unique_ptr<PermissionSet> GetRuntimePermissionsFromPrefs(
+      const Extension& extension) const;
+  std::unique_ptr<PermissionSet> GetDesiredActivePermissionsFromPrefs(
       const Extension& extension) const;
 
   // Returns the set of permissions that the `extension` wants to have active at

@@ -34,6 +34,7 @@
 #include "extensions/browser/site_access_requests_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -144,6 +145,66 @@ std::unique_ptr<PermissionSet> GetAllowedPermissionsAfterWithholding(
   return PermissionSet::CreateIntersection(
       *allowed_permissions, desired_permissions,
       URLPatternSet::IntersectionBehavior::kDetailed);
+}
+
+// Adjusts host patterns if they match all URLs and include the chrome:-scheme.
+// These patterns would otherwise match hosts like chrome://settings, which
+// should not be allowed.
+std::unique_ptr<PermissionSet> AdjustHostPatterns(
+    std::unique_ptr<PermissionSet> permissions,
+    const ExtensionId& id) {
+  // If there are no stored permissions, there's nothing to adjust.
+  if (!permissions) {
+    return nullptr;
+  }
+
+  // If the extension is allowed to run on chrome:// URLs, then we don't have
+  // to adjust anything.
+  if (PermissionsData::AllUrlsIncludesChromeUrls(id)) {
+    return permissions;
+  }
+
+  // NOTE: We don't need to adjust for the file scheme, because
+  // ExtensionPrefs properly does that based on the extension's file access.
+  auto needs_chrome_scheme_adjustment = [](const URLPattern& pattern) {
+    return pattern.match_all_urls() &&
+           ((pattern.valid_schemes() & URLPattern::SCHEME_CHROMEUI) != 0);
+  };
+
+  // NOTE: We don't need to check scriptable_hosts, because the default
+  // scriptable_hosts scheme mask omits the chrome:-scheme in normal
+  // circumstances (whereas the default explicit scheme does not, in order to
+  // allow for patterns like chrome://favicon).
+
+  bool needs_adjustment = base::ranges::any_of(permissions->explicit_hosts(),
+                                               needs_chrome_scheme_adjustment);
+  // If no patterns need adjustment, return the original set.
+  if (!needs_adjustment) {
+    return permissions;
+  }
+
+  // Otherwise, iterate over the explicit hosts, and modify any that need to be
+  // tweaked, adding back in permitted chrome:-scheme hosts. This logic mirrors
+  // that in PermissionsParser, and is also similar to logic in
+  // permissions_api_helpers::UnpackOriginPermissions(), and has some overlap
+  // to URLPatternSet::Populate().
+  // TODO(devlin): ^^ Ouch. Refactor so that this isn't duplicated.
+  URLPatternSet new_explicit_hosts;
+  for (const auto& pattern : permissions->explicit_hosts()) {
+    if (!needs_chrome_scheme_adjustment(pattern)) {
+      new_explicit_hosts.AddPattern(pattern);
+      continue;
+    }
+
+    URLPattern new_pattern(pattern);
+    int new_valid_schemes =
+        pattern.valid_schemes() & ~URLPattern::SCHEME_CHROMEUI;
+    new_pattern.SetValidSchemes(new_valid_schemes);
+    new_explicit_hosts.AddPattern(std::move(new_pattern));
+  }
+
+  permissions->SetExplicitHosts(std::move(new_explicit_hosts));
+  return permissions;
 }
 
 class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
@@ -553,59 +614,15 @@ PermissionsManager::GetRuntimePermissionsFromPrefs(
     const Extension& extension) const {
   std::unique_ptr<PermissionSet> permissions =
       extension_prefs_->GetRuntimeGrantedPermissions(extension.id());
+  return AdjustHostPatterns(std::move(permissions), extension.id());
+}
 
-  // If there are no stored permissions, there's nothing to adjust.
-  if (!permissions)
-    return nullptr;
-
-  // If the extension is allowed to run on chrome:// URLs, then we don't have
-  // to adjust anything.
-  if (PermissionsData::AllUrlsIncludesChromeUrls(extension.id()))
-    return permissions;
-
-  // We need to adjust a pattern if it matches all URLs and includes the
-  // chrome:-scheme. These patterns would otherwise match hosts like
-  // chrome://settings, which should not be allowed.
-  // NOTE: We don't need to adjust for the file scheme, because
-  // ExtensionPrefs properly does that based on the extension's file access.
-  auto needs_chrome_scheme_adjustment = [](const URLPattern& pattern) {
-    return pattern.match_all_urls() &&
-           ((pattern.valid_schemes() & URLPattern::SCHEME_CHROMEUI) != 0);
-  };
-
-  // NOTE: We don't need to check scriptable_hosts, because the default
-  // scriptable_hosts scheme mask omits the chrome:-scheme in normal
-  // circumstances (whereas the default explicit scheme does not, in order to
-  // allow for patterns like chrome://favicon).
-
-  bool needs_adjustment = base::ranges::any_of(permissions->explicit_hosts(),
-                                               needs_chrome_scheme_adjustment);
-  // If no patterns need adjustment, return the original set.
-  if (!needs_adjustment)
-    return permissions;
-
-  // Otherwise, iterate over the explicit hosts, and modify any that need to be
-  // tweaked, adding back in permitted chrome:-scheme hosts. This logic mirrors
-  // that in PermissionsParser, and is also similar to logic in
-  // permissions_api_helpers::UnpackOriginPermissions(), and has some overlap
-  // to URLPatternSet::Populate().
-  // TODO(devlin): ^^ Ouch. Refactor so that this isn't duplicated.
-  URLPatternSet new_explicit_hosts;
-  for (const auto& pattern : permissions->explicit_hosts()) {
-    if (!needs_chrome_scheme_adjustment(pattern)) {
-      new_explicit_hosts.AddPattern(pattern);
-      continue;
-    }
-
-    URLPattern new_pattern(pattern);
-    int new_valid_schemes =
-        pattern.valid_schemes() & ~URLPattern::SCHEME_CHROMEUI;
-    new_pattern.SetValidSchemes(new_valid_schemes);
-    new_explicit_hosts.AddPattern(std::move(new_pattern));
-  }
-
-  permissions->SetExplicitHosts(std::move(new_explicit_hosts));
-  return permissions;
+std::unique_ptr<PermissionSet>
+PermissionsManager::GetDesiredActivePermissionsFromPrefs(
+    const Extension& extension) const {
+  std::unique_ptr<PermissionSet> permissions =
+      extension_prefs_->GetDesiredActivePermissions(extension.id());
+  return AdjustHostPatterns(std::move(permissions), extension.id());
 }
 
 std::unique_ptr<PermissionSet>
