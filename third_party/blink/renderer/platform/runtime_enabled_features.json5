@@ -1252,15 +1252,6 @@
       depends_on: ["CSSTextAutoSpace"],
     },
     {
-      // Makes the transition shorthand omit longhands which have initial
-      // values as per a standards discussion.
-      // Shipped in M127, should be safe to remove in M132.
-      // https://issues.chromium.org/issues/41487057
-      // https://github.com/web-platform-tests/wpt/issues/43574
-      name: "CSSTransitionShorterSerialization",
-      status: "stable",
-    },
-    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //
