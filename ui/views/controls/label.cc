@@ -719,6 +719,10 @@ gfx::Size Label::GetMinimumSize() const {
   return size;
 }
 
+gfx::Size Label::GetMaximumSize() const {
+  return GetPreferredSize({});
+}
+
 int Label::GetLabelHeightForWidth(int w) const {
   if (!GetVisible() && collapse_when_hidden_) {
     return 0;
@@ -1281,7 +1285,7 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
   const int base_line_height = GetLineHeight();
   SizeBound w =
       std::max<SizeBound>(0, available_size.width() - GetInsets().width());
-  if (GetText().empty()) {
+  if (GetText().empty() || (w == 0 && GetMultiLine())) {
     size = gfx::Size(0, base_line_height);
   } else if (max_width_single_line_ > 0) {
     DCHECK(!GetMultiLine());

@@ -85,6 +85,11 @@ SystemToastView::SystemToastView(const std::u16string& text,
           .SetMultiLine(true)
           .SetMaximumWidth(kToastLabelMaxWidth)
           .SetMaxLines(2)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::LayoutOrientation::kHorizontal,
+                           views::MinimumFlexSizeRule::kScaleToZero,
+                           views::MaximumFlexSizeRule::kScaleToMaximum))
           .Build());
 
   const bool has_button = !dismiss_text.empty();
