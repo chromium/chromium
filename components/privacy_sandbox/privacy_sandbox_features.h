@@ -163,6 +163,18 @@ BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 
+// Privacy UX features start
+// See go/ps-privacy-ux-launch-features for more information
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kAddLimit3pcsSetting);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kAlwaysBlock3pcsIncognito);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtection3pcdUx);
+
 // Enables fingerprinting protection setting UX.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionUx);
@@ -203,6 +215,8 @@ BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingUbControl);
 // Enables TRACKING_PROTECTION content settings to control 3pcb.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
+
+// Privacy UX features end
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables UserBypass logic for Progressive Web Apps on Android
