@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "crypto/encryptor.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
@@ -252,6 +253,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       scoped_refptr<hls::MediaPlaylist> playlist,
       HlsDemuxerStatus::Or<RelaxedParserSupportedType> maybe_info);
   void DetermineBitstreamContainer(
+      scoped_refptr<hls::MediaSegment> segment,
       HlsDemuxerStatusCb<RelaxedParserSupportedType> cb,
       HlsDataSourceProvider::ReadResult maybe_stream);
 

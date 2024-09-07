@@ -856,14 +856,29 @@ void HlsManifestDemuxerEngine::DetermineStreamContainer(
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::PeekSegmentChunk", this,
                                       "uri", segments[0]->GetUri());
+    bool read_chunked = true;
+    if (auto enc_data = segments[0]->GetEncryptionData()) {
+      switch (enc_data->GetMethod()) {
+        case hls::XKeyTagMethod::kAES128:
+        case hls::XKeyTagMethod::kAES256: {
+          read_chunked = false;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
     ReadMediaSegment(
-        *segments[0], /*read_chunked=*/true, /*include_init=*/true,
+        *segments[0], read_chunked, /*include_init=*/true,
         base::BindOnce(&HlsManifestDemuxerEngine::DetermineBitstreamContainer,
-                       weak_factory_.GetWeakPtr(), std::move(container_cb)));
+                       weak_factory_.GetWeakPtr(), segments[0],
+                       std::move(container_cb)));
   }
 }
 
 void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
+    scoped_refptr<hls::MediaSegment> segment,
     HlsDemuxerStatusCb<RelaxedParserSupportedType> cb,
     HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
@@ -878,6 +893,45 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
   if (!stream->buffer_size()) {
     std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
     return;
+  }
+
+  if (auto enc_data = segment->GetEncryptionData()) {
+    switch (enc_data->GetMethod()) {
+      case hls::XKeyTagMethod::kNone: {
+        // Fall back to plaintext.
+        break;
+      }
+      case hls::XKeyTagMethod::kAES128:
+      case hls::XKeyTagMethod::kAES256: {
+        auto decryptor = std::make_unique<crypto::Encryptor>();
+        auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
+        auto mode = crypto::Encryptor::Mode::CBC;
+        base::span<const uint8_t> stream_data =
+            base::span(stream->raw_data(), stream->buffer_size());
+        if (!maybe_iv.has_value()) {
+          std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+          return;
+        }
+        auto iv = std::move(maybe_iv).value();
+        if (!decryptor->Init(enc_data->GetKey(), mode, iv)) {
+          std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+          return;
+        }
+        std::vector<uint8_t> plaintext;
+        if (!decryptor->Decrypt(stream_data, &plaintext)) {
+          std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+          return;
+        }
+        decryptor = nullptr;
+        std::move(cb).Run(CheckBitstreamForContainerMagic(plaintext.data(),
+                                                          plaintext.size()));
+        return;
+      }
+      default: {
+        std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+        return;
+      }
+    }
   }
 
   std::move(cb).Run(CheckBitstreamForContainerMagic(stream->raw_data(),
