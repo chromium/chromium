@@ -128,21 +128,32 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
 
   gfx::Size GetMaximumDialogSize() override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-    // Allows the dialog height to be up to 2x the content area height.
-    // 2x is a deliberate choice.
+    // - small content (width < 400): dialog height <= 2x content height
+    // - medium content (width < 750):
+    //     content height <= dialog height <= 2x content height
+    // - large content (width >= 750): dialog height <= content height
+    //
+    // Note: 2x is a deliberate choice.
     // 1x is too restrictive for displaying dialogs that have a header image.
     // Beyond 2x, dialogs become too much higher than the browser window, so
     // much so that they might be confused as top-level windows while not
     // behaving like one (for example, top-level windows are draggable but
     // dialogs are not).
-    // Note that the size will also be adjusted so that modals are fully visible
-    // on the current screen. This is handled by //components/constrained_window
+    //
+    // Note that the position will be adjusted to maximize the visible area on
+    // the current screen. This is handled by //components/constrained_window
     // TODO(crbug.com/358138947): the content area can have zero height on
     // Linux and Windows, resulting in invisible dialogs. Instead of setting
     // a min dialog height, set a min content area height.
-    gfx::Size size = browser_view_layout_->contents_container_->size();
-    size.set_height(base::ClampMul(size.height(), 2));
-    return size;
+    constexpr int kSmallContentHeight = 400;
+    constexpr int kLargeContentHeight = 750;
+    const gfx::Size content_size =
+        browser_view_layout_->contents_container_->size();
+    float fraction_between_small_and_large =
+        float(content_size.height() - kSmallContentHeight) /
+        (kLargeContentHeight - kSmallContentHeight);
+    float scale = 2.f - std::clamp(fraction_between_small_and_large, 0.f, 1.f);
+    return gfx::Size(content_size.width(), content_size.height() * scale);
 #else
     // Modals use NativeWidget and cannot be rendered beyond the browser
     // window boundaries. Restricting them to the browser window bottom
