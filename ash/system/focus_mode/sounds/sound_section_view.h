@@ -21,6 +21,9 @@ namespace ash {
 class PillButton;
 class PlaylistView;
 
+// Number of playlists for focus mode.
+inline constexpr size_t kFocusModePlaylistViewsNum = 4;
+
 // These are views that represent a list of playlists and we toggle between
 // `Focus Sounds` or `YouTube Music` sound sections using the slider button in
 // the focus panel. When a non-premium user toggles to show the `YouTube Music`

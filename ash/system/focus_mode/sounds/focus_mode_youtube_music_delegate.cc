@@ -12,6 +12,7 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_retry_util.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@ namespace ash {
 
 namespace {
 
-constexpr size_t kPlaylistNum = 4;
 constexpr char kFocusSupermixPlaylistId[] =
     "playlists/RDTMAK5uy_l3TXw3uC_sIHl4m6RMGqCyKKd2D2_pv28";
 constexpr char kYouTubeMusicSourceFormat[] = "YouTube Music ᐧ %s";
@@ -61,26 +61,20 @@ void FocusModeYouTubeMusicDelegate::GetPlaylists(
   // Cache the done callback, add focus supermix/reserved playlist to the to-do
   // list, and update the total number of API request to run.
   get_playlists_state_.done_callback = std::move(callback);
-  if (get_playlists_state_.reserved_playlist_id) {
-    get_playlists_state_
-        .playlists_to_query[get_playlists_state_.reserved_playlist_id.value()] =
-        1;
-  }
-  get_playlists_state_.playlists_to_query[kFocusSupermixPlaylistId] = 0;
-  get_playlists_state_.target_count =
-      get_playlists_state_.playlists_to_query.size() + 1;
+  const bool playlist_reserved =
+      get_playlists_state_.reserved_playlist_id.has_value();
+  get_playlists_state_.target_count = playlist_reserved ? 3 : 2;
 
-  // Invoke the API requests.
-  for (const auto& [playlist_id, playlist_bucket] :
-       get_playlists_state_.playlists_to_query) {
-    youtube_music_controller_->GetPlaylist(
-        playlist_id,
-        base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
-                       weak_factory_.GetWeakPtr(), playlist_bucket));
+  // Invoke sub requests. Please note, sub request failures are more permissive
+  // than other requests. As long as we can get four playlists, it will be
+  // treated as a successful overall attempt. This is especially robust when a
+  // certain playlist is deleted so that one single failed sub request does not
+  // affect the overall ability to fetch playlists.
+  GetPlaylistInternal(GetPlaylistsRequestState::PlaylistType::kFocusSuperMix);
+  if (playlist_reserved) {
+    GetPlaylistInternal(GetPlaylistsRequestState::PlaylistType::kReserved);
   }
-  youtube_music_controller_->GetMusicSection(
-      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
-                     weak_factory_.GetWeakPtr(), /*bucket=*/2));
+  GetMusicSectionInternal();
 }
 
 bool FocusModeYouTubeMusicDelegate::ReportPlayback(
@@ -123,7 +117,9 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::Reset() {
   for (auto& playlist_bucket : playlist_buckets) {
     playlist_bucket.clear();
   }
-  playlists_to_query.clear();
+  for (auto& retry_state : retry_states) {
+    retry_state.Reset();
+  }
   target_count = 0;
   count = 0;
   ResetDoneCallback();
@@ -132,7 +128,7 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::Reset() {
 void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
     ResetDoneCallback() {
   if (done_callback) {
-    std::move(done_callback).Run({});
+    std::move(done_callback).Run(/*playlists=*/{});
   }
   done_callback = base::NullCallback();
 }
@@ -140,10 +136,11 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
 std::vector<FocusModeSoundsDelegate::Playlist>
 FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::GetTopPlaylists() {
   std::vector<Playlist> results;
-  results.reserve(kPlaylistNum);
+  results.reserve(kFocusModePlaylistViewsNum);
   for (auto& playlist_bucket : playlist_buckets) {
-    for (size_t i = 0;
-         i < playlist_bucket.size() && results.size() < kPlaylistNum; i++) {
+    for (size_t i = 0; i < playlist_bucket.size() &&
+                       results.size() < kFocusModePlaylistViewsNum;
+         i++) {
       // Skip the duplicate.
       if (base::ranges::find(results, playlist_bucket[i].id, &Playlist::id) !=
           results.end()) {
@@ -152,7 +149,6 @@ FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::GetTopPlaylists() {
       results.emplace_back(playlist_bucket[i]);
     }
   }
-  CHECK_EQ(results.size(), kPlaylistNum);
   return results;
 }
 
@@ -187,25 +183,71 @@ bool FocusModeYouTubeMusicDelegate::ReportPlaybackRequestState::
          url_to_token.find(url) != url_to_token.end();
 }
 
-void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
-    size_t bucket,
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<youtube_music::Playlist> playlist) {
-  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    get_playlists_state_.Reset();
-    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
-        no_premium_callback_) {
-      no_premium_callback_.Run();
-    }
-    // TODO(b/354240276): Add more error handling and retries.
-    return;
+void FocusModeYouTubeMusicDelegate::GetPlaylistInternal(
+    const GetPlaylistsRequestState::PlaylistType type) {
+  std::string playlist_id;
+  if (type == GetPlaylistsRequestState::PlaylistType::kReserved) {
+    CHECK(get_playlists_state_.reserved_playlist_id.has_value());
+    playlist_id = get_playlists_state_.reserved_playlist_id.value();
+  } else {
+    playlist_id = kFocusSupermixPlaylistId;
   }
 
+  youtube_music_controller_->GetPlaylist(
+      playlist_id,
+      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
+                     weak_factory_.GetWeakPtr(), type));
+}
+
+void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
+    const GetPlaylistsRequestState::PlaylistType type,
+    google_apis::ApiErrorCode http_error_code,
+    std::optional<youtube_music::Playlist> playlist) {
   if (!get_playlists_state_.done_callback) {
     return;
   }
 
+  const size_t bucket = static_cast<size_t>(type);
   CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
+
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    // Handle forbidden error. No need to retry.
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
+      // Notify UI about no premium subscription.
+      if (no_premium_callback_) {
+        no_premium_callback_.Run();
+      }
+
+      // Bail gracefully.
+      get_playlists_state_.Reset();
+      return;
+    }
+
+    // Handle too many request error. Retry if needed.
+    FocusModeRetryState& retry_state =
+        get_playlists_state_.retry_states[bucket];
+    if (http_error_code == 429 &&
+        retry_state.retry_index < kMaxRetryTooManyRequests) {
+      retry_state.retry_index++;
+      retry_state.timer.Start(
+          FROM_HERE, kWaitTimeTooManyRequests,
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::GetPlaylistInternal,
+                         weak_factory_.GetWeakPtr(), type));
+      return;
+    }
+
+    // Handle general HTTP errors. Retry if needed.
+    if (ShouldRetryHttpError(http_error_code) &&
+        retry_state.retry_index < kMaxRetryOverall) {
+      retry_state.retry_index++;
+      retry_state.timer.Start(
+          FROM_HERE,
+          GetExponentialBackoffRetryWaitTime(retry_state.retry_index),
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::GetPlaylistInternal,
+                         weak_factory_.GetWeakPtr(), type));
+      return;
+    }
+  }
 
   if (playlist.has_value()) {
     get_playlists_state_.playlist_buckets[bucket].emplace_back(
@@ -214,34 +256,66 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
   }
 
   get_playlists_state_.count++;
-  if (get_playlists_state_.count == get_playlists_state_.target_count) {
-    const std::vector<Playlist>& results =
-        get_playlists_state_.GetTopPlaylists();
-    CHECK_GE(results.size(), kPlaylistNum);
-    std::move(get_playlists_state_.done_callback).Run(results);
-    get_playlists_state_.done_callback = base::NullCallback();
-  }
+  MaybeReportBackPlaylists();
+}
+
+void FocusModeYouTubeMusicDelegate::GetMusicSectionInternal() {
+  youtube_music_controller_->GetMusicSection(
+      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
-    size_t bucket,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::vector<youtube_music::Playlist>> playlists) {
-  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    get_playlists_state_.Reset();
-    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
-        no_premium_callback_) {
-      no_premium_callback_.Run();
-    }
-    // TODO(b/354240276): Add more error handling and retries.
-    return;
-  }
-
   if (!get_playlists_state_.done_callback) {
     return;
   }
 
+  const size_t bucket =
+      static_cast<size_t>(GetPlaylistsRequestState::PlaylistType::kFocusIntent);
   CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
+
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    // Handle forbidden error. No need to retry.
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
+      // Notify UI about no premium subscription.
+      if (no_premium_callback_) {
+        no_premium_callback_.Run();
+      }
+
+      // Bail gracefully.
+      get_playlists_state_.Reset();
+      return;
+    }
+
+    // Handle too many request error. Retry if needed.
+    FocusModeRetryState& retry_state =
+        get_playlists_state_.retry_states[bucket];
+    if (http_error_code == 429 &&
+        retry_state.retry_index < kMaxRetryTooManyRequests) {
+      retry_state.retry_index++;
+      retry_state.timer.Start(
+          FROM_HERE, kWaitTimeTooManyRequests,
+          base::BindOnce(
+              &FocusModeYouTubeMusicDelegate::GetMusicSectionInternal,
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
+
+    // Handle general HTTP errors. Retry if needed.
+    if (ShouldRetryHttpError(http_error_code) &&
+        retry_state.retry_index < kMaxRetryOverall) {
+      retry_state.retry_index++;
+      retry_state.timer.Start(
+          FROM_HERE,
+          GetExponentialBackoffRetryWaitTime(retry_state.retry_index),
+          base::BindOnce(
+              &FocusModeYouTubeMusicDelegate::GetMusicSectionInternal,
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
+  }
 
   if (playlists.has_value()) {
     for (const auto& playlist : playlists.value()) {
@@ -251,13 +325,21 @@ void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
   }
 
   get_playlists_state_.count++;
-  if (get_playlists_state_.count == get_playlists_state_.target_count) {
-    const std::vector<Playlist>& results =
-        get_playlists_state_.GetTopPlaylists();
-    CHECK_GE(results.size(), kPlaylistNum);
+  MaybeReportBackPlaylists();
+}
+
+void FocusModeYouTubeMusicDelegate::MaybeReportBackPlaylists() {
+  if (get_playlists_state_.count != get_playlists_state_.target_count) {
+    return;
+  }
+
+  const std::vector<Playlist>& results = get_playlists_state_.GetTopPlaylists();
+  if (results.size() >= kFocusModePlaylistViewsNum) {
     std::move(get_playlists_state_.done_callback).Run(results);
     get_playlists_state_.done_callback = base::NullCallback();
   }
+
+  get_playlists_state_.Reset();
 }
 
 void FocusModeYouTubeMusicDelegate::GetNextTrackInternal(

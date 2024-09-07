@@ -59,6 +59,12 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   // Struct that keeps track of ongoing `GetPlaylists` request. It contains
   // enough information about how the current request should be done.
   struct GetPlaylistsRequestState {
+    enum class PlaylistType {
+      kFocusSuperMix,
+      kReserved,
+      kFocusIntent,
+    };
+
     GetPlaylistsRequestState();
     ~GetPlaylistsRequestState();
 
@@ -73,10 +79,6 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     std::array<std::vector<Playlist>, kYouTubeMusicPlaylistBucketCount>
         playlist_buckets;
 
-    // Playlist ID to bucket map. It contains all specific playlists to query
-    // for the request.
-    base::flat_map<std::string, size_t> playlists_to_query;
-
     // Reserved playlist to query if set.
     std::optional<std::string> reserved_playlist_id;
 
@@ -88,6 +90,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
     // Callback to run when this request is successful, failed, or overwritten.
     FocusModeSoundsDelegate::PlaylistsCallback done_callback;
+
+    std::array<FocusModeRetryState, kYouTubeMusicPlaylistBucketCount>
+        retry_states;
   };
 
   // Struct that keeps track of ongoing `GetNextTrack` request. It contains
@@ -124,16 +129,26 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     base::flat_map<GURL, std::string> url_to_token;
   };
 
+  // Triggers request to query for specific playlist for the given bucket.
+  void GetPlaylistInternal(const GetPlaylistsRequestState::PlaylistType type);
+
   // Called when get playlists request is done.
-  void OnGetPlaylistDone(size_t bucket,
+  void OnGetPlaylistDone(const GetPlaylistsRequestState::PlaylistType type,
                          google_apis::ApiErrorCode http_error_code,
                          std::optional<youtube_music::Playlist> playlist);
 
+  // Triggers request to query for focus-intent playlists for the given bucket.
+  void GetMusicSectionInternal();
+
   // Called when get music section request is done.
   void OnGetMusicSectionDone(
-      size_t bucket,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::vector<youtube_music::Playlist>> playlists);
+
+  // Invoked when sub-request is done for `GetPlaylists()`. It's responsible for
+  // collecting the data, and reporting the data back when we are at the target
+  // count.
+  void MaybeReportBackPlaylists();
 
   // Triggers request to get next track depending on the current request state.
   void GetNextTrackInternal(const std::string& playlist_id);

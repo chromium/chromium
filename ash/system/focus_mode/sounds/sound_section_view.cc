@@ -23,7 +23,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPlaylistViewsNum = 4;
 constexpr auto kPlaylistsContainerViewInsets = gfx::Insets::VH(0, 24);
 
 std::unique_ptr<views::View> CreateSpacerView() {
@@ -51,10 +50,10 @@ SoundSectionView::~SoundSectionView() = default;
 void SoundSectionView::UpdateContents(
     const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
         data) {
-  CHECK_EQ(static_cast<int>(data.size()), kPlaylistViewsNum);
-  CHECK_EQ(static_cast<int>(playlist_view_list_.size()), kPlaylistViewsNum);
+  CHECK_EQ(data.size(), kFocusModePlaylistViewsNum);
+  CHECK_EQ(playlist_view_list_.size(), kFocusModePlaylistViewsNum);
 
-  for (size_t i = 0; i < kPlaylistViewsNum; ++i) {
+  for (size_t i = 0; i < kFocusModePlaylistViewsNum; ++i) {
     const auto& playlist_data = data.at(i);
     auto* playlist_view = playlist_view_list_.at(i);
     playlist_view->UpdateContents(*playlist_data);
@@ -119,7 +118,7 @@ void SoundSectionView::CreatePlaylistViewsContainer(
   playlist_views_container_->SetBorder(
       views::CreateEmptyBorder(kPlaylistsContainerViewInsets));
 
-  for (size_t i = 0; i < kPlaylistViewsNum; ++i) {
+  for (size_t i = 0; i < kFocusModePlaylistViewsNum; ++i) {
     // Before appending a new `PlaylistView`, we add a spacer view to make the
     // spacing between each of the `PlaylistView` equal.
     if (i > 0) {
