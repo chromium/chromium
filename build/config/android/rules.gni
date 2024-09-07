@@ -14,7 +14,7 @@ assert(
     "current_toolchain=$current_toolchain default_toolchain=$default_toolchain")
 
 _sanitizer_runtimes = []
-if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
+if (use_cfi_diag || is_ubsan_any) {
   _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$sanitizer_arch-android.so" ]
 }
 if (is_asan) {
@@ -1891,7 +1891,7 @@ if (!is_robolectric && enable_java_templates) {
            invoker.assertions_implicitly_enabled) || enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
       }
-      if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
+      if (use_cfi_diag || is_ubsan_any) {
         defines += [ "_IS_UBSAN" ]
       }
 

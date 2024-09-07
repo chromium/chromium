@@ -239,7 +239,7 @@ if (is_mac || is_android || is_linux || is_chromeos) {
       "//third_party/crashpad/crashpad/handler",
     ]
 
-    if (is_mac && (is_component_build || is_asan)) {
+    if (is_mac && (is_component_build || is_asan || is_ubsan_any)) {
       ldflags = [
         # The handler is in
         # Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/A/Helpers/

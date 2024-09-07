@@ -75,7 +75,7 @@ executable("app_mode_loader") {
 
   sources = [ "app_mode_loader_mac.mm" ]
 
-  if (is_component_build || is_asan) {
+  if (is_component_build || is_asan || is_ubsan_any) {
     # Loaders are installed to ~/Applications. In a component build, include
     # the absolute path to the out dir in their library search path so that
     # their components are found at launch.
