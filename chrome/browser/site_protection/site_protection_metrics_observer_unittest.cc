@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,6 +146,27 @@ class SiteProtectionMetricsObserverTest
     }
   }
 
+  int64_t GetUkmFamiliarityHeuristicValue(ukm::TestUkmRecorder& ukm_recorder,
+                                          const std::string& metric_name) {
+    std::vector<int64_t> values = ukm_recorder.GetMetricsEntryValues(
+        "SiteFamiliarityHeuristicResult", metric_name);
+    return values.size() == 1u ? values[0] : -1;
+  }
+
+  void NavigateAndCheckRecordedHeuristicUkm(const GURL& url,
+                                            const std::string& metric_name,
+                                            int64_t expected_value) {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    base::RunLoop run_loop;
+    ukm_recorder.SetOnAddEntryCallback(
+        ukm::builders::SiteFamiliarityHeuristicResult::kEntryName,
+        run_loop.QuitClosure());
+    NavigateAndCommit(url);
+    run_loop.Run();
+    EXPECT_EQ(expected_value,
+              GetUkmFamiliarityHeuristicValue(ukm_recorder, metric_name));
+  }
+
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<TestSafeBrowsingDatabaseManager>
@@ -153,13 +175,13 @@ class SiteProtectionMetricsObserverTest
       safe_browsing_factory_;
 };
 
-// Test that SiteProtectionMetricsObserver logs the
-// SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo histogram if
+// Test that SiteProtectionMetricsObserver logs the correct histogram and UKM if
 // history doesn't have any history entries older than 24 hours ago.
 TEST_F(SiteProtectionMetricsObserverTest, NoHistoryOlderThanADayAgo) {
   GURL kUrlVisited8HoursAgo("https://bar.com");
   GURL kUrlVisitedToday("https://baz.com");
 
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   GetHistoryService()->AddPage(kUrlVisited8HoursAgo,
                                (base::Time::Now() - base::Hours(8)),
                                history::SOURCE_BROWSED);
@@ -167,10 +189,14 @@ TEST_F(SiteProtectionMetricsObserverTest, NoHistoryOlderThanADayAgo) {
   NavigateAndCheckRecordedHeuristicHistograms(
       kUrlVisitedToday,
       {SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo});
+  EXPECT_EQ(static_cast<int>(SiteFamiliarityHistoryHeuristicName::
+                                 kNoVisitsToAnySiteMoreThanADayAgo),
+            GetUkmFamiliarityHeuristicValue(ukm_recorder,
+                                            "SiteFamiliarityHistoryHeuristic"));
 }
 
-// Test the histograms which are logged by SiteProtectionMetricsObserver based
-// on how long ago the current page URL was previously visited.
+// Test the histograms and UKM which are logged by SiteProtectionMetricsObserver
+// based on how long ago the current page URL was previously visited.
 TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
   GURL kUrlVisitedYesterday("https://foo.com");
   GURL kUrlVisited8HoursAgo("https://bar.com");
@@ -185,15 +211,39 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
   GetHistoryService()->AddPage(kUrlVisited1HourAgo, base::Time::Now(),
                                history::SOURCE_BROWSED);
 
-  NavigateAndCheckRecordedHeuristicHistograms(
-      kUrlVisitedYesterday,
-      {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
-       SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
-  NavigateAndCheckRecordedHeuristicHistograms(
-      kUrlVisited8HoursAgo,
-      {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo});
-  NavigateAndCheckRecordedHeuristicHistograms(
-      kUrlVisited1HourAgo, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kUrlVisitedYesterday,
+        {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+         SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
+    EXPECT_EQ(static_cast<int>(
+                  SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo),
+              GetUkmFamiliarityHeuristicValue(
+                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+  }
+
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kUrlVisited8HoursAgo,
+        {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo});
+    EXPECT_EQ(
+        static_cast<int>(
+            SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanFourHoursAgo),
+        GetUkmFamiliarityHeuristicValue(ukm_recorder,
+                                        "SiteFamiliarityHistoryHeuristic"));
+  }
+
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kUrlVisited1HourAgo, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
+    EXPECT_EQ(static_cast<int>(
+                  SiteFamiliarityHistoryHeuristicName::kNoHeuristicMatch),
+              GetUkmFamiliarityHeuristicValue(
+                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+  }
 }
 
 // Test the histograms which are logged by SiteProtectionMetricsObserver for
@@ -257,9 +307,25 @@ TEST_F(SiteProtectionMetricsObserverTest, IgnoreCurrentNavigationEngagement) {
   EXPECT_LT(0, site_engagement_service->GetScore(kUrl));
 }
 
-// Test that SiteProtectionMetricsObserver logs
-// SiteFamiliarityHeuristicName::kUrlOnHighConfidenceAllowlist histogram if the
-// site is on the safe browsing global allowlist.
+// Test that SiteProtectionMetricsObserver logs the site engagement to UKM.
+TEST_F(SiteProtectionMetricsObserverTest, SiteEngagementScoreUkm) {
+  GURL kUrl("https://foo.com");
+  const int kSiteEngagement = 15;
+  // Site engagement should be rounded down to multiple of 10 in UKM.
+  const int kExpectedUkmSiteEngagement = 10;
+
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
+  site_engagement_service->ResetBaseScoreForURL(kUrl, kSiteEngagement);
+  GetHistoryService()->AddPage(kUrl, (base::Time::Now() - base::Hours(1)),
+                               history::SOURCE_BROWSED);
+
+  NavigateAndCheckRecordedHeuristicUkm(kUrl, "SiteEngagementScore",
+                                       kExpectedUkmSiteEngagement);
+}
+
+// Test that SiteProtectionMetricsObserver logs the correct histograms and UKM
+// if the site is on the safe browsing global allowlist.
 TEST_F(SiteProtectionMetricsObserverTest, GlobalAllowlistMatch) {
   AddPageVisitedYesterday(GURL("https://baz.com"));
 
@@ -268,11 +334,36 @@ TEST_F(SiteProtectionMetricsObserverTest, GlobalAllowlistMatch) {
   safe_browsing_database_manager_->SetUrlOnHighConfidenceAllowlist(
       kUrlOnHighConfidenceAllowlist);
 
-  NavigateAndCheckRecordedHeuristicHistograms(
-      kUrlOnHighConfidenceAllowlist,
-      {SiteFamiliarityHeuristicName::kGlobalAllowlistMatch});
-  NavigateAndCheckRecordedHeuristicHistograms(
-      kRegularUrl, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kUrlOnHighConfidenceAllowlist,
+        {SiteFamiliarityHeuristicName::kGlobalAllowlistMatch});
+    EXPECT_EQ(true, GetUkmFamiliarityHeuristicValue(
+                        ukm_recorder, "OnHighConfidenceAllowlist"));
+  }
+
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kRegularUrl, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
+    EXPECT_EQ(false, GetUkmFamiliarityHeuristicValue(
+                         ukm_recorder, "OnHighConfidenceAllowlist"));
+  }
+}
+
+// Test that SiteProtectionMetricsObserver logs whether any heuristics matched
+// to UKM.
+TEST_F(SiteProtectionMetricsObserverTest, AnyHeuristicsMatchUkm) {
+  GURL kUrlVisitedYesterday("https://foo.com");
+  GURL kUrlVisitedNever("https://bar.com");
+
+  AddPageVisitedYesterday(kUrlVisitedYesterday);
+
+  NavigateAndCheckRecordedHeuristicUkm(kUrlVisitedYesterday,
+                                       "AnyHeuristicsMatch", true);
+  NavigateAndCheckRecordedHeuristicUkm(kUrlVisitedNever, "AnyHeuristicsMatch",
+                                       false);
 }
 
 }  // namespace site_protection

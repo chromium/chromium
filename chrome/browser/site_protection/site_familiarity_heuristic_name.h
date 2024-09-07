@@ -23,6 +23,16 @@ enum class SiteFamiliarityHeuristicName {
   kNoVisitsToAnySiteMoreThanADayAgo = 8,
   kMaxValue = kNoVisitsToAnySiteMoreThanADayAgo,
 };
+
+// Subset of SiteFamiliarityHeuristicName for heuristics related to navigation
+// history.
+enum class SiteFamiliarityHistoryHeuristicName {
+  kNoHeuristicMatch = 0,
+  kVisitedMoreThanADayAgo = 1,
+  kVisitedMoreThanFourHoursAgo = 2,
+  kNoVisitsToAnySiteMoreThanADayAgo = 3,
+};
+
 }  // namespace site_protection
 
 #endif  // CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_HEURISTIC_NAME_H_

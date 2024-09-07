@@ -20555,6 +20555,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SiteFamiliarityHeuristicResult">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when a toplevel page navigates. This records which
+    user-page-familiarity-heuristics would trigger for a given site, if any.
+  </summary>
+  <metric name="AnyHeuristicsMatch" enum="Boolean">
+    <summary>
+      Whether any familiarity heuristics would trigger on the site.
+    </summary>
+  </metric>
+  <metric name="OnHighConfidenceAllowlist" enum="Boolean">
+    <summary>
+      Whether the site is on the safe browsing high confidence allowlist.
+    </summary>
+  </metric>
+  <metric name="SiteEngagementScore">
+    <summary>
+      Site engagement score in the range [0, 100], rounded down to a multiple of
+      10 to limit granularity.
+    </summary>
+  </metric>
+  <metric name="SiteFamiliarityHistoryHeuristic"
+      enum="SiteFamiliarityHistoryHeuristicName">
+    <summary>
+      The most stringent navigation-history related familiarity heuristic that
+      would trigger on the site. If no navigation-history heuristic matches then
+      the value NO_HEURISTIC_MATCH is recorded.
+    </summary>
+  </metric>
+</event>
+
 <event name="SiteInstance">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-site-isolation@google.com</owner>

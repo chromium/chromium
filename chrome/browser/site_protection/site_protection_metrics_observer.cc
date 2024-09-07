@@ -4,6 +4,8 @@
 
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 
+#include <math.h>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
@@ -23,6 +25,15 @@
 #include "url/origin.h"
 
 namespace site_protection {
+namespace {
+
+// Returns rounded site engagement score to record in UKM. The score is rounded
+// to limit granularity.
+int RoundSiteEngagementScoreForUkm(double site_engagement_score) {
+  return static_cast<int>(floor(site_engagement_score / 10) * 10);
+}
+
+}  // anonymous namespace
 
 SiteProtectionMetricsObserver::MetricsData::MetricsData() = default;
 SiteProtectionMetricsObserver::MetricsData::~MetricsData() = default;
@@ -69,6 +80,7 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
   // matching heuristics even if the page navigates prior to the asynchronous
   // data fetches completing.
   auto metrics_data = std::make_unique<MetricsData>();
+  metrics_data->ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
   metrics_data->last_committed_url =
       page.GetMainDocument().GetLastCommittedURL();
   metrics_data->last_committed_origin =
@@ -78,7 +90,7 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchStart", true);
 
-  double url_site_engagement_score =
+  metrics_data->site_engagement_score =
       (got_points_navigation &&
        metrics_data->last_committed_url == got_points_navigation->url)
           ? got_points_navigation->score_before_navigation
@@ -86,19 +98,19 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
                 profile_)
                 ->GetScore(metrics_data->last_committed_url);
 
-  if (url_site_engagement_score >= 50) {
+  if (metrics_data->site_engagement_score >= 50) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kSiteEngagementScoreGte50);
   }
-  if (url_site_engagement_score >= 25) {
+  if (metrics_data->site_engagement_score >= 25) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kSiteEngagementScoreGte25);
   }
-  if (url_site_engagement_score >= 10) {
+  if (metrics_data->site_engagement_score >= 10) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kSiteEngagementScoreGte10);
   }
-  if (url_site_engagement_score >= .01) {
+  if (metrics_data->site_engagement_score >= .01) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kSiteEngagementScoreExists);
   }
@@ -118,6 +130,8 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
   if (last_visit_result.success && !last_visit_result.last_visit.is_null()) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo);
+    metrics_data->most_strict_matched_history_heuristic =
+        SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanFourHoursAgo;
 
     if (last_visit_result.last_visit < (base::Time::Now() - base::Days(1))) {
       OnGotVisitToOriginOlderThanADayAgo(std::move(metrics_data),
@@ -141,6 +155,8 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThanADayAgo(
   if (last_visit_result.success && !last_visit_result.last_visit.is_null()) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo);
+    metrics_data->most_strict_matched_history_heuristic =
+        SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo;
     OnKnowIfAnyVisitOlderThanADayAgo(std::move(metrics_data),
                                      /*has_visit_older_than_a_day_ago=*/true);
     return;
@@ -170,6 +186,8 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
   if (!any_visit_older_than_a_day_ago) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo);
+    metrics_data->most_strict_matched_history_heuristic =
+        SiteFamiliarityHistoryHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo;
   }
 
   if (g_browser_process->safe_browsing_service()) {
@@ -178,17 +196,17 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
       GURL last_committed_url = metrics_data->last_committed_url;
       database_manager->CheckUrlForHighConfidenceAllowlist(
           last_committed_url,
-          base::BindOnce(&SiteProtectionMetricsObserver::LogHistograms,
+          base::BindOnce(&SiteProtectionMetricsObserver::LogMetrics,
                          weak_factory_.GetWeakPtr(), std::move(metrics_data)));
       return;
     }
   }
 
-  LogHistograms(std::move(metrics_data),
-                /* url_on_safe_browsing_high_confidence_allowlist=*/false);
+  LogMetrics(std::move(metrics_data),
+             /* url_on_safe_browsing_high_confidence_allowlist=*/false);
 }
 
-void SiteProtectionMetricsObserver::LogHistograms(
+void SiteProtectionMetricsObserver::LogMetrics(
     std::unique_ptr<MetricsData> metrics_data,
     bool url_on_safe_browsing_high_confidence_allowlist) {
   if (url_on_safe_browsing_high_confidence_allowlist) {
@@ -196,7 +214,8 @@ void SiteProtectionMetricsObserver::LogHistograms(
         SiteFamiliarityHeuristicName::kGlobalAllowlistMatch);
   }
 
-  if (metrics_data->matched_heuristics.empty()) {
+  bool no_heuristics_match = metrics_data->matched_heuristics.empty();
+  if (no_heuristics_match) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kNoHeuristicMatch);
   }
@@ -210,6 +229,16 @@ void SiteProtectionMetricsObserver::LogHistograms(
     base::UmaHistogramEnumeration(
         "SafeBrowsing.SiteProtection.FamiliarityHeuristic", heuristic);
   }
+
+  ukm::builders::SiteFamiliarityHeuristicResult(metrics_data->ukm_source_id)
+      .SetAnyHeuristicsMatch(!no_heuristics_match)
+      .SetOnHighConfidenceAllowlist(
+          url_on_safe_browsing_high_confidence_allowlist)
+      .SetSiteEngagementScore(
+          RoundSiteEngagementScoreForUkm(metrics_data->site_engagement_score))
+      .SetSiteFamiliarityHistoryHeuristic(
+          static_cast<int>(metrics_data->most_strict_matched_history_heuristic))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteProtectionMetricsObserver);

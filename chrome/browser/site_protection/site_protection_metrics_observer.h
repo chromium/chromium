@@ -66,10 +66,14 @@ class SiteProtectionMetricsObserver
     MetricsData();
     ~MetricsData();
 
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+    double site_engagement_score = 0;
     GURL last_committed_url;
     url::Origin last_committed_origin;
     base::Time data_fetch_start_time;
     std::vector<SiteFamiliarityHeuristicName> matched_heuristics;
+    SiteFamiliarityHistoryHeuristicName most_strict_matched_history_heuristic =
+        SiteFamiliarityHistoryHeuristicName::kNoHeuristicMatch;
   };
 
   // Called with the most recent history visit to the origin in `metrics_data`
@@ -95,8 +99,8 @@ class SiteProtectionMetricsObserver
       std::unique_ptr<MetricsData> metrics_data,
       bool has_visit_older_than_a_day_ago);
 
-  void LogHistograms(std::unique_ptr<MetricsData> metrics_data,
-                     bool url_on_safe_browsing_high_confidence_allowlist);
+  void LogMetrics(std::unique_ptr<MetricsData> metrics_data,
+                  bool url_on_safe_browsing_high_confidence_allowlist);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
