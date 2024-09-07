@@ -5013,6 +5013,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kAdaptiveButtonInTopToolbarAddToBookmarks)},
+    {"adaptive-button-in-top-toolbar-page-summary",
+     flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryName,
+     flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAdaptiveButtonInTopToolbarPageSummary)},
     {"contextual-page-actions-share-model",
      flag_descriptions::kContextualPageActionsShareModelName,
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,

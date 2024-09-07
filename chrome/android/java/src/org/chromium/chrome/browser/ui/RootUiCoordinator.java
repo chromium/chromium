@@ -120,6 +120,8 @@ import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryButtonController;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
@@ -1505,6 +1507,14 @@ public class RootUiCoordinator
                             new AdaptiveButtonActionMenuCoordinator(),
                             mWindowAndroid,
                             ChromeSharedPreferences.getInstance());
+            PageSummaryButtonController pageSummaryButtonController =
+                    new PageSummaryButtonController(
+                            mActivity,
+                            mBottomSheetController,
+                            mModalDialogManagerSupplier.get(),
+                            mActivityTabProvider,
+                            PageInfoSharingControllerImpl.getInstance());
+
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
@@ -1524,6 +1534,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummaryButtonController);
             mContextualPageActionController =
                     new ContextualPageActionController(
                             mProfileSupplier,

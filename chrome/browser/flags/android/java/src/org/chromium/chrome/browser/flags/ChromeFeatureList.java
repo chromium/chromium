@@ -159,6 +159,8 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarTranslate";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS =
             "AdaptiveButtonInTopToolbarAddToBookmarks";
+    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY =
+            "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =
             "AdaptiveButtonInTopToolbarCustomizationV2";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";

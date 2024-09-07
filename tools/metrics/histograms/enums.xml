@@ -16811,6 +16811,8 @@ from previous Chrome versions.
   <int value="-1596859081" label="WebAuthenticationPINSupport:enabled"/>
   <int value="-1596559650" label="max-tiles-for-interest-area"/>
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
+  <int value="-1595021446"
+      label="AdaptiveButtonInTopToolbarPageSummary:enabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
   <int value="-1594067749" label="TabStripIncognitoMigration:disabled"/>
   <int value="-1593946814"
@@ -20266,6 +20268,8 @@ from previous Chrome versions.
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
   <int value="-157036790" label="CrosPrivacyHubAppPermissions:disabled"/>
   <int value="-154632776" label="HelpAppWelcomeTips:disabled"/>
+  <int value="-154071189"
+      label="AdaptiveButtonInTopToolbarPageSummary:disabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>

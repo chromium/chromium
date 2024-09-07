@@ -37,6 +37,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetViewBinder.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingControllerImpl.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummaryButtonController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummaryMetrics.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummarySharingRequest.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetContent.java",

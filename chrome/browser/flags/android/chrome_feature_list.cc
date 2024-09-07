@@ -170,6 +170,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarTranslate,
     &kAdaptiveButtonInTopToolbarAddToBookmarks,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
+    &kAdaptiveButtonInTopToolbarPageSummary,
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
@@ -422,6 +423,10 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarAddToBookmarks,
 BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
              "AdaptiveButtonInTopToolbarCustomizationV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
+             "AdaptiveButtonInTopToolbarPageSummary",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowNewIncognitoTabIntents,
              "AllowNewIncognitoTabIntents",

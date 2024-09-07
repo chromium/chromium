@@ -2462,6 +2462,8 @@ extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
 extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
+extern const char kAdaptiveButtonInTopToolbarPageSummaryName[];
+extern const char kAdaptiveButtonInTopToolbarPageSummaryDescription[];
 
 extern const char kAImageReaderName[];
 extern const char kAImageReaderDescription[];

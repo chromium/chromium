@@ -31,7 +31,9 @@ public class AdaptiveToolbarStats {
         AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS,
         AdaptiveToolbarRadioButtonState.READ_ALOUD,
-        AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD
+        AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD,
+        AdaptiveToolbarRadioButtonState.PAGE_SUMMARY,
+        AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface AdaptiveToolbarRadioButtonState {
@@ -48,7 +50,9 @@ public class AdaptiveToolbarStats {
         int AUTO_WITH_ADD_TO_BOOKMARKS = 10;
         int READ_ALOUD = 11;
         int AUTO_WITH_READ_ALOUD = 12;
-        int NUM_ENTRIES = 13;
+        int PAGE_SUMMARY = 13;
+        int AUTO_WITH_PAGE_SUMMARY = 14;
+        int NUM_ENTRIES = 15;
     }
 
     /**
@@ -111,6 +115,8 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.TRANSLATE;
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return AdaptiveToolbarRadioButtonState.READ_ALOUD;
+            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
+                return AdaptiveToolbarRadioButtonState.PAGE_SUMMARY;
             case AdaptiveToolbarButtonVariant.AUTO:
                 switch (uiState.autoButtonCaption) {
                     case AdaptiveToolbarButtonVariant.NEW_TAB:
@@ -125,6 +131,8 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE;
                     case AdaptiveToolbarButtonVariant.READ_ALOUD:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD;
+                    case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
+                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY;
                 }
         }
         assert false : "Invalid radio button state";

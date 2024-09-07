@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.common.base.Strings;
@@ -57,7 +58,7 @@ class PageSummarySharingRequest {
     @NonNull private final Context mContext;
     @NonNull private final BottomSheetController mBottomSheetController;
     @NonNull private final Tab mTab;
-    @NonNull private final ChromeOptionShareCallback mChromeOptionShareCallback;
+    @Nullable private final ChromeOptionShareCallback mChromeOptionShareCallback;
     @NonNull private final Runnable mDestroyCallback;
     @NonNull private final ObservableSupplierImpl<PageInfoContents> mPageInfoSupplier;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
@@ -67,7 +68,7 @@ class PageSummarySharingRequest {
     public PageSummarySharingRequest(
             @NonNull Context context,
             @NonNull Tab tab,
-            @NonNull ChromeOptionShareCallback chromeOptionShareCallback,
+            @Nullable ChromeOptionShareCallback chromeOptionShareCallback,
             @NonNull ObservableSupplierImpl<PageInfoContents> pageInfoSupplier,
             @NonNull Runnable destroyCallback,
             @NonNull BottomSheetController bottomSheetController) {
@@ -219,8 +220,10 @@ class PageSummarySharingRequest {
                         .setText(pageInfo.resultContents)
                         .build();
 
-        mChromeOptionShareCallback.showShareSheet(
-                shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
+        if (mChromeOptionShareCallback != null) {
+            mChromeOptionShareCallback.showShareSheet(
+                    shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
+        }
 
         destroy();
     }

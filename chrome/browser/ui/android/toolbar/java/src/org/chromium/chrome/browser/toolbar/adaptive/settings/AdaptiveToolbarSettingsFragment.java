@@ -64,6 +64,8 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                 AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setCanUseReadAloud(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
+        mRadioButtonGroup.setCanUsePageSummary(
+                AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled());
         mRadioButtonGroup.setStatePredictor(
                 new AdaptiveToolbarStatePredictor(
                         getContext(),

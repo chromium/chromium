@@ -4997,6 +4997,11 @@ const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[] =
     "Enables an add to bookmarks button in the top toolbar. Must be selected "
     "in "
     "Settings > Toolbar Shortcut.";
+const char kAdaptiveButtonInTopToolbarPageSummaryName[] =
+    "Adaptive button in top toolbar - Page Summary";
+const char kAdaptiveButtonInTopToolbarPageSummaryDescription[] =
+    "Enables a summary button in the top toolbar. Must be selected in "
+    "Settings > Toolbar Shortcut.";
 
 const char kAdaptiveButtonInTopToolbarCustomizationName[] =
     "Adaptive button in top toolbar customization";

@@ -61,6 +61,7 @@ import java.util.List;
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE,
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS,
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
     ChromeFeatureList.READALOUD
 })
 public class AdaptiveToolbarSettingsFragmentTest {
@@ -396,6 +397,75 @@ public class AdaptiveToolbarSettingsFragmentTest {
                     Assert.assertEquals(
                             View.GONE,
                             getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getVisibility());
+
+                    assertButtonCheckedCorrectly(
+                            "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.AUTO,
+                            ChromeSharedPreferences.getInstance()
+                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testPageSummaryOption_Enabled() {
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Select Read Aloud.
+                    Assert.assertEquals(
+                            R.id.adaptive_option_page_summary,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getId());
+                    selectButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+                    assertButtonCheckedCorrectly(
+                            "Page Summary", AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
+                            mRadioPreference.getSelection());
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
+                            ChromeSharedPreferences.getInstance()
+                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testPageSummaryOption_Disabled() {
+        // Set initial preference to page summary.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Read Aloud option should be hidden, and we should have reverted back to
+                    // "Auto".
+                    Assert.assertEquals(
+                            R.id.adaptive_option_page_summary,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getId());
+
+                    Assert.assertEquals(
+                            View.GONE,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getVisibility());
 
                     assertButtonCheckedCorrectly(
                             "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);

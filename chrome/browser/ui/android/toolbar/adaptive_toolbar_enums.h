@@ -39,7 +39,9 @@ enum class AdaptiveToolbarButtonVariant {
   kTestButton = 11,
   // Price Insights action.
   kPriceInsights = 12,
-  kMaxValue = kPriceInsights,
+  // Page Summary button.
+  kPageSummary = 13,
+  kMaxValue = kPageSummary,
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_
