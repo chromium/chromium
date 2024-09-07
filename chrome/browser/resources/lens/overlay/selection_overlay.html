@@ -91,6 +91,10 @@
     background-color: rgba(var(--color-scrim-rgb), .05);
   }
 
+  :host([translate-mode-enabled]) #selectionElements {
+    background-color: transparent;
+  }
+
   #selectionOverlay :not(#backgroundImageCanvas) {
     transition: opacity 150ms linear;
   }
