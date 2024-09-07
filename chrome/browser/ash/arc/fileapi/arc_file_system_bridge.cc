@@ -60,11 +60,10 @@ namespace arc {
 
 namespace {
 
-// The maximum number of Fusebox Monikers that can be shared concurrently.
-// When this number is reached, CreateMoniker() does not create a new Moniker,
-// and returns a null response. A large number is randomly chosen to not block
-// usual user flows.
-constexpr size_t kMaxNumberOfSharedMonikers = 16384;
+// The maximum number of Fusebox Monikers that can be shared concurrently. When
+// this number is reached, CreateMoniker() destroys the oldest Moniker. A large
+// number is randomly chosen not to block usual user flows.
+constexpr size_t kMaxNumberOfSharedMonikers = 1024;
 
 // Returns true if it's OK to allow ARC apps to read the given URL.
 bool IsUrlAllowed(const GURL& url) {
@@ -165,6 +164,7 @@ ArcFileSystemBridge::ArcFileSystemBridge(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : profile_(Profile::FromBrowserContext(context)),
       bridge_service_(bridge_service),
+      max_number_of_shared_monikers_(kMaxNumberOfSharedMonikers),
       select_files_handlers_manager_(
           std::make_unique<ArcSelectFilesHandlersManager>(context)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -176,6 +176,12 @@ ArcFileSystemBridge::~ArcFileSystemBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bridge_service_->file_system()->RemoveObserver(this);
   bridge_service_->file_system()->SetHost(nullptr);
+  auto* fusebox_server = fusebox::Server::GetInstance();
+  if (fusebox_server) {
+    for (const auto& [moniker, _] : shared_monikers_) {
+      fusebox_server->DestroyMoniker(moniker);
+    }
+  }
 }
 
 // static
@@ -441,15 +447,6 @@ void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
                                         CreateMonikerCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
 
-  if (shared_monikers_.size() >= kMaxNumberOfSharedMonikers) {
-    // Avoid creating too many Monikers without closing.
-    LOG(WARNING) << "Rejecting to create a Fusebox Moniker for " << content_uri
-                 << " because the maximum number of shared Monikers ("
-                 << kMaxNumberOfSharedMonikers << ") is reached";
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
   const GURL url_decoded = DecodeFromChromeContentProviderUrl(content_uri);
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid ChromeContentProvider URI: " << content_uri;
@@ -482,9 +479,24 @@ void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
     std::move(callback).Run(std::nullopt);
     return;
   }
+
+  if (shared_monikers_.size() >= max_number_of_shared_monikers_) {
+    // Destroy the oldest Fusebox Moniker when the maximum number of shared
+    // Monikers is reached.
+    CHECK(!moniker_indices_.empty());
+    const fusebox::Moniker oldest_moniker = moniker_indices_.begin()->second;
+    LOG(WARNING) << "Destroying the oldest Fusebox Moniker: "
+                 << oldest_moniker.ToString();
+    DestroyMoniker(oldest_moniker, base::DoNothing());
+  }
+
   const fusebox::Moniker moniker =
       fusebox_server->CreateMoniker(fs_url_and_handle.url, read_only);
-  shared_monikers_.insert(moniker);
+  const int index =
+      moniker_indices_.empty() ? 0 : (moniker_indices_.rbegin()->first + 1);
+  shared_monikers_.insert({moniker, index});
+  moniker_indices_.insert({index, moniker});
+  CHECK_EQ(shared_monikers_.size(), moniker_indices_.size());
 
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
       kArcVmName, vm_info->seneschal_server_handle(),
@@ -514,12 +526,17 @@ void ArcFileSystemBridge::DestroyMoniker(const fusebox::Moniker& moniker,
                                          DestroyMonikerCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
 
-  if (!shared_monikers_.erase(moniker)) {
-    LOG(ERROR) << "Failed to destroy unknown Fusebox Moniker: "
-               << moniker.ToString();
+  const auto iter = shared_monikers_.find(moniker);
+  if (iter == shared_monikers_.end()) {
+    LOG(WARNING) << "Cannot destroy unknown Fusebox Moniker: "
+                 << moniker.ToString();
     std::move(callback).Run(false);
     return;
   }
+  const int index = iter->second;
+  shared_monikers_.erase(iter);
+  moniker_indices_.erase(index);
+  CHECK_EQ(shared_monikers_.size(), moniker_indices_.size());
 
   auto* fusebox_server = fusebox::Server::GetInstance();
   if (fusebox_server) {
@@ -709,6 +726,10 @@ base::FilePath ArcFileSystemBridge::GetLinuxVFSPathForPathOnFileSystemType(
 
   // The path is not representable on the Linux VFS.
   return base::FilePath();
+}
+
+void ArcFileSystemBridge::SetMaxNumberOfSharedMonikersForTesting(size_t value) {
+  max_number_of_shared_monikers_ = value;
 }
 
 }  // namespace arc

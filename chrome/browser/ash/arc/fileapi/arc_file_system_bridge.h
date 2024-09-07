@@ -10,7 +10,6 @@
 #include <list>
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
@@ -139,6 +138,7 @@ class ArcFileSystemBridge
                            GetLinuxVFSPathFromExternalFileURL);
   FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest,
                            GetLinuxVFSPathForPathOnFileSystemType);
+  FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest, MaxNumberOfSharedMonikers);
 
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const std::optional<std::string>& id)>;
@@ -212,6 +212,8 @@ class ArcFileSystemBridge
                               const std::string& file_system_id,
                               bool result);
 
+  void SetMaxNumberOfSharedMonikersForTesting(size_t value);
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcBridgeService>
       bridge_service_;  // Owned by ArcServiceManager
@@ -220,8 +222,11 @@ class ArcFileSystemBridge
   // Map from file descriptor IDs to requested URLs.
   std::map<std::string, GURL> id_to_url_;
 
-  // Set of Fusebox Monikers currently shared with ARC.
-  std::set<fusebox::Moniker> shared_monikers_;
+  // Set of Fusebox Monikers currently shared with ARC, associated with distinct
+  // indices that indicate the order of creation (smaller is older).
+  std::map<fusebox::Moniker, int> shared_monikers_;
+  std::map<int, fusebox::Moniker> moniker_indices_;
+  size_t max_number_of_shared_monikers_;
 
   std::list<FileStreamForwarderPtr> file_stream_forwarders_;
 
