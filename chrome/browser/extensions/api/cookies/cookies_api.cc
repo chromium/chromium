@@ -267,10 +267,25 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  if (parsed_args_->details.partition_key.has_value() &&
+      !parsed_args_->details.partition_key->has_cross_site_ancestor
+           .has_value() &&
+      parsed_args_->details.partition_key->top_level_site.has_value()) {
+    base::expected<bool, std::string> cross_site_ancestor =
+        cookies_helpers::CalculateHasCrossSiteAncestor(
+            parsed_args_->details.url, parsed_args_->details.partition_key);
+    if (!cross_site_ancestor.has_value()) {
+      return RespondNow(Error(std::move(cross_site_ancestor.error())));
+    }
+    parsed_args_->details.partition_key->has_cross_site_ancestor =
+        cross_site_ancestor.value();
+  }
+
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -279,7 +294,7 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   DCHECK(!url_.is_empty() && url_.is_valid());
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key),
+      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
   // Extension telemetry signal intercept
@@ -357,10 +372,11 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // make sure user input is valid
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -464,10 +480,17 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
+  if (!cookies_helpers::ValidateCrossSiteAncestor(
+          parsed_args_->details.url, parsed_args_->details.partition_key,
+          &error)) {
     return RespondNow(Error(std::move(error)));
+  }
+
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -517,7 +540,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           parsed_args_->details.http_only.value_or(false),       //
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
-          partition_key,                                         //
+          partition_key.value(),                                 //
           /*status=*/nullptr));
   if (!cc) {
     // Return error through callbacks so that the proper error message
@@ -542,7 +565,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key),
+      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
@@ -619,10 +642,11 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -632,8 +656,7 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
       network::mojom::CookieDeletionFilter::New());
 
   filter->cookie_partition_key_collection =
-      cookies_helpers::CookiePartitionKeyCollectionFromApiPartitionKey(
-          parsed_args_->details.partition_key);
+      net::CookiePartitionKeyCollection::FromOptional(partition_key.value());
   filter->url = url_;
   filter->cookie_name = parsed_args_->details.name;
   cookie_manager->DeleteCookies(

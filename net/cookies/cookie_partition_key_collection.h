@@ -42,6 +42,12 @@ class NET_EXPORT CookiePartitionKeyCollection {
     return CookiePartitionKeyCollection(true);
   }
 
+  // Builds a Collection that contains the same-site and cross-site
+  // partitionKeys associated with the `top_level_site`.
+  // `top_level_site` must be non-empty and valid.
+  static CookiePartitionKeyCollection MatchesSite(
+      const net::SchemefulSite& top_level_site);
+
   static CookiePartitionKeyCollection FromOptional(
       const std::optional<CookiePartitionKey>& opt_key) {
     return opt_key ? CookiePartitionKeyCollection(opt_key.value())

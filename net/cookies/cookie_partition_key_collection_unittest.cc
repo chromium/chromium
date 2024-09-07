@@ -81,6 +81,10 @@ TEST(CookiePartitionKeyCollectionTest, Contains) {
       CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
   const CookiePartitionKey kPartitionKeyNotInCollection =
       CookiePartitionKey::FromURLForTesting(GURL("https://foobar.com"));
+  const CookiePartitionKey kDifferentAncestorChainValue =
+      CookiePartitionKey::FromURLForTesting(
+          GURL("https://foo.com"),
+          CookiePartitionKey::AncestorChainBit::kSameSite);
 
   struct TestCase {
     const CookiePartitionKeyCollection keychain;
@@ -96,12 +100,15 @@ TEST(CookiePartitionKeyCollectionTest, Contains) {
       // Multiple keys
       {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
        kPartitionKey, true},
+      // Key not in collection
       {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
        kPartitionKeyNotInCollection, false},
+      // Same url but different CrossSiteAncestorChain value not in collection
+      {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
+       kDifferentAncestorChainValue, false},
       // Contains all keys
       {CookiePartitionKeyCollection::ContainsAll(), kPartitionKey, true},
   };
-
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(test_case.expects_contains,
               test_case.keychain.Contains(test_case.key));
@@ -132,28 +139,7 @@ TEST(CookiePartitionKeyCollectionTest, Equals) {
   EXPECT_NE(all, foo);
 }
 
-class AncestorChainBitCookiePartitionKeyCollectionTest
-    : public testing::TestWithParam<bool> {
- protected:
-  // testing::Test
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAncestorChainBitEnabledInPartitionedCookies,
-        AncestorChainBitEnabled());
-  }
-
-  bool AncestorChainBitEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         AncestorChainBitCookiePartitionKeyCollectionTest,
-                         ::testing::Bool());
-
-TEST_P(AncestorChainBitCookiePartitionKeyCollectionTest,
-       ConsidersAncestorChainBit) {
+TEST(CookiePartitionKeyCollectionTest, ConsidersAncestorChainBit) {
   CookiePartitionKey cross_site_key = CookiePartitionKey::FromURLForTesting(
       GURL("https://foo.test"),
       CookiePartitionKey::AncestorChainBit::kCrossSite);
@@ -172,16 +158,37 @@ TEST_P(AncestorChainBitCookiePartitionKeyCollectionTest,
   EXPECT_TRUE(all.Contains(cross_site_key));
   EXPECT_TRUE(all.Contains(same_site_key));
 
-  // Confirm that the results of equivalency and Contains() are
-  // dependent on if the ancestor chain bit is enabled.
-  if (AncestorChainBitEnabled()) {
     EXPECT_NE(cross_site_collection, same_site_collection);
     EXPECT_FALSE(cross_site_collection.Contains(same_site_key));
     EXPECT_FALSE(same_site_collection.Contains(cross_site_key));
-  } else {
-    EXPECT_EQ(cross_site_collection, same_site_collection);
-    EXPECT_TRUE(cross_site_collection.Contains(same_site_key));
-    EXPECT_TRUE(same_site_collection.Contains(cross_site_key));
+}
+
+TEST(CookiePartitionKeyCollectionTest, MatchesSite) {
+  GURL site = GURL("https://foo.test");
+  CookiePartitionKeyCollection collection =
+      CookiePartitionKeyCollection::MatchesSite(net::SchemefulSite(site));
+
+  struct {
+    CookiePartitionKey key;
+    bool expectation;
+  } cases[]{
+      {CookiePartitionKey::FromURLForTesting(
+           site, CookiePartitionKey::AncestorChainBit::kCrossSite),
+       true},
+      {CookiePartitionKey::FromURLForTesting(
+           site, CookiePartitionKey::AncestorChainBit::kSameSite),
+       true},
+      {CookiePartitionKey::FromURLForTesting(
+           GURL("https://example.com"),
+           CookiePartitionKey::AncestorChainBit::kSameSite),
+       false},
+      {CookiePartitionKey::FromURLForTesting(
+           GURL("https://example.com"),
+           CookiePartitionKey::AncestorChainBit::kCrossSite),
+       false},
+  };
+  for (const auto& tc : cases) {
+    EXPECT_EQ(collection.Contains(tc.key), tc.expectation);
   }
 }
 }  // namespace net

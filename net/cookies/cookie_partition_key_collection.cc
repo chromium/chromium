@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -62,6 +63,22 @@ bool operator==(const CookiePartitionKeyCollection& lhs,
   }
 
   return lhs.PartitionKeys() == rhs.PartitionKeys();
+}
+
+CookiePartitionKeyCollection CookiePartitionKeyCollection::MatchesSite(
+    const net::SchemefulSite& top_level_site) {
+  base::expected<net::CookiePartitionKey, std::string> same_site_key =
+      CookiePartitionKey::FromWire(
+          top_level_site, CookiePartitionKey::AncestorChainBit::kSameSite);
+  base::expected<net::CookiePartitionKey, std::string> cross_site_key =
+      CookiePartitionKey::FromWire(
+          top_level_site, CookiePartitionKey::AncestorChainBit::kCrossSite);
+
+  CHECK(cross_site_key.has_value());
+  CHECK(same_site_key.has_value());
+
+  return net::CookiePartitionKeyCollection(
+      {same_site_key.value(), cross_site_key.value()});
 }
 
 std::ostream& operator<<(std::ostream& os,
