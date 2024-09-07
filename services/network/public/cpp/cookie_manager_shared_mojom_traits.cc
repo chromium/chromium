@@ -51,8 +51,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::kStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
       return network::mojom::CookieExemptionReason::kTopLevelStorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kCorsOptIn:
-      return network::mojom::CookieExemptionReason::kCorsOptIn;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return network::mojom::CookieExemptionReason::kScheme;
   }
@@ -92,9 +90,6 @@ bool EnumTraits<network::mojom::CookieExemptionReason,
     case network::mojom::CookieExemptionReason::kTopLevelStorageAccess:
       *output =
           net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess;
-      return true;
-    case network::mojom::CookieExemptionReason::kCorsOptIn:
-      *output = net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
       return true;
     case network::mojom::CookieExemptionReason::kScheme:
       *output = net::CookieInclusionStatus::ExemptionReason::kScheme;

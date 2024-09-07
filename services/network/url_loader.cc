@@ -776,12 +776,6 @@ URLLoader::URLLoader(
     url_request_->cookie_setting_overrides().Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
-  if (network::cors::IsCorsEnabledRequestMode(request_mode_) &&
-      url_request_->site_for_cookies().IsNull() &&
-      url_request_->allow_credentials()) {
-    url_request_->cookie_setting_overrides().Put(
-        net::CookieSettingOverride::kCrossSiteCredentialedWithCORS);
-  }
 
   AddAdsHeuristicCookieSettingOverrides(
       request.is_ad_tagged, url_request_->cookie_setting_overrides());

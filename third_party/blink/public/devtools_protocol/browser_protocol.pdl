@@ -6385,8 +6385,6 @@ domain Network
       StorageAccess
       # The cookie should have been blocked by 3PCD but is exempted by Top-level Storage Access API.
       TopLevelStorageAccess
-      # The cookie should have been blocked by 3PCD but is exempted by CORS opt-in.
-      CorsOptIn
       # The cookie should have been blocked by 3PCD but is exempted by the first-party URL scheme.
       Scheme
 

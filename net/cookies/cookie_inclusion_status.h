@@ -285,11 +285,8 @@ class NET_EXPORT CookieInclusionStatus {
     kEnterprisePolicy = 6,
     kStorageAccess = 7,
     kTopLevelStorageAccess = 8,
-    // For CorsException in the ABA contexts, which the inner iframe is
-    // same-site with the top-level site but has cross-site ancestor(s).
-    kCorsOptIn = 9,
     // Allowed by the scheme.
-    kScheme = 10,
+    kScheme = 9,
 
     // Keep last.
     kMaxValue = kScheme

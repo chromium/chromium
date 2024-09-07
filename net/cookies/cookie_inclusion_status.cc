@@ -366,9 +366,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::kTopLevelStorageAccess:
       reason = "ExemptionTopLevelStorageAccess";
       break;
-    case ExemptionReason::kCorsOptIn:
-      reason = "ExemptionCorsOptIn";
-      break;
     case ExemptionReason::kScheme:
       reason = "ExemptionScheme";
       break;

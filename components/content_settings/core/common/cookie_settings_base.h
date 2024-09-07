@@ -99,7 +99,7 @@ class CookieSettingsBase {
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
-    kAllowByCORSException = 8,
+    // kAllowByCORSException = 8,  // Deprecated
     // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
     // being deployed.
     kAllowByTopLevel3PCD = 9,

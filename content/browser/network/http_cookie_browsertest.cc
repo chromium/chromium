@@ -579,7 +579,6 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
     feature_list_.InitWithFeatures(
         {
             net::features::kForceThirdPartyCookieBlocking,
-            net::features::kThirdPartyCookieTopLevelSiteCorsException,
         },
         {});
   }
@@ -842,46 +841,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(Fetch(web_contents()->GetPrimaryMainFrame(),
                     https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
                     "cors", "include")
-                  .ExtractString(),
-              net::CookieStringIs(IsEmpty()));
-}
-
-IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
-                       TopLevelSiteCorsException) {
-  // Set and confirm SameSite=None cookie on Site A.
-  ASSERT_TRUE(SetCookie(
-      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
-      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
-
-  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
-
-  // Embed an iframe containing A in B.
-  ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
-                web_contents(), https_server(), base::StrCat({kHostA, "(%s)"}),
-                {0}, EchoCookiesUrl(kHostB)),
-            "None");
-
-  // Test that a subresource request from B to A can use cookies if it is
-  // in CORS mode and includes credentials.
-  EXPECT_EQ(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
-                  https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
-                  "cors", "include")
-                .ExtractString(),
-            base::StrCat({kSameSiteNoneCookieName, "=1"}));
-
-  // Test that a subresource request from B to A cannot use cookies if it is
-  // in CORS mode and omits credentials.
-  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
-                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
-                    "cors", "omit")
-                  .ExtractString(),
-              net::CookieStringIs(IsEmpty()));
-
-  // Test that a subresource request from B to A cannot use cookies if it is
-  // in no-cors mode.
-  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
-                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
-                    "no-cors", "include")
                   .ExtractString(),
               net::CookieStringIs(IsEmpty()));
 }

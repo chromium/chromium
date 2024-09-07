@@ -41,16 +41,6 @@ using net::cookie_util::StorageAccessResult;
 using ThirdPartyCookieAllowMechanism =
     CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 
-bool IsAllowedByCORS(const net::CookieSettingOverrides& overrides,
-                     const GURL& request_url,
-                     const GURL& first_party_url) {
-  return overrides.Has(
-             net::CookieSettingOverride::kCrossSiteCredentialedWithCORS) &&
-         base::FeatureList::IsEnabled(
-             net::features::kThirdPartyCookieTopLevelSiteCorsException) &&
-         net::SchemefulSite(request_url) == net::SchemefulSite(first_party_url);
-}
-
 constexpr StorageAccessResult GetStorageAccessResult(
     ThirdPartyCookieAllowMechanism mechanism) {
   using AllowMechanism = ThirdPartyCookieAllowMechanism;
@@ -81,8 +71,6 @@ constexpr StorageAccessResult GetStorageAccessResult(
       return StorageAccessResult::ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     case AllowMechanism::kAllowByTopLevelStorageAccess:
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
-    case AllowMechanism::kAllowByCORSException:
-      return StorageAccessResult::ACCESS_ALLOWED_CORS_EXCEPTION;
     case AllowMechanism::kAllowByScheme:
       return StorageAccessResult::ACCESS_ALLOWED_SCHEME;
   }
@@ -113,7 +101,6 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
-    case AllowMechanism::kAllowByCORSException:
     case AllowMechanism::kAllowByScheme:
       return std::nullopt;
   }
@@ -201,7 +188,6 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     case AllowMechanism::kAllowBy3PCDHeuristics:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
-    case AllowMechanism::kAllowByCORSException:
     case AllowMechanism::kAllowByTopLevel3PCD:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowByScheme:
@@ -234,7 +220,6 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
     case AllowMechanism::kAllowBy3PCDHeuristics:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
-    case AllowMechanism::kAllowByCORSException:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
     case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
@@ -557,10 +542,6 @@ CookieSettingsBase::DecideAccess(
   }
 
   // Site controlled mechanisms (ex: web APIs, deprecation trial):
-  if (IsAllowedByCORS(overrides, url, first_party_url)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByCORSException};
-  }
   if (IsAllowedByTopLevelStorageAccessGrant(url, first_party_url, overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess};
