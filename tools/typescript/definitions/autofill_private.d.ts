@@ -198,6 +198,12 @@ declare global {
         countryCode: string;
       }
 
+      export interface UserAnnotationsEntry {
+        entryId: number;
+        key: string;
+        value: string;
+      }
+
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
       export function getCountryList(forAccountAddressProfile: boolean):
@@ -223,6 +229,8 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
+      export function getUserAnnotationsEntries():
+          Promise<UserAnnotationsEntry[]>;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

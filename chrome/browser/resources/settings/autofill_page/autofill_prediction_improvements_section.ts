@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
+import '../settings_shared.css.js';
 
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,6 +20,18 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './autofill_prediction_improvements_section.html.js';
+import type {UserAnnotationsManagerProxy} from './user_annotations_manager_proxy.js';
+import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
+
+type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
+
+
+
+export interface SettingsAutofillPredictionImprovementsSectionElement {
+  $: {
+    prefToggle: HTMLElement,
+  };
+}
 
 export class SettingsAutofillPredictionImprovementsSectionElement extends
     PolymerElement {
@@ -39,7 +52,19 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     };
   }
 
-  private prefs: {[key: string]: any};
+  prefs: {[key: string]: any};
+  private userAnnotationsEntries_: UserAnnotationsEntry[];
+  private userAnnotationsManager_: UserAnnotationsManagerProxy =
+      UserAnnotationsManagerProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.userAnnotationsManager_.getEntries().then(
+        (entries: UserAnnotationsEntry[]) => {
+          this.userAnnotationsEntries_ = entries;
+        });
+  }
 
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(

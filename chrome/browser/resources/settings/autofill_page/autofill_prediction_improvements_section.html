@@ -1,6 +1,12 @@
-<style include="cr-shared-style settings-columned-section"></style>
+<style include="cr-shared-style settings-shared settings-columned-section">
+  .item-label {
+    font-size: 11px;
+    line-height: 11px;
+  }
+</style>
 <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
 <settings-toggle-button
+    id="prefToggle"
     no-extension-indicator label=" "
     sub-label-with-link="$i18n{autofillPredictionImprovementsToggleSubLabel}"
     on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
@@ -44,3 +50,20 @@
     </ul>
   </div>
 </div>
+
+<template is="dom-if"
+    if="[[prefs.autofill.prediction_improvements.enabled.value]]">
+  <div id="entriesHeader" class="cr-row">
+    <h2>$i18n{autofillPredictionImprovementsUserAnnotationsHeader}</h2>
+  </div>
+  <ul id="entries" class="list-frame vertical-list">
+    <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
+      <li class="list-item">
+        <div>
+          <div class="cr-secondary-text item-label">[[item.key]]</div>
+          [[item.value]]
+        </div>
+      </li>
+    </template>
+  </ul>
+</template>

@@ -1272,6 +1272,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL},
       {"autofillPredictionImprovementsToConsiderDataUsage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
+      {"autofillPredictionImprovementsUserAnnotationsHeader",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(

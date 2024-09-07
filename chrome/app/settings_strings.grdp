@@ -772,6 +772,9 @@
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
     TODO: Describe how data is used
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
+    Saved information
+  </message>
 
   <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">

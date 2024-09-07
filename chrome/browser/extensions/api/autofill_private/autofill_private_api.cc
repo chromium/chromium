@@ -1044,4 +1044,27 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetUserAnnotationsEntriesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
+  std::vector<autofill_private::UserAnnotationsEntry> result;
+
+  // TODO(crbug.com/361437117): Replace stubby data with real API call result.
+  result.emplace_back();
+  result.back().entry_id = 1;
+  result.back().key = "Date of birth";
+  result.back().value = "15/02/1989";
+
+  result.emplace_back();
+  result.back().entry_id = 2;
+  result.back().key = "Frequent flyer program";
+  result.back().value = "Aadvantage";
+
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetUserAnnotationsEntries::Results::Create(
+          result)));
+}
+
 }  // namespace extensions

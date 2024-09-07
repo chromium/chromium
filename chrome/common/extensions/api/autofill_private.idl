@@ -293,6 +293,14 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
+  // User annotations entry data. Corresponds to the eponymous message from
+  // components/optimization_guide/proto/features/common_quality_data.proto.
+  dictionary UserAnnotationsEntry {
+    long entryId;
+    DOMString key;
+    DOMString value;
+  };
+
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
@@ -302,6 +310,7 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
+  callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -407,6 +416,10 @@ namespace autofillPrivate {
     // Sets the Sync Autofill toggle value, which corresponds to
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
+
+    // Returns the list of user annotations entries.
+    static void getUserAnnotationsEntries(
+        GetUserAnnotationsEntriesCallback callback);
   };
 
   interface Events {
