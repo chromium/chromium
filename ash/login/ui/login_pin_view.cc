@@ -196,10 +196,6 @@ class BasePinButton : public views::View {
     views::View::OnEvent(event);
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(GetViewAccessibility().GetCachedName());
-  }
-
  protected:
   // Called when the button has been pressed.
   virtual void DispatchPress(ui::Event* event) {

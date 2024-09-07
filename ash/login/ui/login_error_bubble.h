@@ -39,9 +39,6 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   // The eventual theme changes will be handled internally.
   void SetTextContent(const std::u16string& message);
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   raw_ptr<views::View, DanglingUntriaged> content_ = nullptr;
   raw_ptr<views::ImageView> alert_icon_ = nullptr;

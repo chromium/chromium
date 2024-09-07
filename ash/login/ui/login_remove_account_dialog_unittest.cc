@@ -114,8 +114,12 @@ TEST_F(LoginRemoveAccountDialogTest, AccessibleProperties) {
               [](bool* remove_called) { *remove_called = true; },
               &remove_called));
 
-  EXPECT_EQ(remove_view->GetViewAccessibility().GetCachedRole(),
-            ax::mojom::Role::kDialog);
+  ui::AXNodeData data;
+  remove_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util ::GetStringUTF16(
+                IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
 
   EXPECT_EQ(
       remove_view->GetViewAccessibility().GetCachedDescription(),
@@ -133,6 +137,10 @@ TEST_F(LoginRemoveAccountDialogTest, AccessibleProperties) {
               [](bool* remove_called) { *remove_called = true; },
               &remove_called));
 
+  data = ui::AXNodeData();
+  non_remove_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"NedHasAReallyLongName StarkHasAReallyLongName");
   EXPECT_EQ(non_remove_view->GetViewAccessibility().GetCachedDescription(),
             u"reallyreallyextralonggaianame@gmail.com");
 

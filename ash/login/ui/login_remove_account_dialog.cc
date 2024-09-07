@@ -244,6 +244,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
              kVerticalPaddingRemoveAccountDialogDp);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
   UpdateAccessibleDescription();
 }
 
@@ -267,12 +268,6 @@ bool LoginRemoveAccountDialog::HasFocus() const {
 
 void LoginRemoveAccountDialog::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  if (remove_user_button_) {
-    node_data->SetName(l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
-  } else {
-    node_data->SetName(username_label_->GetText());
-  }
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
@@ -335,6 +330,21 @@ void LoginRemoveAccountDialog::UpdateAccessibleDescription() {
                         management_disclosure_label_->GetText()}));
     } else {
       GetViewAccessibility().SetDescription(email_label_->GetText());
+    }
+  }
+}
+
+void LoginRemoveAccountDialog::UpdateAccessibleName() {
+  if (remove_user_button_) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
+  } else {
+    std::u16string accessible_name = username_label_->GetText();
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(accessible_name);
+    } else {
+      GetViewAccessibility().SetName(
+          std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     }
   }
 }

@@ -63,10 +63,6 @@ void LoginErrorBubble::SetTextContent(const std::u16string& message) {
   SetContent(login_views_utils::CreateBubbleLabel(message, this));
 }
 
-void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(GetViewAccessibility().GetCachedName());
-}
-
 BEGIN_METADATA(LoginErrorBubble)
 END_METADATA
 
