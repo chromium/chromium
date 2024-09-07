@@ -10,8 +10,9 @@
 
 namespace controlled_frame {
 
-using ControlledFramePermissionRequestInteractiveTest =
-    ControlledFramePermissionRequestTestBase;
+class ControlledFramePermissionRequestInteractiveTest
+    : public ControlledFramePermissionRequestTestBase,
+      public testing::WithParamInterface<PermissionRequestTestParam> {};
 
 // Pointer lock & Fullscreen are not available on MacOS bots.
 #if !BUILDFLAG(IS_MAC)
@@ -35,7 +36,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
   test_case.content_settings_type.insert(ContentSettingsType::POINTER_LOCK);
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
@@ -60,7 +61,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
   test_case.permission_name = "fullscreen";
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/

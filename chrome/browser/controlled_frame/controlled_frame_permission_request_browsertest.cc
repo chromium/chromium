@@ -37,8 +37,9 @@ using testing::StartsWith;
 
 namespace controlled_frame {
 
-using ControlledFramePermissionRequestTest =
-    ControlledFramePermissionRequestTestBase;
+class ControlledFramePermissionRequestTest
+    : public ControlledFramePermissionRequestTestBase,
+      public testing::WithParamInterface<PermissionRequestTestParam> {};
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   PermissionRequestTestCase test_case;
@@ -64,7 +65,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
       {ContentSettingsType::MEDIASTREAM_CAMERA});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
@@ -91,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
       {ContentSettingsType::MEDIASTREAM_MIC});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
   test_case.content_settings_type.insert({ContentSettingsType::GEOLOCATION});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
   test_case.permission_name = "filesystem";
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 class TestDownloadManagerObserver : public content::DownloadManager::Observer {
@@ -203,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Download) {
   TestDownloadManagerObserver download_observer;
   profile()->GetDownloadManager()->AddObserver(&download_observer);
 
-  RunTestAndVerify(
+  VerifyEnabledPermission(
       test_case, test_param,
       base::BindLambdaForTesting(
           [](bool should_success) -> std::string { return "SUCCESS"; }));
@@ -351,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest, WebHid) {
   // No embedder content settings for WebHid.
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/

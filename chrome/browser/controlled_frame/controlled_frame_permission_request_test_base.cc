@@ -91,6 +91,16 @@ const std::vector<PermissionRequestTestParam> kTestParams = {
      .expected_success = false},
 };
 
+const std::vector<DisabledPermissionTestParam> kDisabledPermissionsTestParams =
+    {{.name = "BothFailsWhenPermissionsPolicyIsNotEnabled",
+      .policy_features_enabled = false,
+      .iwa_expect_success = false,
+      .controlled_frame_expect_success = false},
+     {.name = "IwaSucceedsButControlledFrameFails",
+      .policy_features_enabled = true,
+      .iwa_expect_success = true,
+      .controlled_frame_expect_success = false}};
+
 class PermissionRequestEventObserver
     : public extensions::EventRouter::TestObserver {
  public:
@@ -116,6 +126,13 @@ ContentSetting ContentSettingFromState(ContentSettingsState state) {
   return ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
+void FocusControlledFrame(content::RenderFrameHost* controlled_frame) {
+  // Focus <controlledframe> with a fake click.
+  content::SimulateMouseClick(
+      content::WebContents::FromRenderFrameHost(controlled_frame),
+      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
+}
+
 }  // namespace
 
 PermissionRequestTestCase::PermissionRequestTestCase() = default;
@@ -124,6 +141,14 @@ PermissionRequestTestCase::~PermissionRequestTestCase() = default;
 const std::vector<PermissionRequestTestParam>&
 GetDefaultPermissionRequestTestParams() {
   return kTestParams;
+}
+
+DisabledPermissionTestCase::DisabledPermissionTestCase() = default;
+DisabledPermissionTestCase::~DisabledPermissionTestCase() = default;
+
+const std::vector<DisabledPermissionTestParam>&
+GetDefaultDisabledPermissionTestParams() {
+  return kDisabledPermissionsTestParams;
 }
 
 void ControlledFramePermissionRequestTestBase::SetUpOnMainThread() {
@@ -162,7 +187,7 @@ void ControlledFramePermissionRequestTestBase::
                                                       handle_request_str)));
 }
 
-void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
+void ControlledFramePermissionRequestTestBase::VerifyEnabledPermission(
     const PermissionRequestTestCase& test_case,
     const PermissionRequestTestParam& test_param,
     std::optional<base::OnceCallback<std::string(bool)>>
@@ -204,10 +229,7 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
           /*controlled_frame_src_relative_url=*/"/index.html",
           manifest_builder);
 
-  // Focus <controlledframe> with a fake click.
-  content::SimulateMouseClick(
-      content::WebContents::FromRenderFrameHost(controlled_frame),
-      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
+  FocusControlledFrame(controlled_frame);
 
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
@@ -263,6 +285,63 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   extensions::EventRouter::Get(profile())->RemoveObserverForTesting(
       &event_observer);
+}
+
+void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param) {
+  // If the permission has no dependent permissions policy feature, then skip
+  // the true negative permissions policy test cases.
+  if (!test_param.policy_features_enabled &&
+      test_case.policy_features.empty()) {
+    return;
+  }
+
+  web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
+  if (test_param.policy_features_enabled) {
+    for (auto& policy_feature : test_case.policy_features) {
+      manifest_builder.AddPermissionsPolicyWildcard(policy_feature);
+    }
+  }
+
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/kPermissionAllowedHost,
+          /*controlled_frame_src_relative_url=*/"/index.html",
+          manifest_builder);
+
+  std::string expected_iwa_result = test_param.iwa_expect_success
+                                        ? test_case.success_result
+                                        : test_case.failure_result;
+  std::string expected_cf_result = test_param.controlled_frame_expect_success
+                                       ? test_case.success_result
+                                       : test_case.failure_result;
+
+  EXPECT_THAT(content::EvalJs(app_frame, test_case.request_script),
+              expected_iwa_result);
+
+  FocusControlledFrame(controlled_frame);
+
+  ASSERT_EQ("SUCCESS", content::EvalJs(app_frame,
+                                       R"(
+(function() {
+  const frame = document.getElementsByTagName('controlledframe')[0];
+  if (!frame) {
+    return 'FAIL: Could not find a controlledframe element.';
+  }
+  window.permissionEventHandled = false;
+  frame.addEventListener('permissionrequest', (e) => {
+    window.permissionEventHandled = true;
+  });
+  return 'SUCCESS';
+})();
+    )"));
+
+  EXPECT_THAT(content::EvalJs(controlled_frame, test_case.request_script),
+              expected_cf_result);
+
+  EXPECT_EQ(content::EvalJs(app_frame, "window.permissionEventHandled;"),
+            false);
 }
 
 }  // namespace controlled_frame
