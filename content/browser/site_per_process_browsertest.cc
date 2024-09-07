@@ -13335,6 +13335,27 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UserActivationSameOrigin) {
   EXPECT_EQ(http_url, shell()->web_contents()->GetLastCommittedURL());
 }
 
+// Test which captures behavior of navigation to about:blank in a newly created
+// WebContents when an initial SiteInstance is supplied as part of the creation.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       AboutBlankInNewWindowWithInitialSiteInstance) {
+  // Start by navigating to a page on a normal web site.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Now do a browser-initiated navigation to about:blank in a new tab created
+  // in the previous SiteInstance. This happens to stay in the same process,
+  // though there may not be a requirement for that.
+  WebContents::CreateParams new_contents_params(
+      web_contents()->GetBrowserContext(), web_contents()->GetSiteInstance());
+  std::unique_ptr<WebContents> new_web_contents(
+      WebContents::Create(new_contents_params));
+
+  EXPECT_TRUE(NavigateToURL(new_web_contents.get(), GURL(url::kAboutBlankURL)));
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_web_contents->GetPrimaryMainFrame()->GetProcess());
+}
+
 // Tests that verify the feature disabling process reuse.
 class DisableProcessReusePolicyTest : public SitePerProcessBrowserTest {
  public:
