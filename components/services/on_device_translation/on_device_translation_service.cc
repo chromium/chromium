@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/on_device_translation/on_device_translation_service.h"
+#include "components/services/on_device_translation/on_device_translation_service.h"
 
 #include <memory>
 
 #include "base/command_line.h"
-#include "chrome/services/on_device_translation/mock_translator.h"
-#include "chrome/services/on_device_translation/public/cpp/features.h"
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "chrome/services/on_device_translation/translate_kit_client.h"
+#include "components/services/on_device_translation/mock_translator.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/translate_kit_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {

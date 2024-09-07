@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/on_device_translation/on_device_translation_service.h"
+#include "components/services/on_device_translation/on_device_translation_service.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/services/on_device_translation/public/cpp/features.h"
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

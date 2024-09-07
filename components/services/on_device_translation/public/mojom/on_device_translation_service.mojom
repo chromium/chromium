@@ -4,7 +4,7 @@
 
 module on_device_translation.mojom;
 
-import "chrome/services/on_device_translation/public/mojom/translator.mojom";
+import "components/services/on_device_translation/public/mojom/translator.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // The service that provides translation capabilities through

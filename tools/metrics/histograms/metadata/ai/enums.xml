@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
+<!-- LINT.ThenChange(//components/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
 
 </enums>
 

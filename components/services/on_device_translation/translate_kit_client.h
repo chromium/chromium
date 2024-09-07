@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
-#define CHROME_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
+#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
+#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
 
 #include <cstddef>
 #include <map>
@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
-#include "chrome/services/on_device_translation/translate_kit_structs.h"
+#include "components/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {
 
@@ -134,4 +134,4 @@ class TranslateKitClient {
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
+#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_

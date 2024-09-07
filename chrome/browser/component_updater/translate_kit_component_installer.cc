@@ -24,7 +24,7 @@
 #include "crypto/sha2.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/services/on_device_translation/public/cpp/features.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace component_updater {

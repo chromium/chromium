@@ -10,10 +10,10 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
-#include "chrome/services/on_device_translation/public/cpp/features.h"
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/on_device_translation/translate_kit_client.h"
+#include "components/services/on_device_translation/translate_kit_client.h"
 
 #include <map>
 #include <optional>
@@ -10,8 +10,8 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/services/on_device_translation/proto/translate_kit_api.pb.h"
-#include "chrome/services/on_device_translation/translate_kit_structs.h"
+#include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
+#include "components/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {
 namespace {

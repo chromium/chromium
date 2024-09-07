@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
-#define CHROME_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
+#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
+#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
 
 #include <memory>
 
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -43,4 +43,4 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
+#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_

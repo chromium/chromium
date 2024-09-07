@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
-#define CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
+#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
+#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
 
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 
 namespace on_device_translation {
 
@@ -45,4 +45,4 @@ class MockTranslator : public mojom::Translator {
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
+#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
