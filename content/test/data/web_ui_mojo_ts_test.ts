@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestNode} from './web_ui_mojo_ts_test_node.js';
+import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -77,7 +77,7 @@ async function doTest(): Promise<boolean> {
     } =
         await cache.echo(
             true, null, TestEnum.kOne, testStruct, [], [], [], {}, {}, {}, '',
-            new TestNode());
+            new TestNode(), null);
     if (optionalBool !== false) {
       return false;
     }
@@ -131,8 +131,8 @@ async function doTest(): Promise<boolean> {
     } =
         await cache.echo(
             null, 1, null, testStruct, inOptionalBools, inOptionalInts,
-            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '',
-            new TestNode());
+            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '', new TestNode(),
+            null);
     if (optionalBool !== null) {
       return false;
     }
@@ -170,7 +170,8 @@ async function doTest(): Promise<boolean> {
   {
     const str = 'foobear';
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, new TestNode());
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, new TestNode(),
+        null);
 
     if (result.simpleMappedType !== str) {
       return false;
@@ -180,7 +181,8 @@ async function doTest(): Promise<boolean> {
   // Tests an empty nested struct to test basic encoding/decoding.
   {
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode());
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode(),
+        null);
 
     assertObjectEquals(
         new TestNode(), result.nestedMappedType,
@@ -197,13 +199,29 @@ async function doTest(): Promise<boolean> {
       cursor = cursor!.next = new TestNode();
     }
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', chain);
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', chain, null);
 
     if (JSON.stringify(chain) !== JSON.stringify(result.nestedMappedType)) {
       throw new Error(
           'nested mappped type: got: ' +
           JSON.stringify(result.nestedMappedType) +
           ', expected: ' + JSON.stringify(chain));
+    }
+  }
+
+  {
+    let map: StringDictType = new Map<string, string>();
+    map.set('foo', 'bear');
+    map.set('some', 'where');
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode(),
+        map);
+
+    for (const key of map.keys()) {
+      assert(
+          result.otherMappedType!.get(key) === map.get(key),
+          `Expected value: ${map.get(key)} for key: ${key}, got: ${
+              result.otherMappedType!.get(key)}`);
     }
   }
 

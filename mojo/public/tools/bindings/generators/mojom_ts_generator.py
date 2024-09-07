@@ -708,20 +708,55 @@ class Generator(generator.Generator):
 
     return imports
 
+  # Returns a list of imports in the format:
+  #   {
+  #      <import path>: [list of types],
+  #      ...
+  #   }
   def _ConverterImports(self):
-    imports = {}
 
-    # TODO(ffred): we also need to import types from other *-mojom-webui
-    # dependencies.
-    typemapped_structs = self._TypeMappedStructs()
-    for struct in typemapped_structs:
+    def needs_import(kind):
+      return mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+
+    class Import:
+
+      def __init__(self, typename, path, alias=None):
+        self.typename = typename
+        self.path = path
+        self.alias = alias
+
+      def import_name(self):
+        if self.alias:
+          return f"{self.typename} as {self.alias}"
+        return self.typename
+
+    # A dictionary keyed by the qualified type name to an import configuration.
+    qualified_type_to_import = {}
+
+    # Build up our import repository.
+    # Add the mojom module imports first.
+    for import_path, kinds in self._GetJsModuleImports().items():
+      for kind in kinds:
+        if needs_import(kind):
+          qualified_type_to_import[kind.qualified_name] = Import(
+              kind.name, import_path, self._GetNameInJsModule(kind))
+
+    # Then add the typemap imports.
+    for qualified_name, typemap in self.typemap.items():
+      qualified_type_to_import[qualified_name] = Import(typemap['typename'],
+                                                        typemap['type_import'])
+
+    # Now we create the list of imports, based on the struct deps.
+    imports = {}
+    for struct in self._TypeMappedStructs():
       for field in struct.fields:
-        if mojom.IsStructKind(field.kind):
+        if needs_import(field.kind):
           qualified = field.kind.qualified_name
-          if qualified in self.typemap:
-            typemap = self.typemap[qualified]
-            typemap_import = typemap['type_import']
-            if typemap_import:
-              imports.setdefault(typemap_import, []).append(typemap['typename'])
+          type_import = qualified_type_to_import[qualified]
+          # We should have an entry for all non-primitive types
+          assert type_import != None
+
+          imports.setdefault(type_import.path,
+                             []).append(type_import.import_name())
 
     return imports

@@ -5,6 +5,7 @@
 module content.mojom;
 
 import "content/test/data/web_ui_ts_test_types.test-mojom";
+import "content/test/data/web_ui_ts_test_other_types.test-mojom";
 import "url/mojom/url.mojom";
 
 enum TestEnum {
@@ -26,6 +27,10 @@ struct NestedMappedType {
   NestedMappedType? nested;
 };
 
+struct StringDict {
+  MappedDict data;
+};
+
 interface WebUITsMojoTestCache {
   Put(url.mojom.Url url, string contents);
   GetAll() => (array<TsCacheItem> items);
@@ -42,7 +47,8 @@ interface WebUITsMojoTestCache {
     map<int32, int32?> int_map,
     map<int32, TestEnum?> enum_map,
     SimpleMappedType simple_mapped_type,
-    NestedMappedType nested_mapped_type)
+    NestedMappedType nested_mapped_type,
+    StringDict? other_mapped_type)
   => (
     bool? optional_bool,
     uint8? optional_uint8,
@@ -55,5 +61,6 @@ interface WebUITsMojoTestCache {
     map<int32, int32?> int_map,
     map<int32, TestEnum?> enum_map,
     SimpleMappedType simple_mapped_type,
-    NestedMappedType nested_mapped_type);
+    NestedMappedType nested_mapped_type,
+    StringDict? other_mapped_type);
 };

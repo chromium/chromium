@@ -7956,11 +7956,13 @@ data/web_ui_mojo_test.js
 data/web_ui_mojo_ts_test.html
 data/web_ui_mojo_ts_test.ts
 data/web_ui_mojo_ts_test_converters.ts
-data/web_ui_mojo_ts_test_node.ts
+data/web_ui_mojo_ts_test_mapped_types.ts
+data/web_ui_mojo_ts_test_other_mapped_types.ts
 data/web_ui_shared_worker.js
 data/web_ui_test.test-mojom
 data/web_ui_test_types.test-mojom
 data/web_ui_ts_test.test-mojom
+data/web_ui_ts_test_other_types.test-mojom
 data/web_ui_ts_test_types.test-mojom
 data/webkit/async_script_abort_on_end.html
 data/webkit/resources/xslt-bad-import-uri.xml

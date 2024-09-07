@@ -1163,6 +1163,27 @@ if (is_chromeos_ash) {
   }
 }
 
+# Test cross target mojo typemapping.
+mojom("web_ui_ts_test_other_mojo_bindings") {
+  testonly = true
+  sources = [ "data/web_ui_ts_test_other_types.test-mojom" ]
+  webui_module_path = "/content/test/data"
+
+  ts_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.MappedDict"
+          ts = "MappedDictType"
+          ts_import = "./web_ui_mojo_ts_test_other_mapped_types.js"
+          converter = "MappedDictConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+      ]
+    },
+  ]
+}
+
 mojom("web_ui_ts_test_mojo_bindings") {
   testonly = true
   sources = [
@@ -1171,6 +1192,8 @@ mojom("web_ui_ts_test_mojo_bindings") {
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
+
+  deps = [ ":web_ui_ts_test_other_mojo_bindings" ]
 
   ts_typemaps = [
     {
@@ -1184,8 +1207,15 @@ mojom("web_ui_ts_test_mojo_bindings") {
         {
           mojom = "content.mojom.NestedMappedType"
           ts = "TestNode"
-          ts_import = "./web_ui_mojo_ts_test_node.js"
+          ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
           converter = "NestedTypeConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+        {
+          mojom = "content.mojom.StringDict"
+          ts = "StringDictType"
+          ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
+          converter = "StringDictConverter"
           import = "web_ui_mojo_ts_test_converters.js"
         },
       ]
@@ -1198,8 +1228,9 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   out_folder = "$target_gen_dir/data"
   in_files = [
     "web_ui_mojo_ts_test.ts",
-    "web_ui_mojo_ts_test_node.ts",
     "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_mojo_ts_test_mapped_types.ts",
+    "web_ui_mojo_ts_test_other_mapped_types.ts",
     "web_ui_managed_interface_test.ts",
   ]
 }
@@ -1209,10 +1240,13 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
     "web_ui_mojo_ts_test.ts",
-    "web_ui_mojo_ts_test_node.ts",
     "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_mojo_ts_test_mapped_types.ts",
+    "web_ui_mojo_ts_test_other_mapped_types.ts",
     "web_ui_ts_test.test-mojom-converters.ts",
     "web_ui_ts_test.test-mojom-webui.ts",
+    "web_ui_ts_test_other_types.test-mojom-converters.ts",
+    "web_ui_ts_test_other_types.test-mojom-webui.ts",
     "web_ui_ts_test_types.test-mojom-webui.ts",
     "web_ui_managed_interface_test.ts",
     "web_ui_managed_interface_test.test-mojom-webui.ts",
@@ -1222,6 +1256,7 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
     ":preprocess_mojo_webui_test",
     ":web_ui_managed_interface_tests_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
+    ":web_ui_ts_test_other_mojo_bindings_ts__generator",
   ]
 }
 
