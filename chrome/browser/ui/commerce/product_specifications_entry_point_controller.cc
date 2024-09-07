@@ -78,76 +78,13 @@ bool IsNavigationEligibleForEntryPoint(
 
 namespace commerce {
 
-// TODO(crbug.com/362675963): When //c/b/ui/tabs/ gets modularized,
-// //c/b/ui/commerce/ can depend directly on it, and
-// ProductSpecificationsEntryPointController can inherit directly from
-// TabStripModeObserver without creating a circular dependency with //c/b/ui.
-class ProductSpecificationsEntryPointController::TabStripModelObserverImpl
-    : public TabStripModelObserver {
- public:
-  explicit TabStripModelObserverImpl(
-      ProductSpecificationsEntryPointController* controller)
-      : controller_(controller) {
-    controller_->browser_->tab_strip_model()->AddObserver(this);
-  }
-  ~TabStripModelObserverImpl() override = default;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (selection.active_tab_changed() &&
-        ProductSpecificationsDisclosureDialog::CloseDialog()) {
-      // Don't try to re-trigger the entry point when the dialog is closed due
-      // to this tab model change.
-      return;
-    }
-
-    if (change.type() == TabStripModelChange::Type::kRemoved) {
-      controller_->MaybeHideEntryPoint();
-    }
-    // Filter out non-tab-selection events.
-    if (change.type() != TabStripModelChange::Type::kSelectionOnly ||
-        !selection.active_tab_changed() || !selection.old_contents ||
-        !selection.new_contents || !controller_->cluster_manager_) {
-      return;
-    }
-    const GURL old_url = selection.old_contents->GetLastCommittedURL();
-    const GURL new_url = selection.new_contents->GetLastCommittedURL();
-
-    controller_->cluster_manager_->GetEntryPointInfoForSelection(
-        old_url, new_url,
-        base::BindOnce(&ProductSpecificationsEntryPointController::
-                           CheckEntryPointInfoForSelection,
-                       controller_->weak_ptr_factory_.GetWeakPtr(), old_url,
-                       new_url));
-  }
-
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
-    if (change_type == TabChangeType::kAll) {
-      // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
-      // the showing entry point.
-      controller_->MaybeHideEntryPoint();
-      ProductSpecificationsDisclosureDialog::CloseDialog();
-    }
-  }
-
- private:
-  raw_ptr<ProductSpecificationsEntryPointController, DanglingUntriaged>
-      controller_;
-};
-
 // TODO(b/340252809): No need to have browser as a dependency.
 ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(Browser* browser)
     : browser_(browser) {
   CHECK(browser_);
   if (browser_->profile()->IsRegularProfile()) {
-    tab_strip_model_observer_impl_ =
-        std::make_unique<TabStripModelObserverImpl>(this);
+    browser->tab_strip_model()->AddObserver(this);
   }
   shopping_service_ =
       ShoppingServiceFactory::GetForBrowserContext(browser->profile());
@@ -163,6 +100,48 @@ ProductSpecificationsEntryPointController::
 
 ProductSpecificationsEntryPointController::
     ~ProductSpecificationsEntryPointController() = default;
+
+void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed() &&
+      ProductSpecificationsDisclosureDialog::CloseDialog()) {
+    // Don't try to re-trigger the entry point when the dialog is closed due
+    // to this tab model change.
+    return;
+  }
+
+  if (change.type() == TabStripModelChange::Type::kRemoved) {
+    MaybeHideEntryPoint();
+  }
+  // Filter out non-tab-selection events.
+  if (change.type() != TabStripModelChange::Type::kSelectionOnly ||
+      !selection.active_tab_changed() || !selection.old_contents ||
+      !selection.new_contents || !cluster_manager_) {
+    return;
+  }
+  const GURL old_url = selection.old_contents->GetLastCommittedURL();
+  const GURL new_url = selection.new_contents->GetLastCommittedURL();
+
+  cluster_manager_->GetEntryPointInfoForSelection(
+      old_url, new_url,
+      base::BindOnce(&ProductSpecificationsEntryPointController::
+                         CheckEntryPointInfoForSelection,
+                     weak_ptr_factory_.GetWeakPtr(), old_url, new_url));
+}
+
+void ProductSpecificationsEntryPointController::TabChangedAt(
+    content::WebContents* contents,
+    int index,
+    TabChangeType change_type) {
+  if (change_type == TabChangeType::kAll) {
+    // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
+    // the showing entry point.
+    MaybeHideEntryPoint();
+    ProductSpecificationsDisclosureDialog::CloseDialog();
+  }
+}
 
 void ProductSpecificationsEntryPointController::AddObserver(
     Observer* observer) {
