@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -193,14 +194,16 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   }
 
   if (uninstall_all) {
-    // Preserve the log file in %TMP%.
-    std::optional<base::FilePath> log_file = GetLogFilePath(scope);
-    if (log_file) {
-      std::optional<base::FilePath> temp_file =
-          GetUniqueTempFilePath(*log_file);
-      if (temp_file) {
-        base::CopyFile(*log_file, *temp_file);
-      }
+    // Preserve the log file in the temp (`SystemTemp` for system installs)
+    // directory.
+    base::FilePath temp_dir;
+    if (std::optional<base::FilePath> log_file = GetLogFilePath(scope);
+        log_file &&
+        base::PathService::Get(IsSystemInstall(scope)
+                                   ? static_cast<int>(base::DIR_SYSTEM_TEMP)
+                                   : static_cast<int>(base::DIR_TEMP),
+                               &temp_dir)) {
+      base::CopyFile(*log_file, temp_dir.Append(log_file->BaseName()));
     }
   }
 

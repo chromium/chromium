@@ -124,7 +124,8 @@ void ExpectCleanProcesses();
 // Prints the provided file to stdout.
 void PrintFile(const base::FilePath& file);
 
-// Returns all the updater log files found in %TMP%.
+// Returns all the `updater*.log` files found in the temp directory for the
+// current test scope.
 std::vector<base::FilePath> GetUpdaterLogFilesInTmp();
 
 // Prints the updater.log file to stdout.

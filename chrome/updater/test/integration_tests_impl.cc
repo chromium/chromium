@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -536,13 +537,13 @@ std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
   base::FilePath temp_dir;
 
 #if BUILDFLAG(IS_WIN)
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    base::FilePath windows_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_WINDOWS, &windows_dir));
-    temp_dir = windows_dir.Append(FILE_PATH_LITERAL("Temp"));
-  }
+  EXPECT_TRUE(
+      base::PathService::Get(IsSystemInstall(GetUpdaterScopeForTesting())
+                                 ? static_cast<int>(base::DIR_SYSTEM_TEMP)
+                                 : static_cast<int>(base::DIR_TEMP),
+                             &temp_dir));
 #endif
-  if (temp_dir.empty() && !base::GetTempDir(&temp_dir)) {
+  if (temp_dir.empty()) {
     return {};
   }
 

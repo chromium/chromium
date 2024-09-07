@@ -30,7 +30,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -3754,7 +3753,7 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
-  // Expect no updater logs in %TMP%.
+  // Expect no updater logs in the temp dir.
   EXPECT_EQ(GetUpdaterLogFilesInTmp().size(), 0u);
 
   ASSERT_NO_FATAL_FAILURE(SetServerStarts(24));
@@ -3763,19 +3762,12 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
   ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  // Expect a single updater log in %TMP%, and confirm that the file name has an
-  // uuid embedded within it.
+  // Expect a single updater log in the temp dir.
   int invocation_count = 0;
   for (const auto& file : GetUpdaterLogFilesInTmp()) {
     ++invocation_count;
     if (invocation_count == 1) {
-      std::wstring file_base = file.BaseName().value();
-      EXPECT_TRUE(base::StartsWith(file_base, L"updater"));
-      EXPECT_TRUE(base::EndsWith(file_base, L".log"));
-      base::ReplaceSubstringsAfterOffset(&file_base, 0, L"updater", {});
-      base::ReplaceSubstringsAfterOffset(&file_base, 0, L".log", {});
-      EXPECT_TRUE(
-          base::Uuid::ParseLowercase(base::WideToUTF8(file_base)).is_valid());
+      EXPECT_EQ(file.BaseName().value(), L"updater.log");
     } else {
       ADD_FAILURE() << "Unexpected, more than one updater log found: " << file;
     }
