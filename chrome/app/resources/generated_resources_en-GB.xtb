@@ -351,7 +351,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1238293488628890871">Switch profile?</translation>
 <translation id="1239594683407221485">Explore the device’s content in the Files app.</translation>
 <translation id="1239841552505950173">Launch application</translation>
-<translation id="1240903469550363138">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Select experiment state for <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">More languages</translation>
 <translation id="1241381048229838873">Show all bookmarks</translation>
@@ -442,6 +441,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1307431692088049276">Don't ask me again</translation>
 <translation id="1307559529304613120">Oops!  The system failed to store the long-term API access token for this device.</translation>
 <translation id="1308548450293664112">I created this file, radio button group, 1 of 3</translation>
+<translation id="1310482092992808703">Group tabs</translation>
 <translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="131188242279372879">Discover enhanced protection to get Chrome's highest level of security for downloads</translation>
@@ -2641,7 +2641,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2835547721736623118">Speech recognition service</translation>
 <translation id="2835761321523638096">Read and change entries in the reading list</translation>
 <translation id="2836112522909777958">To delete data, close all Incognito windows</translation>
-<translation id="2836232638504556905">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="283669119850230892">To use the network <ph name="NETWORK_ID" />, first complete your connection to the Internet below.</translation>
 <translation id="2838379631617906747">Installing</translation>
@@ -4791,7 +4790,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
 <translation id="4406883609789734330">Live Caption</translation>
-<translation id="4407039574263172582">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
 <translation id="4409271659088619928">Your search engine is <ph name="DSE" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="4409697491990005945">Margins</translation>
@@ -6129,7 +6127,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5398572795982417028">Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Not allowed to look for or use printers that are accessible to your device</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Download update using mobile data</translation>
 <translation id="5404740137318486384">Press a switch or keyboard key to assign it to '<ph name="ACTION" />'.
@@ -8161,6 +8158,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6881845890692344060">Your administrator has logged out. You're in control now.</translation>
 <translation id="6882210908253838664">If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oops!  The system failed to save device configuration.</translation>
+<translation id="6883606786470492001">Manage your ad topics and other settings to limit what sites can learn about you to show you personalised ads</translation>
 <translation id="6884474387073389421">Are you sure that you want to delete the selected sign-in data?</translation>
 <translation id="6885122019363983153">Desktop backgrounds match across devices</translation>
 <translation id="6885771755599377173">System information preview</translation>

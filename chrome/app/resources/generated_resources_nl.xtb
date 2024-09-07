@@ -351,7 +351,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1238293488628890871">Van profiel wisselen?</translation>
 <translation id="1239594683407221485">De content van het apparaat verkennen in de app Bestanden.</translation>
 <translation id="1239841552505950173">App starten</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
 <translation id="1241066500170667906">Experimentstatus selecteren voor <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Meer talen</translation>
 <translation id="1241381048229838873">Alle bookmarks tonen</translation>
@@ -442,6 +441,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1307431692088049276">Niet opnieuw vragen</translation>
 <translation id="1307559529304613120">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
 <translation id="1308548450293664112">Ik heb dit bestand gemaakt, groep met keuzerondjes, 1 van 3</translation>
+<translation id="1310482092992808703">Tabbladen groeperen</translation>
 <translation id="131112695174432497">Gegevens die van invloed zijn op advertentiepersonalisatie, worden verwijderd</translation>
 <translation id="1311294419381837540">Je cast een tabblad. Je kunt het casten op elk moment onderbreken of stoppen.</translation>
 <translation id="131188242279372879">Ontdek Geoptimaliseerde beveiliging voor het hoogste beveiligingsniveau van Chrome voor downloads</translation>
@@ -2628,7 +2628,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2835547721736623118">Spraakherkenningsservice</translation>
 <translation id="2835761321523638096">Items in de leeslijst lezen en wijzigen</translation>
 <translation id="2836112522909777958">Sluit alle incognitovensters om gegevens te verwijderen</translation>
-<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="283669119850230892">Als je het netwerk <ph name="NETWORK_ID" /> wilt gebruiken, moet je eerst hieronder verbinding maken met internet.</translation>
 <translation id="2838379631617906747">Installeren</translation>
@@ -4775,7 +4774,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4405781821077215583">Maak items op je scherm, waaronder tekst, kleiner of groter</translation>
 <translation id="4406308048672435032">Je kunt dit tabblad inactief maken of vernieuwen om de hele lijst weer te zien</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
-<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK" />servicevoorwaarden<ph name="END_LINK" /> van deze site.</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
 <translation id="4409271659088619928">Je zoekmachine is <ph name="DSE" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="4409697491990005945">Marges</translation>
@@ -6111,7 +6109,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5398572795982417028">Paginaverwijzing valt buiten bereik, limiet is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Geen toestemming om printers te zoeken of te gebruiken die toegankelijk zijn voor je apparaat</translation>
 <translation id="5400836586163650660">Grijs</translation>
-<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Update downloaden via mobiele data</translation>
 <translation id="5404740137318486384">Druk op een schakelaar of toets op het toetsenbord om deze toe te wijzen voor de actie <ph name="ACTION" />.
@@ -8140,6 +8137,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6881845890692344060">Je beheerder is uitgelogd. Jij hebt nu de controle.</translation>
 <translation id="6882210908253838664">Als een site niet werkt, kun je proberen de site tijdelijk toestemming te geven om cookies van derden te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
+<translation id="6883606786470492001">Beheer je advertentieonderwerpen en andere instellingen om te beperken wat sites over je mogen weten om je gepersonaliseerde advertenties te tonen</translation>
 <translation id="6884474387073389421">Weet je zeker dat je de geselecteerde inloggegevens wilt verwijderen?</translation>
 <translation id="6885122019363983153">Desktopachtergronden komen overeen op verschillende apparaten</translation>
 <translation id="6885771755599377173">Voorbeeld van systeeminformatie</translation>

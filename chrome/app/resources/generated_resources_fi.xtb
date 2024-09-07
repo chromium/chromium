@@ -351,7 +351,6 @@
 <translation id="1238293488628890871">Haluatko vaihtaa profiilia?</translation>
 <translation id="1239594683407221485">Tutustu laitteen sisältöön Tiedostot-sovelluksen kautta.</translation>
 <translation id="1239841552505950173">Käynnistä sovellus</translation>
-<translation id="1240903469550363138">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK1" />tietosuojakäytäntöön<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />käyttöehtoihin<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Valitse kokeilun tila: <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Lisää kieliä</translation>
 <translation id="1241381048229838873">Näytä kaikki kirjanmerkit</translation>
@@ -442,6 +441,7 @@
 <translation id="1307431692088049276">Älä kysy uudestaan</translation>
 <translation id="1307559529304613120">Hups! Järjestelmä ei voinut tallentaa laitteelle pitkäaikaista API-käyttötunnusta.</translation>
 <translation id="1308548450293664112">Loin tämän tiedoston, valintanappiryhmä, 1/3</translation>
+<translation id="1310482092992808703">Ryhmittele välilehtiä</translation>
 <translation id="131112695174432497">Mainosten personointiin vaikuttava data poistetaan</translation>
 <translation id="1311294419381837540">Striimaat välilehteä. Voit keskeyttää tai lopettaa striimauksen milloin tahansa.</translation>
 <translation id="131188242279372879">Tutustu parannettuun suojaukseen, jolla saat Chromen korkeimman suojaustason latauksille</translation>
@@ -2640,7 +2640,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2835547721736623118">Puheentunnistuspalvelu</translation>
 <translation id="2835761321523638096">Lue ja muuta lukulistalla olevia kohteita</translation>
 <translation id="2836112522909777958">Jos haluat poistaa datan, sulje kaikki incognito-ikkunat</translation>
-<translation id="2836232638504556905">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK" />tietosuojakäytäntöön<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Kaatuminen</translation>
 <translation id="283669119850230892">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, määritä ensin internetyhteyden muodostus alla.</translation>
 <translation id="2838379631617906747">Asennetaan</translation>
@@ -4788,7 +4787,6 @@ sema</translation>
 <translation id="4405781821077215583">Pienennä tai suurenna näytön sisältöä, esimerkiksi tekstiä</translation>
 <translation id="4406308048672435032">Voit tehdä tästä välilehdestä ei-aktiivisen tai päivittää sen, jos haluat nähdä koko listan uudelleen</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
-<translation id="4407039574263172582">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Katso sivuston <ph name="BEGIN_LINK" />käyttöehdot<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">O&amp;hje</translation>
 <translation id="4409271659088619928">Hakukoneesi on <ph name="DSE" />. Katso tarvittaessa hakukoneen ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4409697491990005945">Reunukset</translation>
@@ -6126,7 +6124,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5398572795982417028">Sivuviittaus on rajojen ulkopuolella. Raja on <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="5400196580536813396">Tulostimien, joihin laitteella on pääsy, etsiminen tai käyttäminen kielletty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
-<translation id="5401851137404501592">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle.</translation>
 <translation id="5402367795255837559">Pistekirjoitus</translation>
 <translation id="5402815541704507626">Lataa päivitys mobiilidatan kautta</translation>
 <translation id="5404740137318486384">Paina kytkintä tai näppäimistön näppäintä, niin se määritetään toiminnolle <ph name="ACTION" />.
@@ -8158,6 +8155,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6881845890692344060">Järjestelmänvalvoja on kirjautunut ulos. Päätösvalta on nyt sinulla.</translation>
 <translation id="6882210908253838664">Jos sivusto ei toimi, voit antaa sille väliaikaisen luvan käyttää kolmannen osapuolen evästeitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Hups – laitteen kokoonpanon tallentaminen epäonnistui.</translation>
+<translation id="6883606786470492001">Muokkaa mainosaiheita ja muita asetuksia rajoittaaksesi sitä, mitä tietoa sivustot voivat saada sinusta personoitujen mainosten näyttämiseksi</translation>
 <translation id="6884474387073389421">Haluatko varmasti poistaa valitun kirjautumisdatan?</translation>
 <translation id="6885122019363983153">Työpöytien taustakuvat ovat samat kaikilla laitteilla</translation>
 <translation id="6885771755599377173">Järjestelmätietojen esikatselu</translation>

@@ -160,7 +160,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 witryna wysłała ostatnio wiele powiadomień}few{# witryny wysłały ostatnio wiele powiadomień}many{# witryn wysłało ostatnio wiele powiadomień}other{# witryny wysłało ostatnio wiele powiadomień}}</translation>
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
-<translation id="1750259112639922169">Grupa <ph name="TAB_COUNT" /> kart</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1755203724116202818">Na potrzeby pomiaru skuteczności wyświetlanej reklamy między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="1757620656501361327">Aktualizacja Menedżera haseł Google</translation>
@@ -1769,7 +1768,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9157212632995922070">Wybierz konto, z którego chcesz korzystać w witrynie <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
-<translation id="9159716826369098114">Przywróć grupę <ph name="TAB_COUNT" /> kart jako nową grupę kart w tle.</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>

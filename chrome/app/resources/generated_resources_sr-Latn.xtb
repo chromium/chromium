@@ -353,7 +353,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1238293488628890871">Želite da promenite profil?</translation>
 <translation id="1239594683407221485">Istražite sadržaj uređaja u aplikaciji Datoteke.</translation>
 <translation id="1239841552505950173">Pokreni aplikaciju</translation>
-<translation id="1240903469550363138">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK1" />politiku privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />uslove korišćenja usluge<ph name="END_LINK2" /> za ovaj sajt.</translation>
 <translation id="1241066500170667906">Izaberite status eksperimenta za <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Još jezika</translation>
 <translation id="1241381048229838873">Prikaži sve obeleživače</translation>
@@ -444,6 +443,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
 <translation id="1307559529304613120">Ups! Sistem nije uspeo da sačuva oznaku dugoročnog pristupa API-ju za ovaj uređaj.</translation>
 <translation id="1308548450293664112">Napravio/la sam ovaj fajl, grupa dugmadi za izbor, 1. od 3</translation>
+<translation id="1310482092992808703">Grupiši kartice</translation>
 <translation id="131112695174432497">Podaci koji utiču na personalizaciju oglasa se brišu</translation>
 <translation id="1311294419381837540">Prebacujete karticu. Prebacivanje možete da pauzirate ili zaustavite u svakom trenutku.</translation>
 <translation id="131188242279372879">Otkrijte Poboljšanu zaštitu da biste dobili najviši nivo bezbednosti u Chrome-u za preuzimanja</translation>
@@ -2626,7 +2626,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2835547721736623118">Usluga za prepoznavanje govora</translation>
 <translation id="2835761321523638096">Čitanje i menjanje unosa na listi za čitanje</translation>
 <translation id="2836112522909777958">Da biste izbrisali podatke, zatvorite sve prozore bez arhiviranja</translation>
-<translation id="2836232638504556905">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog sajta.</translation>
 <translation id="2836269494620652131">Otkazivanje</translation>
 <translation id="283669119850230892">Da biste koristili mrežu <ph name="NETWORK_ID" />, najpre uspostavite vezu sa internetom u nastavku.</translation>
 <translation id="2838379631617906747">Instalira se</translation>
@@ -4776,7 +4775,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4405781821077215583">Umanjite ili uvećajte stavke na ekranu, uključujući tekst.</translation>
 <translation id="4406308048672435032">Ovu karticu možete da deaktivirate ili osvežite da biste ponovo videli kompletnu listu</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
-<translation id="4407039574263172582">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />Uslove korišćenja usluge<ph name="END_LINK" /> za ovaj sajt.</translation>
 <translation id="4408599188496843485">P&amp;omoć</translation>
 <translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="4409697491990005945">Margine</translation>
@@ -6113,7 +6111,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5398572795982417028">Prevelika referenca za stranice, ograničenje je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Nije im dozvoljeno da traže ili koriste štampače dostupne uređaju</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="5401851137404501592">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom.</translation>
 <translation id="5402367795255837559">Brajeva azbuka</translation>
 <translation id="5402815541704507626">Preuzmite ažuriranje pomoću mobilnih podataka</translation>
 <translation id="5404740137318486384">Pritisnite prekidač ili taster na tastaturi da biste ga dodelili radnji <ph name="ACTION" />. Možete da dodelite više prekidača ovoj radnji.</translation>
@@ -8149,6 +8146,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6881845890692344060">Administrator se odjavio. Sada imate kontrolu.</translation>
 <translation id="6882210908253838664">Ako sajt ne radi, možete da probate da mu date privremenu dozvolu za korišćenje kolačića treće strane. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ups! Sistem nije uspeo da sačuva konfiguraciju uređaja.</translation>
+<translation id="6883606786470492001">Upravljajte temama oglasa i drugim podešavanjima da biste ograničili informacije koje sajtovi mogu da saznaju o vama kako bi vam prikazivali personalizovane oglase</translation>
 <translation id="6884474387073389421">Želite stvarno da izbrišete izabrane podatke za prijavljivanje?</translation>
 <translation id="6885122019363983153">Pozadine za računare se podudaraju na svim uređajima</translation>
 <translation id="6885771755599377173">Pregled informacija o sistemu</translation>

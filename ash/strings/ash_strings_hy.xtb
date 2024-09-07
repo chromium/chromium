@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">Ձևանմուշ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 սարք միացած է <ph name="DEVICE_NAME" />-ի թեժ կետին</translation>
 <translation id="346243998268439747">Վերականգնել սկզբնական մասշտաբը</translation>
-<translation id="3463151196028058330">Դեմքի ռետուշ</translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա <ph name="KEY_TWO" /> կամ <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5176318573511391780">Տեսագրել էկրանի մի մասը</translation>
 <translation id="5187627942836026988">Ցույց տալ թեժ կետի մանրամասները։ Ձեր ադմինիստրատորն արգելափակել է թեժ կետի օգտագործումը։</translation>
-<translation id="518847040357731612">Պրոֆեսիոնալ պատկերի կարգավորում</translation>
 <translation id="5197255632782567636">Համացանց</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
 <translation id="5198715732953550718">Նոր պանակ ստեղծելու համար «<ph name="MOVED_APP_NAME" />» և «<ph name="IN_PLACE_APP" />» հավելվածները միավորվեցին։</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">Էջը վեր</translation>
 <translation id="619335566042889110">Լիցքավորել ամբողջությամբ հիմա</translation>
 <translation id="6193431488227440296">Մշակողների</translation>
-<translation id="6196214354688969799">Պրոֆեսիոնալ պատկեր</translation>
 <translation id="6199775032047436064">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="6200515304866777730">Չի աջակցվում հավելվածի կողմից</translation>
 <translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>

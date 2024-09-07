@@ -689,7 +689,6 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Šablona, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">K hotspotu zařízení <ph name="DEVICE_NAME" /> je připojeno jedno zařízení</translation>
 <translation id="346243998268439747">Resetovat úroveň přiblížení</translation>
-<translation id="3463151196028058330">Retuš obličeje</translation>
 <translation id="3465223694362104965">K tomuto zařízení je připojena jiná klávesnice než při vašem posledním přihlášení. Před použitím této klávesnice se ujistěte, že jí můžete důvěřovat.</translation>
 <translation id="3465356146291925647">Spravováno vaším administrátorem</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> a poté <ph name="KEY_TWO" /> nebo <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
 <translation id="5187627942836026988">Zobrazit podrobnosti o hotspotu. Administrátor hotspot zakázal.</translation>
-<translation id="518847040357731612">Nastavení studiového záběru</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, počet událostí: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> byla sloučena s aplikací <ph name="IN_PLACE_APP" /> a byla vytvořena nová složka.</translation>
@@ -1532,7 +1530,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6185696379715117369">O stránku nahoru</translation>
 <translation id="619335566042889110">Plně nabít</translation>
 <translation id="6193431488227440296">Pro vývojáře</translation>
-<translation id="6196214354688969799">Studiový záběr</translation>
 <translation id="6199775032047436064">Znovu načíst aktuální stránku</translation>
 <translation id="6200515304866777730">Aplikace tuto funkci nepodporuje</translation>
 <translation id="6210042900243040400">Připojit zařízení <ph name="NAME" />, které bylo dříve uloženo do účtu <ph name="EMAIL" /></translation>

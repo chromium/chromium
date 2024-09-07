@@ -689,7 +689,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3455468639467374593">Mal, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 enhet er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Tilbakestill zoomnivået</translation>
-<translation id="3463151196028058330">Ansiktsretusjering</translation>
 <translation id="3465223694362104965">Et annet tastatur er koblet til denne enheten siden du sist logget på. Sørg for at du stoler på dette tastaturet før du bruker det.</translation>
 <translation id="3465356146291925647">Administreres av administratoren din</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, deretter <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
 <translation id="5187627942836026988">Vis detaljer for wifi-sonen. Administratoren din har blokkert wifi-soner.</translation>
-<translation id="518847040357731612">Innstilling for studiobilde</translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> hendelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> er kombinert med <ph name="IN_PLACE_APP" /> for å opprette en ny mappe.</translation>
@@ -1532,7 +1530,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6185696379715117369">Opp én side</translation>
 <translation id="619335566042889110">Lad helt nå</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Studiobilde</translation>
 <translation id="6199775032047436064">Laster inn gjeldende side på nytt</translation>
 <translation id="6200515304866777730">Støttes ikke av appen</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>

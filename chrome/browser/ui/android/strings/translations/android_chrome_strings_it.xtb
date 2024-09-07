@@ -160,7 +160,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sito ha inviato molte notifiche di recente}other{# siti hanno inviato molte notifiche di recente}}</translation>
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
-<translation id="1750259112639922169">Gruppo di schede - <ph name="TAB_COUNT" /> schede</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1755203724116202818">Per misurare il rendimento di un annuncio, tra i siti vengono condivisi tipi di dati limitati, ad esempio se hai effettuato un acquisto dopo aver visitato un sito.</translation>
 <translation id="1757620656501361327">Aggiornamento di Gestore delle password di Google</translation>
@@ -1313,6 +1312,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7111394291981742152">Chrome ti offre maggiore controllo sugli annunci che ti vengono mostrati e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
+<translation id="7139479418357139965">Puoi contattare l'utente che ha inviato l'invito per chiedergli di inviarti un nuovo link.</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Richiedi maggiori informazioni<ph name="END_LINK" /> a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1475,6 +1475,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
 <translation id="78270725016672455">Il computer chiede di registrare questo dispositivo per accedere a un sito</translation>
 <translation id="7844171778363018843">Nessun dato selezionato da sincronizzare</translation>
+<translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
 <translation id="7846296061357476882">Servizi Google</translation>
 <translation id="784934925303690534">Intervallo di tempo</translation>
 <translation id="7851858861565204677">Altri dispositivi</translation>
@@ -1515,6 +1516,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Ora importa le password</translation>
 <translation id="8015452622527143194">Ripristina le dimensioni predefinite della pagina</translation>
+<translation id="8017431260099661477">Impossibile aprire il link di invito</translation>
 <translation id="8026238112629815203">Abbiamo cambiato la modalità di salvataggio delle password su questo dispositivo</translation>
 <translation id="8027863900915310177">Scegli dove effettuare il download</translation>
 <translation id="8030852056903932865">Approva</translation>
@@ -1766,7 +1768,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9157212632995922070">Scegli un account per continuare su <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
-<translation id="9159716826369098114">Ripristina il gruppo di <ph name="TAB_COUNT" /> schede come nuovo gruppo di schede in background.</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>

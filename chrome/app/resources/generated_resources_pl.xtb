@@ -353,7 +353,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1238293488628890871">Przełączyć profil?</translation>
 <translation id="1239594683407221485">Przeglądaj zawartość urządzenia w aplikacji Pliki.</translation>
 <translation id="1239841552505950173">Uruchom aplikację</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK2" />warunkami korzystania z tej witryny<ph name="END_LINK2" /> oraz jej <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" />.</translation>
 <translation id="1241066500170667906">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Więcej języków</translation>
 <translation id="1241381048229838873">Pokaż wszystkie zakładki</translation>
@@ -444,6 +443,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1307431692088049276">Nie pytaj ponownie</translation>
 <translation id="1307559529304613120">Ups. System nie może zapisać długoterminowego tokena dostępu API dla tego urządzenia.</translation>
 <translation id="1308548450293664112">To plik utworzony przeze mnie, grupa opcji, 1 z 3</translation>
+<translation id="1310482092992808703">Grupuj karty</translation>
 <translation id="131112695174432497">Dane, które mają wpływ na personalizację reklam, są usuwane</translation>
 <translation id="1311294419381837540">Przesyłasz kartę. Przesyłanie możesz w każdej chwili wstrzymać lub zatrzymać.</translation>
 <translation id="131188242279372879">Poznaj silniejszą ochronę, która zapewnia najwyższy poziom bezpieczeństwa pobierania w Chrome</translation>
@@ -2612,7 +2612,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2835547721736623118">Usługa rozpoznawania mowy</translation>
 <translation id="2835761321523638096">Czytanie i zmienianie elementów na liście Do przeczytania</translation>
 <translation id="2836112522909777958">Aby usunąć dane, zamknij wszystkie okna incognito</translation>
-<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zapoznaj się z <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" /> tej witryny.</translation>
 <translation id="2836269494620652131">Awaria</translation>
 <translation id="283669119850230892">Aby korzystać z sieci <ph name="NETWORK_ID" />, zakończ poniższe połączenie z internetem.</translation>
 <translation id="2838379631617906747">Instaluję</translation>
@@ -4758,7 +4757,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4405781821077215583">Zmniejszanie i powiększanie elementów na ekranie, w tym tekstu</translation>
 <translation id="4406308048672435032">Możesz ustawić tę kartę jako nieaktywną lub ją odświeżyć, aby ponownie zobaczyć pełną listę</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
-<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zobacz <ph name="BEGIN_LINK" />warunki korzystania<ph name="END_LINK" /> z tej witryny.</translation>
 <translation id="4408599188496843485">Pomo&amp;c</translation>
 <translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4409697491990005945">Marginesy</translation>
@@ -6094,7 +6092,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5398572795982417028">Odwołanie do strony spoza zakresu, limit to <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Nie zezwolono na wyszukiwanie ani używanie drukarek dostępnych dla urządzenia</translation>
 <translation id="5400836586163650660">Szary</translation>
-<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe.</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
 <translation id="5402815541704507626">Pobieranie aktualizacji przy użyciu mobilnej transmisji danych</translation>
 <translation id="5404740137318486384">Aby przypisać przełącznik lub klawisz na klawiaturze do czynności „<ph name="ACTION" />”, naciśnij go. Do tej czynności możesz przypisać kilka przełączników.</translation>
@@ -8127,6 +8124,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6881845890692344060">Administrator się wylogował. Teraz Ty masz wszystko pod kontrolą.</translation>
 <translation id="6882210908253838664">Jeśli strona nie działa, możesz tymczasowo zezwolić jej na używanie plików cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ups, systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
+<translation id="6883606786470492001">Zarządzaj tematami reklam i innymi ustawieniami, aby ograniczyć ilość informacji o Tobie, jakie są dostępne dla witryn wyświetlających Ci reklamy spersonalizowane</translation>
 <translation id="6884474387073389421">Czy na pewno chcesz usunąć wybrane dane logowania?</translation>
 <translation id="6885122019363983153">Tło pulpitu jest takie samo na różnych urządzeniach</translation>
 <translation id="6885771755599377173">Podgląd informacji o systemie</translation>

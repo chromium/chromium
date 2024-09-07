@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">範本，「<ph name="TEMPLATE_NAME" />」</translation>
 <translation id="3456931972722214204">1 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="346243998268439747">重設縮放比例</translation>
-<translation id="3463151196028058330">修容</translation>
 <translation id="3465223694362104965">這個裝置自你上次登入後接上了另外一組鍵盤。使用前請確認你信任該組鍵盤。</translation>
 <translation id="3465356146291925647">由系統管理員管理</translation>
 <translation id="347117769229524881">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="KEY_TWO" /> 鍵或<ph name="KEY_THREE" />鍵</translation>
@@ -1213,7 +1212,6 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
 <translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
-<translation id="518847040357731612">攝影棚效果偏好設定</translation>
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
@@ -1529,7 +1527,6 @@
 <translation id="6185696379715117369">Page Up 鍵</translation>
 <translation id="619335566042889110">立即充飽電</translation>
 <translation id="6193431488227440296">開發版</translation>
-<translation id="6196214354688969799">攝影棚效果</translation>
 <translation id="6199775032047436064">重新載入目前網頁</translation>
 <translation id="6200515304866777730">應用程式不支援這項功能</translation>
 <translation id="6210042900243040400">連線到 <ph name="EMAIL" /> 先前儲存的「<ph name="NAME" />」</translation>

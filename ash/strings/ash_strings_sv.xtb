@@ -689,7 +689,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3455468639467374593">Mall: <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">En enhet är ansluten till <ph name="DEVICE_NAME" />-surfzonen</translation>
 <translation id="346243998268439747">Återställ zoomnivån</translation>
-<translation id="3463151196028058330">Ansiktsretuschering</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
 <translation id="3465356146291925647">Hanteras av administratören</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> följt av <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5187627942836026988">Visa information om surfzon. Surfzonen blockeras av administratören.</translation>
-<translation id="518847040357731612">Inställning för studioutseende</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> händelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinerades med <ph name="IN_PLACE_APP" /> för att skapa en ny mapp.</translation>
@@ -1532,7 +1530,6 @@ Inga enheter är anslutna.</translation>
 <translation id="6185696379715117369">Uppåt en sida</translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>
 <translation id="6193431488227440296">Utvecklare</translation>
-<translation id="6196214354688969799">Studioutseende</translation>
 <translation id="6199775032047436064">Hämta aktuell sida igen</translation>
 <translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>

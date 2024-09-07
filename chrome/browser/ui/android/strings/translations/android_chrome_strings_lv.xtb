@@ -160,7 +160,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Nesen tika nosūtīts daudz paziņojumu no vienas vietnes}zero{Nesen tika nosūtīts daudz paziņojumu no # vietnēm}one{Nesen tika nosūtīts daudz paziņojumu no # vietnes}other{Nesen tika nosūtīts daudz paziņojumu no # vietnēm}}</translation>
 <translation id="1749561566933687563">Sinhronizējiet grāmatzīmes</translation>
 <translation id="1750238553597293878">Turpiniet izmantot Google kontā saglabātās paroles</translation>
-<translation id="1750259112639922169">Ciļņu grupa — ciļņu skaits: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Atvērt cilnes</translation>
 <translation id="1755203724116202818">Lai novērtētu kādas reklāmas veiktspēju, vietnēs tiek kopīgoti noteiktu veidu dati, piemēram, vai veicāt pirkumu pēc vietnes apmeklēšanas.</translation>
 <translation id="1757620656501361327">Google paroļu pārvaldnieka brīdinājums</translation>
@@ -1769,7 +1768,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
 <translation id="9157212632995922070">Izvēlieties kontu, ar ko turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="9158770349521403363">Kopīgot tikai saturu</translation>
-<translation id="9159716826369098114">Atjaunot ciļņu grupu kā jaunu fona ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="TAB_COUNT" />.</translation>
 <translation id="9169507124922466868">Navigācijas vēsture ir atvērta līdz pusei.</translation>
 <translation id="918419812064856259">Chrome beta versija</translation>
 <translation id="9190276265094487094">Jūsu vēsture būs pieejama visās sinhronizētajās ierīcēs, tāpēc varēsiet turpināt iesākto.</translation>

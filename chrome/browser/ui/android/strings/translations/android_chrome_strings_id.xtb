@@ -160,7 +160,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 situs baru-baru ini mengirim banyak notifikasi}other{# situs baru-baru ini mengirim banyak notifikasi}}</translation>
 <translation id="1749561566933687563">Sinkronisasikan bookmark Anda</translation>
 <translation id="1750238553597293878">Tetap gunakan sandi yang tersimpan di Akun Google Anda</translation>
-<translation id="1750259112639922169">Grup tab - <ph name="TAB_COUNT" /> tab</translation>
 <translation id="17513872634828108">Tab terbuka</translation>
 <translation id="1755203724116202818">Untuk mengukur performa iklan, jenis data tertentu akan dibagikan antar-situs, seperti apakah Anda melakukan pembelian setelah mengunjungi situs.</translation>
 <translation id="1757620656501361327">Pembaruan Pengelola Sandi Google</translation>
@@ -1769,7 +1768,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9157212632995922070">Pilih akun untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Hanya bagikan konten</translation>
-<translation id="9159716826369098114">Pulihkan grup tab sebanyak <ph name="TAB_COUNT" /> tab sebagai grup tab latar belakang baru.</translation>
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>

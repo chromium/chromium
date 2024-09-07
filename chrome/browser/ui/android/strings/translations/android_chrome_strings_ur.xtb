@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 سائٹ نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{# سائٹس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="1749561566933687563">اپنے بُک مارکس کی مطابقت پذیری کریں</translation>
 <translation id="1750238553597293878">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرتے رہیں</translation>
-<translation id="1750259112639922169">ٹیب گروپ - <ph name="TAB_COUNT" /> ٹیبز</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="1755203724116202818">کسی اشتہار کی کارکردگی کی پیمائش کرنے کے لیے، سائٹس کے درمیان ڈیٹا کی محدود اقسام کا اشتراک کیا جاتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے</translation>
 <translation id="1757620656501361327">‏Google پاس ورڈ مینیجر کی اپ ڈیٹ</translation>
@@ -1313,6 +1312,7 @@
 <translation id="7111394291981742152">‏Chrome آپ کو نظر آنے والے اشتہارات پر مزید کنٹرول فراہم کرتا ہے اور یہ محدود کرتا ہے کہ سائٹس کے آپ کو ذاتی نوعیت کے اشتہارات دکھانے پر وہ آپ کے بارے میں کیا جان سکتی ہیں۔</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 سائٹ کے لیے اجازتوں کا جائزہ لیا گیا}other{# سائٹس کے لیے اجازتوں کا جائزہ لیا گیا}}</translation>
 <translation id="7138678301420049075">دوسرا</translation>
+<translation id="7139479418357139965">آپ نیا لنک طلب کرنے کے لیے ارسال کنندہ سے رابطہ کر سکتے ہیں۔</translation>
 <translation id="7140829094791862589">دستی ترتیب کے مطابق ترتیب دیں</translation>
 <translation id="7146622961999026732">یہ سائٹیں اور ایپس آپ کے لیے اہم معلوم ہوتی ہیں:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے <ph name="BEGIN_LINK" />مزید معلومات حاصل کریں<ph name="END_LINK" />۔</translation>
@@ -1475,6 +1475,7 @@
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
 <translation id="78270725016672455">آپ کا کمپیوٹر کسی سائٹ میں سائن ان کرنے کیلئے اس آلے کو رجسٹر کرنا چاہتا ہے</translation>
 <translation id="7844171778363018843">مطابقت پذیری کے ليے کوئی ڈیٹا منتخب نہیں کیا گیا</translation>
+<translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7846296061357476882">‏Google سروسز</translation>
 <translation id="784934925303690534">وقت کی حد</translation>
 <translation id="7851858861565204677">دیگر آلات</translation>
@@ -1515,6 +1516,7 @@
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8014210850410408071">اگلا، پاس ورڈز درآمد کریں</translation>
 <translation id="8015452622527143194">صفحہ پر موجود ہر چیز کو واپس ڈیفالٹ سائز پر کریں</translation>
+<translation id="8017431260099661477">شامل ہونے کا لنک کھولا نہیں جا سکا</translation>
 <translation id="8026238112629815203">ہم نے اس آلے پر پاس ورڈز کو محفوظ کرنے کا طریقہ تبدیل کر دیا ہے</translation>
 <translation id="8027863900915310177">منتخب کریں کہ کہاں پر ڈاؤن لوڈ کرنا ہے</translation>
 <translation id="8030852056903932865">منظوری دیں</translation>
@@ -1766,7 +1768,6 @@
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے ایک اکاؤنٹ منتخب کریں</translation>
 <translation id="9158770349521403363">صرف مواد کا استعمال کریں</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> ٹیبز کے ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔</translation>
 <translation id="9169507124922466868">نیویگیشن کی سرگزشت آدھی کھلی ہوئی ہے</translation>
 <translation id="918419812064856259">‏Chrome بی ٹا</translation>
 <translation id="9190276265094487094">آپ کے تمام مطابقت پذیر آلات پر آپ کی سرگزشت موجود ہوگی تاکہ آپ جو کچھ کر رہے تھے اسے جاری رکھ سکیں</translation>

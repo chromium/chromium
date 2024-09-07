@@ -351,7 +351,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1238293488628890871">Chuyển đổi hồ sơ?</translation>
 <translation id="1239594683407221485">Khám phá nội dung của thiết bị trong ứng dụng Files.</translation>
 <translation id="1239841552505950173">Chạy ứng dụng</translation>
-<translation id="1240903469550363138">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />điều khoản dịch vụ<ph name="END_LINK2" /> của trang web này.</translation>
 <translation id="1241066500170667906">Chọn trạng thái thử nghiệm cho <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1241381048229838873">Hiện tất cả dấu trang</translation>
@@ -442,6 +441,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1307431692088049276">Đừng hỏi lại tôi</translation>
 <translation id="1307559529304613120">Rất tiếc! Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
 <translation id="1308548450293664112">Tôi đã tạo tệp này, nhóm nút chọn, 1/3</translation>
+<translation id="1310482092992808703">Nhóm các thẻ</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
 <translation id="1311294419381837540">Bạn đang truyền một thẻ. Bạn có thể tạm dừng hoặc ngừng truyền bất cứ lúc nào.</translation>
 <translation id="131188242279372879">Khám phá chế độ bảo vệ nâng cao để có được cấp độ bảo mật cao nhất của Chrome đối với nội dung tải xuống</translation>
@@ -2641,7 +2641,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2835547721736623118">Dịch vụ nhận dạng lời nói</translation>
 <translation id="2835761321523638096">Đọc và thay đổi các mục trong danh sách đọc</translation>
 <translation id="2836112522909777958">Để xoá dữ liệu, hãy đóng mọi cửa sổ Ẩn danh</translation>
-<translation id="2836232638504556905">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK" />chính sách quyền riêng tư<ph name="END_LINK" /> của trang web này.</translation>
 <translation id="2836269494620652131">Lỗi</translation>
 <translation id="283669119850230892">Để sử dụng mạng <ph name="NETWORK_ID" />, trước hết hãy hoàn tất kết nối Internet của bạn ở bên dưới.</translation>
 <translation id="2838379631617906747">Đang cài đặt</translation>
@@ -4791,7 +4790,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4405781821077215583">Phóng to hoặc thu nhỏ các mục trên màn hình, bao gồm cả văn bản</translation>
 <translation id="4406308048672435032">Bạn có thể dừng hoạt động của thẻ này hoặc làm mới để xem lại danh sách đầy đủ</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
-<translation id="4407039574263172582">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK" />điều khoản dịch vụ<ph name="END_LINK" /> của trang web này.</translation>
 <translation id="4408599188496843485">T&amp;rợ giúp</translation>
 <translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="4409697491990005945">Lề</translation>
@@ -6129,7 +6127,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5398572795982417028">Vượt quá phạm vi trang, giới hạn là <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Không được phép tìm hoặc sử dụng máy in mà thiết bị của bạn có thể truy cập</translation>
 <translation id="5400836586163650660">Màu xám</translation>
-<translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
 <translation id="5402815541704507626">Tải xuống bản cập nhật bằng cách dùng dữ liệu di động</translation>
 <translation id="5404740137318486384">Nhấn một công tắc hoặc phím trên bàn phím để gán cho “<ph name="ACTION" />”.
@@ -8161,6 +8158,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6881845890692344060">Quản trị viên của bạn đã đăng xuất. Giờ đây, bạn là người nắm quyền kiểm soát.</translation>
 <translation id="6882210908253838664">Nếu một trang web không hoạt động, bạn có thể cho phép trang web đó tạm thời sử dụng cookie của bên thứ ba. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Rất tiếc! Hệ thống không lưu được cấu hình thiết bị.</translation>
+<translation id="6883606786470492001">Quản lý chủ đề quảng cáo và các chế độ cài đặt khác để hạn chế những thông tin mà các trang web có thể tìm hiểu về bạn cho mục đích hiển thị quảng cáo được cá nhân hoá</translation>
 <translation id="6884474387073389421">Bạn có chắc chắn muốn xoá những dữ liệu đăng nhập này?</translation>
 <translation id="6885122019363983153">Nền màn hình trùng khớp trên các thiết bị</translation>
 <translation id="6885771755599377173">Xem trước thông tin hệ thống</translation>

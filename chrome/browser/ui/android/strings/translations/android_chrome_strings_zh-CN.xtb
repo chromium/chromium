@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 个网站近期发送了很多通知}other{# 个网站近期发送了很多通知}}</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
-<translation id="1750259112639922169">标签页分组 - <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="1755203724116202818">为了衡量某个广告的效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
 <translation id="1757620656501361327">Google 密码管理工具更新</translation>
@@ -1767,7 +1766,6 @@
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9157212632995922070">选择一个账号以继续访问 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">仅分享内容</translation>
-<translation id="9159716826369098114">将包含 <ph name="TAB_COUNT" /> 个标签页的标签页分组恢复为新的背景标签页分组。</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>

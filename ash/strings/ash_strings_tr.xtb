@@ -689,7 +689,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> hotspot'una 1 cihaz bağlı</translation>
 <translation id="346243998268439747">Yakınlaştırma düzeyini sıfırlar</translation>
-<translation id="3463151196028058330">Yüz rötuşu</translation>
 <translation id="3465223694362104965">Açtığınız son oturumdan sonra bu cihaza başka bir klavye bağlandı. Kullanmadan önce bu klavyeye güvendiğinizden emin olun.</translation>
 <translation id="3465356146291925647">Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ardından <ph name="KEY_TWO" /> veya <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
 <translation id="5187627942836026988">Hotspot ayrıntılarını göster. Hotspot, yöneticiniz tarafından engellendi.</translation>
-<translation id="518847040357731612">Stüdyo görüntü kalitesi tercihi</translation>
 <translation id="5197255632782567636">İnternet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ile <ph name="IN_PLACE_APP" /> birleştirilerek yeni bir klasör oluşturuldu.</translation>
@@ -1532,7 +1530,6 @@ Bağlı cihaz yok.</translation>
 <translation id="6185696379715117369">Bir sayfa yukarı</translation>
 <translation id="619335566042889110">Şimdi tamamen şarj et</translation>
 <translation id="6193431488227440296">Geliştirme</translation>
-<translation id="6196214354688969799">Stüdyo görüntü kalitesi</translation>
 <translation id="6199775032047436064">Geçerli sayfayı yeniden yükle</translation>
 <translation id="6200515304866777730">Uygulama tarafından desteklenmiyor</translation>
 <translation id="6210042900243040400">Önceden <ph name="EMAIL" /> hesabına kaydedilmiş <ph name="NAME" /> cihazını bağlayın</translation>

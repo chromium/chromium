@@ -160,7 +160,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Tovuti 1 ilituma arifa nyingi hivi majuzi}other{Tovuti # zilituma arifa nyingi hivi majuzi}}</translation>
 <translation id="1749561566933687563">Sawazisha alamisho zako</translation>
 <translation id="1750238553597293878">Endelea kutumia manenosiri katika Akaunti yako ya Google</translation>
-<translation id="1750259112639922169">Kikundi cha vichupo - vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1755203724116202818">Ili kupima utendaji wa tangazo, aina chache za data huruhusiwa kufikiwa baina ya tovuti, kama vile iwapo ulifanya ununuzi baada ya kutembelea tovuti.</translation>
 <translation id="1757620656501361327">Sasisho la Kidhibiti cha Manenosiri cha Google</translation>
@@ -1769,7 +1768,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9148126808321036104">Ingia tena</translation>
 <translation id="9157212632995922070">Chagua akaunti ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Shiriki maudhui pekee</translation>
-<translation id="9159716826369098114">Rejesha kikundi cha vichupo <ph name="TAB_COUNT" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
 <translation id="918419812064856259">Chrome - toleo la Beta</translation>
 <translation id="9190276265094487094">Utaona historia yako kwenye vifaa vyako vyote vilivyosawazishwa ili uweze kuendelea na shughuli uliyokuwa ukifanya</translation>

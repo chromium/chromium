@@ -351,7 +351,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1238293488628890871">Të ndërrohet profili?</translation>
 <translation id="1239594683407221485">Eksploro përmbajtjen e pajisjes në aplikacionin "Skedarët".</translation>
 <translation id="1239841552505950173">Hap aplikacionin</translation>
-<translation id="1240903469550363138">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK1" />politikën e privatësisë<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />kushtet e shërbimit<ph name="END_LINK2" /> të këtij sajti.</translation>
 <translation id="1241066500170667906">Zgjidh gjendjen eksperimentale për <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Gjuhë të tjera</translation>
 <translation id="1241381048229838873">Shfaq të gjithë faqeshënuesit</translation>
@@ -442,6 +441,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1307431692088049276">Mos më pyet përsëri</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="1308548450293664112">E kam krijuar unë këtë skedar, grupi i butonave të radios, 1 nga 3</translation>
+<translation id="1310482092992808703">Grupo skedat</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1311294419381837540">Po transmeton një skedë. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="131188242279372879">Zbulo mbrojtjen e përmirësuar për të marrë nivelin më të lartë të sigurisë të Chrome për shkarkimet</translation>
@@ -2626,7 +2626,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2835547721736623118">Shërbimi i njohjes së ligjërimit</translation>
 <translation id="2835761321523638096">Lexo dhe ndrysho hyrjet në listën e leximit</translation>
 <translation id="2836112522909777958">Për të fshirë të dhënat, mbylli të gjitha dritaret e fshehta</translation>
-<translation id="2836232638504556905">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="2836269494620652131">Ndërprerje aksidentale</translation>
 <translation id="283669119850230892">Për të përdorur rrjetin <ph name="NETWORK_ID" />, në fillim përfundo lidhjen tënde me internetin më poshtë.</translation>
 <translation id="2838379631617906747">Po instalohet</translation>
@@ -4774,7 +4773,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4405781821077215583">Bëji artikujt në ekran më të vegjël ose më të mëdhenj, duke përfshirë edhe tekstin</translation>
 <translation id="4406308048672435032">Mund ta bësh këtë skedë joaktive ose mund ta rifreskosh për të shikuar përsëri listën e plotë</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
-<translation id="4407039574263172582">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK" />kushtet e shërbimit<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="4408599188496843485">N&amp;dihmë</translation>
 <translation id="4409271659088619928">Motori yt i kërkimit është <ph name="DSE" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="4409697491990005945">Kufijtë</translation>
@@ -6110,7 +6108,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5398572795982417028">Referenca e faqes jashtë kufijve, kufiri është <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Nuk lejohen të kërkojnë për printerët e qasshëm nga pajisja jote apo t'i përdorin ata</translation>
 <translation id="5400836586163650660">Gri</translation>
-<translation id="5401851137404501592">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Shkarko përditësimin duke përdorur të dhënat celulare</translation>
 <translation id="5404740137318486384">Shtyp një çelës ose një tast të tastierës për ta caktuar atë për veprimin “<ph name="ACTION" />”.
@@ -8142,6 +8139,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6881845890692344060">Administratori yt ka dalë. Kontrollin e ke ti tani.</translation>
 <translation id="6882210908253838664">Nëse një sajt nuk funksionon, mund të provosh t'i japësh një leje të përkohshme për të përdorur kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Mos! Sistemi nuk arriti të ruante konfigurimin e pajisjes.</translation>
+<translation id="6883606786470492001">Menaxho temat e reklamave dhe cilësimet e tjera për të kufizuar se çfarë mund të mësojnë sajtet për ty për të të shfaqur reklama të personalizuara</translation>
 <translation id="6884474387073389421">E konfirmon që dëshiron t'i fshish të dhënat e zgjedhura të identifikimit?</translation>
 <translation id="6885122019363983153">Imazhet e sfondit të desktopit përputhen mes pajisjeve</translation>
 <translation id="6885771755599377173">Pamja paraprake e informacioneve të sistemit</translation>

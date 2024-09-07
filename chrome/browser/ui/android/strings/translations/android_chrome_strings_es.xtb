@@ -160,7 +160,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sitio ha enviado muchas notificaciones recientemente}other{# sitios han enviado muchas notificaciones recientemente}}</translation>
 <translation id="1749561566933687563">Sincronizar marcadores</translation>
 <translation id="1750238553597293878">Sigue usando las contraseñas en tu cuenta de Google</translation>
-<translation id="1750259112639922169">Grupo de pestañas: <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="1755203724116202818">Para medir el rendimiento de los anuncios, algunos tipos de datos se comparten entre los sitios (como si has hecho una compra después de visitar un sitio).</translation>
 <translation id="1757620656501361327">Actualización del Gestor de contraseñas de Google</translation>
@@ -1769,7 +1768,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
 <translation id="9157212632995922070">Elige una cuenta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir solo contenido</translation>
-<translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> pestañas como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>

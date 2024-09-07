@@ -160,7 +160,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sitio enviou recentemente moitas notificacións}other{# sitios enviaron recentemente moitas notificacións}}</translation>
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
 <translation id="1750238553597293878">Sigue usando os contrasinais na túa Conta de Google</translation>
-<translation id="1750259112639922169">Grupo de pestanas: <ph name="TAB_COUNT" /> pestanas</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1755203724116202818">Para medir o rendemento dos anuncios, certo tipo de datos (como, por exemplo, se fixeches unha compra despois de visitar un sitio) compártese entre os sitios.</translation>
 <translation id="1757620656501361327">Actualización do xestor de contrasinais de Google</translation>
@@ -1769,7 +1768,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9157212632995922070">Selecciona unha conta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir só contido</translation>
-<translation id="9159716826369098114">Restablecer grupo de <ph name="TAB_COUNT" /> pestanas como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>

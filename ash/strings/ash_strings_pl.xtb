@@ -689,7 +689,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Szablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Z hotspotem <ph name="DEVICE_NAME" /> jest połączone 1 urządzenie</translation>
 <translation id="346243998268439747">Resetuj poziom powiększenia</translation>
-<translation id="3463151196028058330">Retusz twarzy</translation>
 <translation id="3465223694362104965">Od czasu Twojego ostatniego logowania do tego urządzenia podłączono inną klawiaturę. Zanim jej użyjesz, upewnij się, że masz do niej zaufanie.</translation>
 <translation id="3465356146291925647">Zarządzana przez administratora</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5187627942836026988">Pokaż szczegóły hotspota. Jest on zablokowany przez administratora.</translation>
-<translation id="518847040357731612">Ustawienia obrazu studyjnego</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, zdarzenia: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
@@ -1532,7 +1530,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6185696379715117369">Strona do góry</translation>
 <translation id="619335566042889110">Naładuj do pełna teraz</translation>
 <translation id="6193431488227440296">Deweloperska</translation>
-<translation id="6196214354688969799">Obraz studyjny</translation>
 <translation id="6199775032047436064">Załaduj bieżącą stronę ponownie</translation>
 <translation id="6200515304866777730">Nieobsługiwana przez aplikację</translation>
 <translation id="6210042900243040400">Połącz urządzenie <ph name="NAME" /> wcześniej zapisane na koncie <ph name="EMAIL" /></translation>

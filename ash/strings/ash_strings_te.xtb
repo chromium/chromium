@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">టెంప్లేట్, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 పరికరం <ph name="DEVICE_NAME" /> హాట్‌స్పాట్‌కు కనెక్ట్ చేయబడింది</translation>
 <translation id="346243998268439747">జూమ్ స్థాయిని రీసెట్ చేయండి</translation>
-<translation id="3463151196028058330">ముఖంపై మెరుగులు</translation>
 <translation id="3465223694362104965">మీరు చివరిగా సైన్ ఇన్ చేసిన తర్వాత ఈ పరికరానికి మరొక కీబోర్డ్ కనెక్ట్ చేయబడింది. మీరు ఈ కీబోర్డ్‌ను ఉపయోగించే ముందు దీనిని మీరు విశ్వసిస్తున్నట్లు నిర్ధారించుకోండి.</translation>
 <translation id="3465356146291925647">మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> తర్వాత <ph name="KEY_TWO" /> లేదా <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
-<translation id="518847040357731612">స్టూడియో లుక్ ప్రాధాన్యత</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
@@ -1533,7 +1531,6 @@
 <translation id="6185696379715117369">ఎగువ పేజీకి వెళ్లుతుంది</translation>
 <translation id="619335566042889110">ఇప్పుడు పూర్తిగా ఛార్జ్ అయింది</translation>
 <translation id="6193431488227440296">డెవలపర్</translation>
-<translation id="6196214354688969799">స్టూడియో లుక్</translation>
 <translation id="6199775032047436064">ప్రస్తుత పేజీని మళ్ళీ లోడ్ చేయి</translation>
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>

@@ -689,7 +689,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3455468639467374593">Modelo, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 dispositivo ligado à zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Repor o nível de zoom</translation>
-<translation id="3463151196028058330">Retoque de rosto</translation>
 <translation id="3465223694362104965">Foi ligado outro teclado a este dispositivo desde o seu último acesso. Certifique-se de que confia neste teclado antes de o utilizar.</translation>
 <translation id="3465356146291925647">Gerida pelo administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, em seguida, <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5187627942836026988">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi foi bloqueada pelo seu administrador.</translation>
-<translation id="518847040357731612">Preferência do visual de estúdio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> em combinação com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
@@ -1533,7 +1531,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Programação</translation>
-<translation id="6196214354688969799">Visual de estúdio</translation>
 <translation id="6199775032047436064">Recarregar a página actual</translation>
 <translation id="6200515304866777730">Não suportado pela app</translation>
 <translation id="6210042900243040400">Ligue o dispositivo <ph name="NAME" /> guardado anteriormente em <ph name="EMAIL" /></translation>

@@ -351,7 +351,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1238293488628890871">Profil wechseln?</translation>
 <translation id="1239594683407221485">Du kannst die Inhalte in der App "Dateien" ansehen.</translation>
 <translation id="1239841552505950173">App starten</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website, um fortzufahren. Weitere Informationen findest du in der <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
 <translation id="1241066500170667906">Wähle den Teststatus für „<ph name="EXPERIMENT_NAME" />“ aus</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1241381048229838873">Alle Lesezeichen anzeigen</translation>
@@ -442,6 +441,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1307431692088049276">Nicht mehr fragen</translation>
 <translation id="1307559529304613120">Hoppla! Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
 <translation id="1308548450293664112">Ich habe diese Datei erstellt, Optionsfeldgruppe, 1 von 3</translation>
+<translation id="1310482092992808703">Tabs gruppieren</translation>
 <translation id="131112695174432497">Daten, die sich auf personalisierte Werbung auswirken, werden gelöscht</translation>
 <translation id="1311294419381837540">Du streamst gerade einen Tab. Du kannst den Stream jederzeit pausieren oder beenden.</translation>
 <translation id="131188242279372879">Aktiviere den erweiterten Schutz, um bei Downloads in Chrome von einem Höchstmaß an Sicherheit zu profitieren</translation>
@@ -2625,7 +2625,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2835547721736623118">Spracherkennungsservice</translation>
 <translation id="2835761321523638096">Einträge in der Leseliste abrufen und ändern</translation>
 <translation id="2836112522909777958">Schließe alle Inkognitofenster, um die Daten zu löschen</translation>
-<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Lies die <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieser Website.</translation>
 <translation id="2836269494620652131">Absturz</translation>
 <translation id="283669119850230892">Zur Verwendung des Netzwerks "<ph name="NETWORK_ID" />" musst du zuerst unten deine Internetverbindung herstellen.</translation>
 <translation id="2838379631617906747">Installation läuft...</translation>
@@ -4773,7 +4772,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4405781821077215583">Du kannst Elemente auf dem Bildschirm vergrößern oder verkleinern, einschließlich Text</translation>
 <translation id="4406308048672435032">Du kannst diesen Tab deaktivieren oder den Tab aktualisieren, um wieder die vollständige Liste anzeigen zu lassen</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
-<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Die Nutzungsbedingungen der Website <ph name="BEGIN_LINK" />findest du hier<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Hilfe</translation>
 <translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4409697491990005945">Ränder</translation>
@@ -6109,7 +6107,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Suchen oder Verwenden der für dein Gerät zugänglichen Drucker nicht erlaubt</translation>
 <translation id="5400836586163650660">Grau</translation>
-<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Update über mobile Daten herunterladen</translation>
 <translation id="5404740137318486384">Drücke auf einen Schalter oder eine Taste, um sie „<ph name="ACTION" />“ zuzuweisen.
@@ -8138,6 +8135,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6881845890692344060">Dein Administrator hat sich abgemeldet. Du hast jetzt wieder die Kontrolle.</translation>
 <translation id="6882210908253838664">Wenn eine Website nicht funktioniert, kannst du ihr eine temporäre Berechtigung zur Verwendung von Drittanbieter-Cookies erteilen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Hoppla! Das System konnte die Gerätekonfiguration nicht speichern.</translation>
+<translation id="6883606786470492001">Du kannst deine Werbethemen und andere Einstellungen verwalten, um einzuschränken, welche Informationen Websites über dich erfahren dürfen, um dir personalisierte Werbung zu zeigen</translation>
 <translation id="6884474387073389421">Möchtest du die ausgewählten Anmeldedaten wirklich löschen?</translation>
 <translation id="6885122019363983153">Desktop-Hintergründe werden geräteübergreifend angepasst</translation>
 <translation id="6885771755599377173">Vorschau der Systeminformationen</translation>

@@ -689,7 +689,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3455468639467374593">Vorlage, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 Gerät mit <ph name="DEVICE_NAME" />-Hotspot verbunden</translation>
 <translation id="346243998268439747">Zoomstufe zurücksetzen</translation>
-<translation id="3463151196028058330">Gesichtsretusche</translation>
 <translation id="3465223694362104965">Seit deiner letzten Anmeldung wurde eine andere Tastatur an dieses Gerät angeschlossen. Bevor du diese Tastatur verwendest, solltest du überprüfen, ob sie vertrauenswürdig ist.</translation>
 <translation id="3465356146291925647">Von deinem Administrator verwaltet</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, dann <ph name="KEY_TWO" /> oder <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
 <translation id="5187627942836026988">Hotspot-Details anzeigen. Der Hotspot wird von deinem Administrator blockiert.</translation>
-<translation id="518847040357731612">Studiolook-Einstellung</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> Termine</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> wurde mit <ph name="IN_PLACE_APP" /> kombiniert, um einen neuen Ordner zu erstellen.</translation>
@@ -1532,7 +1530,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6185696379715117369">Bildlauf nach oben</translation>
 <translation id="619335566042889110">Jetzt vollständig aufladen</translation>
 <translation id="6193431488227440296">Entwickler</translation>
-<translation id="6196214354688969799">Studiolook</translation>
 <translation id="6199775032047436064">Aktuelle Seite neu laden</translation>
 <translation id="6200515304866777730">Wird von der App nicht unterstützt</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> verbinden, wurde(n) bereits in <ph name="EMAIL" /> gespeichert</translation>

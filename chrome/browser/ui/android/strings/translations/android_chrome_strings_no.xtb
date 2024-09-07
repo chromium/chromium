@@ -160,7 +160,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 nettsted har sendt mange varsler i det siste}other{# nettsteder har sendt mange varsler i det siste}}</translation>
 <translation id="1749561566933687563">Synkroniser bokmerkene dine</translation>
 <translation id="1750238553597293878">Fortsett å bruke passordene i Google-kontoen din</translation>
-<translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åpne faner</translation>
 <translation id="1755203724116202818">For å måle annonseresultatene sine deler nettsteder begrensede typer data mellom seg, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="1757620656501361327">Oppdatering om Google Passordlagring</translation>
@@ -1766,7 +1765,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9157212632995922070">Velg en konto for å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun innhold</translation>
-<translation id="9159716826369098114">Gjenopprett fanegruppen med <ph name="TAB_COUNT" /> faner som en ny bakgrunnsfanegruppe.</translation>
 <translation id="9169507124922466868">Navigasjonshistorikken er halvveis åpnet</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>

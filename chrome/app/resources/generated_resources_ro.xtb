@@ -352,7 +352,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1238293488628890871">Schimbi profilul?</translation>
 <translation id="1239594683407221485">Explorează conținutul dispozitivului în aplicația Fișiere.</translation>
 <translation id="1239841552505950173">Lansează aplicația</translation>
-<translation id="1240903469550363138">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK1" />politica de confidențialitate<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />termenii și condițiile<ph name="END_LINK2" /> site-ului.</translation>
 <translation id="1241066500170667906">Selectează starea experimentului pentru <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mai multe limbi</translation>
 <translation id="1241381048229838873">Afișează toate marcajele</translation>
@@ -443,6 +442,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1307431692088049276">Nu mai întreba</translation>
 <translation id="1307559529304613120">Hopa! Sistemul nu a putut stoca indicativul de acces pe termen lung la API pentru acest dispozitiv.</translation>
 <translation id="1308548450293664112">Am creat acest fișier, grup de butoane radio, 1 din 3</translation>
+<translation id="1310482092992808703">Grupează file</translation>
 <translation id="131112695174432497">Datele care influențează personalizarea anunțurilor sunt șterse</translation>
 <translation id="1311294419381837540">Proiectezi o filă. Poți să întrerupi sau să oprești proiectarea oricând.</translation>
 <translation id="131188242279372879">Descoperă protecția îmbunătățită pentru a beneficia de cel mai înalt nivel de securitate pentru descărcări din Chrome</translation>
@@ -2629,7 +2629,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2835547721736623118">Serviciul de recunoaștere vocală</translation>
 <translation id="2835761321523638096">Citește și modifică intrările din lista de lecturi</translation>
 <translation id="2836112522909777958">Pentru a șterge date, închide toate ferestrele incognito</translation>
-<translation id="2836232638504556905">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Consultă <ph name="BEGIN_LINK" />politica de confidențialitate<ph name="END_LINK" /> a site-ului.</translation>
 <translation id="2836269494620652131">Blocare</translation>
 <translation id="283669119850230892">Pentru a utiliza rețeaua <ph name="NETWORK_ID" />, finalizați mai întâi conexiunea la internet mai jos.</translation>
 <translation id="2838379631617906747">Se instalează</translation>
@@ -4778,7 +4777,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4405781821077215583">Mărește sau micșorează elementele de pe ecran, inclusiv textul</translation>
 <translation id="4406308048672435032">Poți să dezactivezi fila sau să o actualizezi pentru a vedea din nou lista completă</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
-<translation id="4407039574263172582">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Vezi <ph name="BEGIN_LINK" />termenii și condițiile<ph name="END_LINK" /> acestui site.</translation>
 <translation id="4408599188496843485">&amp;Ajutor</translation>
 <translation id="4409271659088619928">Motorul tău de căutare este <ph name="DSE" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="4409697491990005945">Margini</translation>
@@ -6114,7 +6112,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5398572795982417028">Referința privind pagina este în afara limitelor (limita este <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">Nu au permisiunea de a căuta sau de a folosi imprimante accesibile pentru dispozitivul tău</translation>
 <translation id="5400836586163650660">Gri</translation>
-<translation id="5401851137404501592">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Descarcă actualizarea folosind datele mobile</translation>
 <translation id="5404740137318486384">Apasă un comutator sau o tastă de pe tastatură ca să o atribui acțiunii „<ph name="ACTION" />”.
@@ -8148,6 +8145,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6881845890692344060">Administratorul s-a deconectat. Acum tu deții controlul.</translation>
 <translation id="6882210908253838664">Dacă un site nu funcționează, poți încerca să-i acorzi permisiunea temporară de a folosi cookie-uri terță parte. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Hopa! Sistemul nu a putut salva configurarea dispozitivului.</translation>
+<translation id="6883606786470492001">Gestionează subiectele anunțurilor și alte setări pentru a limita informațiile pe care site-urile le pot afla despre tine pentru a-ți afișa anunțuri personalizate</translation>
 <translation id="6884474387073389421">Sigur vrei să ștergi datele de conectare selectate?</translation>
 <translation id="6885122019363983153">Fundalurile pentru desktop sunt identice pe toate dispozitivele</translation>
 <translation id="6885771755599377173">Previzualizarea informațiilor de sistem</translation>

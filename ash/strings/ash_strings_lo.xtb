@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">ແມ່ແບບ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">ມີ 1 ອຸປະກອນເຊື່ອມຕໍ່ກັບຮັອດສະປອດ <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">ຣີເຊັດລະດັບການຊູມ</translation>
-<translation id="3463151196028058330">ການແຕ່ງໜ້າ</translation>
 <translation id="3465223694362104965">ແປ້ນພິມອື່ນໄດ້ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້ແລ້ວນັບແຕ່ທ່ານເຂົ້າສູ່ລະບົບຄັ້ງສຸດທ້າຍ. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອຖືແປ້ນພິມນີ້ກ່ອນທີ່ທ່ານຈະໃຊ້ມັນ.</translation>
 <translation id="3465356146291925647">ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ຈາກນັ້ນ <ph name="KEY_TWO" /> ຫຼື <ph name="KEY_THREE" /></translation>
@@ -918,6 +917,7 @@
 <translation id="4209973997261364186">ເປີດໃຊ້ Wi-Fi ແລ້ວ</translation>
 <translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
 <translation id="4212472694152630271">ປ່ຽນໄປໃຊ້ PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ປຸ່ມເປີດປິດ, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">ການຕັ້ງຄ່າ VPN</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
@@ -1216,7 +1216,6 @@
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5176318573511391780">ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="5187627942836026988">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
-<translation id="518847040357731612">ຄ່າກຳນົດຂອງສະຕູດິໂອລຸກ</translation>
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ນັດໝາຍ</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ຮວມກັນກັບ <ph name="IN_PLACE_APP" /> ເພື່ອສ້າງໂຟນເດີໃໝ່.</translation>
@@ -1532,7 +1531,6 @@
 <translation id="6185696379715117369">ໜ້າຂຶ້ນ</translation>
 <translation id="619335566042889110">ສາກໃຫ້ເຕັມຕອນນີ້</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">ສະຕູດິໂອລຸກ</translation>
 <translation id="6199775032047436064">ໂຫຼດໜ້າປະຈຸບັນຄືນໃໝ່</translation>
 <translation id="6200515304866777730">ແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="6210042900243040400">ເຊື່ອມຕໍ່ <ph name="NAME" /> ທີ່ບັນທຶກໄວ້ກ່ອນໜ້ານີ້ໃສ່ <ph name="EMAIL" /></translation>

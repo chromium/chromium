@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">ಟೆಂಪ್ಲೇಟ್‌‌, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 ಸಾಧನವು <ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="346243998268439747">ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
-<translation id="3463151196028058330">ಫೇಸ್ ರೀಟಚ್</translation>
 <translation id="3465223694362104965">ನೀವು ಕೊನೆಯದಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗಿನಿಂದ ಇನ್ನೊಂದು ಕೀಬೋರ್ಡ್ ಈ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ. ನೀವು ಈ ಕೀಬೋರ್ಡ್ ಬಳಸುವ ಮೊದಲು ಅದರ ಮೇಲಿನ ನಿಮ್ಮ ನಂಬಿಕೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3465356146291925647">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ನಂತರ <ph name="KEY_TWO" /> ಅಥವಾ <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5176318573511391780">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="5187627942836026988">ಹಾಟ್‌ಸ್ಪಾಟ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ.</translation>
-<translation id="518847040357731612">ಸ್ಟುಡಿಯೋ ಲುಕ್ ಆದ್ಯತೆ</translation>
 <translation id="5197255632782567636">ಇಂಟರ್ನೆಟ್</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ಈವೆಂಟ್‌ಗಳು</translation>
 <translation id="5198715732953550718">ಹೊಸ ಫೋಲ್ಡರ್ ಅನ್ನು ರಚಿಸಲು <ph name="MOVED_APP_NAME" /> ಆ್ಯಪ್, <ph name="IN_PLACE_APP" /> ಆ್ಯಪ್ ಜೊತೆಗೆ ಸಂಯೋಜಿತವಾಗಿದೆ.</translation>
@@ -1533,7 +1531,6 @@
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಚ್ ಮಾಡಿ</translation>
 <translation id="6193431488227440296">ದೇವ್</translation>
-<translation id="6196214354688969799">ಸ್ಟುಡಿಯೋ ಲುಕ್</translation>
 <translation id="6199775032047436064">ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮರುತುಂಬಿಸಿ</translation>
 <translation id="6200515304866777730">ಆ್ಯಪ್‌ನಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6210042900243040400">ಹಿಂದೆ ಉಳಿಸಿದ <ph name="EMAIL" /> ಅನ್ನು <ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>

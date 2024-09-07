@@ -160,7 +160,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site son zamanlarda çok fazla bildirim gönderdi}other{# site son zamanlarda çok fazla bildirim gönderdi}}</translation>
 <translation id="1749561566933687563">Yer işaretlerinizi senkronize edin</translation>
 <translation id="1750238553597293878">Google Hesabınızdaki şifreleri kullanmaya devam edin</translation>
-<translation id="1750259112639922169">Sekme grubu: <ph name="TAB_COUNT" /> sekme</translation>
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1755203724116202818">Bir reklamın performansını ölçmek için sınırlı türde veri (ör. bir siteyi ziyaret ettikten sonra satın alma işlemi yapıp yapmadığınız), siteler arasında paylaşılır.</translation>
 <translation id="1757620656501361327">Google Şifre Yöneticisi güncellemesi</translation>
@@ -1769,7 +1768,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> web sitesine devam etmek için bir hesap seçin</translation>
 <translation id="9158770349521403363">Yalnızca içerik paylaşılıyor</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> sekmeden oluşan sekme grubunu, yeni bir arka plan sekme grubu olarak geri yükleyin.</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabilirsiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>

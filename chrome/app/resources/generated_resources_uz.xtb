@@ -351,7 +351,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1238293488628890871">Profil almashtirilsinmi?</translation>
 <translation id="1239594683407221485">Qurilmadagi kontekt bilan Fayllar ilovasida tanishing.</translation>
 <translation id="1239841552505950173">Ilovani ishga tushirish</translation>
-<translation id="1240903469550363138">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />xizmat shartlari<ph name="END_LINK2" /> bilan tanishing.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang</translation>
 <translation id="124116460088058876">Boshqa tillar</translation>
 <translation id="1241381048229838873">Barcha xatcho‘plarni ko‘rish</translation>
@@ -442,6 +441,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1307431692088049276">Boshqa soʻralmasin</translation>
 <translation id="1307559529304613120">Tizim bu qurilmada API uchun ruxsat tokenini saqlay olmadi.</translation>
 <translation id="1308548450293664112">Bu men yaratgan fayl, tanlash tugmalari guruhi, 1/3</translation>
+<translation id="1310482092992808703">Varaqlarni guruhlash</translation>
 <translation id="131112695174432497">Reklamani moslashtirishga aloqador axborot oʻchirildi</translation>
 <translation id="1311294419381837540">Varaq translatsiya qilinmoqda. Translatsiyani istalgan vaqt pauza qilish yoki tugatish mumkin.</translation>
 <translation id="131188242279372879">Chromeda yuklanmalardan yuqori darajali himoyalanish uchun kengaytirilgan himoya bilan tanishing</translation>
@@ -2630,7 +2630,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2835547721736623118">Nutqni aniqlash xizmati</translation>
 <translation id="2835761321523638096">Saqlangan sahifalar qaydlarini oʻqish va oʻzgartirish</translation>
 <translation id="2836112522909777958">Maʼlumotlarni oʻchirish uchun barcha Inkognito oynalarni yoping</translation>
-<translation id="2836232638504556905">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK" />maxfiylik siyosati<ph name="END_LINK" /> bilan tanishing.</translation>
 <translation id="2836269494620652131">Nosozlik</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> tarmog‘idan foydalanish uchun, avval Internetga ulaning.</translation>
 <translation id="2838379631617906747">O‘rnatilmoqda</translation>
@@ -4778,7 +4777,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4405781821077215583">Ekrandagi matn kabi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="4406308048672435032">Toʻliq roʻyxatni qayta koʻrish uchun bu varaqni nofaol qiling yoki yangilang</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
-<translation id="4407039574263172582">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK" />xizmat shartlari<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Yordam</translation>
 <translation id="4409271659088619928">Qidiruv tizimingiz: <ph name="DSE" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="4409697491990005945">Maydonlar</translation>
@@ -6115,7 +6113,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5398572795982417028">Sahifa raqami noto‘g‘ri kiritildi, maksimal raqam: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Qurilma ishlatishi mumkin printerlarni qidirish yoki ulardan foydalanishga ruxsat berilmagan</translation>
 <translation id="5400836586163650660">Kulrang</translation>
-<translation id="5401851137404501592">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi.</translation>
 <translation id="5402367795255837559">Brayl yozuvi</translation>
 <translation id="5402815541704507626">Yangilanish mobil internet orqali yuklanmoqda</translation>
 <translation id="5404740137318486384">“<ph name="ACTION" />” amali uchun belgilanadigan kalit yoki klaviatura tugmasini bosing.
@@ -8147,6 +8144,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6881845890692344060">Administrator hisobidan chiqdi. Endi oʻzingiz boshqarasiz.</translation>
 <translation id="6882210908253838664">Sayt ishlamasa, unga tashqi cookie fayllaridan foydalanishga vaqtinchalik ruxsat berishga urinib koʻrishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Tizim qurilma parametrlarini saqlay olmadi.</translation>
+<translation id="6883606786470492001">Saytlar moslangan reklama chiqarish maqsadida axborotlaringizni oʻrganishini cheklash uchun reklama mavzulari va boshqa sozlamalarni boshqaring</translation>
 <translation id="6884474387073389421">Ushbu tanlangan kirish maʼlumotlari oʻchirib tashlansinmi?</translation>
 <translation id="6885122019363983153">Qurilmalar ish stolida fon rasmini bir xil qilish</translation>
 <translation id="6885771755599377173">Tizim haqida ma’lumot</translation>

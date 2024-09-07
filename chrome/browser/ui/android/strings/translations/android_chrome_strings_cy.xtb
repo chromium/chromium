@@ -160,7 +160,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Anfonodd 1 wefan lawer o hysbysiadau yn ddiweddar}zero{Anfonodd # gwefan lawer o hysbysiadau yn ddiweddar}two{Anfonodd # wefan lawer o hysbysiadau yn ddiweddar}few{Anfonodd # gwefan lawer o hysbysiadau yn ddiweddar}many{Anfonodd # gwefan lawer o hysbysiadau yn ddiweddar}other{Anfonodd # gwefan lawer o hysbysiadau yn ddiweddar}}</translation>
 <translation id="1749561566933687563">Cysonwch eich nodau tudalen</translation>
 <translation id="1750238553597293878">Parhewch i ddefnyddio'r cyfrineiriau yn eich Cyfrif Google</translation>
-<translation id="1750259112639922169">Grŵp tabiau - <ph name="TAB_COUNT" /> o dabiau</translation>
 <translation id="17513872634828108">Tabiau agored</translation>
 <translation id="1755203724116202818">I fesur perfformiad hysbyseb, rhennir mathau cyfyngedig o ddata rhwng gwefannau, megis a wnaethoch brynu ar ôl ymweld â gwefan.</translation>
 <translation id="1757620656501361327">Diweddariad Rheolwr Cyfrineiriau Google</translation>
@@ -1769,7 +1768,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9148126808321036104">Mewngofnodwch eto</translation>
 <translation id="9157212632995922070">Dewiswch gyfrif i barhau ar <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Rhannu cynnwys yn unig</translation>
-<translation id="9159716826369098114">Adfer grŵp tabiau o <ph name="TAB_COUNT" /> o dabiau fel grŵp tabiau cefndirol newydd.</translation>
 <translation id="9169507124922466868">Mae hanes llywio wedi'i hanner agor</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>

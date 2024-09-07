@@ -160,7 +160,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개}other{최근에 많은 알림을 보낸 사이트 #개}}</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
-<translation id="1750259112639922169">탭 그룹 - 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1755203724116202818">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="1757620656501361327">Google 비밀번호 관리자 업데이트</translation>
@@ -1769,7 +1768,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" />에서 사용할 계정을 선택하세요</translation>
 <translation id="9158770349521403363">콘텐츠만 공유</translation>
-<translation id="9159716826369098114">탭 <ph name="TAB_COUNT" />개의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="918419812064856259">Chrome 베타</translation>
 <translation id="9190276265094487094">동기화된 모든 기기에 방문 기록이 유지되므로 전에 하던 작업을 이어서 할 수 있습니다.</translation>

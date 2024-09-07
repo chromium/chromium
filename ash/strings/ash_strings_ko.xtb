@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">템플릿, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">기기 1개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
 <translation id="346243998268439747">확대/축소 수준 재설정</translation>
-<translation id="3463151196028058330">얼굴 보정</translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 키를 누른 후 <ph name="KEY_TWO" /> 또는 <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
 <translation id="5187627942836026988">핫스팟 세부정보를 표시합니다. 관리자가 핫스팟을 차단했습니다.</translation>
-<translation id="518847040357731612">스튜디오 화질 환경설정</translation>
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> 앱과 <ph name="IN_PLACE_APP" /> 앱이 포함된 새 폴더를 만들었습니다.</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">페이지 위로</translation>
 <translation id="619335566042889110">지금 완전히 충전하기</translation>
 <translation id="6193431488227440296">개발</translation>
-<translation id="6196214354688969799">스튜디오 화질</translation>
 <translation id="6199775032047436064">현재 페이지 새로고침</translation>
 <translation id="6200515304866777730">앱에서 지원되지 않음</translation>
 <translation id="6210042900243040400">이전에 <ph name="EMAIL" />에 저장된 <ph name="NAME" /> 연결</translation>

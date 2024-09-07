@@ -689,7 +689,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3455468639467374593">Plantilla, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Se conectó 1 dispositivo al hotspot de <ph name="DEVICE_NAME" />.</translation>
 <translation id="346243998268439747">Restablecer el nivel de zoom</translation>
-<translation id="3463151196028058330">Retoque facial</translation>
 <translation id="3465223694362104965">Se conectó otro teclado a este dispositivo desde la última vez que accediste. Asegúrate de que este teclado sea de confianza antes de usarlo.</translation>
 <translation id="3465356146291925647">Administrada por tu administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, luego, <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
 <translation id="5187627942836026988">Mostrar detalles del hotspot. El administrador bloqueó el hotspot.</translation>
-<translation id="518847040357731612">Preferencia de aspecto de estudio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718">Se combinó <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una nueva carpeta.</translation>
@@ -1533,7 +1531,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6185696379715117369">Retroceder página</translation>
 <translation id="619335566042889110">Cargar por completo ahora</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Aspecto de estudio</translation>
 <translation id="6199775032047436064">Cargar de nuevo la página actual</translation>
 <translation id="6200515304866777730">No es compatible con la app</translation>
 <translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>

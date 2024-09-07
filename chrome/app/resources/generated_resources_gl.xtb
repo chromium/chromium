@@ -351,7 +351,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1238293488628890871">Queres cambiar de perfil?</translation>
 <translation id="1239594683407221485">Explora o contido do dispositivo na aplicación Ficheiros.</translation>
 <translation id="1239841552505950173">Iniciar aplicación</translation>
-<translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> deste sitio.</translation>
 <translation id="1241066500170667906">Seleccionar o estado do experimento <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Máis idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos os marcadores</translation>
@@ -442,6 +441,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Non preguntarme de novo</translation>
 <translation id="1307559529304613120">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="1308548450293664112">O ficheiro é creación miña, grupo de botóns de opción, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupar pestanas</translation>
 <translation id="131112695174432497">Elimínanse os datos que repercuten na personalización dos anuncios</translation>
 <translation id="1311294419381837540">Estás emitindo unha pestana. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="131188242279372879">Descubre a protección mellorada para dispor do máximo nivel de seguranza de Chrome nas descargas</translation>
@@ -2627,7 +2627,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2835547721736623118">Servizo de recoñecemento de voz</translation>
 <translation id="2835761321523638096">Ler e cambiar entradas na lista de lectura</translation>
 <translation id="2836112522909777958">Para borrar os datos, pecha todas as ventás do modo de incógnito</translation>
-<translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="2836269494620652131">Erro</translation>
 <translation id="283669119850230892">Para utilizar a rede <ph name="NETWORK_ID" />, primeiro completa a túa conexión a Internet a continuación.</translation>
 <translation id="2838379631617906747">Instalando</translation>
@@ -4780,7 +4779,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4405781821077215583">Reduce ou amplía os elementos da pantalla, como o texto</translation>
 <translation id="4406308048672435032">Podes desactivar esta pestana ou actualizar a páxina para ver a lista completa de novo</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
-<translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta as <ph name="BEGIN_LINK" />condicións de servizo<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4409697491990005945">Marxes</translation>
@@ -6118,7 +6116,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5398572795982417028">A referencia da páxina supera o límite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Permiso denegado para buscar ou usar as impresoras ás que pode acceder o teu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Utiliza os datos móbiles para descargar a actualización</translation>
 <translation id="5404740137318486384">Preme un interruptor ou unha tecla para asignarlle a acción <ph name="ACTION" />.
@@ -8147,6 +8144,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6881845890692344060">A persoa administradora pechou a sesión. Agora ti tes o control.</translation>
 <translation id="6882210908253838664">Se un sitio non funciona, proba a concederlle permiso temporal para usar as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Produciuse un erro no sistema e non se puido gardar a configuración do dispositivo.</translation>
+<translation id="6883606786470492001">Xestiona os temas dos anuncios e outras opcións de configuración para limitar a información sobre ti que poden obter os sitios co fin de mostrarche anuncios personalizados</translation>
 <translation id="6884474387073389421">Seguro que queres eliminar os datos de inicio de sesión seleccionados?</translation>
 <translation id="6885122019363983153">Os fondos de escritorio coinciden en todos os dispositivos</translation>
 <translation id="6885771755599377173">Vista previa da información do sistema</translation>

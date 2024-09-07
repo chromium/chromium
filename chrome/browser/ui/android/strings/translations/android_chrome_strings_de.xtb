@@ -160,7 +160,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 Website hat in letzter Zeit viele Benachrichtigungen gesendet}other{# Websites haben in letzter Zeit viele Benachrichtigungen gesendet}}</translation>
 <translation id="1749561566933687563">Lesezeichen synchronisieren</translation>
 <translation id="1750238553597293878">Passwörter in deinem Google-Konto weiterhin verwenden</translation>
-<translation id="1750259112639922169">Tabgruppe – <ph name="TAB_COUNT" /> Tabs</translation>
 <translation id="17513872634828108">Geöffnete Tabs</translation>
 <translation id="1755203724116202818">Um die Leistung einer Werbeanzeige zu messen, werden nur manche Datentypen zwischen Websites geteilt, wie z. B. ob du nach dem Besuch einer Website etwas gekauft hast</translation>
 <translation id="1757620656501361327">Hinweis zum Google Passwortmanager</translation>
@@ -1769,7 +1768,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9157212632995922070">Wähle ein Konto aus, um auf <ph name="SITE_ETLD_PLUS_ONE" /> fortzufahren</translation>
 <translation id="9158770349521403363">Nur Inhalt teilen</translation>
-<translation id="9159716826369098114">Tabgruppe mit <ph name="TAB_COUNT" /> Tabs als neue Tabgruppe im Hintergrund wiederherstellen.</translation>
 <translation id="9169507124922466868">Navigationsverlauf ist halb geöffnet</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Du siehst deinen Verlauf auf allen synchronisierten Geräten und kannst dort weitermachen, wo du vorher aufgehört hast</translation>

@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">เทมเพลต <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">อุปกรณ์ 1 เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">รีเซ็ตระดับการซูม</translation>
-<translation id="3463151196028058330">รีทัชใบหน้า</translation>
 <translation id="3465223694362104965">แป้นพิมพ์อีกรายการหนึ่งเชื่อมต่อกับอุปกรณ์นี้นับจากที่คุณลงชื่อเข้าใช้ครั้งล่าสุด โปรดตรวจสอบว่าแป้นพิมพ์นี้เชื่อถือได้ก่อนใช้งาน</translation>
 <translation id="3465356146291925647">จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> แล้วกด <ph name="KEY_TWO" /> หรือ <ph name="KEY_THREE" /></translation>
@@ -1212,7 +1211,6 @@
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5176318573511391780">บันทึกหน้าจอบางส่วน</translation>
 <translation id="5187627942836026988">แสดงรายละเอียดฮอตสปอต ผู้ดูแลระบบบล็อกฮอตสปอต</translation>
-<translation id="518847040357731612">ค่ากำหนดของภาพระดับสตูดิโอ</translation>
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="5198715732953550718">รวม <ph name="MOVED_APP_NAME" /> กับ <ph name="IN_PLACE_APP" /> เพื่อสร้างโฟลเดอร์ใหม่แล้ว</translation>
@@ -1528,7 +1526,6 @@
 <translation id="6185696379715117369">เลื่อนหน้าขึ้น</translation>
 <translation id="619335566042889110">ชาร์จจนเต็มเลย</translation>
 <translation id="6193431488227440296">กำลังพัฒนา</translation>
-<translation id="6196214354688969799">ภาพระดับสตูดิโอ</translation>
 <translation id="6199775032047436064">โหลดหน้าปัจจุบันใหม่</translation>
 <translation id="6200515304866777730">แอปไม่รองรับ</translation>
 <translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>

@@ -689,7 +689,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3455468639467374593">Plantilla <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Hi ha 1 dispositiu connectat al punt d'accés Wi-Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Restableix el nivell de zoom</translation>
-<translation id="3463151196028058330">Retoc facial</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confies.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> i després <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
 <translation id="5187627942836026988">Mostra els detalls del punt d'accés Wi‐Fi. El teu administrador l'ha bloquejat.</translation>
-<translation id="518847040357731612">Preferència de look d'estudi</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniments</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> i <ph name="IN_PLACE_APP" /> s'han combinat per crear una carpeta nova.</translation>
@@ -1533,7 +1531,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6185696379715117369">Re Pàg</translation>
 <translation id="619335566042889110">Carrega completament ara</translation>
 <translation id="6193431488227440296">Desenvolupament</translation>
-<translation id="6196214354688969799">Look d'estudi</translation>
 <translation id="6199775032047436064">Torna a carregar la pàgina actual</translation>
 <translation id="6200515304866777730">No compatible amb l'aplicació</translation>
 <translation id="6210042900243040400">Connecta <ph name="NAME" />, desat anteriorment a <ph name="EMAIL" /></translation>

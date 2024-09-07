@@ -353,7 +353,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1238293488628890871">Přepnout profil?</translation>
 <translation id="1239594683407221485">Prozkoumejte obsah zařízení v aplikaci Soubory.</translation>
 <translation id="1239841552505950173">Spustit aplikaci</translation>
-<translation id="1240903469550363138">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />smluvní podmínky<ph name="END_LINK2" /> tohoto webu.</translation>
 <translation id="1241066500170667906">Vyberte stav pro experiment <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Další jazyky</translation>
 <translation id="1241381048229838873">Zobrazit všechny záložky</translation>
@@ -444,6 +443,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1307431692088049276">Příště se neptat</translation>
 <translation id="1307559529304613120">Jejda! Systému se pro toto zařízení nepodařilo uložit token dlouhodobého přístupu k rozhraní API.</translation>
 <translation id="1308548450293664112">Tenhle soubor jsem vytvořil(a) já, skupina přepínačů, 1 ze 3</translation>
+<translation id="1310482092992808703">Seskupit karty</translation>
 <translation id="131112695174432497">Budou smazána data ovlivňující personalizaci reklam</translation>
 <translation id="1311294419381837540">Jednu z karet odesíláte. Odesílání můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="131188242279372879">Objevte vylepšenou ochranu a získejte nejvyšší úroveň zabezpečení Chromu pro stažené soubory</translation>
@@ -2630,7 +2630,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2835547721736623118">Služba rozpoznávání řeči</translation>
 <translation id="2835761321523638096">Číst a měnit položky v seznamu četby</translation>
 <translation id="2836112522909777958">Pokud chcete vymazat data, zavřete všechna anonymní okna</translation>
-<translation id="2836232638504556905">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e-mailovou adresu a profilový obrázek. Zobrazit <ph name="BEGIN_LINK" />zásady ochrany soukromí<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="2836269494620652131">Selhání</translation>
 <translation id="283669119850230892">Chcete-li používat sít <ph name="NETWORK_ID" />, dokončete nejdříve připojení k internetu níže.</translation>
 <translation id="2838379631617906747">Instalace</translation>
@@ -4777,7 +4776,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4405781821077215583">Zmenšit nebo zvětšit položky na obrazovce (včetně textu)</translation>
 <translation id="4406308048672435032">Tuto kartu můžete deaktivovat, nebo obnovit, aby se vám opět zobrazil úplný seznam</translation>
 <translation id="4406883609789734330">Okamžité titulky</translation>
-<translation id="4407039574263172582">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek. Přečtěte si <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="4408599188496843485">&amp;Nápověda</translation>
 <translation id="4409271659088619928">Váš vyhledávač je <ph name="DSE" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="4409697491990005945">Okraje</translation>
@@ -6113,7 +6111,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5398572795982417028">Odkaz na stránku mimo rozsah, limit je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Není povoleno vyhledávat ani používat tiskárny přístupné z vašeho zařízení</translation>
 <translation id="5400836586163650660">Šedá</translation>
-<translation id="5401851137404501592">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek.</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
 <translation id="5402815541704507626">Stažení aktualizace pomocí mobilního datového připojení</translation>
 <translation id="5404740137318486384">Stiskněte přepínač nebo klávesu, kterou chcete přiřadit k akci <ph name="ACTION" />.
@@ -8146,6 +8143,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6881845890692344060">Váš administrátor se odhlásil. Nyní nad zařízením máte kontrolu vy.</translation>
 <translation id="6882210908253838664">Pokud web nefunguje, můžete mu zkusit udělit dočasné povolení k používání souborů cookie třetích stran. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Jejda! Systému se nepodařilo uložit konfiguraci zařízení.</translation>
+<translation id="6883606786470492001">Spravujte témata reklam a další nastavení, abyste omezili, co se o vás weby mohou dozvědět za účelem zobrazování personalizovaných reklam</translation>
 <translation id="6884474387073389421">Opravdu chcete vybrané přihlašovací údaje smazat?</translation>
 <translation id="6885122019363983153">Pozadí plochy se na různých zařízeních shoduje</translation>
 <translation id="6885771755599377173">Náhled informací o systému</translation>

@@ -689,7 +689,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3455468639467374593">Mall, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Seadme <ph name="DEVICE_NAME" /> kuumkohaga on ühendatud 1 seade</translation>
 <translation id="346243998268439747">Suumimistaseme lähtestamine</translation>
-<translation id="3463151196028058330">Näo retušeerimine</translation>
 <translation id="3465223694362104965">Pärast teie viimast sisselogimist lõi muu klaviatuur seadmega ühenduse. Enne klaviatuuri kasutamist veenduge, et see oleks usaldusväärne.</translation>
 <translation id="3465356146291925647">Võrku haldab teie administraator</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, seejärel <ph name="KEY_TWO" /> või <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5187627942836026988">Kuumkoha üksikasjade kuvamine. Teie administraator on kuumkoha blokeerinud.</translation>
-<translation id="518847040357731612">Stuudioilme eelistus</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> sündmust</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombineeriti uue kausta loomiseks rakendusega <ph name="IN_PLACE_APP" />.</translation>
@@ -1533,7 +1531,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6185696379715117369">Lehel üles</translation>
 <translation id="619335566042889110">Laadi nüüd täielikult täis</translation>
 <translation id="6193431488227440296">Arendaja</translation>
-<translation id="6196214354688969799">Stuudioilme</translation>
 <translation id="6199775032047436064">Laadib praeguse lehe uuesti</translation>
 <translation id="6200515304866777730">Rakendus ei toeta</translation>
 <translation id="6210042900243040400">Ühendage <ph name="NAME" />, mis oli varem salvestatud kontole <ph name="EMAIL" /></translation>

@@ -160,7 +160,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sayt bu yaxınlarda çoxlu bildiriş göndərib}other{# sayt bu yaxınlarda çoxlu bildiriş göndərib}}</translation>
 <translation id="1749561566933687563">Əlfəcinlərinizi sinxronizasiya edin</translation>
 <translation id="1750238553597293878">Google Hesabında parollardan istifadəyə davam edin</translation>
-<translation id="1750259112639922169">Tab qrupu - <ph name="TAB_COUNT" /> tab</translation>
 <translation id="17513872634828108">Panelləri açın</translation>
 <translation id="1755203724116202818">Reklam performansını (məsələn, sayta daxil olduqdan sonra alış edib-etməməyiniz) ölçmək üçün məhdud növ data saytlar arasında paylaşılır.</translation>
 <translation id="1757620656501361327">Google Parol Meneceri bildirişi</translation>
@@ -1767,7 +1766,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> ünvanında davam etmək üçün hesab seçin</translation>
 <translation id="9158770349521403363">Yalnız məzmun paylaşın</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> tabdan ibarət tab qrupunu yeni arxa fon tab qrupu olaraq bərpa edin.</translation>
 <translation id="9169507124922466868">Naviqasiya tarixçəsi yarı açıqdır</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>

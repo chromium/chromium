@@ -689,7 +689,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3455468639467374593">Shablloni, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 pajisje e lidhur me zonën e qasjes për internet të <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Rivendos nivelin e zmadhimit</translation>
-<translation id="3463151196028058330">Retushimi i fytyrës</translation>
 <translation id="3465223694362104965">Një tastierë tjetër është lidhur me këtë pajisje që nga identifikimi yt i fundit. Sigurohu që e beson këtë tastierë para se ta përdorësh atë.</translation>
 <translation id="3465356146291925647">Menaxhuar nga administratori yt</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> më pas <ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
 <translation id="5187627942836026988">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet është bllokuar nga administratori yt.</translation>
-<translation id="518847040357731612">Preferenca për "Pamjen studio"</translation>
 <translation id="5197255632782567636">Interneti</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ngjarje</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinuar me <ph name="IN_PLACE_APP" /> për të krijuar dosje të re.</translation>
@@ -1532,7 +1530,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6185696379715117369">Faqe lart</translation>
 <translation id="619335566042889110">Karikoje plotësisht tani</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Pamja studio</translation>
 <translation id="6199775032047436064">Ringarko faqen aktuale</translation>
 <translation id="6200515304866777730">Nuk mbështetet nga aplikacioni</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>

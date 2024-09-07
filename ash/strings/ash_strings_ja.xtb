@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">テンプレート、<ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="346243998268439747">拡大縮小をリセットする</translation>
-<translation id="3463151196028058330">顔レタッチ</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
 <translation id="5187627942836026988">アクセス ポイントの詳細を表示します。アクセス ポイントは管理者によってブロックされています。</translation>
-<translation id="518847040357731612">スタジオビデオの設定</translation>
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> で <ph name="IN_PLACE_APP" /> を使用して新しいフォルダが作成されました。</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">ページ内を上に移動</translation>
 <translation id="619335566042889110">今すぐ完全に充電</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">スタジオビデオ</translation>
 <translation id="6199775032047436064">現在のページを再読み込みする</translation>
 <translation id="6200515304866777730">アプリが対応していません</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> に保存済みの <ph name="NAME" /> に接続します</translation>

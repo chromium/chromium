@@ -354,7 +354,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1238293488628890871">Perjungti profilį?</translation>
 <translation id="1239594683407221485">Naršykite įrenginio turinį programoje „Failai“.</translation>
 <translation id="1239841552505950173">Paleisti programą</translation>
-<translation id="1240903469550363138">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą, adresą ir profilio nuotrauką su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK1" />privatumo politiką<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />paslaugų teikimo sąlygas<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Pasirinkite „<ph name="EXPERIMENT_NAME" />“ eksperimento būseną</translation>
 <translation id="124116460088058876">Daugiau kalbų</translation>
 <translation id="1241381048229838873">Rodyti visas žymas</translation>
@@ -445,6 +444,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1307431692088049276">Daugiau neklausti</translation>
 <translation id="1307559529304613120">Oi, sistemai nepavyko išsaugoti šio įrenginio ilgalaikio API prieigos kodo.</translation>
 <translation id="1308548450293664112">Sukūriau šį failą, akučių grupė, 1 iš 3</translation>
+<translation id="1310482092992808703">Grupuoti skirtukus</translation>
 <translation id="131112695174432497">Duomenys, turintys įtakos suasmeninant skelbimus, ištrinami</translation>
 <translation id="1311294419381837540">Perduodate skirtuką. Galite bet kada pristabdyti arba sustabdyti perdavimą.</translation>
 <translation id="131188242279372879">Atraskite sustiprintą apsaugą, kad užtikrintumėte aukščiausio lygio „Chrome“ atsisiuntimų saugą</translation>
@@ -2644,7 +2644,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2835547721736623118">Kalbos atpažinimo paslauga</translation>
 <translation id="2835761321523638096">Skaitymo sąrašo įrašų skaitymas ir keitimas</translation>
 <translation id="2836112522909777958">Norėdami ištrinti duomenis, uždarykite visus inkognito langus</translation>
-<translation id="2836232638504556905">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą ir profilio nuotrauką su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK" />privatumo politiką<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Strigtis</translation>
 <translation id="283669119850230892">Jei norite naudoti tinklą <ph name="NETWORK_ID" />, pirmiausia baikite prisijungti prie toliau nurodyto interneto.</translation>
 <translation id="2838379631617906747">Diegiama</translation>
@@ -4794,7 +4793,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4405781821077215583">Sumažinti arba padidinti elementus ekrane, įskaitant tekstą</translation>
 <translation id="4406308048672435032">Galite padaryti šį skirtuką neaktyvų arba atnaujinti, kad vėl matytumėte visą sąrašą</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
-<translation id="4407039574263172582">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą ir profilio nuotrauką su šia svetaine. Žr. svetainės <ph name="BEGIN_LINK" />paslaugų teikimo sąlygas<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">P&amp;agalba</translation>
 <translation id="4409271659088619928">Jūsų paieškos variklis yra „<ph name="DSE" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="4409697491990005945">Paraštės</translation>
@@ -6132,7 +6130,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5398572795982417028">Puslapio už diapazono ribų nuoroda (apribojimas :<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">Neleidžiama ieškoti įrenginiui pasiekiamų spausdintuvų ar juos naudoti</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
-<translation id="5401851137404501592">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą ir profilio nuotrauką su šia svetaine.</translation>
 <translation id="5402367795255837559">Brailio rašmenys</translation>
 <translation id="5402815541704507626">Naujinio atsisiuntimas naudojant mobiliojo ryšio duomenis</translation>
 <translation id="5404740137318486384">Paspauskite jungiklį ar klaviatūros klavišą, kad priskirtumėte jį veiksmui „<ph name="ACTION" />“.
@@ -8171,6 +8168,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6881845890692344060">Administratorius atsijungė. Dabar jūs viską valdote.</translation>
 <translation id="6882210908253838664">Jei svetainė neveikia, galite pabandyti suteikti jai laikiną leidimą naudoti trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oi!  Sistemai nepavyko išsaugoti įrenginio konfigūracijos.</translation>
+<translation id="6883606786470492001">Valdykite skelbimų temas ir kitus nustatymus, kad apribotumėte, ką svetainės gali sužinoti apie jus, kad galėtų rodyti suasmenintus skelbimus</translation>
 <translation id="6884474387073389421">Ar tikrai norite ištrinti pasirinktus prisijungimo duomenis?</translation>
 <translation id="6885122019363983153">Darbalaukio fonai sutampa visuose įrenginiuose</translation>
 <translation id="6885771755599377173">Sistemos informacijos peržiūra</translation>

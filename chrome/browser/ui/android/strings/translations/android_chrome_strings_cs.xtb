@@ -160,7 +160,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 web nedávno odeslal mnoho oznámení}few{# weby nedávno odeslaly mnoho oznámení}many{# webu nedávno odeslalo mnoho oznámení}other{# webů nedávno odeslalo mnoho oznámení}}</translation>
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="1750238553597293878">Pokračujte v používání hesel ve svém účtu Google</translation>
-<translation id="1750259112639922169">Skupina karet – počet karet: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otevřené karty</translation>
 <translation id="1755203724116202818">K měření výkonu reklamy jsou mezi weby sdíleny omezené typy dat, například informace o tom, zda jste po návštěvě webu uskutečnili nákup.</translation>
 <translation id="1757620656501361327">Oznámení Správce hesel Google</translation>
@@ -1769,7 +1768,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9148126808321036104">Znovu přihlásit</translation>
 <translation id="9157212632995922070">Vyberte účet, pomocí kterého chcete pokračovat na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Sdílet pouze obsah</translation>
-<translation id="9159716826369098114">Obnovit skupinu <ph name="TAB_COUNT" /> karet jako novou skupinu karet na pozadí.</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>

@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">નમૂનો, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 ડિવાઇસ <ph name="DEVICE_NAME" /> હૉટસ્પૉટ સાથે કનેક્ટેડ છે</translation>
 <translation id="346243998268439747">ઝૂમ લેવલ રીસેટ કરો</translation>
-<translation id="3463151196028058330">ચહેરો નિખારવાની સુવિધા</translation>
 <translation id="3465223694362104965">તમે છેલ્લે સાઇન ઇન કર્યું તે પછી આ ડિવાઇસ સાથે બીજું કીબોર્ડ કનેક્ટ કરવામાં આવ્યું છે. તમે આ કીબોર્ડનો ઉપયોગ કરો તે પહેલાં ખાતરી કરો કે તમને તેના પર વિશ્વાસ છે.</translation>
 <translation id="3465356146291925647">તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> પછી <ph name="KEY_TWO" /> અથવા <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5176318573511391780">આંશિક સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="5187627942836026988">હૉટસ્પૉટની વિગતો બતાવો. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા હૉટસ્પૉટ બ્લૉક કરવામાં આવ્યું છે.</translation>
-<translation id="518847040357731612">સ્ટુડિયો લુક સંબંધિત પસંદગી</translation>
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="5198715732953550718">નવું ફોલ્ડર બનાવવા માટે <ph name="MOVED_APP_NAME" />ને <ph name="IN_PLACE_APP" /> સાથે જોડી.</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">Page Up</translation>
 <translation id="619335566042889110">હવે પૂર્ણ ચાર્જ કરો</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">સ્ટુડિયો લુક</translation>
 <translation id="6199775032047436064">ચાલુ પૃષ્ઠ ફરીથી લોડ કરો </translation>
 <translation id="6200515304866777730">ઍપ દ્વારા સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="6210042900243040400">અગાઉ <ph name="EMAIL" /> પર સાચવેલા <ph name="NAME" />ને કનેક્ટ કરો</translation>

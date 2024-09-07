@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">До точки доступу <ph name="DEVICE_NAME" /> підключено 1 пристрій</translation>
 <translation id="346243998268439747">Скинути масштабування</translation>
-<translation id="3463151196028058330">Ретуш обличчя</translation>
 <translation id="3465223694362104965">Після вашого останнього входу до пристрою було підключено іншу клавіатуру. Переконайтеся, що вона безпечна, перш ніж користуватися нею.</translation>
 <translation id="3465356146291925647">Мережею керує адміністратор</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім – <ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
 <translation id="5187627942836026988">Показати відомості про точку доступу. Адміністратор заблокував точку доступу.</translation>
-<translation id="518847040357731612">Параметри студійного зображення</translation>
 <translation id="5197255632782567636">Інтернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Щоб створити нову папку, об'єднано додатки <ph name="MOVED_APP_NAME" /> і <ph name="IN_PLACE_APP" />.</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">Сторінка вгору</translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
 <translation id="6193431488227440296">Версія для розробників</translation>
-<translation id="6196214354688969799">Студійне зображення</translation>
 <translation id="6199775032047436064">Перезавантажити поточну сторінку</translation>
 <translation id="6200515304866777730">Не підтримується додатком</translation>
 <translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>

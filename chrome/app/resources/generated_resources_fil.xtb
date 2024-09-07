@@ -352,7 +352,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1238293488628890871">Lumipat ng Profile?</translation>
 <translation id="1239594683407221485">I-explore ang content ng device sa app na Mga File.</translation>
 <translation id="1239841552505950173">Ilunsad ang application</translation>
-<translation id="1240903469550363138">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga tuntunin ng serbisyo<ph name="END_LINK2" /> ng site na ito.</translation>
 <translation id="1241066500170667906">Pumili ng status ng eksperimento para sa <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Higit pang wika</translation>
 <translation id="1241381048229838873">Ipakita ang lahat ng mga bookmark</translation>
@@ -443,6 +442,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1307431692088049276">Huwag akong tanungin ulit</translation>
 <translation id="1307559529304613120">Oops!  Nabigo ang system na i-imbak ang pangmatagalang token sa pag-access sa API para sa device na ito.</translation>
 <translation id="1308548450293664112">Ginawa ko ang file na ito, grupo ng radio button, 1 ng 3</translation>
+<translation id="1310482092992808703">Igrupo ang mga tab</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="1311294419381837540">Nagka-cast ka ng tab. Puwede mong i-pause o ihinto ang pag-cast sa anumang oras.</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
@@ -2642,7 +2642,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2835547721736623118">Serbisyo ng pagkilala sa speech</translation>
 <translation id="2835761321523638096">Basahin at baguhin ang mga entry sa listahan ng babasahin.</translation>
 <translation id="2836112522909777958">Para ma-delete ang data, isara ang lahat ng Incognito window</translation>
-<translation id="2836232638504556905">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="2836269494620652131">Nag-crash</translation>
 <translation id="283669119850230892">Upang gamitin ang network na <ph name="NETWORK_ID" />, kumpletuhin muna ang iyong koneksyon sa Internet sa ibaba.</translation>
 <translation id="2838379631617906747">Nag-i-install</translation>
@@ -4792,7 +4791,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4405781821077215583">Paliitin o palakihin ang mga item sa iyong screen, kabilang ang text</translation>
 <translation id="4406308048672435032">Puwede mong gawing hindi aktibo ang tab na ito o mag-refresh para makita ulit ang buong listahan</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
-<translation id="4407039574263172582">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />mga tuntunin ng serbisyo<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="4408599188496843485">T&amp;ulong</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="4409697491990005945">Mga Margin</translation>
@@ -6130,7 +6128,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5398572795982417028">Lampas sa hangganan ang tinukoy na page, ang limitasyon ay <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Hindi pinapayagang maghanap o gumamit ng mga printer na naa-access ng device mo</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="5401851137404501592">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">I-download ang update gamit ang mobile data</translation>
 <translation id="5404740137318486384">Pumindot ng switch o key sa keyboard para italaga ito sa “<ph name="ACTION" />.”
@@ -8164,6 +8161,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6881845890692344060">Nag-log out ang iyong administrator. Ikaw na ang may kontrol.</translation>
 <translation id="6882210908253838664">Kung hindi gumagana ang isang site, puwede mong subukang bigyan ito ng pansamantalang pahintulot na gumamit ng third-party na cookies. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oops!  Hindi na-save ng system ang configuration ng device.</translation>
+<translation id="6883606786470492001">Pamahalaan ang iyong mga paksa ng ad at iba pang setting para limitahan ang puwedeng malaman ng mga site tungkol sa iyo para makapagpakita ang mga ito sa iyo ng mga naka-personalize na ad</translation>
 <translation id="6884474387073389421">Sigurado ka bang gusto mong i-delete ang napiling data sa pag-sign in?</translation>
 <translation id="6885122019363983153">Magkakatugma ang mga background ng desktop sa lahat ng device</translation>
 <translation id="6885771755599377173">Preview ng Impormasyon ng System</translation>

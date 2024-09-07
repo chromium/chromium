@@ -352,7 +352,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1238293488628890871">Changer de profil?</translation>
 <translation id="1239594683407221485">Explorer le contenu de l'appareil dans l'application Fichiers.</translation>
 <translation id="1239841552505950173">Lancer l'application</translation>
-<translation id="1240903469550363138">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez la <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
 <translation id="1241066500170667906">Sélectionner l'état des tests pour <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Plus de langues</translation>
 <translation id="1241381048229838873">Afficher tous les favoris</translation>
@@ -443,6 +442,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="1307559529304613120">Oups! Le système n'a pas réussi à stocker le jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="1308548450293664112">J'ai créé ce fichier, groupe de boutons radio, 1 sur 3</translation>
+<translation id="1310482092992808703">Grouper les onglets</translation>
 <translation id="131112695174432497">Les données qui touchent la personnalisation des annonces sont supprimées</translation>
 <translation id="1311294419381837540">Vous diffusez un onglet. Vous pouvez mettre en pause ou arrêter la diffusion à tout moment.</translation>
 <translation id="131188242279372879">Découvrez une protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
@@ -2631,7 +2631,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2835761321523638096">Lire et modifier des entrées dans la Liste de lecture</translation>
 <translation id="2836112522909777958">Pour supprimer les données, fermez toutes les fenêtres de navigation privée</translation>
-<translation id="2836232638504556905">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce site.</translation>
 <translation id="2836269494620652131">Plantage</translation>
 <translation id="283669119850230892">Pour utiliser le réseau <ph name="NETWORK_ID" />, terminez d'abord la connexion à Internet ci-dessous.</translation>
 <translation id="2838379631617906747">Installation en cours…</translation>
@@ -4781,7 +4780,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4405781821077215583">Ajustez la taille des éléments affichés à l'écran, y compris le texte, pour les rendre plus petits ou plus grands</translation>
 <translation id="4406308048672435032">Vous pouvez rendre cet onglet inactif ou actualiser la liste pour revoir la liste complète</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
-<translation id="4407039574263172582">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" /> de ce site.</translation>
 <translation id="4408599188496843485">Aid&amp;e</translation>
 <translation id="4409271659088619928">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="4409697491990005945">Marges</translation>
@@ -6117,7 +6115,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5398572795982417028">Référence de page hors limite, la limite est de <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Non autorisé à rechercher ou à utiliser des imprimantes accessibles sur votre appareil</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Télécharger des mises à jour en utilisant les données cellulaires</translation>
 <translation id="5404740137318486384">Appuyez sur un commutateur ou une touche du clavier pour lui attribuer l'action suivante : « <ph name="ACTION" /> »
@@ -8151,6 +8148,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6881845890692344060">Votre administrateur s'est déconnecté. Vous avez le contrôle maintenant.</translation>
 <translation id="6882210908253838664">Si un site ne fonctionne pas, vous pouvez essayer de lui donner l'autorisation temporaire d'utiliser des témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oups! Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
+<translation id="6883606786470492001">Gérez vos sujets d'annonces et d'autres paramètres pour limiter ce que les sites peuvent apprendre sur vous pour vous montrer des annonces personnalisées</translation>
 <translation id="6884474387073389421">Voulez-vous vraiment supprimer les données de connexion sélectionnées?</translation>
 <translation id="6885122019363983153">Les arrière-plans de bureau correspondent sur tous les appareils</translation>
 <translation id="6885771755599377173">Aperçu des données du système</translation>

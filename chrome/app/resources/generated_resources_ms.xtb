@@ -351,7 +351,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1238293488628890871">Tukar Profil?</translation>
 <translation id="1239594683407221485">Teroka kandungan peranti dalam apl Fail.</translation>
 <translation id="1239841552505950173">Lancarkan aplikasi</translation>
-<translation id="1240903469550363138">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />syarat perkhidmatan<ph name="END_LINK2" /> laman ini.</translation>
 <translation id="1241066500170667906">Pilih status percubaan untuk <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Lagi bahasa</translation>
 <translation id="1241381048229838873">Tunjukkan semua penanda halaman</translation>
@@ -442,6 +441,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="1307559529304613120">Op!  Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
 <translation id="1308548450293664112">Saya membuat fail ini, kumpulan butang radio, 1 daripada 3</translation>
+<translation id="1310482092992808703">Himpunkan tab.</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="1311294419381837540">Anda menghantar tab. Anda boleh menjeda atau menghentikan penghantaran pada bila-bila masa.</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
@@ -2641,7 +2641,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2835547721736623118">Perkhidmatan pengecaman pertuturan</translation>
 <translation id="2835761321523638096">Baca dan ubah masukan dalam senarai bacaan</translation>
 <translation id="2836112522909777958">Untuk memadamkan data, tutup semua tetingkap Inkognito</translation>
-<translation id="2836232638504556905">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />dasar privasi<ph name="END_LINK" /> laman ini.</translation>
 <translation id="2836269494620652131">Ranap</translation>
 <translation id="283669119850230892">Untuk menggunakan rangkaian <ph name="NETWORK_ID" />, mula-mula lengkapkan sambungan anda ke Internet di bawah.</translation>
 <translation id="2838379631617906747">Memasang</translation>
@@ -4791,7 +4790,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4405781821077215583">Kecilkan atau besarkan item pada skrin anda</translation>
 <translation id="4406308048672435032">Anda boleh menjadikan tab ini tidak aktif atau menyegarkan semula tab untuk melihat senarai penuh semula</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
-<translation id="4407039574263172582">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />syarat perkhidmatan<ph name="END_LINK" /> laman ini.</translation>
 <translation id="4408599188496843485">B&amp;antuan</translation>
 <translation id="4409271659088619928">Enjin carian anda ialah <ph name="DSE" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="4409697491990005945">Margin</translation>
@@ -6129,7 +6127,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5398572795982417028">Rujukan halaman di luar batasan, hadnya ialah <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Tidak dibenarkan mencari atau menggunakan pencetak yang boleh diakses oleh peranti anda</translation>
 <translation id="5400836586163650660">Kelabu</translation>
-<translation id="5401851137404501592">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Muat turun kemas kini menggunakan data mudah alih</translation>
 <translation id="5404740137318486384">Tekan suis atau kekunci papan kekunci untuk menetapkannya kepada “<ph name="ACTION" />.”
@@ -8161,6 +8158,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6881845890692344060">Pentadbir anda telah log keluar. Kini anda yang mengawal.</translation>
 <translation id="6882210908253838664">Jika laman tidak berfungsi, anda boleh cuba memberikan kebenaran sementara untuk menggunakan kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Op!  Sistem gagal menyimpan konfigurasi peranti.</translation>
+<translation id="6883606786470492001">Urus topik iklan anda dan tetapan lain untuk mengehadkan perkara yang boleh dipelajari oleh laman tentang anda untuk memaparkan iklan diperibadikan kepada anda</translation>
 <translation id="6884474387073389421">Adakah anda pasti mahu memadamkan data log masuk yang dipilih?</translation>
 <translation id="6885122019363983153">Latar desktop sepadan merentas peranti</translation>
 <translation id="6885771755599377173">Pratonton Maklumat Sistem</translation>

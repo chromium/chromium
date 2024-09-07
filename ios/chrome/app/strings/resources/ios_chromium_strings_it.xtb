@@ -71,6 +71,8 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. Potrebbero essere inclusi la cronologia e la compilazione automatica.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. Potrebbero essere inclusi la cronologia e la compilazione automatica.}}</translation>
+<translation id="3410395242749598859">Alcuni dati di Chromium non sono ancora stati salvati sull'account <ph name="EMAIL" />.
+Prova ad attendere qualche minuto prima di cambiare account. Se cambi account ora, questi dati verranno eliminati.</translation>
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="347967311580159871">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chromium, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La tua password non è stata condivisa. Controlla la connessione a internet e assicurati di aver eseguito l'accesso a Chromium. Quindi riprova.</translation>

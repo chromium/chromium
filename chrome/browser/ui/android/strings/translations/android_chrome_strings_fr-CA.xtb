@@ -160,7 +160,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site a envoyé de nombreuses notifications récemment}one{# site a envoyé de nombreuses notifications récemment}other{# sites ont envoyé de nombreuses notifications récemment}}</translation>
 <translation id="1749561566933687563">Synchronisez vos favoris</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
-<translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglet(s)</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1755203724116202818">Pour mesurer la performance d'une annonce, des types de données restreints sont partagés entre les sites, par exemple si vous avez effectué un achat après avoir visité un site.</translation>
 <translation id="1757620656501361327">Mise à jour du gestionnaire de mots de passe Google</translation>
@@ -1769,7 +1768,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>
 <translation id="9157212632995922070">Choisissez un compte pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Partager le contenu uniquement</translation>
-<translation id="9159716826369098114">Restaurez le groupe d'onglets de <ph name="TAB_COUNT" /> onglets en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="918419812064856259">Version bêta de Chrome</translation>
 <translation id="9190276265094487094">Vous aurez accès à votre historique sur tous vos appareils synchronisés pour reprendre le cours de vos activités</translation>

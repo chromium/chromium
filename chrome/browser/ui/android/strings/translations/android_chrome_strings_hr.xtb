@@ -160,7 +160,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Jedna web-lokacija nedavno je poslala mnogo obavijesti}one{# web-lokacija nedavno je poslala mnogo obavijesti}few{# web-lokacije nedavno su poslale mnogo obavijesti}other{# web-lokacija nedavno je poslalo mnogo obavijesti}}</translation>
 <translation id="1749561566933687563">Sinkronizirajte oznake</translation>
 <translation id="1750238553597293878">Nastavite upotrebljavati zaporke na svom Google računu</translation>
-<translation id="1750259112639922169">Grupa kartica – broj kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="1755203724116202818">Radi mjerenja izvedbe oglasa ograničene vrste podataka dijele se između web-lokacija, primjerice jeste li izvršili kupnju nakon posjeta web-lokaciji.</translation>
 <translation id="1757620656501361327">Ažuriranje Google upravitelja zaporki</translation>
@@ -1769,7 +1768,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
 <translation id="9157212632995922070">Odaberite račun da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Podijeli samo sadržaj</translation>
-<translation id="9159716826369098114">Vratite grupu od <ph name="TAB_COUNT" /> kartica kao novu pozadinsku grupu kartica.</translation>
 <translation id="9169507124922466868">Povijest navigacije je poluotvorena</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Vaša će povijest biti dostupna na svim vašim sinkroniziranim uređajima kako biste mogli nastaviti s onim što radite</translation>

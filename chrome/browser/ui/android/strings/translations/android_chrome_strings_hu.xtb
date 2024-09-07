@@ -160,7 +160,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Az utóbbi időben 1 webhely sok értesítést küldött}other{Az utóbbi időben # webhely sok értesítést küldött}}</translation>
 <translation id="1749561566933687563">Könyvjelzők szinkronizálása</translation>
 <translation id="1750238553597293878">Továbbra is használhatja a Google-fiókjában lévő jelszavakat</translation>
-<translation id="1750259112639922169">Lapcsoport – <ph name="TAB_COUNT" /> lap</translation>
 <translation id="17513872634828108">Megnyitott lapok</translation>
 <translation id="1755203724116202818">A hirdetések teljesítményének méréséhez a webhelyek korlátozott adattípusokat osztanak meg egymás között (például hogy Ön vásárolt-e egy adott webhely felkeresése után).</translation>
 <translation id="1757620656501361327">A Google Jelszókezelő frissítése</translation>
@@ -1769,7 +1768,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9148126808321036104">Jelentkezzen be újra</translation>
 <translation id="9157212632995922070">Válasszon fiókot a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatáshoz</translation>
 <translation id="9158770349521403363">Csak tartalom megosztása</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> lapból álló lapcsoport visszaállítása új háttérbeli lapcsoportként.</translation>
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
 <translation id="918419812064856259">Chrome Béta</translation>
 <translation id="9190276265094487094">Előzményeihez az összes szinkronizált eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta</translation>

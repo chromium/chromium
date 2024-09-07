@@ -160,7 +160,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 website har for nylig sendt mange notifikationer}one{# website har for nylig sendt mange notifikationer}other{# websites har for nylig sendt mange notifikationer}}</translation>
 <translation id="1749561566933687563">Synkroniser dine bogmærker</translation>
 <translation id="1750238553597293878">Fortsæt med at bruge adgangskoderne på din Google-konto</translation>
-<translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åbne faner</translation>
 <translation id="1755203724116202818">Med henblik på at måle en annonces effektivitet deles der begrænsede typer data mellem websites, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="1757620656501361327">Opdatering af Google Adgangs­kode­admin­istrator</translation>
@@ -1769,7 +1768,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9157212632995922070">Vælg en konto for at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
-<translation id="9159716826369098114">Gendan fanegruppen med <ph name="TAB_COUNT" /> faner som en ny fanegruppe i baggrunden.</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>

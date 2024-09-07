@@ -160,7 +160,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 lloc web ha enviat moltes notificacions recentment}other{# llocs web han enviat moltes notificacions recentment}}</translation>
 <translation id="1749561566933687563">Sincronitzeu les adreces d'interès</translation>
 <translation id="1750238553597293878">Continua utilitzant les contrasenyes al teu Compte de Google</translation>
-<translation id="1750259112639922169">Grup de pestanyes: <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
 <translation id="1755203724116202818">Per mesurar el rendiment d'un anunci, es comparteixen tipus de dades limitats entre llocs web, com ara si has fet una compra després de visitar un lloc web.</translation>
 <translation id="1757620656501361327">Actualització del gestor de contrasenyes de Google</translation>
@@ -1769,7 +1768,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9157212632995922070">Tria un compte per continuar a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Comparteix només el contingut</translation>
-<translation id="9159716826369098114">Restaura el grup de <ph name="TAB_COUNT" /> pestanyes com un nou grup de pestanyes en segon pla.</translation>
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Tindràs l'historial en tots els dispositius sincronitzats perquè puguis continuar el que estaves fent</translation>

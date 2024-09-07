@@ -160,7 +160,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sait saatis hiljuti palju märguandeid}other{# saiti saatis hiljuti palju märguandeid}}</translation>
 <translation id="1749561566933687563">Järjehoidjate sünkroonimine</translation>
 <translation id="1750238553597293878">Jätkake paroolide kasutamist Google'i kontol</translation>
-<translation id="1750259112639922169">Vahelehegrupp – <ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="17513872634828108">Avatud vahelehed</translation>
 <translation id="1755203724116202818">Reklaami toimivuse mõõtmiseks jagatakse saitide vahel piiratud andmetüüpe, näiteks kas sooritasite ostu pärast saidi külastamist.</translation>
 <translation id="1757620656501361327">Google'i paroolihalduri teade</translation>
@@ -1769,7 +1768,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9157212632995922070">Valige konto, et jätkata saidil <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Jagatakse vaid sisu</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> vahelehega vahelehegrupi taastamine uue taustal oleva vahelehegrupina.</translation>
 <translation id="9169507124922466868">Navigeerimisajalugu on pooleldi avatud</translation>
 <translation id="918419812064856259">Chrome’i beetaversioon</translation>
 <translation id="9190276265094487094">Teie ajalugu on saadaval kõigis sünkroonitud seadmetes, et saaksite pooleli jäänud toiminguid jätkata</translation>

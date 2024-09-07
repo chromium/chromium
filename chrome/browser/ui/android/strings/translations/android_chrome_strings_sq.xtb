@@ -160,7 +160,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sajt ka dërguar së fundi shumë njoftime}other{# sajte kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="1749561566933687563">Sinkronizo faqeshënuesit e tu</translation>
 <translation id="1750238553597293878">Vazhdo të përdorësh fjalëkalimet në "Llogarinë tënde të Google"</translation>
-<translation id="1750259112639922169">Grupi i skedave - <ph name="TAB_COUNT" /> skeda</translation>
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1755203724116202818">Për të matur performancën e një reklame, lloje të kufizuara të të dhënave ndahen mes sajteve, si p.sh. nëse ke bërë një blerje pas vizitës në një sajt.</translation>
 <translation id="1757620656501361327">Përditësim i "Menaxherit të fjalëkalimeve të Google"</translation>
@@ -1769,7 +1768,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9157212632995922070">Zgjidh një llogari për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Ndaj vetëm përmbajtjen</translation>
-<translation id="9159716826369098114">Restauro grupin e skedave me <ph name="TAB_COUNT" /> skeda si një grup të ri të skedave në sfond.</translation>
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Do të kesh historikun në të gjitha pajisjet e sinkronizuara, në mënyrë që të vazhdosh atë që po bëje</translation>

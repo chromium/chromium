@@ -160,7 +160,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 werf het onlangs baie kennisgewings gestuur}other{# werwe het onlangs baie kennisgewings gestuur}}</translation>
 <translation id="1749561566933687563">Sinkroniseer jou boekmerke</translation>
 <translation id="1750238553597293878">Hou aan om die wagwoorde in jou Google-rekening te gebruik</translation>
-<translation id="1750259112639922169">Oortjiegroep – <ph name="TAB_COUNT" /> oortjies</translation>
 <translation id="17513872634828108">Oop oortjies</translation>
 <translation id="1755203724116202818">Om die werkverrigting van ’n advertensie te meet, word beperkte soorte data tussen werwe gedeel, soos of jy ’n aankoop gedoen het nadat jy ’n werf besoek het.</translation>
 <translation id="1757620656501361327">Google Wagwoordbestuurder-opdatering</translation>
@@ -1769,7 +1768,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9148126808321036104">Meld weer aan …</translation>
 <translation id="9157212632995922070">Kies ’n rekening om op <ph name="SITE_ETLD_PLUS_ONE" /> voort te gaan</translation>
 <translation id="9158770349521403363">Deel net inhoud</translation>
-<translation id="9159716826369098114">Stel oortjiegroep van <ph name="TAB_COUNT" /> oortjies terug as ’n nuwe agtergrondoortjiegroep.</translation>
 <translation id="9169507124922466868">Navigasiegeskiedenis is half oopgemaak</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Jy sal jou geskiedenis op al jou gesinkroniseerde toestelle hê sodat jy kan voortgaan met dit waarmee jy besig was</translation>

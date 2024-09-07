@@ -160,7 +160,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site enviou muitas notificações recentemente}one{# site enviou muitas notificações recentemente}other{# sites enviaram muitas notificações recentemente}}</translation>
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
-<translation id="1750259112639922169">Grupo de guias: <ph name="TAB_COUNT" /> guias</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados entre os sites, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gerenciador de senhas do Google</translation>
@@ -793,7 +792,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4787736314074622408">Quer excluir o arquivo <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Saiba como o Chrome protege você</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
-<translation id="4807098396393229769">Nome impresso no cartão</translation>
+<translation id="4807098396393229769">Nome no cartão</translation>
 <translation id="480990236307250886">Abrir a página inicial</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4822710610088666676">Grupo de guias <ph name="TAB_GROUP_TITLE" /> fechado e salvo</translation>
@@ -1314,6 +1313,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7111394291981742152">O Chrome oferece mais controle sobre os anúncios mostrados e limita o que os sites podem saber sobre você quando mostram anúncios personalizados</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para # site}other{Permissões revisadas para # sites}}</translation>
 <translation id="7138678301420049075">Outro</translation>
+<translation id="7139479418357139965">Entre em contato com o remetente para pedir um novo link.</translation>
 <translation id="7140829094791862589">Classificar por ordem manual</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem importantes para você:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Confira mais informações<ph name="END_LINK" /> do <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1476,6 +1476,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7824665136384946951">Sua organização desativou o recurso Navegação segura</translation>
 <translation id="78270725016672455">O computador quer registrar este dispositivo para fazer login em um site</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
+<translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>
 <translation id="784934925303690534">Período</translation>
 <translation id="7851858861565204677">Outros dispositivos</translation>
@@ -1516,6 +1517,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">Agora, importe as senhas</translation>
 <translation id="8015452622527143194">Retornar tudo na página para o tamanho padrão</translation>
+<translation id="8017431260099661477">Não foi possível abrir o link do convite</translation>
 <translation id="8026238112629815203">Mudamos a forma como as senhas são salvas neste dispositivo</translation>
 <translation id="8027863900915310177">Escolha um local para fazer o download</translation>
 <translation id="8030852056903932865">Aprovar</translation>
@@ -1767,7 +1769,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9157212632995922070">Escolha uma conta para continuar no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
-<translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> guias como um novo grupo de guias em segundo plano.</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Seu histórico vai ser mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>

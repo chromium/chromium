@@ -160,7 +160,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Un site a trimis recent multe notificări}few{# site-uri au trimis recent multe notificări}other{# de site-uri au trimis recent multe notificări}}</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
-<translation id="1750259112639922169">Grup de file – <ph name="TAB_COUNT" /> file</translation>
 <translation id="17513872634828108">File deschise</translation>
 <translation id="1755203724116202818">Pentru a măsura performanța unui anunț, sunt trimise tipuri de date limitate între site-uri, de exemplu, dacă ai făcut o achiziție după ce ai accesat un site.</translation>
 <translation id="1757620656501361327">Informare despre Managerul de parole Google</translation>
@@ -1769,7 +1768,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9157212632995922070">Alege un cont pentru a continua la <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
-<translation id="9159716826369098114">Restabilește grupul de <ph name="TAB_COUNT" /> file ca pe un nou grup de file din fundal.</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai.</translation>

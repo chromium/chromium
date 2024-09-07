@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">Sablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 eszköz van csatlakoztatva a következő hotspothoz: <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">A nagyítási szint alaphelyzetbe állítása</translation>
-<translation id="3463151196028058330">Arcretusálás</translation>
 <translation id="3465223694362104965">Az utolsó bejelentkezése óta másik billentyűzetet csatlakoztattak ehhez az eszközhöz. Mielőtt elkezdené használni, győződjön meg róla, hogy biztonságos.</translation>
 <translation id="3465356146291925647">A rendszergazdája kezeli</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, majd <ph name="KEY_TWO" /> vagy <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
-<translation id="518847040357731612">Stúdiószintű látvány beállítása</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
@@ -1533,7 +1531,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6185696379715117369">Lapozás felfelé</translation>
 <translation id="619335566042889110">Töltés a teljes akkumulátorszint eléréséig most</translation>
 <translation id="6193431488227440296">Fejlesztői</translation>
-<translation id="6196214354688969799">Stúdiószintű látvány</translation>
 <translation id="6199775032047436064">A jelenlegi oldal újratöltése</translation>
 <translation id="6200515304866777730">Nem támogatja az alkalmazás</translation>
 <translation id="6210042900243040400">A(z) <ph name="EMAIL" /> fiókhoz korábban mentett <ph name="NAME" /> csatlakoztatása</translation>

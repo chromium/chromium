@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">範本，<ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">有 1 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="346243998268439747">重設縮放等級</translation>
-<translation id="3463151196028058330">面部修飾</translation>
 <translation id="3465223694362104965">自您上次登入以來，有另一個鍵盤連接到此裝置。請在使用前確定您信任此鍵盤。</translation>
 <translation id="3465356146291925647">由管理員管理</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然後按<ph name="KEY_TWO" />或者<ph name="KEY_THREE" /></translation>
@@ -1215,7 +1214,6 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
 <translation id="5187627942836026988">顯示熱點詳情。管理員已封鎖熱點。</translation>
-<translation id="518847040357731612">製作室影效偏好設定</translation>
 <translation id="5197255632782567636">互聯網</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">結合「<ph name="MOVED_APP_NAME" />」同「<ph name="IN_PLACE_APP" />」就可以建立新資料夾。</translation>
@@ -1531,7 +1529,6 @@
 <translation id="6185696379715117369">向上鍵</translation>
 <translation id="619335566042889110">現已完全充滿</translation>
 <translation id="6193431488227440296">開發發佈途徑</translation>
-<translation id="6196214354688969799">製作室影效</translation>
 <translation id="6199775032047436064">重新載入目前網頁</translation>
 <translation id="6200515304866777730">應用程式不支援</translation>
 <translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>

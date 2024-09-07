@@ -352,7 +352,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1238293488628890871">Skipta um prófíl?</translation>
 <translation id="1239594683407221485">Skoða efni tækisins í skráaforritinu.</translation>
 <translation id="1239841552505950173">Ræsa forrit</translation>
-<translation id="1240903469550363138">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />þjónustuskilmála<ph name="END_LINK2" /> vefsvæðisins.</translation>
 <translation id="1241066500170667906">Velja tilraunastöðu fyrir <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Fleiri tungumál</translation>
 <translation id="1241381048229838873">Sýna öll bókamerki</translation>
@@ -443,6 +442,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Ekki spyrja aftur</translation>
 <translation id="1307559529304613120">Úbbs! Kerfinu tókst ekki að vista langtímaaðgangslykil forritaskila fyrir þetta tæki.</translation>
 <translation id="1308548450293664112">Ég bjó þessa skrá til, hringhnappahópur eitt af þremur</translation>
+<translation id="1310482092992808703">Sameina flipa</translation>
 <translation id="131112695174432497">Gögnum sem hafa áhrif á sérsniðnar auglýsingar er eytt</translation>
 <translation id="1311294419381837540">Þú ert að varpa flipa. Þú getur gert hlé á eða hætt að varpa hvenær sem er.</translation>
 <translation id="131188242279372879">Kynntu þér hvernig aukin vörn veitir þér hámarksöryggi Chrome þegar þú sækir efni</translation>
@@ -2642,7 +2642,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2835547721736623118">Raddgreiningarþjónusta</translation>
 <translation id="2835761321523638096">Lesa og breyta færslum á leslistanum</translation>
 <translation id="2836112522909777958">Lokaðu öllum huliðsgluggum til að eyða gögnum</translation>
-<translation id="2836232638504556905">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> vefsvæðisins.</translation>
 <translation id="2836269494620652131">Hrun</translation>
 <translation id="283669119850230892">Til að nota netið <ph name="NETWORK_ID" /> þarftu fyrst að ljúka við tenginguna við internetið hér fyrir neðan.</translation>
 <translation id="2838379631617906747">Setur upp</translation>
@@ -4792,7 +4791,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4405781821077215583">Minnkaðu eða stækkaðu atriði á skjánum, þar á meðal texta</translation>
 <translation id="4406308048672435032">Þú getur gert þennan flipa óvirkan eða endurnýjað til að sjá heildarlistann á nýjan leik</translation>
 <translation id="4406883609789734330">Skjátextar í rauntíma</translation>
-<translation id="4407039574263172582">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK" />þjónustuskilmála<ph name="END_LINK" /> þessa vefsvæðis.</translation>
 <translation id="4408599188496843485">Hjálp</translation>
 <translation id="4409271659088619928">Leitarvélin þín er <ph name="DSE" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="4409697491990005945">Spássíur</translation>
@@ -6130,7 +6128,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5398572795982417028">Síðutilvísun er ekki innan réttra marka, hámarkið er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Ekki heimilt að leita að eða nota prentara sem tækið þitt hefur aðgang að</translation>
 <translation id="5400836586163650660">Grár</translation>
-<translation id="5401851137404501592">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði.</translation>
 <translation id="5402367795255837559">Blindraletur</translation>
 <translation id="5402815541704507626">Sækja uppfærslu með farsímagögnum</translation>
 <translation id="5404740137318486384">Ýttu á rofa eða lyklaborðshnapp til að úthluta rofa/hnappi á „<ph name="ACTION" />“.
@@ -8164,6 +8161,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6881845890692344060">Stjórnandinn var skráður út. Nú ert þú við stjórnvölinn.</translation>
 <translation id="6882210908253838664">Ef vefsvæði virkar ekki geturðu prófað að veita því tímabundna heimild til að nota fótspor þriðju aðila. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Úbbs!  Kerfið gat ekki vistað stillingu tækisins.</translation>
+<translation id="6883606786470492001">Stjórnaðu umfjöllunarefnum auglýsinganna þinna og öðrum stillingum til að takmarka það sem vefsvæði geta lært um þig til að birta þér sérsniðnar auglýsingar</translation>
 <translation id="6884474387073389421">Viltu örugglega eyða völdum innskráningargögnum?</translation>
 <translation id="6885122019363983153">Bakgrunnur skjáborðs er sá sami milli tækja</translation>
 <translation id="6885771755599377173">Forskoðun kerfisupplýsinga</translation>

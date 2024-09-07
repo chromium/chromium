@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 ጣቢያ በቅርቡ ብዙ ማሳወቂያዎችን ልኳል}one{# ጣቢያ በቅርቡ ብዙ ማሳወቂያዎችን ልኳል}other{# ጣቢያዎች በቅርቡ ብዙ ማሳወቂያዎችን ልከዋል}}</translation>
 <translation id="1749561566933687563">የእርስዎን ዕልባቶች ያስምሩ</translation>
 <translation id="1750238553597293878">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን መጠቀምዎን ይቀጥሉ</translation>
-<translation id="1750259112639922169">የትር ቡድን - <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="17513872634828108">ትሮችን ክፈት</translation>
 <translation id="1755203724116202818">የማስታወቂያ አፈጻጸምን ለመለካት ውስን የውሂብ ዓይነቶች በጣቢያዎች መካከል ይጋራሉ፣ ለምሳሌ አንድን ጣቢያ ከጎበኙ በኋላ ግዢ ከፈጸሙ።</translation>
 <translation id="1757620656501361327">የGoogle የይለፍ ቃል አስተዳዳሪ ዝማኔ</translation>
@@ -1769,7 +1768,6 @@
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል መለያ ይምረጡ</translation>
 <translation id="9158770349521403363">ይዘትን ብቻ ያጋሩ</translation>
-<translation id="9159716826369098114">የ<ph name="TAB_COUNT" /> ትሮችን የትር ቡድን እንደ አዲስ የዳራ ትር ቡድን ወደነበረበት መልስ።</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
 <translation id="918419812064856259">Chrome ቅድመ-ይሁንታ</translation>
 <translation id="9190276265094487094">ሲያደርጉት የነበረውን እንገር መቀጠል እንዲችሉ ታሪክዎ በሁሉም የሰመሩ መሣሪያዎችዎ ላይ ይኖረዎታል</translation>

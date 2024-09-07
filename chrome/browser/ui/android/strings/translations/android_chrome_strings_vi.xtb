@@ -160,7 +160,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Gần đây, có 1 trang web đã gửi nhiều thông báo}other{Gần đây, có # trang web đã gửi nhiều thông báo}}</translation>
 <translation id="1749561566933687563">Đồng bộ hóa dấu trang của bạn</translation>
 <translation id="1750238553597293878">Tiếp tục sử dụng mật khẩu trong Tài khoản Google</translation>
-<translation id="1750259112639922169">Nhóm thẻ – <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1755203724116202818">Để đo lường hiệu suất của quảng cáo, chỉ có một số loại dữ liệu được chia sẻ giữa các trang web, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không.</translation>
 <translation id="1757620656501361327">Thông tin cập nhật về Trình quản lý mật khẩu của Google</translation>
@@ -1769,7 +1768,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9157212632995922070">Chọn một tài khoản để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
-<translation id="9159716826369098114">Khôi phục nhóm <ph name="TAB_COUNT" /> thẻ dưới dạng một nhóm thẻ nền mới.</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Bạn sẽ thấy nhật ký duyệt web trên tất cả những thiết bị đã đồng bộ hoá, nhờ vậy bạn có thể tiếp tục những việc bạn đang làm</translation>

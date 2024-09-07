@@ -351,7 +351,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1238293488628890871">Vill du byta profil?</translation>
 <translation id="1239594683407221485">Utforska innehållet på den här enheten i appen Filer.</translation>
 <translation id="1239841552505950173">Starta app</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress, din adress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />användarvillkor<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Välj experimentstatus för <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Fler språk</translation>
 <translation id="1241381048229838873">Visa alla bokmärken</translation>
@@ -442,6 +441,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Fråga mig inte igen</translation>
 <translation id="1307559529304613120">Hoppsan! Det gick inte att lagra någon långsiktig API-åtkomsttoken för den här enheten.</translation>
 <translation id="1308548450293664112">Jag har skapat den här filen, alternativknappsgrupp, 1 av 3</translation>
+<translation id="1310482092992808703">Gruppera flikar</translation>
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
 <translation id="1311294419381837540">Du castar en flik. Du kan pausa eller sluta casta när du vill.</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
@@ -2641,7 +2641,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2835547721736623118">Tjänst för taligenkänning</translation>
 <translation id="2835761321523638096">Läsa och ändra poster i läslistan</translation>
 <translation id="2836112522909777958">Stäng alla inkognitofönster för att radera data</translation>
-<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress, din adress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Krasch</translation>
 <translation id="283669119850230892">För att kunna använda nätverket <ph name="NETWORK_ID" /> måste du först ansluta till Internet nedan.</translation>
 <translation id="2838379631617906747">Installerar</translation>
@@ -4791,7 +4790,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4405781821077215583">Gör objekt på skärmen, bland annat text, mindre eller större</translation>
 <translation id="4406308048672435032">Du kan inaktivera den här fliken eller uppdatera för att se hela listan igen</translation>
 <translation id="4406883609789734330">Live Caption</translation>
-<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jälp</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4409697491990005945">Marginaler</translation>
@@ -6129,7 +6127,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5398572795982417028">Sidreferensen faller utanför intervallet. Gränsen är <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="5400196580536813396">Tillåts inte att söka efter eller använda skrivare som är tillgängliga för din enhet</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter.</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
 <translation id="5402815541704507626">Ladda ned uppdateringen via mobildata</translation>
 <translation id="5404740137318486384">Tryck på en brytare eller en tangent för att tilldela den åtgärden <ph name="ACTION" />.
@@ -8161,6 +8158,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6881845890692344060">Administratören har loggat ut. Du har återfått kontrollen.</translation>
 <translation id="6882210908253838664">Om en webbplats inte fungerar kan du testa att ge den tillfällig behörighet att använda tredjepartscookies. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Det gick inte att spara enhetskonfigurationen.</translation>
+<translation id="6883606786470492001">Hantera dina annonsämnen och andra inställningar för att begränsa vilken information webbplatser kan få om dig när de visar anpassade annonser</translation>
 <translation id="6884474387073389421">Vill du radera de valda inloggningsuppgifterna?</translation>
 <translation id="6885122019363983153">Skrivbordsbakgrunder synkroniseras mellan enheter</translation>
 <translation id="6885771755599377173">Förhandsgranska systeminformation</translation>

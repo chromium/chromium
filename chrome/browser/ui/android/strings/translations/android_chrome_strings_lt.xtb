@@ -160,7 +160,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Viena svetainė neseniai išsiuntė daug pranešimų}one{# svetainė neseniai išsiuntė daug pranešimų}few{# svetainės neseniai išsiuntė daug pranešimų}many{# svetainės neseniai išsiuntė daug pranešimų}other{# svetainių neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
-<translation id="1750259112639922169">Skirtukų grupė – <ph name="TAB_COUNT" /> skirtuk.</translation>
 <translation id="17513872634828108">Atidaryti skirtukai</translation>
 <translation id="1755203724116202818">Siekiant įvertinti skelbimo našumą, tarp svetainių bendrinami tam tikrų tipų duomenys, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="1757620656501361327">„Google“ slaptažodžių tvarkyklės naujinys</translation>
@@ -1769,7 +1768,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>
 <translation id="9157212632995922070">Pasirinkite paskyrą, kad pereitumėte prie „<ph name="SITE_ETLD_PLUS_ONE" />“</translation>
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
-<translation id="9159716826369098114">Atkurkite skirtukų grupę, kurioje yra tiek skirtukų: <ph name="TAB_COUNT" />, kaip naują foninę skirtukų grupę.</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>
 <translation id="918419812064856259">„Chrome“ beta versija</translation>
 <translation id="9190276265094487094">Istorija bus rodoma visuose sinchronizuojamuose įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>

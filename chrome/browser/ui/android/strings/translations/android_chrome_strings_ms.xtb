@@ -160,7 +160,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 laman menghantar banyak pemberitahuan baru-baru ini}other{# laman menghantar banyak pemberitahuan baru-baru ini}}</translation>
 <translation id="1749561566933687563">Segerakkan penanda halaman anda</translation>
 <translation id="1750238553597293878">Kekal menggunakan kata laluan dalam Google Account anda</translation>
-<translation id="1750259112639922169">Kumpulan tab - <ph name="TAB_COUNT" /> tab</translation>
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1755203724116202818">Untuk mengukur prestasi iklan, jenis data yang terhad dikongsi antara laman, seperti sama ada anda membuat pembelian atau tidak selepas melawat laman.</translation>
 <translation id="1757620656501361327">Kemaskinian Google Password Manager</translation>
@@ -1769,7 +1768,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9157212632995922070">Pilih akaun untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Kongsi kandungan sahaja</translation>
-<translation id="9159716826369098114">Pulihkan kumpulan tab <ph name="TAB_COUNT" /> tab sebagai kumpulan tab latar baharu.</translation>
 <translation id="9169507124922466868">Sejarah navigasi separa terbuka</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Sejarah anda boleh didapati pada semua peranti tersegerak anda supaya anda boleh meneruskan perkara yang sedang anda lakukan</translation>

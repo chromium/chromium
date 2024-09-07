@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 web nedávno odoslal veľa upozornení}few{# weby nedávno odoslali veľa upozornení}many{# sites recently sent a lot of notifications}other{# webov nedávno odoslalo veľa upozornení}}</translation>
 <translation id="1749561566933687563">Synchronizujte svoje záložky</translation>
 <translation id="1750238553597293878">Naďalej používajte heslá vo svojom účte Google</translation>
-<translation id="1750259112639922169">Skupina kariet – počet kariet: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otvorené karty</translation>
 <translation id="1755203724116202818">Medzi webmi sa zdieľajú obmedzené typy údajov na meranie výkonnosti reklamy, napríklad či ste si po prejdení na nejaký web niečo kúpili.</translation>
 <translation id="1757620656501361327">Aktualita týkajúce sa Správcu hesiel Google</translation>
@@ -1769,7 +1768,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9157212632995922070">Vyberte účet, pomocou ktorého chcete pokračovať na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Zdieľať iba obsah</translation>
-<translation id="9159716826369098114">Obnovte skupinu kariet s <ph name="TAB_COUNT" /> kartami ako novú skupinu kariet na pozadí.</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Históriu budete mať vo všetkých synchronizovaných zariadeniach, takže budete môcť pokračovať v tom, čo ste robili</translation>

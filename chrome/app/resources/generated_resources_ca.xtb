@@ -351,7 +351,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1238293488628890871">Vols canviar de perfil?</translation>
 <translation id="1239594683407221485">Explora el contingut del dispositiu a l'aplicació Fitxers.</translation>
 <translation id="1239841552505950173">Inicia l'aplicació</translation>
-<translation id="1240903469550363138">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei<ph name="END_LINK2" /> d'aquest lloc web.</translation>
 <translation id="1241066500170667906">Selecciona l'estat de l'experiment per a <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Més idiomes</translation>
 <translation id="1241381048229838873">Mostra totes les adreces d'interès</translation>
@@ -442,6 +441,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1307431692088049276">No m'ho tornis a preguntar</translation>
 <translation id="1307559529304613120">El sistema no ha pogut emmagatzemar un testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
 <translation id="1308548450293664112">He creat aquest fitxer, grup de botons d'opció, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupa les pestanyes</translation>
 <translation id="131112695174432497">Se suprimiran les dades que afecten la personalització d'anuncis</translation>
 <translation id="1311294419381837540">Estàs emetent una pestanya. Pots posar en pausa l'emissió o aturar-la en qualsevol moment.</translation>
 <translation id="131188242279372879">Descobreix la protecció millorada per obtenir el màxim nivell de seguretat de Chrome per a les baixades</translation>
@@ -2628,7 +2628,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2835547721736623118">Servei de reconeixement de parla</translation>
 <translation id="2835761321523638096">Llegir i canviar les entrades de la llista de lectura</translation>
 <translation id="2836112522909777958">Per suprimir les dades, tanca totes les finestres d'incògnit</translation>
-<translation id="2836232638504556905">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> del lloc web.</translation>
 <translation id="2836269494620652131">Bloqueig</translation>
 <translation id="283669119850230892">Per fer servir la xarxa <ph name="NETWORK_ID" />, primer cal establir la connexió a Internet a continuació.</translation>
 <translation id="2838379631617906747">S'està instal·lant</translation>
@@ -4775,7 +4774,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4405781821077215583">Amplia o redueix els elements de la pantalla, inclòs el text</translation>
 <translation id="4406308048672435032">Pots desactivar aquesta pestanya o actualitzar per tornar a veure la llista completa</translation>
 <translation id="4406883609789734330">Subtítols instantanis</translation>
-<translation id="4407039574263172582">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" /> d'aquest lloc web.</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
 <translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="4409697491990005945">Marges</translation>
@@ -6112,7 +6110,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5398572795982417028">La pàgina indicada no respecta el límit de <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Sense permís per cercar o utilitzar les impressores a què el dispositiu pot accedir</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Baixa l'actualització utilitzant dades mòbils</translation>
 <translation id="5404740137318486384">Prem un interruptor o una tecla del teclat per assignar-los a <ph name="ACTION" />.
@@ -8142,6 +8139,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6881845890692344060">L'administrador ha tancat la sessió. Ara tens el control.</translation>
 <translation id="6882210908253838664">Si un lloc web no funciona, pots provar de donar-li permís temporal per utilitzar galetes de tercers. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">El sistema no ha pogut desar la configuració del dispositiu.</translation>
+<translation id="6883606786470492001">Gestiona els temes d'anuncis i altres opcions de configuració per limitar la informació que els llocs web poden obtenir sobre tu a fi de mostrar-te anuncis personalitzats</translation>
 <translation id="6884474387073389421">Confirmes que vols suprimir les dades d'inici de sessió?</translation>
 <translation id="6885122019363983153">Els fons d'escriptori coincideixen en tots els dispositius</translation>
 <translation id="6885771755599377173">Previsualització de la informació del sistema</translation>

@@ -352,7 +352,6 @@
 <translation id="1238293488628890871">પ્રોફાઇલ સ્વિચ કરીએ?</translation>
 <translation id="1239594683407221485">Files ઍપમાં ડિવાઇસના કન્ટેન્ટ વિશે શોધખોળ કરો.</translation>
 <translation id="1239841552505950173">ઍપ્લિકેશન લૉન્ચ કરો</translation>
-<translation id="1240903469550363138">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> માટે પ્રયોગની સ્થિતિ પસંદ કરો</translation>
 <translation id="124116460088058876">વધુ ભાષાઓ</translation>
 <translation id="1241381048229838873">બધા બુકમાર્ક્સ બતાવો</translation>
@@ -443,6 +442,7 @@
 <translation id="1307431692088049276">મને ફરીથી પૂછશો નહીં</translation>
 <translation id="1307559529304613120">અરેરે! સિસ્ટમ આ ડિવાઇસ માટે એક લાંબા ગાળાનું API ઍક્સેસ ટોકન સ્ટોર કરવામાં નિષ્ફળ થઈ.</translation>
 <translation id="1308548450293664112">મેં આ ફાઇલ બનાવી, રેડિયો બટન ગ્રૂપ, 3માંથી 1</translation>
+<translation id="1310482092992808703">ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="131112695174432497">રુચિ મુજબ જાહેરાતની સુવિધાને અસર કરે એવા ડેટાને ડિલીટ કરવામાં આવે છે</translation>
 <translation id="1311294419381837540">તમે ટૅબને કાસ્ટ કરી રહ્યા છો. તમે કોઈપણ સમયે કાસ્ટ કરવાનું થોભાવી કે રોકી શકો છો.</translation>
 <translation id="131188242279372879">ડાઉનલોડ કરેલી વસ્તુઓ માટે Chromeની સુરક્ષાનું સૌથી ઉચ્ચ લેવલ મેળવવા, વધારેલું સંરક્ષણ શોધો</translation>
@@ -2626,7 +2626,6 @@
 <translation id="2835547721736623118">વાણી ઓળખ સેવા</translation>
 <translation id="2835761321523638096">વાંચન સૂચિમાં એન્ટ્રી વાંચો અને તેમને બદલો</translation>
 <translation id="2836112522909777958">ડેટા ડિલીટ કરવા માટે, બધી છૂપી વિન્ડો બંધ કરો</translation>
-<translation id="2836232638504556905">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ.</translation>
 <translation id="2836269494620652131">ક્રૅશ</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> નો નેટવર્ક ઉપયોગ કરવા માટે, પહેલાં નીચે ઇન્ટરનેટથી તમારા કનેક્શનને પૂર્ણ કરો.</translation>
 <translation id="2838379631617906747">ઇન્સ્ટોલ કરી રહ્યું છે</translation>
@@ -4776,7 +4775,6 @@
 <translation id="4405781821077215583">તમારી સ્ક્રીન પર ટેક્સ્ટ સહિત બધી આઇટમને નાની અથવા મોટી કરો</translation>
 <translation id="4406308048672435032">સંપૂર્ણ સૂચિ ફરીથી જોવા માટે, તમે આ ટૅબને નિષ્ક્રિય કે રિફ્રેશ કરી શકો છો</translation>
 <translation id="4406883609789734330">લાઇવ કૅપ્શન</translation>
-<translation id="4407039574263172582">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> જુઓ.</translation>
 <translation id="4408599188496843485">સ&amp;હાય</translation>
 <translation id="4409271659088619928">તમારું શોધ એન્જિન <ph name="DSE" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="4409697491990005945">હાંસિયા</translation>
@@ -6114,7 +6112,6 @@
 <translation id="5398572795982417028">મર્યાદાની બહારનો પેજ રેફરન્સ, મર્યાદા <ph name="MAXIMUM_PAGE" /> છે</translation>
 <translation id="5400196580536813396">તમારા ડિવાઇસ માટે ઍક્સેસિબલ હોય તેવા પ્રિન્ટર શોધવાની અથવા તેનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
-<translation id="5401851137404501592">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે.</translation>
 <translation id="5402367795255837559">બ્રેઇલ</translation>
 <translation id="5402815541704507626">મોબાઇલ ડેટાનો ઉપયોગ કરીને અપડેટ ડાઉનલોડ કરો</translation>
 <translation id="5404740137318486384">“<ph name="ACTION" />”ને સોંપણી કરવા માટે, કોઈ સ્વિચ કે કીબોર્ડની કી દબાવો.
@@ -8150,6 +8147,7 @@ USB ડિવાઇસ</translation>
 <translation id="6881845890692344060">તમારા ઍડમિનિસ્ટ્રેટરે લૉગ આઉટ કર્યું છે. હવે તમારી પાસે નિયંત્રણ છે.</translation>
 <translation id="6882210908253838664">જો કોઈ સાઇટ કાર્ય કરતી ન હોય, તો તમે તેને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની પરવાનગી હંગામી રીતે આપવાનું અજમાવી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">અરેરે! ડિવાઇસ ગોઠવણી સાચવવામાં સિસ્ટમ નિષ્ફળ ગઈ.</translation>
+<translation id="6883606786470492001">તમને મનગમતી બનાવેલી જાહેરાતો બતાવવા માટે સાઇટ તમારા વિશે શું જાણી શકે તે મર્યાદિત કરવા માટે, તમારા જાહેરાતના વિષયો અને અન્ય સેટિંગ મેનેજ કરો</translation>
 <translation id="6884474387073389421">શું તમે ખરેખર પસંદ કરેલો સાઇન-ઇન ડેટા ડિલીટ કરવા માગો છો?</translation>
 <translation id="6885122019363983153">ડેસ્કટૉપ બૅકગ્રાઉન્ડ બધા ડિવાઇસ પર મેળ ખાય છે</translation>
 <translation id="6885771755599377173">સિસ્ટમ માહિતી પ્રીવ્યૂ</translation>

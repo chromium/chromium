@@ -689,7 +689,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Predloga, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 naprava je povezana z dostopno točko naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Ponastavitev povečave/pomanjšave</translation>
-<translation id="3463151196028058330">Retuširanje obraza</translation>
 <translation id="3465223694362104965">Odkar ste se nazadnje prijavili, se je s to napravo povezala druga tipkovnica. Pred uporabo te tipkovnice se prepričajte, da ji zaupate.</translation>
 <translation id="3465356146291925647">Upravlja ga vaš skrbnik</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, nato <ph name="KEY_TWO" /> ali <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato prit
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5176318573511391780">Snemanje delnega zaslona</translation>
 <translation id="5187627942836026988">Prikaz podrobnosti dostopne točke. Dostopno točko je blokiral skrbnik.</translation>
-<translation id="518847040357731612">Nastavitev studijskega videza</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, dogodki (<ph name="NUMBER" />)</translation>
 <translation id="5198715732953550718">Zaradi ustvarjanja nove mape je bila aplikacija <ph name="MOVED_APP_NAME" /> združena z aplikacijo <ph name="IN_PLACE_APP" />.</translation>
@@ -1532,7 +1530,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6185696379715117369">Stran gor</translation>
 <translation id="619335566042889110">Napolni v celoti</translation>
 <translation id="6193431488227440296">Za razvijalce</translation>
-<translation id="6196214354688969799">Studijski videz</translation>
 <translation id="6199775032047436064">Znova naloži trenutno stran</translation>
 <translation id="6200515304866777730">Aplikacija ne podpira</translation>
 <translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>

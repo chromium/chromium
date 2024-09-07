@@ -353,7 +353,6 @@
 <translation id="1238293488628890871">לעבור לפרופיל אחר?</translation>
 <translation id="1239594683407221485">‏באפליקציה Files אפשר לעיין בתוכן של המכשיר.</translation>
 <translation id="1239841552505950173">הפעלת האפליקציה</translation>
-<translation id="1240903469550363138">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישורים הבאים ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> וב<ph name="BEGIN_LINK2" />תנאים וההגבלות<ph name="END_LINK2" /> של האתר הזה.</translation>
 <translation id="1241066500170667906">בחירת מצב הניסוי של <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">שפות נוספות</translation>
 <translation id="1241381048229838873">הצג את כל הסימניות</translation>
@@ -444,6 +443,7 @@
 <translation id="1307431692088049276">אין צורך לשאול אותי שוב</translation>
 <translation id="1307559529304613120">‏אופס! המערכת לא הצליחה לאחסן את טוקן הגישה לטווח ארוך אל ממשק ה-API עבור המכשיר הזה.</translation>
 <translation id="1308548450293664112">יצרתי את הקובץ הזה, קבוצת לחצני בחירה, 1 מתוך 3</translation>
+<translation id="1310482092992808703">קיבוץ כרטיסיות</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
 <translation id="1311294419381837540">‏Cast של כרטיסייה מופעל. אפשר להשהות או להפסיק אותו בכל שלב.</translation>
 <translation id="131188242279372879">‏כדאי להכיר את ההגנה המשופרת כדי ליהנות מרמת האבטחה הגבוהה ביותר ב-Chrome להורדות</translation>
@@ -2640,7 +2640,6 @@
 <translation id="2835547721736623118">שירות של זיהוי דיבור</translation>
 <translation id="2835761321523638096">קריאה ושינוי של פריטים ברשימת הקריאה</translation>
 <translation id="2836112522909777958">כדי למחוק נתונים, צריך לצאת מכל החלונות הפרטיים</translation>
-<translation id="2836232638504556905">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. <ph name="BEGIN_LINK" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="2836269494620652131">קריסה</translation>
 <translation id="283669119850230892">כדי להשתמש ב-<ph name="NETWORK_ID" /> של הרשת, יש להשלים קודם את ההתחברות לאינטרנט, למטה.</translation>
 <translation id="2838379631617906747">בהתקנה</translation>
@@ -4790,7 +4789,6 @@
 <translation id="4405781821077215583">הגדלה או הקטנה של פריטים במסך, כולל טקסט</translation>
 <translation id="4406308048672435032">אפשר להשבית את הכרטיסייה הזו או לרענן אותה כדי לראות שוב את הרשימה המלאה</translation>
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
-<translation id="4407039574263172582">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך. <ph name="BEGIN_LINK" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="4408599188496843485">ע&amp;זרה</translation>
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4409697491990005945">שוליים</translation>
@@ -6129,7 +6127,6 @@
 <translation id="5398572795982417028">התייחסות לדף מחוץ לטווח, המגבלה היא <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">אין הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן או להשתמש בהן</translation>
 <translation id="5400836586163650660">אפור</translation>
-<translation id="5401851137404501592">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך.</translation>
 <translation id="5402367795255837559">ברייל</translation>
 <translation id="5402815541704507626">הורדת עדכון דרך חבילת גלישה</translation>
 <translation id="5404740137318486384">צריך להקיש על מתג או מקש במקלדת כדי להקצות אותם לפעולה “<ph name="ACTION" />.”
@@ -8165,6 +8162,7 @@
 <translation id="6881845890692344060">האדמין שלך התנתק. עכשיו השליטה בידיים שלך.</translation>
 <translation id="6882210908253838664">‏אם אתר מסוים לא פועל, אפשר לתת לו הרשאה זמנית לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">אופס! המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
+<translation id="6883606786470492001">אפשר לנהל את נושאי המודעות והגדרות אחרות כדי להגביל את המידע שאתרים יכולים לקבל עליך כדי להציג לך מודעות בהתאמה אישית</translation>
 <translation id="6884474387073389421">בחרת למחוק את פרטי הכניסה שנבחרו. להמשיך?</translation>
 <translation id="6885122019363983153">יוגדרו אותם רקעים בשולחן העבודה במכשירים שונים</translation>
 <translation id="6885771755599377173">תצוגה מקדימה של מידע מערכת</translation>

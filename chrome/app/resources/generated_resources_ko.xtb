@@ -351,7 +351,6 @@
 <translation id="1238293488628890871">프로필을 전환하시겠습니까?</translation>
 <translation id="1239594683407221485">파일 앱에서 기기의 콘텐츠를 탐색하세요.</translation>
 <translation id="1239841552505950173">애플리케이션 시작</translation>
-<translation id="1240903469550363138">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />의 실험 상태 선택</translation>
 <translation id="124116460088058876">다른 언어</translation>
 <translation id="1241381048229838873">모든 북마크 표시</translation>
@@ -442,6 +441,7 @@
 <translation id="1307431692088049276">다시 묻지 않음</translation>
 <translation id="1307559529304613120">시스템이 이 기기에 대한 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="1308548450293664112">내가 만든 파일, 라디오 버튼 그룹, 3개 중 1개</translation>
+<translation id="1310482092992808703">탭 그룹화</translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
 <translation id="1311294419381837540">탭을 전송하고 있습니다. 언제든지 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="131188242279372879">Chrome의 향상된 보호 모드를 통해 안전하게 다운로드하세요.</translation>
@@ -2643,7 +2643,6 @@
 <translation id="2835547721736623118">음성 인식 서비스</translation>
 <translation id="2835761321523638096">읽기 목록의 항목 읽기 및 변경</translation>
 <translation id="2836112522909777958">데이터를 삭제하려면 모든 시크릿 창을 닫으세요.</translation>
-<translation id="2836232638504556905">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="2836269494620652131">비정상 종료</translation>
 <translation id="283669119850230892">네트워크 <ph name="NETWORK_ID" />을(를) 사용하려면 먼저 아래에서 인터넷 연결을 완료합니다.</translation>
 <translation id="2838379631617906747">설치 중</translation>
@@ -4791,7 +4790,6 @@
 <translation id="4405781821077215583">텍스트를 포함하여 화면에 표시된 항목을 작게 또는 크게 표시합니다.</translation>
 <translation id="4406308048672435032">이 탭을 비활성화하거나 새로고침하여 전체 목록을 다시 볼 수 있습니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
-<translation id="4407039574263172582">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="4408599188496843485">도움말(&amp;E)</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4409697491990005945">여백</translation>
@@ -6130,7 +6128,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
 <translation id="5400196580536813396">기기에 액세스할 수 있는 프린터를 찾거나 사용할 수 없음</translation>
 <translation id="5400836586163650660">그레이</translation>
-<translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>
 <translation id="5402367795255837559">점자</translation>
 <translation id="5402815541704507626">모바일 데이터를 사용하여 업데이트 다운로드</translation>
 <translation id="5404740137318486384">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.
@@ -8162,6 +8159,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6881845890692344060">관리자가 로그아웃했습니다. 사용자가 직접 관리할 수 있습니다.</translation>
 <translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
+<translation id="6883606786470492001">사이트에서 개인 맞춤 광고를 표시할 때 나에 관해 알아볼 수 있는 정보를 제한하기 위해 광고 주제 및 기타 설정을 관리하세요.</translation>
 <translation id="6884474387073389421">선택한 로그인 데이터를 삭제하시겠습니까?</translation>
 <translation id="6885122019363983153">모든 기기에서 바탕화면 배경이 일치함</translation>
 <translation id="6885771755599377173">시스템 정보 미리보기</translation>

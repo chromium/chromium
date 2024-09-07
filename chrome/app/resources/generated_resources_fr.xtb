@@ -352,7 +352,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1238293488628890871">Changer de profil ?</translation>
 <translation id="1239594683407221485">Explorez le contenu de l'appareil dans l'application Fichiers.</translation>
 <translation id="1239841552505950173">Lancer l'application</translation>
-<translation id="1240903469550363138">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation<ph name="END_LINK2" /> de ce site.</translation>
 <translation id="1241066500170667906">Sélectionner l'état des tests pour <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Autres langues</translation>
 <translation id="1241381048229838873">Afficher tous les favoris</translation>
@@ -443,6 +442,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="1307559529304613120">Échec de l'enregistrement du jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="1308548450293664112">J'ai créé ce fichier, groupe de cases d'option, 1 sur 3</translation>
+<translation id="1310482092992808703">Regrouper les onglets</translation>
 <translation id="131112695174432497">Les données qui influent sur la personnalisation des annonces seront supprimées</translation>
 <translation id="1311294419381837540">Vous castez un onglet. Vous pouvez suspendre ou arrêter la diffusion à tout moment.</translation>
 <translation id="131188242279372879">Découvrir la protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
@@ -2629,7 +2629,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
 <translation id="2835761321523638096">Lire et modifier les entrées de la liste de lecture</translation>
 <translation id="2836112522909777958">Pour supprimer les données, fermez toutes les fenêtres de navigation privée</translation>
-<translation id="2836232638504556905">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" /> de ce site.</translation>
 <translation id="2836269494620652131">Blocage</translation>
 <translation id="283669119850230892">Pour utiliser le réseau <ph name="NETWORK_ID" />, finalisez d'abord la connexion à Internet ci-dessous</translation>
 <translation id="2838379631617906747">Installation en cours…</translation>
@@ -4777,7 +4776,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4405781821077215583">Agrandissez ou réduisez la taille des éléments à l'écran, y compris le texte</translation>
 <translation id="4406308048672435032">Vous pouvez désactiver cet onglet ou actualiser pour afficher de nouveau la liste complète</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
-<translation id="4407039574263172582">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> du site.</translation>
 <translation id="4408599188496843485">&amp;Aide</translation>
 <translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez ses instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="4409697491990005945">Marges</translation>
@@ -6113,7 +6111,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5398572795982417028">Plage de pages hors limites. Le nombre maximal de pages est <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="5400196580536813396">Non autorisés à rechercher ou à utiliser des imprimantes accessibles à votre appareil</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Télécharger la mise à jour en utilisant les données mobiles</translation>
 <translation id="5404740137318486384">Appuyez sur un contacteur ou une touche du clavier pour l'associer à "<ph name="ACTION" />".
@@ -8148,6 +8145,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6881845890692344060">Votre administrateur s'est déconnecté. Vous récupérez le contrôle.</translation>
 <translation id="6882210908253838664">Si un site ne fonctionne pas, vous pouvez l'autoriser temporairement à utiliser des cookies tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Petit problème… Échec de l'enregistrement de la configuration de l'appareil par le système.</translation>
+<translation id="6883606786470492001">Gérez vos thèmes d'annonces et d'autres paramètres pour limiter ce que les sites peuvent apprendre à votre sujet afin de vous présenter des annonces personnalisées</translation>
 <translation id="6884474387073389421">Voulez-vous vraiment supprimer les données de connexion sélectionnées ?</translation>
 <translation id="6885122019363983153">Arrière-plan du bureau identique sur tous les appareils</translation>
 <translation id="6885771755599377173">Aperçu des informations système</translation>

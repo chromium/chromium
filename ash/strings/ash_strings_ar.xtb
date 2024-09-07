@@ -690,7 +690,6 @@
 <translation id="3455468639467374593">النموذج <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">هناك جهاز واحد متصل بنقطة اتصال <ph name="DEVICE_NAME" />.</translation>
 <translation id="346243998268439747">إعادة ضبط مستوى التكبير أو التصغير</translation>
-<translation id="3463151196028058330">ميزة "تجميل الوجه"</translation>
 <translation id="3465223694362104965">تم ربط لوحة مفاتيح أخرى بهذا الجهاز منذ آخر مرة سجَّلت الدخول فيها. يُرجى التأكُّد من أن لوحة المفاتيح هذه موثوقة قبل استخدامها.</translation>
 <translation id="3465356146291925647">يديرها المشرف</translation>
 <translation id="347117769229524881">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />، ثم <ph name="KEY_TWO" /> أو <ph name="KEY_THREE" /></translation>
@@ -1218,7 +1217,6 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
 <translation id="5187627942836026988">يمكنك عرض تفاصيل نقطة الاتصال. حظَر مشرفك ميزة نقطة الاتصال.</translation>
-<translation id="518847040357731612">الإعدادات المفضّلة لميزة "مُحسِّن الصورة الذكي"</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> حدث</translation>
 <translation id="5198715732953550718">تم جمع <ph name="MOVED_APP_NAME" /> مع <ph name="IN_PLACE_APP" /> لإنشاء مجلد جديد.</translation>
@@ -1534,7 +1532,6 @@
 <translation id="6185696379715117369">صفحة لأعلى</translation>
 <translation id="619335566042889110">الشحن بالكامل الآن</translation>
 <translation id="6193431488227440296">إصدار مطوِّري البرامج</translation>
-<translation id="6196214354688969799">مُحسِّن الصورة الذكي</translation>
 <translation id="6199775032047436064">لإعادة تحميل الصفحة الحالية</translation>
 <translation id="6200515304866777730">غير متاح من خلال التطبيق</translation>
 <translation id="6210042900243040400">ربط <ph name="NAME" /> الذي تم حفظه في السابق على الحساب <ph name="EMAIL" /></translation>

@@ -351,7 +351,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1238293488628890871">Ganti Profil?</translation>
 <translation id="1239594683407221485">Jelajahi konten perangkat di aplikasi File.</translation>
 <translation id="1239841552505950173">Luncurkan aplikasi</translation>
-<translation id="1240903469550363138">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />persyaratan layanan<ph name="END_LINK2" /> situs ini.</translation>
 <translation id="1241066500170667906">Pilih status eksperimen untuk <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Bahasa lainnya</translation>
 <translation id="1241381048229838873">Tampilkan semua bookmark</translation>
@@ -442,6 +441,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="1307559529304613120">Ups! Sistem gagal menyimpan token akses API jangka panjang untuk perangkat ini.</translation>
 <translation id="1308548450293664112">Saya membuat file ini, grup tombol pilihan, 1 dari 3</translation>
+<translation id="1310482092992808703">Kelompokkan tab</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
 <translation id="1311294419381837540">Anda sedang mentransmisikan tab. Anda dapat menjeda atau menghentikan transmisi kapan saja.</translation>
 <translation id="131188242279372879">Temukan perlindungan yang ditingkatkan untuk mendapatkan tingkat keamanan tertinggi Chrome untuk hasil download</translation>
@@ -2641,7 +2641,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2835547721736623118">Layanan pengenalan ucapan</translation>
 <translation id="2835761321523638096">Membaca dan mengubah entri dalam daftar bacaan</translation>
 <translation id="2836112522909777958">Untuk menghapus data, tutup semua jendela Samaran</translation>
-<translation id="2836232638504556905">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK" />kebijakan privasi<ph name="END_LINK" /> situs ini.</translation>
 <translation id="2836269494620652131">Kerusakan</translation>
 <translation id="283669119850230892">Untuk menggunakan <ph name="NETWORK_ID" /> jaringan, pertama-tama, selesaikan sambungan Anda ke Internet di bawah ini.</translation>
 <translation id="2838379631617906747">Memasang</translation>
@@ -4791,7 +4790,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4405781821077215583">Membuat item di layar Anda, termasuk teks, menjadi lebih kecil atau lebih besar</translation>
 <translation id="4406308048672435032">Anda dapat menonaktifkan tab ini atau memuat ulang untuk melihat kembali daftar lengkapnya</translation>
 <translation id="4406883609789734330">Teks Otomatis</translation>
-<translation id="4407039574263172582">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK" />persyaratan layanan<ph name="END_LINK" /> situs ini.</translation>
 <translation id="4408599188496843485">Bantuan</translation>
 <translation id="4409271659088619928">Mesin telusur Anda adalah <ph name="DSE" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="4409697491990005945">Margin</translation>
@@ -6129,7 +6127,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5398572795982417028">Di luar referensi halaman batas, batasannya adalah <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Tidak diizinkan mencari atau menggunakan printer yang dapat diakses oleh perangkat Anda</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="5401851137404501592">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Mendownload update menggunakan data seluler</translation>
 <translation id="5404740137318486384">Tekan satu tombol akses atau tombol keyboard guna menetapkannya untuk “<ph name="ACTION" />.”
@@ -8161,6 +8158,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6881845890692344060">Administrator Anda telah logout. Anda memegang kendali sekarang.</translation>
 <translation id="6882210908253838664">Jika suatu situs tidak berfungsi, Anda dapat mencoba memberi situs izin sementara untuk menggunakan cookie pihak ketiga. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Maaf!  Sistem gagal menyimpan konfigurasi ponsel.</translation>
+<translation id="6883606786470492001">Mengelola topik iklan dan setelan lainnya untuk membatasi informasi yang dapat dipelajari situs tentang Anda guna menampilkan iklan yang dipersonalisasi</translation>
 <translation id="6884474387073389421">Yakin ingin menghapus data login yang dipilih?</translation>
 <translation id="6885122019363983153">Latar belakang desktop cocok di seluruh perangkat</translation>
 <translation id="6885771755599377173">Pratinjau Informasi Sistem</translation>

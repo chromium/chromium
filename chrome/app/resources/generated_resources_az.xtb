@@ -349,7 +349,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1238293488628890871">Profil dəyişdirilsin?</translation>
 <translation id="1239594683407221485">Fayllar tətbiqində cihazın kontentini kəşf edin.</translation>
 <translation id="1239841552505950173">Tətbiqləri işə salın</translation>
-<translation id="1240903469550363138">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />məxfilik siyasəti<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />xidmət şərtlərinə<ph name="END_LINK2" /> baxın.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> üçün eksperiment vəziyyəti seçin</translation>
 <translation id="124116460088058876">Digər dillər</translation>
 <translation id="1241381048229838873">Bütün əlfəcinləri göstərin</translation>
@@ -440,6 +439,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1307431692088049276">Daha məndən soruşmayın</translation>
 <translation id="1307559529304613120">Sistem bu cihaz üçün uzunmüddətli API girişini saxlaya bilmədi.</translation>
 <translation id="1308548450293664112">Bu faylı yaratdım, radio düyməsi qrupu, 1/3</translation>
+<translation id="1310482092992808703">Tabları qruplaşdırın</translation>
 <translation id="131112695174432497">Reklamın fərdiləşdirilməsinə təsir edən data silinir</translation>
 <translation id="1311294419381837540">Tab yayımlayırsınız. İstənilən vaxt yayımı durdura, yaxud dayandıra bilərsiniz.</translation>
 <translation id="131188242279372879">Chrome-un endirmələr üzrə ən yüksək güvənlik səviyyəsini əldə etmək üçün təkmil qorumanı kəşf edin</translation>
@@ -2627,7 +2627,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2835547721736623118">Nitq tanınması xidməti</translation>
 <translation id="2835761321523638096">Oxu siyahısında daxiletmələri oxuyub, dəyişin</translation>
 <translation id="2836112522909777958">Datanı silmək üçün bütün Anonim pəncərələri bağlayın</translation>
-<translation id="2836232638504556905">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="2836269494620652131">Qəza</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> şəbəkəsini istifadə etmək üçün ilk öncə internet bağlantınızı tamamlayın.</translation>
 <translation id="2838379631617906747">Qarşıya yükləmə ...</translation>
@@ -4775,7 +4774,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4405781821077215583">Mətn daxil olmaqla ekrandakı elementləri kiçildin və ya böyüdün</translation>
 <translation id="4406308048672435032">Bu tabı qeyri-aktiv edə və ya tam siyahıya yenidən baxmaq üçün təzələyə bilərsiniz</translation>
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
-<translation id="4407039574263172582">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />xidmət şərtlərinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="4408599188496843485">Yardım</translation>
 <translation id="4409271659088619928">Axtarış sisteminiz <ph name="DSE" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="4409697491990005945">Kənar boşluqlar</translation>
@@ -6113,7 +6111,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5398572795982417028">Həddindən çox səhifə istinadı, limit <ph name="MAXIMUM_PAGE" /> qədərdir</translation>
 <translation id="5400196580536813396">Cihaz üçün əlçatan printerləri axtarmaq və ya istifadə etmək icazəsi verilməyib</translation>
 <translation id="5400836586163650660">Boz</translation>
-<translation id="5401851137404501592">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq.</translation>
 <translation id="5402367795255837559">Brayl</translation>
 <translation id="5402815541704507626">Mobil data istifadə edərək güncəlləmə endirin</translation>
 <translation id="5404740137318486384">Keçirici və ya klaviatura düyməsinə basaraq onu “<ph name="ACTION" />” əməliyyatına təyin edin.
@@ -8143,6 +8140,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6881845890692344060">Administrator çıxıb. Nəzarət sizdədir.</translation>
 <translation id="6882210908253838664">Sayt işləməsə, üçüncü tərəf kukilərindən müvəqqəti istifadə icazəsi verə bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ups! Sistem cihaz konfiqurasiyasını yadda saxlaya bimədi.</translation>
+<translation id="6883606786470492001">Sizə fərdiləşdirilmiş reklamlar göstərmək məqsədilə saytların haqqınızda öyrənə biləcəklərini məhdudlaşdırmaq üçün reklam mövzularını və digər ayarları idarə edin</translation>
 <translation id="6884474387073389421">Seçilmiş giriş datasını silmək istədiyinizə əminsiniz?</translation>
 <translation id="6885122019363983153">Desktop arxa fonları cihazlara uyğundur</translation>
 <translation id="6885771755599377173">Sistem Məlumatı Önizləməsi</translation>

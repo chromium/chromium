@@ -689,7 +689,6 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Predložak, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 uređaj povezan je sa žarišnom točkom uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Poništavanje razine zumiranja</translation>
-<translation id="3463151196028058330">Retuširanje lica</translation>
 <translation id="3465223694362104965">Još je jedna tipkovnica povezana s ovim uređajem otkad ste se posljednji put prijavili. Provjerite je li riječ o pouzdanoj tipkovnici prije nego što je upotrijebite.</translation>
 <translation id="3465356146291925647">Upravlja administrator</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, a zatim<ph name="KEY_TWO" /> ili <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
 <translation id="5187627942836026988">Prikažite pojedinosti žarišne točke. Žarišnu točku blokirao je vaš administrator.</translation>
-<translation id="518847040357731612">Preferencija studijske slike</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj/događaja</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> povezana je s aplikacijom <ph name="IN_PLACE_APP" /> u novu mapu.</translation>
@@ -1533,7 +1531,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6185696379715117369">Stranica prema gore</translation>
 <translation id="619335566042889110">Odmah napunite do kraja</translation>
 <translation id="6193431488227440296">Razvoj</translation>
-<translation id="6196214354688969799">Studijska slika</translation>
 <translation id="6199775032047436064">Ponovno učitaj trenutačnu stranicu</translation>
 <translation id="6200515304866777730">Nije podržano u aplikaciji</translation>
 <translation id="6210042900243040400">Povežite uređaj <ph name="NAME" /> koji je prethodno spremljen na e-adresu <ph name="EMAIL" /></translation>

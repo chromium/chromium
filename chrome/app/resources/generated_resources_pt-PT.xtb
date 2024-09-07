@@ -351,7 +351,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1238293488628890871">Mudar de perfil?</translation>
 <translation id="1239594683407221485">Explore o conteúdo do dispositivo na aplicação Ficheiros.</translation>
 <translation id="1239841552505950173">Iniciar aplicação</translation>
-<translation id="1240903469550363138">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />termos de utilização<ph name="END_LINK2" /> deste site.</translation>
 <translation id="1241066500170667906">Selecione o estado da experiência de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos os marcadores</translation>
@@ -442,6 +441,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1307431692088049276">Não voltar a perguntar</translation>
 <translation id="1307559529304613120">Ups! O sistema não conseguiu guardar o token de acesso da API de longo prazo para este dispositivo.</translation>
 <translation id="1308548450293664112">Criei este ficheiro, grupo de botões de opção, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupar separadores</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são apagados</translation>
 <translation id="1311294419381837540">Está a transmitir um separador. Pode pausar ou parar a transmissão em qualquer altura.</translation>
 <translation id="131188242279372879">Descubra a Proteção melhorada para desfrutar do nível de segurança mais elevado do Chrome para as transferências</translation>
@@ -2628,7 +2628,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2835547721736623118">Serviço de reconhecimento de voz</translation>
 <translation id="2835761321523638096">Ler e alterar entradas na Lista de leitura</translation>
 <translation id="2836112522909777958">Para eliminar os dados, feche todas as janelas de navegação anónima</translation>
-<translation id="2836232638504556905">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste site.</translation>
 <translation id="2836269494620652131">Falha</translation>
 <translation id="283669119850230892">Para utilizar a rede <ph name="NETWORK_ID" />, conclua primeiro a sua ligação à internet abaixo.</translation>
 <translation id="2838379631617906747">A instalar</translation>
@@ -4779,7 +4778,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4405781821077215583">Aumente ou diminua o tamanho dos itens no ecrã, incluindo o texto</translation>
 <translation id="4406308048672435032">Pode tornar este separador inativo ou atualizar para ver novamente a lista completa</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
-<translation id="4407039574263172582">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte os <ph name="BEGIN_LINK" />termos de utilização<ph name="END_LINK" /> deste site.</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
 <translation id="4409271659088619928">O seu motor de pesquisa é o <ph name="DSE" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="4409697491990005945">Margens</translation>
@@ -6117,7 +6115,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5398572795982417028">A referência da página está fora dos limites; o limite é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Sem autorização para procurar ou usar impressoras acessíveis ao seu dispositivo</translation>
 <translation id="5400836586163650660">Cinzento</translation>
-<translation id="5401851137404501592">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Transferir a atualização através de dados móveis</translation>
 <translation id="5404740137318486384">Prima um interruptor ou uma tecla do teclado para atribuir a "<ph name="ACTION" />".
@@ -8150,6 +8147,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6881845890692344060">O administrador terminou sessão. A escolha agora é sua.</translation>
 <translation id="6882210908253838664">Se um site não estiver a funcionar, pode experimentar dar-lhe autorização temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ups! O sistema não conseguiu guardar a configuração do dispositivo.</translation>
+<translation id="6883606786470492001">Faça a gestão dos tópicos de anúncios e de outras definições para limitar o que os sites podem saber sobre si para lhe mostrar anúncios personalizados</translation>
 <translation id="6884474387073389421">Tem a certeza de que quer eliminar os dados de início de sessão selecionados?</translation>
 <translation id="6885122019363983153">Os fundos dos ambientes de trabalho correspondem em todos os dispositivos</translation>
 <translation id="6885771755599377173">Pré-visualização das informações do sistema</translation>

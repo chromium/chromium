@@ -351,7 +351,6 @@
 <translation id="1238293488628890871">要切換個人檔案嗎？</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1239841552505950173">啟動應用程式</translation>
-<translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241381048229838873">顯示所有書籤</translation>
@@ -442,6 +441,7 @@
 <translation id="1307431692088049276">不要再問我</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
 <translation id="1308548450293664112">此檔案由我建立，圓形按鈕群組，3 個按鈕中的第 1 個</translation>
+<translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
 <translation id="1311294419381837540">您正在投放分頁。您可以隨時暫停或停止投放。</translation>
 <translation id="131188242279372879">探索強化保護功能，即可享有 Chrome 就下載檔案提供的最強大安全防護</translation>
@@ -2640,7 +2640,6 @@
 <translation id="2835547721736623118">語音識別服務</translation>
 <translation id="2835761321523638096">讀取及變更閱讀清單中的項目</translation>
 <translation id="2836112522909777958">如要刪除資料，請關閉所有無痕式視窗</translation>
-<translation id="2836232638504556905">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》。</translation>
 <translation id="2836269494620652131">當機</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網絡，請先在下方連線至互聯網。</translation>
 <translation id="2838379631617906747">正在安裝</translation>
@@ -4781,7 +4780,6 @@
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字</translation>
 <translation id="4406308048672435032">你可以將分頁設定為閒置，或重新整理以再次查看完整清單</translation>
 <translation id="4406883609789734330">即時字幕</translation>
-<translation id="4407039574263172582">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。請參閱此網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4409697491990005945">邊界</translation>
@@ -6117,7 +6115,6 @@
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的打印機</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用流動數據下載更新</translation>
 <translation id="5404740137318486384">按下按鈕裝置或鍵盤按鍵，即可指派為「<ph name="ACTION" />」。
@@ -8146,6 +8143,7 @@
 <translation id="6881845890692344060">管理員已登出帳戶，現在一切由你掌控。</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
+<translation id="6883606786470492001">管理廣告主題和其他設定，限制網站可根據你的哪些資料放送個人化廣告</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
 <translation id="6885122019363983153">跨裝置使用一致的桌面背景</translation>
 <translation id="6885771755599377173">預覽系統資訊</translation>

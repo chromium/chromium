@@ -160,7 +160,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 spletno mesto je nedavno poslalo veliko obvestil}one{# spletno mesto je nedavno poslalo veliko obvestil}two{# spletni mesti sta nedavno poslali veliko obvestil}few{# spletna mesta so nedavno poslala veliko obvestil}other{# spletnih mest je nedavno poslalo veliko obvestil}}</translation>
 <translation id="1749561566933687563">Sinhroniziranje zaznamkov</translation>
 <translation id="1750238553597293878">Še naprej uporabljajte gesla v računu Google</translation>
-<translation id="1750259112639922169">Skupina zavihkov – zavihki (<ph name="TAB_COUNT" />)</translation>
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="1755203724116202818">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti delijo omejene vrste podatkov, na primer ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="1757620656501361327">Obvestilo Googlovega upravitelja gesel</translation>
@@ -1769,7 +1768,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9157212632995922070">Izberite račun, če želite nadaljevati v aplikaciji <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Deli samo vsebino</translation>
-<translation id="9159716826369098114">Obnovitev skupine zavihkov (št. zavihkov: <ph name="TAB_COUNT" />) kot nove skupine zavihkov v ozadju.</translation>
 <translation id="9169507124922466868">Zgodovina krmarjenja je napol odprta</translation>
 <translation id="918419812064856259">Chrome beta</translation>
 <translation id="9190276265094487094">Zgodovino si boste lahko ogledali v vseh sinhroniziranih napravah, da boste lahko nadaljevali, kar ste počeli.</translation>

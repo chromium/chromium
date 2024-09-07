@@ -160,7 +160,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sivusto lähetti viime aikoina paljon ilmoituksia}other{# sivustoa on lähettänyt viime aikoina paljon ilmoituksia}}</translation>
 <translation id="1749561566933687563">Synkronoi kirjanmerkit</translation>
 <translation id="1750238553597293878">Jatka Google-tilisi salasanojen käyttöä</translation>
-<translation id="1750259112639922169">Välilehtiryhmä – <ph name="TAB_COUNT" /> välilehteä</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
 <translation id="1755203724116202818">Mainostulosten mittaamiseksi sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytyäsi sivustolla.</translation>
 <translation id="1757620656501361327">Googlen Salasanojen päivitys</translation>
@@ -1769,7 +1768,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9157212632995922070">Valitse tili jatkaaksesi (<ph name="SITE_ETLD_PLUS_ONE" />)</translation>
 <translation id="9158770349521403363">Jaa vain sisältö</translation>
-<translation id="9159716826369098114">Palauta <ph name="TAB_COUNT" /> välilehden välilehtiryhmä uutena taustavälilehtiryhmänä.</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>

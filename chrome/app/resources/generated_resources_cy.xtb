@@ -355,7 +355,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1238293488628890871">Newid Proffil?</translation>
 <translation id="1239594683407221485">Archwilio cynnwys y ddyfais yn yr ap Files.</translation>
 <translation id="1239841552505950173">Lansio'r ap</translation>
-<translation id="1240903469550363138">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweld <ph name="BEGIN_LINK1" />polisi preifatrwydd<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />thelerau gwasanaeth<ph name="END_LINK2" /> y wefan hon.</translation>
 <translation id="1241066500170667906">Dewiswch gyflwr arbrofi ar gyfer <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Rhagor o ieithoedd</translation>
 <translation id="1241381048229838873">Dangos pob nod tudalen</translation>
@@ -446,6 +445,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1307431692088049276">Peidiwch â gofyn i fi eto</translation>
 <translation id="1307559529304613120">Wps!  Gwnaeth y system fethu â storio'r tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
 <translation id="1308548450293664112">Creais y ffeil hon, grŵp botwm radio, 1 o 3</translation>
+<translation id="1310482092992808703">Grwpio tabiau</translation>
 <translation id="131112695174432497">Dilëwyd data sy'n effeithio ar bersonoli hysbysebion</translation>
 <translation id="1311294419381837540">Rydych yn castio tab. Gallwch oedi neu stopio castio unrhyw bryd.</translation>
 <translation id="131188242279372879">Darganfyddwch well amddiffyniad i gael y lefel uchaf o ddiogelwch Chrome ar gyfer lawrlwythiadau</translation>
@@ -2644,7 +2644,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2835547721736623118">Gwasanaeth adnabod llais</translation>
 <translation id="2835761321523638096">Darllen a newid cofnodion yn y rhestr ddarllen</translation>
 <translation id="2836112522909777958">I ddileu data, caewch bob ffenestr Anhysbys</translation>
-<translation id="2836232638504556905">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweld <ph name="BEGIN_LINK" />polisi preifatrwydd<ph name="END_LINK" /> y wefan hon.</translation>
 <translation id="2836269494620652131">Wedi torri</translation>
 <translation id="283669119850230892">I ddefnyddio'r rhwydwaith <ph name="NETWORK_ID" />, cwblhewch eich cysylltiad â'r Rhyngrwyd isod yn gyntaf.</translation>
 <translation id="2838379631617906747">Wrthi’n gosod</translation>
@@ -4794,7 +4793,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4405781821077215583">Gwneud eitemau ar eich sgrîn, gan gynnwys testun, yn llai neu'n fwy</translation>
 <translation id="4406308048672435032">Gallwch wneud y tab hwn yn anweithredol neu adnewyddu i weld y rhestr lawn eto</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
-<translation id="4407039574263172582">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweler <ph name="BEGIN_LINK" />telerau gwasanaeth<ph name="END_LINK" /> y wefan hon.</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="4409697491990005945">Ymylon</translation>
@@ -6132,7 +6130,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5398572795982417028">Cyfeirnod tudalen allan o ffiniau, y terfyn yw <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Ni chaniateir i chwilio am neu ddefnyddio argraffwyr hygyrch i'ch dyfais</translation>
 <translation id="5400836586163650660">Llwyd</translation>
-<translation id="5401851137404501592">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Lawrlwytho'r diweddariad gan ddefnyddio data symudol</translation>
 <translation id="5404740137318486384">Pwyswch switsh neu fysell bysellfwrdd i'w aseinio i “<ph name="ACTION" />.”
@@ -8172,6 +8169,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6881845890692344060">Mae eich gweinyddwr wedi allgofnodi. Chi sydd mewn rheolaeth nawr.</translation>
 <translation id="6882210908253838664">Os nad yw gwefan yn gweithio, gallwch roi cynnig ar roi caniatâd dros dro iddi ddefnyddio cwcis trydydd parti. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Wps!  Gwnaeth y system fethu â chadw ffufrweddiad dyfais.</translation>
+<translation id="6883606786470492001">Rheoli eich pynciau hysbyseb a gosodiadau eraill i gyfyngu ar yr hyn y gall gwefannau ddysgu amdanoch chi i ddangos hysbysebion personol</translation>
 <translation id="6884474387073389421">Ydych chi'n siŵr eich bod am ddileu'r data mewngofnodi a ddewiswyd?</translation>
 <translation id="6885122019363983153">Mae cefndiroedd bwrdd gwaith yn cyfateb ar draws dyfeisiau</translation>
 <translation id="6885771755599377173">Rhagolwg o Wybodaeth System</translation>

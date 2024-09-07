@@ -351,7 +351,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1238293488628890871">Kas vahetada profiil?</translation>
 <translation id="1239594683407221485">Avastage seadme sisu rakenduses Failid.</translation>
 <translation id="1239841552505950173">Käivita rakendus</translation>
-<translation id="1240903469550363138">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Valige katse <ph name="EXPERIMENT_NAME" /> olek</translation>
 <translation id="124116460088058876">Rohkem keeli</translation>
 <translation id="1241381048229838873">Kuva kõik järjehoidjad</translation>
@@ -442,6 +441,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1307431692088049276">Ära enam küsi</translation>
 <translation id="1307559529304613120">Vabandust! Süsteemil ei õnnestunud selle seadme pikaajalist API juurdepääsuluba salvestada.</translation>
 <translation id="1308548450293664112">Lõin selle faili, raadionuppude rühm, 1/3</translation>
+<translation id="1310482092992808703">Vahelehtede grupeerimine</translation>
 <translation id="131112695174432497">Andmed, mis mõjutavad reklaamide isikupärastamist, kustutatakse</translation>
 <translation id="1311294419381837540">Olete vahekaarti üle kandmas. Saate ülekandmise igal ajal peatada või lõpetada.</translation>
 <translation id="131188242279372879">Avastage täiustatud kaitse Chrome'i kõrgeima taseme turvalisuse saavutamiseks allalaadimiste puhul</translation>
@@ -2632,7 +2632,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2835547721736623118">Kõnetuvastuse teenus</translation>
 <translation id="2835761321523638096">Lugege ja muutke lugemisloendi kirjeid</translation>
 <translation id="2836112522909777958">Andmete kustutamiseks sulgege kõik inkognito aknad</translation>
-<translation id="2836232638504556905">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Krahh</translation>
 <translation id="283669119850230892">Võrgu <ph name="NETWORK_ID" /> kasutamiseks looge esmalt ühendus Internetiga.</translation>
 <translation id="2838379631617906747">Installimine</translation>
@@ -4782,7 +4781,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4405781821077215583">Muutke ekraanil kuvatud üksused (sh tekst) väiksemaks või suuremaks</translation>
 <translation id="4406308048672435032">Saate selle vahelehe inaktiveerida või seda värskendada, et kuvada kogu loend uuesti</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
-<translation id="4407039574263172582">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK" />teenusetingimusi<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">A&amp;bi</translation>
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4409697491990005945">Veerised</translation>
@@ -6120,7 +6118,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5398572795982417028">Piiridest väljas olev leht, limiit on <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Ei lubata otsida ega kasutada printereid, mis on teie seadme puhul juurdepääsetavad</translation>
 <translation id="5400836586163650660">Hall</translation>
-<translation id="5401851137404501592">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Laadite värskenduse alla mobiilse andmeside kaudu</translation>
 <translation id="5404740137318486384">Vajutage lülitit või klahvi klaviatuuril, et see toimingule „<ph name="ACTION" />“ määrata.
@@ -8152,6 +8149,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6881845890692344060">Teie administraator on välja loginud. Kontroll on nüüd teie käes.</translation>
 <translation id="6882210908253838664">Kui sait ei tööta, võite proovida anda sellele ajutise loa kasutada kolmanda osapoole küpsisefaile. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Vabandust! Süsteemil ei õnnestunud seadme seadistust salvestada.</translation>
+<translation id="6883606786470492001">Hallake oma reklaamiteemasid ja muid seadeid, et piirata, millist teavet saidid reklaamide isikupärastamiseks teie kohta saavad</translation>
 <translation id="6884474387073389421">Kas olete kindel, et soovite valitud sisselogimisandmed kustutada?</translation>
 <translation id="6885122019363983153">Töölaua taustad on seadmetes ühesugused</translation>
 <translation id="6885771755599377173">Süsteemiteabe eelvaade</translation>

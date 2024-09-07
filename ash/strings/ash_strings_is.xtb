@@ -689,7 +689,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3455468639467374593">Sniðmát, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 tæki tengt við heitan reit í <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Endurstilla aðdrátt</translation>
-<translation id="3463151196028058330">Lagfæring á andliti</translation>
 <translation id="3465223694362104965">Annað lyklaborð hefur tengst þessu tæki frá því að þú skráðir þig síðast inn. Gakktu úr skugga um að þú treystir þessu lyklaborði áður en þú notar það.</translation>
 <translation id="3465356146291925647">Stjórnað af kerfisstjóra</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> og svo <ph name="KEY_TWO" /> eða <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Eitt tæki er tengt.</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
 <translation id="5187627942836026988">Sýna upplýsingar um heitan reit. Kerfisstjórinn hefur lokað á heita reitinn.</translation>
-<translation id="518847040357731612">Stilling stúdíógæða á mynd</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> viðburðir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> var sameinað við <ph name="IN_PLACE_APP" /> til að búa til nýja möppu.</translation>
@@ -1532,7 +1530,6 @@ Engin tæki eru tengd.</translation>
 <translation id="6185696379715117369">Upp um síðu</translation>
 <translation id="619335566042889110">Fullhlaða núna</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Stúdíógæði á mynd</translation>
 <translation id="6199775032047436064">Endurhlaða þessa síðu</translation>
 <translation id="6200515304866777730">Ekki stutt af forriti</translation>
 <translation id="6210042900243040400">Tengdu <ph name="NAME" />, sem áður var vistað á <ph name="EMAIL" /></translation>

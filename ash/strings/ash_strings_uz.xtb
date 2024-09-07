@@ -689,7 +689,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3455468639467374593">Andoza, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 ta qurilma <ph name="DEVICE_NAME" /> hotspotiga ulandi</translation>
 <translation id="346243998268439747">Masshtabni tiklash</translation>
-<translation id="3463151196028058330">Yuzni retushlash</translation>
 <translation id="3465223694362104965">Oxirgi kirishingizdan keyin bu qurilmaga boshqa klaviatura ulangan. Foydalanishdan oldin bu klaviatura ishonchliligini tekshiring.</translation>
 <translation id="3465356146291925647">Administrator boshqaruvida</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, keyin <ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Klaviatura tezkor tugmalaridan foydalanishingiz ham mumkin. Avval matnni belgila
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5176318573511391780">Ekran qismini yozib olish</translation>
 <translation id="5187627942836026988">Hotspot axborotini ochish. Hotspot xizmatini administrator bloklagan.</translation>
-<translation id="518847040357731612">Studiyaviy tasvir sozlamasi</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> va <ph name="IN_PLACE_APP" /> ilovalari yangi jildga birlashtirildi.</translation>
@@ -1532,7 +1530,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6185696379715117369">Yuqoriga</translation>
 <translation id="619335566042889110">Toʻliq quvvatlang</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Studiyaviy tasvir</translation>
 <translation id="6199775032047436064">Joriy sahifani qayta yuklash</translation>
 <translation id="6200515304866777730">Ilovada ishlamaydi</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> qurilmasini oldin saqlangan <ph name="EMAIL" /> hisobiga ulang</translation>

@@ -689,7 +689,6 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3455468639467374593">Modelo, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 dispositivo conectado á zona wifi de <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Restablece o nivel de zoom</translation>
-<translation id="3463151196028058330">Retoque facial</translation>
 <translation id="3465223694362104965">Conectouse outro teclado a este dispositivo desde a última vez que iniciaches sesión. Asegúrate de que confías neste teclado antes de utilizalo.</translation>
 <translation id="3465356146291925647">Xestionada polo teu administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e despois <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5187627942836026988">Mostrar os detalles da zona wifi. A persoa administradora bloqueou a zona wifi.</translation>
-<translation id="518847040357731612">Preferencia de aspecto de estudio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
@@ -1533,7 +1531,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6185696379715117369">Retroceder páxina</translation>
 <translation id="619335566042889110">Cargar por completo agora</translation>
 <translation id="6193431488227440296">Desenvolvemento</translation>
-<translation id="6196214354688969799">Aspecto de estudio</translation>
 <translation id="6199775032047436064">Recargar páxina actual</translation>
 <translation id="6200515304866777730">Función non admitida pola aplicación</translation>
 <translation id="6210042900243040400">Conecta o dispositivo (<ph name="NAME" />), que xa está gardado en <ph name="EMAIL" /></translation>

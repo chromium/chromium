@@ -160,7 +160,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 webbplats har nyligen skickat många aviseringar}other{# webbplatser har nyligen skickat många aviseringar}}</translation>
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
-<translation id="1750259112639922169">Flikgrupp – <ph name="TAB_COUNT" /> flikar</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1755203724116202818">För att mäta en annons resultat delas begränsade typer av data mellan webbplatser, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="1757620656501361327">Uppdatering om Google Lösenordshantering</translation>
@@ -1770,7 +1769,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9157212632995922070">Välj ett konto för att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Dela endast innehåll</translation>
-<translation id="9159716826369098114">Återställ flikgruppen med <ph name="TAB_COUNT" /> flikar som en ny flikgrupp i bakgrunden.</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>

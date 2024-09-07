@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 個網站最近傳送了大量通知}other{# 個網站最近傳送了大量通知}}</translation>
 <translation id="1749561566933687563">同步處理您的書籤</translation>
 <translation id="1750238553597293878">請繼續使用 Google 帳戶中的密碼</translation>
-<translation id="1750259112639922169">分頁群組 - <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
 <translation id="1755203724116202818">為評估廣告成效，網站間會分享某些特定資料，例如使用者是否在造訪網站後購物。</translation>
 <translation id="1757620656501361327">Google 密碼管理工具更新</translation>
@@ -1769,7 +1768,6 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9157212632995922070">請選擇接下來要在「<ph name="SITE_ETLD_PLUS_ONE" />」上使用的帳戶</translation>
 <translation id="9158770349521403363">僅分享內容</translation>
-<translation id="9159716826369098114">將 <ph name="TAB_COUNT" /> 個分頁群組還原為新的背景分頁群組。</translation>
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>

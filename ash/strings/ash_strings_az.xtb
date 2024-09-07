@@ -689,7 +689,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 cihaz <ph name="DEVICE_NAME" /> hotspotuna qoşulub</translation>
 <translation id="346243998268439747">Miqyas səviyyəsini sıfırlayın</translation>
-<translation id="3463151196028058330">Üz retuşu</translation>
 <translation id="3465223694362104965">Ən son girişdən etibarən bu cihaza başqa klaviatura qoşulub. Klaviatura işlətməzdən öncə təhlükəsizliyinə əmin olun.</translation>
 <translation id="3465356146291925647">Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, sonra <ph name="KEY_TWO" /> və ya <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Klaviatura qısayolundan da istifadə edə bilərsiniz. Əvvəlcə mətni vurğu
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5176318573511391780">Ekranın bir hissəsini çəkin</translation>
 <translation id="5187627942836026988">Hotspot detallarını göstərin. Administrator hotspotu bloklayıb.</translation>
-<translation id="518847040357731612">Profesional görüntü tərcihi</translation>
 <translation id="5197255632782567636">internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> tədbir</translation>
 <translation id="5198715732953550718">Yeni qovluq yaratmaq üçün <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> ilə birləşdirilib.</translation>
@@ -1532,7 +1530,6 @@ Cihaz qoşulmayıb.</translation>
 <translation id="6185696379715117369">Yuxarı səhifə</translation>
 <translation id="619335566042889110">İndi tam şarj edin</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Profesional görüntü</translation>
 <translation id="6199775032047436064">Cari səhifəni yenidən yükləyin</translation>
 <translation id="6200515304866777730">Tətbiq tərəfindən dəstəklənmir</translation>
 <translation id="6210042900243040400">Daha əvvəl <ph name="EMAIL" /> hesabında saxlanmış <ph name="NAME" /> cihazını qoşun</translation>

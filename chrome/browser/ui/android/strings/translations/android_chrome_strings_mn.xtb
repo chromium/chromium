@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 сайт саяхан олон мэдэгдэл илгээсэн}other{# сайт саяхан олон мэдэгдэл илгээсэн}}</translation>
 <translation id="1749561566933687563">Хавчуургаа синхрончлоорой</translation>
 <translation id="1750238553597293878">Google Бүртгэлдээ нууц үгнүүдийг үргэлжлүүлэн ашиглана уу</translation>
-<translation id="1750259112639922169">Табын бүлэг - <ph name="TAB_COUNT" /> таб</translation>
 <translation id="17513872634828108">Нээлттэй цонх</translation>
 <translation id="1755203724116202818">Сайтууд зарынхаа гүйцэтгэлийг хэмжихийн тулд таныг сайтад зочилсны дараа худалдан авалт хийсэн эсэх зэрэг хязгаарлагдмал төрлийн өгөгдлийг хоорондоо хуваалцдаг.</translation>
 <translation id="1757620656501361327">Google Password Manager-н шинэчлэлт</translation>
@@ -1769,7 +1768,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> дээр үргэлжлүүлэхийн тулд бүртгэл сонгоно уу</translation>
 <translation id="9158770349521403363">Зөвхөн контент хуваалцана уу</translation>
-<translation id="9159716826369098114"><ph name="TAB_COUNT" /> табтай табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээнэ үү.</translation>
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="918419812064856259">Chrome Бета</translation>
 <translation id="9190276265094487094">Таны синк хийсэн бүх төхөөрөмж дээр таны түүхийг хадгална. Ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>

@@ -351,7 +351,6 @@
 <translation id="1238293488628890871">是否切换个人资料？</translation>
 <translation id="1239594683407221485">在“文件”应用中浏览此设备上的内容。</translation>
 <translation id="1239841552505950173">启动应用</translation>
-<translation id="1240903469550363138">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的姓名、电子邮件地址和个人资料照片提供给此网站。具体请参阅此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1241066500170667906">为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态</translation>
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1241381048229838873">显示所有书签</translation>
@@ -442,6 +441,7 @@
 <translation id="1307431692088049276">不再询问</translation>
 <translation id="1307559529304613120">糟糕！系统无法为该设备存储长期的 API 访问令牌。</translation>
 <translation id="1308548450293664112">此文件是我创建的，单选按钮分组，第 1 个，共 3 个</translation>
+<translation id="1310482092992808703">组合标签页</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="1311294419381837540">您正在投放一个标签页。您可随时暂停或停止投放。</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
@@ -2620,7 +2620,6 @@
 <translation id="2835547721736623118">语音识别服务</translation>
 <translation id="2835761321523638096">读取和更改阅读清单中的条目</translation>
 <translation id="2836112522909777958">若要删除数据，请关闭所有无痕式窗口</translation>
-<translation id="2836232638504556905">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />。</translation>
 <translation id="2836269494620652131">崩溃</translation>
 <translation id="283669119850230892">要使用网络“<ph name="NETWORK_ID" />”，请先在下方连接互联网。</translation>
 <translation id="2838379631617906747">正在安装</translation>
@@ -4767,7 +4766,6 @@
 <translation id="4405781821077215583">放大或缩小屏幕上的内容（包括文字）</translation>
 <translation id="4406308048672435032">您可以将此标签页设为非活跃状态，或刷新以再次查看完整列表</translation>
 <translation id="4406883609789734330">实时字幕</translation>
-<translation id="4407039574263172582">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="4408599188496843485">帮助(&amp;E)</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4409697491990005945">边距</translation>
@@ -6103,7 +6101,6 @@
 <translation id="5398572795982417028">页面引用超出范围，上限为 <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">不得查找或使用您的设备可访问的打印机</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="5401851137404501592">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。</translation>
 <translation id="5402367795255837559">盲文</translation>
 <translation id="5402815541704507626">使用移动数据网络下载更新</translation>
 <translation id="5404740137318486384">按某个开关键或键盘按键即可将其分配给“<ph name="ACTION" />”操作。
@@ -8132,6 +8129,7 @@
 <translation id="6881845890692344060">您的管理员已退出账号。现在一切由您掌控。</translation>
 <translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
+<translation id="6883606786470492001">管理您的广告主题和其他设置，以限制网站能根据哪些个人信息向您展示个性化广告</translation>
 <translation id="6884474387073389421">确定要删除所选登录数据吗？</translation>
 <translation id="6885122019363983153">各设备上的桌面背景一致</translation>
 <translation id="6885771755599377173">系统信息预览</translation>

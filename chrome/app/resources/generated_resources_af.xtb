@@ -351,7 +351,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1238293488628890871">Wissel profiel?</translation>
 <translation id="1239594683407221485">Verken die toestel se inhoud in die Lêers-program.</translation>
 <translation id="1239841552505950173">Begin aansoek</translation>
-<translation id="1240903469550363138">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Kies eksperimentstatus vir <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Meer tale</translation>
 <translation id="1241381048229838873">Wys alle boekmerke</translation>
@@ -442,6 +441,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1307431692088049276">Moet my nie weer vra nie</translation>
 <translation id="1307559529304613120">Oeps! Die stelsel kon nie die langtermyn-API-toegangtoken vir hierdie toestel stoor nie.</translation>
 <translation id="1308548450293664112">Ek het hierdie lêer geskep, radioknoppiegroep, 1 van 3</translation>
+<translation id="1310482092992808703">Groepeer oortjies</translation>
 <translation id="131112695174432497">Data wat advertensiepersonalisering raak, word uitgevee</translation>
 <translation id="1311294419381837540">Jy saai tans ’n oortjie uit. Jy kan die uitsending enige tyd onderbreek of staak.</translation>
 <translation id="131188242279372879">Ontdek verbeterde beskerming om Chrome se hoogste sekuriteitvlak vir aflaaie te kry</translation>
@@ -2641,7 +2641,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2835547721736623118">Spraakherkenningdiens</translation>
 <translation id="2835761321523638096">Lees en verander inskrywings op die Leeslys</translation>
 <translation id="2836112522909777958">Maak alle Incognito-vensters toe om data uit te vee</translation>
-<translation id="2836232638504556905">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Omval</translation>
 <translation id="283669119850230892">Om die netwerk <ph name="NETWORK_ID" /> te gebruik, moet jy eers klaar aan die internet koppel hieronder.</translation>
 <translation id="2838379631617906747">Installeer tans</translation>
@@ -4791,7 +4790,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4405781821077215583">Maak items op jou skerm, insluitend teks, kleiner of groter</translation>
 <translation id="4406308048672435032">Jy kan hierdie oortjie onaktief maak of herlaai om die volledige lys weer te sien</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
-<translation id="4407039574263172582">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Besoek hierdie werf se <ph name="BEGIN_LINK" />diensbepalings<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">Hulp</translation>
 <translation id="4409271659088619928">Jou soekenjin is <ph name="DSE" />. Sien hul instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="4409697491990005945">Kantlyne</translation>
@@ -6129,7 +6127,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5398572795982417028">Bladsyverwysing is buite perke, limiet is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Word nie toegelaat om drukkers wat vir jou toestel toeganklik is, te soek of te gebruik nie</translation>
 <translation id="5400836586163650660">Grys</translation>
-<translation id="5401851137404501592">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Gebruik mobiele data om opdatering af te laai</translation>
 <translation id="5404740137318486384">Druk 'n skakelaar of sleutelbordsleutel om dit vir “<ph name="ACTION" />” toe te wys.
@@ -8162,6 +8159,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6881845890692344060">Jou administrateur het afgemeld. Jy is nou in beheer.</translation>
 <translation id="6882210908253838664">As ’n werf nie werk nie, kan jy probeer om dit tydelik toe te laat om derdepartywebkoekies te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oeps! Die stelsel het nie toestelopstelling gestoor nie.</translation>
+<translation id="6883606786470492001">Bestuur jou advertensie-onderwerpe en ander instellings om te beperk wat werwe oor jou kan leer om vir jou gepersonaliseerde advertensies te wys</translation>
 <translation id="6884474387073389421">Is jy seker jy wil die geselekteerde aanmelddata uitvee?</translation>
 <translation id="6885122019363983153">Werkskermatergronde pas op alle toestelle</translation>
 <translation id="6885771755599377173">Voorskou van stelselinligting</translation>

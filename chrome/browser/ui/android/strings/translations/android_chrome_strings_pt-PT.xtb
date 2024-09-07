@@ -160,7 +160,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site enviou recentemente muitas notificações}other{# sites enviaram recentemente muitas notificações}}</translation>
 <translation id="1749561566933687563">Sincronizar os marcadores</translation>
 <translation id="1750238553597293878">Continue a usar as palavras-passe na sua Conta Google</translation>
-<translation id="1750259112639922169">Grupo de separadores – <ph name="TAB_COUNT" /> separadores</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
 <translation id="1755203724116202818">Para medir o desempenho de um anúncio, são partilhados tipos de dados limitados entre sites, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gestor de Palavras-passe da Google</translation>
@@ -1769,7 +1768,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9157212632995922070">Escolha uma conta para continuar em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
-<translation id="9159716826369098114">Restaure o grupo de <ph name="TAB_COUNT" /> separadores como um novo grupo de separadores em segundo plano.</translation>
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>

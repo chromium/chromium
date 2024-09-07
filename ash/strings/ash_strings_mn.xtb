@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">Загвар, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" />-н сүлжээний цэгтэй 1 төхөөрөмж холбогдсон</translation>
 <translation id="346243998268439747">Томруулах түвшинг шинэчлэх</translation>
-<translation id="3463151196028058330">Нүүрийг дахин засах</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
 <translation id="3465356146291925647">Таны администратор удирддаг</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> дараа нь <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /></translation>
@@ -1217,7 +1216,6 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
 <translation id="5187627942836026988">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг танай администратор блоклосон.</translation>
-<translation id="518847040357731612">Studio Look-н сонголт</translation>
 <translation id="5197255632782567636">Интернэт</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> үйл явдал</translation>
 <translation id="5198715732953550718">Шинэ фолдер үүсгэхийн тулд <ph name="MOVED_APP_NAME" />-г <ph name="IN_PLACE_APP" />-тай цуг нийлүүлсэн.</translation>
@@ -1533,7 +1531,6 @@
 <translation id="6185696379715117369">Хуудас дээшлүүлэх</translation>
 <translation id="619335566042889110">Одоо бүрэн цэнэглээрэй</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Студийн харагдах байдал</translation>
 <translation id="6199775032047436064">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="6200515304866777730">Аппаас дэмждэггүй</translation>
 <translation id="6210042900243040400">Өмнө нь <ph name="EMAIL" />-д хадгалсан <ph name="NAME" />-г холбоно уу</translation>

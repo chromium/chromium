@@ -352,7 +352,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1238293488628890871">Trocar de perfil?</translation>
 <translation id="1239594683407221485">Ver o conteúdo do dispositivo no app Arquivos.</translation>
 <translation id="1239841552505950173">Iniciar aplicativo</translation>
-<translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="1241066500170667906">Selecione o estado do experimento de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos os favoritos</translation>
@@ -443,6 +442,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1307431692088049276">Não perguntar novamente</translation>
 <translation id="1307559529304613120">Ops. O sistema encontrou uma falha ao armazenar um token de acesso de longo prazo à API para este dispositivo.</translation>
 <translation id="1308548450293664112">Eu criei esse arquivo, grupo de botões de opção, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupar guias</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são excluídos</translation>
 <translation id="1311294419381837540">Você está transmitindo uma guia. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="131188242279372879">Conheça a proteção reforçada e tenha o nível mais alto de segurança para downloads do Chrome</translation>
@@ -2641,7 +2641,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2835547721736623118">Serviço de reconhecimento de fala</translation>
 <translation id="2835761321523638096">Ler e mudar entradas na Lista de leitura</translation>
 <translation id="2836112522909777958">Para excluir os dados, feche todas as janelas anônimas</translation>
-<translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do site.</translation>
 <translation id="2836269494620652131">Falha</translation>
 <translation id="283669119850230892">Para usar a rede <ph name="NETWORK_ID" />, conclua primeiro sua conexão com a Internet abaixo.</translation>
 <translation id="2838379631617906747">Instalando</translation>
@@ -4792,7 +4791,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4405781821077215583">Aumente ou diminua os itens na tela, incluindo o texto</translation>
 <translation id="4406308048672435032">Você pode deixar essa guia inativa ou atualizar a página para ver a lista completa de novo</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
-<translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Veja os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" /> desse site.</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="4409697491990005945">Margens</translation>
@@ -5313,7 +5311,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4804827417948292437">Abacate</translation>
 <translation id="4806071198808203109">Salvar frame de vídeo como…</translation>
 <translation id="4806457879608775995">Leia estes termos e controle seus dados</translation>
-<translation id="4807098396393229769">Nome impresso no cartão</translation>
+<translation id="4807098396393229769">Nome no cartão</translation>
 <translation id="4807122856660838973">Ativar a Navegação segura</translation>
 <translation id="4807514039636325497">Detalhes do DBus</translation>
 <translation id="4808525520374557629">Receba notificações com sugestões sobre como melhorar os problemas de desempenho detectados. <ph name="BEGIN_LINK" />Saiba mais sobre os alertas de problemas de desempenho<ph name="END_LINK" /></translation>
@@ -6130,7 +6128,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5398572795982417028">Referência de página fora do limite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Sem permissão para procurar ou usar impressoras acessíveis ao dispositivo</translation>
 <translation id="5400836586163650660">Cinza</translation>
-<translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Faça o download da atualização usando dados móveis</translation>
 <translation id="5404740137318486384">Pressione um interruptor ou uma tecla para atribuí-los à ação de "<ph name="ACTION" />".
@@ -8165,6 +8162,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6881845890692344060">Seu administrador saiu. Agora você está no controle.</translation>
 <translation id="6882210908253838664">Se um site não estiver funcionando, tente conceder uma permissão temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oops! O sistema falhou ao salvar a configuração do dispositivo.</translation>
+<translation id="6883606786470492001">Gerencie seus temas de anúncios e outras configurações para limitar o que os sites podem saber sobre você e mostrar anúncios personalizados</translation>
 <translation id="6884474387073389421">Tem certeza de que você quer excluir os dados de login selecionados?</translation>
 <translation id="6885122019363983153">Os planos de fundo da área de trabalho são iguais em todos os dispositivos</translation>
 <translation id="6885771755599377173">Visualização de informações do sistema</translation>

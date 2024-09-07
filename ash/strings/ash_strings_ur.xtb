@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">تمثیل، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ سے 1 آلہ منسلک ہے</translation>
 <translation id="346243998268439747">زوم کی سطح کو دوبارہ ترتیب دیں</translation>
-<translation id="3463151196028058330">فیس ری ٹچ</translation>
 <translation id="3465223694362104965">آخری بار آپ کے سائن ان ہونے کے بعد سے اب تک ایک دوسرا کی بورڈ اس آلہ سے منسلک ہو گیا ہے۔ اس کا استعمال کرنے سے پہلے اس بات کو یقینی بنائیں کہ آپ کو اس کی بورڈ پر بھروسہ ہے۔</translation>
 <translation id="3465356146291925647">آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پھر <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
 <translation id="5187627942836026988">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ آپ کے منتظم نے ہاٹ اسپاٹ کو مسدود کیا ہوا ہے۔</translation>
-<translation id="518847040357731612">اسٹوڈیو لُک کی ترجیح</translation>
 <translation id="5197255632782567636">انٹرنیٹ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹس</translation>
 <translation id="5198715732953550718">نیا فولڈر بنانے کے لیے <ph name="MOVED_APP_NAME" /> کو <ph name="IN_PLACE_APP" /> کے ساتھ جوڑ دیا گیا ہے۔</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">اسٹوڈیو لُک</translation>
 <translation id="6199775032047436064">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="6200515304866777730">ایپ کے ذریعہ تعاون یافتہ نہیں ہے</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> میں پہلے سے محفوظ کردہ <ph name="NAME" /> سے منسلک ہوں</translation>

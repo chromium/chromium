@@ -689,7 +689,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3455468639467374593">Modèle, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 appareil connecté au point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Réinitialiser le niveau de zoom</translation>
-<translation id="3463151196028058330">Retouche du visage</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Avant d'utiliser ce clavier, assurez-vous qu'il s'agit d'un clavier de confiance.</translation>
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, puis <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Voir les détails du point d'accès. Celui-ci est bloqué par votre administrateur.</translation>
-<translation id="518847040357731612">Préférence d'image studio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
@@ -1532,7 +1530,6 @@ Aucun appareil connecté.</translation>
 <translation id="6185696379715117369">Accéder à la page précédente</translation>
 <translation id="619335566042889110">Recharger complètement</translation>
 <translation id="6193431488227440296">Développement</translation>
-<translation id="6196214354688969799">Image studio</translation>
 <translation id="6199775032047436064">Actualiser la page actuelle</translation>
 <translation id="6200515304866777730">Non compatible avec l'appli</translation>
 <translation id="6210042900243040400">Associer les <ph name="NAME" /> précédemment enregistrés dans <ph name="EMAIL" /></translation>

@@ -160,7 +160,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site ang nagpadala ng napakaraming notification kamakailan}one{# site ang nagpadala ng napakaraming notification kamakailan}other{# na site ang nagpadala ng napakaraming notification kamakailan}}</translation>
 <translation id="1749561566933687563">I-sync ang iyong mga bookmark</translation>
 <translation id="1750238553597293878">Patuloy na gamitin ang mga password sa iyong Google Account</translation>
-<translation id="1750259112639922169">Grupo ng tab - <ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="17513872634828108">Mga bukas na tab</translation>
 <translation id="1755203724116202818">Para masukat ang performance ng isang ad, nagshe-share ng mga limitadong uri ng data sa pagitan ng mga site, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="1757620656501361327">Update sa Google Password Manager</translation>
@@ -1769,7 +1768,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9157212632995922070">Pumili ng account para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Ibahagi lang ang content</translation>
-<translation id="9159716826369098114">I-restore ang grupo ng tab na <ph name="TAB_COUNT" /> (na) tab bilang bagong background na grupo ng tab.</translation>
 <translation id="9169507124922466868">Nakabukas nang kalahati ang history ng pag-navigate</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Makikita mo ang iyong history sa lahat ng naka-sync mong device, para maipagpatuloy mo ang iyong ginagawa</translation>

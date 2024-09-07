@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 අඩවියක් මෑතක දී දැනුම්දීම් රැසක් එවා ඇත}one{අඩවි #ක් මෑතක දී දැනුම්දීම් රැසක් එවා ඇත}other{අඩවි #ක් මෑතක දී දැනුම්දීම් රැසක් එවා ඇත}}</translation>
 <translation id="1749561566933687563">ඔබගේ පොත් සලකුණු සමමුහුර්ත කරන්න</translation>
 <translation id="1750238553597293878">ඔබේ Google ගිණුමේ ඇති මුරපද දිගටම භාවිතා කරන්න</translation>
-<translation id="1750259112639922169">ටැබ සමූහය - ටැබ <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
 <translation id="1755203724116202818">දැන්වීමක කාර්යසාධනය මැනීමට, ඔබ වෙබ් අඩවියකට පිවිසීමෙන් පසු මිලදී ගැනීමක් සිදු කළේද යන්න වැනි සීමිත දත්ත වර්ග අඩවි අතර බෙදා ගනියි.</translation>
 <translation id="1757620656501361327">Google මුරපද කළමනාකරු යාවත්කාලීනය</translation>
@@ -1313,6 +1312,7 @@
 <translation id="7111394291981742152">Chrome ඔබට ඔබ දකින දැන්වීම් කෙරෙහි වැඩි පාලනයක් ලබා දෙන අතර ඔවුන් ඔබට පෞද්ගලීකරණය කළ දැන්වීම් පෙන්වන විට අඩවිවලට ඔබ ගැන ඉගෙන ගත හැකි දේ සීමා කරයි.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 අඩවියක් සඳහා අවසර සමාලෝචනය කරන ලදි}one{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}other{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}}</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
+<translation id="7139479418357139965">ඔබට නව සබැඳියක් විමසීමට යවන්නා සම්බන්ධ කර ගත හැක.</translation>
 <translation id="7140829094791862589">හස්තීය පිළිවෙලට සකසන්න</translation>
 <translation id="7146622961999026732">මෙම අඩවි සහ යෙදුම් ඔබට වැදගත් යැයි පෙනේ:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> වෙතින් <ph name="BEGIN_LINK" />වැඩිදුර තොරතුරු ලබා ගන්න<ph name="END_LINK" />.</translation>
@@ -1475,6 +1475,7 @@
 <translation id="7824665136384946951">ඔබේ සංවිධානය සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="78270725016672455">වෙබ් අඩවියකට පිරීම සඳහා ඔබගේ පරිගණකයට මෙම උපාංගය ලියාපදිංචි කිරීමට අවශ්‍යය</translation>
 <translation id="7844171778363018843">සමමුහුර්ත කිරීමට දත්ත තෝරා නැත</translation>
+<translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="7846296061357476882">Google සේවා</translation>
 <translation id="784934925303690534">කාල පරාසය</translation>
 <translation id="7851858861565204677">වෙනත් උපාංග</translation>
@@ -1515,6 +1516,7 @@
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="8014210850410408071">මීළඟට, මුරපද ආයාත කරන්න</translation>
 <translation id="8015452622527143194">පිටුවේ සැම දෙයක්ම පෙරනිමි තරමට ආපසු ගෙන එන්න</translation>
+<translation id="8017431260099661477">ආරාධනා සබැඳිය විවෘත කළ නොහැකි විය</translation>
 <translation id="8026238112629815203">අපි මෙම උපාංගයේ මුරපද සුරකින ආකාරය වෙනස් කළෙමු</translation>
 <translation id="8027863900915310177">බාගන්නා ස්ථානය තෝරා ගන්න</translation>
 <translation id="8030852056903932865">අනුමත කරන්න</translation>
@@ -1766,7 +1768,6 @@
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ගිණුමක් තෝරා ගන්න</translation>
 <translation id="9158770349521403363">අන්තර්ගතය පමණක් බෙදා ගන්න</translation>
-<translation id="9159716826369098114">නව පසුබිම් ටැබ සමූහයක් ලෙස ටැබ <ph name="TAB_COUNT" />ක ටැබ සමූහය ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="9169507124922466868">සංචලන ඉතිහාසය අඩක් විවෘතයි</translation>
 <translation id="918419812064856259">Chrome බීටා</translation>
 <translation id="9190276265094487094">ඔබට ඔබේ සමමුහුර්ත කළ උපාංග සියල්ලෙහි ඔබේ ඉතිහාසය ඇති නිසා ඔබට ඔබ කරමින් සිටි දේ දිගටම කර ගෙන යා හැක</translation>

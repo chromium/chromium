@@ -351,7 +351,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1238293488628890871">Cambiare profilo?</translation>
 <translation id="1239594683407221485">Esplora i contenuti del dispositivo nell'app File.</translation>
 <translation id="1239841552505950173">Avvia applicazione</translation>
-<translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="1241066500170667906">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Altre lingue</translation>
 <translation id="1241381048229838873">Mostra tutti i preferiti</translation>
@@ -442,6 +441,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
 <translation id="1307559529304613120">Spiacenti, il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
 <translation id="1308548450293664112">Ho creato io questo file, gruppo di pulsanti di opzione, 1 di 3</translation>
+<translation id="1310482092992808703">Raggruppa schede</translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
 <translation id="1311294419381837540">Stai trasmettendo una scheda. Puoi mettere in pausa o interrompere la trasmissione in qualsiasi momento.</translation>
 <translation id="131188242279372879">Scopri la Protezione avanzata per ottenere il massimo livello di sicurezza di Chrome per i download</translation>
@@ -2628,7 +2628,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
 <translation id="2835761321523638096">Lettura e modifica delle voci nell'elenco di lettura</translation>
 <translation id="2836112522909777958">Per eliminare i dati, chiudi tutte le finestre di navigazione in incognito</translation>
-<translation id="2836232638504556905">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del sito.</translation>
 <translation id="2836269494620652131">Interruzione anomala</translation>
 <translation id="283669119850230892">Per poter utilizzare la rete <ph name="NETWORK_ID" /> devi completare la connessione a Internet sotto.</translation>
 <translation id="2838379631617906747">Installazione</translation>
@@ -4777,7 +4776,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4405781821077215583">Ingrandisci o rimpicciolisci gli elementi sullo schermo, compreso il testo</translation>
 <translation id="4406308048672435032">Puoi rendere inattiva questa scheda o aggiornare per visualizzare di nuovo l'elenco completo</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
-<translation id="4407039574263172582">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Vedi i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" /> del sito.</translation>
 <translation id="4408599188496843485">G&amp;uida</translation>
 <translation id="4409271659088619928">Il tuo motore di ricerca è <ph name="DSE" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="4409697491990005945">Margini</translation>
@@ -6114,7 +6112,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5398572795982417028">Riferimento pagina oltre i limiti. Il limite è <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Non autorizzati a cercare o utilizzare stampanti accessibili al tuo dispositivo</translation>
 <translation id="5400836586163650660">Grigio</translation>
-<translation id="5401851137404501592">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Scarica l'aggiornamento usando i dati mobili</translation>
 <translation id="5404740137318486384">Premi un sensore o un tasto della tastiera per assegnarlo a "<ph name="ACTION" />".
@@ -8143,6 +8140,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6881845890692344060">L'amministratore si è disconnesso. Ora sei tu ad avere il controllo.</translation>
 <translation id="6882210908253838664">Se un sito non funziona, puoi provare a concedergli l'autorizzazione temporanea a utilizzare i cookie di terze parti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Spiacenti. Impossibile salvare la configurazione del dispositivo.</translation>
+<translation id="6883606786470492001">Gestisci gli argomenti degli annunci e altre impostazioni per limitare le informazioni che i siti possono apprendere su di te per mostrarti annunci personalizzati</translation>
 <translation id="6884474387073389421">Vuoi eliminare i dati di accesso selezionati?</translation>
 <translation id="6885122019363983153">Gli sfondi del desktop corrispondono sui vari dispositivi</translation>
 <translation id="6885771755599377173">Anteprima informazioni di sistema</translation>

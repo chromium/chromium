@@ -160,7 +160,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site heeft recent veel meldingen gestuurd}other{# sites hebben recent veel meldingen gestuurd}}</translation>
 <translation id="1749561566933687563">Synchroniseer je bookmarks</translation>
 <translation id="1750238553597293878">Blijf de wachtwoorden in je Google-account gebruiken</translation>
-<translation id="1750259112639922169">Tabbladgroep: <ph name="TAB_COUNT" /> tabbladen</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="1755203724116202818">Beperkte typen gegevens worden gedeeld tussen sites om de prestaties van een advertentie te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="1757620656501361327">Update voor Google Wachtwoordmanager</translation>
@@ -1769,7 +1768,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9157212632995922070">Kies een account om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Alleen content delen</translation>
-<translation id="9159716826369098114">Tabbladgroep van <ph name="TAB_COUNT" /> tabbladen herstellen als een nieuwe tabbladgroep op de achtergrond.</translation>
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="918419812064856259">Chrome Bèta</translation>
 <translation id="9190276265094487094">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>

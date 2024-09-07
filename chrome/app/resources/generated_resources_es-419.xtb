@@ -351,7 +351,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1238293488628890871">¿Quieres cambiar de perfil?</translation>
 <translation id="1239594683407221485">Explora el contenido del dispositivo en la app Archivos.</translation>
 <translation id="1239841552505950173">Ejecutar aplicación</translation>
-<translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />condiciones del servicio<ph name="END_LINK2" /> de este sitio.</translation>
 <translation id="1241066500170667906">Seleccionar el estado del experimento para <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos los favoritos</translation>
@@ -442,6 +441,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
 <translation id="1308548450293664112">Yo creé este archivo, grupo de botones de selección, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupar pestañas</translation>
 <translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="131188242279372879">Descubre la protección mejorada para obtener el nivel más alto de seguridad de Chrome para las descargas</translation>
@@ -2625,7 +2625,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2835761321523638096">Leer y cambiar entradas en la lista de lectura</translation>
 <translation id="2836112522909777958">Para borrar los datos, cierra todas las ventanas de incógnito</translation>
-<translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este sitio.</translation>
 <translation id="2836269494620652131">Fallo</translation>
 <translation id="283669119850230892">Para utilizar la red <ph name="NETWORK_ID" />, primero debes establecer la conexión a Internet que se especifica a continuación.</translation>
 <translation id="2838379631617906747">Instalando</translation>
@@ -4775,7 +4774,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
-<translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta las <ph name="BEGIN_LINK" />condiciones del servicio<ph name="END_LINK" /> del sitio.</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
 <translation id="4409271659088619928">Tu motor de búsqueda es <ph name="DSE" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="4409697491990005945">Márgenes</translation>
@@ -6113,7 +6111,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5398572795982417028">Referencia de página fuera de los límites; el valor máximo es <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">No puede buscar ni usar impresoras a las que pueda acceder tu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Descargar la actualización a través de datos móviles</translation>
 <translation id="5404740137318486384">Presiona un interruptor o una tecla del teclado para asignarlo a "<ph name="ACTION" />".
@@ -8145,6 +8142,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6881845890692344060">Tu administrador salió de la cuenta. Ahora tienes el control.</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, intenta otorgarle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">El sistema no pudo guardar la configuración del dispositivo.</translation>
+<translation id="6883606786470492001">Administra tus temas de anuncios y otros parámetros de configuración si quieres limitar la información que los sitios pueden obtener sobre ti para mostrarte anuncios personalizados</translation>
 <translation id="6884474387073389421">¿Confirmas que quieres borrar los datos de acceso seleccionados?</translation>
 <translation id="6885122019363983153">Los fondos de escritorio coinciden en todos los dispositivos</translation>
 <translation id="6885771755599377173">Vista previa de la información del sistema</translation>

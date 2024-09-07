@@ -689,7 +689,6 @@
 <translation id="3455468639467374593">টেমপ্লেট, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" />-এর হটস্পটের সাথে ১টি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="346243998268439747">জুম লেভেল রিসেট করুন</translation>
-<translation id="3463151196028058330">ফেস রিটাচ</translation>
 <translation id="3465223694362104965">আপনি শেষবার সাইন-ইন করার পরে আরেকটি কীবোর্ড এই ডিভাইসে কানেক্ট করা হয়েছে। এটি ব্যবহার করার আগে কীবোর্ডটিকে আপনি নিরাপদ বলে মনে করেন কিনা তা দেখে নিন।</translation>
 <translation id="3465356146291925647">আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> তারপর <ph name="KEY_TWO" /> বা <ph name="KEY_THREE" /></translation>
@@ -1216,7 +1215,6 @@
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
 <translation id="5187627942836026988">হটস্পটের বিবরণ দেখুন। আপনার অ্যাডমিনিস্ট্রেটর হটস্পট ব্লক করে রেখেছেন।</translation>
-<translation id="518847040357731612">স্টুডিও লুক সংক্রান্ত পছন্দ</translation>
 <translation id="5197255632782567636">ইন্টারনেট</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
 <translation id="5198715732953550718">নতুন ফোল্ডার তৈরি করতে <ph name="MOVED_APP_NAME" /> অ্যাপ <ph name="IN_PLACE_APP" /> অ্যাপের সঙ্গে যোগ করা হয়েছে।</translation>
@@ -1532,7 +1530,6 @@
 <translation id="6185696379715117369">পৃষ্ঠায় উপরের দিকে যান</translation>
 <translation id="619335566042889110">এখন সম্পূর্ণ চার্জ করুন</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">স্টুডিও লুক</translation>
 <translation id="6199775032047436064">বর্তমান পৃষ্ঠাটি পুনরায় লোড করুন</translation>
 <translation id="6200515304866777730">অ্যাপে কাজ করে না</translation>
 <translation id="6210042900243040400">আগে থেকে <ph name="EMAIL" />-এ সেভ করা <ph name="NAME" /> কানেক্ট করুন</translation>

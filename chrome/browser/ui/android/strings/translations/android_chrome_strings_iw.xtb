@@ -160,7 +160,6 @@
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{אתר אחד שלח לאחרונה הרבה התראות}one{‫# אתרים שלחו הרבה התראות לאחרונה}two{‫# אתרים שלחו הרבה התראות לאחרונה}other{‫# אתרים שלחו הרבה התראות לאחרונה}}</translation>
 <translation id="1749561566933687563">סנכרון הסימניות שלך</translation>
 <translation id="1750238553597293878">‏המשך השימוש בסיסמאות בחשבון Google שלך</translation>
-<translation id="1750259112639922169">קבוצת כרטיסיות - <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="1755203724116202818">כדי למדוד את ביצועי המודעות, רק סוגים מסוימים של נתונים ישותפו בין אתרים. למשל, אם ביצעת רכישה אחרי ביקור באתר.</translation>
 <translation id="1757620656501361327">‏עדכון במנהל הסיסמאות של Google</translation>
@@ -1766,7 +1765,6 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9157212632995922070">בחירת חשבון להמשך השימוש ב-<ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">שיתוף התוכן בלבד</translation>
-<translation id="9159716826369098114">שחזור של קבוצת כרטיסיות שמכילה <ph name="TAB_COUNT" /> כרטיסיות כקבוצת כרטיסיות חדשה ברקע.</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
 <translation id="918419812064856259">‏Chrome בטא</translation>
 <translation id="9190276265094487094">ההיסטוריה תופיע בכל המכשירים המסונכרנים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
