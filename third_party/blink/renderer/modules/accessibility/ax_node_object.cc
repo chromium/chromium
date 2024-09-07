@@ -7718,12 +7718,14 @@ AXObject* AXNodeObject::AccessibilityHitTest(const gfx::Point& point) const {
   result = result->ElementAccessibilityHitTest(point);
 
   while (result && result->IsIgnored()) {
+    CHECK(!result->IsDetached());
     // If this element is the label of a control, a hit test should return the
     // control. The label is ignored because it's already reflected in the name.
     if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
       if (HTMLElement* control = label->Control()) {
         if (AXObject* ax_control = AXObjectCache().Get(control)) {
-          return ax_control;
+          result = ax_control;
+          break;
         }
       }
     }
@@ -7731,7 +7733,8 @@ AXObject* AXNodeObject::AccessibilityHitTest(const gfx::Point& point) const {
     result = result->ParentObject();
   }
 
-  return result;
+  return result->IsIncludedInTree() ? result
+                                    : result->ParentObjectIncludedInTree();
 }
 
 AXObject* AXNodeObject::AccessibilityImageMapHitTest(

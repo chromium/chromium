@@ -255,6 +255,8 @@ void RenderAccessibilityImpl::HitTest(
     return;
   }
 
+  DCHECK(ax_object.IsIncludedInTree());
+
   // If the result was in the same frame, return the result.
   ui::AXNodeData data;
   ax_object.Serialize(&data, ax_context_->GetAXMode());
