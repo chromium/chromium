@@ -25,6 +25,7 @@ source_set("ranking_model") {
   ]
   deps = [
     ":cells",
+    ":constants",
     ":magic_stack",
     ":public",
     "//components/commerce/core:feature_list",
@@ -61,7 +62,12 @@ source_set("constants") {
     "magic_stack_constants.h",
     "magic_stack_constants.mm",
   ]
-  deps = []
+  deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/segmentation_platform/public",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 

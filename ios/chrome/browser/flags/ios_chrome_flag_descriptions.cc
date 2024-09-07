@@ -893,6 +893,11 @@ const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
 
+const char kPriceTrackingPromoName[] =
+    "Enables price tracking notification promo card";
+const char kPriceTrackingPromoDescription[] =
+    "Enables being able to show the card in the Magic Stack";
+
 const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
 const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
@@ -961,6 +966,12 @@ const char kSafetyCheckNotificationsDescription[] =
 const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
+
+const char kSegmentationPlatformEphemeralCardRankerName[] =
+    "Enable Segmentation Ranking for Ephemeral Cards";
+const char kSegmentationPlatformEphemeralCardRankerDescription[] =
+    "Enables the segmentation platform to rank ephemeral cards in the Magic "
+    "Stack";
 
 const char kSegmentationPlatformIosModuleRankerCachingName[] =
     "Enabled Magic Stack Segmentation Ranking Caching";

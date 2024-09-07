@@ -648,10 +648,13 @@ TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
 // correct card.
 TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {commerce::kPriceTrackingPromo,
-       segmentation_platform::features::
-           kSegmentationPlatformEphemeralCardRanker},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{commerce::kPriceTrackingPromo, {}},
+       {segmentation_platform::features::
+            kSegmentationPlatformEphemeralCardRanker,
+        {{segmentation_platform::features::
+              kEphemeralCardRankerForceShowCardParam,
+          segmentation_platform::features::kPriceTrackingPromoForceOverride}}}},
       {});
   commerce::MockShoppingService* shopping_service =
       static_cast<commerce::MockShoppingService*>(

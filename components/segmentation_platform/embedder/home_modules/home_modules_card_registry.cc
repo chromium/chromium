@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
@@ -13,9 +14,6 @@ namespace segmentation_platform::home_modules {
 namespace {
 
 #if BUILDFLAG(IS_IOS)
-// The maximum number of times a card can be visible to the user.
-const int kMaxPriceTrackingNotificationCardImpressions = 3;
-
 // Immpression counter for each card.
 const char kPriceTrackingPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.price_tracking_promo_counter";
@@ -80,11 +78,10 @@ void HomeModulesCardRegistry::CreateAllCards() {
 #if BUILDFLAG(IS_IOS)
   int price_tracking_promo_count =
       profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
-  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo) &&
-      price_tracking_promo_count <
-          kMaxPriceTrackingNotificationCardImpressions) {
+  if (PriceTrackingNotificationPromo::IsEnabled(price_tracking_promo_count)) {
     all_cards_by_priority_.push_back(
-        std::make_unique<PriceTrackingNotificationPromo>());
+        std::make_unique<PriceTrackingNotificationPromo>(
+            price_tracking_promo_count));
   }
 #else
   // Add all cards

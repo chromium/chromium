@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
@@ -308,14 +309,18 @@
   options.on_demand_execution = true;
   auto inputContext =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  inputContext->metadata_args.emplace(
-      segmentation_platform::kIsNewUser,
-      segmentation_platform::processing::ProcessedValue::FromFloat(
-          IsFirstRunRecent(base::Days(14))));
-  inputContext->metadata_args.emplace(
-      segmentation_platform::kIsSynced,
-      segmentation_platform::processing::ProcessedValue::FromFloat(
-          _shoppingService->IsShoppingListEligible()));
+  // This check has to match check in HomeModulesCardRegistry::CreateAllCards()
+  // so that expected inputs match passed inputs.
+  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsNewUser,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            IsFirstRunRecent(base::Days(14))));
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsSynced,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _shoppingService->IsShoppingListEligible()));
+  }
   __weak MagicStackRankingModel* weakSelf = self;
   _segmentationService->GetClassificationResult(
       segmentation_platform::kEphemeralHomeModuleBackendKey, options,
@@ -338,11 +343,7 @@
   MagicStackModule* card;
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {
-      if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
-        if (!_shoppingService->IsShoppingListEligible()) {
-          base::debug::DumpWithoutCrashing();
-          return;
-        }
+      if (IsPriceTrackingPromoCardEnabled(_shoppingService)) {
         _ephemeralCardToShow =
             ContentSuggestionsModuleType::kPriceTrackingPromo;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;

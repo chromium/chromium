@@ -11,8 +11,10 @@ namespace segmentation_platform::home_modules {
 
 class PriceTrackingNotificationPromo : public CardSelectionInfo {
  public:
-  explicit PriceTrackingNotificationPromo();
+  explicit PriceTrackingNotificationPromo(int price_tracking_promo_count);
   ~PriceTrackingNotificationPromo() override = default;
+
+  static bool IsEnabled(int impression_count);
 
   // CardSelectionInfo
   std::map<SignalKey, FeatureQuery> GetInputs() override;

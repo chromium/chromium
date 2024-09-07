@@ -794,6 +794,11 @@ extern const char kPasswordSharingDescription[];
 extern const char kDownloadedPDFOpeningName[];
 extern const char kDownloadedPDFOpeningDescription[];
 
+// Title and description for the flag to enable the Price Tracking Notification
+// Promo card.
+extern const char kPriceTrackingPromoName[];
+extern const char kPriceTrackingPromoDescription[];
+
 // Title and description for the flag to enable the Privacy Guide.
 extern const char kPrivacyGuideIosName[];
 extern const char kPrivacyGuideIosDescription[];
@@ -852,6 +857,11 @@ extern const char kSafetyCheckNotificationsDescription[];
 // system.
 extern const char kScreenTimeIntegrationName[];
 extern const char kScreenTimeIntegrationDescription[];
+
+// Title and description for the flag to enable Segmentaiton ranking for the
+// ephemeral cards in the Magic Stack.
+extern const char kSegmentationPlatformEphemeralCardRankerName[];
+extern const char kSegmentationPlatformEphemeralCardRankerDescription[];
 
 // Title and description for the flag to enable caching Segmentation ranking for
 // the Home Magic Stack on Start.

@@ -5448,6 +5448,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-price-tracking-notification-promo-card",
+    "owners": [
+      "davidjm@google.com",
+      "thegreenfrog@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-proactive-password-generation-bottom-sheet",
     "owners": [
       "cloutierc@google.com",
@@ -5502,6 +5510,11 @@
       "chrome-browser-privacy-team@google.com"
     ],
     "expiry_milestone": 131
+  },
+  {
+    "name": "ios-segmentation-ephemeral-card-ranker",
+    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 136
   },
   {
     "name": "ios-shared-highlighting-color-change",
