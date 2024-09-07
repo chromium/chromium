@@ -13,6 +13,7 @@
 
 #include <codecapi.h>
 #include <d3d11_1.h>
+#include <mfapi.h>
 #include <mferror.h>
 #include <mftransform.h>
 
@@ -60,7 +61,13 @@
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #endif
 
+using Microsoft::WRL::ComPtr;
+
 namespace media {
+
+BASE_FEATURE(kExpandMediaFoundationEncodingResolutions,
+             "ExpandMediaFoundationEncodingResolutions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 constexpr uint32_t kDefaultGOPLength = 3000;
@@ -85,7 +92,9 @@ constexpr uint8_t kVP9MaxQuantizer = 56;
 constexpr uint8_t kAV1MinQuantizer = 10;
 // //third_party/webrtc/media/engine/webrtc_video_engine.h.
 constexpr uint8_t kAV1MaxQuantizer = 56;
-constexpr gfx::Size kMaxResolution(1920, 1088);
+constexpr gfx::Size k2KMaxResolution(1920, 1088);
+constexpr gfx::Size k4KMaxResolution(3840, 2160);
+constexpr gfx::Size k8KMaxResolution(7680, 4320);
 constexpr gfx::Size kMinResolution(32, 32);
 
 // The range for the quantization parameter is determined by examining the
@@ -396,8 +405,9 @@ MFTEnum2Type GetMFTEnum2Function() {
 
 // If MFTEnum2 is unavailable, this uses MFTEnumEx and doesn't fill any
 // adapter information if there are more than one adapters.
-std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
-  std::vector<IMFActivate*> encoders;
+std::vector<ComPtr<IMFActivate>> EnumerateHardwareEncodersLegacy(
+    VideoCodec codec) {
+  std::vector<ComPtr<IMFActivate>> encoders;
 
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
@@ -472,8 +482,9 @@ std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
   return encoders;
 }
 
-std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
-  std::vector<IMFActivate*> encoders;
+std::vector<ComPtr<IMFActivate>> EnumerateHardwareEncoders(VideoCodec codec) {
+  std::vector<ComPtr<IMFActivate>> encoders;
+
   if (!InitializeMediaFoundation()) {
     return encoders;
   }
@@ -563,27 +574,91 @@ std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
   return encoders;
 }
 
-bool IsCodecSupportedForEncoding(
-    VideoCodec codec,
-    int* num_temporal_layers,
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
-  *num_temporal_layers = 1;
-
-  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec);
-  if (activates.empty()) {
-    DVLOG(1) << "Hardware encode acceleration is not available for "
-             << GetCodecName(codec);
-    return false;
+UINT32 VideoCodecToMFVideoLevel(VideoCodec code) {
+  switch (code) {
+    case VideoCodec::kH264:
+      return eAVEncH264VLevel5_2;
+    case VideoCodec::kAV1:
+      return eAVEncAV1VLevel5_2;
+    case VideoCodec::kHEVC:
+      return eAVEncH265VLevel5_2;
+    default:
+      NOTREACHED();
   }
+}
+
+constexpr DWORD CalculateMacroBlocksPerSecond(const gfx::Size& size) {
+  constexpr DWORD kMacroBlockWidth = 16u;
+  constexpr DWORD kMacroBlockHeight = 16u;
+  constexpr DWORD kMacroBlockFrameRate = 30u;
+  return (size.GetArea() * kMacroBlockFrameRate) /
+         (kMacroBlockWidth * kMacroBlockHeight);
+}
+
+gfx::Size GetMaxResolutionFromMFT(VideoCodec codec, IMFTransform* encoder) {
+  ComPtr<IMFMediaType> media_type;
+  RETURN_ON_HR_FAILURE(MFCreateMediaType(&media_type),
+                       "Create media type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video),
+                       "Set major type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      media_type->SetGUID(MF_MT_SUBTYPE, VideoCodecToMFSubtype(codec)),
+      "Set guid for sub type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
+                         k2KMaxResolution.width(), k2KMaxResolution.height()),
+      "Set attribute size failed", k2KMaxResolution);
+  // Frame rate,30, is dummy value for pass through.
+  RETURN_ON_HR_FAILURE(MFSetAttributeRatio(media_type.Get(), MF_MT_FRAME_RATE,
+                                           /*unNumerator=*/30,
+                                           /*unDenominator=*/1),
+                       "Set attribute ratio failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_AVG_BITRATE, 9000000),
+                       "Set avg bitrate failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      media_type->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive),
+      "Set interlace mode failed", k2KMaxResolution);
+
+  if (codec != VideoCodec::kVP9) {
+    RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_VIDEO_LEVEL,
+                                               VideoCodecToMFVideoLevel(codec)),
+                         "Set video level failed", k2KMaxResolution);
+  }
+
+  RETURN_ON_HR_FAILURE(
+      encoder->SetOutputType(/*stream_id=*/0, media_type.Get(), 0),
+      "Set output type failed", k2KMaxResolution);
+
+  ComPtr<IMFAttributes> attributes;
+  RETURN_ON_HR_FAILURE(encoder->GetAttributes(&attributes),
+                       "Get attributes failed", k2KMaxResolution);
+  uint32_t max_macroblocks_per_second =
+      MFGetAttributeUINT32(attributes.Get(), MF_VIDEO_MAX_MB_PER_SEC, 0);
+  max_macroblocks_per_second &=
+      0x0fffffff;  // Only lower 28 bits are supported.
+
+  if (max_macroblocks_per_second >=
+      CalculateMacroBlocksPerSecond(k8KMaxResolution)) {
+    return k8KMaxResolution;
+  } else if (max_macroblocks_per_second >=
+             CalculateMacroBlocksPerSecond(k4KMaxResolution)) {
+    return k4KMaxResolution;
+  }
+  return k2KMaxResolution;
+}
+
+int GetMaxTemporalLayer(VideoCodec codec,
+                        std::vector<ComPtr<IMFActivate>>& activates,
+                        const gpu::GpuDriverBugWorkarounds& workarounds) {
+  int num_temporal_layers = 1;
 
   for (size_t i = 0; i < activates.size(); i++) {
-    *num_temporal_layers = std::max(
-        GetNumSupportedTemporalLayers(activates[i], codec, workarounds),
-        *num_temporal_layers);
-    activates[i]->Release();
+    num_temporal_layers = std::max(
+        GetNumSupportedTemporalLayers(activates[i].Get(), codec, workarounds),
+        num_temporal_layers);
   }
 
-  return true;
+  return num_temporal_layers;
 }
 
 // Per
@@ -738,22 +813,46 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
   for (auto codec : supported_codecs) {
-    int num_temporal_layers = 1;
-    if (!IsCodecSupportedForEncoding(codec, &num_temporal_layers,
-                                     workarounds_)) {
+    auto activates = EnumerateHardwareEncoders(codec);
+    if (activates.empty()) {
+      DVLOG(1) << "Hardware encode acceleration is not available for "
+               << GetCodecName(codec);
       continue;
     }
 
+    int num_temporal_layers =
+        GetMaxTemporalLayer(codec, activates, workarounds_);
     auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
                         VideoEncodeAccelerator::kVariableMode;
     if (codec == VideoCodec::kH264) {
       bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
     }
 
-    // There's no easy way to enumerate the supported resolution bounds, so we
-    // just choose reasonable default values.
-    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
-                             /*max_resolution=*/kMaxResolution,
+    gfx::Size max_resolution = k2KMaxResolution;
+
+    if (base::FeatureList::IsEnabled(
+            kExpandMediaFoundationEncodingResolutions)) {
+      // https://crbug.com/40233328, Ideally we'd want supported profiles to
+      // return the max supported resolution and then during configure() to
+      // find the encoder which can support the right resolution.
+      // For now checking only the first encoder seems okay, but we probably
+      // still need the configure() part: ensure that selected one supports the
+      // given resolution of the first encoder.
+      IMFActivate* activate = activates[0].Get();
+      ComPtr<IMFTransform> encoder;
+      if (FAILED(activate->ActivateObject(IID_PPV_ARGS(&encoder)))) {
+        continue;
+      }
+
+      CHECK(encoder);
+      max_resolution = GetMaxResolutionFromMFT(codec, encoder.Get());
+      DVLOG(3) << __func__ << ": " << codec
+               << " codec, max resolution width: " << max_resolution.width()
+               << ", height: " << max_resolution.height();
+      activate->ShutdownObject();
+    }
+
+    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN, max_resolution,
                              kMaxFrameRateNumerator, kMaxFrameRateDenominator,
                              bitrate_mode, {SVCScalabilityMode::kL1T1});
     profile.min_resolution = kMinResolution;
@@ -850,13 +949,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
   client_ = client;
-  // Unsupported frame size should be rejected. However, to avoid breaking
-  // existing applications, only a warning is printed.
-  if (!IsFrameSizeAllowed(config.input_visible_size)) {
-    MEDIA_LOG(WARNING, media_log_)
-        << config.input_visible_size.ToString()
-        << " is not supported by profile " << profile_;
-  }
+
   input_visible_size_ = config.input_visible_size;
   if (config.framerate > 0) {
     frame_rate_ = config.framerate;
@@ -880,7 +973,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 
   SetState(kInitializing);
 
-  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec_);
+  std::vector<ComPtr<IMFActivate>> activates =
+      EnumerateHardwareEncoders(codec_);
 
   if (activates.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -889,19 +983,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   }
 
   bool activated = ActivateAsyncEncoder(activates, config.is_constrained_h264);
-  if (!activates.empty()) {
-    // Release the enumerated instances if any.
-    // According to Windows Dev Center,
-    // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
-    // The caller must release the pointers.
-    for (size_t i = 0; i < activates.size(); i++) {
-      if (activates[i]) {
-        activates[i]->Release();
-        activates[i] = nullptr;
-      }
-    }
-    activates.clear();
-  }
+  activates.clear();
 
   if (!activated) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -1275,23 +1357,23 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
-  // TODO (crbug.com/40942709): Figure out how to get max supported resolution
-  // from MF API. Once it's done and GetSupportedProfiles() returns the true max
-  // resolution, we should use it here.
-  // Since GetSupportedProfiles() is very expensive, its result will need to
-  // be cashed in a static variable at the GPU process level.
+  if (max_resolution_.IsEmpty()) {
+    DCHECK(encoder_);
+    max_resolution_ = GetMaxResolutionFromMFT(codec_, encoder_.Get());
+  }
+
   if (size.width() >= kMinResolution.width() &&
       size.height() >= kMinResolution.height() &&
-      size.width() <= kMaxResolution.width() &&
-      size.height() <= kMaxResolution.height()) {
+      size.width() <= max_resolution_.width() &&
+      size.height() <= max_resolution_.height()) {
     return true;
   }
 
   size.Transpose();
   if (size.width() >= kMinResolution.width() &&
       size.height() >= kMinResolution.height() &&
-      size.width() <= kMaxResolution.width() &&
-      size.height() <= kMaxResolution.height()) {
+      size.width() <= max_resolution_.width() &&
+      size.height() <= max_resolution_.height()) {
     return true;
   }
   return false;
@@ -1474,7 +1556,7 @@ bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 }
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
-    std::vector<IMFActivate*>& activates,
+    std::vector<ComPtr<IMFActivate>>& activates,
     bool is_constrained_h264) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1482,7 +1564,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
   // Try to create the encoder with priority according to merit value.
   HRESULT hr = E_FAIL;
   for (auto& activate : activates) {
-    auto vendor = GetDriverVendor(activate);
+    auto vendor = GetDriverVendor(activate.Get());
 
     // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
     // baseline profile H.264 encoding, and go to the next instance according
@@ -1506,7 +1588,6 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       DCHECK(SUCCEEDED(hr));
       activate_ = activate;
       vendor_ = vendor;
-      activate = nullptr;
 
       // Print the friendly name.
       base::win::ScopedCoMem<WCHAR> friendly_name;

@@ -8,6 +8,7 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <stdint.h>
+#include <wrl/client.h>
 
 #include <memory>
 
@@ -145,8 +146,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
-  bool ActivateAsyncEncoder(std::vector<IMFActivate*>& activates,
-                            bool is_constrained_h264);
+  bool ActivateAsyncEncoder(
+      std::vector<Microsoft::WRL::ComPtr<IMFActivate>>& activates,
+      bool is_constrained_h264);
 
   // Initializes and allocates memory for input and output parameters.
   bool InitializeInputOutputParameters(VideoCodecProfile output_profile,
@@ -333,6 +335,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // This counter starts from 0, used for managing the METransformNeedInput
   // events sent by MFT encoder.
   uint32_t encoder_needs_input_counter_;
+
+  gfx::Size max_resolution_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
