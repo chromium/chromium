@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/permissions/features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,6 +94,13 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
   CHECK_GT(delegate_->Requests().size(), 0u);
   element_rect_ = delegate_->Requests()[0]->GetAnchorElementPosition().value_or(
       gfx::Rect());
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      delegate_->Requests()[0]->get_requesting_frame_id());
+  if (rfh && rfh->GetView()) {
+    element_rect_ = gfx::Rect(
+        rfh->GetView()->TransformPointToRootCoordSpace(element_rect_.origin()),
+        element_rect_.size());
+  }
 }
 
 EmbeddedPermissionPromptBaseView::~EmbeddedPermissionPromptBaseView() = default;
