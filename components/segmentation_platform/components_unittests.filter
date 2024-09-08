@@ -45,6 +45,7 @@
 *PostProcessorTest.*
 *PowerUserModelTest.*
 *PrefsMigratorTest.*
+*PriceTrackingNotificationPromoTest.*
 *RequestDispatcherTest.*
 *RequestHandlerTest.*
 *ResultMigrationUtilsTest.*

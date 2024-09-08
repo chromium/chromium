@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "card_selection_signals_unittest.cc",
     "ephemeral_home_module_backend_unittest.cc",
     "home_modules_card_registry_unittest.cc",
+    "price_tracking_notification_promo_unittest.cc",
   ]
 
   deps = [

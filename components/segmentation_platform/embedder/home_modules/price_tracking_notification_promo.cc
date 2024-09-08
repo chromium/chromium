@@ -24,23 +24,27 @@ namespace segmentation_platform {
 
 namespace home_modules {
 
+const char kHasSubscriptionSignalKey[] = "has_subscription";
+const char kIsNewUserSignalKey[] = "is_new_user";
+const char kIsSyncedSignalKey[] = "is_sycned";
+
 PriceTrackingNotificationPromo::PriceTrackingNotificationPromo(
     int price_tracking_promo_count)
     : CardSelectionInfo(kPriceTrackingNotificationPromo) {}
 
 std::map<SignalKey, FeatureQuery> PriceTrackingNotificationPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
-      {"has_subscription",
+      {kHasSubscriptionSignalKey,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
            .name = "TotalShoppingBookmarkCount"})},
-      {"is_new_user",
+      {kIsNewUserSignalKey,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kIsNewUser})},
-      {"is_sycned",
+      {kIsSyncedSignalKey,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
@@ -65,8 +69,14 @@ CardSelectionInfo::ShowResult PriceTrackingNotificationPromo::ComputeCardResult(
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
+  if (*signals.GetSignal(kHasSubscriptionSignalKey) &&
+      !*signals.GetSignal(kIsNewUserSignalKey) &&
+      *signals.GetSignal(kIsSyncedSignalKey)) {
+    result.position = EphemeralHomeModuleRank::kTop;
+    return result;
+  }
+
   result.position = EphemeralHomeModuleRank::kNotShown;
-  // TODO(b/361576671): Implement logic.
   return result;
 }
 
