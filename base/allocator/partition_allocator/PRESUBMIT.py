@@ -187,6 +187,11 @@ def CheckCpp17CompatibleKeywords(input_api, output_api):
         "co_return",
         "co_yield",
         "requires",
+        "std::hardware_",
+        "std::is_constant_evaluated",
+        "std::bit_cast",
+        "std::midpoint",
+        "std::to_array",
     ]
     # Note: C++23 doesn't introduce new keywords.
 

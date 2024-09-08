@@ -6,7 +6,6 @@
 #define PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_
 
 #include <cstddef>
-#include <new>
 #include <utility>
 
 #include "partition_alloc/address_pool_manager_types.h"
@@ -437,8 +436,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kUninitializedPoolBaseAddress =
       static_cast<uintptr_t>(-1);
 
-  struct alignas(std::hardware_destructive_interference_size)
-      PA_THREAD_ISOLATED_ALIGN PoolSetup {
+  struct alignas(kPartitionCachelineSize) PA_THREAD_ISOLATED_ALIGN PoolSetup {
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
     // -1, so that PartitionAddressSpace::IsIn*Pool() always returns false.
@@ -468,9 +466,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static_assert(sizeof(PoolSetup) % SystemPageSize() == 0,
                 "PoolSetup has to fill a page(s)");
 #else
-  static_assert(sizeof(PoolSetup) %
-                        std::hardware_destructive_interference_size ==
-                    0,
+  static_assert(sizeof(PoolSetup) % kPartitionCachelineSize == 0,
                 "PoolSetup has to fill a cacheline(s)");
 #endif
 
