@@ -355,7 +355,7 @@
 <translation id="1239841552505950173">הפעלת האפליקציה</translation>
 <translation id="1241066500170667906">בחירת מצב הניסוי של <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">שפות נוספות</translation>
-<translation id="1241381048229838873">הצג את כל הסימניות</translation>
+<translation id="1241381048229838873">הצגת כל הסימניות</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> רוצה לאפס את ההגדרות שלך.</translation>
 <translation id="1243002225871118300">שינוי גודל הטקסט והתצוגה</translation>
 <translation id="1243314992276662751">העלאה</translation>
@@ -4624,7 +4624,7 @@
 <translation id="4282196459431406533">‏Smart Lock מופעל</translation>
 <translation id="4284903252249997120">‏הקראה וקורא המסך ChromeVox</translation>
 <translation id="4285418559658561636">עדכון סיסמה</translation>
-<translation id="4285498937028063278">ביטול הצמדה</translation>
+<translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="428565720843367874">תוכנת האנטי-וירוס נכשלה באופן בלתי צפוי בעת סריקת קובץ זה.</translation>
 <translation id="4286409554022318832">‫<ph name="NUM_OF_APPS" /> אפליקציות שהותקנו יוסרו</translation>
 <translation id="4287099557599763816">קורא מסך</translation>
