@@ -5033,6 +5033,13 @@
      },
      "the-stylepropertymap": {
       "computed": {
+       "get-border-shorthand-crash.html": [
+        "c20a76334bea15ac9cacc574ff24a3ddee4b25ff",
+        [
+         null,
+         {}
+        ]
+       ],
        "getAll-disconnected-element-crash.html": [
         "5292ebae1cfe2cababc58d0c25439b5bfe9996b6",
         [
@@ -117085,6 +117092,19 @@
        [
         [
          "/css/css-flexbox/flexbox-align-items-center-nested-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-align-self-baseline-compatability.html": [
+      "42270c1b364c14dc21ba0eb67294eb263a4732f1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
