@@ -11,9 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -25,6 +23,7 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2527,23 +2526,27 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                        MAYBE_TrackWebContentsAcrossReplace) {
   const GURL url1 = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   const GURL url2 = embedded_test_server()->GetURL(kEmptyDocumentURL);
-  RunTestSequence(InstrumentTab(kWebContentsElementId),
-                  NavigateWebContents(kWebContentsElementId, url1),
-                  AddInstrumentedTab(kWebContentsElementId2, url2),
-                  SelectTab(kTabStripElementId, 1),
-                  // This has to be done on a fresh message loop.
-                  Do(base::BindLambdaForTesting([&]() {
-                    // Discard the first tab. This triggers a replacement. Note
-                    // that because the active tab cannot be discarded, this
-                    // line is guaranteed to discard the tab we want. (But if it
-                    // did not, the following steps would fail.)
-                    g_browser_process->GetTabManager()->DiscardTab(
-                        mojom::LifecycleUnitDiscardReason::EXTERNAL);
-                  })),
-                  WaitForHide(kWebContentsElementId),
-                  // This has to be done on a fresh message loop.
-                  // For some reason, this does not reliably trigger page
-                  // reload on Mac (see crbug.com/1447298).
-                  SelectTab(kTabStripElementId, 0),
-                  WaitForShow(kWebContentsElementId));
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, url1),
+      AddInstrumentedTab(kWebContentsElementId2, url2),
+      SelectTab(kTabStripElementId, 1),
+      // This has to be done on a fresh message loop.
+      Do(base::BindLambdaForTesting([&]() {
+        // Discard the first tab. This triggers a replacement.
+        content::WebContents* original_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        std::unique_ptr<content::WebContents> new_contents =
+            content::WebContents::Create(
+                content::WebContents::CreateParams(browser()->profile()));
+        new_contents->GetController().CopyStateFrom(
+            &original_contents->GetController(), true);
+        browser()->tab_strip_model()->DiscardWebContentsAt(
+            0, std::move(new_contents));
+      })),
+      WaitForHide(kWebContentsElementId),
+      // This has to be done on a fresh message loop.
+      // For some reason, this does not reliably trigger page
+      // reload on Mac (see crbug.com/1447298).
+      SelectTab(kTabStripElementId, 0), WaitForShow(kWebContentsElementId));
 }
