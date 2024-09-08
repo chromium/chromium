@@ -468,6 +468,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     const stream = await navigator.mediaDevices.getDisplayMedia({
       audio: {
         autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
       },
       systemAudio: 'include',
     });

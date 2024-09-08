@@ -178,6 +178,8 @@ export class PlatformHandler extends PlatformHandlerBase {
       video: false,
       audio: {
         autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
       },
       systemAudio: 'include',
     });
