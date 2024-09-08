@@ -757,6 +757,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356070529366658676">Pytaj</translation>
 <translation id="2356926036049612643">Optymalizator V8</translation>
+<translation id="2356941001189392209">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują zdarzenia oparte na starszej technologii</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -4297,6 +4298,7 @@ Dodatkowe informacje:
 <translation id="8919740778133505789">Samochody sportowe</translation>
 <translation id="8919895429178014996">Ukryj wszystkie elementy</translation>
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>
+<translation id="8922734931659847428">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują <ph name="BEGIN_LINK" />zdarzenia oparte na starszej technologii<ph name="END_LINK" /></translation>
 <translation id="8924109546403192898">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, adresy URL stron, z których skopiowano dane, nazwy plików lub metadane, awarie przeglądarki lub kart oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na danym urządzeniu i w Chrome.</translation>
 <translation id="892588693504540538">Otwór w prawym górnym rogu</translation>
 <translation id="8926389886865778422">Nie pytaj ponownie</translation>

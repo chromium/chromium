@@ -917,6 +917,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4209973997261364186">Povezava Wi-Fi je vklopljena.</translation>
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4212472694152630271">Preklopi na kodo PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, preklopni gumb, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Nastavitve VPN-ja</translation>
 <translation id="4217571870635786043">Narek</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, nameščena aplikacija, začasno zaustavljena</translation>

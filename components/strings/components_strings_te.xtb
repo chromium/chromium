@@ -711,6 +711,7 @@
 <translation id="2265356434276802347">ఈ పాలసీలో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఫీచర్ చేయబడిన ఎంట్రీలు ఉండకూడదు.</translation>
 <translation id="2267047181501709434">మీ గుర్తింపును ధృవీకరిస్తోంది...</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
+<translation id="2268966938956566076">అప్‌లోడ్ <ph name="MINUTES" /> నిమిషాల్లో</translation>
 <translation id="2270484714375784793">ఫోన్ నంబర్</translation>
 <translation id="2276057643614339130">ప్రింట్ బేస్</translation>
 <translation id="2277103315734023688">ముందుకు జరుపు</translation>
@@ -1108,6 +1109,7 @@
 <translation id="3062655045399308513">బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
+<translation id="3068118691172921711">మీ ఫైల్ అప్‌లోడ్ <ph name="CLOUD_PROVIDER" /> 1 నిమిషంలో ప్రారంభమవుతుంది</translation>
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
 <translation id="3082007635241601060">వ్యక్తిగతీకరించిన డిస్కౌంట్‌లు అందుబాటులో ఉన్నప్పుడు కనుగొనడానికి, మీ కార్ట్‌లను ఉపయోగించడానికి Googleకు అనుమతినివ్వండి</translation>
@@ -1119,6 +1121,7 @@
 <translation id="3099619114405539473">అందుబాటులో ఉన్న కెమెరాలను (<ph name="CAMERAS_COUNT" />) ఉపయోగించండి</translation>
 <translation id="3102312643185441063">సేవింగ్స్</translation>
 <translation id="3103188521861412364">స్టాక్‌లు &amp; బాండ్‌లు</translation>
+<translation id="3103535543639438037">ఒకలాంటి ప్రోడక్ట్‌లను పక్కపక్కనే ఉంచి పోల్చండి</translation>
 <translation id="3105172416063519923">అసెట్ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />సెక్యూర్ DNS కాన్ఫిగరేషన్‌ని చెక్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">మిడిల్ ట్రే</translation>
@@ -1296,6 +1299,7 @@
 <translation id="3407789382767355356">థర్డ్-పార్టీ సైన్ ఇన్</translation>
 <translation id="340924996148642843">కంపారిజన్ చేయడం ప్రస్తుతం అందుబాటులో లేదు</translation>
 <translation id="3409896703495473338">భద్రతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
+<translation id="3411091017011773343">అప్‌లోడ్ <ph name="HOURS" /> గంటల్లో</translation>
 <translation id="3414275587143250384">డిస్ట్రిబ్యూషన్ &amp; క్లౌడ్ కంప్యూటింగ్</translation>
 <translation id="3414952576877147120">సైజ్‌:</translation>
 <translation id="341513675006332771">'Chrome Dino గేమ్‌ను ఆడండి' బటన్, Chromeలో Dino Run గేమ్‌ను ఆడటానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -1964,6 +1968,7 @@
 <translation id="4628678854894591460">వెకేషన్ ఆఫర్‌లు</translation>
 <translation id="4628948037717959914">ఫోటో</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" />కు మీ ఫైల్ అప్‌లోడ్ కావడం <ph name="HOURS" /> గంటల్లో ప్రారంభమవుతుంది</translation>
 <translation id="4631649115723685955">క్యాష్‌బ్యాక్ లింక్ చేయబడింది</translation>
 <translation id="4631881646528206880">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్</translation>
 <translation id="4635278307999235413">అడ్మిన్ కన్సోల్‌కు డేటా పంపబడుతోంది</translation>
@@ -2084,6 +2089,7 @@
 <translation id="484988093836683706">పరికర అన్‌లాక్‌ను ఉపయోగించండి</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="4854853140771946034">Google Keepలో త్వరగా కొత్త నోట్‌ను క్రియేట్ చేయండి</translation>
+<translation id="4855395119669662878">మీ అడ్మినిస్ట్రేటర్ మీ ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />కు <ph name="DATE_TIME" /> సమయానికి అప్‌లోడ్ చేయడం ప్రారంభిస్తారు. మీ ఫైల్ అప్‌లోడ్ పూర్తయ్యే వరకు మీ పరికరాన్ని కనెక్ట్ చేసి ఉంచండి. అప్‌లోడ్ సమయంలో, మీరు లోకల్ ఫైల్స్‌ను మాత్రమే చదవగలరు.</translation>
 <translation id="485902285759009870">కోడ్‌ను వెరిఫై చేస్తోంది...</translation>
 <translation id="4860260582253463350">YouTubeకు కొనసాగడానికి, ఇది మీరేనని మేము నిర్ధారించుకోవాలి. Family Linkలో మీ తల్లి/తండ్రి లేదా గార్డియన్ సెటప్ చేసిన సెట్టింగ్‌లను మీరు పొందుతారు.</translation>
 <translation id="4864406669374375262">క్లిప్‌బోర్డ్‌కు వెర్షన్ స్ట్రింగ్ కాపీ చేయబడింది</translation>
@@ -2139,6 +2145,7 @@
 <translation id="4933468175699107356">ఏదైనా ఫారమ్‌లో మీ పేరు లేదా అడ్రస్ వంటి సేవ్ చేయబడిన సమాచారాన్ని ఆటోఫిల్ చేయడానికి కుడి క్లిక్ చేయండి</translation>
 <translation id="4934780484581617878">విండో మేనేజ్‌మెంట్</translation>
 <translation id="4936134414789135531">ఇన్‌సర్ట్ చేసిన <ph name="VALUE_NAME" /> కనుగొనబడలేదు.</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />కు మీ ఫైల్ అప్‌లోడ్ కావడం 1 గంటలో ప్రారంభమవుతుంది</translation>
 <translation id="4936675324097895694">ఆర్థికం</translation>
 <translation id="4943620199112228840">మీ మైక్రోఫోన్‌లను ఉపయోగించండి</translation>
 <translation id="4943872375798546930">ఫలితాలు ఏవీ లేవు</translation>
@@ -2314,6 +2321,7 @@
 <translation id="5269225904387178860">దిగువ భాగంలో నాలుగు రంధ్రాలు</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" విషయంలో, "<ph name="DATA_CONTROLS_ATTRIBUTE" />" కండిషన్‌కు సపోర్ట్ లేదు</translation>
 <translation id="5273658854610202413">హెచ్చరిక: ఈ విధానం విలీనం చేయగల నిఘంటువు విధానాలలో భాగం కానందున, PolicyDictionaryMultipleSourceMergeList విధానంలో పేర్కొన్నట్లుగా ఇది విలీనం చేయబడలేదు.</translation>
+<translation id="5278778426231952189">ఇప్పుడే అప్‌లోడ్ చేయండి</translation>
 <translation id="5279286380302340275">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">డాక్యుమెంట్ ప్రాపర్టీలు</translation>
@@ -3822,6 +3830,7 @@
 <translation id="8032546467100845887">ట్రాన్స్‌పరెన్సీ</translation>
 <translation id="8034522405403831421">ఈ పేజీ <ph name="SOURCE_LANGUAGE" />లో ఉంది. దీన్ని <ph name="TARGET_LANGUAGE" />లోకి అనువదించాలా?</translation>
 <translation id="8035152190676905274">పెన్</translation>
+<translation id="8035264638816032066">మీరు టేబుల్‌కు జోడించే పేజీల ట్యాబ్ టైటిల్స్, URLలు Googleకు పంపబడతాయి</translation>
 <translation id="8037117624646282037">పరికరాన్ని ఇటీవల ఎవరెవరు ఉపయోగించారు</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>
@@ -4122,6 +4131,7 @@
 <translation id="8564466070529550495">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8564985650692024650">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="8570895683659698018">అభిరుచులు &amp; కాలక్షేపం</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> వరకు చెల్లుబాటు అవుతుంది</translation>
 <translation id="8574841453995331336">రెఫ్రిజిరేటర్‌లు &amp; ఫ్రీజర్‌లు</translation>
 <translation id="8577192028579836704">అన్ని ఆప్షన్‌లు సాధారణంగా <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">వర్చువల్ కార్డ్ అందుబాటులో లేదు</translation>
@@ -4143,6 +4153,7 @@
 <translation id="8617269623452051934">మీ పరికర వినియోగం</translation>
 <translation id="861775596732816396">సైజ్‌ 4</translation>
 <translation id="8620276786115098679">ఎన్వలప్ కాకు 7</translation>
+<translation id="8622864575115813231">మీ ఆర్థిక సంస్థను సంప్రదిస్తోంది...</translation>
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="8634957317623797170">54 x 86 మి.మీ.</translation>
@@ -4444,6 +4455,7 @@
 <translation id="9192361865877479444">మెటల్ (మాట్)</translation>
 <translation id="9192947025498305328">క్లీన్ బ్యూటీ</translation>
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
+<translation id="9204089334327209740">అప్‌లోడ్ పూర్తయిన తర్వాత, మీరు మీ ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />లో సవరించవచ్చు. ట్రాష్‌లోని ఏవైనా ఫైల్స్‌తో సహా లోకల్ స్టోరేజ్ ఆటోమేటిక్‌గా తీసివేయబడుతుంది.</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="920643408853370361">ప్రయాణ బీమా</translation>
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
@@ -4464,6 +4476,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ఏ డేటా ఉపయోగించబడుతుంది:<ph name="END_BOLD" /> మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీ, అలాగే ఈ పరికరంలో Chromeను ఉపయోగించి మీరు తెరిచిన సైట్‌ల లిస్ట్ అనే అంశాలపై మీ యాడ్ టాపిక్‌లు ఆధారపడి ఉంటాయి.</translation>
 <translation id="937885410143139026">డేటా, అడ్మిన్ కన్సోల్‌కు పంపబడింది</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />కు మీ ఫైల్ అప్‌లోడ్ కావడం <ph name="MINUTES" /> నిమిషాల్లో ప్రారంభమవుతుంది</translation>
 <translation id="944540589955480312">మీ Google ఖాతాలో సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలను ఉపయోగించండి</translation>
 <translation id="945646848072568856">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.</translation>
 <translation id="945855313015696284">ఈ కింది వివరాలను ఒక్కసారి పరిశీలించి చెల్లని కార్డ్‌లు ఏమైనా ఉంటే తొలగించండి</translation>

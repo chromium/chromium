@@ -716,6 +716,7 @@
 <translation id="2265356434276802347">ນະໂຍບາຍນີ້ຕ້ອງມີຂໍ້ມູນບໍ່ເກີນ <ph name="MAX_ITEMS_LIMIT" /> ລາຍການ.</translation>
 <translation id="2267047181501709434">ກຳລັງກວດຢັ້ງຢືນຕົວຕົນຂອງທ່ານ...</translation>
 <translation id="2268044343513325586">ກັ່ນ​ຕອງ</translation>
+<translation id="2268966938956566076">ອັບໂຫຼດໃນອີກ <ph name="MINUTES" /> ນທ</translation>
 <translation id="2270484714375784793">ເບີໂທລະ​ສັບ</translation>
 <translation id="2276057643614339130">ຖານການພິມ</translation>
 <translation id="2277103315734023688">ເລື່ອນໄປໜ້າ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3062655045399308513">ລຶບຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
 <translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
+<translation id="3068118691172921711">ການອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ຈະເລີ່ມໃນອີກ 1 ນາທີ</translation>
 <translation id="3076865167425975822">ລະບົບປະຕິບັດການ</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
 <translation id="3082007635241601060">ໃຫ້ Google ໃຊ້ກະຕ່າຂອງທ່ານເພື່ອຊອກຫາສ່ວນຫຼຸດທີ່ປັບແຕ່ງສ່ວນຕົວໃນເວລາທີ່ສາມາດໃຊ້ໄດ້</translation>
@@ -1125,6 +1127,7 @@
 <translation id="3099619114405539473">ໃຊ້ກ້ອງທີ່ພ້ອມນຳໃຊ້ (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">ເງິນຝາກປະຢັດ</translation>
 <translation id="3103188521861412364">ຮຸ້ນ ແລະ ພັນທະບັດ</translation>
+<translation id="3103535543639438037">ປຽບທຽບຜະລິດຕະພັນທີ່ຄ້າຍຄືກັນຂ້າງກັນ</translation>
 <translation id="3105172416063519923">ລະ​ຫັດຊັບ​ສິນ​:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າ DNS ທີ່ປອດໄພ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ຖາດກາງ</translation>
@@ -1302,6 +1305,7 @@
 <translation id="3407789382767355356">ການເຂົ້າສູ່ລະບົບຂອງພາກສ່ວນທີສາມ</translation>
 <translation id="340924996148642843">ການປຽບທຽບບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນນີ້</translation>
 <translation id="3409896703495473338">ຈັດການການຕັ້ງຄ່າຄວາມປອດໄພ</translation>
+<translation id="3411091017011773343">ອັບໂຫຼດໃນອີກ <ph name="HOURS" /> ຊມ</translation>
 <translation id="3414275587143250384">ການປະມວນຜົນແບບກະຈາຍ ແລະ ແບບຄລາວ</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
 <translation id="341513675006332771">ປຸ່ມຫຼິ້ນເກມ Chrome Dino, ເປີດນຳໃຊ້ເພື່ອຫຼິ້ນເກມ Dino Run ໃນ Chrome</translation>
@@ -1970,6 +1974,7 @@
 <translation id="4628678854894591460">ຂໍ້ສະເໜີການພັກຜ່ອນ</translation>
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">ການອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ຈະເລີ່ມໃນອີກ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="4631649115723685955">ເຊື່ອມໂຍງເງິນຄືນແລ້ວ</translation>
 <translation id="4631881646528206880">ການລົງທະບຽນບັດສະເໝືອນ</translation>
 <translation id="4635278307999235413">ກຳລັງສົ່ງຂໍ້ມູນໄປຫາຄອນໂຊຜູ້ເບິ່ງແຍງ</translation>
@@ -2090,6 +2095,7 @@
 <translation id="484988093836683706">ໃຊ້ການປົດລັອກອຸປະກອນ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="4854853140771946034">ສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງງ່າຍດາຍ</translation>
+<translation id="4855395119669662878">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະເລີ່ມອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ໃນວັນທີ <ph name="DATE_TIME" />. ເຊື່ອມຕໍ່ອຸປະກອນຂອງທ່ານໄວ້ຈົນກວ່າການອັບໂຫຼດໄຟລ໌ຂອງທ່ານຈະສຳເລັດ. ໃນລະຫວ່າງທີ່ອັບໂຫຼດ, ທ່ານຈະສາມາດອ່ານໄຟລ໌ໃນເຄື່ອງໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="485902285759009870">ກຳລັງຢັ້ງຢືນລະຫັດ...</translation>
 <translation id="4860260582253463350">ເພື່ອດຳເນີນການຕໍ່ຢູ່ YouTube, ພວກເຮົາຕ້ອງກວດສອບວ່າແມ່ນທ່ານແທ້ໆ. ທ່ານຈະໄດ້ຮັບການຕັ້ງຄ່າທີ່ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງຂອງທ່ານຕັ້ງຄ່າໄວ້ໃນ Family Link.</translation>
 <translation id="4864406669374375262">ສຳເນົາສະຕຣິງເວີຊັນໄປໃສ່ຄລິບບອດແລ້ວ</translation>
@@ -2145,6 +2151,7 @@
 <translation id="4933468175699107356">ຄລິກຂວາເພື່ອຕື່ມຂໍ້ມູນທີ່ບັນທຶກໄວ້ໂດຍອັດຕະໂນມັດໃນທຸກຮູບແບບ ເຊັ່ນ: ຊື່ ຫຼື ທີ່ຢູ່ຂອງທ່ານ</translation>
 <translation id="4934780484581617878">ການຈັດການໜ້າຈໍ</translation>
 <translation id="4936134414789135531">ບໍ່ພົບ <ph name="VALUE_NAME" /> ທີ່ແຊກໃສ່.</translation>
+<translation id="4936573216809994970">ການອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ຈະເລີ່ມໃນອີກ 1 ຊົ່ວໂມງ</translation>
 <translation id="4936675324097895694">ການເງິນ</translation>
 <translation id="4943620199112228840">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="4943872375798546930">ບໍ່​ມີ​ຜົນ​ໄດ້​ຮັບ</translation>
@@ -2320,6 +2327,7 @@
 <translation id="5269225904387178860">ເຈາະຮູຢູ່ລຸ່ມສຸດສີ່ຮູ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ບໍ່ແມ່ນເງື່ອນໄຂທີ່ຮອງຮັບສຳລັບ "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">ຄຳເຕືອນ: ນະໂຍບາຍນີ້ບໍ່ຮວມເຂົ້າກັນຕາມທີ່ລະບຸໄວ້ໃນນະໂຍບາຍ PolicyDictionaryMultipleSourceMergeList ເພາະວ່າມັນບໍ່ແມ່ນສ່ວນໜຶ່ງຂອງນະໂຍບາຍພົດຈະນານຸກົມທີ່ສາມາດຮວມເຂົ້າກັນໄດ້.</translation>
+<translation id="5278778426231952189">ອັບໂຫຼດດຽວນີ້</translation>
 <translation id="5279286380302340275">ຈັດການການດາວໂຫຼດ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ຄຸນລັກສະນະຂອງເອກະສານ</translation>
@@ -3827,6 +3835,7 @@
 <translation id="8032546467100845887">ຄວາມໂປ່ງແສງ</translation>
 <translation id="8034522405403831421">ຫນ້າ​ນີ້​ຢູ່​ໃນ <ph name="SOURCE_LANGUAGE" />. ​ແປ​​ມັນເປັນ <ph name="TARGET_LANGUAGE" /> ບໍ?</translation>
 <translation id="8035152190676905274">ບິກ</translation>
+<translation id="8035264638816032066">ລະບົບຈະສົ່ງຊື່ແຖບ ແລະ URL ຂອງໜ້າທີ່ທ່ານເພີ່ມໃສ່ຕາຕະລາງໄປຫາ Google</translation>
 <translation id="8037117624646282037">ໃຜໃຊ້ອຸປະກອນເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
@@ -4127,6 +4136,7 @@
 <translation id="8564466070529550495">ບັດສະເໝືອນບໍ່ພ້ອມນຳໃຊ້ໃນຕອນນີ້, ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="8564985650692024650">Chromium ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="8570895683659698018">ວຽກເວລາຫວ່າງ ແລະ ການພັກຜ່ອນ</translation>
+<translation id="8572792595597115856">ໃຊ້ໄດ້ຈົນຮອດວັນທີ <ph name="DATE" /></translation>
 <translation id="8574841453995331336">ຕູ້ເຢັນ ແລະ ຕູ້ແຊ່</translation>
 <translation id="8577192028579836704">ຕົວເລືອກທັງໝົດປົກກະຕິແມ່ນ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ບໍ່ສາມາດໃຊ້ບັດສະເໝືອນໄດ້</translation>
@@ -4148,6 +4158,7 @@
 <translation id="8617269623452051934">ການນຳໃຊ້ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="861775596732816396">ຂະໜາດ 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
+<translation id="8622864575115813231">ກຳລັງຕິດຕໍ່ຫາສະຖາບັນການເງິນຂອງທ່ານ...</translation>
 <translation id="8623885649813806493">ບໍ່ມີລະຫັດຜ່ານທີ່ກົງກັນ. ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ.</translation>
 <translation id="8624354461147303341">ຮັບສ່ວນຫຼຸດ</translation>
 <translation id="8634957317623797170">54 x 86 ມມ</translation>
@@ -4450,6 +4461,7 @@
 <translation id="9192361865877479444">ໂລຫະ (ດ້ານ)</translation>
 <translation id="9192947025498305328">ຜະລິດຕະພັນເສີມຄວາມງາມຈາກທຳມະຊາດ</translation>
 <translation id="9199905725844810519">ມີການບລັອກການພິມໄວ້</translation>
+<translation id="9204089334327209740">ເມື່ອອັບໂຫຼດສຳເລັດແລ້ວ, ທ່ານສາມາດແກ້ໄຂໄຟລ໌ຂອງທ່ານໄດ້ໃນ <ph name="CLOUD_PROVIDER" />. ບ່ອນຈັດເກັບຂໍ້ມູນໃນເຄື່ອງ, ຮວມທັງໄຟລ໌ໃດກໍຕາມໃນຖັງຂີ້ເຫຍື້ອ, ຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="9205078245616868884">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍວະລີຜ່ານການຊິ້ງຂອງທ່ານ. ໃຫ້ປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="920643408853370361">ປະກັນໄພການເດີນທາງ</translation>
 <translation id="9207861905230894330">ເພີ່ມບົດຄວາມບໍ່ສໍາເລັດ.</translation>
@@ -4470,6 +4482,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ຂໍ້ມູນທີ່ໃຊ້:<ph name="END_BOLD" /> ຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈະອີງຕາມປະຫວັດການທ່ອງເວັບຫຼ້າສຸດຂອງທ່ານ, ເຊິ່ງເປັນລາຍຊື່ເວັບໄຊທີ່ທ່ານເຄີຍເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="937885410143139026">ສົ່ງຂໍ້ມູນໄປຫາຄອນໂຊຜູ້ເບິ່ງແຍງແລ້ວ</translation>
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
+<translation id="940524522703752213">ການອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ຈະເລີ່ມໃນອີກ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="944540589955480312">ໃຊ້ລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານທີ່ບັນທຶກໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="945646848072568856">Chrome ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນຂະນະທີ່ທ່ານທ່ອງເວັບ.</translation>
 <translation id="945855313015696284">ກວດເບິ່ງຂໍ້ມູນຂ້າງລຸ່ມ ແລະ ລຶບບັດທີ່ໃຊ້ບໍ່ໄດ້ຕ່າງໆ</translation>

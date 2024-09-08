@@ -757,6 +757,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2355395290879513365">Napadalci morda vidijo slike, ki si jih ogledujete na tem spletnem mestu, in vas ukanijo, tako da jih spremenijo.</translation>
 <translation id="2356070529366658676">Vprašaj</translation>
 <translation id="2356926036049612643">Orodje za optimiziranje V8</translation>
+<translation id="2356941001189392209">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do starejših tehnoloških dogodkov</translation>
 <translation id="2357481397660644965">Vašo napravo upravlja domena <ph name="DEVICE_MANAGER" /> in vaš račun upravlja domena <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Več valut</translation>
 <translation id="2359808026110333948">Naprej</translation>
@@ -4297,6 +4298,7 @@ Dodatne podrobnosti:
 <translation id="8919740778133505789">Športni avtomobili</translation>
 <translation id="8919895429178014996">Skrij vse elemente</translation>
 <translation id="8922013791253848639">Vedno dovoli oglase na tem spletnem mestu</translation>
+<translation id="8922734931659847428">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do <ph name="BEGIN_LINK" />starejših tehnoloških dogodkov<ph name="END_LINK" /></translation>
 <translation id="8924109546403192898">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, URL-je strani, s katerih ste kopirali podatke, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="892588693504540538">Luknjanje zgoraj desno</translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
