@@ -5584,7 +5584,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5039071832298038564">Seadme võrguteave</translation>
 <translation id="5039804452771397117">Luba</translation>
 <translation id="5040262127954254034">Privaatsus</translation>
-<translation id="5040823038948176460">Täiendavad sisuseaded</translation>
+<translation id="5040823038948176460">Täiendavad sisu seaded</translation>
 <translation id="5041509233170835229">Chrome'i rakendus</translation>
 <translation id="5043440033854483429">Nimes saab kasutada tähti, numbreid ja sidekriipse (-) ning nimi peab olema vahemikus 1–15 tähemärki pikk.</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> eemaldatakse ainult sellest seadmest. Tellimuses muudatuste tegemiseks võtke ühendust tellimusteenuse pakkujaga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -6510,7 +6510,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5711010025974903573">Teenuselogid</translation>
 <translation id="5711983031544731014">Ei õnnestu avada. Sisestage parool.</translation>
 <translation id="5712153969432126546">Mõnikord avaldavad saidid PDF-e, nt dokumente, lepinguid ja vorme</translation>
-<translation id="571222594670061844">Saidid saavad teile kuvada sisselogimisviipasid isikut tuvastavatest teenusest</translation>
+<translation id="571222594670061844">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid</translation>
 <translation id="5713033452812927234">Akende avamine teie eelmisest seadmest</translation>
 <translation id="5713158217420111469">Ühendatud seadmega <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Tühiku sisestusstiil</translation>
@@ -6730,7 +6730,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5876851302954717356">Uus vaheleht paremale</translation>
 <translation id="5877064549588274448">Kanal on muutunud. Muudatuste rakendamiseks taaskäivitage oma seade.</translation>
 <translation id="5877584842898320529">Valitud printer pole saadaval või pole õigesti installitud. <ph name="BR" /> Kontrollige printerit või valige teine printer.</translation>
-<translation id="5878945009165002849">Sisselogimisviibad isikut tuvastavatest teenusest blokeeritakse</translation>
+<translation id="5878945009165002849">Sisselogimisviibad identiteedihaldusteenustest blokeeritakse</translation>
 <translation id="5881710783061958569">Sellisel juhul muutke teenuses <ph name="BRAND" /> oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
 <translation id="5882919346125742463">Teadaolevad võrgud</translation>
 <translation id="5883356647197510494">Automaatselt on blokeeritud <ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /></translation>
