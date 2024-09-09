@@ -63,10 +63,10 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
 
   void OnAccountsResponseReceived(
       IdpNetworkRequestManager::FetchStatus fetch_status,
-      IdpNetworkRequestManager::AccountList accounts);
+      std::vector<IdentityRequestAccountPtr> accounts);
 
   void MaybeReturnAccounts(
-      const IdpNetworkRequestManager::AccountList& accounts);
+      const std::vector<IdentityRequestAccountPtr>& accounts);
 
   bool IsReturningAccount(const IdentityRequestAccount& account);
 

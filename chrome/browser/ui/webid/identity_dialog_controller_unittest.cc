@@ -46,10 +46,11 @@ class MockAccountSelectionView : public AccountSelectionView {
       bool,
       Show,
       (const std::string& rp_for_display,
-       const std::vector<content::IdentityProviderData>& identity_provider_data,
+       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
+       const std::vector<IdentityRequestAccountPtr>& accounts,
        Account::SignInMode sign_in_mode,
        blink::mojom::RpMode rp_mode,
-       const std::optional<content::IdentityProviderData>& new_account_idp),
+       const std::vector<IdentityRequestAccountPtr>& new_accounts),
       (override));
 
   MOCK_METHOD(bool,
@@ -134,26 +135,29 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
-  std::vector<content::IdentityRequestAccount> CreateAccount() {
-    return {
-        {"account_id1", "", "", "", GURL(),
-         /*login_hints=*/std::vector<std::string>(),
-         /*domain_hints=*/std::vector<std::string>(),
-         /*labels=*/std::vector<std::string>(),
-         /*login_state=*/content::IdentityRequestAccount::LoginState::kSignUp,
-         /*browser_trusted_login_state=*/
-         content::IdentityRequestAccount::LoginState::kSignUp}};
+  std::vector<IdentityRequestAccountPtr> CreateAccount() {
+    return {base::MakeRefCounted<Account>(
+        "account_id1", "", "", "", GURL(),
+        /*login_hints=*/std::vector<std::string>(),
+        /*domain_hints=*/std::vector<std::string>(),
+        /*labels=*/std::vector<std::string>(),
+        /*login_state=*/content::IdentityRequestAccount::LoginState::kSignUp,
+        /*browser_trusted_login_state=*/
+        content::IdentityRequestAccount::LoginState::kSignUp)};
   }
 
-  content::IdentityProviderData CreateIdentityProviderData(
-      std::vector<content::IdentityRequestAccount> accounts) {
-    return {kIdpEtldPlusOne,
-            accounts,
-            content::IdentityProviderMetadata(),
+  IdentityProviderDataPtr CreateIdentityProviderData(
+      std::vector<IdentityRequestAccountPtr>& accounts) {
+    IdentityProviderDataPtr idp_data =
+        base::MakeRefCounted<content::IdentityProviderData>(
+            kIdpEtldPlusOne, content::IdentityProviderMetadata(),
             content::ClientMetadata(GURL(), GURL(), GURL()),
-            blink::mojom::RpContext::kSignIn,
-            kDefaultPermissions,
-            /*has_login_status_mismatch=*/false};
+            blink::mojom::RpContext::kSignIn, kDefaultPermissions,
+            /*has_login_status_mismatch=*/false);
+    for (auto& account : accounts) {
+      account->identity_provider = idp_data;
+    }
+    return idp_data;
   }
 };
 
@@ -233,8 +237,8 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
   controller.SetAccountSelectionViewForTesting(
       std::make_unique<MockAccountSelectionView>());
 
-  std::vector<content::IdentityRequestAccount> accounts = CreateAccount();
-  content::IdentityProviderData idp_data = CreateIdentityProviderData(accounts);
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts);
 
   // Dismiss callback should run once.
   base::MockCallback<DismissCallback> dismiss_callback;
@@ -242,16 +246,17 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
 
   // Show button mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data},
+      kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kButton, /*new_account_idp=*/std::nullopt,
+      blink::mojom::RpMode::kButton,
+      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/dismiss_callback.Get(),
       /*accounts_displayed_callback=*/base::DoNothing());
 
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
-  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]);
+  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), *accounts[0]);
   controller.OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
@@ -262,8 +267,8 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
   controller.SetAccountSelectionViewForTesting(
       std::make_unique<MockAccountSelectionView>());
 
-  std::vector<content::IdentityRequestAccount> accounts = CreateAccount();
-  content::IdentityProviderData idp_data = CreateIdentityProviderData(accounts);
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts);
 
   // Dismiss callback should not be run.
   base::MockCallback<DismissCallback> dismiss_callback;
@@ -271,30 +276,32 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
 
   // Show widget mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data},
+      kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kWidget, /*new_account_idp=*/std::nullopt,
+      blink::mojom::RpMode::kWidget,
+      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/dismiss_callback.Get(),
       /*accounts_displayed_callback=*/base::DoNothing());
 
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
-  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]);
+  controller.OnAccountSelected(GURL(kIdpEtldPlusOne), *accounts[0]);
   controller.OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
 // Crash test for crbug.com/358302105.
 TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
   IdentityDialogController controller(web_contents());
-  std::vector<content::IdentityRequestAccount> accounts = CreateAccount();
-  content::IdentityProviderData idp_data = CreateIdentityProviderData(accounts);
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts);
 
   // Show button mode accounts dialog.
   EXPECT_FALSE(controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data},
+      kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kButton, /*new_account_idp=*/std::nullopt,
+      blink::mojom::RpMode::kButton,
+      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/base::DoNothing(),
       /*accounts_displayed_callback=*/base::DoNothing()));

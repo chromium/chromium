@@ -42,19 +42,20 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override { ShowAccounts(); }
 
   void ShowAccounts(Account::SignInMode mode = Account::SignInMode::kExplicit) {
-    std::vector<content::IdentityRequestAccount> accounts = {
-        {"id", "email", "name", "given_name", GURL(),
-         /*login_hints=*/std::vector<std::string>(),
-         /*domain_hints=*/std::vector<std::string>(),
-         /*labels=*/std::vector<std::string>()}};
+    idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
+        "idp-example.com", content::IdentityProviderMetadata(),
+        content::ClientMetadata(GURL(), GURL(), GURL()),
+        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false)};
+    accounts_ = {base::MakeRefCounted<Account>(
+        "id", "email", "name", "given_name", GURL(),
+        /*login_hints=*/std::vector<std::string>(),
+        /*domain_hints=*/std::vector<std::string>(),
+        /*labels=*/std::vector<std::string>())};
+    accounts_[0]->identity_provider = idps_[0];
     account_selection_view()->Show(
-        "rp-example.com",
-        {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false}},
-        mode, blink::mojom::RpMode::kWidget,
-        /*new_account_idp*/ std::nullopt);
+        "rp-example.com", idps_, accounts_, mode, blink::mojom::RpMode::kWidget,
+        /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 
   void Show() {
@@ -77,6 +78,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeDelegate> delegate_;
+  std::vector<IdentityProviderDataPtr> idps_;
+  std::vector<IdentityRequestAccountPtr> accounts_;
   std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
 };
 

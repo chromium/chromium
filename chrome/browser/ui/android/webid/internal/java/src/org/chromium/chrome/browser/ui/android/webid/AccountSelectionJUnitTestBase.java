@@ -40,6 +40,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Common test fixtures for AccountSelection Robolectric JUnit tests. */
 public class AccountSelectionJUnitTestBase {
     @Parameter(0)
@@ -90,7 +93,6 @@ public class AccountSelectionJUnitTestBase {
     Account mNewUserAccount;
     Account mNoOneAccount;
 
-    ClientIdMetadata mClientIdMetadata;
     IdentityCredentialTokenError mTokenError;
     IdentityCredentialTokenError mTokenErrorEmptyUrl;
 
@@ -99,9 +101,10 @@ public class AccountSelectionJUnitTestBase {
     ModelList mSheetAccountItems;
     View mContentView;
     IdentityProviderMetadata mIdpMetadata;
-    IdentityProviderData mNewAccountsIdpSingleReturningAccount;
-    IdentityProviderData mNewAccountsIdpSingleNewAccount;
-    IdentityProviderData mNewAccountsIdpMultipleAccounts;
+    IdentityProviderData mIdpData;
+    List<Account> mNewAccountsSingleReturningAccount;
+    List<Account> mNewAccountsSingleNewAccount;
+    List<Account> mNewAccountsMultipleAccounts;
     AccountSelectionBottomSheetContent mBottomSheetContent;
     AccountSelectionMediator mMediator;
 
@@ -175,11 +178,6 @@ public class AccountSelectionJUnitTestBase {
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true);
 
-        mClientIdMetadata =
-                new ClientIdMetadata(
-                        mTestUrlTermsOfService,
-                        mTestUrlPrivacyPolicy,
-                        mTestRpBrandIconUrl.getSpec());
         mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
         mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);
 
@@ -192,33 +190,21 @@ public class AccountSelectionJUnitTestBase {
                         mTestLoginUrl,
                         /* supportsAddAccount= */ false);
 
-        mNewAccountsIdpSingleReturningAccount =
+        mIdpData =
                 new IdentityProviderData(
-                        mTestEtldPlusOne,
-                        new Account[] {mAnaAccount},
+                        mTestEtldPlusOne2,
                         mIdpMetadata,
-                        mClientIdMetadata,
+                        new ClientIdMetadata(
+                                mTestUrlTermsOfService,
+                                mTestUrlPrivacyPolicy,
+                                mTestRpBrandIconUrl.getSpec()),
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
-                        /* hasLoginStatusMismatch= */ false);
-        mNewAccountsIdpSingleNewAccount =
-                new IdentityProviderData(
-                        mTestEtldPlusOne,
-                        new Account[] {mNewUserAccount},
-                        mIdpMetadata,
-                        mClientIdMetadata,
-                        RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
-                        /* hasLoginStatusMismatch= */ false);
-        mNewAccountsIdpMultipleAccounts =
-                new IdentityProviderData(
-                        mTestEtldPlusOne,
-                        new Account[] {mAnaAccount, mBobAccount},
-                        mIdpMetadata,
-                        mClientIdMetadata,
-                        RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
-                        /* hasLoginStatusMismatch= */ false);
+                        /* request_permission= */ true,
+                        /* has_login_status_mismatch= */ false);
+
+        mNewAccountsSingleReturningAccount = Arrays.asList(mAnaAccount);
+        mNewAccountsSingleNewAccount = Arrays.asList(mNewUserAccount);
+        mNewAccountsMultipleAccounts = Arrays.asList(mAnaAccount, mBobAccount);
 
         mActivityScenarioRule
                 .getScenario()

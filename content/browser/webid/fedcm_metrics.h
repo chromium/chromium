@@ -19,6 +19,7 @@ class TimeDelta;
 
 namespace content {
 
+using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
 
@@ -274,7 +275,7 @@ class CONTENT_EXPORT FedCmMetrics {
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
   // mismatch flow or button flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTime(
-      const std::vector<IdentityProviderData>& providers,
+      const std::vector<IdentityProviderDataPtr>& providers,
       base::TimeDelta duration);
 
   // Records the time from when a call to the API was made to when the accounts
@@ -300,19 +301,19 @@ class CONTENT_EXPORT FedCmMetrics {
   // selecting any accounts. `duration` is the time from when the accounts
   // dialog was shown to when the user closed the dialog.
   void RecordCancelOnDialogTime(
-      const std::vector<IdentityProviderData>& providers,
+      const std::vector<IdentityProviderDataPtr>& providers,
       base::TimeDelta duration);
 
   // Records the duration from when an accounts dialog is shown to when it is
   // destroyed.
   void RecordAccountsDialogShownDuration(
-      const std::vector<IdentityProviderData>& providers,
+      const std::vector<IdentityProviderDataPtr>& providers,
       base::TimeDelta duration);
 
   // Records the duration from when a mismatch dialog is shown to when it is
   // destroyed or user triggers IDP sign-in pop-up window.
   void RecordMismatchDialogShownDuration(
-      const std::vector<IdentityProviderData>& providers,
+      const std::vector<IdentityProviderDataPtr>& providers,
       base::TimeDelta duration);
 
   // Records the reason that closed accounts dialog without selecting any
@@ -383,7 +384,7 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records a sample when an accounts dialog is shown.
   void RecordAccountsDialogShown(
-      const std::vector<IdentityProviderData>& providers);
+      const std::vector<IdentityProviderDataPtr>& providers);
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.

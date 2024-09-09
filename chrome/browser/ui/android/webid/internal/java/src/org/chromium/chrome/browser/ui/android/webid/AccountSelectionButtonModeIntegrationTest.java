@@ -49,13 +49,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionMediator.AccountChooserResult;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
-import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Integration tests for the Account Selection Button Mode component check that the calls to the
@@ -82,12 +82,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -106,12 +103,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         EXAMPLE_ETLD_PLUS_ONE,
                                         TEST_ETLD_PLUS_ONE_2,
                                         Arrays.asList(NEW_BOB, RETURNING_ANA),
-                                        IDP_METADATA_WITH_ADD_ACCOUNT,
-                                        mClientIdMetadata,
+                                        mIdpDataWithAddAccount,
                                         /* isAutoReauthn= */ false,
-                                        RpContext.SIGN_IN,
-                                        /* requestPermission= */ true,
-                                        mNewAccountsIdpReturningAna);
+                                        mNewAccountsReturningAna);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -125,7 +119,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     contentView.findViewById(R.id.account_selection_add_account_btn).performClick();
                 });
 
-        // Because of newAccountsIdp and the account is a returning user, user is now signed in and
+        // Because of newAccounts and the account is a returning user, user is now signed in and
         // shown the verifying UI.
         assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
 
@@ -142,12 +136,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -166,12 +157,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         EXAMPLE_ETLD_PLUS_ONE,
                                         TEST_ETLD_PLUS_ONE_2,
                                         Arrays.asList(NEW_BOB, RETURNING_ANA),
-                                        IDP_METADATA_WITH_ADD_ACCOUNT,
-                                        mClientIdMetadata,
+                                        mIdpDataWithAddAccount,
                                         /* isAutoReauthn= */ false,
-                                        RpContext.SIGN_IN,
-                                        /* requestPermission= */ true,
-                                        mNewAccountsIdpNewBob);
+                                        mNewAccountsNewBob);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -185,7 +173,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     contentView.findViewById(R.id.account_selection_add_account_btn).performClick();
                 });
 
-        // Because of newAccountsIdp and the account is a non-returning user which requires us to
+        // Because of newAccounts and the account is a non-returning user which requires us to
         // show disclosure text, the next dialog shown should be the request permission dialog with
         // only the newly signed-in account and the disclosure text shown.
         assertEquals(
@@ -221,15 +209,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ false);
-        IdentityProviderData newAccountsIdp =
-                new IdentityProviderData(
-                        EXAMPLE_ETLD_PLUS_ONE,
-                        new Account[] {account},
-                        IDP_METADATA_WITH_ADD_ACCOUNT,
-                        mClientIdMetadata,
-                        RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
-                        /* hasLoginStatusMismatch= */ false);
 
         runOnUiThreadBlocking(
                 () -> {
@@ -237,12 +216,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -261,12 +237,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         EXAMPLE_ETLD_PLUS_ONE,
                                         TEST_ETLD_PLUS_ONE_2,
                                         Arrays.asList(account, RETURNING_ANA),
-                                        IDP_METADATA_WITH_ADD_ACCOUNT,
-                                        mClientIdMetadata,
+                                        mIdpDataWithAddAccount,
                                         /* isAutoReauthn= */ false,
-                                        RpContext.SIGN_IN,
-                                        /* requestPermission= */ true,
-                                        newAccountsIdp);
+                                        Arrays.asList(account));
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -280,7 +253,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     contentView.findViewById(R.id.account_selection_add_account_btn).performClick();
                 });
 
-        // Because of newAccountsIdp and the account's IDP claimed login state does not match the
+        // Because of newAccounts and the account's IDP claimed login state does not match the
         // account's browser trusted login state, we show the account chooser UI since browser
         // trusted login state takes precedence. We do not show the request permission UI because
         // the IDP claimed login state tells us to not show the disclosure text.
@@ -305,12 +278,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -354,12 +324,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -386,12 +353,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -420,12 +384,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB, RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -494,12 +455,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -530,12 +488,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -555,18 +510,16 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
     @Test
     @MediumTest
     public void testRpInApprovedClientsFlow() {
+        mIdpDataWithAddAccount.setRequestPermission(false);
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ false,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -592,12 +545,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -626,12 +576,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -673,12 +620,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -726,12 +670,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -770,18 +711,16 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
     @Test
     @MediumTest
     public void testAccountSelectionRecordsAccountChooserResultHistogram() {
+        mIdpDataWithAddAccount.setRequestPermission(false);
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ false,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -805,12 +744,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -841,12 +777,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
+                            mIdpData,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
@@ -873,12 +806,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -902,12 +832,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -936,12 +863,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -970,12 +894,9 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            IDP_METADATA_WITH_ADD_ACCOUNT,
-                            mClientIdMetadata,
+                            mIdpDataWithAddAccount,
                             /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);

@@ -363,7 +363,7 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        showAccountsInternal(/* newAccountsIdp= */ null);
+        showAccountsInternal(/* newAccounts= */ null);
     }
 
     private PropertyModel createHeaderItem(
@@ -546,25 +546,22 @@ class AccountSelectionMediator {
             String rpForDisplay,
             String idpForDisplay,
             List<Account> accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata,
+            IdentityProviderData idpData,
             boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission,
-            @Nullable IdentityProviderData newAccountsIdp) {
+            List<Account> newAccounts) {
         // On widget mode, show placeholder icon to preserve header text wrapping when icon is
         // fetched.
         if (mRpMode == RpMode.WIDGET) {
-            showPlaceholderIcon(idpMetadata);
+            showPlaceholderIcon(idpData.getIdpMetadata());
         }
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
-        mIdpMetadata = idpMetadata;
-        mClientMetadata = clientMetadata;
+        mIdpMetadata = idpData.getIdpMetadata();
+        mClientMetadata = idpData.getClientMetadata();
         mIsAutoReauthn = isAutoReauthn;
-        mRpContext = rpContext;
-        mRequestPermission = requestPermission;
+        mRpContext = idpData.getRpContext();
+        mRequestPermission = idpData.getRequestPermission();
         mSelectedAccount = null;
 
         fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
@@ -573,11 +570,11 @@ class AccountSelectionMediator {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
         }
 
-        if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
+        if (accounts.size() == 1 && (isAutoReauthn || !mIdpMetadata.supportsAddAccount())) {
             mSelectedAccount = accounts.get(0);
         }
 
-        showAccountsInternal(newAccountsIdp);
+        showAccountsInternal(newAccounts);
         setComponentShowTime(SystemClock.elapsedRealtime());
     }
 
@@ -664,12 +661,10 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
-    private void showAccountsInternal(@Nullable IdentityProviderData newAccountsIdp) {
+    private void showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
-                newAccountsIdp != null && newAccountsIdp.getAccounts().size() == 1
-                        ? newAccountsIdp.getAccounts().get(0)
-                        : null;
+                newAccounts != null && newAccounts.size() == 1 ? newAccounts.get(0) : null;
 
         if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.BUTTON) {
             mSelectedAccount = newlySignedInAccount;
@@ -693,7 +688,7 @@ class AccountSelectionMediator {
             // if we do not skip the next dialog. Also skip when request_permission
             // is false (controlled by the fields API).
             boolean shouldShowRequestPermissionDialog =
-                    !newlySignedInAccount.isSignIn() && newAccountsIdp.getRequestPermission();
+                    !newlySignedInAccount.isSignIn() && mRequestPermission;
             if (shouldShowRequestPermissionDialog) {
                 showRequestPermissionSheet(mSelectedAccount);
                 return;
@@ -982,7 +977,7 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user and RP mode is widget.
-        showAccountsInternal(/* newAccountsIdp= */ null);
+        showAccountsInternal(/* newAccounts= */ null);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {

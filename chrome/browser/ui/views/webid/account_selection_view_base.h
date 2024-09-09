@@ -28,10 +28,13 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget_observer.h"
 
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
 
 namespace content {
-struct IdentityRequestAccount;
+class IdentityRequestAccount;
 }  // namespace content
 
 // The radius used for the corner of the "Continue as" button.
@@ -140,12 +143,12 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
    public:
     // Called when a user either selects the account from the multi-account
     // chooser or clicks the "continue" button.
-    // Takes `account` as well as `idp_display_data` since passing `account_id`
+    // Takes `account` as well as `idp_data` since passing `account_id`
     // is insufficient in the multiple IDP case. The caller should pass a cref,
     // as these objects are owned by the observer.
     virtual void OnAccountSelected(
         const content::IdentityRequestAccount& account,
-        const content::IdentityProviderData& idp_display_data,
+        const content::IdentityProviderData& idp_data,
         const ui::Event& event) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
@@ -201,14 +204,14 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // 'Choose an account'. This is currently only used on widget mode, when
   // clicking on the 'Choose an account' button.
   virtual void ShowMultiAccountPicker(
-      const std::vector<content::IdentityProviderData>& idp_data_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
       bool show_back_button,
       bool is_choose_an_account) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data,
       const std::u16string& title) = 0;
 
   // Updates to show a single account. On widget mode, used when showing the
@@ -216,7 +219,6 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // On button mode, used for the user to pick the single account.
   virtual void ShowSingleAccountConfirmDialog(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data,
       bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "failure" sheet.
@@ -233,13 +235,14 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_display_data) = 0;
+      const content::IdentityProviderData& idp_data) = 0;
 
   // Updates to show a single account along with a button to show all options.
   // Currently used when there are multiple IDPs and exactly one returning
   // account.
   virtual void ShowSingleReturningAccountDialog(
-      const std::vector<content::IdentityProviderData>& idp_data_list) = 0;
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityProviderDataPtr>& idp_list) = 0;
 
   // Updates the FedCM dialog to show the "loading" sheet.
   virtual void ShowLoadingDialog() = 0;
@@ -281,7 +284,6 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // account in the overall dialog.
   std::unique_ptr<views::View> CreateAccountRow(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_display_data,
       std::optional<int> clickable_position,
       bool should_include_idp,
       bool is_modal_dialog = false,
@@ -291,7 +293,7 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // Returns a StyledLabel containing a disclosure label. The label links to
   // privacy policy and terms of service URLs, if available.
   std::unique_ptr<views::StyledLabel> CreateDisclosureLabel(
-      const content::IdentityProviderData& idp_display_data);
+      const content::IdentityProviderData& idp_data);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.

@@ -40,10 +40,11 @@ int IdentityDialogController::GetBrandIconIdealSize(
 
 bool IdentityDialogController::ShowAccountsDialog(
     const std::string& rp_for_display,
-    const std::vector<content::IdentityProviderData>& identity_provider_data,
+    const std::vector<IdentityProviderDataPtr>& identity_provider_data,
+    const std::vector<IdentityRequestAccountPtr>& accounts,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    const std::optional<content::IdentityProviderData>& new_account_idp,
+    const std::vector<IdentityRequestAccountPtr>& new_accounts,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback,
@@ -56,8 +57,8 @@ bool IdentityDialogController::ShowAccountsDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->Show(rp_for_display, identity_provider_data,
-                             sign_in_mode, rp_mode, new_account_idp);
+  return account_view_->Show(rp_for_display, identity_provider_data, accounts,
+                             sign_in_mode, rp_mode, new_accounts);
 }
 
 bool IdentityDialogController::ShowFailureDialog(

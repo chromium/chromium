@@ -18,7 +18,6 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
-import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -105,36 +104,26 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
-     * @param idpMetadata is the metadata of the IDP.
-     * @param clientIdMetadata is the metadata of the RP.
+     * @param idpData is the data of the IDP.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
-     * @param rpContext is an enum representing the desired text to be used in the title of the
-     *     FedCM prompt: "signin", "continue", etc.
-     * @param requestPermission A {@link boolean} indicating whether we need to request permission
-     *     from the user to share their data with the IDP, if the user is not a returning user.
+     * @param newAccounts represents the newly logged in accounts.
      */
     @CalledByNative
     private void showAccounts(
             @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             Account[] accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientIdMetadata,
+            IdentityProviderData idpData,
             boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission,
-            @Nullable IdentityProviderData newAccountsIdp) {
+            Account[] newAccounts) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(
                 rpForDisplay,
                 idpForDisplay,
                 Arrays.asList(accounts),
-                idpMetadata,
-                clientIdMetadata,
+                idpData,
                 isAutoReauthn,
-                rpContext,
-                requestPermission,
-                newAccountsIdp);
+                Arrays.asList(newAccounts));
     }
 
     /**

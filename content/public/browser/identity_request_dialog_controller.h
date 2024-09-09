@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/identity_request_account.h"
@@ -65,20 +66,18 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   bool supports_add_account{false};
 };
 
-struct CONTENT_EXPORT IdentityProviderData {
-  IdentityProviderData(const std::string& idp_url_for_display,
-                       const std::vector<IdentityRequestAccount>& accounts,
+class CONTENT_EXPORT IdentityProviderData
+    : public base::RefCounted<IdentityProviderData> {
+ public:
+  IdentityProviderData(const std::string& idp_for_display,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
                        blink::mojom::RpContext rp_context,
                        const std::vector<IdentityRequestDialogDisclosureField>&
                            disclosure_fields,
                        bool has_login_status_mismatch);
-  IdentityProviderData(const IdentityProviderData& other);
-  ~IdentityProviderData();
 
   std::string idp_for_display;
-  std::vector<IdentityRequestAccount> accounts;
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
   blink::mojom::RpContext rp_context;
@@ -88,6 +87,11 @@ struct CONTENT_EXPORT IdentityProviderData {
   // Whether there was some login status API mismatch when fetching the IDP's
   // accounts.
   bool has_login_status_mismatch;
+
+ private:
+  friend class base::RefCounted<IdentityProviderData>;
+
+  ~IdentityProviderData();
 };
 
 // IdentityRequestDialogController is an interface, overridden and implemented
@@ -159,16 +163,19 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Shows and accounts selections for the given IDP. The `on_selected` callback
   // is called with the selected account id or empty string otherwise.
   // `sign_in_mode` represents whether this is an auto re-authn flow.
-  // `new_accounts_idp` are the accounts that were just logged in, which should
+  // `new_accounts` are the accounts that were just logged in, which should
   // be prioritized in the UI. Returns true if the method successfully showed
   // UI. When false, the caller should assume that the API invocation was
   // terminated and the cleanup methods invoked.
   virtual bool ShowAccountsDialog(
       const std::string& rp_for_display,
-      const std::vector<IdentityProviderData>& identity_provider_data,
-      IdentityRequestAccount::SignInMode sign_in_mode,
+      const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
+      const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
+          accounts,
+      content::IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<IdentityProviderData>& new_accounts_idp,
+      const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
+          new_accounts,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,

@@ -69,16 +69,7 @@ constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
-static const std::vector<IdentityRequestAccount> kAccounts{{
-    kAccountId,                  // id
-    "ken@idp.example",           // email
-    "Ken R. Example",            // name
-    "Ken",                       // given_name
-    GURL(),                      // picture
-    std::vector<std::string>(),  // login_hints
-    std::vector<std::string>(),  // domain_hints
-    std::vector<std::string>()   // labels
-}};
+static std::vector<IdentityRequestAccountPtr> kAccounts;
 
 // IdpNetworkRequestManager which returns valid data from IdP.
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
@@ -163,10 +154,11 @@ class TestDialogController
 
   bool ShowAccountsDialog(
       const std::string& rp_for_display,
-      const std::vector<IdentityProviderData>& identity_provider_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
       IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_account_idp,
+      const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -216,6 +208,18 @@ class FederatedAuthRequestImplMultipleFramesTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
+    // Initialize `kAccounts` on SetUp() to ensure it is initialized correctly
+    // in every test.
+    kAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
+        kAccountId,                  // id
+        "ken@idp.example",           // email
+        "Ken R. Example",            // name
+        "Ken",                       // given_name
+        GURL(),                      // picture
+        std::vector<std::string>(),  // login_hints
+        std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>()   // labels
+        )};
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     mock_auto_reauthn_permission_delegate_ =

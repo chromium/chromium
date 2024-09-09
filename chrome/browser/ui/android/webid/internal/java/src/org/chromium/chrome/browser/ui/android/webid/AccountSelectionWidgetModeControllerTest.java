@@ -29,13 +29,13 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /** Controller tests verify that the Account Selection Widget Mode delegate modifies the model. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,16 +52,14 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
         for (int rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
+            mIdpData.setRpContext(rpContext);
             mMediator.showAccounts(
                     mTestEtldPlusOne,
                     mTestEtldPlusOne2,
                     Arrays.asList(mNewUserAccount),
-                    mIdpMetadata,
-                    mClientIdMetadata,
+                    mIdpData,
                     /* isAutoReauthn= */ false,
-                    rpContext,
-                    /* requestPermission= */ true,
-                    /* newAccountsIdp= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
 
             assertEquals(1, mSheetAccountItems.size());
@@ -76,17 +74,15 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
         for (int rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
+            mIdpData.setRpContext(rpContext);
             // showVerifySheet is called in showAccounts when isAutoReauthn is true
             mMediator.showAccounts(
                     mTestEtldPlusOne,
                     mTestEtldPlusOne2,
                     Arrays.asList(mAnaAccount),
-                    mIdpMetadata,
-                    mClientIdMetadata,
+                    mIdpData,
                     /* isAutoReauthn= */ true,
-                    rpContext,
-                    /* requestPermission= */ true,
-                    /* newAccountsIdp= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -119,12 +115,9 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
+                mIdpData,
                 /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true,
-                /* newAccountsIdp= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
@@ -148,12 +141,9 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
+                mIdpData,
                 /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true,
-                /* newAccountsIdp= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Brand icon should be transparent placeholder icon. This is useful so that the header text

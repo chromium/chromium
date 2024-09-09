@@ -41,6 +41,10 @@ inline constexpr char kRpBrandIconUrl[] = "https://rp-brand-icon.com";
 extern const std::vector<content::IdentityRequestDialogDisclosureField>
     kDefaultDisclosureFields;
 
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
+
 // A base class for FedCM account selection view unit tests.
 class AccountSelectionViewTestBase {
  public:
@@ -69,16 +73,18 @@ class AccountSelectionViewTestBase {
                            bool expect_terms_of_service,
                            bool expect_privacy_policy);
 
-  content::IdentityRequestAccount CreateTestIdentityRequestAccount(
+  IdentityRequestAccountPtr CreateTestIdentityRequestAccount(
       const std::string& account_suffix,
-      content::IdentityRequestAccount::LoginState login_state,
+      IdentityProviderDataPtr idp,
+      content::IdentityRequestAccount::LoginState login_state =
+          content::IdentityRequestAccount::LoginState::kSignUp,
       std::optional<base::Time> last_used_timestamp = std::nullopt);
   // Creates a vector of accounts. When `login_states` are not passed, sets the
   // accounts' login states to LoginState::kSignUp. When `last_used_timestamps`
   // are not passed, sets accounts' last used timestamp to std::nullopt.
-  std::vector<content::IdentityRequestAccount>
-  CreateTestIdentityRequestAccounts(
+  std::vector<IdentityRequestAccountPtr> CreateTestIdentityRequestAccounts(
       const std::vector<std::string>& account_suffixes,
+      IdentityProviderDataPtr idp,
       const std::vector<content::IdentityRequestAccount::LoginState>&
           login_states = {},
       const std::vector<std::optional<base::Time>>& last_used_timestamps = {});

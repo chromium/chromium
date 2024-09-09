@@ -28,7 +28,14 @@
 class AccountSelectionModalViewTest : public DialogBrowserTest,
                                       public AccountSelectionViewTestBase {
  public:
-  AccountSelectionModalViewTest() {
+  AccountSelectionModalViewTest()
+      : idp_data_(base::MakeRefCounted<content::IdentityProviderData>(
+            kIdpForDisplay,
+            content::IdentityProviderMetadata(),
+            CreateTestClientMetadata(),
+            blink::mojom::RpContext::kSignIn,
+            kDefaultDisclosureFields,
+            /*has_login_status_mismatch=*/false)) {
     test_shared_url_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
@@ -63,61 +70,41 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void CreateAndShowSingleAccountPicker(
       bool show_back_button,
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientMetadata& client_metadata,
-      bool show_auto_reauthn_checkbox = false) {
+      content::IdentityRequestAccount& account) {
     CreateAccountSelectionModal();
-    content::IdentityProviderData idp_data(
-        kIdpForDisplay, {account}, idp_metadata, client_metadata,
-        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-        /*has_login_status_mismatch=*/false);
-    dialog_->ShowSingleAccountConfirmDialog(account, idp_data,
-                                            show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(account, show_back_button);
   }
 
   void CreateAndShowMultiAccountPicker(
       const std::vector<std::string>& account_suffixes,
-      const content::ClientMetadata& client_metadata,
       bool supports_add_account = false) {
-    std::vector<content::IdentityRequestAccount> account_list =
-        CreateTestIdentityRequestAccounts(account_suffixes);
+    idp_data_->idp_metadata.supports_add_account = supports_add_account;
+    account_list_ =
+        CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
 
     CreateAccountSelectionModal();
-    std::vector<content::IdentityProviderData> idp_data;
-    content::IdentityProviderMetadata metadata;
-    metadata.supports_add_account = supports_add_account;
-    idp_data.emplace_back(kIdpForDisplay, account_list, metadata,
-                          client_metadata, blink::mojom::RpContext::kSignIn,
-                          kDefaultDisclosureFields,
-                          /*has_login_status_mismatch=*/false);
-    dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
+    for (auto& account : account_list_) {
+      account->identity_provider = idp_data_;
+    }
+    dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
+                                    /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
   }
 
   void CreateAndShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientMetadata& client_metadata) {
+      content::IdentityRequestAccount& account) {
     CreateAccountSelectionModal();
-    content::IdentityProviderData idp_data(
-        kIdpForDisplay, {account}, idp_metadata, client_metadata,
-        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-        /*has_login_status_mismatch=*/false);
-    dialog_->ShowRequestPermissionDialog(account, idp_data);
+    account.identity_provider = idp_data_;
+    dialog_->ShowRequestPermissionDialog(account, *idp_data_);
   }
 
   void CreateAndShowVerifyingSheet() {
     CreateAccountSelectionModal();
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-    content::IdentityProviderData idp_data(
-        kIdpForDisplay, {account}, content::IdentityProviderMetadata(),
-        CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
-        kDefaultDisclosureFields,
-        /*has_login_status_mismatch=*/false);
-    dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
+    IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
+        kAccountSuffix, idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp));
+    dialog_->ShowVerifyingSheet(*account, kTitleSignIn);
   }
 
   void CreateAndShowLoadingDialog() {
@@ -295,13 +282,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestSingleAccount(bool supports_add_account = false) {
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-    content::IdentityProviderMetadata idp_metadata;
-    idp_metadata.supports_add_account = supports_add_account;
+    idp_data_->idp_metadata.supports_add_account = supports_add_account;
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        kAccountSuffix, idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp);
     CreateAndShowSingleAccountPicker(
-        /*show_back_button=*/false, account, idp_metadata,
-        CreateTestClientMetadata());
+        /*show_back_button=*/false, *account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -323,8 +309,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestMultipleAccounts(bool supports_add_account = false) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    CreateAndShowMultiAccountPicker(
-        kAccountSuffixes, CreateTestClientMetadata(), supports_add_account);
+    CreateAndShowMultiAccountPicker(kAccountSuffixes, supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -360,14 +345,11 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const std::string& idp_brand_icon_url = kIdpBrandIconUrl,
       const std::string& rp_brand_icon_url = kRpBrandIconUrl) {
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(
-        CreateTestIdentityRequestAccount(kAccountSuffix, login_state));
-    content::IdentityProviderMetadata idp_metadata;
-    idp_metadata.brand_icon_url = GURL(idp_brand_icon_url);
-    CreateAndShowRequestPermissionDialog(
-        account, idp_metadata,
-        CreateTestClientMetadata(kTermsOfServiceUrl, kPrivacyPolicyUrl,
-                                 rp_brand_icon_url));
+    idp_data_->idp_metadata.brand_icon_url = GURL(idp_brand_icon_url);
+    idp_data_->client_metadata.brand_icon_url = GURL(rp_brand_icon_url);
+    IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
+        kAccountSuffix, idp_data_, login_state));
+    CreateAndShowRequestPermissionDialog(*account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -477,9 +459,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   AccountSelectionModalView* dialog() { return dialog_; }
 
+  IdentityProviderDataPtr idp_data() { return idp_data_; }
+
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       const {
     return test_shared_url_loader_factory_;
+  }
+
+  void SetIdpBrandIcon(const std::string& url) {
+    idp_data_->idp_metadata.brand_icon_url = GURL(url);
   }
 
  private:
@@ -487,6 +475,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   bool should_focus_title_{true};
   ui::ImageModel idp_brand_icon_;
   raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
+  std::vector<IdentityRequestAccountPtr> account_list_;
+  IdentityProviderDataPtr idp_data_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -612,14 +602,13 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 // bubble. This is because we show a placeholder globe icon on modal.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        InvalidBrandIconUrlDoesNotHideBrandIcon) {
+  SetIdpBrandIcon("invalid url");
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-  content::IdentityProviderMetadata idp_metadata;
-  idp_metadata.brand_icon_url = GURL("invalid url");
+  IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, idp_data(),
+      content::IdentityRequestAccount::LoginState::kSignUp);
   CreateAndShowSingleAccountPicker(
-      /*show_back_button=*/false, account, idp_metadata,
-      CreateTestClientMetadata());
+      /*show_back_button=*/false, *account);
 
   // We check that the icon is visible in PerformHeaderChecks.
   PerformHeaderChecks(dialog()->children()[0]);

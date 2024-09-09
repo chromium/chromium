@@ -21,24 +21,21 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
 
 bool FakeIdentityRequestDialogController::ShowAccountsDialog(
     const std::string& rp_for_display,
-    const std::vector<content::IdentityProviderData>& identity_provider_data,
-    IdentityRequestAccount::SignInMode sign_in_mode,
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const std::vector<IdentityRequestAccountPtr>& accounts,
+    content::IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    const std::optional<content::IdentityProviderData>& new_account_idp,
+    const std::vector<IdentityRequestAccountPtr>& new_accounts,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback,
     AccountsDisplayedCallback accounts_displayed_callback) {
-  // TODO(crbug.com/40233285): Temporarily support only the first IDP, extend to
-  // support multiple IDPs.
-  std::vector<IdentityRequestAccount> accounts =
-      identity_provider_data[0].accounts;
   CHECK_GT(accounts.size(), 0ul);
-  CHECK_GT(identity_provider_data.size(), 0ul);
+  CHECK_GT(idp_list.size(), 0ul);
 
   // We're faking this so that browser automation and tests can verify that
   // the RP context was read properly.
-  switch (identity_provider_data[0].rp_context) {
+  switch (idp_list[0]->rp_context) {
     case blink::mojom::RpContext::kSignIn:
       title_ = "Sign in";
       break;
@@ -56,14 +53,15 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
   // Use the provided account, if any. Otherwise do not run the callback right
   // away.
   if (selected_account_ && !is_interception_enabled_) {
+    // TODO(crbug.com/364578201): This needs to be augmented to provide the
+    // selected IDP. For now use the first one.
     std::move(on_selected)
-        .Run(identity_provider_data[0].idp_metadata.config_url,
-             *selected_account_,
+        .Run(idp_list[0]->idp_metadata.config_url, *selected_account_,
              /* is_sign_in= */ true);
   } else if (sign_in_mode == IdentityRequestAccount::SignInMode::kAuto) {
     std::move(on_selected)
-        .Run(identity_provider_data[0].idp_metadata.config_url,
-             identity_provider_data[0].accounts[0].id, /* is_sign_in= */ true);
+        .Run(accounts[0]->identity_provider->idp_metadata.config_url,
+             accounts[0]->id, /* is_sign_in= */ true);
   }
   return true;
 }

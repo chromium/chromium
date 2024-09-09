@@ -4,6 +4,8 @@
 
 #include "content/public/browser/identity_request_account.h"
 
+#include "content/public/browser/identity_request_dialog_controller.h"
+
 namespace content {
 
 IdentityRequestAccount::IdentityRequestAccount(
@@ -30,8 +32,6 @@ IdentityRequestAccount::IdentityRequestAccount(
       browser_trusted_login_state{browser_trusted_login_state},
       last_used_timestamp{last_used_timestamp} {}
 
-IdentityRequestAccount::IdentityRequestAccount(const IdentityRequestAccount&) =
-    default;
 IdentityRequestAccount::~IdentityRequestAccount() = default;
 
 }  // namespace content
