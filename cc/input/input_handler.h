@@ -266,6 +266,23 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     bool viewport_cannot_scroll = false;
   };
 
+  // ViewportScrollResult records, for a scroll gesture affecting a page's
+  // viewport:
+  // - the amount from the scroll gesture's delta that actually resulted in
+  //   scrolling: |consumed_delta|,
+  // - the amount from the scroll gesture's delta that applied to the content of
+  //   the page, i.e. excluding movement of browser controls.
+  // - the distribution of the scroll gesture's delta between the inner and
+  //   outer viewports, {inner,outer}_viewport_consumed_delta_
+  // TODO(tdresser): eventually |consumed_delta| should equal
+  // |content_scrolled_delta|. See crbug.com/510045 for details.
+  struct ViewportScrollResult {
+    gfx::Vector2dF consumed_delta;
+    gfx::Vector2dF content_scrolled_delta;
+    gfx::Vector2dF outer_viewport_scrolled_delta;
+    gfx::Vector2dF inner_viewport_scrolled_delta;
+  };
+
   enum class TouchStartOrMoveEventListenerType {
     kNoHandler,
     kHandler,
@@ -501,6 +518,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       const {
     return snap_strategy_;
   }
+
+  // Detects whether or not the scroll generating the |result| affected the
+  // inner or outer viewports.
+  void SetViewportConsumedDelta(const ViewportScrollResult& result);
 
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input

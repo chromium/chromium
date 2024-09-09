@@ -64,6 +64,12 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
 InputHandlerCommitData::InputHandlerCommitData() = default;
 InputHandlerCommitData::~InputHandlerCommitData() = default;
 
+// The minimum amount of scroll delta that must be consumed before we consider
+// a scroll to have happened.
+// TODO(tdresser): Use a more rational epsilon. See crbug.com/510550 for
+// details.
+const float kScrollEpsilon = 0.1f;
+
 // static
 base::WeakPtr<InputHandler> InputHandler::Create(
     CompositorDelegateForInput& compositor_delegate) {
@@ -1643,9 +1649,6 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   gfx::Vector2dF applied_delta;
   gfx::Vector2dF delta_applied_to_content;
   std::optional<gfx::PointF> snap_strategy_offset;
-  // TODO(tdresser): Use a more rational epsilon. See crbug.com/510550 for
-  // details.
-  const float kEpsilon = 0.1f;
 
   if (ShouldAnimateScroll(scroll_state)) {
     DCHECK(!scroll_state.is_in_inertial_phase());
@@ -1690,14 +1693,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
       if (scroll_node.scrolls_outer_viewport) {
         auto result = GetViewport().ScrollAnimated(delta, delayed_by);
         applied_delta = result.consumed_delta;
-        if (std::abs(result.outer_viewport_scrolled_delta.x()) > kEpsilon ||
-            std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
-          outer_viewport_consumed_delta_ = true;
-        }
-        if (std::abs(result.inner_viewport_scrolled_delta.x()) > kEpsilon ||
-            std::abs(result.inner_viewport_scrolled_delta.y()) > kEpsilon) {
-          inner_viewport_consumed_delta_ = true;
-        }
+        SetViewportConsumedDelta(result);
       } else {
         applied_delta = ComputeScrollDelta(scroll_node, delta);
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
@@ -1723,21 +1719,14 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
       // want to scroll *only* the inner viewport -- to allow panning while
       // zoomed -- but still use Viewport::ScrollBy to also move browser
       // controls if needed.
-      Viewport::ScrollResult result = GetViewport().ScrollBy(
+      ViewportScrollResult result = GetViewport().ScrollBy(
           delta, viewport_point, scroll_state.is_direct_manipulation(),
           latched_scroll_type_ != ui::ScrollInputType::kWheel,
           scroll_node.scrolls_outer_viewport);
 
       applied_delta = result.consumed_delta;
       delta_applied_to_content = result.content_scrolled_delta;
-      if (std::abs(result.outer_viewport_scrolled_delta.x()) > kEpsilon ||
-          std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
-        outer_viewport_consumed_delta_ = true;
-      }
-      if (std::abs(result.inner_viewport_scrolled_delta.x()) > kEpsilon ||
-          std::abs(result.inner_viewport_scrolled_delta.y()) > kEpsilon) {
-        inner_viewport_consumed_delta_ = true;
-      }
+      SetViewportConsumedDelta(result);
     } else {
       applied_delta = ScrollSingleNode(scroll_node, delta, viewport_point,
                                        scroll_state.is_direct_manipulation());
@@ -1747,8 +1736,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   overscroll_delta_for_main_thread_ += delta - applied_delta;
 
   // If the layer wasn't able to move, try the next one in the hierarchy.
-  bool scrolled = std::abs(applied_delta.x()) > kEpsilon;
-  scrolled = scrolled || std::abs(applied_delta.y()) > kEpsilon;
+  bool scrolled = std::abs(applied_delta.x()) > kScrollEpsilon;
+  scrolled = scrolled || std::abs(applied_delta.y()) > kScrollEpsilon;
   if (!scrolled) {
     // TODO(bokan): This preserves existing behavior by not allowing tiny
     // scrolls to produce overscroll but is inconsistent in how delta gets
@@ -1775,8 +1764,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   }
 
   scroll_state.set_caused_scroll(
-      std::abs(delta_applied_to_content.x()) > kEpsilon,
-      std::abs(delta_applied_to_content.y()) > kEpsilon);
+      std::abs(delta_applied_to_content.x()) > kScrollEpsilon,
+      std::abs(delta_applied_to_content.y()) > kScrollEpsilon);
   scroll_state.ConsumeDelta(applied_delta.x(), applied_delta.y());
 
   did_scroll_x_for_scroll_gesture_ |= scroll_state.caused_scroll_x();
@@ -1993,11 +1982,10 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   if (scroll_node->scrolls_outer_viewport) {
     gfx::Vector2dF scaled_delta(delta);
     scaled_delta.Scale(compositor_delegate_->PageScaleFactor());
-    gfx::Vector2dF consumed_delta =
-        GetViewport()
-            .ScrollAnimated(scaled_delta, base::TimeDelta())
-            .consumed_delta;
+    auto result = GetViewport().ScrollAnimated(scaled_delta, base::TimeDelta());
+    gfx::Vector2dF consumed_delta = result.consumed_delta;
     did_animate = !consumed_delta.IsZero();
+    SetViewportConsumedDelta(result);
   } else {
     did_animate =
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
@@ -2177,6 +2165,18 @@ std::unique_ptr<SnapSelectionStrategy> InputHandler::CreateSnapStrategy(
     return SnapSelectionStrategy::CreateForEndPosition(
         current_offset, did_scroll_x_for_scroll_gesture_,
         did_scroll_y_for_scroll_gesture_);
+  }
+}
+
+void InputHandler::SetViewportConsumedDelta(
+    const ViewportScrollResult& result) {
+  if (std::abs(result.outer_viewport_scrolled_delta.x()) > kScrollEpsilon ||
+      std::abs(result.outer_viewport_scrolled_delta.y()) > kScrollEpsilon) {
+    outer_viewport_consumed_delta_ = true;
+  }
+  if (std::abs(result.inner_viewport_scrolled_delta.x()) > kScrollEpsilon ||
+      std::abs(result.inner_viewport_scrolled_delta.y()) > kScrollEpsilon) {
+    inner_viewport_consumed_delta_ = true;
   }
 }
 
