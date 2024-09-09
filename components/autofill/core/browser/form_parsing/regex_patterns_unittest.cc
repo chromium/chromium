@@ -96,8 +96,7 @@ INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                              PatternSource::kLegacy
 #else
-                             PatternSource::kDefault,
-                             PatternSource::kExperimental
+                             PatternSource::kDefault
 #endif
                              ));
 
@@ -281,11 +280,6 @@ INSTANTIATE_TEST_SUITE_P(
                         .language = "en",
                         .positive_samples = {"default"},
                         .negative_samples = {"legacy", "experimental"}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"experimental"},
-                        .negative_samples = {"default", "legacy"}},
         PatternTestCase{
             .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
@@ -347,74 +341,6 @@ INSTANTIATE_TEST_SUITE_P(
                              // Not referring to a ZIP code:
                              "Supported file formats: .docx, .rar, .zip."}},
         PatternTestCase{.pattern_source = PatternSource::kDefault,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "de",
-                        .positive_samples =
-                            {// Inherited from "en":
-                             "Zip code", "postal code",
-                             // Specifically added for "de":
-                             "postleitzahl"}},
-        PatternTestCase{
-            .pattern_source = PatternSource::kExperimental,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {"mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
-        PatternTestCase{
-            .pattern_source = PatternSource::kExperimental,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {// Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple two year cases
-                 "mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "en",
-                        .positive_samples = {"Zip code", "postal code"},
-                        .negative_samples =
-                            {// Not matching for "en" language:
-                             "postleitzahl",
-                             // Not referring to a ZIP code:
-                             "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
                         .pattern_name = "ZIP_CODE",
                         .language = "de",
                         .positive_samples =

@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -209,7 +210,8 @@ void FormStructure::DetermineHeuristicTypes(
   if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
     context.pattern_source = *pattern_source;
     active_predictions = ParseFieldTypesWithPatterns(context);
-    AssignBestFieldTypes(*active_predictions, *pattern_source);
+    AssignBestFieldTypes(*active_predictions,
+                         PatternSourceToHeuristicSource(*pattern_source));
   }
   DetermineNonActiveHeuristicTypes(std::move(active_predictions), context);
 
@@ -248,30 +250,16 @@ void FormStructure::DetermineHeuristicTypes(
 void FormStructure::DetermineNonActiveHeuristicTypes(
     std::optional<FieldCandidatesMap> active_predictions,
     ParsingContext& context) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillDisableShadowHeuristics)) {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  if (GetActiveHeuristicSource() == HeuristicSource::kDefault) {
     return;
   }
-  std::optional<PatternSource> active_pattern_source =
-      HeuristicSourceToPatternSource(GetActiveHeuristicSource());
-  for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
-    std::optional<PatternSource> pattern_source =
-        HeuristicSourceToPatternSource(heuristic_source);
-    if (!pattern_source) {
-      continue;
-    }
-    if (active_pattern_source &&
-        AreMatchingPatternsEqual(*active_pattern_source, *pattern_source,
-                                 context.page_language)) {
-      // No need to recompute the predictions - just copy the results.
-      AssignBestFieldTypes(*active_predictions, *pattern_source);
-    } else {
-      // Run heuristics.
-      context.pattern_source = *pattern_source;
-      AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
-                           *pattern_source);
-    }
-  }
+  // When a non-default source is active, shadow predictions between this
+  // non-default source and default are emitted. Compute default predictions.
+  context.active_features.clear();
+  AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
+                       HeuristicSource::kDefault);
+#endif
 }
 
 // static
@@ -697,7 +685,7 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
 
 void FormStructure::AssignBestFieldTypes(
     const FieldCandidatesMap& field_type_map,
-    PatternSource pattern_source) {
+    HeuristicSource heuristic_source) {
   if (field_type_map.empty()) {
     return;
   }
@@ -711,16 +699,15 @@ void FormStructure::AssignBestFieldTypes(
       continue;
 
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(PatternSourceToHeuristicSource(pattern_source),
-                              candidates.BestHeuristicType());
+    field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
 
     ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
-        .field_type = field->heuristic_type(
-            PatternSourceToHeuristicSource(pattern_source)),
-        .pattern_source = pattern_source,
-        .is_active_pattern_source = GetActivePatternSource() == pattern_source,
+        .field_type = field->heuristic_type(heuristic_source),
+        .heuristic_source = heuristic_source,
+        .is_active_heuristic_source =
+            GetActiveHeuristicSource() == heuristic_source,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
     });

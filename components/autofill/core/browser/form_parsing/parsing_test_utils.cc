@@ -22,7 +22,6 @@ std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
   return {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       {.active_source = "default"},
-      {.active_source = "experimental"},
 #else
       // Builds without Autofill internal patterns default to the legacy
       // patterns. The `active_source` feature parameter is in fact not read

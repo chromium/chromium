@@ -2381,22 +2381,24 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
     if (auto* event =
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
-      switch (event->pattern_source) {
+      switch (event->heuristic_source) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        case PatternSource::kLegacy:
+        case HeuristicSource::kLegacy:
           heuristic_legacy_type = event->field_type;
           break;
 #else
-        case PatternSource::kDefault:
+        case HeuristicSource::kDefault:
           heuristic_default_type = event->field_type;
           break;
-        case PatternSource::kExperimental:
+        case HeuristicSource::kExperimental:
           heuristic_experimental_type = event->field_type;
           break;
 #endif
+        case HeuristicSource::kMachineLearning:
+          NOTREACHED();
       }
 
-      if (event->is_active_pattern_source) {
+      if (event->is_active_heuristic_source) {
         heuristic_type = event->field_type;
       }
       rank_in_field_signature_group = event->rank_in_field_signature_group;

@@ -111,12 +111,6 @@ BASE_FEATURE(kAutofillDisableAddressImport,
              "AutofillDisableAddressImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for computing heuristics other than the active ones
-// (GetActivePatternSource()).
-BASE_FEATURE(kAutofillDisableShadowHeuristics,
-             "AutofillDisableShadowHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, autofill will use the new ranking algorithm for address profile
 // autofill suggestions.
 BASE_FEATURE(kAutofillEnableRankingFormulaAddressProfiles,

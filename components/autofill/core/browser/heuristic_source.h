@@ -34,12 +34,8 @@ enum class HeuristicSource {
   kMaxValue = kMachineLearning
 };
 
-// The active and non active heuristic sources depend on the build
-// config and Finch configs. In the unlikely case that
-// `kAutofillModelPredictions` and `kAutofillParsingPatternProvider`
-// are both enabled, `kAutofillModelPredictions` is prioritized.
+// The active heuristic sources depend on the build config and Finch configs.
 HeuristicSource GetActiveHeuristicSource();
-DenseSet<HeuristicSource> GetNonActiveHeuristicSources();
 
 // Converts a `HeuristicSource` to `PatternSource`. If the passed
 // source is not a `PatternSource` then a nullopt is returned.

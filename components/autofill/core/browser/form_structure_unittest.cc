@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -68,7 +69,7 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
 #else
-    PatternSource::kDefault, PatternSource::kExperimental
+    PatternSource::kDefault
 #endif
 };
 
@@ -125,8 +126,6 @@ class FormStructureTest_ForPatternSource
 #else
       case PatternSource::kDefault:
         return "default";
-      case PatternSource::kExperimental:
-        return "experimental";
 #endif
     }
   }
@@ -2348,7 +2347,7 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   test_api(form_structure)
       .AssignBestFieldTypes(
           test_api(form_structure).ParseFieldTypesWithPatterns(context),
-          pattern_source());
+          PatternSourceToHeuristicSource(pattern_source()));
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {

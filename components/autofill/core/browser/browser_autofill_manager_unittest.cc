@@ -1198,12 +1198,12 @@ class BrowserAutofillManagerTest : public testing::Test {
     return VariantWith<HeuristicPredictionFieldLogEvent>(AllOf(
         Field("field_type", &HeuristicPredictionFieldLogEvent::field_type,
               expected.field_type),
-        Field("pattern_source",
-              &HeuristicPredictionFieldLogEvent::pattern_source,
-              expected.pattern_source),
-        Field("is_active_pattern_source",
-              &HeuristicPredictionFieldLogEvent::is_active_pattern_source,
-              expected.is_active_pattern_source),
+        Field("heuristic_source",
+              &HeuristicPredictionFieldLogEvent::heuristic_source,
+              expected.heuristic_source),
+        Field("is_active_heuristic_source",
+              &HeuristicPredictionFieldLogEvent::is_active_heuristic_source,
+              expected.is_active_heuristic_source),
         Field("rank_in_field_signature_group",
               &HeuristicPredictionFieldLogEvent::rank_in_field_signature_group,
               expected.rank_in_field_signature_group)));
@@ -3755,23 +3755,16 @@ class BrowserAutofillManagerWithLogEventsTest
     // Default pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
-        .pattern_source = PatternSource::kDefault,
-        .is_active_pattern_source = true,
-        .rank_in_field_signature_group = field_signature_rank,
-    });
-    // Experimental pattern.
-    expected_events.push_back(HeuristicPredictionFieldLogEvent{
-        .field_type = heuristic_type,
-        .pattern_source = PatternSource::kExperimental,
-        .is_active_pattern_source = false,
+        .heuristic_source = HeuristicSource::kDefault,
+        .is_active_heuristic_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });
 #else
     // Legacy pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
-        .pattern_source = PatternSource::kLegacy,
-        .is_active_pattern_source = true,
+        .heuristic_source = HeuristicSource::kLegacy,
+        .is_active_heuristic_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });
 #endif

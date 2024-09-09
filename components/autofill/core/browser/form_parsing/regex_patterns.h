@@ -78,11 +78,8 @@ enum class PatternSource : uint8_t {
   kLegacy,
   kMaxValue = kLegacy
 #else
-  // The patterns applied for most users.
   kDefault,
-  // Patterns that are being verified experimentally.
-  kExperimental,
-  kMaxValue = kExperimental
+  kMaxValue = kDefault
 #endif
 };
 
@@ -114,13 +111,6 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 // Returns true iff there at least one pattern for some PatternSource and
 // pattern name.
 bool IsSupportedLanguageCode(LanguageCode language_code);
-
-// Checks if all the matching patterns for the given PatternSources and
-// language are the same - meaning that computing predictions for both is
-// unnecessary, since it will yield the same result.
-bool AreMatchingPatternsEqual(PatternSource a,
-                              PatternSource b,
-                              LanguageCode language_code);
 
 }  // namespace autofill
 

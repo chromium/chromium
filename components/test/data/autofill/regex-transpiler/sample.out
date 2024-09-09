@@ -150,23 +150,6 @@ constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({
   "de", "en"
 }, LanguageComparator());
 
-// Checks if all the matching patterns for the given PatternSources
-// and language are the same - meaning that computing predictions for
-// both is unnecessary, since it will yield the same result.
-constexpr bool AreMatchingPatternsEqualImpl(PatternSource a,
-                                            PatternSource b,
-                                            LanguageCode lang_code) {
-  if (a == b) {
-    return true;
-  }
-  auto a_id = base::to_underlying(a);
-  auto b_id = base::to_underlying(b);
-  if (a_id > b_id) {
-    std::swap(a_id, b_id);
-  }
-  return false;
-}
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_

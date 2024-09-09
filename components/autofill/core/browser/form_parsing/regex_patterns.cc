@@ -37,8 +37,6 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 #else
     case PatternSource::kDefault:
       return it->second[0];
-    case PatternSource::kExperimental:
-      return it->second[1];
 #endif
   }
   NOTREACHED();
@@ -84,12 +82,6 @@ MatchingPattern MatchPatternRef::operator*() const {
       .form_control_types = p.form_control_types,
       .feature = p.feature,
   };
-}
-
-bool AreMatchingPatternsEqual(PatternSource a,
-                              PatternSource b,
-                              LanguageCode language_code) {
-  return AreMatchingPatternsEqualImpl(a, b, language_code);
 }
 
 }  // namespace autofill

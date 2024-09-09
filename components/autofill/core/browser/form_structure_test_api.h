@@ -81,8 +81,8 @@ class FormStructureTestApi {
   }
 
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
-                            PatternSource pattern_source) {
-    form_structure_->AssignBestFieldTypes(field_type_map, pattern_source);
+                            HeuristicSource heuristic_source) {
+    form_structure_->AssignBestFieldTypes(field_type_map, heuristic_source);
   }
 
  private:

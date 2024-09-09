@@ -133,8 +133,10 @@ class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
 
 // When shadow predictions are not calculated, the shadow prediction metrics
 // should report `0`.
+// TODO(crbug.com/364593932): Shadow predictions only get emitted when
+// `HeuristicSource::kExperimental` is active. Find a way to so in tests.
 TEST_F(AutofillShadowPredictionMetricsTest,
-       SubmissionWithoutShadowPredictions) {
+       DISABLED_SubmissionWithoutShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
   test_api(form).field(0).set_value(
       u"Elvis Aaron Presley");  // A known `NAME_FULL`.
@@ -165,8 +167,10 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // Test that Autofill.ShadowPredictions.* describes the differences between the
 // predictions and the submitted values.
+// TODO(crbug.com/364593932): Shadow predictions only get emitted when
+// `HeuristicSource::kExperimental` is active. Find a way to do so in tests.
 TEST_F(AutofillShadowPredictionMetricsTest,
-       SubmissionWithAgreeingShadowPredictions) {
+       DISABLED_SubmissionWithAgreeingShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
   test_api(form).field(0).set_value(
       u"Elvis Aaron Presley");  // A known `NAME_FULL`.
