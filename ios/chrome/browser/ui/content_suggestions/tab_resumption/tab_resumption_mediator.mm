@@ -104,6 +104,24 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   return nullptr;
 }
 
+// Helper function to extract history data from url aggregate.
+const visited_url_ranking::URLVisitAggregate::HistoryData* ExtractHistoryData(
+    visited_url_ranking::URLVisitAggregate& url_aggregate) {
+  const auto& history_iterator = url_aggregate.fetcher_data_map.find(
+      visited_url_ranking::Fetcher::kHistory);
+  if (history_iterator != url_aggregate.fetcher_data_map.end()) {
+    const visited_url_ranking::URLVisitAggregate::URLVisitVariant&
+        url_visit_variant = history_iterator->second;
+    const visited_url_ranking::URLVisitAggregate::HistoryData* history_data =
+        std::get_if<visited_url_ranking::URLVisitAggregate::HistoryData>(
+            &url_visit_variant);
+    if (history_data) {
+      return history_data;
+    }
+  }
+  return nullptr;
+}
+
 // Whether the item should be displayed immediately (before fetching an image).
 bool ShouldShowItemImmediately() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -738,7 +756,7 @@ const char kGStatic[] = ".gstatic.com";
   size_t index;
   // Select the first URL with tab data.
   for (index = 0; index < URLs.size(); index++) {
-    if (ExtractTabData(URLs[index])) {
+    if (ExtractTabData(URLs[index]) || ExtractHistoryData(URLs[index])) {
       break;
     }
   }
@@ -768,32 +786,44 @@ const char kGStatic[] = ".gstatic.com";
     return;
   }
   const visited_url_ranking::URLVisitAggregate::TabData* tabData = nullptr;
+  const visited_url_ranking::URLVisitAggregate::HistoryData* historyData =
+      nullptr;
+  const visited_url_ranking::URLVisit* visit = nullptr;
+
   const visited_url_ranking::URLVisitAggregate* URLAggregate = nullptr;
   for (auto& aggregate : URLs) {
     tabData = ExtractTabData(aggregate);
     if (tabData) {
       URLAggregate = &aggregate;
+      visit = &tabData->last_active_tab.visit;
+      break;
+    }
+    historyData = ExtractHistoryData(aggregate);
+    if (historyData) {
+      URLAggregate = &aggregate;
+      visit = &historyData->visit;
       break;
     }
   }
-  if (!tabData || !URLAggregate) {
+  if (!URLAggregate || !visit) {
     return;
   }
-  const visited_url_ranking::URLVisitAggregate::Tab& tab =
-      tabData->last_active_tab;
 
   bool isLocal =
-      tab.visit.source == visited_url_ranking::URLVisit::Source::kLocal;
+      visit->source != visited_url_ranking::URLVisit::Source::kForeign;
   TabResumptionItemType type =
       (isLocal ? TabResumptionItemType::kMostRecentTab
                : TabResumptionItemType::kLastSyncedTab);
   TabResumptionItem* item = [[TabResumptionItem alloc] initWithItemType:type];
-  item.tabTitle = base::SysUTF16ToNSString(tab.visit.title);
-  item.syncedTime = tab.visit.last_modified;
-  item.tabURL = tab.visit.url;
+  item.tabTitle = base::SysUTF16ToNSString(visit->title);
+  item.syncedTime = visit->last_modified;
+  item.tabURL = visit->url;
   item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
   item.URLKey = URLAggregate->url_key;
   item.requestID = URLAggregate->request_id;
+  if (visit->client_name) {
+    item.sessionName = base::SysUTF8ToNSString(visit->client_name.value());
+  }
   item.commandHandler = self;
   item.delegate = self;
   if (IsTabResumption2BubbleEnabled()) {
@@ -803,10 +833,14 @@ const char kGStatic[] = ".gstatic.com";
               .GetDisplayString());
     }
   }
-  if (tab.id > 0 && tab.session_tag && !isLocal) {
-    item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
-    _sessionTag = tab.session_tag.value();
-    _tabId = SessionID::FromSerializedValue(tab.id);
+  if (tabData) {
+    const visited_url_ranking::URLVisitAggregate::Tab& tab =
+        tabData->last_active_tab;
+    if (tab.id > 0 && tab.session_tag && !isLocal) {
+      item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
+      _sessionTag = tab.session_tag.value();
+      _tabId = SessionID::FromSerializedValue(tab.id);
+    }
   }
 
   // Fetch the favicon.
