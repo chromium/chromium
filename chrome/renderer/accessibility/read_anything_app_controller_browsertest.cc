@@ -584,10 +584,16 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 };
 
 TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
+// Read Aloud is currently only enabled by default on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(IsReadAloudEnabled());
+
+#else
   EXPECT_FALSE(IsReadAloudEnabled());
 
   scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   EXPECT_TRUE(IsReadAloudEnabled());
+#endif  // IS_CHROMEOS_ASH
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
@@ -698,6 +704,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(GetStoredVoice(), current_voice);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_NoAutoSwitching_ReturnsLatestVoiceRegardlessOfLang) {
   std::string current_lang = "it-IT";
@@ -712,6 +719,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnVoiceChange).Times(2);
   ASSERT_EQ(GetStoredVoice(), current_voice);
 }
+#endif  // !IS_CHROMEOS_ASH
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
   scoped_feature_list_.InitWithFeatures(
@@ -798,7 +806,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   int color_value = 0;
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
-  std::string language_value = "it-IT";
+  std::string language_value = "it";
   base::Value::Dict voices = base::Value::Dict();
   voices.Set(language_value, voice_value);
   base::Value::List languages_enabled_in_pref = base::Value::List();
@@ -806,6 +814,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   int highlight_granularity_value = 0;
+
+  SetLanguageCode(language_value);
 
   OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
