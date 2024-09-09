@@ -82,6 +82,7 @@ class HostStarterBase : public HostStarter {
   void StopOldHost();
   void OnOldHostStopped(DaemonController::AsyncResult result);
   void GenerateConfigFile();
+  virtual void ApplyConfigValues(base::Value::Dict& config) = 0;
   void OnNewHostStarted(DaemonController::AsyncResult result);
 
   // |HandleError| will cause |on_done_| to be executed.

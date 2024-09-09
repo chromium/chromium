@@ -15,6 +15,8 @@
 #include "base/sequence_checker.h"
 #include "remoting/base/cloud_service_client.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/host/host_config.h"
+#include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
@@ -45,6 +47,7 @@ class CloudHostStarter : public HostStarterBase {
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
+  void ApplyConfigValues(base::Value::Dict& config) override;
 
   // CloudServiceClient callback.
   void OnProvisionGceInstanceResponse(
@@ -135,6 +138,25 @@ void CloudHostStarter::RemoveOldHostFromDirectory(
   // This workflow removes the existing host as part of the provisioning service
   // call so we don't need to make an additional service request here.
   std::move(on_host_removed).Run();
+}
+
+void CloudHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The legacy code is taken when an API_KEY is not provided. In that case, the
+  // host acts like a Me2Me host rather than a Cloud host. Note that is kept for
+  // compatibility reasons but is not going to be supported long-term.
+  // TODO: joedow - Remove this when all Cloud hosts are required to use the
+  // Cloud API.
+  if (params().api_key.empty()) {
+    config.Set(kHostTypeHintPath, kMe2MeHostTypeHint);
+    config.Set(kHostSecretHashConfigPath,
+               MakeHostPinHash(params().id, params().pin));
+  } else {
+    config.Set(kHostTypeHintPath, kCloudHostTypeHint);
+    config.Set(kRequireSessionAuthorizationPath, true);
+    config.Set(kCloudApiKeyPath, params().api_key);
+  }
 }
 
 }  // namespace

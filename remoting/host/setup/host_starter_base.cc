@@ -26,7 +26,6 @@
 #include "remoting/base/fqdn.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_starter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -240,22 +239,7 @@ void HostStarterBase::GenerateConfigFile() {
     config.Set(kHostNameConfigPath, start_host_params_.name);
   }
 
-  // TODO: joedow - Handle Cloud hosts here.
-  if (!start_host_params_.username.empty()) {
-    // Configuring for a username means session authorization is required.
-    // TODO: joedow - Replace this check once we have access to the robot scopes
-    // and can set this for Corp and Cloud hosts.
-    config.Set(kRequireSessionAuthorizationPath, true);
-    config.Set(kHostTypeHintPath, kCorpHostTypeHint);
-  } else {
-    config.Set(kHostTypeHintPath, kMe2MeHostTypeHint);
-
-    if (!start_host_params_.pin.empty()) {
-      std::string host_secret_hash = remoting::MakeHostPinHash(
-          start_host_params_.id, start_host_params_.pin);
-      config.Set(kHostSecretHashConfigPath, host_secret_hash);
-    }
-  }
+  ApplyConfigValues(config);
 
   config.Set(kUsageStatsConsentConfigPath,
              start_host_params_.enable_crash_reporting);

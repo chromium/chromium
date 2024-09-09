@@ -51,6 +51,9 @@ constexpr char kTestRobotAuthCode[] = "robot_auth_code";
 constexpr char kTestDirectoryId[] = "test_directory_id";
 constexpr char kTestMachineName[] = "test_machine_name";
 
+constexpr char kTestConfigValuePath[] = "test_config_value";
+constexpr char kTestConfigValue[] = "so_much_value";
+
 class TestDaemonControllerDelegate : public DaemonController::Delegate {
  public:
   TestDaemonControllerDelegate();
@@ -154,6 +157,7 @@ class TestHostStarter : public HostStarterBase {
   void RegisterNewHost(const std::string& public_key,
                        std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
+  void ApplyConfigValues(base::Value::Dict& config) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_done) override;
 
@@ -208,6 +212,10 @@ void TestHostStarter::RegisterNewHost(const std::string& public_key,
 
 void TestHostStarter::RemoveOldHostFromDirectory(base::OnceClosure on_removed) {
   std::move(on_removed).Run();
+}
+
+void TestHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+  config.Set(kTestConfigValuePath, kTestConfigValue);
 }
 
 void TestHostStarter::ReportError(const std::string& error_message,
@@ -356,9 +364,10 @@ TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
   value = config->FindString(kHostNameConfigPath);
   ASSERT_NE(value, nullptr);
   EXPECT_EQ(*value, kTestMachineName);
-  // Just check for existence here.
-  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
-  EXPECT_TRUE(config->FindString(kHostSecretHashConfigPath));
+  // Verify subclass value was applied.
+  value = config->FindString(kTestConfigValuePath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -366,7 +375,7 @@ TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
 
 TEST_F(HostStarterBaseTest, CorpCodePath) {
   HostStarter::Params params;
-  params.owner_email = kTestUserEmail;
+  params.username = kTestUserEmail;
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -395,10 +404,10 @@ TEST_F(HostStarterBaseTest, CorpCodePath) {
   EXPECT_EQ(*value, kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
   EXPECT_TRUE(config->FindString(kHostNameConfigPath));
-  // Just check for existence here.
-  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
-  // Ensure we did not write a PIN hash value since no PIN was provided.
-  EXPECT_FALSE(config->FindString(kHostSecretHashConfigPath));
+  // Verify subclass value was applied.
+  value = config->FindString(kTestConfigValuePath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -436,10 +445,10 @@ TEST_F(HostStarterBaseTest, CloudCodePath) {
   EXPECT_EQ(*value, kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
   EXPECT_TRUE(config->FindString(kHostNameConfigPath));
-  // Just check for existence here.
-  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
-  // Ensure we did not write a PIN hash value since no PIN was provided.
-  EXPECT_FALSE(config->FindString(kHostSecretHashConfigPath));
+  // Verify subclass value was applied.
+  value = config->FindString(kTestConfigValuePath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -477,10 +486,10 @@ TEST_F(HostStarterBaseTest, LegacyCloudCodePath) {
   EXPECT_EQ(*value, kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
   EXPECT_TRUE(config->FindString(kHostNameConfigPath));
-  // Just check for existence here.
-  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
-  // Ensure we wrote a PIN hash value since a PIN was provided.
-  EXPECT_TRUE(config->FindString(kHostSecretHashConfigPath));
+  // Verify subclass value was applied.
+  value = config->FindString(kTestConfigValuePath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
