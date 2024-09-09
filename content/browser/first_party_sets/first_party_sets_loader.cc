@@ -11,9 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "net/base/features.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
 
@@ -66,10 +68,16 @@ void FirstPartySetsLoader::SetComponentSets(base::Version version,
     return;
   }
 
-  // We use USER_BLOCKING here since First-Party Set initialization blocks
-  // network navigations at startup.
+  // We may use USER_BLOCKING here since First-Party Set initialization may
+  // block network navigations at startup. Otherwise, initialization blocks
+  // resolution of promises from `document.requestStorageAccess()`, but those
+  // calls are unlikely to occur during startup.
+  base::TaskPriority priority =
+      base::FeatureList::IsEnabled(net::features::kWaitForFirstPartySetsInit)
+          ? base::TaskPriority::USER_BLOCKING
+          : base::TaskPriority::USER_VISIBLE;
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      FROM_HERE, {base::MayBlock(), priority},
       base::BindOnce(&ReadSetsFile, std::move(sets_file)),
       base::BindOnce(&FirstPartySetsLoader::OnReadSetsFile,
                      weak_factory_.GetWeakPtr(), std::move(version)));
