@@ -40,12 +40,12 @@ void ContextImplTflite::CreateGraphImpl(
       std::move(graph_info), std::move(compute_resource_info), this));
 }
 
-void ContextImplTflite::CreateBufferImpl(
+void ContextImplTflite::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::BufferInfoPtr buffer_info,
-    CreateBufferImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info,
+    CreateTensorImplCallback callback) {
   std::move(callback).Run(TensorImplTflite::Create(std::move(receiver), this,
-                                                   std::move(buffer_info)));
+                                                   std::move(tensor_info)));
 }
 
 }  // namespace webnn::tflite

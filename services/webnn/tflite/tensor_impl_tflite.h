@@ -28,12 +28,12 @@ class TensorImplTflite final : public WebNNTensorImpl {
   static base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
   Create(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
          WebNNContextImpl* context,
-         mojom::BufferInfoPtr buffer_info);
+         mojom::TensorInfoPtr tensor_info);
 
   TensorImplTflite(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info,
+      mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
       base::PassKey<TensorImplTflite>);
 
@@ -46,8 +46,8 @@ class TensorImplTflite final : public WebNNTensorImpl {
       const;
 
  private:
-  void ReadBufferImpl(ReadBufferCallback callback) override;
-  void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
+  void ReadTensorImpl(ReadTensorCallback callback) override;
+  void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

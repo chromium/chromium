@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
-  using CreateBufferImplCallback = base::OnceCallback<void(
+  using CreateTensorImplCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
 
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -124,19 +124,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateGraphBuilder(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver)
       override;
-  void CreateBuffer(mojom::BufferInfoPtr buffer_info,
-                    CreateBufferCallback callback) override;
+  void CreateTensor(mojom::TensorInfoPtr tensor_info,
+                    CreateTensorCallback callback) override;
 
-  // This method will be called by `CreateBuffer()` after the buffer info is
+  // This method will be called by `CreateTensor()` after the buffer info is
   // validated. A backend subclass should implement this method to create and
   // initialize a platform specific buffer asynchronously.
-  virtual void CreateBufferImpl(
+  virtual void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) = 0;
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) = 0;
 
   void DidCreateWebNNTensorImpl(
-      CreateBufferCallback callback,
+      CreateTensorCallback callback,
       mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
       base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
 

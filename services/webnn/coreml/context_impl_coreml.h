@@ -41,10 +41,10 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override;
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override;
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };

@@ -458,12 +458,12 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
   FakeWebNNTensor(
       WebNNContextHelper& helper,
       mojo::PendingAssociatedReceiver<blink_mojom::WebNNTensor> receiver,
-      const blink::WebNNTensorToken& buffer_handle,
-      blink_mojom::BufferInfoPtr buffer_info)
+      const blink::WebNNTensorToken& tensor_handle,
+      blink_mojom::TensorInfoPtr tensor_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
-        handle_(buffer_handle) {
-    buffer_ = mojo_base::BigBuffer(buffer_info->descriptor.PackedByteLength());
+        handle_(tensor_handle) {
+    buffer_ = mojo_base::BigBuffer(tensor_info->descriptor.PackedByteLength());
     receiver_.set_disconnect_handler(WTF::BindOnce(
         &FakeWebNNTensor::OnConnectionError, WTF::Unretained(this)));
   }
@@ -476,14 +476,14 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
   const blink::WebNNTensorToken& handle() const { return handle_; }
 
  private:
-  void ReadBuffer(ReadBufferCallback callback) override {
+  void ReadTensor(ReadTensorCallback callback) override {
     mojo_base::BigBuffer dst_buffer(buffer_.byte_span());
 
     std::move(callback).Run(
-        blink_mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
+        blink_mojom::ReadTensorResult::NewBuffer(std::move(dst_buffer)));
   }
 
-  void WriteBuffer(mojo_base::BigBuffer src_buffer) override {
+  void WriteTensor(mojo_base::BigBuffer src_buffer) override {
     ASSERT_LE(src_buffer.size(), buffer_.size());
     base::span(buffer_).copy_prefix_from(src_buffer);
   }
@@ -545,20 +545,20 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         std::make_unique<FakeWebNNGraphBuilder>(*helper_), std::move(receiver));
   }
 
-  void CreateBuffer(blink_mojom::BufferInfoPtr buffer_info,
-                    CreateBufferCallback callback) override {
+  void CreateTensor(blink_mojom::TensorInfoPtr tensor_info,
+                    CreateTensorCallback callback) override {
     mojo::PendingAssociatedRemote<blink_mojom::WebNNTensor> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
-    blink::WebNNTensorToken buffer_handle;
+    blink::WebNNTensorToken tensor_handle;
     context_helper_.ConnectWebNNTensorImpl(
-        buffer_handle, std::make_unique<FakeWebNNTensor>(
+        tensor_handle, std::make_unique<FakeWebNNTensor>(
                            context_helper_, std::move(blink_receiver),
-                           buffer_handle, std::move(buffer_info)));
+                           tensor_handle, std::move(tensor_info)));
 
-    auto success = blink_mojom::CreateBufferSuccess::New(
-        std::move(blink_remote), std::move(buffer_handle));
+    auto success = blink_mojom::CreateTensorSuccess::New(
+        std::move(blink_remote), std::move(tensor_handle));
     std::move(callback).Run(
-        blink_mojom::CreateBufferResult::NewSuccess(std::move(success)));
+        blink_mojom::CreateTensorResult::NewSuccess(std::move(success)));
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
@@ -789,7 +789,7 @@ bool DownloadMLTensorAndCheck(V8TestingScope& scope,
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(
       script_state,
-      context->readBuffer(script_state, src_buffer, scope.GetExceptionState()));
+      context->readTensor(script_state, src_buffer, scope.GetExceptionState()));
   tester.WaitUntilSettled();
   if (tester.IsRejected()) {
     return false;
@@ -811,14 +811,14 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
-      ml_context->createBuffer(scope.GetScriptState(), desc,
+      ml_context->createTensor(scope.GetScriptState(), desc,
                                scope.GetExceptionState()));
   tester.WaitUntilSettled();
   CHECK(tester.IsFulfilled());
 
   MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, tester.Value());
 
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       scope.GetScriptState(), ml_buffer,
       MaybeShared<DOMArrayBufferView>(array_buffer_view.Get()),
       /*src_element_offset=*/0, scope.GetExceptionState());
@@ -830,7 +830,7 @@ Vector<uint8_t> GetMLTensorValues(V8TestingScope& scope,
                                   MLTensor* ml_buffer) {
   ScriptPromiseTester tester(
       scope.GetScriptState(),
-      ml_context->readBuffer(scope.GetScriptState(), ml_buffer,
+      ml_context->readTensor(scope.GetScriptState(), ml_buffer,
                              scope.GetExceptionState()));
   tester.WaitUntilSettled();
   if (tester.IsRejected()) {
@@ -1322,7 +1322,7 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
 
   ScriptPromiseTester buffer_tester(
       script_state,
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
   buffer_tester.WaitUntilSettled();
   EXPECT_TRUE(buffer_tester.IsFulfilled());
 
@@ -1361,7 +1361,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
 
   ScriptPromiseTester buffer_tester(
       script_state,
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
   buffer_tester.WaitUntilSettled();
   EXPECT_TRUE(buffer_tester.IsFulfilled());
 
@@ -1380,13 +1380,13 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   ASSERT_THAT(array_buffer, testing::NotNull());
 
   // Writing the full buffer.
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       CreateArrayBufferViewFromBytes(array_buffer, input_data),
       /*src_element_offset=*/0, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
           array_buffer, /*byte_offset=*/0,
@@ -1398,7 +1398,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
       DownloadMLTensorAndCheck(scope, ml_context, ml_buffer, input_data));
 
   // Writing to the remainder of the buffer from source offset.
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       CreateArrayBufferViewFromBytes(
           array_buffer,
@@ -1407,7 +1407,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // Writing zero bytes at the end of the buffer.
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
           array_buffer, /*byte_offset=*/0,
@@ -1420,7 +1420,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
       std::array<const uint8_t, kBufferSize>{0xBB, 0xBB, 0xAA, 0xAA}));
 
   // Writing with both a source offset and size.
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       CreateArrayBufferViewFromBytes(
           array_buffer,
@@ -1454,7 +1454,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
 
   ScriptPromiseTester buffer_tester(
       script_state,
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
   buffer_tester.WaitUntilSettled();
   EXPECT_TRUE(buffer_tester.IsFulfilled());
 
@@ -1469,7 +1469,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
 
   ml_buffer->destroy();
 
-  ml_context->writeBuffer(
+  ml_context->writeTensor(
       script_state, ml_buffer,
       CreateDOMArrayBufferView(ml_buffer->PackedByteLength(),
                                V8MLOperandDataType::Enum::kUint8)
@@ -1497,7 +1497,7 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
 
   ScriptPromiseTester create_buffer_tester(
       script_state,
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
   create_buffer_tester.WaitUntilSettled();
   EXPECT_TRUE(create_buffer_tester.IsFulfilled());
 
@@ -1513,7 +1513,7 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
 
   ml_buffer->destroy();
 
-  ScriptPromise<DOMArrayBuffer> read_promise = ml_context->readBuffer(
+  ScriptPromise<DOMArrayBuffer> read_promise = ml_context->readTensor(
       script_state, ml_buffer, scope.GetExceptionState());
   EXPECT_TRUE(read_promise.IsEmpty());
 }

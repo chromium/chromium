@@ -42,12 +42,12 @@ void ContextImplCoreml::CreateGraphImpl(
       options().Clone(), properties(), std::move(callback));
 }
 
-void ContextImplCoreml::CreateBufferImpl(
+void ContextImplCoreml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::BufferInfoPtr buffer_info,
-    CreateBufferImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info,
+    CreateTensorImplCallback callback) {
   std::move(callback).Run(TensorImplCoreml::Create(std::move(receiver), this,
-                                                   std::move(buffer_info)));
+                                                   std::move(tensor_info)));
 }
 
 }  // namespace webnn::coreml

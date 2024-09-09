@@ -104,10 +104,10 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
             std::move(callback)));
   }
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override {
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override {
     NOTIMPLEMENTED();
   }
 

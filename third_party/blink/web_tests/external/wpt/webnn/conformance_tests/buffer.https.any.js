@@ -57,7 +57,7 @@ const testDestroyWebNNBuffer = (testName) => {
 
     try {
       const mlBuffer =
-          await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+          await mlContext.createTensor({dataType: 'int32', dimensions: [2, 3]});
     } catch (e) {
       throw new AssertionError(
           `Unable to create buffer for ${variant} variant. ${e}`);
@@ -65,7 +65,7 @@ const testDestroyWebNNBuffer = (testName) => {
   });
   promise_test(async () => {
     let mlBuffer =
-        await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+        await mlContext.createTensor({dataType: 'int32', dimensions: [2, 3]});
     mlBuffer.destroy();
     mlBuffer.destroy();
   }, `${testName}`);
@@ -91,11 +91,11 @@ const testCreateWebNNBuffer = (testName, bufferDescriptor) => {
     if (!mlContext.opSupportLimits().input.dataTypes.includes(
             bufferDescriptor.dataType)) {
       await promise_rejects_js(
-          t, TypeError, mlContext.createBuffer(bufferDescriptor));
+          t, TypeError, mlContext.createTensor(bufferDescriptor));
       return;
     }
 
-    const mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    const mlBuffer = await mlContext.createTensor(bufferDescriptor);
     assert_equals(
         mlBuffer.dataType, bufferDescriptor.dataType,
         'buffer data types do not match');
@@ -123,7 +123,7 @@ const testCreateWebNNBufferFails = (testName, bufferDescriptor) => {
   });
   promise_test(async t => {
     await promise_rejects_js(
-        t, TypeError, mlContext.createBuffer(bufferDescriptor));
+        t, TypeError, mlContext.createTensor(bufferDescriptor));
   }, `${testName} / ${bufferDescriptor.dataType}`);
 };
 
@@ -134,7 +134,7 @@ const testCreateWebNNBufferFails = (testName, bufferDescriptor) => {
  * @param {Array} expected - Array of the expected data in the buffer.
  */
 const assert_buffer_data_equals = async (mlContext, mlBuffer, expected) => {
-  const actual = await mlContext.readBuffer(mlBuffer);
+  const actual = await mlContext.readTensor(mlBuffer);
   assert_array_equals(
       new expected.constructor(actual), expected,
       'Read buffer data equals expected data.');
@@ -156,7 +156,7 @@ const testWriteWebNNBuffer = (testName) => {
 
     try {
       const mlBuffer =
-          await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+          await mlContext.createTensor({dataType: 'int32', dimensions: [2, 3]});
     } catch (e) {
       throw new AssertionError(
           `Unable to create buffer for ${variant} variant. ${e}`);
@@ -169,7 +169,7 @@ const testWriteWebNNBuffer = (testName) => {
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO,
     };
-    let mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    let mlBuffer = await mlContext.createTensor(bufferDescriptor);
 
     const bufferByteLength = sizeOfDescriptor(bufferDescriptor);
     let arrayBuffer = new ArrayBuffer(bufferByteLength);
@@ -177,38 +177,38 @@ const testWriteWebNNBuffer = (testName) => {
     // Writing with a size that goes past that source buffer length.
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(arrayBuffer), /*srcOffset=*/ 0,
             /*srcSize=*/ bufferByteLength + 1));
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(arrayBuffer), /*srcOffset=*/ 3,
             /*srcSize=*/ bufferByteLength));
 
     // Writing with a source offset that is out of range of the source size.
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(arrayBuffer),
             /*srcOffset=*/ bufferByteLength + 1));
 
     // Writing with a source offset that is out of range of implicit copy size.
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(arrayBuffer),
             /*srcOffset=*/ bufferByteLength + 1, /*srcSize=*/ undefined));
 
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(arrayBuffer), /*srcOffset=*/ undefined,
             /*srcSize=*/ bufferByteLength + 1));
 
     assert_throws_js(
         TypeError,
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, Uint8Array.from([0xEE, 0xEE, 0xEE, 0xEE, 0xEE])));
   }, `${testName} / error`);
 
@@ -218,14 +218,14 @@ const testWriteWebNNBuffer = (testName) => {
       dimensions: [2, 2],
       usage: MLTensorUsage.WRITE_TO,
     };
-    let mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    let mlBuffer = await mlContext.createTensor(bufferDescriptor);
 
     // Writing data to a destroyed MLTensor should throw.
     mlBuffer.destroy();
 
     assert_throws_dom(
         'InvalidStateError',
-        () => mlContext.writeBuffer(
+        () => mlContext.writeTensor(
             mlBuffer, new Uint8Array(sizeOfDescriptor(bufferDescriptor))));
   }, `${testName} / destroy`);
 
@@ -235,21 +235,21 @@ const testWriteWebNNBuffer = (testName) => {
       dimensions: [2, 3],
       usage: MLTensorUsage.WRITE_TO,
     };
-    let mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    let mlBuffer = await mlContext.createTensor(bufferDescriptor);
 
     let anotherMLContext = await navigator.ml.createContext(contextOptions);
-    let anotherMLTensor = await anotherMLContext.createBuffer(bufferDescriptor);
+    let anotherMLTensor = await anotherMLContext.createTensor(bufferDescriptor);
 
     let inputData =
         new Uint8Array(sizeOfDescriptor(bufferDescriptor)).fill(0xAA);
     assert_throws_js(
-        TypeError, () => mlContext.writeBuffer(anotherMLTensor, inputData));
+        TypeError, () => mlContext.writeTensor(anotherMLTensor, inputData));
     assert_throws_js(
-        TypeError, () => anotherMLContext.writeBuffer(mlBuffer, inputData));
+        TypeError, () => anotherMLContext.writeTensor(mlBuffer, inputData));
   }, `${testName} / context_mismatch`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
@@ -257,15 +257,15 @@ const testWriteWebNNBuffer = (testName) => {
 
     // Initialize the buffer.
     const inputData = Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]);
-    mlContext.writeBuffer(mlBuffer, inputData);
+    mlContext.writeTensor(mlBuffer, inputData);
 
     // Writing zero bytes from a zero write size.
-    mlContext.writeBuffer(mlBuffer, Uint8Array.from([0xBB]), 0, 0);
+    mlContext.writeTensor(mlBuffer, Uint8Array.from([0xBB]), 0, 0);
 
     await assert_buffer_data_equals(mlContext, mlBuffer, inputData);
 
     // Writing zero bytes at the end of the buffer.
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         mlBuffer, Uint32Array.from([0xBBBBBBBB]), /*srcOffset=*/ 1);
 
     await assert_buffer_data_equals(mlContext, mlBuffer, inputData);
@@ -277,7 +277,7 @@ const testWriteWebNNBuffer = (testName) => {
       dimensions: [2, 2],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
     };
-    let mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    let mlBuffer = await mlContext.createTensor(bufferDescriptor);
 
     const bufferByteLength = sizeOfDescriptor(bufferDescriptor);
     let inputBuffer = new ArrayBuffer(bufferByteLength);
@@ -286,13 +286,13 @@ const testWriteWebNNBuffer = (testName) => {
     const int32View = new Int32Array(inputBuffer);
     int32View.fill(0xBBBBBBBB);
 
-    mlContext.writeBuffer(mlBuffer, int32View);
+    mlContext.writeTensor(mlBuffer, int32View);
 
     // Writing to a detached buffer should be ignored.
     const detachedBuffer = inputBuffer.transfer();
     assert_true(inputBuffer.detached, 'array buffer should be detached.');
 
-    mlContext.writeBuffer(mlBuffer, inputBuffer);
+    mlContext.writeTensor(mlBuffer, inputBuffer);
 
     await assert_buffer_data_equals(
         mlContext, mlBuffer, new Int32Array(detachedBuffer));
@@ -315,7 +315,7 @@ const testReadWebNNBuffer = (testName) => {
 
     try {
       const mlBuffer =
-          await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+          await mlContext.createTensor({dataType: 'int32', dimensions: [2, 3]});
     } catch (e) {
       throw new AssertionError(
           `Unable to create buffer for ${variant} variant. ${e}`);
@@ -323,7 +323,7 @@ const testReadWebNNBuffer = (testName) => {
   });
 
   promise_test(async t => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [2, 2],
       usage: MLTensorUsage.READ_FROM,
@@ -333,18 +333,18 @@ const testReadWebNNBuffer = (testName) => {
     mlBuffer.destroy();
 
     await promise_rejects_dom(
-        t, 'InvalidStateError', mlContext.readBuffer(mlBuffer));
+        t, 'InvalidStateError', mlContext.readTensor(mlBuffer));
   }, `${testName} / read_after_destroy`);
 
   promise_test(async t => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [2, 3],
       usage: MLTensorUsage.READ_FROM,
     });
 
-    let promise = mlContext.readBuffer(mlBuffer);
-    let anotherPromise = mlContext.readBuffer(mlBuffer);
+    let promise = mlContext.readTensor(mlBuffer);
+    let anotherPromise = mlContext.readTensor(mlBuffer);
 
     mlBuffer.destroy();
 
@@ -353,7 +353,7 @@ const testReadWebNNBuffer = (testName) => {
   }, `${testName} / read_before_destroy`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1024],
       usage: MLTensorUsage.READ_FROM,
@@ -364,33 +364,33 @@ const testReadWebNNBuffer = (testName) => {
   }, `${testName} / uninitialized`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.READ_FROM | MLTensorUsage.WRITE_TO,
     });
 
     // Initialize the buffer.
-    mlContext.writeBuffer(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+    mlContext.writeTensor(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
 
-    mlContext.writeBuffer(mlBuffer, Uint32Array.from([0xBBBBBBBB]));
+    mlContext.writeTensor(mlBuffer, Uint32Array.from([0xBBBBBBBB]));
     await assert_buffer_data_equals(
         mlContext, mlBuffer, Uint32Array.from([0xBBBBBBBB]));
     ;
   }, `${testName} / full_size`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
     });
 
     // Initialize the buffer.
-    mlContext.writeBuffer(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+    mlContext.writeTensor(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
 
     // Writing to the remainder of the buffer from source offset.
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         mlBuffer, Uint8Array.from([0xCC, 0xCC, 0xBB, 0xBB]),
         /*srcOffset=*/ 2);
     await assert_buffer_data_equals(
@@ -398,17 +398,17 @@ const testReadWebNNBuffer = (testName) => {
   }, `${testName} / src_offset_only`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
     });
 
     // Initialize the buffer.
-    mlContext.writeBuffer(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+    mlContext.writeTensor(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
 
     // Writing with both a source offset and size.
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         mlBuffer, Uint8Array.from([0xDD, 0xDD, 0xCC, 0xDD]),
         /*srcOffset=*/ 2, /*srcSize=*/ 1);
     await assert_buffer_data_equals(
@@ -416,17 +416,17 @@ const testReadWebNNBuffer = (testName) => {
   }, `${testName} / src_offset_and_size`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
     });
 
     // Initialize the buffer.
-    mlContext.writeBuffer(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+    mlContext.writeTensor(mlBuffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
 
     // Using an offset allows a larger source buffer to fit.
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         mlBuffer, Uint8Array.from([0xEE, 0xEE, 0xEE, 0xEE, 0xEE]),
         /*srcOffset=*/ 1);
     await assert_buffer_data_equals(
@@ -434,7 +434,7 @@ const testReadWebNNBuffer = (testName) => {
   }, `${testName} / larger_src_data`);
 
   promise_test(async () => {
-    let mlBuffer = await mlContext.createBuffer({
+    let mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [1],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
@@ -443,7 +443,7 @@ const testReadWebNNBuffer = (testName) => {
     const inputData = [0xAA, 0xAA, 0xAA, 0xAA];
 
     // Writing with a source offset of undefined should be treated as 0.
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         mlBuffer, Uint8Array.from(inputData), /*srcOffset=*/ undefined,
         /*srcSize=*/ inputData.length);
     await assert_buffer_data_equals(
@@ -456,15 +456,15 @@ const testReadWebNNBuffer = (testName) => {
       dimensions: [2, 3],
       usage: MLTensorUsage.READ_FROM,
     };
-    let mlBuffer = await mlContext.createBuffer(bufferDescriptor);
+    let mlBuffer = await mlContext.createTensor(bufferDescriptor);
 
     let anotherMLContext = await navigator.ml.createContext(contextOptions);
-    let anotherMLTensor = await anotherMLContext.createBuffer(bufferDescriptor);
+    let anotherMLTensor = await anotherMLContext.createTensor(bufferDescriptor);
 
     await promise_rejects_js(
-        t, TypeError, mlContext.readBuffer(anotherMLTensor));
+        t, TypeError, mlContext.readTensor(anotherMLTensor));
     await promise_rejects_js(
-        t, TypeError, anotherMLContext.readBuffer(mlBuffer));
+        t, TypeError, anotherMLContext.readTensor(mlBuffer));
   }, `${testName} / context_mismatch`);
 };
 
@@ -501,19 +501,19 @@ const testDispatchWebNNBuffer = (testName) => {
 
     try {
       const mlBuffer =
-          await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+          await mlContext.createTensor({dataType: 'int32', dimensions: [2, 3]});
     } catch (e) {
       throw new AssertionError(
           `Unable to create buffer for ${variant} variant. ${e}`);
     }
 
     inputs = {
-      'lhs': await mlContext.createBuffer(bufferDescriptor),
-      'rhs': await mlContext.createBuffer(bufferDescriptor),
+      'lhs': await mlContext.createTensor(bufferDescriptor),
+      'rhs': await mlContext.createTensor(bufferDescriptor),
     };
     outputs = {
-      'output1': await mlContext.createBuffer(bufferDescriptor),
-      'output2': await mlContext.createBuffer(bufferDescriptor),
+      'output1': await mlContext.createTensor(bufferDescriptor),
+      'output2': await mlContext.createTensor(bufferDescriptor),
     };
   });
 
@@ -524,7 +524,7 @@ const testDispatchWebNNBuffer = (testName) => {
     mlContext.dispatch(mlGraph, inputs, outputs);
 
     // Test the wrong context being used for inputs.
-    const lhsBuffer = await anotherMLContext.createBuffer(
+    const lhsBuffer = await anotherMLContext.createTensor(
         getDescriptorFromBuffer(inputs['lhs']));
     assert_throws_js(
         TypeError,
@@ -536,7 +536,7 @@ const testDispatchWebNNBuffer = (testName) => {
             outputs));
 
     // Test the wrong context being used for outputs.
-    const outputBuffer1 = await anotherMLContext.createBuffer(
+    const outputBuffer1 = await anotherMLContext.createTensor(
         getDescriptorFromBuffer(outputs['output1']));
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
       'output1': outputBuffer1,
@@ -549,7 +549,7 @@ const testDispatchWebNNBuffer = (testName) => {
     mlContext.dispatch(mlGraph, inputs, outputs);
 
     // Input is a different shape.
-    const lhsBuffer = await mlContext.createBuffer({
+    const lhsBuffer = await mlContext.createTensor({
       dataType: inputs['lhs'].dataType,
       // Input rank is too high.
       dimensions: inputs['lhs'].shape.concat([2])
@@ -564,7 +564,7 @@ const testDispatchWebNNBuffer = (testName) => {
             },
             outputs));
 
-    const rhsBuffer = await mlContext.createBuffer({
+    const rhsBuffer = await mlContext.createTensor({
       dataType: inputs['rhs'].dataType,
       // Input rank is too low.
       dimensions: inputs['rhs'].shape.slice(1)
@@ -582,7 +582,7 @@ const testDispatchWebNNBuffer = (testName) => {
     // Output is a different shape. Dimension value is too large.
     let output1WrongShape = [...outputs['output1'].shape];
     output1WrongShape[0] += 2;
-    const outputBuffer1 = await mlContext.createBuffer(
+    const outputBuffer1 = await mlContext.createTensor(
         {dataType: outputs['output1'].dataType, dimensions: output1WrongShape});
 
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
@@ -593,7 +593,7 @@ const testDispatchWebNNBuffer = (testName) => {
     // Output is a different shape. Dimension value is too small.
     let output2WrongShape = [...outputs['output2'].shape];
     output2WrongShape[1] -= 1;
-    const outputBuffer2 = await mlContext.createBuffer(
+    const outputBuffer2 = await mlContext.createTensor(
         {dataType: outputs['output2'].dataType, dimensions: output2WrongShape});
 
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
@@ -614,7 +614,7 @@ const testDispatchWebNNBuffer = (testName) => {
         TypeError,
         () => mlContext.dispatch(
             mlGraph, {
-              'lhs': mlContext.createBuffer({
+              'lhs': mlContext.createTensor({
                 dataType: inputWrongDataType,
                 dimensions: inputs['lhs'].shape
               }),
@@ -627,7 +627,7 @@ const testDispatchWebNNBuffer = (testName) => {
         () => mlContext.dispatch(
             mlGraph, {
               'lhs': inputs['lhs'],
-              'rhs': mlContext.createBuffer({
+              'rhs': mlContext.createTensor({
                 dataType: inputWrongDataType,
                 dimensions: inputs['rhs'].shape
               }),
@@ -638,7 +638,7 @@ const testDispatchWebNNBuffer = (testName) => {
     const outputWrongDataType = 'int32';
     assert_not_equals(outputs['output1'].dataType, outputWrongDataType);
     assert_not_equals(outputs['output2'].dataType, outputWrongDataType);
-    const outputBuffer1 = await mlContext.createBuffer(
+    const outputBuffer1 = await mlContext.createTensor(
         {dataType: outputWrongDataType, dimensions: outputs['output1'].shape});
 
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
@@ -646,7 +646,7 @@ const testDispatchWebNNBuffer = (testName) => {
       'output2': outputs['output2'],
     }));
 
-    const outputBuffer2 = await mlContext.createBuffer(
+    const outputBuffer2 = await mlContext.createTensor(
         {dataType: outputWrongDataType, dimensions: outputs['output2'].shape});
 
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
@@ -703,7 +703,7 @@ const testDispatchWebNNBuffer = (testName) => {
 
     // Too many named inputs is invalid.
     const anotherRhsBuffer =
-        await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs']));
+        await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs']));
     assert_throws_js(
         TypeError,
         () => mlContext.dispatch(
@@ -720,7 +720,7 @@ const testDispatchWebNNBuffer = (testName) => {
     }));
 
     // Too many named outputs is invalid.
-    const anotherOutputBuffer2 = await mlContext.createBuffer(
+    const anotherOutputBuffer2 = await mlContext.createTensor(
         getDescriptorFromBuffer(outputs['output2']));
     assert_throws_js(TypeError, () => mlContext.dispatch(mlGraph, inputs, {
       'output1': outputs['output1'],
@@ -773,30 +773,30 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatch1Outputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     const dispatch2Outputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const inputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData);
 
     // Output_1 = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, dispatch1Outputs);
@@ -824,35 +824,35 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatch1Inputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatch2Inputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatchOutputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const input1Data =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatch1Inputs['lhs'], input1Data);
-    mlContext.writeBuffer(dispatch1Inputs['rhs'], input1Data);
+    mlContext.writeTensor(dispatch1Inputs['lhs'], input1Data);
+    mlContext.writeTensor(dispatch1Inputs['rhs'], input1Data);
 
     const input2Data =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(2.0);
-    mlContext.writeBuffer(dispatch2Inputs['lhs'], input2Data);
-    mlContext.writeBuffer(dispatch2Inputs['rhs'], input2Data);
+    mlContext.writeTensor(dispatch2Inputs['lhs'], input2Data);
+    mlContext.writeTensor(dispatch2Inputs['rhs'], input2Data);
 
     // Output = LHS_1 + RHS_1 = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatch1Inputs, dispatchOutputs);
@@ -872,23 +872,23 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatchOutputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const inputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData);
 
     // Output = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);
@@ -906,30 +906,30 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatch1Outputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     const dispatch2Outputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const inputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData);
 
     // Output_1 = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, dispatch1Outputs);
@@ -969,19 +969,19 @@ const testDispatchWebNNBuffer = (testName) => {
         await builder.build({'output': builder.sub(lhsOperand, rhsOperand)});
 
     const lhsBuffer =
-        await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs']));
+        await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs']));
     const rhsBuffer =
-        await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs']));
+        await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs']));
 
     const dispatchOutputs = {
-      'output': await mlContext.createBuffer(
+      'output': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1']))
     };
 
     // Initialize inputs
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         lhsBuffer, new TypedArrayDict['float32'](sizeOfShape(shape)).fill(5.0));
-    mlContext.writeBuffer(
+    mlContext.writeTensor(
         rhsBuffer, new TypedArrayDict['float32'](sizeOfShape(shape)).fill(3.0));
 
     // Output = LHS - RHS = 5 - 3 = 2
@@ -1012,21 +1012,21 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
-    const outputBuffer1 = await mlContext.createBuffer(
+    const outputBuffer1 = await mlContext.createTensor(
         getDescriptorFromBuffer(outputs['output1']));
-    const outputBuffer2 = await mlContext.createBuffer(
+    const outputBuffer2 = await mlContext.createTensor(
         getDescriptorFromBuffer(outputs['output2']));
 
     // Initialize inputs
     const inputData1 =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData1);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData1);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData1);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData1);
 
     // Output = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, {
@@ -1037,12 +1037,12 @@ const testDispatchWebNNBuffer = (testName) => {
     // Output = LHS + RHS = 2 + 2 = 4
     const inputData2 =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(2.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData2);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData2);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData2);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData2);
 
     mlContext.dispatch(mlGraph, dispatchInputs, {
       'output1': outputBuffer1,
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     });
 
@@ -1055,23 +1055,23 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatchOutputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const inputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData);
 
     // Output = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);
@@ -1079,11 +1079,11 @@ const testDispatchWebNNBuffer = (testName) => {
     // Check destroyed input buffers cannot be re-used in subsequent dispatches.
     dispatchInputs['lhs'].destroy();
     dispatchInputs['lhs'] =
-        await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs']));
+        await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs']));
 
     const newInputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(2.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], newInputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], newInputData);
 
     // Output = LHS + RHS = 2 + 1 = 3
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);
@@ -1094,8 +1094,8 @@ const testDispatchWebNNBuffer = (testName) => {
 
     dispatchInputs['rhs'].destroy();
     dispatchInputs['rhs'] =
-        await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs']));
-    mlContext.writeBuffer(dispatchInputs['rhs'], newInputData);
+        await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs']));
+    mlContext.writeTensor(dispatchInputs['rhs'], newInputData);
 
     // Output = LHS + RHS = 2 + 2 = 4
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);
@@ -1108,23 +1108,23 @@ const testDispatchWebNNBuffer = (testName) => {
   promise_test(async () => {
     const dispatchInputs = {
       'lhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['lhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['lhs'])),
       'rhs':
-          await mlContext.createBuffer(getDescriptorFromBuffer(inputs['rhs'])),
+          await mlContext.createTensor(getDescriptorFromBuffer(inputs['rhs'])),
     };
 
     const dispatchOutputs = {
-      'output1': await mlContext.createBuffer(
+      'output1': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output1'])),
-      'output2': await mlContext.createBuffer(
+      'output2': await mlContext.createTensor(
           getDescriptorFromBuffer(outputs['output2'])),
     };
 
     // Initialize inputs
     const inputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(1.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], inputData);
-    mlContext.writeBuffer(dispatchInputs['rhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], inputData);
+    mlContext.writeTensor(dispatchInputs['rhs'], inputData);
 
     // Output = LHS + RHS = 1 + 1 = 2
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);
@@ -1132,12 +1132,12 @@ const testDispatchWebNNBuffer = (testName) => {
     // Check destroyed output buffers cannot be re-used in subsequent
     // dispatches.
     dispatchOutputs['output1'].destroy();
-    dispatchOutputs['output1'] = await mlContext.createBuffer(
+    dispatchOutputs['output1'] = await mlContext.createTensor(
         getDescriptorFromBuffer(outputs['output1']));
 
     const newInputData =
         new TypedArrayDict['float32'](sizeOfShape(shape)).fill(2.0);
-    mlContext.writeBuffer(dispatchInputs['lhs'], newInputData);
+    mlContext.writeTensor(dispatchInputs['lhs'], newInputData);
 
     // Output = LHS + RHS = 2 + 1 = 3
     mlContext.dispatch(mlGraph, dispatchInputs, dispatchOutputs);

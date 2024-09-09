@@ -29,7 +29,7 @@ promise_setup(async () => {
   }
 
   try {
-    mlBuffer = await mlContext.createBuffer({
+    mlBuffer = await mlContext.createTensor({
       dataType: 'int32',
       dimensions: [2, 4],
       usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
@@ -39,22 +39,22 @@ promise_setup(async () => {
         `Unable to create buffer for ${variant} variant. ${e}`);
   }
 
-  mlContext.writeBuffer(mlBuffer, testContents);
+  mlContext.writeTensor(mlBuffer, testContents);
 });
 
 promise_test(async (t) => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength - 4);
 
   await promise_rejects_js(
-      t, TypeError, mlContext.readBuffer(mlBuffer, arrayBuffer));
-}, `readBuffer() with an ArrayBuffer that is too small should reject`);
+      t, TypeError, mlContext.readTensor(mlBuffer, arrayBuffer));
+}, `readTensor() with an ArrayBuffer that is too small should reject`);
 
 promise_test(async (t) => {
   const typedArray = new Uint32Array(testContents.length - 1);
 
   await promise_rejects_js(
-      t, TypeError, mlContext.readBuffer(mlBuffer, typedArray));
-}, `readBuffer() with a TypedArray that is too small should reject`);
+      t, TypeError, mlContext.readTensor(mlBuffer, typedArray));
+}, `readTensor() with a TypedArray that is too small should reject`);
 
 promise_test(async (t) => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength);
@@ -63,11 +63,11 @@ promise_test(async (t) => {
   arrayBuffer.transfer();
 
   await promise_rejects_js(
-      t, TypeError, mlContext.readBuffer(mlBuffer, arrayBuffer));
+      t, TypeError, mlContext.readTensor(mlBuffer, arrayBuffer));
 
   await promise_rejects_js(
-      t, TypeError, mlContext.readBuffer(mlBuffer, typedArray));
-}, `readBuffer() with a detached ArrayBuffer should reject`);
+      t, TypeError, mlContext.readTensor(mlBuffer, typedArray));
+}, `readTensor() with a detached ArrayBuffer should reject`);
 
 promise_test(async (t) => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength);
@@ -75,23 +75,23 @@ promise_test(async (t) => {
 
   const checks = Promise.all([
     promise_rejects_js(
-        t, TypeError, mlContext.readBuffer(mlBuffer, arrayBuffer)),
+        t, TypeError, mlContext.readTensor(mlBuffer, arrayBuffer)),
     promise_rejects_js(
-        t, TypeError, mlContext.readBuffer(mlBuffer, typedArray)),
+        t, TypeError, mlContext.readTensor(mlBuffer, typedArray)),
   ]);
 
   arrayBuffer.transfer();
 
   await checks;
-}, `Detaching an ArrayBuffer while readBuffer() is in progress should reject`);
+}, `Detaching an ArrayBuffer while readTensor() is in progress should reject`);
 
 promise_test(async () => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength);
 
-  await mlContext.readBuffer(mlBuffer, arrayBuffer);
+  await mlContext.readTensor(mlBuffer, arrayBuffer);
 
   assert_array_equals(new Uint32Array(arrayBuffer), testContents);
-}, `readBuffer() with an ArrayBuffer`);
+}, `readTensor() with an ArrayBuffer`);
 
 promise_test(async () => {
   // Create a slightly larger ArrayBuffer and set up the TypedArray at an
@@ -100,15 +100,15 @@ promise_test(async () => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength + 4);
   const typedArray = new Uint32Array(arrayBuffer, 4);
 
-  await mlContext.readBuffer(mlBuffer, typedArray);
+  await mlContext.readTensor(mlBuffer, typedArray);
 
   assert_array_equals(typedArray, testContents);
-}, `readBuffer() with a TypedArray`);
+}, `readTensor() with a TypedArray`);
 
 promise_test(async () => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength * 2);
 
-  await mlContext.readBuffer(mlBuffer, arrayBuffer);
+  await mlContext.readTensor(mlBuffer, arrayBuffer);
 
   assert_array_equals(
       new Uint32Array(arrayBuffer).subarray(0, testContents.length),
@@ -118,7 +118,7 @@ promise_test(async () => {
       new Uint32Array(arrayBuffer)
           .subarray(testContents.length, testContents.length * 2),
       new Uint32Array(testContents.length));
-}, `readBuffer() with a larger ArrayBuffer`);
+}, `readTensor() with a larger ArrayBuffer`);
 
 promise_test(async () => {
   // Create a slightly larger ArrayBuffer and set up the TypedArray at an
@@ -127,7 +127,7 @@ promise_test(async () => {
   const arrayBuffer = new ArrayBuffer(testContents.byteLength * 2 + 4);
   const typedArray = new Uint32Array(arrayBuffer, 4);
 
-  await mlContext.readBuffer(mlBuffer, typedArray);
+  await mlContext.readTensor(mlBuffer, typedArray);
 
   assert_array_equals(
       typedArray.subarray(0, testContents.length), testContents);
@@ -135,10 +135,10 @@ promise_test(async () => {
   assert_array_equals(
       typedArray.subarray(testContents.length, testContents.length * 2),
       new Uint32Array(testContents.length));
-}, `readBuffer() with a larger TypedArray`);
+}, `readTensor() with a larger TypedArray`);
 
 promise_test(async (t) => {
-  const buffer = await mlContext.createBuffer({
+  const buffer = await mlContext.createTensor({
     dataType: 'int32',
     dimensions: [2, 2],
     usage: MLTensorUsage.READ_FROM,
@@ -150,13 +150,13 @@ promise_test(async (t) => {
   buffer.destroy();
 
   await promise_rejects_dom(
-      t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBuffer));
+      t, 'InvalidStateError', mlContext.readTensor(buffer, arrayBuffer));
   await promise_rejects_dom(
-      t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBufferView));
-}, `readBuffer() rejects on a destroyed MLTensor`);
+      t, 'InvalidStateError', mlContext.readTensor(buffer, arrayBufferView));
+}, `readTensor() rejects on a destroyed MLTensor`);
 
 promise_test(async (t) => {
-  const buffer = await mlContext.createBuffer({
+  const buffer = await mlContext.createTensor({
     dataType: 'int32',
     dimensions: [2, 2],
     usage: MLTensorUsage.READ_FROM,
@@ -166,12 +166,12 @@ promise_test(async (t) => {
 
   const checks = Promise.all([
     promise_rejects_dom(
-        t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBuffer)),
+        t, 'InvalidStateError', mlContext.readTensor(buffer, arrayBuffer)),
     promise_rejects_dom(
-        t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBufferView)),
+        t, 'InvalidStateError', mlContext.readTensor(buffer, arrayBufferView)),
   ]);
 
   buffer.destroy();
 
   await checks;
-}, `readBuffer() rejects when the MLTensor is destroyed`);
+}, `readTensor() rejects when the MLTensor is destroyed`);

@@ -21,7 +21,7 @@ class TensorImplDml final : public WebNNTensorImpl {
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
                 ContextImplDml* context,
-                mojom::BufferInfoPtr buffer_info);
+                mojom::TensorInfoPtr tensor_info);
 
   TensorImplDml(const TensorImplDml&) = delete;
   TensorImplDml& operator=(const TensorImplDml&) = delete;
@@ -40,8 +40,8 @@ class TensorImplDml final : public WebNNTensorImpl {
   }
 
  private:
-  void ReadBufferImpl(ReadBufferCallback callback) override;
-  void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
+  void ReadTensorImpl(ReadTensorCallback callback) override;
+  void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
   // The D3D12 resource that holds the buffer data.
   // The buffer must always remain valid after creation and could outlive

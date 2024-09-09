@@ -38,7 +38,7 @@ namespace {
 
 void HandleBufferCreationFailure(
     const std::string& error_message,
-    WebNNContextImpl::CreateBufferImplCallback callback) {
+    WebNNContextImpl::CreateTensorImplCallback callback) {
   std::move(callback).Run(base::unexpected(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
@@ -431,15 +431,15 @@ void ContextImplDml::CreateGraphImpl(
           gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
-void ContextImplDml::CreateBufferImpl(
+void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::BufferInfoPtr buffer_info,
-    CreateBufferImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info,
+    CreateTensorImplCallback callback) {
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
-      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength())) {
+      static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength())) {
     LOG(ERROR) << "[WebNN] Buffer is too large to create.";
     HandleBufferCreationFailure("Failed to create buffer.",
                                 std::move(callback));
@@ -447,7 +447,7 @@ void ContextImplDml::CreateBufferImpl(
   }
 
   const uint64_t aligned_buffer_byte_size = base::bits::AlignUp(
-      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength()),
+      static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength()),
       kDMLBufferAlignment);
 
   HRESULT hr = S_OK;
@@ -458,14 +458,14 @@ void ContextImplDml::CreateBufferImpl(
   if (adapter_->IsUMA()) {
     // Create a buffer configured with memory properties based on
     // usage.
-    if (buffer_info->usage.Has(MLTensorUsageFlags::kWriteTo)) {
+    if (tensor_info->usage.Has(MLTensorUsageFlags::kWriteTo)) {
       // Upload buffer is used when the buffer mostly CPU writes but
       // could also CPU read. A upload buffer provides less bandwidth for CPU
       // reads in favor of GPU writes being optimal.
       hr = CreateCustomUploadBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,
           L"WebNN_Custom_Upload_Buffer_External", buffer);
-    } else if (buffer_info->usage.Has(MLTensorUsageFlags::kReadFrom)) {
+    } else if (tensor_info->usage.Has(MLTensorUsageFlags::kReadFrom)) {
       // Readback buffer is used when the buffer only requires CPU reads.
       hr = CreateCustomReadbackBuffer(
           adapter_->d3d12_device(), aligned_buffer_byte_size,
@@ -496,20 +496,20 @@ void ContextImplDml::CreateBufferImpl(
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
   std::move(callback).Run(std::make_unique<TensorImplDml>(
-      std::move(receiver), std::move(buffer), this, std::move(buffer_info)));
+      std::move(receiver), std::move(buffer), this, std::move(tensor_info)));
 }
 
-void ContextImplDml::ReadBuffer(
-    TensorImplDml* src_buffer,
-    mojom::WebNNTensor::ReadBufferCallback callback) {
-  const size_t src_buffer_size = src_buffer->PackedByteLength();
+void ContextImplDml::ReadTensor(
+    TensorImplDml* src_tensor,
+    mojom::WebNNTensor::ReadTensorCallback callback) {
+  const size_t src_tensor_size = src_tensor->PackedByteLength();
 
   HRESULT hr = S_OK;
 
   // Map entire buffer to readback the output data.
   if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
-                               src_buffer->last_submission_fence_value()) {
-    ContextImplDml::OnReadbackComplete(src_buffer->buffer(), src_buffer_size,
+                               src_tensor->last_submission_fence_value()) {
+    ContextImplDml::OnReadbackComplete(src_tensor->buffer(), src_tensor_size,
                                        std::move(callback), hr);
     return;
   }
@@ -517,10 +517,10 @@ void ContextImplDml::ReadBuffer(
   // Copy the buffer into a staging buffer to readback the output data.
   ComPtr<ID3D12Resource> download_buffer;
   hr = CreateReadbackBuffer(adapter_->d3d12_device(),
-                            static_cast<uint64_t>(src_buffer_size),
+                            static_cast<uint64_t>(src_tensor_size),
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     HandleContextLostOrCrash("Failed to create the download buffer.", hr);
     return;
@@ -528,19 +528,19 @@ void ContextImplDml::ReadBuffer(
 
   hr = StartRecordingIfNecessary();
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     HandleRecordingError("Failed to start recording.", hr);
     return;
   }
 
-  command_recorder_->ReadbackBufferWithBarrier(download_buffer, src_buffer,
-                                               src_buffer_size);
+  command_recorder_->ReadbackBufferWithBarrier(download_buffer, src_tensor,
+                                               src_tensor_size);
 
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     HandleRecordingError("Failed to close and execute the command list.", hr);
     return;
@@ -551,16 +551,16 @@ void ContextImplDml::ReadBuffer(
   // CommandRecorder::CloseAndExecute().
   adapter_->command_queue()->WaitAsync(base::BindOnce(
       &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
-      std::move(download_buffer), src_buffer_size, std::move(callback)));
+      std::move(download_buffer), src_tensor_size, std::move(callback)));
 }
 
 void ContextImplDml::OnReadbackComplete(
     ComPtr<ID3D12Resource> download_buffer,
     size_t read_byte_size,
-    mojom::WebNNTensor::ReadBufferCallback callback,
+    mojom::WebNNTensor::ReadTensorCallback callback,
     HRESULT hr) {
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     HandleRecordingError("Failed to download the buffer.", hr);
     return;
@@ -572,7 +572,7 @@ void ContextImplDml::OnReadbackComplete(
   void* mapped_download_data = nullptr;
   hr = download_buffer->Map(0, nullptr, &mapped_download_data);
   if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+    std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     HandleContextLostOrCrash("Failed to map the download buffer.", hr);
     return;
@@ -584,18 +584,18 @@ void ContextImplDml::OnReadbackComplete(
   download_buffer->Unmap(0, nullptr);
 
   std::move(callback).Run(
-      mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
+      mojom::ReadTensorResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
+void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
                                  mojo_base::BigBuffer src_buffer) {
   HRESULT hr = S_OK;
-  ComPtr<ID3D12Resource> buffer_to_map = dst_buffer->buffer();
+  ComPtr<ID3D12Resource> buffer_to_map = dst_tensor->buffer();
 
   // Create a staging buffer to upload data into when the existing buffer
   // cannot be updated by the CPU.
   if (!adapter_->IsUMA() || adapter_->command_queue()->GetCompletedValue() <
-                                dst_buffer->last_submission_fence_value()) {
+                                dst_tensor->last_submission_fence_value()) {
     hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
                             L"WebNN_Upload_Buffer", buffer_to_map);
     if (FAILED(hr)) {
@@ -624,7 +624,7 @@ void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
   buffer_to_map->Unmap(0, nullptr);
 
   // Uploads are only required when the mapped buffer was a staging buffer.
-  if (dst_buffer->buffer() != buffer_to_map.Get()) {
+  if (dst_tensor->buffer() != buffer_to_map.Get()) {
     hr = StartRecordingIfNecessary();
     if (FAILED(hr)) {
       HandleRecordingError("Failed to start recording.", hr);
@@ -632,7 +632,7 @@ void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
     }
 
     command_recorder_->UploadBufferWithBarrier(
-        dst_buffer, std::move(buffer_to_map), src_buffer.size());
+        dst_tensor, std::move(buffer_to_map), src_buffer.size());
 
     // TODO(crbug.com/40278771): consider not submitting after every write.
     // CloseAndExecute() only needs to be called once, when the buffer is read

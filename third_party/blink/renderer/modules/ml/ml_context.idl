@@ -281,7 +281,7 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<MLTensor> createBuffer(MLTensorDescriptor descriptor);
+  ] Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
 
   // TODO(crbug.com/328105506): enable partial MLTensor reads/writes.
   // TODO(crbug.com/40278771): consider moving arguments into a dictonary 
@@ -291,8 +291,8 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeBuffer(
-        MLTensor dstBuffer,
+  ] void writeTensor(
+        MLTensor dstTensor,
         [AllowShared] ArrayBufferView srcData,
         optional MLSize64 srcElementOffset = 0,
         optional MLSize64 srcElementSize);
@@ -301,8 +301,8 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeBuffer(
-        MLTensor dstBuffer,
+  ] void writeTensor(
+        MLTensor dstTensor,
         ArrayBuffer srcData,
         optional MLSize64 srcByteOffset = 0,
         optional MLSize64 srcByteSize);
@@ -311,24 +311,24 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<ArrayBuffer> readBuffer(
-        MLTensor srcBuffer);
+  ] Promise<ArrayBuffer> readTensor(
+        MLTensor sourceTensor);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<undefined> readBuffer(
-        MLTensor srcBuffer,
-        [AllowShared] ArrayBufferView dstData);
+  ] Promise<undefined> readTensor(
+        MLTensor sourceTensor,
+        [AllowShared] ArrayBufferView destinationData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<undefined> readBuffer(
-        MLTensor srcBuffer,
-        [AllowShared] ArrayBuffer dstData);
+  ] Promise<undefined> readTensor(
+        MLTensor sourceTensor,
+        [AllowShared] ArrayBuffer destinationData);
 
   // TODO(crbug.com/1273291): enable partial buffer dispatches.
   [

@@ -80,38 +80,38 @@ void WebNNContextImpl::CreateGraphBuilder(
   graph_builder_ptr->SetId(id, base::PassKey<WebNNContextImpl>());
 }
 
-void WebNNContextImpl::CreateBuffer(
-    mojom::BufferInfoPtr buffer_info,
-    mojom::WebNNContext::CreateBufferCallback callback) {
+void WebNNContextImpl::CreateTensor(
+    mojom::TensorInfoPtr tensor_info,
+    mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ValidateBuffer(properties_, buffer_info->descriptor).has_value()) {
+  if (!ValidateBuffer(properties_, tensor_info->descriptor).has_value()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  CreateBufferImpl(
-      std::move(receiver), std::move(buffer_info),
+  CreateTensorImpl(
+      std::move(receiver), std::move(tensor_info),
       base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl, AsWeakPtr(),
                      std::move(callback), std::move(remote)));
 }
 
 void WebNNContextImpl::DidCreateWebNNTensorImpl(
-    mojom::WebNNContext::CreateBufferCallback callback,
+    mojom::WebNNContext::CreateTensorCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
     base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
-        mojom::CreateBufferResult::NewError(std::move(result.error())));
+        mojom::CreateTensorResult::NewError(std::move(result.error())));
     return;
   }
 
-  auto success = mojom::CreateBufferSuccess::New(std::move(remote),
+  auto success = mojom::CreateTensorSuccess::New(std::move(remote),
                                                  result.value()->handle());
   std::move(callback).Run(
-      mojom::CreateBufferResult::NewSuccess(std::move(success)));
+      mojom::CreateTensorResult::NewSuccess(std::move(success)));
 
   // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
@@ -133,8 +133,8 @@ void WebNNContextImpl::OnLost(std::string_view message) {
 }
 
 base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
-    const blink::WebNNTensorToken& buffer_handle) {
-  const auto it = buffer_impls_.find(buffer_handle);
+    const blink::WebNNTensorToken& tensor_handle) {
+  const auto it = buffer_impls_.find(tensor_handle);
   if (it == buffer_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return std::nullopt;

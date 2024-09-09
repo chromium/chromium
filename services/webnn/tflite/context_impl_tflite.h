@@ -33,10 +33,10 @@ class ContextImplTflite final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override;
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override;
 
   base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };

@@ -42,10 +42,10 @@ class ContextImplCrOS final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  void CreateBufferImpl(
+  void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override;
+      mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) override;
 
   // The TFLite model will be loaded in the callback when creating `ModelLoader`
   // interface successfully.

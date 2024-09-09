@@ -14,10 +14,10 @@ namespace webnn {
 WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info)
+    mojom::TensorInfoPtr tensor_info)
     : context_(context),
-      descriptor_(std::move(buffer_info->descriptor)),
-      usage_(std::move(buffer_info->usage)),
+      descriptor_(std::move(tensor_info->descriptor)),
+      usage_(std::move(tensor_info->usage)),
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(
@@ -26,17 +26,17 @@ WebNNTensorImpl::WebNNTensorImpl(
 
 WebNNTensorImpl::~WebNNTensorImpl() = default;
 
-void WebNNTensorImpl::ReadBuffer(ReadBufferCallback callback) {
+void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   if (!usage().Has(MLTensorUsageFlags::kReadFrom)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
-  // Call ReadBufferImpl() implemented by a backend.
-  ReadBufferImpl(std::move(callback));
+  // Call ReadTensorImpl() implemented by a backend.
+  ReadTensorImpl(std::move(callback));
 }
 
-void WebNNTensorImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
+void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   if (!usage().Has(MLTensorUsageFlags::kWriteTo)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
@@ -48,8 +48,8 @@ void WebNNTensorImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
     return;
   }
 
-  // Call WriteBufferImpl() implemented by a backend.
-  WriteBufferImpl(std::move(src_buffer));
+  // Call WriteTensorImpl() implemented by a backend.
+  WriteTensorImpl(std::move(src_buffer));
 }
 
 void WebNNTensorImpl::OnDisconnect() {

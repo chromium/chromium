@@ -79,12 +79,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                          const MLNamedArrayBufferViews& outputs,
                                          ExceptionState& exception_state);
 
-  ScriptPromise<MLTensor> createBuffer(ScriptState* script_state,
+  ScriptPromise<MLTensor> createTensor(ScriptState* script_state,
                                        const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
 
   // Writes data specified by array buffer view from offset in elements.
-  void writeBuffer(ScriptState* script_state,
+  void writeTensor(ScriptState* script_state,
                    MLTensor* dst_buffer,
                    const MaybeShared<DOMArrayBufferView>& src_data,
                    uint64_t src_element_offset,
@@ -92,7 +92,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Writes data specified by array buffer view from offset and size in
   // elements.
-  void writeBuffer(ScriptState* script_state,
+  void writeTensor(ScriptState* script_state,
                    MLTensor* dst_buffer,
                    const MaybeShared<DOMArrayBufferView>& src_data,
                    uint64_t src_element_offset,
@@ -100,30 +100,30 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                    ExceptionState& exception_state);
 
   // Writes array buffer data from offset in bytes.
-  void writeBuffer(ScriptState* script_state,
+  void writeTensor(ScriptState* script_state,
                    MLTensor* dst_buffer,
                    const DOMArrayBufferBase* src_data,
                    uint64_t src_byte_offset,
                    ExceptionState& exception_state);
 
   // Writes array buffer data from offset and size in bytes.
-  void writeBuffer(ScriptState* script_state,
+  void writeTensor(ScriptState* script_state,
                    MLTensor* dst_buffer,
                    const DOMArrayBufferBase* src_data,
                    uint64_t src_byte_offset,
                    uint64_t src_byte_size,
                    ExceptionState& exception_state);
 
-  ScriptPromise<DOMArrayBuffer> readBuffer(ScriptState* script_state,
+  ScriptPromise<DOMArrayBuffer> readTensor(ScriptState* script_state,
                                            MLTensor* src_buffer,
                                            ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> readBuffer(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> readTensor(ScriptState* script_state,
                                          MLTensor* src_buffer,
                                          DOMArrayBufferBase* dst_data,
                                          ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> readBuffer(
+  ScriptPromise<IDLUndefined> readTensor(
       ScriptState* script_state,
       MLTensor* src_buffer,
       MaybeShared<DOMArrayBufferView> dst_data,
@@ -166,7 +166,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                             ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
                             webnn::MLTensorUsage usage,
-                            webnn::mojom::blink::CreateBufferResultPtr result);
+                            webnn::mojom::blink::CreateTensorResultPtr result);
 
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;

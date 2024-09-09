@@ -39,35 +39,35 @@ promise_test(async () => {
   const [mlGraph, inputBuffer1, inputBuffer2, outputBuffer] =
       await Promise.all([
         buildMulGraph(mlContext, operandDescriptor, 2),
-        mlContext.createBuffer(operandDescriptor),
-        mlContext.createBuffer(operandDescriptor),
-        mlContext.createBuffer(operandDescriptor)
+        mlContext.createTensor(operandDescriptor),
+        mlContext.createTensor(operandDescriptor),
+        mlContext.createTensor(operandDescriptor)
       ]);
 
-  mlContext.writeBuffer(inputBuffer1, Float32Array.from([1]));
-  mlContext.writeBuffer(inputBuffer2, Float32Array.from([10]));
+  mlContext.writeTensor(inputBuffer1, Float32Array.from([1]));
+  mlContext.writeTensor(inputBuffer2, Float32Array.from([10]));
 
-  let readBufferPromises = [];
+  let readTensorPromises = [];
 
   mlContext.dispatch(
       mlGraph, {'input': inputBuffer1}, {'output': outputBuffer});
 
   // Don't await buffer readback before dispatching again.
-  readBufferPromises.push(mlContext.readBuffer(outputBuffer));
+  readTensorPromises.push(mlContext.readTensor(outputBuffer));
 
   mlContext.dispatch(
       mlGraph, {'input': inputBuffer2}, {'output': outputBuffer});
 
-  readBufferPromises.push(mlContext.readBuffer(outputBuffer));
+  readTensorPromises.push(mlContext.readTensor(outputBuffer));
 
   const actualOutputs =
-      await Promise.all(readBufferPromises.map(async (promise) => {
+      await Promise.all(readTensorPromises.map(async (promise) => {
         const output = await promise;
         return new Float32Array(output)[0];
       }));
 
   assert_array_equals(actualOutputs, [2, 20]);
-}, 'dispatch queues behind readBuffer');
+}, 'dispatch queues behind readTensor');
 
 promise_test(async () => {
   const operandDescriptor = {
@@ -81,16 +81,16 @@ promise_test(async () => {
   const testInputs = [1, 2, 3, 4];
   const actualOutputs = await Promise.all(testInputs.map(async (input) => {
     const [inputBuffer, outputBuffer] = await Promise.all([
-      mlContext.createBuffer(operandDescriptor),
-      mlContext.createBuffer(operandDescriptor)
+      mlContext.createTensor(operandDescriptor),
+      mlContext.createTensor(operandDescriptor)
     ]);
 
-    mlContext.writeBuffer(inputBuffer, Float32Array.from([input]));
+    mlContext.writeTensor(inputBuffer, Float32Array.from([input]));
 
     mlContext.dispatch(
         mlGraph, {'input': inputBuffer}, {'output': outputBuffer});
 
-    const output = await mlContext.readBuffer(outputBuffer);
+    const output = await mlContext.readTensor(outputBuffer);
     return new Float32Array(output)[0];
   }));
 
@@ -110,25 +110,25 @@ promise_test(async () => {
   const inputAndOutputBuffers =
       await Promise.all(testInputs.map(async (testInput) => {
         const [inputBuffer, outputBuffer] = await Promise.all([
-          mlContext.createBuffer(operandDescriptor),
-          mlContext.createBuffer(operandDescriptor)
+          mlContext.createTensor(operandDescriptor),
+          mlContext.createTensor(operandDescriptor)
         ]);
 
-        mlContext.writeBuffer(inputBuffer, Float32Array.from([testInput]));
+        mlContext.writeTensor(inputBuffer, Float32Array.from([testInput]));
         return [inputBuffer, outputBuffer];
       }));
 
   // dispatch/read, dispatch/read, ...
-  let readBufferPromises = [];
+  let readTensorPromises = [];
   for (let i = 0; i < testInputs.length; i++) {
     mlContext.dispatch(
         mlGraph, {'input': inputAndOutputBuffers[i][0]},
         {'output': inputAndOutputBuffers[i][1]});
-    readBufferPromises.push(mlContext.readBuffer(inputAndOutputBuffers[i][1]));
+    readTensorPromises.push(mlContext.readTensor(inputAndOutputBuffers[i][1]));
   };
 
   const actualOutputs =
-      await Promise.all(readBufferPromises.map(async (promise) => {
+      await Promise.all(readTensorPromises.map(async (promise) => {
         const output = await promise;
         return new Float32Array(output)[0];
       }));
@@ -149,11 +149,11 @@ promise_test(async () => {
   const inputAndOutputBuffers =
       await Promise.all(testInputs.map(async (testInput) => {
         const [inputBuffer, outputBuffer] = await Promise.all([
-          mlContext.createBuffer(operandDescriptor),
-          mlContext.createBuffer(operandDescriptor)
+          mlContext.createTensor(operandDescriptor),
+          mlContext.createTensor(operandDescriptor)
         ]);
 
-        mlContext.writeBuffer(inputBuffer, Float32Array.from([testInput]));
+        mlContext.writeTensor(inputBuffer, Float32Array.from([testInput]));
         return [inputBuffer, outputBuffer];
       }));
 
@@ -167,7 +167,7 @@ promise_test(async () => {
   // read/read...
   const actualOutputs = await Promise.all(
       inputAndOutputBuffers.map(async (inputAndOutputBuffer) => {
-        const output = await mlContext.readBuffer(inputAndOutputBuffer[1]);
+        const output = await mlContext.readTensor(inputAndOutputBuffer[1]);
         return new Float32Array(output)[0];
       }));
 
@@ -183,14 +183,14 @@ promise_test(async () => {
   const mlGraph = await buildMulGraph(mlContext, operandDescriptor, 2);
 
   const buffers = await Promise.all([
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor)
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor)
   ]);
 
-  mlContext.writeBuffer(buffers[0], Float32Array.from([1]));
+  mlContext.writeTensor(buffers[0], Float32Array.from([1]));
 
   // dispatch/dispatch...
   for (let i = 0; i < buffers.length - 1; i++) {
@@ -200,7 +200,7 @@ promise_test(async () => {
 
   // read/read...
   const actualOutputs = await Promise.all(buffers.map(async (buffer) => {
-    const output = await mlContext.readBuffer(buffer);
+    const output = await mlContext.readTensor(buffer);
     return new Float32Array(output)[0];
   }));
 
@@ -220,25 +220,25 @@ promise_test(async () => {
       await Promise.all(testInputs.map(async (testInput) => {
         const [graph, inputBuffer, outputBuffer] = await Promise.all([
           buildMulGraph(mlContext, operandDescriptor, testInput),
-          mlContext.createBuffer(operandDescriptor),
-          mlContext.createBuffer(operandDescriptor)
+          mlContext.createTensor(operandDescriptor),
+          mlContext.createTensor(operandDescriptor)
         ]);
 
-        mlContext.writeBuffer(inputBuffer, Float32Array.from([testInput]));
+        mlContext.writeTensor(inputBuffer, Float32Array.from([testInput]));
         return [graph, inputBuffer, outputBuffer];
       }));
 
   // dispatch/read, dispatch/read, ...
-  let readBufferPromises = [];
+  let readTensorPromises = [];
   for (let i = 0; i < graphsAndBuffers.length; i++) {
     mlContext.dispatch(
         graphsAndBuffers[i][0], {'input': graphsAndBuffers[i][1]},
         {'output': graphsAndBuffers[i][2]});
-    readBufferPromises.push(mlContext.readBuffer(graphsAndBuffers[i][2]));
+    readTensorPromises.push(mlContext.readTensor(graphsAndBuffers[i][2]));
   };
 
   const actualOutputs =
-      await Promise.all(readBufferPromises.map(async (promise) => {
+      await Promise.all(readTensorPromises.map(async (promise) => {
         const output = await promise;
         return new Float32Array(output)[0];
       }));
@@ -259,11 +259,11 @@ promise_test(async () => {
       await Promise.all(testInputs.map(async (testInput) => {
         const [graph, inputBuffer, outputBuffer] = await Promise.all([
           buildMulGraph(mlContext, operandDescriptor, testInput * 2),
-          mlContext.createBuffer(operandDescriptor),
-          mlContext.createBuffer(operandDescriptor)
+          mlContext.createTensor(operandDescriptor),
+          mlContext.createTensor(operandDescriptor)
         ]);
 
-        mlContext.writeBuffer(inputBuffer, Float32Array.from([testInput]));
+        mlContext.writeTensor(inputBuffer, Float32Array.from([testInput]));
         return [graph, inputBuffer, outputBuffer];
       }));
 
@@ -277,7 +277,7 @@ promise_test(async () => {
   // read/read...
   const actualOutputs =
       await Promise.all(graphsAndBuffers.map(async (graphAndBuffers) => {
-        const output = await mlContext.readBuffer(graphAndBuffers[2]);
+        const output = await mlContext.readTensor(graphAndBuffers[2]);
         return new Float32Array(output)[0];
       }));
 
@@ -296,14 +296,14 @@ promise_test(async () => {
   }));
 
   const buffers = await Promise.all([
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor)
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor)
   ]);
 
-  mlContext.writeBuffer(buffers[0], Float32Array.from([1]));
+  mlContext.writeTensor(buffers[0], Float32Array.from([1]));
 
   // dispatch/dispatch...
   for (let i = 0; i < buffers.length - 1; i++) {
@@ -313,7 +313,7 @@ promise_test(async () => {
 
   // read/read...
   const actualOutputs = await Promise.all(buffers.map(async (buffer) => {
-    const output = await mlContext.readBuffer(buffer);
+    const output = await mlContext.readTensor(buffer);
     return new Float32Array(output)[0];
   }));
 
@@ -332,12 +332,12 @@ promise_test(async () => {
   }));
 
   const buffers = await Promise.all([
-    mlContext.createBuffer(operandDescriptor),
-    mlContext.createBuffer(operandDescriptor)
+    mlContext.createTensor(operandDescriptor),
+    mlContext.createTensor(operandDescriptor)
   ]);
 
   // Write to the buffer which will be initially used as an input.
-  mlContext.writeBuffer(buffers[0], Float32Array.from([1]));
+  mlContext.writeTensor(buffers[0], Float32Array.from([1]));
 
   // Double the value in one buffer, sticking the result in the other buffer.
   //
@@ -359,7 +359,7 @@ promise_test(async () => {
 
   // read/read...
   const actualOutputs = await Promise.all(buffers.map(async (buffer) => {
-    const output = await mlContext.readBuffer(buffer);
+    const output = await mlContext.readTensor(buffer);
     return new Float32Array(output)[0];
   }));
 

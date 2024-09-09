@@ -29,11 +29,6 @@ mojom_component("mojom") {
     {
       types = [
         {
-          mojom = "webnn.mojom.BufferUsage"
-          cpp = "::webnn::MLTensorUsage"
-          copyable_pass_by_value = true
-        },
-        {
           mojom = "webnn.mojom.ContextProperties"
           cpp = "::webnn::ContextProperties"
           default_constructible = false
@@ -52,13 +47,18 @@ mojom_component("mojom") {
           mojom = "webnn.mojom.SupportedDataTypes"
           cpp = "::webnn::SupportedDataTypes"
         },
+        {
+          mojom = "webnn.mojom.TensorUsage"
+          cpp = "::webnn::MLTensorUsage"
+          copyable_pass_by_value = true
+        },
       ]
       traits_headers = [
-        "buffer_usage_mojom_traits.h",
         "context_properties_mojom_traits.h",
         "data_type_limits_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
         "supported_data_types_mojom_traits.h",
+        "tensor_usage_mojom_traits.h",
       ]
       traits_public_deps = [ ":webnn_mojom_traits" ]
     },

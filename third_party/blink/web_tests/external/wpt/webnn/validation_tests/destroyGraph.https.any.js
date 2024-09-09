@@ -84,9 +84,9 @@ promise_test(async t => {
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer(operandType);
-  const rhsBuffer = await context.createBuffer(operandType);
-  const dispatchOutputs = {'output': await context.createBuffer(operandType)};
+  const lhsBuffer = await context.createTensor(operandType);
+  const rhsBuffer = await context.createTensor(operandType);
+  const dispatchOutputs = {'output': await context.createTensor(operandType)};
 
   graph.destroy();
   assert_throws_dom('InvalidStateError', () => {
@@ -107,25 +107,25 @@ promise_test(async t => {
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createBuffer({
+  const lhsBuffer = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.WRITE_TO,
   });
-  const rhsBuffer = await context.createBuffer({
+  const rhsBuffer = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.WRITE_TO,
   });
-  const outputBuffer = await context.createBuffer({
+  const outputBuffer = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.READ_FROM,
   });
   // Initialize inputs
   const inputData = new Float32Array(1).fill(2.0);
-  context.writeBuffer(lhsBuffer, inputData);
-  context.writeBuffer(rhsBuffer, inputData);
+  context.writeTensor(lhsBuffer, inputData);
+  context.writeTensor(rhsBuffer, inputData);
   context.dispatch(
       graph, {
         'lhs': lhsBuffer,
@@ -134,8 +134,8 @@ promise_test(async t => {
       {'output': outputBuffer});
 
   graph.destroy();
-  const outputData = await context.readBuffer(outputBuffer);
+  const outputData = await context.readTensor(outputBuffer);
   assert_array_equals(
       new Float32Array(outputData), [4],
       'Read buffer data equals expected data.');
-}, 'Destroying graph after dispatch() and before readBuffer() is OK.');
+}, 'Destroying graph after dispatch() and before readTensor() is OK.');

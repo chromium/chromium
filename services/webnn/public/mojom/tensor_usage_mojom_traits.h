@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_PUBLIC_MOJOM_BUFFER_USAGE_MOJOM_TRAITS_H_
-#define SERVICES_WEBNN_PUBLIC_MOJOM_BUFFER_USAGE_MOJOM_TRAITS_H_
+#ifndef SERVICES_WEBNN_PUBLIC_MOJOM_TENSOR_USAGE_MOJOM_TRAITS_H_
+#define SERVICES_WEBNN_PUBLIC_MOJOM_TENSOR_USAGE_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
@@ -12,7 +12,7 @@
 namespace mojo {
 
 template <>
-struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLTensorUsage> {
+struct StructTraits<webnn::mojom::TensorUsageDataView, webnn::MLTensorUsage> {
   static bool web_gpu_interop(const webnn::MLTensorUsage& usage) {
     return usage.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
   }
@@ -25,7 +25,7 @@ struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLTensorUsage> {
     return usage.Has(webnn::MLTensorUsageFlags::kReadFrom);
   }
 
-  static bool Read(webnn::mojom::BufferUsageDataView data,
+  static bool Read(webnn::mojom::TensorUsageDataView data,
                    webnn::MLTensorUsage* out) {
     out->Clear();
 
@@ -47,4 +47,4 @@ struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLTensorUsage> {
 
 }  // namespace mojo
 
-#endif  // SERVICES_WEBNN_PUBLIC_MOJOM_BUFFER_USAGE_MOJOM_TRAITS_H_
+#endif  // SERVICES_WEBNN_PUBLIC_MOJOM_TENSOR_USAGE_MOJOM_TRAITS_H_

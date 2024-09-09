@@ -13,10 +13,10 @@ enum class MLTensorUsageFlags {
   // This buffer may be imported/rented to WebGPU.
   kWebGpuInterop,
 
-  // This buffer can be used with readBuffer().
+  // This buffer can be used with readTensor().
   kReadFrom,
 
-  // This buffer can be used with writeBuffer().
+  // This buffer can be used with writeTensor().
   kWriteTo,
 
   kMinValue = kWebGpuInterop,

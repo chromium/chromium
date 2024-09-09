@@ -160,9 +160,9 @@ void WebNNGraphImpl::Dispatch(
   std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
       name_to_input_buffers;
   name_to_input_buffers.reserve(named_inputs.size());
-  for (const auto& [name, buffer_handle] : named_inputs) {
+  for (const auto& [name, tensor_handle] : named_inputs) {
     base::optional_ref<WebNNTensorImpl> input_buffer =
-        context_->GetWebNNTensorImpl(buffer_handle);
+        context_->GetWebNNTensorImpl(tensor_handle);
     if (!input_buffer.has_value()) {
       return;
     }
@@ -182,9 +182,9 @@ void WebNNGraphImpl::Dispatch(
   std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
       name_to_output_buffers;
   name_to_output_buffers.reserve(named_outputs.size());
-  for (const auto& [name, buffer_handle] : named_outputs) {
+  for (const auto& [name, tensor_handle] : named_outputs) {
     base::optional_ref<WebNNTensorImpl> output_buffer =
-        context_->GetWebNNTensorImpl(buffer_handle);
+        context_->GetWebNNTensorImpl(tensor_handle);
     if (!output_buffer.has_value()) {
       return;
     }
