@@ -3547,7 +3547,7 @@ No devices connected.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_STYLE_TRANSFER" desc="label used for input style transfer toggle">
-        Studio mic
+        Studio-style mic
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_HFP_MIC_SR" desc="label used for input hfp mic sr toggle">
