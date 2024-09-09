@@ -184,6 +184,9 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   };
   base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
 
+  // Buffers returned by getAllFrameBuffers()
+  HeapVector<Member<VideoEncoderBuffer>> frame_reference_buffers_;
+
   // The color space corresponding to the last emitted output. Used to update
   // emitted VideoDecoderConfig when necessary.
   gfx::ColorSpace last_output_color_space_;

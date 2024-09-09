@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+Test manual reference frame control:
+ - VideoEncoder.getAllFrameBuffers()
+ - VideoEncoderEncodeOptions.updateBuffer
+ - VideoEncoderEncodeOptions.referenceBuffers
+-->
+<html>
+
+<head>
+  <title>Manual SVC encoding test</title>
+  <script src="webcodecs_common.js"></script>
+  <script src="manual-svc.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    addManualTestButton([
+    {
+      'codec': 'av01.0.04M.08',
+      'acceleration': 'prefer-software',
+      'layers': 0
+    },
+    {
+      'codec': 'av01.0.04M.08',
+      'acceleration': 'prefer-software',
+      'layers': 1
+    },
+    {
+      'codec': 'av01.0.04M.08',
+      'acceleration': 'prefer-software',
+      'layers': 2
+    },
+    {
+      'codec': 'av01.0.04M.08',
+      'acceleration': 'prefer-software',
+      'layers': 3
+    }]);
+  </script>
+</head>
+
+<body>
+  <canvas id="debug_cnv" width="640" height="480"></canvas>
+</body>
+
+</html>

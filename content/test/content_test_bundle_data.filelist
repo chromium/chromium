@@ -6812,6 +6812,8 @@ data/gpu/webcodecs/encoding-rate-control.js
 data/gpu/webcodecs/frame-qp-encoding.html
 data/gpu/webcodecs/frame-size-change.html
 data/gpu/webcodecs/frame-size-change.js
+data/gpu/webcodecs/manual-svc.html
+data/gpu/webcodecs/manual-svc.js
 data/gpu/webcodecs/svc.html
 data/gpu/webcodecs/terminate-worker-worker.js
 data/gpu/webcodecs/terminate-worker.html
