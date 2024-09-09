@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -68,7 +69,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -1123,11 +1127,20 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)switchProfileItem {
+  NSString* detailText = nil;
+  std::string profileName = _browserState->GetProfileName();
+  // TODO(crbug.com/331783685): Remove assumption that "Default" is the
+  // personal profile.
+  if (profileName == kIOSChromeInitialBrowserState) {
+    detailText = @"Personal";
+  } else {
+    detailText = base::SysUTF8ToNSString(profileName);
+  }
   return [self
            detailItemWithType:SettingsItemTypeSwitchProfile
                          text:l10n_util::GetNSString(
                                   IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS)
-                   detailText:nil
+                   detailText:detailText
                        symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
         symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
       accessibilityIdentifier:nil];
