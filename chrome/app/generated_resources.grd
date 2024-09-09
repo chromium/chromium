@@ -7076,18 +7076,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM_WITHOUT_STRONG" desc="Text shown next to a generated password describing it as a suggestion.">
           Use suggested password
         </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE" desc="Text shown next to a generated password describing it as recommended.">
-          Use recommended password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST" desc="Text shown next to a generated password describing it as safe.">
-          Use a safer password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW" desc="Text shown next to a generated password describing it in a reassuring way.">
-          Try a new password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
-          Quickly use a strong password
-        </message>
         <message name="IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON" desc="Text shown on a cancel button in the password generation flow.">
           Choose your own
         </message>
@@ -7104,18 +7092,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM_WITHOUT_STRONG" desc="In Title Case: Text shown next to a generated password describing it as a suggestion.">
           Use Suggested Password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE" desc="Text shown next to a generated password describing it as recommended.">
-          Use Recommended Password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST" desc="Text shown next to a generated password describing it as safe.">
-          Use a Safer Password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW" desc="Text shown next to a generated password describing it in a reassuring way.">
-          Try a New Password
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
-          Quickly Use a Strong Password
         </message>
         <message name="IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON" desc="Text shown on a cancel button in the password generation flow.">
           Choose Your Own
@@ -7207,35 +7183,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER" desc="Autofill dropdown text describing password generation.">
           You won't need to remember this password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
       </message>
-      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_TRUSTED_ADVICE" desc="Autofill dropdown text describing password generation focusing on strong security messaging.">
-          Keep this account more secure with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_SAFETY_FIRST" desc="Autofill dropdown text describing password generation focusing on safety.">
-          Stay safer online with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_TRY_SOMETHING_NEW" desc="Autofill dropdown text describing password generation with a more persuasive and reassuring tone.">
-          You can always change this password later. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_CONVENIENCE" desc="Autofill dropdown text describing password generation with a convenience proposition.">
-          Sign up and sign in faster when your password is automatically saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
-      </message>
       <message name="IDS_PASSWORD_GENERATION_NUDGE_TITLE" desc="Autofill dropdown title describing password generation.">
           Google Password Manager created a strong password for this website
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_BENEFITS" desc="Autofill dropdown text before listing bullet points of password generation benefits.">
-          When you use and save this password:
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_CROSS_DEVICE" desc="Autofill dropdown text describing that the generated password is available cross-device.">
-          It's available on any device
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_SECURITY" desc="Autofill dropdown text describing that the generated password is protected by the best Google technologies.">
-          It's protected by the best of Google
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_PROACTIVE_CHECK" desc="Autofill dropdown text describing that the user will be notified whenever their saved generated password is at risk.">
-          You'll be notified if it's ever at risk
-      </message>
-      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT" desc="Autofill dropdown text describing where the generated password is saved and how to access it.">
-          It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
       </message>
       <message name="IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS" desc="The footer text of the managment bubble the lists saved password for this website. This is used only for account store users.">
         Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.

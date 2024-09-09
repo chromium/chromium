@@ -216,19 +216,9 @@ class PasswordGenerationPopupViewWithExperimentsBrowsertest
     ON_CALL(controller(), state)
         .WillByDefault(Return(PasswordGenerationPopupController::
                                   GenerationUIState::kOfferGeneration));
-
-    int message_id = IDS_PASSWORD_GENERATION_SUGGESTION_GPM;
-    if (experiment == "trusted_advice") {
-      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE;
-    } else if (experiment == "safety_first") {
-      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST;
-    } else if (experiment == "try_something_new") {
-      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW;
-    } else if (experiment == "convenience") {
-      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE;
-    }
     ON_CALL(controller(), SuggestedText)
-        .WillByDefault(Return(l10n_util::GetStringUTF16(message_id)));
+        .WillByDefault(Return(
+            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
 
     if (experiment == "nudge_password") {
       ON_CALL(controller(), ShouldShowNudgePassword)
@@ -266,12 +256,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PasswordGenerationPopupViewWithExperimentsBrowsertest,
                          Combine(Bool(),
                                  Bool(),
-                                 Values("trusted_advice",
-                                        "safety_first",
-                                        "try_something_new",
-                                        "convenience",
-                                        "cross_device",
-                                        "chunk_password",
-                                        "nudge_password")),
+                                 Values("chunk_password", "nudge_password")),
                          PasswordGenerationPopupViewWithExperimentsBrowsertest::
                              GetExperimentTestSuffix);
