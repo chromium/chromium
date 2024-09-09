@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -156,7 +157,9 @@ public class TabbedModeTabPersistencePolicyTest {
                             profileProviderSupplier.set(mProfileProvider);
                             TabbedModeTabModelOrchestrator tmpOrchestrator =
                                     new TabbedModeTabModelOrchestrator(
-                                            false, mActivityLifecycleDispatcher);
+                                            false,
+                                            mActivityLifecycleDispatcher,
+                                            CipherFactory.getInstance());
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
                                     profileProviderSupplier,

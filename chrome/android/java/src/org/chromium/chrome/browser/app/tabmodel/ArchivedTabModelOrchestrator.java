@@ -23,6 +23,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -246,7 +247,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * to do.
      */
     public void maybeCreateAndInitTabModels(
-            TabContentManager tabContentManager, TabCreator regularTabCreator) {
+            TabContentManager tabContentManager,
+            TabCreator regularTabCreator,
+            CipherFactory cipherFactory) {
         if (mInitCalled) return;
         ThreadUtils.assertOnUiThread();
         assert tabContentManager != null;
@@ -285,7 +288,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mArchivedTabCreatorManager,
-                        mTabWindowManager) {
+                        mTabWindowManager,
+                        cipherFactory) {
                     @Override
                     protected void recordLegacyTabCountMetrics() {
                         // Intentional no-op.

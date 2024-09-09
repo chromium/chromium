@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -47,7 +48,9 @@ public class TabStateTest {
         mTestTabModelDirectory.writeTabStateFile(info);
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), info.filename);
-        TabState tabState = TabStateFileManager.restoreTabStateInternal(tabStateFile, false);
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(
+                        tabStateFile, false, CipherFactory.getInstance());
         Assert.assertNotNull(tabState);
         Assert.assertEquals(info.url, tabState.contentsState.getVirtualUrlFromState());
         Assert.assertEquals(info.title, tabState.contentsState.getDisplayTitleFromState());

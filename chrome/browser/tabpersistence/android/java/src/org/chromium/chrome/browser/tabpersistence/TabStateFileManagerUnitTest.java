@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import androidx.annotation.Nullable;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,6 +22,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
@@ -59,15 +61,24 @@ public class TabStateFileManagerUnitTest {
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    private CipherFactory mCipherFactory;
+
+    @Before
+    public void setUp() {
+        mCipherFactory = CipherFactory.getInstance();
+    }
+
     @Test
     public void testSaveTabStateWithMemoryMappedContentsState_WithoutTabGroupId()
             throws IOException {
         Token tabGroupId = null;
         File file = createTestTabStateFile();
         TabState state = createTabStateWithMappedByteBuffer(file, tabGroupId);
-        TabStateFileManager.saveStateInternal(file, state, false);
+        TabStateFileManager.saveStateInternal(file, state, false, mCipherFactory);
 
-        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false), tabGroupId);
+        validateTestTabState(
+                TabStateFileManager.restoreTabStateInternal(file, false, mCipherFactory),
+                tabGroupId);
     }
 
     @Test
@@ -75,9 +86,11 @@ public class TabStateFileManagerUnitTest {
         Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
         File file = createTestTabStateFile();
         TabState state = createTabStateWithMappedByteBuffer(file, tabGroupId);
-        TabStateFileManager.saveStateInternal(file, state, false);
+        TabStateFileManager.saveStateInternal(file, state, false, mCipherFactory);
 
-        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false), tabGroupId);
+        validateTestTabState(
+                TabStateFileManager.restoreTabStateInternal(file, false, mCipherFactory),
+                tabGroupId);
     }
 
     @Test
@@ -90,9 +103,10 @@ public class TabStateFileManagerUnitTest {
         WebContentsState contentsState = new WebContentsState(buffer);
         contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
         TabState state = createTabState(contentsState);
-        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false);
+        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false, mCipherFactory);
         validateTestTabState(
-                TabStateFileManager.restoreTabStateInternal(file, /* isEncrypted= */ false),
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* isEncrypted= */ false, mCipherFactory),
                 contentsState);
     }
 

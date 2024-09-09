@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -217,9 +218,12 @@ public class HomeSurfaceTestUtils {
                         /* isFlatBuffer= */ false);
         writeFile(file, M26_GOOGLE_COM.encodedTabState);
 
-        TabState tabState = TabStateFileManager.restoreTabStateInternal(file, false);
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(
+                        file, false, CipherFactory.getInstance());
         tabState.rootId = rootId;
-        TabStateFileManager.saveStateInternal(file, tabState, encrypted);
+        TabStateFileManager.saveStateInternal(
+                file, tabState, encrypted, CipherFactory.getInstance());
     }
 
     private static void writeFile(File file, String data) {

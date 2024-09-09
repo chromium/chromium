@@ -34,6 +34,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
@@ -66,13 +67,15 @@ public class WebappActionsNotificationTest {
                                     CustomTabIntentHandler.IntentIgnoringCriterion
                                             intentIgnoringCriterion,
                                     TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
+                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
+                                    CipherFactory cipherFactory) ->
                                     new BaseCustomTabActivityModule(
                                             intentDataProvider,
                                             nightModeController,
                                             intentIgnoringCriterion,
                                             topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl()));
+                                            new FakeDefaultBrowserProviderImpl(),
+                                            cipherFactory));
 
     @Rule
     public RuleChain mRuleChain =

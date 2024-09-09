@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHo
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -40,19 +41,22 @@ public class BaseCustomTabActivityModule {
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private final CustomTabActivityNavigationController.DefaultBrowserProvider
             mDefaultBrowserProvider;
+    private final CipherFactory mCipherFactory;
 
     public BaseCustomTabActivityModule(
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabNightModeStateController nightModeController,
             IntentIgnoringCriterion intentIgnoringCriterion,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            CustomTabActivityNavigationController.DefaultBrowserProvider defaultBrowserProvider) {
+            CustomTabActivityNavigationController.DefaultBrowserProvider defaultBrowserProvider,
+            CipherFactory cipherFactory) {
         mIntentDataProvider = intentDataProvider;
         mActivityType = intentDataProvider.getActivityType();
         mNightModeController = nightModeController;
         mIntentIgnoringCriterion = intentIgnoringCriterion;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mDefaultBrowserProvider = defaultBrowserProvider;
+        mCipherFactory = cipherFactory;
     }
 
     @Provides
@@ -124,6 +128,11 @@ public class BaseCustomTabActivityModule {
     }
 
     @Provides
+    public CipherFactory provideCipherFactory() {
+        return mCipherFactory;
+    }
+
+    @Provides
     public IncognitoTabHostRegistry provideIncognitoTabHostRegistry() {
         return IncognitoTabHostRegistry.getInstance();
     }
@@ -134,6 +143,7 @@ public class BaseCustomTabActivityModule {
                 CustomTabNightModeStateController nightModeController,
                 IntentIgnoringCriterion intentIgnoringCriterion,
                 TopUiThemeColorProvider topUiThemeColorProvider,
-                DefaultBrowserProviderImpl customTabDefaultBrowserProvider);
+                DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
+                CipherFactory cipherFactory);
     }
 }

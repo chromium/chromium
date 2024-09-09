@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -146,6 +147,7 @@ public class TabPersistentStoreTest {
     /** Used when testing interactions of TabPersistentStore with real {@link TabModelImpl}s. */
     static class TestTabModelSelector extends TabModelSelectorBase implements TabModelDelegate {
         final TabPersistentStore mTabPersistentStore;
+        final CipherFactory mCipherFactory;
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
@@ -160,6 +162,7 @@ public class TabPersistentStoreTest {
             // real object is not available from {@link ChromeActivity} due to the test structure.
             // {@link TabModelImpl} requires a non-null {@link TabContentManager} to initialize.
             mMockTabContentManager = Mockito.mock(TabContentManager.class);
+            mCipherFactory = CipherFactory.getInstance();
             mTabPersistentStore =
                     ThreadUtils.runOnUiThreadBlocking(
                             new Callable<TabPersistentStore>() {
@@ -174,7 +177,8 @@ public class TabPersistentStoreTest {
                                                     persistencePolicy,
                                                     TestTabModelSelector.this,
                                                     getTabCreatorManager(),
-                                                    TabWindowManagerSingleton.getInstance());
+                                                    TabWindowManagerSingleton.getInstance(),
+                                                    mCipherFactory);
                                     tabPersistentStore.addObserver(mTabPersistentStoreObserver);
                                     return tabPersistentStore;
                                 }
@@ -293,6 +297,7 @@ public class TabPersistentStoreTest {
                 }
             };
     private static TabWindowManagerImpl sTabWindowManager;
+    private static CipherFactory sCipherFactory;
 
     /** Class for mocking out the directory containing all of the TabState files. */
     private TestTabModelDirectory mMockDirectory;
@@ -316,6 +321,8 @@ public class TabPersistentStoreTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
+
+        sCipherFactory = CipherFactory.getInstance();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -435,7 +442,8 @@ public class TabPersistentStoreTest {
                             persistencePolicy,
                             modelSelector,
                             creatorManager,
-                            TabWindowManagerSingleton.getInstance());
+                            TabWindowManagerSingleton.getInstance(),
+                            sCipherFactory);
                 });
     }
 
@@ -809,13 +817,19 @@ public class TabPersistentStoreTest {
 
     private int getRootIdFromLegacyTabStateFile(Tab tab) {
         return TabStateFileManager.restoreTabState(
-                        mMockDirectory.getDataDirectory(), tab.getId(), /* useFlatBuffer= */ false)
+                        mMockDirectory.getDataDirectory(),
+                        tab.getId(),
+                        sCipherFactory,
+                        /* useFlatBuffer= */ false)
                 .rootId;
     }
 
     private int getRootIdFromFlatBufferTabStateFile(Tab tab) {
         return TabStateFileManager.restoreTabState(
-                        mMockDirectory.getDataDirectory(), tab.getId(), /* useFlatBuffer= */ true)
+                        mMockDirectory.getDataDirectory(),
+                        tab.getId(),
+                        sCipherFactory,
+                        /* useFlatBuffer= */ true)
                 .rootId;
     }
 
@@ -1356,7 +1370,9 @@ public class TabPersistentStoreTest {
                 if (restoredFromDisk(selector.getModel(false).getTabAt(j))) {
                     TabState currentState =
                             TabStateFileManager.restoreTabState(
-                                    mMockDirectory.getDataDirectory(), info.contents[j].tabId);
+                                    mMockDirectory.getDataDirectory(),
+                                    info.contents[j].tabId,
+                                    sCipherFactory);
                     Assert.assertEquals(
                             info.contents[j].title,
                             currentState.contentsState.getDisplayTitleFromState());

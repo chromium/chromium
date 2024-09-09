@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
@@ -304,13 +305,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
-                                new DefaultBrowserProviderImpl())
+                                new DefaultBrowserProviderImpl(),
+                                CipherFactory.getInstance())
                         : new BaseCustomTabActivityModule(
                                 mIntentDataProvider,
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
-                                new DefaultBrowserProviderImpl());
+                                new DefaultBrowserProviderImpl(),
+                                CipherFactory.getInstance());
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
                         .createBaseCustomTabActivityComponent(commonsModule, baseCustomTabsModule);

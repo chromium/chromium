@@ -26,6 +26,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -132,7 +133,8 @@ public class RestoreMigrateTest {
                                     persistencePolicy,
                                     selector,
                                     null,
-                                    TabWindowManagerSingleton.getInstance());
+                                    TabWindowManagerSingleton.getInstance(),
+                                    CipherFactory.getInstance());
                     return store;
                 });
     }
