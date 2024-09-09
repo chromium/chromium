@@ -438,16 +438,15 @@ TEST_F(ActiveSessionAuthControllerTest, PinLockoutMessage) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return controller->IsShown(); }));
 
   const base::TimeDelta in_a_while = base::Seconds(60);
-  cryptohome::PinStatus soft_lockout{in_a_while};
-  test_api.DisplayPinStatusMessage(soft_lockout);
+  test_api.SetPinStatus(std::make_unique<cryptohome::PinStatus>(in_a_while));
 
   EXPECT_EQ(
       test_api.GetPinStatusMessage(),
       l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED,
                                  u"1 minute, 0 seconds"));
 
-  cryptohome::PinStatus hard_lockout{base::TimeDelta::Max()};
-  test_api.DisplayPinStatusMessage(hard_lockout);
+  test_api.SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(base::TimeDelta::Max()));
   EXPECT_EQ(
       test_api.GetPinStatusMessage(),
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS));

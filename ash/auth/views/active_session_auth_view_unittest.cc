@@ -15,6 +15,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/containers/enum_set.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -243,8 +245,12 @@ TEST_F(ActiveSessionAuthViewUnitTest, ResetInputfieldsTest) {
 }
 
 TEST_F(ActiveSessionAuthViewUnitTest, SetPinStatusTest) {
-  const std::u16string status_message = u"Too many failed attempts.";
-  test_api_->GetView()->SetPinStatus(status_message);
+  const std::u16string status_message = u"Too many PIN attempts";
+
+  cryptohome::PinStatus pin_status(base::TimeDelta::Max());
+
+  test_api_->GetView()->SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(base::TimeDelta::Max()));
 
   EXPECT_EQ(test_pin_status_->GetCurrentText(), status_message);
 }

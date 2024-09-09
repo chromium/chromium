@@ -6,7 +6,6 @@
 #define ASH_AUTH_ACTIVE_SESSION_AUTH_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -62,8 +61,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     // manually entered it.
     void SubmitPin(const std::string& pin);
 
-    // Simulate building and displaying a pin status message.
-    void DisplayPinStatusMessage(const cryptohome::PinStatus pin_status);
+    void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
 
     const std::u16string& GetPinStatusMessage() const;
 
@@ -175,10 +173,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // cryptohome.
   void InitUi();
 
-  // Show a PinStatus based error message, only if |pin_status| represents
-  // a locked factor.
-  void DisplayPinStatusMessage(const cryptohome::PinStatus pin_status);
-
   std::unique_ptr<views::Widget> widget_;
 
   base::ScopedObservation<views::View, ViewObserver> contents_view_observer_{
@@ -189,6 +183,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   AccountId account_id_;
   std::u16string title_;
   std::u16string description_;
+
+  std::string auth_session_broadcast_id_;
   std::u16string pin_status_message_;
 
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
@@ -199,8 +195,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   AuthFactorSet available_factors_;
   ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
 
-  std::optional<user_data_auth::AuthFactorStatusUpdate>
-      pending_pin_factor_status_update_ = std::nullopt;
   std::unique_ptr<AuthRequest> auth_request_;
 
   raw_ptr<ActiveSessionFingerprintClient> fp_client_;

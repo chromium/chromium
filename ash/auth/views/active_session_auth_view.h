@@ -27,6 +27,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
+namespace cryptohome {
+class PinStatus;
+}  // namespace cryptohome
+
 namespace ash {
 
 // ActiveSessionAuthView is a view that contains a header view: close button,
@@ -97,7 +101,8 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
 
   void SetHasPin(bool has_pin);
   bool HasPin() const;
-  void SetPinStatus(const std::u16string& status_str);
+  void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
+  const std::u16string& GetPinStatusMessage() const;
 
   // Enables or disables the input area of the view. The header area (e.g.,
   // close button) remains accessible even in the disabled state.

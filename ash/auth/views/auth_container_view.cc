@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -218,7 +219,7 @@ void AuthContainerView::AddSwitchButton() {
 
 void AuthContainerView::AddPinStatusView() {
   CHECK_EQ(pin_status_, nullptr);
-  pin_status_ = AddChildView(std::make_unique<PinStatusView>(std::u16string()));
+  pin_status_ = AddChildView(std::make_unique<PinStatusView>());
   pin_status_->SetVisible(false);
 }
 
@@ -311,10 +312,17 @@ bool AuthContainerView::HasPin() const {
   return available_auth_factors_.Has(AuthInputType::kPin);
 }
 
-void AuthContainerView::SetPinStatus(const std::u16string& status_str) {
-  pin_status_->SetText(status_str);
-  pin_status_->SetVisible(!status_str.empty());
+void AuthContainerView::SetPinStatus(
+    std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  if (pin_status != nullptr) {
+    SetHasPin(!pin_status->IsLockedFactor());
+  }
+  pin_status_->SetPinStatus(std::move(pin_status));
   PreferredSizeChanged();
+}
+
+const std::u16string& AuthContainerView::GetPinStatusMessage() const {
+  return pin_status_->GetCurrentText();
 }
 
 void AuthContainerView::SetFingerprintState(FingerprintState state) {

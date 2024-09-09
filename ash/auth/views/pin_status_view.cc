@@ -4,16 +4,24 @@
 
 #include "ash/auth/views/pin_status_view.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/auth/views/auth_view_utils.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,6 +35,29 @@ namespace {
 // Distance between the top of the view and the label.
 constexpr int kTopLabelDistanceDp = 28;
 
+std::u16string BuildPinStatusMessage(cryptohome::PinStatus* pin_status) {
+  if (pin_status == nullptr || !pin_status->IsLockedFactor()) {
+    return u"";
+  }
+
+  if (pin_status->AvailableAt() == base::Time::Max()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+  }
+
+  base::TimeDelta delta = pin_status->AvailableAt() - base::Time::Now();
+  std::u16string time_left_message;
+  if (base::TimeDurationCompactFormatWithSeconds(
+          delta, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
+          &time_left_message)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED, time_left_message);
+  }
+
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+}
+
 }  // namespace
 
 namespace ash {
@@ -35,14 +66,14 @@ PinStatusView::TestApi::TestApi(PinStatusView* view) : view_(view) {}
 PinStatusView::TestApi::~TestApi() = default;
 
 const std::u16string& PinStatusView::TestApi::GetCurrentText() const {
-  return view_->text_label_->GetText();
+  return view_->GetCurrentText();
 }
 
 raw_ptr<PinStatusView> PinStatusView::TestApi::GetView() {
   return view_;
 }
 
-PinStatusView::PinStatusView(const std::u16string& text) {
+PinStatusView::PinStatusView() {
   auto decorate_label = [](views::Label* label) {
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
@@ -60,7 +91,7 @@ PinStatusView::PinStatusView(const std::u16string& text) {
   AddVerticalSpace(this, kTopLabelDistanceDp);
 
   // Add text.
-  text_label_ = new views::Label(text, views::style::CONTEXT_LABEL,
+  text_label_ = new views::Label(u"", views::style::CONTEXT_LABEL,
                                  views::style::STYLE_PRIMARY);
   text_label_->SetMultiLine(true);
   text_label_->SizeToFit(kTextLineWidthDp);
@@ -83,7 +114,18 @@ gfx::Size PinStatusView::CalculatePreferredSize(
 }
 
 void PinStatusView::SetText(const std::u16string& text_str) {
+  SetVisible(!text_str.empty());
   text_label_->SetText(text_str);
+}
+
+const std::u16string& PinStatusView::GetCurrentText() const {
+  return text_label_->GetText();
+}
+
+void PinStatusView::SetPinStatus(
+    std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  pin_status_ = std::move(pin_status);
+  SetText(BuildPinStatusMessage(pin_status_.get()));
 }
 
 BEGIN_METADATA(PinStatusView)
