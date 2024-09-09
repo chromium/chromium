@@ -56,7 +56,9 @@ AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
     bool use_for_encryption)
     : local_state_(local_state),
       com_worker_(base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
-      use_for_encryption_(use_for_encryption) {}
+      use_for_encryption_(use_for_encryption),
+      support_level_(
+          os_crypt::GetAppBoundEncryptionSupportLevel(local_state_)) {}
 
 AppBoundEncryptionProviderWin::~AppBoundEncryptionProviderWin() = default;
 
@@ -143,13 +145,11 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   base::UmaHistogramEnumeration(
       "OSCrypt.AppBoundProvider.KeyRetrieval.Status",
       encrypted_key_data.error_or(KeyRetrievalStatus::kSuccess));
-  const auto support_level =
-      os_crypt::GetAppBoundEncryptionSupportLevel(local_state_);
 
   base::UmaHistogramEnumeration("OSCrypt.AppBoundEncryption.SupportLevel",
-                                support_level);
+                                support_level_);
 
-  if (support_level == os_crypt::SupportLevel::kNotSystemLevel) {
+  if (support_level_ == os_crypt::SupportLevel::kNotSystemLevel) {
     // No service. No App-Bound APIs are available, so fail now.
     std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
     return;
@@ -168,7 +168,7 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   // system. In unsupported systems the provider will support decrypt of
   // existing data (if App-Bound validation still passes) but not encrypt of any
   // new data.
-  if (support_level != os_crypt::SupportLevel::kSupported) {
+  if (support_level_ != os_crypt::SupportLevel::kSupported) {
     std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
     return;
   }
@@ -190,7 +190,8 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
 
 bool AppBoundEncryptionProviderWin::UseForEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return use_for_encryption_;
+  return support_level_ == os_crypt::SupportLevel::kSupported &&
+         use_for_encryption_;
 }
 
 bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {

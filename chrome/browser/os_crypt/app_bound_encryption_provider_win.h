@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_OS_CRYPT_APP_BOUND_ENCRYPTION_PROVIDER_WIN_H_
 #define CHROME_BROWSER_OS_CRYPT_APP_BOUND_ENCRYPTION_PROVIDER_WIN_H_
 
-#include "components/os_crypt/async/browser/key_provider.h"
-
 #include <optional>
 #include <string>
 
@@ -16,6 +14,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "base/win/windows_types.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
+#include "components/os_crypt/async/browser/key_provider.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -66,6 +66,8 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   base::SequenceBound<COMWorker> com_worker_;
 
   const bool use_for_encryption_;
+
+  const os_crypt::SupportLevel support_level_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
