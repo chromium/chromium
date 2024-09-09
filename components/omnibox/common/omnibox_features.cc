@@ -488,7 +488,7 @@ BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
 // the omnibox above starter pack suggestions.
 BASE_FEATURE(kShowFeaturedEnterpriseSiteSearch,
              "ShowFeaturedEnterpriseSiteSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables an informational IPH message at the bottom of the Omnibox directing
 // users to featured Enterprise search engines created by policy.
