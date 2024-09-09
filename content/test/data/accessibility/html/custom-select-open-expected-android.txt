@@ -1,0 +1,9 @@
+android.webkit.WebView focusable
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable expanded focusable name='Currency for purchase'
+++++++android.view.View
+++++++++android.view.View clickable focusable name='EUR Euro'
+++++++++android.view.View clickable focusable name='GBP Great British Pound' item_index=1 row_index=1
+++++++++android.view.View clickable focusable focused selected name='USD United States Dollar' item_index=2 row_index=2
+++++++++android.view.View clickable focusable name='JPY Japanese Yen' item_index=3 row_index=3
+++++++++android.view.View clickable focusable name='BTC Bitcoin' item_index=4 row_index=4

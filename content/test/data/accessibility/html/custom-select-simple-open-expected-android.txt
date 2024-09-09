@@ -1,0 +1,7 @@
+android.webkit.WebView focusable
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable expanded focusable name='Fruit'
+++++++android.view.View
+++++++++android.view.View clickable focusable focused selected name='Apple'
+++++++++android.view.View clickable focusable name='Orange' item_index=1 row_index=1
+++++++++android.view.View clickable focusable name='Banana' item_index=2 row_index=2

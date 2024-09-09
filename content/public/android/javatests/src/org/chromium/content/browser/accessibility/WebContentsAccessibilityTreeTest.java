@@ -1493,6 +1493,30 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_customSelect() {
+        performHtmlTest("custom-select.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectOpen() {
+        performHtmlTest("custom-select-open.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectSimple() {
+        performHtmlTest("custom-select-simple.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectSimpleOpen() {
+        performHtmlTest("custom-select-simple-open.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_dd() {
         performHtmlTest("dd.html");
     }

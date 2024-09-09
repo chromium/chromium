@@ -1,0 +1,4 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='group'
+++++AXPopUpButton AXDescription='Fruit' AXRoleDescription='pop up button' AXValue='Apple'
+++++++AXMenuItem AXRoleDescription='menu item' AXValue='Apple'
