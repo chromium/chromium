@@ -31,7 +31,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -172,7 +171,6 @@ SigninManagerAndroid::SigninManagerAndroid(
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       profile_->GetJavaObject(),
-      identity_manager_->LegacyGetAccountTrackerServiceJavaObject(),
       identity_manager_->GetJavaObject(),
       identity_manager_->GetIdentityMutatorJavaObject(),
       SyncServiceFactory::GetForProfile(profile_)->GetJavaObject());
@@ -296,7 +294,6 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
 
 void SigninManagerAndroid::IsAccountManaged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_account_tracker_service,
     const JavaParamRef<jobject>& j_account_info,
     const JavaParamRef<jobject>& j_callback) {
   base::Time start_time = base::Time::Now();
@@ -310,17 +307,6 @@ void SigninManagerAndroid::IsAccountManaged(
     bool is_managed = cached_is_account_managed_->is_account_managed;
     base::android::RunBooleanCallbackAndroid(callback, is_managed);
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
-    // Force seed the account, since requesting management status would require
-    // access token, and this operation would result in a crash if done on a
-    // non seeded account. See https://crbug.com/332900316.
-    AccountTrackerService* account_tracker_service =
-        AccountTrackerService::FromAccountTrackerServiceAndroid(
-            j_account_tracker_service);
-
-    account_tracker_service->SeedAccountInfo(account.gaia, account.email);
   }
 
   RegisterPolicyWithAccount(

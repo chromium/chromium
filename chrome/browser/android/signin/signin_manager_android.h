@@ -66,7 +66,6 @@ class SigninManagerAndroid : public KeyedService {
 
   void IsAccountManaged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_account_tracker_service,
       const base::android::JavaParamRef<jobject>& j_account_info,
       const base::android::JavaParamRef<jobject>& j_callback);
 

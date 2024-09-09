@@ -25,18 +25,6 @@ JNI_IdentityServicesProvider_GetIdentityManager(JNIEnv* env, Profile* profile) {
 }
 
 static ScopedJavaLocalRef<jobject>
-JNI_IdentityServicesProvider_GetAccountTrackerService(JNIEnv* env,
-                                                      Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  // Ensuring that the pointer is not null here produces unactionable stack
-  // traces, so just let the Java side handle possible issues with null.
-  return identity_manager
-             ? identity_manager->LegacyGetAccountTrackerServiceJavaObject()
-             : nullptr;
-}
-
-static ScopedJavaLocalRef<jobject>
 JNI_IdentityServicesProvider_GetSigninManager(JNIEnv* env, Profile* profile) {
   SigninManagerAndroid* signin_manager =
       SigninManagerAndroidFactory::GetForProfile(profile);

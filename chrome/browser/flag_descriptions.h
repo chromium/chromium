@@ -1970,11 +1970,6 @@ extern const char kSecurePaymentConfirmationDebugDescription[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kSeedAccountsRevampName[];
-extern const char kSeedAccountsRevampDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 extern const char kSidePanelJourneysFlagId[];
 extern const char kSidePanelJourneysName[];
 extern const char kSidePanelJourneysDescription[];

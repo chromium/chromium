@@ -801,14 +801,9 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
   }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
-    // If SeedAccountsRevamp is enabled, account seeding on Android is
-    // controlled by SigninManager, so don't remove any accounts here.
-    return;
-  }
-#endif
-
+// On Android, account seeding on Android is
+// controlled by SigninManager, so don't remove any accounts here.
+#if !BUILDFLAG(IS_ANDROID)
   // Remove account information from the account tracker service if needed.
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
     std::vector<AccountInfo> accounts_in_tracker_service =
@@ -824,6 +819,7 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
+#endif
 }
 
 void PrimaryAccountManager::OnSigninAllowedPrefChanged() {

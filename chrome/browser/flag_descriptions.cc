@@ -3424,12 +3424,6 @@ const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
     "Allow the passing in and display of card network and issuer icons for the "
     "Secure Payment Confirmation Web API.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
-const char kSeedAccountsRevampDescription[] =
-    "Refactors how and when accounts are seeded on Android";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
 const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =

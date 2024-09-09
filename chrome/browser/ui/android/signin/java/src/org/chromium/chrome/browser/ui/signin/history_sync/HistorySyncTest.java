@@ -405,7 +405,6 @@ public class HistorySyncTest {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         // Account Capabilities are intentionally empty.
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);

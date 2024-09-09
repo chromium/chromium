@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -32,7 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -54,7 +51,6 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -100,8 +96,6 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock private AccountTrackerService mAccountTrackerServiceMock;
-
     @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
 
     private final AccountInfo mAccountInfoWithAvatar =
@@ -123,9 +117,6 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @Before
     public void setUp() {
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
-                .when(mAccountTrackerServiceMock)
-                .legacySeedAccountsIfNeeded(any(Runnable.class));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -133,7 +124,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                             IdentityManager.create(
                                     NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
 
-                    AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
+                    AccountInfoServiceProvider.init(mIdentityManager);
                     Activity activity = getActivity();
                     mContentView = new FrameLayout(activity);
                     mImageView = new ChromeImageView(activity);

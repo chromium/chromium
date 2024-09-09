@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -126,8 +125,8 @@ public interface SigninManager {
      *
      * <p>The sign-in flow goes through the following steps:
      *
-     * <p>- Wait for AccountTrackerService to be seeded. - Complete sign-in with the native
-     * IdentityManager. - Call the callback if provided.
+     * <p>- Wait for accounts to be seeded. - Complete sign-in with the native IdentityManager. -
+     * Call the callback if provided.
      *
      * @param coreAccountInfo The {@link CoreAccountInfo} to sign in to.
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
@@ -143,8 +142,8 @@ public interface SigninManager {
      *
      * <p>The sign-in flow goes through the following steps:
      *
-     * <p>- Wait for AccountTrackerService to be seeded. - Wait for policy to be checked for the
-     * account. - If managed, wait for the policy to be fetched. - Complete sign-in with the native
+     * <p>- Wait for accounts to be seeded. - Wait for policy to be checked for the account. - If
+     * managed, wait for the policy to be fetched. - Complete sign-in with the native
      * IdentityManager. - Call the callback if provided.
      *
      * @param coreAccountInfo The {@link CoreAccountInfo} to sign in to.
@@ -233,16 +232,10 @@ public interface SigninManager {
     void isAccountManaged(@NonNull CoreAccountInfo accountInfo, Callback<Boolean> callback);
 
     /**
-     * Reloads all the accounts from the system within the {@link IdentityManager}.
-     * @param primaryAccountId {@link CoreAccountId} of the primary account.
-     */
-    void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
-
-    /**
      * Wipes the user's bookmarks and sync data.
      *
-     * Callers should make this call within a runAfterOperationInProgress() call in order to ensure
-     * serialization of wipe operations.
+     * <p>Callers should make this call within a runAfterOperationInProgress() call in order to
+     * ensure serialization of wipe operations.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
      * @param dataWipeOption What kind of data to delete.

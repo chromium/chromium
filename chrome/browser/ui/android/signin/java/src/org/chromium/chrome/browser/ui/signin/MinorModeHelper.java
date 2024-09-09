@@ -108,8 +108,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         AccountInfo accountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
 
-        // TODO(b/40284908): remove accountInfo null check
-        if (accountInfo != null && hasCapabilities(accountInfo)) {
+        if (hasCapabilities(accountInfo)) {
             uiUpdater.onScreenModeReady(
                     screenModeFromCapabilities(accountInfo.getAccountCapabilities()));
             recordImmediateAvailability();

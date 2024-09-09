@@ -53,7 +53,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImpl.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceProvider.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -88,7 +87,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -185,7 +183,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/signin/SystemAccountManagerDelegateTest.java",
     "junit/src/org/chromium/components/signin/base/AccountCapabilitiesTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
-    "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
   ]
   deps = [
     ":java",

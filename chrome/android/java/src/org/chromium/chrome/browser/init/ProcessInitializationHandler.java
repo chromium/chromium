@@ -704,7 +704,8 @@ public class ProcessInitializationHandler {
         // initialization order.
         tasks.add(() -> IncognitoTabLauncher.updateComponentEnabledState(profile));
 
-        tasks.add(() -> SigninCheckerProvider.get(profile).onMainActivityStart());
+        // Initialize the SigninChecker.
+        tasks.add(() -> SigninCheckerProvider.get(profile));
 
         tasks.add(
                 () -> {

@@ -137,21 +137,6 @@ class AccountTrackerService {
   void SetMigrationDone();
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  // Returns a reference to the corresponding Java AccountTrackerService object.
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-
-  // Returns a pointer to the native counterpart of the given Java
-  // `AccountTrackerService`.
-  static AccountTrackerService* FromAccountTrackerServiceAndroid(
-      const base::android::JavaRef<jobject>& j_account_tracker_service);
-
-  // Seeds the accounts with |core_account_infos|.
-  void LegacySeedAccountsInfo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& core_account_infos);
-#endif
-
   // If set, this callback will be invoked whenever the details of a tracked
   // account changes (e.g. account's info, image, |is_child_account|...).
   void SetOnAccountUpdatedCallback(AccountInfoCallback callback);
@@ -265,11 +250,6 @@ class AccountTrackerService {
 
   // Task runner used for file operations on avatar images.
   scoped_refptr<base::SequencedTaskRunner> image_storage_task_runner_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // A reference to the Java counterpart of this object.
-  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -20,8 +20,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
@@ -54,20 +52,13 @@ final class ProfileOAuth2TokenServiceDelegate {
 
     private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
 
-    private final long mNativeProfileOAuth2TokenServiceDelegate;
-    private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
 
     @VisibleForTesting
     @CalledByNative
-    ProfileOAuth2TokenServiceDelegate(
-            long nativeProfileOAuth2TokenServiceDelegate,
-            AccountTrackerService accountTrackerService) {
+    ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate) {
         assert nativeProfileOAuth2TokenServiceDelegate != 0
                 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
-        assert accountTrackerService != null : "accountTrackerService should not be null!";
-        mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
-        mAccountTrackerService = accountTrackerService;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
     }
 
@@ -171,17 +162,6 @@ final class ProfileOAuth2TokenServiceDelegate {
         mAccountManagerFacade.invalidateAccessToken(accessToken);
     }
 
-    /** Called by native to invalidate the seeding status in {@link AccountTrackerService} */
-    @MainThread
-    @CalledByNative
-    private void invalidateAccountsSeedingStatus() {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            throw new IllegalStateException(
-                    "This method should never be called when SeedAccountsRevamp is enabled");
-        }
-        mAccountTrackerService.invalidateAccountsSeedingStatus();
-    }
-
     /**
      * Called by the native method ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable to
      * check whether the account has an OAuth2 refresh token. TODO(crbug.com/40928950): Use
@@ -194,29 +174,6 @@ final class ProfileOAuth2TokenServiceDelegate {
         return promise.isFulfilled()
                 && AccountUtils.findCoreAccountInfoByEmail(promise.getResult(), accountEmail)
                         != null;
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    void legacySeedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            throw new IllegalStateException(
-                    "This method should never be called when SeedAccountsRevamp is enabled");
-        }
-        ThreadUtils.assertOnUiThread();
-        mAccountTrackerService.legacySeedAccountsIfNeeded(
-                () -> {
-                    final List<CoreAccountInfo> fetchedCoreAccountInfos =
-                            AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                                    AccountManagerFacadeProvider.getInstance()
-                                            .getCoreAccountInfos());
-                    ProfileOAuth2TokenServiceDelegateJni.get()
-                            .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                                    mNativeProfileOAuth2TokenServiceDelegate,
-                                    primaryAccountId,
-                                    AccountUtils.toAccountEmails(fetchedCoreAccountInfos)
-                                            .toArray(new String[0]));
-                });
     }
 
     @NativeMethods

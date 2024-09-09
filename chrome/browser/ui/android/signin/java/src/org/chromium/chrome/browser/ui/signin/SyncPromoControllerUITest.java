@@ -708,7 +708,7 @@ public class SyncPromoControllerUITest {
     public void testNTPSyncPromoViewSignedInAndNotSyncing(boolean nightModeEnabled)
             throws Throwable {
         setUpNightMode(nightModeEnabled);
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCache();
         View view =

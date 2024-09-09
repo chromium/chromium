@@ -11231,12 +11231,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "LinkPreview")},
 #endif  // !BUILDFLAG_(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"seed-accounts-revamp", flag_descriptions::kSeedAccountsRevampName,
-     flag_descriptions::kSeedAccountsRevampDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kSeedAccountsRevamp)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"send-tab-ios-push-notifications",
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription, kOsAll,

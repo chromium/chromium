@@ -19,13 +19,11 @@ public final class AccountInfoServiceProvider {
 
     /** Initializes the singleton {@link AccountInfoService} instance. */
     @MainThread
-    public static void init(
-            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
+    public static void init(IdentityManager identityManager) {
         if (sInstancePromise != null && sInstancePromise.isFulfilled()) {
             return;
         }
-        final AccountInfoService service =
-                new AccountInfoServiceImpl(identityManager, accountTrackerService);
+        final AccountInfoService service = new AccountInfoServiceImpl(identityManager);
         if (sInstancePromise == null) {
             sInstancePromise = Promise.fulfilled(service);
         } else {

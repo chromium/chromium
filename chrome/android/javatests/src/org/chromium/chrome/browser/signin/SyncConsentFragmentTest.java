@@ -362,7 +362,7 @@ public class SyncConsentFragmentTest {
             throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         AccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
-        mSigninTestRule.addAccountAndWaitForSeeding(accountInfo);
+        mSigninTestRule.addAccount(accountInfo);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -553,7 +553,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(primaryAccount.getId());
+        mSigninTestRule.removeAccount(primaryAccount.getId());
 
         CriteriaHelper.pollUiThread(() -> fragment.mIsUpdateAccountCalled);
         verify(mFirstRunPageDelegateMock).abortFirstRunExperience();
@@ -1247,7 +1247,6 @@ public class SyncConsentFragmentTest {
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
@@ -1270,7 +1269,6 @@ public class SyncConsentFragmentTest {
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
@@ -1293,7 +1291,6 @@ public class SyncConsentFragmentTest {
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
@@ -1316,7 +1313,6 @@ public class SyncConsentFragmentTest {
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
@@ -1338,7 +1334,6 @@ public class SyncConsentFragmentTest {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
         mSyncConsentActivity =
@@ -1363,7 +1358,6 @@ public class SyncConsentFragmentTest {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         mSyncConsentActivity =
@@ -1388,7 +1382,6 @@ public class SyncConsentFragmentTest {
         // Account Capabilities are intentionally empty.
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
         mSyncConsentActivity =
@@ -1412,7 +1405,6 @@ public class SyncConsentFragmentTest {
         // to be fetched to determine buttons, but in this test they will never arrive.
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
@@ -1443,7 +1435,6 @@ public class SyncConsentFragmentTest {
         // Account Capabilities are intentionally empty.
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
@@ -1488,7 +1479,6 @@ public class SyncConsentFragmentTest {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
         mSyncConsentActivity =
@@ -1610,7 +1600,7 @@ public class SyncConsentFragmentTest {
     @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_confirmed() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(NEW_ACCOUNT_NAME);
 
         SigninManager signinManager =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1655,7 +1645,7 @@ public class SyncConsentFragmentTest {
     @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_failedSignin() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(NEW_ACCOUNT_NAME);
 
         SigninManager signinManager =
                 ThreadUtils.runOnUiThreadBlocking(

@@ -28,7 +28,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -84,7 +83,6 @@ public class SigninManagerIntegrationTest {
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
-        mSigninTestRule.waitForSeeding();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
@@ -106,10 +104,6 @@ public class SigninManagerIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Run test.
-                    if (!ChromeFeatureList.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-                        mSigninManager.reloadAllAccountsFromSystem(null);
-                    }
-
                     Assert.assertArrayEquals(
                             "No account: getAccounts must be empty",
                             new CoreAccountInfo[] {},
@@ -120,15 +114,10 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredAndNoSignedInUser() {
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Run test.
-                    if (!ChromeFeatureList.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-                        mSigninManager.reloadAllAccountsFromSystem(null);
-                    }
-
                     Assert.assertArrayEquals(
                             "No signed in account: getAccounts must be empty",
                             new CoreAccountInfo[] {},
@@ -139,7 +128,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredSignedIn() {
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signin(mTestAccount1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -153,27 +142,8 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    // TODO(crbug.com/40284908): Delete this test
-    public void testUpdateAccountListOneAccountsRegisteredSignedInOther() {
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Run test.
-                    mSigninManager.reloadAllAccountsFromSystem(mTestAccount2.getId());
-
-                    Assert.assertArrayEquals(
-                            "Signed in but different account, getAccounts must remain empty",
-                            new CoreAccountInfo[] {},
-                            mIdentityManager.getAccountsWithRefreshTokens());
-                });
-    }
-
-    @Test
-    @MediumTest
     public void testUpdateAccountListSingleAccountThenAddOne() {
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signin(mTestAccount1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -185,15 +155,10 @@ public class SigninManagerIntegrationTest {
                 });
 
         // Add another account.
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TEST_ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Re-run validation.
-                    if (!ChromeFeatureList.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-                        mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
-                    }
-
                     Assert.assertEquals(
                             "Signed in and two accounts available",
                             new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -205,12 +170,11 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signin(mTestAccount1);
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TEST_ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -222,7 +186,7 @@ public class SigninManagerIntegrationTest {
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(mTestAccount2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -237,8 +201,8 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT2);
         SigninTestUtil.signin(mTestAccount1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -252,16 +216,11 @@ public class SigninManagerIntegrationTest {
                 });
 
         // Remove all.
-        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount1.getId());
-        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(mTestAccount1.getId());
+        mSigninTestRule.removeAccount(mTestAccount2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Re-validate and run checks.
-                    if (!ChromeFeatureList.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-                        mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
-                    }
-
                     Assert.assertArrayEquals(
                             "No account available",
                             new CoreAccountInfo[] {},
@@ -271,11 +230,10 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT2);
         SigninTestUtil.signin(mTestAccount1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -289,8 +247,8 @@ public class SigninManagerIntegrationTest {
                 });
 
         mSigninTestRule.signOut();
-        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount1.getId());
-        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(mTestAccount1.getId());
+        mSigninTestRule.removeAccount(mTestAccount2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -305,8 +263,8 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsRegisteredAndOneSignedIn() {
         // Add accounts.
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
-        mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TEST_ACCOUNT2);
         SigninTestUtil.signin(mTestAccount1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -322,24 +280,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    // TODO(crbug.com/40284908): Delete this test
-    public void testUpdateAccountListNoAccountsRegisteredButSignedIn() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Run test.
-                    mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
-
-                    Assert.assertArrayEquals(
-                            "No accounts available",
-                            new CoreAccountInfo[] {},
-                            mIdentityManager.getAccountsWithRefreshTokens());
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRemoval_signsOut() {
         mSigninTestRule.addAccount(TEST_ACCOUNT1);
@@ -364,7 +304,6 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
         mSigninTestRule.addAccount(TEST_ACCOUNT1);
@@ -397,10 +336,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        SigninFeatures.SEED_ACCOUNTS_REVAMP,
-        SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF
-    })
+    @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
     public void testSignInAndSignOut_updateLegacySyncAccountEmail() {
         mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
 
@@ -422,10 +358,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        SigninFeatures.SEED_ACCOUNTS_REVAMP,
-        SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF
-    })
+    @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail_whenSignedIn() {
         mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
 
@@ -531,8 +464,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testSignInWithoutSync_waitForPrefCommit() {
-        CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signinAndWaitForPrefsCommit(coreAccountInfo);
 
         Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));

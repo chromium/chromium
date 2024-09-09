@@ -6,42 +6,23 @@ package org.chromium.components.signin.identitymanager;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
-
-import java.util.List;
 
 /** This class handles the {@link AccountInfo} fetch on Java side. */
-final class AccountInfoServiceImpl
-        implements IdentityManager.Observer, AccountTrackerService.Observer, AccountInfoService {
+final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountInfoService {
     private final IdentityManager mIdentityManager;
-    private final AccountTrackerService mAccountTrackerService;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    AccountInfoServiceImpl(
-            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
+    AccountInfoServiceImpl(IdentityManager identityManager) {
         mIdentityManager = identityManager;
-        mAccountTrackerService = accountTrackerService;
         identityManager.addObserver(this);
-        accountTrackerService.addObserver(this);
     }
 
     /** Gets the {@link AccountInfo} of the given account email. */
     @Override
     public Promise<AccountInfo> getAccountInfoByEmail(String email) {
         final Promise<AccountInfo> accountInfoPromise = new Promise<>();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            accountInfoPromise.fulfill(
-                    mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-        } else {
-            mAccountTrackerService.legacySeedAccountsIfNeeded(
-                    () -> {
-                        accountInfoPromise.fulfill(
-                                mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-                    });
-        }
+        accountInfoPromise.fulfill(mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
         return accountInfoPromise;
     }
 
@@ -60,7 +41,6 @@ final class AccountInfoServiceImpl
     /** Releases the resources used by {@link AccountInfoService}. */
     @Override
     public void destroy() {
-        mAccountTrackerService.removeObserver(this);
         mIdentityManager.removeObserver(this);
     }
 
@@ -70,12 +50,5 @@ final class AccountInfoServiceImpl
         for (Observer observer : mObservers) {
             observer.onAccountInfoUpdated(accountInfo);
         }
-    }
-
-    /** Implements {@link AccountTrackerService.Observer}. */
-    @Override
-    public void legacyOnAccountsSeeded(
-            List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
-        mIdentityManager.refreshAccountInfoIfStale(accountInfos);
     }
 }

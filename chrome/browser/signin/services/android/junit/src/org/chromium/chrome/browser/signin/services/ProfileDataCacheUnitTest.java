@@ -24,7 +24,6 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 
@@ -44,8 +43,6 @@ public class ProfileDataCacheUnitTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
-    @Mock private AccountTrackerService mAccountTrackerServiceMock;
 
     @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
 

@@ -73,7 +73,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -190,11 +189,8 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    // Enabling SEED_ACCOUNTS_REVAMP prevents the account from being removed before
-    // {@link AccountCapabilitiesFetcher.onCapabilitiesFetchComplete} has completed.
     @Features.EnableFeatures({
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-        SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void destroyHistorySyncActivityWhenAccountIsRemoved() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);

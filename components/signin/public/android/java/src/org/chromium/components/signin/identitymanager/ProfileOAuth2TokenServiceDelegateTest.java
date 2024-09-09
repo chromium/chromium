@@ -6,9 +6,7 @@ package org.chromium.components.signin.identitymanager;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 
 import android.accounts.Account;
 
@@ -29,13 +27,11 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
@@ -91,8 +87,6 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Rule public final JniMocker mocker = new JniMocker();
 
-    @Mock private AccountTrackerService mAccountTrackerServiceMock;
-
     @Mock private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
 
     private final CustomGetAccessTokenCallback mTokenCallback = new CustomGetAccessTokenCallback();
@@ -106,8 +100,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void setUp() {
         mocker.mock(ProfileOAuth2TokenServiceDelegateJni.TEST_HOOKS, mNativeMock);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
-        mDelegate =
-                new ProfileOAuth2TokenServiceDelegate(NATIVE_DELEGATE, mAccountTrackerServiceMock);
+        mDelegate = new ProfileOAuth2TokenServiceDelegate(NATIVE_DELEGATE);
     }
 
     @Test
@@ -172,27 +165,5 @@ public class ProfileOAuth2TokenServiceDelegateTest {
                             .getCoreAccountInfos();
                     Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
                 });
-    }
-
-    @Test
-    @SmallTest
-    @Features.DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(mAccountTrackerServiceMock)
-                .legacySeedAccountsIfNeeded(any(Runnable.class));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDelegate.legacySeedAndReloadAccountsWithPrimaryAccount(null);
-                });
-        verify(mNativeMock)
-                .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                        NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});
     }
 }
