@@ -41,6 +41,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_MULTIPART_IMAGE_RESOURCE_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_MULTIPART_IMAGE_RESOURCE_PARSER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -57,7 +58,7 @@ class CORE_EXPORT MultipartImageResourceParser final
    public:
     virtual ~Client() = default;
     virtual void OnePartInMultipartReceived(const ResourceResponse&) = 0;
-    virtual void MultipartDataReceived(const char* bytes, size_t) = 0;
+    virtual void MultipartDataReceived(base::span<const uint8_t> bytes) = 0;
     void Trace(Visitor* visitor) const override {}
   };
 

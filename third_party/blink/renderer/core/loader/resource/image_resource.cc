@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -628,14 +629,9 @@ void ImageResource::OnePartInMultipartReceived(
   }
 }
 
-// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in the header.
-void ImageResource::MultipartDataReceived(const char* bytes, size_t size) {
+void ImageResource::MultipartDataReceived(base::span<const uint8_t> bytes) {
   DCHECK(multipart_parser_);
-  Resource::AppendData(
-      // SAFETY: The caller must ensure `bytes` points to `size` elements.
-      // TODO(crbug.com/40284755): Make this method take a span to capture the
-      // invariant.
-      UNSAFE_TODO(base::span(bytes, size)));
+  Resource::AppendData(base::as_chars(bytes));
 }
 
 bool ImageResource::IsAccessAllowed(

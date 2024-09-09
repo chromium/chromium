@@ -100,7 +100,7 @@ class CORE_EXPORT ImageResource final
 
   // MultipartImageResourceParser::Client
   void OnePartInMultipartReceived(const ResourceResponse&) final;
-  void MultipartDataReceived(const char*, size_t) final;
+  void MultipartDataReceived(base::span<const uint8_t> bytes) final;
 
   // If the ImageResource came from a user agent CSS stylesheet then we should
   // flag it so that it can persist beyond navigation.
