@@ -26,7 +26,7 @@ build itself, feel free to contact codeql-discuss@chromium.org.
 1. Download a database.
 
     You can download recent databases at the
-    [chrome-codeql-databases GCS bucket](https://pantheon.corp.google.com/storage/browser/chrome-codeql-databases).
+    [chrome-codeql-databases GCS bucket](https://commondatastorage.googleapis.com/chrome-codeql-databases/).
 
     (There are a LOT of databases there.  We'll prune them in the future, but
     for now you probably want to just filter by a date prefix, e.g.
