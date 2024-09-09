@@ -167,8 +167,8 @@ TEST_F(ThreadTest, StartWithOptions_StackSize) {
   additional_space += 56 * 1024;
 #endif
 #if DCHECK_IS_ON()
-  // The thread restrictions add four BooleanWithOptionalStacks (~2k each).
-  additional_space += sizeof(BooleanWithOptionalStack) * 4;
+  // The thread restrictions add four BooleanWithStacks (which are ~2k each).
+  additional_space += sizeof(BooleanWithStack) * 4;
 #endif
 
   Thread a("StartWithStackSize");
