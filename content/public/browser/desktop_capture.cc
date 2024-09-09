@@ -150,14 +150,21 @@ bool ShouldEnumerateCurrentProcessWindows() {
 
 void OpenNativeScreenCapturePicker(
     content::DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
   content::MediaStreamManager::GetInstance()
       ->video_capture_manager()
-      ->OpenNativeScreenCapturePicker(type, std::move(picker_callback),
-                                      std::move(cancel_callback),
-                                      std::move(error_callback));
+      ->OpenNativeScreenCapturePicker(
+          type, std::move(created_callback), std::move(picker_callback),
+          std::move(cancel_callback), std::move(error_callback));
+}
+
+void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
+  content::MediaStreamManager::GetInstance()
+      ->video_capture_manager()
+      ->CloseNativeScreenCapturePicker(source_id);
 }
 
 }  // namespace content::desktop_capture

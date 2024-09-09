@@ -53,6 +53,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,
+      base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
       base::OnceCallback<void()> error_callback) override;

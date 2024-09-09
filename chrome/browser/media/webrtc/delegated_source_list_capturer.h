@@ -33,12 +33,14 @@ class DelegatedSourceListCapturer
   void EnsureHidden() override;
 
  private:
+  void OnPickerCreated(content::DesktopMediaID::Id source_id);
   void OnSelected(Source source);
   void OnCancelled();
   void OnError();
 
   raw_ptr<Observer> delegated_source_list_observer_ = nullptr;
   std::optional<Source> selected_source_;
+  std::optional<content::DesktopMediaID::Id> source_id_;
   content::DesktopMediaID::Type type_;
 
   SEQUENCE_CHECKER(sequence_checker_);
