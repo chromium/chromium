@@ -1051,6 +1051,11 @@ bool TestingProfile::IsNewProfile() const {
 
 TestingProfile::Builder::Builder() = default;
 
+TestingProfile::Builder::Builder(Builder&&) = default;
+
+TestingProfile::Builder& TestingProfile::Builder::operator=(Builder&&) =
+    default;
+
 TestingProfile::Builder::~Builder() = default;
 
 TestingProfile::Builder& TestingProfile::Builder::SetPath(

@@ -717,7 +717,12 @@ Profile* ProfileManager::GetProfile(const base::FilePath& profile_dir) {
   Profile* profile = GetProfileByPath(profile_dir);
   if (profile)
     return profile;
-  return CreateAndInitializeProfile(profile_dir);
+  return CreateAndInitializeProfile(
+      profile_dir,
+      // Because the callback is called synchronously, it's safe to use
+      // Unretained here.
+      base::BindOnce(&ProfileManager::CreateProfileHelper,
+                     base::Unretained(this)));
 }
 
 size_t ProfileManager::GetNumberOfProfiles() {
@@ -1699,29 +1704,6 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-bool ProfileManager::AddProfile(std::unique_ptr<Profile> profile) {
-  TRACE_EVENT0("browser", "ProfileManager::AddProfile");
-
-  DCHECK(profile);
-
-  // Make sure that we're not loading a profile with the same ID as a profile
-  // that's already loaded.
-  if (GetProfileByPathInternal(profile->GetPath())) {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempted to add profile with the same path ("
-        << profile->GetPath().value() << ") as an already-loaded profile.";
-    return false;
-  }
-
-  ProfileInfo* profile_info = RegisterOwnedProfile(std::move(profile));
-  profile_info->MarkProfileAsCreated(profile_info->GetRawProfile());
-
-  InitProfileUserPrefs(profile_info->GetCreatedProfile());
-  DoFinalInit(profile_info,
-              ShouldGoOffTheRecord(profile_info->GetCreatedProfile()));
-  return true;
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::UnloadProfile");
@@ -1758,7 +1740,9 @@ void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 Profile* ProfileManager::CreateAndInitializeProfile(
-    const base::FilePath& profile_dir) {
+    const base::FilePath& profile_dir,
+    base::OnceCallback<std::unique_ptr<Profile>(const base::FilePath&)>
+        factory) {
   TRACE_EVENT0("browser", "ProfileManager::CreateAndInitializeProfile");
 
   if (!CanCreateProfileAtPath(profile_dir)) {
@@ -1794,9 +1778,10 @@ Profile* ProfileManager::CreateAndInitializeProfile(
     return profile_being_loaded.get();
   }
 
-  std::unique_ptr<Profile> profile = CreateProfileHelper(profile_dir);
-  if (!profile)
+  std::unique_ptr<Profile> profile = std::move(factory).Run(profile_dir);
+  if (!profile) {
     return nullptr;
+  }
 
   // Place the unique_ptr inside ProfileInfo, which was added by
   // OnProfileCreationStarted().

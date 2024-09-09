@@ -461,12 +461,6 @@ class ProfileManager : public Profile::Delegate {
   // The profile used can be overridden by using --login-profile on cros.
   Profile* GetActiveUserOrOffTheRecordProfile();
 
-  // Adds a pre-existing Profile object to the set managed by this
-  // ProfileManager.
-  // The Profile should not already be managed by this ProfileManager.
-  // Returns true if the profile was added, false otherwise.
-  bool AddProfile(std::unique_ptr<Profile> profile);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Unloads the `Profile` at `profile_dir` from the manager and destroys the
   // `Profile` C++ object. If it's an ephemeral profile, also deletes the
@@ -477,7 +471,10 @@ class ProfileManager : public Profile::Delegate {
   // Synchronously creates and returns a profile. This handles both the full
   // creation and adds it to the set managed by this ProfileManager. Returns
   // null if creation fails.
-  Profile* CreateAndInitializeProfile(const base::FilePath& profile_dir);
+  Profile* CreateAndInitializeProfile(
+      const base::FilePath& profile_dir,
+      base::OnceCallback<std::unique_ptr<Profile>(const base::FilePath&)>
+          factory);
 
   // Registers profile with given info. Returns pointer to created ProfileInfo
   // entry.
