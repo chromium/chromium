@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#expandableDiv {
+  height: 0px; /* Initial height */
+  background-color: lightgray; /* For visualization */
+  margin-bottom: 10px;
+}
+
+iframe {
+  width: 100%;
+  height: 500px
+}
+</style>
+</head>
+<body>
+
+<div id="expandableDiv">This div will expand</div>
+
+<div id="iframeContainer"></div>
+
+<script>
+var old_iframe_offset = -1;
+function insertIframe(url) {
+  const iframe = document.createElement('iframe');
+  iframe.src = url;
+  iframe.allow = "camera; microphone; geolocation;";
+
+  iframe.onload = function() {
+    const doneDiv = document.createElement('div');
+    doneDiv.id = 'done';
+    document.body.appendChild(doneDiv);
+  };
+  document.getElementById('iframeContainer').appendChild(iframe);
+}
+
+function expandDiv() {
+  const div = document.getElementById('expandableDiv');
+  div.style.height = (parseInt(getComputedStyle(div).height) + 10) + 'px';
+}
+
+function clickInIframe(message) {
+  setTimeout(() => { 
+    const iframe = document.getElementById('iframeContainer').firstChild;
+    iframe.contentWindow.postMessage(message, '*'); }, 500);
+  }
+</script>
+
+</body>
+</html>

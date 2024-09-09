@@ -747,9 +747,7 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
   CHECK_GT(permission_descriptors_.size(), 0U);
   CHECK_LE(permission_descriptors_.size(), 2U);
   auto descriptor = EmbeddedPermissionRequestDescriptor::New();
-  // TODO(crbug.com/1462930): Send element position to browser and use the
-  // rect to calculate expected prompt position in screen coordinates.
-  descriptor->element_position = GetBoundingClientRect()->ToEnclosingRect();
+  descriptor->element_position = BoundsInWidget();
   descriptor->permissions = mojo::Clone(permission_descriptors_);
 
   pending_request_created_ = base::TimeTicks::Now();
