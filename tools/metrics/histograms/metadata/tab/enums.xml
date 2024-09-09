@@ -204,17 +204,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/types.h:TabGroupEvent) -->
 
-<enum name="TabManagerTabRankerResult">
-  <int value="0" label="Success">Tab score was calculated successfully.</int>
-  <int value="1" label="Preprocessor initialization failed">
-    The ExamplePreprocessorConfig could not be loaded or parsed.
-  </int>
-  <int value="2" label="Preprocessor other error">
-    The ExamplePreprocessor returned an error other than, or in addition to, the
-    kNoFeatureIndexFound error.
-  </int>
-</enum>
-
 <enum name="TabOrganizationTriggerOutcome">
   <int value="0" label="Accepted">User clicked through the nudge UI.</int>
   <int value="1" label="Dismissed">User explicitly dismissed the nudge UI.</int>

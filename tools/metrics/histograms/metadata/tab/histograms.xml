@@ -1430,18 +1430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.TabRanker.Result" enum="TabManagerTabRankerResult"
-    expires_after="M85">
-  <owner>michaelpg@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
-  <summary>
-    Logged when calculating a tab reactivation score for a background tab. Any
-    value other than &quot;none&quot; may indicate a bug in the inference code,
-    a problem with the preprocessor configuration shipped with the model, or a
-    bug in the code that populates the RankerExample for a tab.
-  </summary>
-</histogram>
-
 <histogram name="TabRestore.{RestoreType}.TimeBetweenClosedAndRestored"
     units="ms" expires_after="2025-01-05">
   <owner>sreejakshetty@chromium.org</owner>

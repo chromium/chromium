@@ -22,10 +22,6 @@ BASE_FEATURE(kCustomizedTabLoadTimeout,
              "CustomizedTabLoadTimeout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the Tab Ranker to score tabs for discarding instead of relying
-// on last focused time.
-BASE_FEATURE(kTabRanker, "TabRanker", base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 
 namespace resource_coordinator {
@@ -39,42 +35,6 @@ base::TimeDelta GetTabLoadTimeout(const base::TimeDelta& default_timeout) {
     return default_timeout;
 
   return base::Milliseconds(timeout_in_ms);
-}
-
-int GetNumOldestTabsToScoreWithTabRanker() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabRanker, "number_of_oldest_tabs_to_score_with_TabRanker",
-      50);
-}
-
-int GetProcessTypeToScoreWithTabRanker() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabRanker, "process_type_of_tabs_to_score_with_TabRanker", 3);
-}
-
-int GetNumOldestTabsToLogWithTabRanker() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabRanker, "number_of_oldest_tabs_to_log_with_TabRanker", 0);
-}
-
-bool DisableBackgroundLogWithTabRanker() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kTabRanker, "disable_background_log_with_TabRanker", true);
-}
-
-float GetDiscardCountPenaltyTabRanker() {
-  return static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      features::kTabRanker, "discard_count_penalty", 0.0));
-}
-
-float GetMRUScorerPenaltyTabRanker() {
-  return static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      features::kTabRanker, "mru_scorer_penalty", 1.0));
-}
-
-int GetScorerTypeForTabRanker() {
-  return base::GetFieldTrialParamByFeatureAsInt(features::kTabRanker,
-                                                "scorer_type", 1);
 }
 
 }  // namespace resource_coordinator

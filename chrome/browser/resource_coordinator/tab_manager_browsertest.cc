@@ -302,17 +302,12 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
   EXPECT_EQ(3, tsm()->count());
-  if (base::FeatureList::IsEnabled(features::kTabRanker)) {
-    // In testing configs with TabRanker enabled, we don't always know which tab
-    // it will kill. But exactly one of the first two tabs should be killed.
-    EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(0)) ^
-                IsTabDiscarded(GetWebContentsAt(1)));
-  } else {
-    // With TabRanker disabled, it should kill the first tab, since it was the
-    // oldest and was not selected.
-    EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(0)));
-    EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(1)));
-  }
+
+  // The first tab should be killed since it was the oldest and was not
+  // selected.
+  EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(0)));
+  EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(1)));
+
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(2)));
 
   // Run discard again. Both unselected tabs should now be killed.
