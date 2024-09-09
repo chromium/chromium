@@ -62,7 +62,9 @@ void FocusModeYouTubeMusicDelegate::GetPlaylists(
   // list, and update the total number of API request to run.
   get_playlists_state_.done_callback = std::move(callback);
   const bool playlist_reserved =
-      get_playlists_state_.reserved_playlist_id.has_value();
+      get_playlists_state_.reserved_playlist_id.has_value() &&
+      get_playlists_state_.reserved_playlist_id.value() !=
+          kFocusSupermixPlaylistId;
   get_playlists_state_.target_count = playlist_reserved ? 3 : 2;
 
   // Invoke sub requests. Please note, sub request failures are more permissive
@@ -334,7 +336,7 @@ void FocusModeYouTubeMusicDelegate::MaybeReportBackPlaylists() {
   }
 
   const std::vector<Playlist>& results = get_playlists_state_.GetTopPlaylists();
-  if (results.size() >= kFocusModePlaylistViewsNum) {
+  if (results.size() == kFocusModePlaylistViewsNum) {
     std::move(get_playlists_state_.done_callback).Run(results);
     get_playlists_state_.done_callback = base::NullCallback();
   }
