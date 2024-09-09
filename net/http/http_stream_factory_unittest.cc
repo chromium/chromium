@@ -1608,12 +1608,20 @@ TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
                           /*allowed_bad_certs=*/{},
                           /*enable_ip_based_pooling=*/true,
                           /*enable_alternative_services=*/true);
+  requester.MaybeWaitForSwitchesToHttpStreamPool();
   EXPECT_FALSE(requester.stream_done());
 
-  // Confirm a stream has been created by asserting that a new session
-  // has been created.  (The stream is only created at the SPDY level on
-  // first write, which happens after the request has returned a stream).
-  ASSERT_EQ(1, GetSpdySessionCount(session.get()));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 is enabled, SpdySessions never created
+    // synchronously even when the mocked connects complete synchronously.
+    // There is no new session at this point.
+    ASSERT_EQ(0, GetSpdySessionCount(session.get()));
+  } else {
+    // Confirm a stream has been created by asserting that a new session
+    // has been created.  (The stream is only created at the SPDY level on
+    // first write, which happens after the request has returned a stream).
+    ASSERT_EQ(1, GetSpdySessionCount(session.get()));
+  }
 
   // Test to confirm that a SetPriority received after the stream is created
   // but before the request returns it does not crash.
