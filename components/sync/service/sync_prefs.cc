@@ -752,9 +752,6 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kApps:
-#if BUILDFLAG(IS_ANDROID)
-      return base::FeatureList::IsEnabled(kWebApkBackupAndRestoreBackend);
-#endif
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:
     case UserSelectableType::kCookies:
