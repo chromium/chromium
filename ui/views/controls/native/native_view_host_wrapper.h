@@ -5,20 +5,17 @@
 #ifndef UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_WRAPPER_H_
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_WRAPPER_H_
 
-#include <memory>
-
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
 class RoundedCornersF;
-}
+}  // namespace gfx
 
 namespace ui {
 class Layer;
-class LayerOwner;
-}
+}  // namespace ui
 
 namespace views {
 
@@ -50,14 +47,10 @@ class NativeViewHostWrapper {
   // rooted at a valid Widget.
   virtual void RemovedFromWidget() = 0;
 
-  // Clips the corners of the gfx::NativeView to the |corner_radii| specififed.
+  // Clips the corners of the gfx::NativeView to the `corner_radii` specified.
   // Returns true on success or false if the platform doesn't support the
   // operation.
   virtual bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) = 0;
-
-  // Sets the custom mask for clipping gfx::NativeView. Returns true on
-  // success or false if the platform doesn't support the operation.
-  virtual bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) = 0;
 
   // Sets the height of the top region where gfx::NativeView shouldn't be
   // targeted.
