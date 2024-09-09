@@ -77,10 +77,19 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   UITableView* _tableView;
+
+  NSLayoutConstraint* _tableViewHeightConstraint;
+
   browsing_data::TimePeriod _timeRange;
   NSString* _browsingDataSummary;
   BOOL _shouldShowFooter;
-  NSLayoutConstraint* _tableViewHeightConstraint;
+
+  BOOL _historySelected;
+  BOOL _tabsSelected;
+  BOOL _siteDataSelected;
+  BOOL _cacheSelected;
+  BOOL _passwordsSelected;
+  BOOL _autofillSelected;
 }
 @end
 
@@ -131,13 +140,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   [self displayGradientView:NO];
 
-  // Configure the color of the primary button to red, as the default colour is
-  // blue.
-  UIButtonConfiguration* buttonConfiguration =
-      self.primaryActionButton.configuration;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kRedColor];
-  self.primaryActionButton.configuration = buttonConfiguration;
+  // Configure the color of the primary button to red in several states, as the
+  // default colour is blue.
+  [self updatePrimaryActionButtonEnabledStatus];
   self.confirmationCheckmarkColor = [UIColor colorNamed:kRed600Color];
   self.confirmationButtonColor = [UIColor colorNamed:kRed100Color];
 
@@ -323,33 +328,33 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setHistorySelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _historySelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setTabsSelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _tabsSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _siteDataSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setCacheSelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _cacheSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _passwordsSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
-  // No-op: This ViewController doesn't show the selection for each browsing
-  // data type.
+  _autofillSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
 }
 
 - (void)deletionInProgress {
@@ -405,6 +410,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 #pragma mark - Private
+
+// Updates the enabled status of the primary button. The primary button should
+// only be enabled if at least one browsing data type is selected for deletion.
+- (void)updatePrimaryActionButtonEnabledStatus {
+  self.primaryActionButton.enabled = _historySelected || _tabsSelected ||
+                                     _siteDataSelected || _cacheSelected ||
+                                     _passwordsSelected || _autofillSelected;
+
+  UIButtonConfiguration* buttonConfiguration =
+      self.primaryActionButton.configuration;
+  buttonConfiguration.background.backgroundColor =
+      self.primaryActionButton.enabled ? [UIColor colorNamed:kRedColor]
+                                       : [UIColor colorNamed:kRed100Color];
+  self.primaryActionButton.configuration = buttonConfiguration;
+}
 
 // Action handler that executes when a voiceover announcement ends.
 - (void)handleUIAccessibilityAnnouncementDidFinishNotification:

@@ -374,6 +374,40 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that the browsing data button is disabled if no browsing data type is
+// selected.
+- (void)testDisabledBrowsingDataButtonWhenNoSelection {
+  // Disable selection of all browsing data types.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  id<GREYMatcher> browsingDataButton = ButtonWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON));
+  // Check that the browsing data button is disabled.
+  [[EarlGrey selectElementWithMatcher:browsingDataButton]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Select a browsing data type.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+
+  // Check that the browsing data button is enabled.
+  [[EarlGrey selectElementWithMatcher:browsingDataButton]
+      assertWithMatcher:grey_enabled()];
+}
+
 // Tests the selection time range for the browsing data deletion: the time range
 // selection is shown with the pref value and a new selection updates the pref.
 - (void)testTimeRangeForDeletionSelection {

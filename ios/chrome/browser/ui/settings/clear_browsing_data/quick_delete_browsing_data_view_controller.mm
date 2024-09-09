@@ -84,6 +84,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       UINavigationItemLargeTitleDisplayModeNever;
   self.navigationItem.leftBarButtonItem = [self cancelButton];
   self.navigationItem.rightBarButtonItem = [self confirmButton];
+  [self updateConfirmButtonEnabledStatus];
   self.title = l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
   [self loadModel];
 }
@@ -128,7 +129,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
 
   // Update selection value for the corresponding cell with `itemIdentifier`.
-  [self updateSelectionForItemIdentifier:itemIdentifier];
+  [self toggleSelectionForItemIdentifier:itemIdentifier];
 
   // Update the snapshot for the selected cell.
   [self updateSnapshotForItemIdentifier:itemIdentifier];
@@ -268,6 +269,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - Private
 
+// Updates the enabled status of the confirm button. The confirm button should
+// only be enabled if at least one browsing data type is selected for deletion.
+- (void)updateConfirmButtonEnabledStatus {
+  self.navigationItem.rightBarButtonItem.enabled =
+      _historySelected || _tabsSelected || _siteDataSelected ||
+      _cacheSelected || _passwordsSelected || _autofillSelected;
+}
+
 // Returns the cancel button on the navigation bar.
 - (UIBarButtonItem*)cancelButton {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -397,10 +406,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource snapshot];
   [snapshot reloadItemsWithIdentifiers:@[ @(itemIdentifier) ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+
+  [self updateConfirmButtonEnabledStatus];
 }
 
 // Toggles the selection for the given `itemIdentifier`.
-- (void)updateSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
+- (void)toggleSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
       _historySelected = !_historySelected;
@@ -427,6 +438,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       break;
     }
   }
+  [self updateConfirmButtonEnabledStatus];
 }
 
 // Returns the icon for the given `itemIdentifier`.

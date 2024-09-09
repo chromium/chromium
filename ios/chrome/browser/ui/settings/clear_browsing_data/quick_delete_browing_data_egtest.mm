@@ -228,6 +228,38 @@ id<GREYMatcher> SignOutLinkMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that the confirm button is disabled if no browsing data type is
+// selected.
+- (void)testDisabledConfirmButtonWhenNoSelection {
+  // Disable selection of all browsing data types.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
+
+  [self openQuickDeleteBrowsingDataPage];
+
+  // Check that the confirm button is disabled.
+  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Select a browsing data type.
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      performAction:grey_tap()];
+
+  // Check that the confirm button is enabled.
+  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+}
+
 // Tests the cancel button does not save changes to prefs.
 - (void)testCancelButtonDoesNotUpdatePrefs {
   // Set all prefs to false.

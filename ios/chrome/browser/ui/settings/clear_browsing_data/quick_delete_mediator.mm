@@ -193,6 +193,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 
   bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
 
+  CHECK((removeMask != BrowsingDataRemoveMask::REMOVE_NOTHING) ||
+        shouldCloseTabs);
+
   // If we cannot perform the tabs closure animation, then close the tabs when
   // deleting the other data.
   if (shouldCloseTabs && !_canPerformTabsClosureAnimation) {
@@ -235,8 +238,15 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
       },
       std::move(removeBrowsingDataCompletion));
 
-  _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
-                                      std::move(delayedCompletion));
+  // If we have nothing to remove in the in progress UI, then already trigger
+  // the completion block.
+  if (removeMask == BrowsingDataRemoveMask::REMOVE_NOTHING) {
+    CHECK(shouldCloseTabs);
+    std::move(delayedCompletion).Run();
+  } else {
+    _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
+                                        std::move(delayedCompletion));
+  }
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
