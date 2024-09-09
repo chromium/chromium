@@ -553,6 +553,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResolveEndpointFailedSync) {
   endpoint_request->set_start_result(ERR_FAILED);
   StreamRequester requester;
   requester.RequestStream(pool());
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
 
   // Resetting the request should release the corresponding job(s).
@@ -586,9 +587,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, LoadState) {
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
-
-  RunUntilIdle();
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_IDLE);
 }
 
@@ -1455,6 +1455,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   streams.pop_back();
 
   released_stream.reset();
+  requester.WaitForResult();
   ASSERT_TRUE(request->completed());
   ASSERT_EQ(manager->PendingJobCount(), 0u);
 }

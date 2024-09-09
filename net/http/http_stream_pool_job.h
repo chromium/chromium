@@ -105,6 +105,14 @@ class HttpStreamPool::Job {
   }
 
  private:
+  void CallOnStreamReady(std::unique_ptr<HttpStream> stream,
+                         NextProto negotiated_protocol);
+  void CallOnStreamFailed(int status,
+                          const NetErrorDetails& net_error_details,
+                          ResolveErrorInfo resolve_error_info);
+  void CallOnCertificateError(int status, const SSLInfo& ssl_info);
+  void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
+
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
   const NextProto expected_protocol_;
