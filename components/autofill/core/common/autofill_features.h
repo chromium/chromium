@@ -252,6 +252,8 @@ extern const base::FeatureParam<std::string>
     kAutofillUKMExperimentalFieldsBucket4;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTrackMultipleUseDates);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillGreekRegexes);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)

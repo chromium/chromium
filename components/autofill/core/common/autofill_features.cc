@@ -747,6 +747,12 @@ BASE_FEATURE(kAutofillTrackMultipleUseDates,
              "AutofillTrackMultipleUseDates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Greek regexes are used for parsing in branded builds.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillGreekRegexes,
+             "AutofillGreekRegexes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
