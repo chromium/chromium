@@ -101,7 +101,7 @@ BASE_FEATURE(kPermissionsPromptSurvey,
 // device attribute API for a web kiosk session.
 BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
              "AllowMultipleOriginsForWebKioskPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
