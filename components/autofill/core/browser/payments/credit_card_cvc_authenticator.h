@@ -129,7 +129,7 @@ class CreditCardCvcAuthenticator
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
   friend class autofill_metrics::AutofillMetricsBaseTest;
-  friend class CreditCardAccessManagerTest;
+  friend class CreditCardAccessManagerTestBase;
   friend class CreditCardCvcAuthenticatorTest;
   friend class FormFillerTest;
 

@@ -25,7 +25,7 @@ class AutofillClient;
 class AutofillMetricsTest;
 class BrowserAutofillManagerTest;
 class CreditCard;
-class CreditCardAccessManagerTest;
+class CreditCardAccessManagerTestBase;
 class CreditCardCvcAuthenticatorTest;
 class FormFillerTest;
 class PersonalDataManager;
@@ -197,7 +197,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   friend class autofill::BrowserAutofillManagerTest;
   friend class autofill::AutofillMetricsTest;
   friend class autofill::autofill_metrics::AutofillMetricsBaseTest;
-  friend class autofill::CreditCardAccessManagerTest;
+  friend class autofill::CreditCardAccessManagerTestBase;
   friend class autofill::CreditCardCvcAuthenticatorTest;
   friend class autofill::FormFillerTest;
 
