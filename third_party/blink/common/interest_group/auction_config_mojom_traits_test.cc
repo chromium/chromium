@@ -172,9 +172,14 @@ TEST(AuctionConfigMojomTraitsTest, SellerDecisionAndTrustedSignalsUrlsTooLong) {
   EXPECT_TRUE(SerializeAndDeserialize(auction_config_clone));
 }
 
-TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
+TEST(AuctionConfigMojomTraitsTest,
+     SellerScoringSignalsUrlCrossOriginDisallowed) {
   AuctionConfig auction_config =
       CreateBasicAuctionConfig(GURL("https://seller.test"));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgePermitCrossOriginTrustedSignals);
+
   // Different origin than seller, but same scheme.
   auction_config.trusted_scoring_signals_url =
       GURL("https://not.seller.test/foo");

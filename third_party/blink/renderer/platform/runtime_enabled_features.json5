@@ -2002,6 +2002,7 @@
       // Permit trusted signals to come cross-origin, subject to CORS on the
       // trusted server side and opt-in on the worklet script side.
       name: "FledgePermitCrossOriginTrustedSignals",
+      status: "stable",
     },
     {
       // Enables real time reporting API in Protected Audience.

@@ -1158,6 +1158,18 @@ class BidderWorkletMultiBidAndCookieDeprecationTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class BidderWorkletCrossOriginTrustedSignalsDisabledTest
+    : public BidderWorkletTest {
+ public:
+  BidderWorkletCrossOriginTrustedSignalsDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgePermitCrossOriginTrustedSignals);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Test the case the BidderWorklet pipe is closed before invoking the
 // GenerateBidCallback. The invocation of the GenerateBidCallback is not
 // observed, since the callback is on the pipe that was just closed. There
@@ -6395,7 +6407,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
 
 // With the cross-origin trusted signals flag off, nothing is passed in to the
 // cross-original signals parameter.
-TEST_F(BidderWorkletTest, CrossOriginTrustedSignalsDisabled) {
+TEST_F(BidderWorkletCrossOriginTrustedSignalsDisabledTest, Basic) {
   RunGenerateBidExpectingExpressionIsTrue(
       "crossOriginTrustedSignals === undefined");
   RunGenerateBidExpectingExpressionIsTrue("arguments.length === 6");

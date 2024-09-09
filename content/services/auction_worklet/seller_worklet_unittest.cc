@@ -901,6 +901,18 @@ class SellerWorkletTest : public testing::Test {
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
 };
 
+class SellerWorkletCrossOriginTrustedSignalsDisabledTest
+    : public SellerWorkletTest {
+ public:
+  SellerWorkletCrossOriginTrustedSignalsDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgePermitCrossOriginTrustedSignals);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
  private:
   size_t NumThreads() override { return 2u; }
@@ -2056,7 +2068,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
 
 // With the cross-origin trusted signals flag off, nothing is passed in to the
 // cross-original signals parameter.
-TEST_F(SellerWorkletTest, CrossOriginTrustedSignalsDisabled) {
+TEST_F(SellerWorkletCrossOriginTrustedSignalsDisabledTest, Basic) {
   RunScoreAdWithReturnValueExpectingResult(
       "crossOriginTrustedSignals === undefined ? 1 : 0", 1);
   RunScoreAdWithReturnValueExpectingResult("arguments.length", 6);
