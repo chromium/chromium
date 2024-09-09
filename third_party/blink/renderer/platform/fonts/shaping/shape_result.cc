@@ -220,7 +220,7 @@ float ShapeResult::RunInfo::XPositionForOffset(
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance;
+        glyph_sequence_advance += glyph_data_[i].advance.ToFloat();
         continue;
       }
 
@@ -248,7 +248,7 @@ float ShapeResult::RunInfo::XPositionForOffset(
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance;
+        glyph_sequence_advance += glyph_data_[i].advance.ToFloat();
         continue;
       }
 
@@ -344,7 +344,7 @@ void ShapeResult::RunInfo::CharacterIndexForXPosition(
     // If the glyph is part of the same sequence, we just accumulate the
     // advance.
     if (glyph_sequence_start == current_glyph_char_index) {
-      result->advance += glyph_data.advance;
+      result->advance += glyph_data.advance.ToFloat();
       continue;
     }
 
@@ -751,7 +751,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
                                     void* context,
                                     const RunInfo& run) const {
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
-  auto total_advance = initial_advance;
+  auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run.direction_);
   for (const auto& glyph_data : run.glyph_data_) {
     glyph_callback(context, run.start_index_ + glyph_data.character_index,
@@ -788,7 +788,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
                                     void* context,
                                     const RunInfo& run) const {
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
-  auto total_advance = initial_advance;
+  auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   unsigned run_start = run.start_index_ + index_offset;
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run.direction_);
   const SimpleFontData* font_data = run.font_data_.Get();
@@ -870,10 +870,11 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
                                            GraphemeClusterCallback callback,
                                            void* context) const {
   unsigned run_offset = index_offset;
-  float advance_so_far = initial_advance;
+  InlineLayoutUnit advance_so_far =
+      InlineLayoutUnit::FromFloatRound(initial_advance);
   for (const auto& run : runs_) {
     unsigned graphemes_in_cluster = 1;
-    float cluster_advance = 0;
+    InlineLayoutUnit cluster_advance;
 
     // FIXME: should this be run->direction_?
     bool rtl = Direction() == TextDirection::kRtl;
@@ -930,7 +931,7 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
         advance_so_far += cluster_advance;
 
         cluster_start = cluster_end;
-        cluster_advance = 0;
+        cluster_advance = InlineLayoutUnit();
       }
     }
   }
@@ -945,12 +946,12 @@ float ShapeResult::ApplySpacingImpl(
     int text_start_offset) {
   float offset = 0;
   float total_advance = 0;
-  float space = 0;
+  TextRunLayoutUnit space;
   for (auto& run : runs_) {
     if (!run)
       continue;
     unsigned run_start_index = run->start_index_ + text_start_offset;
-    float total_advance_for_run = 0;
+    InlineLayoutUnit total_advance_for_run;
     for (wtf_size_t i = 0; i < run->glyph_data_.size(); i++) {
       HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
 
@@ -966,7 +967,7 @@ float ShapeResult::ApplySpacingImpl(
           parameters{.index = run_start_index + glyph_data.character_index,
                      .original_advance = glyph_data.advance};
       space = spacing.ComputeSpacing(parameters, offset);
-      glyph_data.advance += space;
+      glyph_data.AddAdvance(space);
       total_advance_for_run += glyph_data.advance;
 
       // |offset| is non-zero only when justifying CJK characters that follow
@@ -1027,8 +1028,9 @@ void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
         continue;
       }
 
-      const float expansion_as_float = expansion.ToFloat();
-      glyph_data.advance += expansion_as_float;
+      const TextRunLayoutUnit advance = expansion.To<TextRunLayoutUnit>();
+      glyph_data.AddAdvance(advance);
+      const float expansion_as_float = advance.ToFloat();
       run->width_ += expansion_as_float;
       width_ += expansion_as_float;
 
@@ -1058,8 +1060,9 @@ void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
       continue;
     }
     HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.back();
-    const float expansion_as_float = expansion.ToFloat();
-    glyph_data.advance += expansion_as_float;
+    const TextRunLayoutUnit advance = expansion.To<TextRunLayoutUnit>();
+    glyph_data.AddAdvance(advance);
+    const float expansion_as_float = advance.ToFloat();
     run->width_ += expansion_as_float;
     width_ += expansion_as_float;
     return;
@@ -1140,7 +1143,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
           run->glyph_data_.SetOffsetAt(i, glyph_offset);
           last_glyph_of_first_char = i;
         }
-        run->glyph_data_[last_glyph_of_first_char].advance += uni_dim_offset;
+        run->glyph_data_[last_glyph_of_first_char].AddAdvance(uni_dim_offset);
         has_vertical_offsets_ |= (glyph_offset.y() != 0);
         run->width_ += uni_dim_offset;
         current_offset++;
@@ -1197,7 +1200,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
       }
       if (should_add_spacing) {
         HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
-        glyph_data.advance += current_offset->spacing;
+        glyph_data.AddAdvance(current_offset->spacing);
         total_space_for_run += current_offset->spacing;
 
         ShapeResultCharacterData& data = CharacterData(offset - 1);
@@ -1239,8 +1242,8 @@ const ShapeResult* ShapeResult::UnapplyAutoSpacing(
       continue;
     }
     HarfBuzzRunGlyphData& last_glyph = run->glyph_data_.back();
-    DCHECK_GE(last_glyph.advance, spacing_width);
-    last_glyph.advance -= spacing_width;
+    DCHECK_GE(last_glyph.advance.ToFloat(), spacing_width);
+    last_glyph.AddAdvance(-spacing_width);
     run->width_ -= spacing_width;
     sub_range->width_ -= spacing_width;
     break;
@@ -1291,6 +1294,10 @@ namespace {
 
 float HarfBuzzPositionToFloat(hb_position_t value) {
   return static_cast<float>(value) / (1 << 16);
+}
+
+inline TextRunLayoutUnit HarfBuzzPositionToTextLayoutUnit(hb_position_t value) {
+  return TextRunLayoutUnit::FromFixed<16>(value);
 }
 
 // Checks whether it's safe to break without reshaping before the given glyph.
@@ -1459,7 +1466,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
 
   // Compute glyph_origin in physical, since offsets of glyphs are in physical.
   // It's the caller's responsibility to convert to logical.
-  float total_advance = 0.0f;
+  InlineLayoutUnit total_advance;
   bool has_vertical_offsets = !is_horizontal_run;
 
   // HarfBuzz returns result in visual order, no need to flip for RTL.
@@ -1470,8 +1477,9 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     // One out of x_advance and y_advance is zero, depending on
     // whether the buffer direction is horizontal or vertical.
     // Convert to float and negate to avoid integer-overflow for ULONG_MAX.
-    float advance = is_horizontal_run ? HarfBuzzPositionToFloat(pos.x_advance)
-                                      : -HarfBuzzPositionToFloat(pos.y_advance);
+    const TextRunLayoutUnit advance =
+        is_horizontal_run ? HarfBuzzPositionToTextLayoutUnit(pos.x_advance)
+                          : -HarfBuzzPositionToTextLayoutUnit(pos.y_advance);
 
     DCHECK_GE(glyph.cluster, start_cluster);
     const uint16_t character_index = glyph.cluster - start_cluster;
@@ -1493,7 +1501,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     total_advance += advance;
   }
 
-  run->width_ = std::max(0.0f, total_advance);
+  run->width_ = total_advance.ClampNegativeToZero().ToFloat();
   has_vertical_offsets_ |= has_vertical_offsets;
   run->CheckConsistency();
 }
@@ -1566,7 +1574,7 @@ ShapeResult::RunInfo* ShapeResult::InsertRunForTesting(
       CanvasRotationInVertical::kRegular, HB_SCRIPT_COMMON, start_index,
       num_characters, num_characters);
   for (unsigned i = 0; i < run->glyph_data_.size(); i++) {
-    run->glyph_data_[i] = {0, i, false, 0};
+    run->glyph_data_[i] = {0, i, false, TextRunLayoutUnit()};
   }
   for (uint16_t offset : safe_break_offsets)
     run->glyph_data_[offset].safe_to_break_before = true;
@@ -1818,22 +1826,25 @@ const ShapeResult* ShapeResult::CreateForTabulationCharacters(
   hb_direction_t hb_direction =
       blink::IsLtr(direction) ? HB_DIRECTION_LTR : HB_DIRECTION_RTL;
   // Only the advance of the first tab is affected by |position|.
-  float advance = font->TabWidth(font_data, tab_size, position);
+  TextRunLayoutUnit advance = TextRunLayoutUnit::FromFloatRound(
+      font->TabWidth(font_data, tab_size, position));
   do {
     unsigned run_length = std::min(length, HarfBuzzRunGlyphData::kMaxGlyphs);
     RunInfo* run = MakeGarbageCollected<RunInfo>(
         font_data, hb_direction, CanvasRotationInVertical::kRegular,
         HB_SCRIPT_COMMON, start_index, run_length, run_length);
-    float start_position = position;
+    InlineLayoutUnit run_width;
     for (unsigned i = 0; i < run_length; i++) {
       // 2nd and following tabs have the base width, without using |position|.
-      if (i == 1)
-        advance = font->TabWidth(font_data, tab_size);
+      if (i == 1) {
+        advance = TextRunLayoutUnit::FromFloatRound(
+            font->TabWidth(font_data, tab_size));
+      }
       const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
       run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, advance};
-      position += advance;
+      run_width += advance;
     }
-    run->width_ = position - start_position;
+    run->width_ = run_width;
     result->width_ += run->width_;
     result->runs_.push_back(run);
     DCHECK_GE(length, run_length);
@@ -1864,10 +1875,11 @@ const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
       HB_SCRIPT_COMMON, start_index, length, length);
   result->width_ = run->width_ = width;
   length = run->NumGlyphs();
+  TextRunLayoutUnit glyph_width = TextRunLayoutUnit::FromFloatRound(width);
   for (unsigned i = 0; i < length; i++) {
     const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
-    run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, width};
-    width = 0;
+    run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, glyph_width};
+    glyph_width = TextRunLayoutUnit();
   }
   result->runs_.push_back(run);
   return result;
@@ -1888,9 +1900,9 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
   RunInfo* run = MakeGarbageCollected<RunInfo>(
       font->PrimaryFont(), hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, 1 /* num_glyph */, num_characters);
-  run->glyph_data_[glyph_index] = {glyph_variant, 0 /* character index */,
-                                   true /* IsSafeToBreakBefore */,
-                                   stretch_size};
+  run->glyph_data_[glyph_index] = {
+      glyph_variant, 0 /* character index */, true /* IsSafeToBreakBefore */,
+      TextRunLayoutUnit::FromFloatRound(stretch_size)};
   run->width_ = std::max(0.0f, stretch_size);
 
   result->width_ = run->width_;
@@ -1943,9 +1955,10 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
       float full_advance = glyph_index == assembly_parameters.glyph_count - 1
                                ? part.full_advance
                                : part.full_advance - overlap;
-      run->glyph_data_[glyph_index] = {part.glyph, 0 /* character index */,
-                                       !glyph_index /* IsSafeToBreakBefore */,
-                                       full_advance};
+      run->glyph_data_[glyph_index] = {
+          part.glyph, 0 /* character index */,
+          !glyph_index /* IsSafeToBreakBefore */,
+          TextRunLayoutUnit::FromFloatRound(full_advance)};
       if (!is_horizontal_assembly) {
         GlyphOffset glyph_offset(
             0, -assembly_parameters.stretch_size + glyph_ink_ascent);
@@ -2014,8 +2027,8 @@ std::ostream& operator<<(std::ostream& ostream,
 template <bool rtl>
 void ShapeResult::ComputePositionData() const {
   unsigned next_character_index = 0;
-  float run_advance = 0;
-  float last_x_position = 0;
+  InlineLayoutUnit total_advance;
+  InlineLayoutUnit last_x_position;
 
   // Iterate runs/glyphs in the visual order; i.e., from the left edge
   // regardless of the directionality, so that |x_position| is always in
@@ -2030,7 +2043,6 @@ void ShapeResult::ComputePositionData() const {
     // |x_position| is in ascending order.
     DCHECK_EQ(IsRtl(), run->IsRtl());
 
-    float total_advance = run_advance;
     for (const auto& glyph_data : run->glyph_data_) {
       DCHECK_GE(run->start_index_, start_index_);
       const unsigned logical_index =
@@ -2057,14 +2069,14 @@ void ShapeResult::ComputePositionData() const {
           // the logical order; i.e., the last position for LTR or this position
           // for RTL.
           const LayoutUnit x_position =
-              LayoutUnit::FromFloatCeil(!rtl ? last_x_position : total_advance);
+              (!rtl ? last_x_position : total_advance).ToCeil<LayoutUnit>();
           for (unsigned i = next_character_index; i < character_index; i++) {
             DCHECK_LT(i, num_characters_);
             character_position_[i].SetCachedData(x_position, false, false);
           }
         }
 
-        const LayoutUnit x_position = LayoutUnit::FromFloatCeil(total_advance);
+        const LayoutUnit x_position = total_advance.ToCeil<LayoutUnit>();
         character_position_[character_index].SetCachedData(
             x_position, true, glyph_data.safe_to_break_before);
         last_x_position = total_advance;
@@ -2073,20 +2085,19 @@ void ShapeResult::ComputePositionData() const {
       total_advance += glyph_data.advance;
       next_character_index = character_index + 1;
     }
-    run_advance += run->width_;
   }
 
   // Fill |x_position| for the rest of characters, when they don't have
   // corresponding glyphs.
   if (next_character_index < num_characters_) {
     const LayoutUnit x_position =
-        LayoutUnit::FromFloatCeil(!rtl ? last_x_position : run_advance);
+        (!rtl ? last_x_position : total_advance).ToCeil<LayoutUnit>();
     for (unsigned i = next_character_index; i < num_characters_; i++) {
       character_position_[i].SetCachedData(x_position, false, false);
     }
   }
 
-  width_ = run_advance;
+  width_ = total_advance;
 }
 
 void ShapeResult::EnsurePositionData() const {
@@ -2252,7 +2263,7 @@ void AddRunInfoRanges(const ShapeResult::RunInfo& run_info,
       NOTREACHED_IN_MIGRATION();
       character_widths.Grow(glyph.character_index + 1);
     }
-    character_widths[glyph.character_index] += glyph.advance;
+    character_widths[glyph.character_index] += glyph.advance.ToFloat();
   }
 
   if (run_info.IsRtl())
@@ -2318,6 +2329,7 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 #endif
 
   GlyphBoundsAccumulator<is_horizontal_run> bounds;
+  InlineLayoutUnit origin = InlineLayoutUnit::FromFloatCeil(run_advance);
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
 #if BUILDFLAG(IS_APPLE)
@@ -2326,9 +2338,9 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 #else
     gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
-    bounds.Unite(glyph_bounds, run_advance, *glyph_offsets);
+    bounds.Unite(glyph_bounds, origin, *glyph_offsets);
     ++glyph_offsets;
-    run_advance += glyph_data.advance;
+    origin += glyph_data.advance;
   }
 
   if (!is_horizontal_run)

@@ -1883,11 +1883,17 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       const Font& font = style.GetFont();
       const SimpleFontData* font_data = font.PrimaryFont();
       const TabSize& tab_size = style.GetTabSize();
-      float advance = font.TabWidth(font_data, tab_size, position);
+      // Sync with `ShapeResult::CreateForTabulationCharacters()`.
+      TextRunLayoutUnit glyph_advance = TextRunLayoutUnit::FromFloatRound(
+          font.TabWidth(font_data, tab_size, position));
+      InlineLayoutUnit run_advance = glyph_advance;
       DCHECK_GE(length, 1u);
-      if (length > 1u)
-        advance += font.TabWidth(font_data, tab_size) * (length - 1);
-      position += LayoutUnit::FromFloatCeil(advance).ClampNegativeToZero();
+      if (length > 1u) {
+        glyph_advance = TextRunLayoutUnit::FromFloatRound(
+            font.TabWidth(font_data, tab_size));
+        run_advance += glyph_advance.To<InlineLayoutUnit>() * (length - 1);
+      }
+      position += run_advance.ToCeil<LayoutUnit>().ClampNegativeToZero();
     }
 
     LayoutUnit Finish(ItemIterator end) {
