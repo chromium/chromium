@@ -88,6 +88,11 @@ public interface NativePage {
     /** Updates the native page based on the given url. */
     void updateForUrl(String url);
 
+    /** Get the height of the region of the native page view that overlaps top browser controls. */
+    default int getHeightOverlappedWithTopControls() {
+        return 0;
+    }
+
     /**
      * @return {@code true} if the native page is in inactive/frozen state.
      */

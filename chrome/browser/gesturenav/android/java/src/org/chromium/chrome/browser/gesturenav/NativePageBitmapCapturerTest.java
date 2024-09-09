@@ -19,8 +19,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.TabTestUtils;
-import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -42,11 +40,6 @@ public class NativePageBitmapCapturerTest {
     public void testWithNativePage() throws TimeoutException {
         mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
 
-        final TabWebContentsDelegateAndroid delegate =
-                TabTestUtils.getTabWebContentsDelegate(
-                        mTabbedActivityTestRule.getActivity().getActivityTab());
-        final int topControlsHeight = delegate.getTopControlsHeight();
-
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -55,8 +48,7 @@ public class NativePageBitmapCapturerTest {
                                     mTabbedActivityTestRule.getActivity().getActivityTab(),
                                     (bitmap) -> {
                                         callbackHelper.notifyCalled();
-                                    },
-                                    topControlsHeight));
+                                    }));
                 });
 
         callbackHelper.waitForOnly();
@@ -67,11 +59,6 @@ public class NativePageBitmapCapturerTest {
     public void testWithNonNativePage() {
         mTabbedActivityTestRule.startMainActivityOnBlankPage();
 
-        final TabWebContentsDelegateAndroid delegate =
-                TabTestUtils.getTabWebContentsDelegate(
-                        mTabbedActivityTestRule.getActivity().getActivityTab());
-        final int topControlsHeight = delegate.getTopControlsHeight();
-
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -80,8 +67,7 @@ public class NativePageBitmapCapturerTest {
                                     mTabbedActivityTestRule.getActivity().getActivityTab(),
                                     (bitmap) -> {
                                         callbackHelper.notifyCalled();
-                                    },
-                                    topControlsHeight));
+                                    }));
                 });
 
         // Capture will be finished before the following task.

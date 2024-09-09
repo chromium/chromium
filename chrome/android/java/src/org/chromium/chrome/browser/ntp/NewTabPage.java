@@ -1048,6 +1048,11 @@ public class NewTabPage
     public void updateForUrl(String url) {}
 
     @Override
+    public int getHeightOverlappedWithTopControls() {
+        return mBrowserControlsStateProvider.getTopControlsHeight();
+    }
+
+    @Override
     public void reload() {
         mFeedSurfaceProvider.reload();
         mNewTabPageLayout.reload();

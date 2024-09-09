@@ -175,6 +175,11 @@ public class RecentTabsPage
     @Override
     public void updateForUrl(String url) {}
 
+    @Override
+    public int getHeightOverlappedWithTopControls() {
+        return mBrowserControlsStateProvider.getTopControlsHeight();
+    }
+
     // View.OnAttachStateChangeListener
     @Override
     public void onViewAttachedToWindow(View view) {

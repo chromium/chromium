@@ -184,6 +184,46 @@ public class ScreenshotCaptureTest {
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testNavigatingAwayFromNativeBookmarkToNormalPage(boolean nightModeEnabled)
+            throws IOException, TimeoutException, InterruptedException {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.BOOKMARKS_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        int currentNavIndex =
+                mActivityTestRule
+                        .getActivity()
+                        .getCurrentWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getCurrentEntryIndex();
+
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                new ScreenshotCaptureTestHelper.NavScreenshotCallback() {
+                    @Override
+                    public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+                        Assert.assertEquals(
+                                "Should capture the screenshot of the previous page.",
+                                currentNavIndex,
+                                navIndex);
+                        Assert.assertTrue(requested);
+                        mCapturedBitmap = bitmap;
+                        callbackHelper.notifyCalled();
+                        return null;
+                    }
+                });
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+
+        callbackHelper.waitForOnly();
+        mRenderTestRule.compareForResult(
+                mCapturedBitmap, "navigate_away_from_native_bookmark_to_normal_page");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingAwayFromNtpToWebUiPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);

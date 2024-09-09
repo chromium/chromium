@@ -86,6 +86,11 @@ public abstract class BasicNativePage implements NativePage {
     }
 
     @Override
+    public int getHeightOverlappedWithTopControls() {
+        return 0;
+    }
+
+    @Override
     public void destroy() {
         if (mMarginSupplier != null) {
             mMarginSupplier.removeObserver(mMarginObserver);

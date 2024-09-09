@@ -37,11 +37,10 @@ public class NativePageBitmapCapturer implements UnownedUserData {
      * @param tab The target tab to be captured.
      * @param callback Executed with a non-null bitmap if the tab is presenting a native page. Empty
      *     bitmap if capturing fails, such as out of memory error.
-     * @param topControlsHeight Height of the top controls.
      * @return True if the capture is successfully triggered; otherwise false.
      */
     public static boolean maybeCaptureNativeView(
-            @NonNull Tab tab, @NonNull Callback<Bitmap> callback, int topControlsHeight) {
+            @NonNull Tab tab, @NonNull Callback<Bitmap> callback) {
         if (!isCapturable(tab)) {
             return false;
         }
@@ -52,25 +51,24 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         }
 
         // TODO(crbug.com/330230340): capture bitmap asynchronously.
-        Bitmap bitmap = capture(tab, topControlsHeight);
+        Bitmap bitmap = capture(tab);
         PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
         return true;
     }
 
     /**
-     * Synchronous version of {@link #maybeCaptureNativeView(Tab, Callback, int)}.
+     * Synchronous version of {@link #maybeCaptureNativeView(Tab, Callback)}.
      *
      * @param tab The target tab to be captured.
-     * @param topControlsHeight Height of the top controls.
      * @return Null if fails; otherwise, a Bitmap object.
      */
     @Nullable
-    public static Bitmap maybeCaptureNativeViewSync(@NonNull Tab tab, int topControlsHeight) {
+    public static Bitmap maybeCaptureNativeViewSync(@NonNull Tab tab) {
         if (!isCapturable(tab)) {
             return null;
         }
 
-        return capture(tab, topControlsHeight);
+        return capture(tab);
     }
 
     private static boolean isCapturable(Tab tab) {
@@ -88,10 +86,15 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         View view = tab.getView();
         // The view is not laid out yet.
         if (view.getWidth() == 0 || view.getHeight() == 0) return false;
+        if (tab.getWebContents() == null
+                || tab.getWebContents().getViewAndroidDelegate() == null
+                || tab.getWebContents().getViewAndroidDelegate().getContainerView() == null) {
+            return false;
+        }
         return true;
     }
 
-    private static Bitmap capture(Tab tab, int topControlsHeight) {
+    private static Bitmap capture(Tab tab) {
         UnownedUserDataHost host = tab.getWindowAndroid().getUnownedUserDataHost();
         if (CAPTURER_KEY.retrieveDataFromHost(host) == null) {
             CAPTURER_KEY.attachToHost(host, new NativePageBitmapCapturer());
@@ -99,16 +102,27 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         final var capturer = CAPTURER_KEY.retrieveDataFromHost(host);
 
         View view = tab.getView();
+        // The size of the webpage might be different from that of native pages.
+        // The former may also capture the area underneath the navigation bar while
+        // the latter sometimes does not. If their sizes don't match, a fallback screenshot will
+        // be used instead.
+        Bitmap bitmap =
+                CaptureUtils.createBitmap(
+                        view.getWidth(),
+                        tab.getWebContents()
+                                .getViewAndroidDelegate()
+                                .getContainerView()
+                                .getHeight());
 
-        Bitmap bitmap = CaptureUtils.createBitmap(view.getWidth(), view.getHeight());
         bitmap.eraseColor(tab.getNativePage().getBackgroundColor());
 
         Canvas canvas = new Canvas(bitmap);
         float scale = capturer.getScale();
 
         // TODO(crbug.com/330230340): capture bitmap asynchronously.
-        // Translate to exclude the area of the top controls.
-        canvas.translate(0, -topControlsHeight);
+
+        // Translate to exclude the area of the top controls if present.
+        canvas.translate(0, -tab.getNativePage().getHeightOverlappedWithTopControls());
         canvas.scale(scale, scale);
         view.draw(canvas);
         return bitmap;
