@@ -62,6 +62,15 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                base::span<const Suggestion>,
                UpdateSuggestionsCallback),
               (override));
+  MOCK_METHOD(void,
+              OnAcceptedInlineSuggestion,
+              (const url::Origin&,
+               base::span<const Suggestion>,
+               size_t,
+               UpdateSuggestionsCallback,
+               HideSuggestionsCallback,
+               PlusAddressCallback),
+              (override));
 };
 
 }  // namespace autofill

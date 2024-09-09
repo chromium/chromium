@@ -51,6 +51,7 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -388,6 +389,30 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
       GetWeakPtr(), *session_id);
 }
 
+base::OnceCallback<void(SuggestionHidingReason)>
+AutofillExternalDelegate::CreateHideSuggestionsCallback() {
+  using SessionId = AutofillClient::SuggestionUiSessionId;
+  const std::optional<SessionId> session_id =
+      manager_->client().GetSessionIdForCurrentAutofillSuggestions();
+  if (!session_id) {
+    return base::DoNothing();
+  }
+  return base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self, SessionId session_id,
+         SuggestionHidingReason hiding_reason) {
+        if (!self) {
+          return;
+        }
+        if (self->manager_->client()
+                .GetSessionIdForCurrentAutofillSuggestions()
+                .value_or(SessionId()) != session_id) {
+          return;
+        }
+        self->manager_->client().HideAutofillSuggestions(hiding_reason);
+      },
+      GetWeakPtr(), *session_id);
+}
+
 SuggestionType
 AutofillExternalDelegate::GetLastAcceptedSuggestionToFillForSection(
     const Section& section) const {
@@ -677,6 +702,22 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
   base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
                                 suggestion.type);
 
+  auto create_fill_plus_address_callback = [&](SuggestionType suggestion_type) {
+    return base::BindOnce(
+        [](base::WeakPtr<AutofillExternalDelegate> delegate,
+           const FormData& form, const FormFieldData& field,
+           SuggestionType suggestion_type, const std::string& plus_address) {
+          if (delegate) {
+            delegate->manager_->FillOrPreviewField(
+                mojom::ActionPersistence::kFill,
+                mojom::FieldActionType::kReplaceAll, form, field,
+                base::UTF8ToUTF16(plus_address), suggestion_type,
+                EMAIL_ADDRESS);
+          }
+        },
+        GetWeakPtr(), query_form_, query_field_, suggestion_type);
+  };
+
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kFillFullAddress:
@@ -752,26 +793,33 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kCreateNewPlusAddressChosen);
       }
-      PlusAddressCallback callback = base::BindOnce(
-          [](base::WeakPtr<AutofillExternalDelegate> delegate,
-             const FormData& form, const FormFieldData& field,
-             const std::string& plus_address) {
-            if (delegate) {
-              delegate->manager_->FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAll, form, field,
-                  base::UTF8ToUTF16(plus_address),
-                  SuggestionType::kCreateNewPlusAddress, EMAIL_ADDRESS);
-            }
-          },
-          GetWeakPtr(), query_form_, query_field_);
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-          std::move(callback));
+          create_fill_plus_address_callback(
+              SuggestionType::kCreateNewPlusAddress));
       break;
     }
     case SuggestionType::kCreateNewPlusAddressInline:
-      // TODO(crbug.com/362445807): Implement.
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        base::span<const Suggestion> suggestions =
+            manager_->client().GetAutofillSuggestions();
+        // TODO(crbug.com/362445807): Change the signature of
+        // DidAcceptSuggestion to pass all suggestions and an index of the
+        // currently focused one.
+        auto it = std::ranges::find(suggestions, suggestion);
+        CHECK(it != suggestions.end());
+
+        plus_address_delegate->OnAcceptedInlineSuggestion(
+            manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
+            suggestions,
+            /*current_suggestion_index=*/it - suggestions.begin(),
+            CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
+            create_fill_plus_address_callback(
+                SuggestionType::kCreateNewPlusAddressInline));
+        // The delegate is responsible for hiding the popup.
+        return;
+      }
       break;
     case SuggestionType::kPlusAddressError:
       break;

@@ -126,6 +126,13 @@ class PlusAddressService : public KeyedService,
       const url::Origin& primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
       UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnAcceptedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback,
+      HideSuggestionsCallback hide_suggestions_callback,
+      PlusAddressCallback fill_field_callback) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

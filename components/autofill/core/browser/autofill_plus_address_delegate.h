@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
@@ -130,6 +131,19 @@ class AutofillPlusAddressDelegate {
       const url::Origin& primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
+
+  using HideSuggestionsCallback =
+      base::OnceCallback<void(SuggestionHidingReason)>;
+  // Attempts to create the plus address in
+  // `current_suggestions[current_suggestion_index]` for
+  // `primary_main_frame_origin`.
+  virtual void OnAcceptedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback,
+      HideSuggestionsCallback hide_suggestions_callback,
+      PlusAddressCallback fill_field_callback) = 0;
 };
 
 }  // namespace autofill

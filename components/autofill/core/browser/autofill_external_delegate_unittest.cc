@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -91,6 +92,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
@@ -2371,6 +2373,86 @@ TEST_F(AutofillExternalDelegateUnitTest,
       .Run(
           suggestions,
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+}
+
+// Tests that triggering the extra button action on a plus address inline
+// suggestion informs the plus address delegate and passes a callback that can
+// be used to update the Autofill suggestions.
+TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/u"Create plus address",
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(client(), GetAutofillSuggestions)
+      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(123));
+
+  using UpdateSuggestionsCallback =
+      AutofillPlusAddressDelegate::UpdateSuggestionsCallback;
+  using HideSuggestionsCallback =
+      AutofillPlusAddressDelegate::HideSuggestionsCallback;
+  UpdateSuggestionsCallback update_callback;
+  HideSuggestionsCallback hide_callback;
+  PlusAddressCallback filling_callback;
+  std::vector<Suggestion> updated_suggestions = suggestions;
+  updated_suggestions.back().is_loading = Suggestion::IsLoading(true);
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    // `MoveArg` only supports moving out a single argument and cannot be
+    // combined via `DoAll` - therefore use a helper.
+    EXPECT_CALL(
+        plus_address_delegate(),
+        OnAcceptedInlineSuggestion(_, base::span<const Suggestion>(suggestions),
+                                   /*current_suggestion_index=*/0, _, _, _))
+        .WillOnce([&](const url::Origin& primary_main_frame_origin,
+                      base::span<const Suggestion> current_suggestions,
+                      size_t current_suggestion_index,
+                      UpdateSuggestionsCallback update_suggestions_callback,
+                      HideSuggestionsCallback hide_suggestions_callback,
+                      PlusAddressCallback fill_field_callback) {
+          update_callback = std::move(update_suggestions_callback);
+          hide_callback = std::move(hide_suggestions_callback);
+          filling_callback = std::move(fill_field_callback);
+        });
+    EXPECT_CALL(client(),
+                UpdateAutofillSuggestions(
+                    updated_suggestions, FillingProduct::kPlusAddresses,
+                    AutofillSuggestionTriggerSource::
+                        kPlusAddressUpdatedInBrowserProcess));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(client(), HideAutofillSuggestions(
+                              SuggestionHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager(),
+                FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                   mojom::FieldActionType::kReplaceAll,
+                                   HasQueriedFormId(), HasQueriedFieldId(),
+                                   plus_address,
+                                   SuggestionType::kCreateNewPlusAddressInline,
+                                   std::optional(EMAIL_ADDRESS)));
+  }
+
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(update_callback);
+  ASSERT_TRUE(hide_callback);
+  ASSERT_TRUE(filling_callback);
+
+  std::move(update_callback)
+      .Run(
+          updated_suggestions,
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+  check.Call();
+  std::move(hide_callback).Run(SuggestionHidingReason::kAcceptSuggestion);
+  check.Call();
+  std::move(filling_callback).Run(base::UTF16ToUTF8(plus_address));
 }
 
 TEST_F(
