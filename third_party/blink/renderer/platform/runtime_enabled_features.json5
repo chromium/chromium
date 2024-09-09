@@ -2740,9 +2740,8 @@
       status: "test",
     },
     {
-      // https://chromestatus.com/feature/6270155647352832
       name: "MultiSmoothScrollIntoView",
-      status: "stable",
+      status: "experimental",
     },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
