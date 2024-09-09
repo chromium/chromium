@@ -16,6 +16,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
@@ -992,6 +993,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Class for handling key events from the renderer that were not handled.
   std::unique_ptr<lens::LensOverlayEventHandler> lens_overlay_event_handler_;
+
+  // Layer delegate that handles blurring the background behind the WebUI.
+  std::unique_ptr<lens::LensOverlayBlurLayerDelegate>
+      lens_overlay_blur_layer_delegate_;
 
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.

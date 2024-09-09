@@ -1,0 +1,66 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_BLUR_LAYER_DELEGATE_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_BLUR_LAYER_DELEGATE_H_
+
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/paint_context.h"
+
+namespace lens {
+
+// LayerDelegate for controlling the background blur behind the overlay. This
+// class is only a LayerDelegate to control the layer painting and does not own
+// the layer.
+class LensOverlayBlurLayerDelegate : public ui::LayerDelegate {
+ public:
+  // Starts painting to the given layer with a blurring background image using
+  // the given render view as the background.
+  // TODO(b/364902039): Starting blurring is not optimal, since we might be
+  // doing work for a layer the user can't even see yet. Instead, we should
+  // start blurring once the user can actually see the blur.
+  LensOverlayBlurLayerDelegate(ui::Layer* layer,
+                               content::RenderWidgetHostView* background_view);
+  ~LensOverlayBlurLayerDelegate() override;
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
+
+  // Fetches a new background screenshot to use for blurring.
+  void FetchBackgroundImage();
+
+  // Updates background_screenshot_ to the new bitmap and rerenders IFF bitmap
+  // is visually different than background_screenshot_.
+  void UpdateBackgroundImage(const SkBitmap& bitmap);
+
+  // The latest screenshot being used to render the background.
+  SkBitmap background_screenshot_;
+
+  // A timer to periodically take screenshots of the underlying page.
+  base::RepeatingTimer screenshot_timer_;
+
+  // Pointer to the layer we are adding the blur to. Belongs to a child of the
+  // LensOverlayController so guaranteed to outlive this class.
+  raw_ptr<ui::Layer> layer_;
+
+  // Pointer to the RenderWidgetHostView to get the contents which we are
+  // blurring. Owned by the live page web contents, so is possible to become
+  // null.
+  raw_ptr<content::RenderWidgetHostView> background_view_;
+
+  // Must be the last member.
+  base::WeakPtrFactory<LensOverlayBlurLayerDelegate> weak_factory_{this};
+};
+
+}  // namespace lens
+
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_BLUR_LAYER_DELEGATE_H_
