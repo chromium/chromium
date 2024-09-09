@@ -398,7 +398,7 @@ void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
   for (const WebInputElement& password_element :
        current_generation_item_->password_elements_) {
     if (password_element ==
-        password_agent_->focused_element().DynamicTo<WebInputElement>()) {
+        password_agent_->last_queried_element().DynamicTo<WebInputElement>()) {
       render_frame()->GetWebView()->AdvanceFocus(false);
     }
   }
@@ -469,7 +469,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     return false;
   }
   const WebInputElement last_focused_password_element =
-      password_agent_->focused_element().DynamicTo<WebInputElement>();
+      password_agent_->last_queried_element().DynamicTo<WebInputElement>();
   if (!last_focused_password_element ||
       last_focused_password_element.IsReadOnly() ||
       last_focused_password_element.FormControlTypeForAutofill() !=

@@ -225,7 +225,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   bool IsPrerendering() const;
 
-  blink::WebFormControlElement focused_element() const {
+  blink::WebFormControlElement last_queried_element() const {
     return last_queried_element_.GetField();
   }
 
