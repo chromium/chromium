@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="_google_chrome">
 import './data_sharing_sdk.js';
+// </if>
+// <if expr="not _google_chrome">
+import './dummy_data_sharing_sdk.js';
+
+// </if>
+
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {$} from 'chrome-untrusted://resources/js/util.js';

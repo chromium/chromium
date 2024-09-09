@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="_google_chrome">
 import './data_sharing_sdk.js';
+// </if>
+// <if expr="not _google_chrome">
+import './dummy_data_sharing_sdk.js';
+
+// </if>
 
 import {BrowserProxy} from './browser_proxy.js';
 import type {GroupData} from './group_data.mojom-webui.js';
