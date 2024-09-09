@@ -28,7 +28,7 @@
 
 namespace {
 
-constexpr gfx::Size kDialogSize{410, 350};
+constexpr gfx::Size kDialogSize{450, 350};
 
 void UpdateDialogPosition(views::Widget* widget,
                           content::WebContents* web_contents) {
