@@ -658,6 +658,7 @@ static_library("test_support") {
     public_deps += [
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
+      "//chrome/browser/password_manager/android/access_loss:public",
       "//components/feed/core/v2:feed_core_stubs",
     ]
 
@@ -10440,7 +10441,10 @@ static_library("test_support_unit") {
       "../browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h",
     ]
 
-    deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
+    deps += [
+      "//chrome/browser/keyboard_accessory/test_utils/android",
+      "//chrome/browser/password_manager/android/access_loss:test_support",
+    ]
   } else {
     sources += [
       "../browser/ui/autofill/test_autofill_popup_controller_autofill_client.h",

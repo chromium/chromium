@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
@@ -171,6 +172,10 @@ class AutofillKeyboardAccessoryControllerImpl
   // The first `IsStandaloneSuggestionType()` is used to define what the
   // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
+  // Bridge used to show the data loss warning (expected to be shown after
+  // filling user's credentials).
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
       self_deletion_weak_ptr_factory_{this};
