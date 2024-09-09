@@ -3028,11 +3028,13 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
 
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionQrCodeGenerator)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionQrCodeGenerator);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionQrCodeGenerator)) {
+      anchor_view = container->GetButtonFor(kActionQrCodeGenerator);
+    }
   }
 
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
@@ -3077,11 +3079,13 @@ BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionSendTabToSelf)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionSendTabToSelf);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
+      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
+    }
   }
   auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
       anchor_view, web_contents);
@@ -3098,11 +3102,13 @@ BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
                                           bool show_signin_button) {
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionSendTabToSelf)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionSendTabToSelf);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
+      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
+    }
   }
   auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
       anchor_view, web_contents, show_signin_button);
