@@ -5657,6 +5657,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.DigitalAssetLinks.AssetIncludes.LinksInManifest"
+    units="statements" expires_after="2025-07-26">
+  <owner>bewise@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how many &quot;include&quot; links an app has declared in their
+    asset_statemenets in the app manifest. The documentation states that apps
+    can only have 10 links. This histogram logs the actual number of statements.
+
+    We want to log this to see if there are apps that define more than 10
+    include links despite the specified limit, as we truncate the list of
+    returned links to the first 10.
+
+    The histogram is logged the first time asset_statements are read, and only
+    if the kWebViewDigitalAssetLinksLoadIncludes flag is enabled.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.DigitalAssetLinks.AssetIncludes.NetworkLoadResult"
     enum="BooleanSuccess" expires_after="2025-07-26">
   <owner>bewise@chromium.org</owner>
