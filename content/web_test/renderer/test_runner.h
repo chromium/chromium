@@ -101,10 +101,6 @@ class TestRunner {
   // Notification that another renderer has explicitly asked the test to end.
   void TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source);
 
-  // Performs a reset at the end of a test, in order to prepare for the next
-  // test.
-  void ResetRendererAfterWebTest();
-
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
   void AddMainFrame(WebFrameTestProxy& frame);

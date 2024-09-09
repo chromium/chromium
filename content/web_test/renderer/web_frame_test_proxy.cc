@@ -269,11 +269,13 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
   GetWebTestControlHostRemote();
 }
 
-void WebFrameTestProxy::Reset() {
-  // TODO(crbug.com/40615943): The RenderDocument project will cause us to
-  // replace the main frame on each navigation, including to about:blank and
-  // then to the next test. So resetting the frame or RenderWidget won't be
-  // meaningful then.
+void WebFrameTestProxy::ResetRendererAfterWebTest() {
+  // TODO(crbug.com/40615943): Some of this work is no longer needed if the
+  // RenderDocument project causes us to replace the main frame on each
+  // navigation. But some of it will continue to be necessary since it modifies
+  // process-global state, e.g. ResetMockOverlayScrollbars in internals.cc.
+  // The content::TestRunner object also persists for the life of the renderer.
+  // So the steps in this method need to be audited piecemeal for redundancy.
   CHECK(IsMainFrame());
 
   if (IsMainFrame()) {
@@ -297,6 +299,7 @@ void WebFrameTestProxy::Reset() {
 
   accessibility_controller_.Reset();
   spell_check_->Reset();
+  test_runner_->Reset();
 }
 
 std::string WebFrameTestProxy::GetFrameNameForWebTests() {
@@ -890,10 +893,6 @@ void WebFrameTestProxy::ReplicateWebTestRuntimeFlagsChanges(
     base::Value::Dict changed_layout_test_runtime_flags) {
   test_runner_->ReplicateWebTestRuntimeFlagsChanges(
       std::move(changed_layout_test_runtime_flags));
-}
-
-void WebFrameTestProxy::ResetRendererAfterWebTest() {
-  test_runner_->ResetRendererAfterWebTest();
 }
 
 }  // namespace content

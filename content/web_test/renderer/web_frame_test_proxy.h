@@ -46,9 +46,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
   // RenderFrameImpl overrides.
   void Initialize(blink::WebFrame* parent) override;
 
-  // Reset state between tests.
-  void Reset();
-
   // Returns a frame name that can be used in the output of web tests
   // (the name is derived from the frame's unique name).
   std::string GetFrameNameForWebTests();

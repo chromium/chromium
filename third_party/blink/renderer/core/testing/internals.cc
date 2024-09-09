@@ -722,10 +722,6 @@ Internals::Internals(ExecutionContext* context)
   document_->Fetcher()->EnableIsPreloadedForTest();
 }
 
-Internals::~Internals() {
-  ResetMockOverlayScrollbars();
-}
-
 LocalFrame* Internals::GetFrame() const {
   if (!document_)
     return nullptr;
