@@ -12161,6 +12161,21 @@
             ]
         }
     ],
+    "IOSSegmentationPlatformEphemeralCardRanker": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformEphemeralCardRanker"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
