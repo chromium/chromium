@@ -1079,7 +1079,7 @@ BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
 // Safety Hub Extension Reivew Panel.
 BASE_FEATURE(kSafetyHubExtensionsNoPrivacyPracticesTrigger,
              "SafetyHubExtensionsNoPrivacyPracticesTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables offstore extensions to be shown in the Safety Hub Extension
 // review panel.
 BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
