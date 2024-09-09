@@ -17441,6 +17441,27 @@
             ]
         }
     ],
+    "PrefetchNewWaitLoop": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240909",
+                    "enable_features": [
+                        "PrefetchNewWaitLoop"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchProxyDesktop": [
         {
             "platforms": [
