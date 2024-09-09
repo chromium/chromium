@@ -135,8 +135,8 @@ class HashMap {
 
   void swap(HashMap& ref) { impl_.swap(ref.impl_); }
 
-  unsigned size() const;
-  unsigned Capacity() const;
+  wtf_size_t size() const;
+  wtf_size_t Capacity() const;
   void ReserveCapacityForSize(unsigned size) {
     impl_.ReserveCapacityForSize(size);
   }
@@ -365,12 +365,12 @@ auto HashMap<T, U, V, W, X>::operator=(
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-inline unsigned HashMap<T, U, V, W, X>::size() const {
+inline wtf_size_t HashMap<T, U, V, W, X>::size() const {
   return impl_.size();
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-inline unsigned HashMap<T, U, V, W, X>::Capacity() const {
+inline wtf_size_t HashMap<T, U, V, W, X>::Capacity() const {
   return impl_.Capacity();
 }
 
