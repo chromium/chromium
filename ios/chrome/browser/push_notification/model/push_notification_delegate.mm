@@ -240,6 +240,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       id<SystemIdentity> identity =
           authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       config.primaryAccount = identity;
+      // Send an initial NAU to share the OS auth status and channel status with
+      // the server. Send an NAU on every foreground to report the OS Auth
+      // Settings.
+      ContentNotificationService* contentNotificationService =
+          ContentNotificationServiceFactory::GetForBrowserState(browserState);
+      [self sendSettingsChangeNAUWithService:contentNotificationService];
     }
   }
 
@@ -336,25 +342,30 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       }
     }
     // Send an NAU on every foreground to report the OS Auth Settings.
-    [PushNotificationUtil
-        getPermissionSettings:^(UNNotificationSettings* settings) {
-          UNAuthorizationStatus previousAuthStatus =
-              [PushNotificationUtil getSavedPermissionSettings];
-            ContentNotificationNAUConfiguration* config =
-                [[ContentNotificationNAUConfiguration alloc] init];
-            ContentNotificationSettingsAction* settingsAction =
-                [[ContentNotificationSettingsAction alloc] init];
-            settingsAction.previousAuthorizationStatus = previousAuthStatus;
-            settingsAction.currentAuthorizationStatus =
-                settings.authorizationStatus;
-            config.settingsAction = settingsAction;
-            contentNotificationService->SendNAUForConfiguration(config);
-        }];
+    [self sendSettingsChangeNAUWithService:contentNotificationService];
   }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         [PushNotificationUtil
             updateAuthorizationStatusPref:settings.authorizationStatus];
+      }];
+}
+
+- (void)sendSettingsChangeNAUWithService:
+    (ContentNotificationService*)contentNotificationService {
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        UNAuthorizationStatus previousAuthStatus =
+            [PushNotificationUtil getSavedPermissionSettings];
+        ContentNotificationNAUConfiguration* config =
+            [[ContentNotificationNAUConfiguration alloc] init];
+        ContentNotificationSettingsAction* settingsAction =
+            [[ContentNotificationSettingsAction alloc] init];
+        settingsAction.previousAuthorizationStatus = previousAuthStatus;
+        settingsAction.currentAuthorizationStatus =
+            settings.authorizationStatus;
+        config.settingsAction = settingsAction;
+        contentNotificationService->SendNAUForConfiguration(config);
       }];
 }
 
