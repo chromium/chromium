@@ -82,7 +82,7 @@ SyncEncryptionKeysToTrustedVaultKeys(
 
 // Parses an array of key objects passed to `setClientEncryptionKeys()`.
 // The members of each object are `epoch` integer and `key` ArrayBuffer.
-bool ParseTrustedVaultKeyArray(
+bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     v8::Local<v8::Context> context,
     v8::Local<v8::Array> array,
     std::vector<chrome::mojom::TrustedVaultKeyPtr>* trusted_vault_keys) {
@@ -122,11 +122,20 @@ bool ParseTrustedVaultKeyArray(
 // is a map of security domain name strings to encryption_keys: A map of
 // security domain name strings to arrays of objects with members `epoch`
 // integer, and `key` ArrayBuffer.
-bool ParseTrustedVaultKeysFromMap(
+//
+// This method may run property callbacks during parsing of trusted vault key
+// objects, which could end up deleting the frame.
+// TrustedVaultEncryptionKeysExtension is frame-scoped, and therefore may have
+// been destroyed together with the frame by the time this method returns. Hence
+// `callback` must be weakly bound.
+void ParseTrustedVaultKeysFromMapMayDeleteFrame(
     v8::Local<v8::Context> context,
     v8::Local<v8::Map> map,
-    base::flat_map<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>*
-        trusted_vault_keys) {
+    base::OnceCallback<
+        void(std::optional<
+             base::flat_map<std::string,
+                            std::vector<chrome::mojom::TrustedVaultKeyPtr>>>)>
+        callback) {
   std::vector<
       std::pair<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
       result;
@@ -136,7 +145,8 @@ bool ParseTrustedVaultKeysFromMap(
     v8::Local<v8::Value> key;
     if (!array->Get(context, i).ToLocal(&key) || !key->IsString()) {
       DVLOG(1) << "invalid map key";
-      return false;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
     const std::string security_domain_name(
         *v8::String::Utf8Value(context->GetIsolate(), key));
@@ -144,22 +154,23 @@ bool ParseTrustedVaultKeysFromMap(
     v8::Local<v8::Value> value;
     if (!array->Get(context, i + 1).ToLocal(&value) || !value->IsArray()) {
       DVLOG(1) << "invalid map value";
-      return false;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
     std::vector<chrome::mojom::TrustedVaultKeyPtr> domain_keys;
-    if (!ParseTrustedVaultKeyArray(context, value.As<v8::Array>(),
-                                   &domain_keys)) {
+    if (!ParseTrustedVaultKeyArrayMayDeleteFrame(context, value.As<v8::Array>(),
+                                                 &domain_keys)) {
       DVLOG(1) << "parsing vault keys failed";
-      return false;
+      std::move(callback).Run(std::nullopt);
+      return;
     }
     result.emplace_back(std::move(security_domain_name),
                         std::move(domain_keys));
   }
-  *trusted_vault_keys =
+  std::move(callback).Run(
       base::flat_map<std::string,
                      std::vector<chrome::mojom::TrustedVaultKeyPtr>>(
-          std::move(result));
-  return true;
+          std::move(result)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -405,10 +416,23 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
     return;
   }
 
-  base::flat_map<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>
-      trusted_vault_keys;
-  if (!ParseTrustedVaultKeysFromMap(context, encryption_keys.As<v8::Map>(),
-                                    &trusted_vault_keys)) {
+  ParseTrustedVaultKeysFromMapMayDeleteFrame(
+      context, encryption_keys.As<v8::Map>(),
+      base::BindOnce(
+          &TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeysContinue,
+          weak_ptr_factory_.GetWeakPtr(), args, std::move(callback),
+          std::move(gaia_id)));
+}
+
+void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeysContinue(
+    gin::Arguments* args,
+    v8::Local<v8::Function> callback,
+    std::string gaia_id,
+    std::optional<
+        base::flat_map<std::string,
+                       std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
+        trusted_vault_keys) {
+  if (!trusted_vault_keys) {
     DLOG(ERROR) << "Can't parse encryption keys object";
     RecordCallToSetClientEncryptionKeysToUma(kInvalidArgs);
     args->ThrowError();
@@ -421,13 +445,13 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
   }
 
-  for (const auto& [security_domain_name, keys] : trusted_vault_keys) {
+  for (const auto& [security_domain_name, keys] : *trusted_vault_keys) {
     trusted_vault::RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
         trusted_vault::GetSecurityDomainByName(security_domain_name));
   }
 
   remote_->SetEncryptionKeys(
-      gaia_id, std::move(trusted_vault_keys),
+      gaia_id, std::move(*trusted_vault_keys),
       base::BindOnce(
           &TrustedVaultEncryptionKeysExtension::RunCompletionCallback,
           weak_ptr_factory_.GetWeakPtr(),
