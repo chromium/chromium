@@ -234,7 +234,23 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
-    gn_args = "ci/chromeos-arm64-generic-rel",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-arm64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+        # b/346598710
+        "chromium.luci_analysis_v2": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 100,
+    ),
 )
 
 try_.builder(
