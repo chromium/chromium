@@ -173,8 +173,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Simulate failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap the action in the manual fallback UI.
   [[EarlGrey selectElementWithMatcher:manual_fallback_action_matcher]
@@ -663,8 +662,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [self openOtherPasswords];
 

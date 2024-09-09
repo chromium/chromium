@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
@@ -70,6 +71,8 @@ void CredentialListCoordinatorTest::TearDown() {}
 // Tests that a user selecting a credential will trigger the appropriate
 // function in the CredentialResponseHandler.
 TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   MockReauthenticationModule* reauthenticationModule =
       [[MockReauthenticationModule alloc] init];
   reauthenticationModule.canAttemptWithBiometrics = YES;
@@ -102,9 +105,10 @@ TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
 
   id<Credential> credential = TestPasswordCredential();
   [credentialListUIHandler userSelectedCredential:credential];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
-    return blockWaitCompleted;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
+        return blockWaitCompleted;
+      }));
 
   if (@available(iOS 17.0, *)) {
     blockWaitCompleted = NO;
@@ -116,7 +120,7 @@ TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
     credential = TestPasskeyCredential();
     [credentialListUIHandler userSelectedCredential:credential];
     EXPECT_TRUE(
-        WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
+        WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
           return blockWaitCompleted;
         }));
   }

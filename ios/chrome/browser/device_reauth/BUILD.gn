@@ -25,6 +25,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "ios_device_authenticator_unittest.mm" ]
   deps = [
+    "//base/test:test_proto",
     "//base/test:test_support",
     "//ios/chrome/browser/device_reauth:device_reauth",
     "//ios/chrome/test/app:test_support",

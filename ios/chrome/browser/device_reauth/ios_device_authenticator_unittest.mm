@@ -4,7 +4,12 @@
 
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 
+#import "base/run_loop.h"
+#import "base/task/single_thread_task_runner.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/mock_callback.h"
+#import "base/test/task_environment.h"
+#import "base/test/test.pb.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -18,7 +23,7 @@ class IOSDeviceAuthenticatorTest : public PlatformTest {
         mock_reauth_module_, &proxy_,
         device_reauth::DeviceAuthParams(
             base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill));
-    mock_reauth_module_.shouldReturnSynchronously = YES;
+    mock_reauth_module_.shouldSkipReAuth = YES;
     mock_reauth_module_.canAttemptWithBiometrics = YES;
     mock_reauth_module_.canAttempt = YES;
   }
@@ -52,49 +57,70 @@ class IOSDeviceAuthenticatorTest : public PlatformTest {
 // If the time that passed since the last successful authentication is smaller
 // than the auth valid period of time, no reauthentication is needed.
 TEST_F(IOSDeviceAuthenticatorTest, SkipReauthIfLessThanAuthValidPeriod) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   SimulateReauthSucceeded();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::RunLoop run_loop;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop.QuitClosure()));
+  run_loop.Run();
 
   SimulateReauthBypassed();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::RunLoop run_loop2;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop2.QuitClosure()));
+  run_loop2.Run();
 }
 
 // If the time that passed since the last successful authentication is larger
 // than the auth valid period of time, another reauthentication is needed (no
 // ReauthenticationResult::kSkipped returned from the ReauthenticationProtocol).
 TEST_F(IOSDeviceAuthenticatorTest, DoReauthIfMoreThanAuthValidPeriod) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   SimulateReauthSucceeded();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::RunLoop run_loop;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop.QuitClosure()));
+  run_loop.Run();
 
   SimulateReauthFailed();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
+  base::RunLoop run_loop2;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop2.QuitClosure()));
+  run_loop2.Run();
 }
 
 // If previous auth failed, another reauthentication is needed anyway.
 TEST_F(IOSDeviceAuthenticatorTest, DoReauthIfPreviousFailure) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   SimulateReauthFailed();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
+  base::RunLoop run_loop;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop.QuitClosure()));
+  run_loop.Run();
 
   SimulateReauthSucceeded();
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::RunLoop run_loop2;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"dummy message", result_callback().Get());
+      /*message=*/u"dummy message",
+      result_callback().Get().Then(run_loop2.QuitClosure()));
+  run_loop2.Run();
 }
 
 // Param of the IOSDeviceAuthenticatorAvailabilityTest:
