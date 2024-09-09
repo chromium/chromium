@@ -151,6 +151,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
     logging::SetLogMessageHandler(nullptr);                                    \
   } while (0)
 
+#if defined(OFFICIAL_BUILD)
 #if DCHECK_IS_ON()
 #define EXPECT_DUMP_WILL_BE_CHECK EXPECT_DCHECK
 #else
@@ -162,6 +163,9 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
                                    statement, expected_string "\n");        \
   } while (0)
 #endif  // DCHECK_IS_ON()
+#else
+#define EXPECT_DUMP_WILL_BE_CHECK EXPECT_CHECK
+#endif  // defined(OFFICIAL_BUILD)
 
 TEST(CheckDeathTest, Basics) {
   EXPECT_CHECK("Check failed: false. ", CHECK(false));

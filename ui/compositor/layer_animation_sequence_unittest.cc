@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -316,7 +317,7 @@ TEST(LayerAnimationSequenceTest, ToString) {
 // TODO(b/352744702): Remove this test or convert to DEATH test after
 // https://crrev.com/c/5713998 has rolled out and any cases like this have been
 // removed.
-#if !DCHECK_IS_ON()
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
 // Check that the sequence doesn't get stuck in an infinite loop when it's
 // repeating and has a total duration of zero.
 TEST(LayerAnimationSequenceTest, RepeatingWithZeroDuration) {

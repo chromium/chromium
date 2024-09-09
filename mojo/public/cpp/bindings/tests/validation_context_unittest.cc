@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/bindings/lib/validation_context.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <limits>
 
+#include "base/dcheck_is_on.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
-#include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -23,7 +25,7 @@ const void* ToPtr(uintptr_t ptr) {
   return reinterpret_cast<const void*>(ptr);
 }
 
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
 TEST(ValidationContextTest, ConstructorRangeOverflow) {
   {
     // Test memory range overflow.

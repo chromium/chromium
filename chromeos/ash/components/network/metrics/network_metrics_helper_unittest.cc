@@ -257,16 +257,16 @@ void LogVpnResult(const std::string& provider,
                   bool* failed_to_log_result) {
   ASSERT_NE(failed_to_log_result, nullptr);
 
-// Emitting a metric for an unknown VPN provider will always cause a NOTREACHED
-// to be hit. This can cause a CHECK to fail, depending on the build flags. We
-// catch any failing CHECK below by asserting that we will crash when emitting.
-#if DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+// Emitting a metric for an unknown VPN provider will always cause a
+// DUMP_WILL_BE_NOTREACHED() to be hit. This is fatal outside official builds,
+// so make sure that we die in those configurations.
+#if !defined(OFFICIAL_BUILD)
   if (provider == kTestUnknownVpn) {
     ASSERT_DEATH({ func.Run(); }, "");
     *failed_to_log_result = true;
     return;
   }
-#endif  // DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+#endif  // !defined(OFFICIAL_BUILD)
   func.Run();
 }
 

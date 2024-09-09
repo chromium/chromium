@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -741,11 +742,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetAppType()));
 }
 
-#if !DCHECK_IS_ON()
-// The following tests are disabled in DCHECK builds. LaunchSystemWebAppAsync
-// DCHECKs if it can't find a suitable profile. EXPECT_DCHECK_DEATH (or its
-// variants) aren't reliable in browsertests, so we don't test this. Here we
-// to verify LaunchSystemWebAppAsync doesn't crash in release builds
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+// The following tests are disabled outside official non-DCHECK builds.
+// LaunchSystemWebAppAsync hits a DUMP_WILL_BE_NOTREACHED() if it can't find a
+// suitable profile. EXPECT_NOTREACHED_DEATH isn't reliable in browser_tests, so
+// we don't test this. Here we verify LaunchSystemWebAppAsync doesn't crash
+// in official builds.
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
                        LaunchFromSignInProfile) {
   WaitForTestSystemAppInstall();
