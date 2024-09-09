@@ -3178,85 +3178,86 @@
         </message>
 
         <!-- Sanitize UI -->
-        <message name="IDS_SANITIZE" desc="Name of the Sanitize web app" translateable="false">
-          Sanitize
+        <message name="IDS_SANITIZE" desc="Name of the Safety reset web app">
+          Safety reset
         </message>
-        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window" translateable="false">
-          Your device is sanitized
+        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window">
+          Safety reset has been completed
         </message>
-        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog" translateable="false">
-          Your ChromeOS device was reset to safe defaults.
+        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog">
+          Your Chromebook was reset to safe defaults. You can adjust these changes anytime in Settings.
         </message>
-        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Description of how the user can roll back changes" translateable="false">
-          We made changes to make your device more secure, you can undo some of our changes below.
+        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Summary title">
+          Summary
         </message>
-        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the sanitize done dialog" translateable="false">
+        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the safety reset done dialog">
           Done
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" translateable="false">
-          Your Extensions
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" translateable="false">
-          Re-enable extensions you trust
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" translateable="false">
-          Your ChromeOS Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" translateable="false">
-          Verify your input method
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" translateable="false">
-          Check your current network
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" translateable="false">
-          Your Chrome Settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" translateable="false">
-          Verify your site content settings
-        </message>
-        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" translateable="false">
-          Check your Chrome startup preferences
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" translateable="false">
-          Verify the status of your homepage
-        </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" translateable="false">
-          Verify your language settings
-        </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" translateable="false">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" desc="Accordion title for extension resets">
           Extensions
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" translateable="false">
-          ChromeOS Input
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" desc="Instructions to re-enable extensions">
+          Only turn on extensions you trust
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" translateable="false">
-          ChromeOS Network
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" desc="Accordion title for ChromeOS resets">
+          ChromeOS Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" translateable="false">
-          Chrome Startup
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+          Input method
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" translateable="false">
-          Chrome Homepage
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+          Network
         </message>
-        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" translateable="false">
-          Chrome Languages
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" desc="Accordion title for Chrome resets">
+          Chrome Settings
         </message>
-        <message name="IDS_SANITIZE_HEADING" translateable="false" desc="Name of the 'Safety reset' window">
-          Sanitize your device
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+          Site content
         </message>
-        <message name="IDS_SANITIZE_DESCRIPTION" translateable="false" desc="Description of the sanitization feature on the sanitize window">
-          Getting unwanted pop-ups, or other unexpected behavior? Sometimes,
-          apps and extensions that you install can change your ChromeOS settings
-          without you knowing.
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+          Startup preferences
         </message>
-        <message name="IDS_SANITIZE_WARNING" translateable="false" desc="Warning text in the 'Sanitize' window">
-          This will disable extensions and reset your settings to safe defaults.
-          Tabs, files, and cookies will be preserved.
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+          Homepage
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+          Language
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" desc="Button label to redirect to Chrome Extensions page">
+          Extensions
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" desc="Button label to redirect to ChromeOS Input Settings">
+          Input settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" desc="Button label to redirect to ChromeOS Network Settings">
+          Network settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_SITE_CONTENT" desc="Button label to redirect to Chrome Site Content Settings">
+          Site content settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" desc="Button label to redirect to Chrome Startup Settings">
+          Startup settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" desc="Button label to redirect to Chrome Homepage Settings">
+          Homepage settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" desc="Button label to redirecto to Chrome Language Settings">
+          Language settings
+        </message>
+        <message name="IDS_SANITIZE_HEADING" desc="Name of the 'Safety reset' window">
+          Safety reset
+        </message>
+        <message name="IDS_SANITIZE_DESCRIPTION" desc="Description of the safety reset feature">
+          Safety reset can help remove unwanted pop-ups, fix network issues, and address other unexpected issues.
+        </message>
+        <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
+          Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
+          Your default search engine will be reset, but your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
         </message>
-        <message name="IDS_SANITIZE_CANCEL" translateable="false" desc="Button label to cancel proceeding with sanitize">
+        <message name="IDS_SANITIZE_CANCEL" desc="Button label to cancel proceeding with the safety reset">
           Cancel
         </message>
 
