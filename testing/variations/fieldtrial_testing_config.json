@@ -7374,7 +7374,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "dice-support": "enabled"
+                        "dice-support": "enabled",
+                        "exclusive-registration-path": ""
                     },
                     "enable_features": [
                         "EnableBoundSessionCredentials"
