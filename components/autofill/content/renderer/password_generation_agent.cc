@@ -471,9 +471,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
   const WebInputElement last_focused_password_element =
       password_agent_->last_queried_element().DynamicTo<WebInputElement>();
   if (!last_focused_password_element ||
-      last_focused_password_element.IsReadOnly() ||
-      last_focused_password_element.FormControlTypeForAutofill() !=
-          kInputPassword) {
+      last_focused_password_element.IsReadOnly()) {
     return false;
   }
 

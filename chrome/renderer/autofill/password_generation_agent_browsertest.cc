@@ -1019,6 +1019,32 @@ TEST_F(PasswordGenerationAgentTest,
   SelectGenerationFallbackAndExpect(true);
 }
 
+// Tests that manual generation can be triggered on a text field, if heuristics
+// signal that the field is a password field.
+TEST_F(PasswordGenerationAgentTest,
+       ManualGenerationIsTriggeredOnTextFieldWithHeuristic) {
+  // The field type is text, but has password mention in the id/name attribute.
+  LoadHTML(
+      R"(
+      <input type="text" id="username-field" name="username-field">
+      <input type="text" id="password-field" name="password-field">
+    )");
+
+  SimulateElementRightClick("password-field");
+  SelectGenerationFallbackAndExpect(true);
+
+  // Simulate that the user accepts a generated password.
+  std::u16string password = u"random_password";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
+  password_generation_->GeneratedPasswordAccepted(password);
+
+  WebInputElement password_element = GetInputElementById("password-field");
+  // Check that the password field is autofilled with the generated
+  // password.
+  EXPECT_EQ(password, password_element.Value().Utf16());
+  EXPECT_TRUE(password_element.IsAutofilled());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordGenerationAgentTest, PresavingGeneratedPassword) {

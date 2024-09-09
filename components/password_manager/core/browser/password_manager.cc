@@ -464,14 +464,14 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
-  if (manager) {
-    manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
-                                         password);
-  } else {
-    // OnPresaveGeneratedPassword records the histogram in all other cases.
-    UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
-                          true);
+  if (!manager) {
+    // Form manager might not be present at the time manual password generation
+    // is triggered.
+    manager = CreateFormManager(driver, form_data);
   }
+
+  manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
+                                       password);
 }
 
 void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,

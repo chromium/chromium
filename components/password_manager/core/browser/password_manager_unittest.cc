@@ -318,6 +318,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(void,
+              GeneratedPasswordAccepted,
+              (const std::u16string& password),
+              (override));
 };
 
 // Invokes the password store consumer with a single copy of |form|.
@@ -2878,6 +2882,23 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
       manager()->form_managers().front().get();
 
   EXPECT_TRUE(form_manager->HasGeneratedPassword());
+}
+
+// Tests that generation triggers `PasswordManager` to create
+// `PasswordFormManager` for the corresponding form.
+TEST_P(PasswordManagerTest, GenerationTriggersFormManagerCreation) {
+  FormData form(MakeSimpleFormData());
+  ASSERT_THAT(form.fields(), SizeIs(2));
+  EXPECT_TRUE(form.fields()[1].IsPasswordInputElement());
+  std::u16string generated_password;
+
+  EXPECT_CALL(driver_, GeneratedPasswordAccepted)
+      .WillOnce(SaveArg<0>(&generated_password));
+  manager()->OnGeneratedPasswordAccepted(
+      &driver_, form, form.fields()[1].renderer_id(), u"generated_password");
+
+  EXPECT_THAT(manager()->form_managers(), SizeIs(1));
+  EXPECT_EQ(generated_password, u"generated_password");
 }
 
 TEST_P(PasswordManagerTest, UpdateFormManagers) {
