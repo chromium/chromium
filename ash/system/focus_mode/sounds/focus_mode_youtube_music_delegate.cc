@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -79,24 +80,27 @@ void FocusModeYouTubeMusicDelegate::GetPlaylists(
   GetMusicSectionInternal();
 }
 
-bool FocusModeYouTubeMusicDelegate::ReportPlayback(
+void FocusModeYouTubeMusicDelegate::ReportPlayback(
     const youtube_music::PlaybackData& playback_data) {
   // Check for token and see if it has sufficient data for the reporting
   // request.
-  if (report_playback_state_.url_to_token.find(playback_data.url) ==
-      report_playback_state_.url_to_token.end()) {
-    return false;
+  const auto state_iterator = report_playback_states_.find(playback_data.url);
+  if (state_iterator == report_playback_states_.end() ||
+      !state_iterator->second.get()) {
+    return;
   }
 
-  report_playback_state_.url_to_playback_state.insert(
-      {playback_data.url, playback_data.state});
-  const std::string& playback_reporting_token =
-      report_playback_state_.url_to_token[playback_data.url];
+  ReportPlaybackRequestState& state = *state_iterator->second;
+  state.retry_state.Reset();
+  state.playback_state = playback_data.state;
+  if (state.staged_playback_data.has_value() &&
+      state.staged_playback_data->CanAggregateWithNewData(playback_data)) {
+    state.staged_playback_data.value().AggregateWithNewData(playback_data);
+  } else {
+    state.staged_playback_data = playback_data;
+  }
 
-  return youtube_music_controller_->ReportPlayback(
-      playback_reporting_token, playback_data,
-      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnReportPlaybackDone,
-                     weak_factory_.GetWeakPtr(), playback_data.url));
+  ReportPlaybackInternal(playback_data.url);
 }
 
 void FocusModeYouTubeMusicDelegate::SetNoPremiumCallback(
@@ -178,12 +182,6 @@ FocusModeYouTubeMusicDelegate::ReportPlaybackRequestState::
     ReportPlaybackRequestState() = default;
 FocusModeYouTubeMusicDelegate::ReportPlaybackRequestState::
     ~ReportPlaybackRequestState() = default;
-
-bool FocusModeYouTubeMusicDelegate::ReportPlaybackRequestState::
-    CanReportPlaybackForUrl(const GURL& url) {
-  return url_to_playback_state.find(url) != url_to_playback_state.end() &&
-         url_to_token.find(url) != url_to_token.end();
-}
 
 void FocusModeYouTubeMusicDelegate::GetPlaylistInternal(
     const GetPlaylistsRequestState::PlaylistType type) {
@@ -459,7 +457,10 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
         /*source_url=*/playback_context->stream_url,
         // YouTube Music requires playback reporting.
         /*enable_playback_reporting=*/true);
-    report_playback_state_.url_to_token[playback_context->stream_url] =
+    report_playback_states_.emplace(
+        playback_context->stream_url,
+        std::make_unique<ReportPlaybackRequestState>());
+    report_playback_states_.at(playback_context->stream_url)->token =
         playback_context->playback_reporting_token;
   }
 
@@ -471,20 +472,83 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
   next_track_state_.retry_state.Reset();
 }
 
+void FocusModeYouTubeMusicDelegate::ReportPlaybackInternal(const GURL& url) {
+  const auto state_iterator = report_playback_states_.find(url);
+  if (state_iterator == report_playback_states_.end() ||
+      !state_iterator->second.get()) {
+    return;
+  }
+
+  ReportPlaybackRequestState& state = *state_iterator->second;
+  youtube_music_controller_->ReportPlayback(
+      state.token, state.staged_playback_data.value(),
+      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnReportPlaybackDone,
+                     weak_factory_.GetWeakPtr(), url));
+}
+
 void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
     const GURL& url,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::string> new_playback_reporting_token) {
-  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
-        no_premium_callback_) {
-      no_premium_callback_.Run();
-    }
-    // TODO(b/354240276): Add more error handling and retries.
+  const auto state_iterator = report_playback_states_.find(url);
+  if (state_iterator == report_playback_states_.end() ||
+      !state_iterator->second.get()) {
     return;
   }
 
-  if (!report_playback_state_.CanReportPlaybackForUrl(url)) {
+  ReportPlaybackRequestState& state = *state_iterator->second;
+  const bool last_report =
+      state.playback_state == youtube_music::PlaybackState::kEnded ||
+      state.playback_state == youtube_music::PlaybackState::kSwitchedToNext;
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    // Handle forbidden error. No need for further attempts.
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
+      if (no_premium_callback_) {
+        no_premium_callback_.Run();
+      }
+
+      // Bail gracefully.
+      report_playback_states_.erase(url);
+      return;
+    }
+
+    // Handle too many request error. Retry if needed.
+    if (http_error_code == 429 &&
+        state.retry_state.retry_index < kMaxRetryTooManyRequests) {
+      state.retry_state.retry_index++;
+      state.retry_state.timer.Start(
+          FROM_HERE, kWaitTimeTooManyRequests,
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::ReportPlaybackInternal,
+                         weak_factory_.GetWeakPtr(), url));
+      return;
+    }
+
+    // Handle general HTTP errors. Retry if needed.
+    if (ShouldRetryHttpError(http_error_code) &&
+        state.retry_state.retry_index < kMaxRetryOverall) {
+      state.retry_state.retry_index++;
+      state.retry_state.timer.Start(
+          FROM_HERE, kWaitTimeTooManyRequests,
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::ReportPlaybackInternal,
+                         weak_factory_.GetWeakPtr(), url));
+      return;
+    }
+
+    // Bail gracefully. If it's the last report of the track, remove its local
+    // state; otherwise, reset the retry state for the next report so that the
+    // staged data could be aggregated into the new incoming data and still be
+    // reported.
+    if (last_report) {
+      report_playback_states_.erase(url);
+    } else {
+      state.retry_state.Reset();
+    }
+    return;
+  }
+
+  // When a track is completed, clear the local data.
+  if (last_report) {
+    report_playback_states_.erase(url);
     return;
   }
 
@@ -492,18 +556,15 @@ void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
   // the API server may return empty tokens when a track is completed.
   if (new_playback_reporting_token.has_value() &&
       !new_playback_reporting_token.value().empty()) {
-    report_playback_state_.url_to_token[url] =
-        new_playback_reporting_token.value();
+    state.token = new_playback_reporting_token.value();
   }
 
-  // When a track is completed, clear the local data.
-  if (report_playback_state_.url_to_playback_state.at(url) ==
-          youtube_music::PlaybackState::kEnded ||
-      report_playback_state_.url_to_playback_state.at(url) ==
-          youtube_music::PlaybackState::kSwitchedToNext) {
-    report_playback_state_.url_to_playback_state.erase(url);
-    report_playback_state_.url_to_token.erase(url);
-  }
+  // Commit finished playback data from staging area.
+  state.staged_playback_data.reset();
+
+  // For a successful request, reset the retry state so that it could handle
+  // failure correctly going forward.
+  state.retry_state.Reset();
 }
 
 }  // namespace ash

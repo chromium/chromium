@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_YOUTUBE_MUSIC_DELEGATE_H_
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -50,7 +51,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   void SetNoPremiumCallback(base::RepeatingClosure callback);
 
   // Reports music playback.
-  bool ReportPlayback(const youtube_music::PlaybackData& playback_data);
+  void ReportPlayback(const youtube_music::PlaybackData& playback_data);
 
   // Reserves a playlist for the returned playlists.
   void ReservePlaylistForGetPlaylists(const std::string& playlist_id);
@@ -117,16 +118,10 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     ReportPlaybackRequestState();
     ~ReportPlaybackRequestState();
 
-    // Checks if it can report the playback for `url`.
-    bool CanReportPlaybackForUrl(const GURL& url);
-
-    // URL to `PlaybackState` map. It contains all playback data for the
-    // requests.
-    base::flat_map<GURL, youtube_music::PlaybackState> url_to_playback_state;
-
-    // URL to playback reporting token map. It contains all tokens for the
-    // requests.
-    base::flat_map<GURL, std::string> url_to_token;
+    youtube_music::PlaybackState playback_state;
+    std::optional<youtube_music::PlaybackData> staged_playback_data;
+    std::string token;
+    FocusModeRetryState retry_state;
   };
 
   // Triggers request to query for specific playlist for the given bucket.
@@ -159,6 +154,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       google_apis::ApiErrorCode http_error_code,
       std::optional<const youtube_music::PlaybackContext> playback_context);
 
+  void ReportPlaybackInternal(const GURL& url);
+
   // Called when report playback request is done.
   void OnReportPlaybackDone(
       const GURL& url,
@@ -171,8 +168,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   // Next track request state for `GetPlaylists`.
   GetNextTrackRequestState next_track_state_;
 
-  // Report playback request state for `ReportPlayback`.
-  ReportPlaybackRequestState report_playback_state_;
+  // Report playback request state per track for `ReportPlayback`.
+  base::flat_map<GURL, std::unique_ptr<ReportPlaybackRequestState>>
+      report_playback_states_;
 
   // Callback to run when the request fails with HTTP 403.
   base::RepeatingClosure no_premium_callback_;
