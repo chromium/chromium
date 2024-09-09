@@ -62,7 +62,7 @@ public class TabUiUtils {
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.isIncognitoBranded();
 
-        if (hideTabGroups || isIncognito || !isSyncEnabled) {
+        if (hideTabGroups || isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
             filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
             Callback.runNullSafe(didCloseCallback, true);
         } else {
@@ -113,7 +113,7 @@ public class TabUiUtils {
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
-        if (isIncognito || !isSyncEnabled) {
+        if (isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
             for (Tab tab : tabs) {
                 filter.moveTabOutOfGroup(tab.getId());
             }
@@ -217,6 +217,8 @@ public class TabUiUtils {
                 TabGroupSyncUtils.getSavedTabGroupFromTabId(tabId, tabModel, tabGroupSyncService);
         if (savedTabGroup == null || TextUtils.isEmpty(savedTabGroup.collaborationId)) return;
 
+        assert actionConfirmationManager != null;
+
         actionConfirmationManager.processDeleteSharedGroupAttempt(
                 savedTabGroup.title,
                 (@ConfirmationResult Integer result) -> {
@@ -252,6 +254,8 @@ public class TabUiUtils {
         @Nullable
         CoreAccountInfo account = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (account == null) return;
+
+        assert actionConfirmationManager != null;
 
         actionConfirmationManager.processLeaveGroupAttempt(
                 savedTabGroup.title,

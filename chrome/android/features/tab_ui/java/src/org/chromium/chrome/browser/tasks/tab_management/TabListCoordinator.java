@@ -18,9 +18,11 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,7 +45,6 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -96,6 +97,10 @@ public class TabListCoordinator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
+    private final boolean mHasEmptyView;
+    private final @DrawableRes int mEmptyStateImageResId;
+    private final @StringRes int mEmptyStateHeadingResId;
+    private final @StringRes int mEmptyStateSubheadingResId;
     private final boolean mAllowDragAndDrop;
 
     private boolean mIsInitialized;
@@ -105,10 +110,6 @@ public class TabListCoordinator
     private ItemTouchHelper mItemTouchHelper;
     private OnItemTouchListener mOnItemTouchListener;
     private TabListEmptyCoordinator mTabListEmptyCoordinator;
-    private boolean mHasEmptyView;
-    private int mEmptyStateImageResId;
-    private int mEmptyStateHeadingResId;
-    private int mEmptyStateSubheadingResId;
     private boolean mIsEmptyViewInitialized;
     private @Nullable Runnable mAwaitingLayoutRunnable;
     private int mAwaitingTabId = Tab.INVALID_TAB_ID;
@@ -126,6 +127,7 @@ public class TabListCoordinator
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
+     * @param actionConfirmationManager An action confirmation manager.
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
      *     click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
@@ -142,6 +144,10 @@ public class TabListCoordinator
      *     file.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
+     * @param emptyImageResId Drawable resource for empty state.
+     * @param emptyHeadingStringResId String resource for empty heading.
+     * @param emptySubheadingStringResId String resource for empty subheading.
+     * @param onTabGroupCreation Runnable invoked on tab group creation
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      */
     TabListCoordinator(
@@ -152,50 +158,7 @@ public class TabListCoordinator
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
-            @Nullable
-                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
-            @TabActionState int initialTabActionState,
-            @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
-            @NonNull ViewGroup parentView,
-            boolean attachToParent,
-            String componentName,
-            @Nullable Callback<Object> onModelTokenChange,
-            boolean allowDragAndDrop) {
-        this(
-                mode,
-                context,
-                browserControlsStateProvider,
-                modalDialogManager,
-                tabModelFilterSupplier,
-                thumbnailProvider,
-                actionOnRelatedTabs,
-                gridCardOnClickListenerProvider,
-                dialogHandler,
-                initialTabActionState,
-                selectionDelegateProvider,
-                priceWelcomeMessageControllerSupplier,
-                parentView,
-                attachToParent,
-                componentName,
-                onModelTokenChange,
-                false,
-                0,
-                0,
-                0,
-                /* onTabGroupCreation= */ null,
-                /* allowDragAndDrop= */ allowDragAndDrop);
-    }
-
-    TabListCoordinator(
-            @TabListMode int mode,
-            Context context,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @Nullable ThumbnailProvider thumbnailProvider,
-            boolean actionOnRelatedTabs,
+            @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable
                     TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
@@ -207,9 +170,9 @@ public class TabListCoordinator
             String componentName,
             @Nullable Callback<Object> onModelTokenChange,
             boolean hasEmptyView,
-            int emptyImageResId,
-            int emptyHeadingStringResId,
-            int emptySubheadingStringResId,
+            @DrawableRes int emptyImageResId,
+            @StringRes int emptyHeadingStringResId,
+            @StringRes int emptySubheadingStringResId,
             @Nullable Runnable onTabGroupCreation,
             boolean allowDragAndDrop) {
         mMode = mode;
@@ -298,14 +261,6 @@ public class TabListCoordinator
                         mContext,
                         mMode == TabListMode.STRIP,
                         R.dimen.default_favicon_corner_radius);
-
-        TabModelFilter currentFilter = mCurrentTabModelFilterSupplier.get();
-        ActionConfirmationManager actionConfirmationManager =
-                new ActionConfirmationManager(
-                        currentFilter.getTabModel().getProfile().getOriginalProfile(),
-                        mContext,
-                        (TabGroupModelFilter) currentFilter,
-                        modalDialogManager);
 
         mMediator =
                 new TabListMediator(
@@ -397,13 +352,13 @@ public class TabListCoordinator
         }
 
         mHasEmptyView = hasEmptyView;
-        if (mHasEmptyView) {
+        mEmptyStateHeadingResId = emptyHeadingStringResId;
+        mEmptyStateSubheadingResId = emptySubheadingStringResId;
+        mEmptyStateImageResId = emptyImageResId;
+        if (hasEmptyView) {
             mTabListEmptyCoordinator =
                     new TabListEmptyCoordinator(
                             parentView, mModel, this::runOnItemAnimatorFinished);
-            mEmptyStateHeadingResId = emptyHeadingStringResId;
-            mEmptyStateSubheadingResId = emptySubheadingStringResId;
-            mEmptyStateImageResId = emptyImageResId;
         }
 
         configureRecyclerViewTouchHelpers(mMode, mTabActionState);

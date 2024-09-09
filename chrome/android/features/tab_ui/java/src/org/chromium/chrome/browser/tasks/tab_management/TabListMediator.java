@@ -355,7 +355,7 @@ class TabListMediator {
     private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
-    private @NonNull final ActionConfirmationManager mActionConfirmationManager;
+    private final @Nullable ActionConfirmationManager mActionConfirmationManager;
     private final Runnable mOnTabGroupCreation;
 
     private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
@@ -914,7 +914,7 @@ class TabListMediator {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @TabActionState int initialTabActionState,
-            @NonNull ActionConfirmationManager actionConfirmationManager,
+            @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable Runnable onTabGroupCreation) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -1118,7 +1118,9 @@ class TabListMediator {
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
-                        if (mActionsOnAllRelatedTabs || filter.isIncognito()) {
+                        if (mActionsOnAllRelatedTabs
+                                || filter.isIncognito()
+                                || mActionConfirmationManager == null) {
                             doCloseTab(tabId, closingTab, filter, /* allowUndo= */ true);
                             return;
                         }

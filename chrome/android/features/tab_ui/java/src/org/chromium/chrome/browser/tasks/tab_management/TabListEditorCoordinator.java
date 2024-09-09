@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -483,6 +484,7 @@ class TabListEditorCoordinator {
                         mCurrentTabModelFilterSupplier,
                         thumbnailProvider,
                         mDisplayGroups,
+                        /* actionConfirmationManager= */ null,
                         mGridCardOnClickListenerProvider,
                         /* dialogHandler= */ null,
                         mTabActionState,
@@ -491,7 +493,12 @@ class TabListEditorCoordinator {
                         mTabListEditorLayout,
                         /* attachToParent= */ false,
                         COMPONENT_NAME,
-                        null,
+                        /* onModelTokenChange= */ null,
+                        /* hasEmptyView= */ false,
+                        /* emptyImageResId= */ Resources.ID_NULL,
+                        /* emptyHeadingStringResId= */ Resources.ID_NULL,
+                        /* emptySubheadingStringResId= */ Resources.ID_NULL,
+                        /* onTabGroupCreation= */ null,
                         /* allowDragAndDrop= */ false);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.Gravity;
@@ -196,6 +197,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             currentTabModelFilterSupplier,
                             new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
+                            actionConfirmationManager,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
                             TabProperties.TabActionState.CLOSABLE,
@@ -205,6 +207,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* attachToParent= */ false,
                             mComponentName,
                             /* onModelTokenChange= */ null,
+                            /* hasEmptyView= */ false,
+                            /* emptyImageResId= */ Resources.ID_NULL,
+                            /* emptyHeadingStringResId= */ Resources.ID_NULL,
+                            /* emptySubheadingStringResId= */ Resources.ID_NULL,
+                            /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
