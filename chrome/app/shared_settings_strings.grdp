@@ -313,8 +313,8 @@
   <message name="IDS_SETTINGS_SAVED_TAB_GROUPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing saved tab groups between multiple browser instances.">
     Saved tab groups
   </message>
-  <message name="IDS_SETTINGS_PRODUCT_COMPARISONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing product specifications between multiple browser instances.">
-    Product specifications
+  <message name="IDS_SETTINGS_PRODUCT_COMPARISONS_CHECKBOX_LABEL" translateable="false" desc="Label for the checkbox which enables or disables syncing comparison tables between multiple browser instances.">
+    Comparison tables
   </message>
   <message name="IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of Wi-Fi networks across devices.">
     Wi-Fi networks
