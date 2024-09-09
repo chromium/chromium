@@ -3187,6 +3187,13 @@
       name: "PointerEventTargetsInEventLists",
       status: "stable",
     },
+    // TODO(crbug.com/364669918) This enables these two new functionalities:
+    // 1. add an imperative way to set invoker relationships between popovers.
+    // 2. invoker relationships create implicit anchor element references.
+    {
+      name: "PopoverAnchorRelationships",
+      status: "experimental",
+    },
     // This is a killswitch for the behavior of <dialog popover autofocus>,
     // which landed in M130 and can be removed in M132.
     {

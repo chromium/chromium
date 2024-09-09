@@ -463,6 +463,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/media/html_media_element.idl",
   "//third_party/blink/renderer/core/html/media/html_video_element.idl",
   "//third_party/blink/renderer/core/html/media/media_error.idl",
+  "//third_party/blink/renderer/core/html/popover_options.idl",
   "//third_party/blink/renderer/core/html/time_ranges.idl",
   "//third_party/blink/renderer/core/html/track/audio_track.idl",
   "//third_party/blink/renderer/core/html/track/audio_track_list.idl",
