@@ -249,11 +249,6 @@
 #define IDC_CARET_BROWSING_TOGGLE      40260
 #define IDC_CHROME_TIPS                40263
 #define IDC_CHROME_WHATS_NEW           40264
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define IDC_LACROS_DATA_MIGRATION      40265
-#endif
-
 #define IDC_PERFORMANCE                             40266
 #define IDC_EXTENSIONS_SUBMENU                         40267
 #define IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS       40268

@@ -231,13 +231,6 @@ std::u16string GetUpgradeDialogTitleText() {
   return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the menu item name for Lacros data migration.
-std::u16string GetLacrosDataMigrationMenuItemName() {
-  return l10n_util::GetStringUTF16(IDS_LACROS_DATA_MIGRATION_RELAUNCH);
-}
-#endif
-
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
 std::u16string GetInstallPWALabel(const Browser* browser) {
@@ -1061,11 +1054,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     case IDC_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_LACROS_DATA_MIGRATION:
-      LogMenuAction(MENU_ACTION_LACROS_DATA_MIGRATION);
-      break;
-#endif
     case IDC_NEW_TAB:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.NewTab", delta);
@@ -1739,7 +1727,6 @@ void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
   DCHECK_EQ(0u, GetItemCount());
 
-  bool need_separator = false;
   if (app_menu_icon_controller_ &&
       app_menu_icon_controller_->GetTypeAndSeverity().type ==
           AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
@@ -1752,15 +1739,10 @@ void AppMenuModel::Build() {
                       update_icon);
       AddSeparator(ui::SPACING_SEPARATOR);
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    AddItemWithIcon(IDC_LACROS_DATA_MIGRATION,
-                    GetLacrosDataMigrationMenuItemName(), update_icon);
-    need_separator = true;
-#endif
   }
 
   if (AddSafetyHubMenuItem() || AddGlobalErrorMenuItems() ||
-      AddDefaultBrowserMenuItems() || need_separator) {
+      AddDefaultBrowserMenuItems()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 

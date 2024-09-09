@@ -122,7 +122,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/browser_data_migration/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
@@ -939,31 +938,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
                           chrome::kSafetyHubSubPage);
       break;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_LACROS_DATA_MIGRATION: {
-      auto* user_manager = user_manager::UserManager::Get();
-      const auto* user = user_manager->GetPrimaryUser();
-      DCHECK(user);
-      // Unset local state holding the internal state of the previous migration
-      // attempts used to avoid the infinite loop of the migration.
-      // Because user explicitly triggered the migration so we should try to
-      // run it always.
-      ash::BrowserDataMigratorImpl::ClearMigrationStep(
-          user_manager->GetLocalState());
-      ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
-          user_manager->GetLocalState(), user->username_hash());
-      ash::BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-          user->GetAccountId(), user->username_hash(),
-          base::BindOnce(
-              [](bool result, const std::optional<uint64_t>& required_size) {
-                if (!result && required_size.has_value())
-                  ash::OpenBrowserDataMigrationErrorDialog(*required_size);
-              }));
-      break;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     case IDC_HELP_PAGE_VIA_KEYBOARD:
       ShowHelp(browser_, HELP_SOURCE_KEYBOARD);
       break;
@@ -1436,9 +1410,6 @@ void BrowserCommandController::InitCommandState() {
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_.UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);
   command_updater_.UpdateCommandEnabled(IDC_SET_BROWSER_AS_DEFAULT, true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  command_updater_.UpdateCommandEnabled(IDC_LACROS_DATA_MIGRATION, true);
-#endif
 
   // Safety Hub commands.
   command_updater_.UpdateCommandEnabled(
