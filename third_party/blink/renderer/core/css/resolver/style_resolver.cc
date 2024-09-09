@@ -521,7 +521,9 @@ void StyleResolver::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
   tracker_ = tracker;
 }
 
-static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
+namespace {
+
+inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   TreeScope* tree_scope = &element.GetTreeScope();
   if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
     DCHECK(!element.IsVTTElement());
@@ -531,7 +533,7 @@ static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   return nullptr;
 }
 
-static inline ScopedStyleResolver* ParentScopedResolverFor(
+inline ScopedStyleResolver* ParentScopedResolverFor(
     const Element& element,
     bool* parent_scope_contains_style_attribute) {
   // Rules for ::cue and custom pseudo elements like
@@ -569,9 +571,9 @@ static inline ScopedStyleResolver* ParentScopedResolverFor(
 // Matches :host and :host-context rules if the element is a shadow host.
 // It matches rules from the ShadowHostRules of the ScopedStyleResolver
 // of the attached shadow root.
-static void MatchHostRules(const Element& element,
-                           ElementRuleCollector& collector,
-                           StyleRuleUsageTracker* tracker) {
+void MatchHostRules(const Element& element,
+                    ElementRuleCollector& collector,
+                    StyleRuleUsageTracker* tracker) {
   ShadowRoot* shadow_root = element.GetShadowRoot();
   ScopedStyleResolver* resolver =
       shadow_root ? shadow_root->GetScopedStyleResolver() : nullptr;
@@ -585,12 +587,12 @@ static void MatchHostRules(const Element& element,
       CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
 }
 
-static void MatchSlottedRules(const Element&,
-                              ElementRuleCollector&,
-                              StyleRuleUsageTracker* tracker);
-static void MatchSlottedRulesForUAHost(const Element& element,
-                                       ElementRuleCollector& collector,
-                                       StyleRuleUsageTracker* tracker) {
+void MatchSlottedRules(const Element&,
+                       ElementRuleCollector&,
+                       StyleRuleUsageTracker* tracker);
+void MatchSlottedRulesForUAHost(const Element& element,
+                                ElementRuleCollector& collector,
+                                StyleRuleUsageTracker* tracker) {
   if (element.ShadowPseudoId() !=
       shadow_element_names::kPseudoInputPlaceholder) {
     return;
@@ -625,9 +627,9 @@ static void MatchSlottedRulesForUAHost(const Element& element,
 // scope. If that slot is itself slotted it will match rules in the slot's
 // slot's scope and so on. The result is that it considers a chain of scopes
 // descending from the element's own scope.
-static void MatchSlottedRules(const Element& element,
-                              ElementRuleCollector& collector,
-                              StyleRuleUsageTracker* tracker) {
+void MatchSlottedRules(const Element& element,
+                       ElementRuleCollector& collector,
+                       StyleRuleUsageTracker* tracker) {
   MatchSlottedRulesForUAHost(element, collector, tracker);
   HeapVector<std::pair<Member<HTMLSlotElement>, Member<ScopedStyleResolver>>>
       resolvers;
@@ -655,7 +657,7 @@ static void MatchSlottedRules(const Element& element,
   }
 }
 
-const static TextTrack* GetTextTrackFromElement(const Element& element) {
+const TextTrack* GetTextTrackFromElement(const Element& element) {
   if (auto* vtt_element = DynamicTo<VTTElement>(element)) {
     return vtt_element->GetTrack();
   }
@@ -665,9 +667,9 @@ const static TextTrack* GetTextTrackFromElement(const Element& element) {
   return nullptr;
 }
 
-static void MatchVTTRules(const Element& element,
-                          ElementRuleCollector& collector,
-                          StyleRuleUsageTracker* tracker) {
+void MatchVTTRules(const Element& element,
+                   ElementRuleCollector& collector,
+                   StyleRuleUsageTracker* tracker) {
   const TextTrack* text_track = GetTextTrackFromElement(element);
   if (!text_track) {
     return;
@@ -692,53 +694,9 @@ static void MatchVTTRules(const Element& element,
   }
 }
 
-// Matches rules from the element's scope. The selectors may cross shadow
-// boundaries during matching, like for :host-context.
-static void MatchElementScopeRules(const Element& element,
-                                   ElementRuleCollector& collector,
-                                   StyleRuleUsageTracker* tracker) {
-  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
-  bool parent_scope_contains_style_attribute = false;
-  ScopedStyleResolver* parent_scope_resolver =
-      ParentScopedResolverFor(element, &parent_scope_contains_style_attribute);
-  bool did_begin_for_scope = false;
-  if (element_scope_resolver) {
-    collector.ClearMatchedRules();
-    DCHECK_EQ(&element_scope_resolver->GetTreeScope(), &element.GetTreeScope());
-    collector.BeginAddingAuthorRulesForTreeScope(
-        element_scope_resolver->GetTreeScope());
-    did_begin_for_scope = true;
-    element_scope_resolver->CollectMatchingElementScopeRules(collector);
-    collector.SortAndTransferMatchedRules(
-        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
-  }
-
-  if (parent_scope_resolver && parent_scope_contains_style_attribute) {
-    // NOTE: This block is duplicated below, for the case of
-    // parent_scope_contains_style_attribute being false.
-    //
-    // TODO(crbug.com/1479329): Pseudo elements matching elements inside
-    // UA shadow trees (::-internal-*, ::-webkit-*, ::placeholder, etc.,
-    // although not ::cue) should end up in the same cascade context as
-    // other rules from an outer tree (like ::part() rules), and
-    // collected separately from the element's tree scope. That should
-    // remove the need for the ParentScopedResolver() here.
-    collector.ClearMatchedRules();
-    collector.BeginAddingAuthorRulesForTreeScope(
-        parent_scope_resolver->GetTreeScope());
-    did_begin_for_scope = true;
-    parent_scope_resolver->CollectMatchingElementScopeRules(collector);
-    collector.SortAndTransferMatchedRules(
-        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
-  }
-
-  if (!did_begin_for_scope) {
-    // TODO(dbaron): Does the choice of scope here matter?  (If so,
-    // should the second "did_begin_for_scope = true" above instead
-    // assign false?)
-    collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
-  }
-
+void MatchStyleAttributeAndVTTRules(const Element& element,
+                                    ElementRuleCollector& collector,
+                                    StyleRuleUsageTracker* tracker) {
   MatchVTTRules(element, collector, tracker);
   if (element.IsStyledElement() && element.InlineStyle() &&
       collector.GetPseudoId() == kPseudoIdNone) {
@@ -756,10 +714,37 @@ static void MatchElementScopeRules(const Element& element,
         element.InlineStyle(), CascadeOrigin::kAuthor,
         is_inline_style_cacheable, true /* is_inline_style */);
   }
+}
 
-  if (parent_scope_resolver && !parent_scope_contains_style_attribute) {
-    // NOTE: This block is duplicated above, for the case of
-    // parent_scope_contains_style_attribute being true.
+// Matches rules from the element's scope. The selectors may cross shadow
+// boundaries during matching, like for :host-context.
+void MatchElementScopeRules(const Element& element,
+                            ElementRuleCollector& collector,
+                            StyleRuleUsageTracker* tracker) {
+  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
+  bool parent_scope_contains_style_attribute = false;
+  ScopedStyleResolver* parent_scope_resolver =
+      ParentScopedResolverFor(element, &parent_scope_contains_style_attribute);
+  collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
+  if (element_scope_resolver) {
+    collector.ClearMatchedRules();
+    DCHECK_EQ(&element_scope_resolver->GetTreeScope(), &element.GetTreeScope());
+    element_scope_resolver->CollectMatchingElementScopeRules(collector);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
+  }
+
+  if (!parent_scope_contains_style_attribute) {
+    MatchStyleAttributeAndVTTRules(element, collector, tracker);
+  }
+
+  if (parent_scope_resolver) {
+    // TODO(crbug.com/1479329): Pseudo elements matching elements inside
+    // UA shadow trees (::-internal-*, ::-webkit-*, ::placeholder, etc.,
+    // although not ::cue) should end up in the same cascade context as
+    // other rules from an outer tree (like ::part() rules), and
+    // collected separately from the element's tree scope. That should
+    // remove the need for the ParentScopedResolver() here.
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(
         parent_scope_resolver->GetTreeScope());
@@ -767,7 +752,13 @@ static void MatchElementScopeRules(const Element& element,
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
+
+  if (parent_scope_contains_style_attribute) {
+    MatchStyleAttributeAndVTTRules(element, collector, tracker);
+  }
 }
+
+}  // namespace
 
 void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
