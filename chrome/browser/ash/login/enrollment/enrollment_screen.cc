@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -1026,8 +1025,13 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   signin_artifacts_.reset();
 
   CHECK(LoginDisplayHost::default_host());
-  CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
-      .user_context = std::move(user_context);
+  WizardContext* wizard_context =
+      LoginDisplayHost::default_host()->GetWizardContext();
+  CHECK(wizard_context);
+  // Make sure we aren't overwriting any existing information.
+  CHECK(!wizard_context->user_context);
+  wizard_context->user_context = std::move(user_context);
+  wizard_context->add_user_from_cached_credentials = true;
 
   return true;
 }

@@ -447,8 +447,11 @@ bool GaiaScreen::MaybeLoginWithCachedCredentials() {
   CHECK(wizard_context);
 
   UserContext* user_context = wizard_context->user_context.get();
-  if (!user_context || user_context->GetAccountId().empty() ||
-      !user_context->GetPassword() || user_context->GetRefreshToken().empty()) {
+  const bool user_context_available =
+      user_context && !user_context->GetAccountId().empty() &&
+      user_context->GetPassword() && !user_context->GetRefreshToken().empty();
+  if (!wizard_context->add_user_from_cached_credentials ||
+      !user_context_available) {
     return false;
   }
 
@@ -458,6 +461,8 @@ bool GaiaScreen::MaybeLoginWithCachedCredentials() {
     view_->ToggleLoadingUI(true);
     view_->Show();
   }
+
+  wizard_context->add_user_from_cached_credentials = false;
   LoginDisplayHost::default_host()->CompleteLogin(
       *std::move(wizard_context->user_context));
 

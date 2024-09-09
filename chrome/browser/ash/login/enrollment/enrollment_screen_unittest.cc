@@ -519,6 +519,7 @@ TEST_F(EnrollmentAddUserTest,
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
 
+  EXPECT_TRUE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_TRUE(user_context);
   EXPECT_EQ(user_context->GetAccountId().GetUserEmail(), kTestUserEmail);
@@ -545,6 +546,7 @@ TEST_F(EnrollmentAddUserTest,
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
 
+  EXPECT_FALSE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_FALSE(user_context);
 }
@@ -565,6 +567,7 @@ TEST_F(EnrollmentAddUserTest,
 
   UserCancel();
 
+  EXPECT_FALSE(wizard_context().add_user_from_cached_credentials);
   UserContext* user_context = wizard_context().user_context.get();
   EXPECT_FALSE(user_context);
 }

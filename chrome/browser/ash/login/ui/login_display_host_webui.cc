@@ -20,7 +20,6 @@
 #include "ash/shell.h"
 #include "ash/utility/wm_util.h"
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -49,6 +48,7 @@
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -238,6 +238,21 @@ void MaybeShutdownLoginDisplayHostWebUI() {
   }
 }
 
+// Safely check if the UserContext is stored in the WizardContext;
+bool ShouldPreserveUserContext() {
+  if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
+      !LoginDisplayHost::default_host()) {
+    return false;
+  }
+  WizardContext* wizard_context =
+      LoginDisplayHost::default_host()->GetWizardContext();
+  if (!wizard_context || !wizard_context->add_user_from_cached_credentials ||
+      !wizard_context->user_context) {
+    return false;
+  }
+  return true;
+}
+
 // ShowLoginWizard is split into two parts. This function is sometimes called
 // from TriggerShowLoginWizardFinish() directly, and sometimes from
 // OnLanguageSwitchedCallback() (if locale was updated).
@@ -255,14 +270,12 @@ void ShowLoginWizardFinish(
 
   std::unique_ptr<UserContext> user_context;
   if (ShouldShowSigninScreen(first_screen)) {
-    if (features::IsOobeAddUserDuringEnrollmentEnabled() &&
-        LoginDisplayHost::default_host() &&
-        CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
-            .user_context) {
+    if (ShouldPreserveUserContext()) {
       // Move the user context to the local variable before it's destroyed.
-      user_context = std::move(
-          CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
-              .user_context);
+      WizardContext* wizard_context =
+          LoginDisplayHost::default_host()->GetWizardContext();
+      CHECK(wizard_context);
+      user_context = std::move(wizard_context->user_context);
     }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
@@ -301,8 +314,10 @@ void ShowLoginWizardFinish(
 
   if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
     // Restore the user context within the wizard context.
-    CHECK_DEREF(display_host->GetWizardContext()).user_context =
-        std::move(user_context);
+    WizardContext* wizard_context = display_host->GetWizardContext();
+    CHECK(wizard_context);
+    wizard_context->user_context = std::move(user_context);
+    wizard_context->add_user_from_cached_credentials = true;
   }
 
   // Restore system timezone.
