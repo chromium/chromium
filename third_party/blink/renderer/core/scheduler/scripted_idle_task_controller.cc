@@ -258,6 +258,12 @@ void ScriptedIdleTaskController::SchedulerTimeoutTask(CallbackId id) {
     return;
   }
 
+  // This task uses `blink::TaskType::kIdleTask` which has freezable and
+  // pauseable `blink::scheduler::MainThreadTaskQueue::QueueTraits`, so it
+  // shouldn't be scheduled while paused.
+  CHECK(!paused_, base::NotFatalUntil::M133);
+
+  // TODO(crbug.com/365114039): Remove this in M133 if the above CHECK holds.
   if (paused_) {
     // Reschedule when unpaused.
     idle_tasks_with_expired_timeout_.push_back(id);

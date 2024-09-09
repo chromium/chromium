@@ -321,36 +321,6 @@ TEST_P(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
   EXPECT_EQ(1u, scheduler_->GetNumIdleTasks());
 }
 
-TEST_P(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
-  InitializeScheduler(ShouldYield(true));
-
-  // Register an idle task with a deadline.
-  Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
-  IdleRequestOptions* options = IdleRequestOptions::Create();
-  options->setTimeout(1);
-  int id = GetController()->RegisterCallback(idle_task, options);
-  EXPECT_NE(0, id);
-
-  // Hitting the deadline while the frame is paused shouldn't cause any tasks to
-  // run.
-  GetController()->ContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kPaused);
-  EXPECT_CALL(*idle_task, invoke(testing::_)).Times(0);
-  scheduler_->AdvanceTimeAndRun(base::Milliseconds(1));
-  testing::Mock::VerifyAndClearExpectations(idle_task);
-
-  // Even if we unpause, no tasks should run immediately.
-  EXPECT_CALL(*idle_task, invoke(testing::_)).Times(0);
-  GetController()->ContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kRunning);
-  testing::Mock::VerifyAndClearExpectations(idle_task);
-
-  // Idle callback should have been scheduled as an asynchronous task.
-  EXPECT_CALL(*idle_task, invoke(testing::_)).Times(1);
-  scheduler_->AdvanceTimeAndRun(base::Milliseconds(0));
-  testing::Mock::VerifyAndClearExpectations(idle_task);
-}
-
 TEST_P(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
   InitializeScheduler(ShouldYield(false));
 
