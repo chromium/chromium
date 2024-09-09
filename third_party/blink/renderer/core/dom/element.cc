@@ -9552,6 +9552,12 @@ void Element::MapLanguageAttributeToLocale(const AtomicString& value,
 void Element::LogAddElementIfIsolatedWorldAndInDocument(
     const char element[],
     const QualifiedName& attr1) {
+  // TODO(crbug.com/361461518): Investigate the root cause of execution context
+  // is unexpectedly null.
+  if (!GetDocument().GetExecutionContext()) {
+    return;
+  }
+
   if (!isConnected() ||
       !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
