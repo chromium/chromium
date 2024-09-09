@@ -2487,7 +2487,7 @@ deps = {
   'src/third_party/swift-format': {
       'packages': [
           {
-              'package': 'infra/3pp/tools/swift-format/${{platform}}',
+              'package': 'infra/3pp/tools/swift-format/mac-${{arch}}',
               'version': 'version:2@505.chromium.1',
           },
       ],
