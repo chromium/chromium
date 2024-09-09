@@ -102,7 +102,7 @@ class MODULES_EXPORT AudioContext final
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
   double outputLatency() const;
-  Member<V8UnionAudioSinkInfoOrString> sinkId() const { return v8_sink_id_; }
+  V8UnionAudioSinkInfoOrString* sinkId() const { return v8_sink_id_.Get(); }
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sinkchange, kSinkchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   AudioTimestamp* getOutputTimestamp(ScriptState*) const;
