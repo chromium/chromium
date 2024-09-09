@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
@@ -206,7 +207,8 @@ void LogPredictionMetrics(
     AutofillMetrics::LogOverallPredictionQualityMetrics(
         form_interactions_ukm_logger, form, *field, metric_type);
     AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
-    autofill_metrics::LogShadowPredictionComparison(*field);
+    autofill_metrics::LogShadowPredictionComparison(*field,
+                                                    GetActiveHeuristicSource());
   }
 }
 

@@ -40,9 +40,10 @@ ShadowPredictionComparison GetBaseComparison(
   }
 }
 
-void LogRegexShadowPredictions(const AutofillField& field) {
+void LogRegexShadowPredictions(const AutofillField& field,
+                               HeuristicSource active_source) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() == HeuristicSource::kDefault) {
+  if (active_source == HeuristicSource::kDefault) {
     base::UmaHistogramSparse(
         "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
         GetShadowPrediction(field.heuristic_type(), field.server_type(),
@@ -52,7 +53,7 @@ void LogRegexShadowPredictions(const AutofillField& field) {
   // If the experimental source is active, emit shadow predictions against the
   // default patterns. `FormStructure::DetermineNonActiveHeuristicTypes()`
   // ensures that they were computed.
-  if (GetActiveHeuristicSource() == HeuristicSource::kExperimental) {
+  if (active_source == HeuristicSource::kExperimental) {
     base::UmaHistogramSparse(
         "Autofill.ShadowPredictions.ExperimentalToDefault",
         GetShadowPrediction(
@@ -107,8 +108,9 @@ int GetShadowPrediction(FieldType current,
   return encoding;
 }
 
-void LogShadowPredictionComparison(const AutofillField& field) {
-  LogRegexShadowPredictions(field);
+void LogShadowPredictionComparison(const AutofillField& field,
+                                   HeuristicSource active_source) {
+  LogRegexShadowPredictions(field, active_source);
   LogMlShadowPredictions(field);
 }
 

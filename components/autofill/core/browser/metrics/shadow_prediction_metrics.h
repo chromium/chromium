@@ -41,7 +41,10 @@ int GetShadowPrediction(FieldType current,
 
 // Logs Autofill.ShadowPredictions.* metrics by comparing the submitted
 // values to the actual and hypothetical predictions.
-void LogShadowPredictionComparison(const AutofillField& field);
+// Unfortunately, this code cannot rely on `GetActiveHeuristicSource()` because
+// tests need to simulate that experimental patterns are active.
+void LogShadowPredictionComparison(const AutofillField& field,
+                                   HeuristicSource active_source);
 
 }  // namespace autofill::autofill_metrics
 
