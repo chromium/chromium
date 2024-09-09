@@ -54,7 +54,7 @@ void MatchingTypesTest(const std::u16string& number,
     SCOPED_TRACE(::testing::Message() << "test.input: " << test.input);
     FieldTypeSet matching_types;
     phone_number.GetMatchingTypesWithProfileSources(test.input, kLocale,
-                                                    &matching_types);
+                                                    &matching_types, nullptr);
     EXPECT_EQ(matching_types, test.expected_types);
   }
 }

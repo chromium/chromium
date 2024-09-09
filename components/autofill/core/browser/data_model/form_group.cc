@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/profile_value_source.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 
 namespace autofill {
@@ -17,7 +18,8 @@ namespace autofill {
 void FormGroup::GetMatchingTypesWithProfileSources(
     const std::u16string& text,
     const std::string& app_locale,
-    FieldTypeSet* matching_types) const {
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
   if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
     return;

@@ -113,7 +113,8 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
 void PhoneNumber::GetMatchingTypesWithProfileSources(
     const std::u16string& text,
     const std::string& app_locale,
-    FieldTypeSet* matching_types) const {
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
   // Strip the common phone number non numerical characters before calling the
   // base matching type function. For example, the |text| "(514) 121-1523"
   // would become the stripped text "5141211523". Since the base matching
@@ -121,8 +122,8 @@ void PhoneNumber::GetMatchingTypesWithProfileSources(
   // data, some domain specific cases will be covered below.
   std::u16string stripped_text = text;
   base::RemoveChars(stripped_text, u" .()-", &stripped_text);
-  FormGroup::GetMatchingTypesWithProfileSources(stripped_text, app_locale,
-                                                matching_types);
+  FormGroup::GetMatchingTypesWithProfileSources(
+      stripped_text, app_locale, matching_types, profile_value_sources);
 
   // TODO(crbug.com/41236729): Investigate the use of PhoneNumberUtil when
   // matching phone numbers for upload.

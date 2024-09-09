@@ -569,9 +569,10 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
 void CreditCard::GetMatchingTypesWithProfileSources(
     const std::u16string& text,
     const std::string& app_locale,
-    FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypesWithProfileSources(text, app_locale,
-                                                matching_types);
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
+  FormGroup::GetMatchingTypesWithProfileSources(
+      text, app_locale, matching_types, profile_value_sources);
 
   std::u16string card_number = GetInfo(CREDIT_CARD_NUMBER, app_locale);
   if (!card_number.empty()) {

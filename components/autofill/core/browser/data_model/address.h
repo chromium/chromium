@@ -36,7 +36,8 @@ class Address : public FormGroup {
   void GetMatchingTypesWithProfileSources(
       const std::u16string& text,
       const std::string& locale,
-      FieldTypeSet* matching_types) const override;
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const override;
 
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting
