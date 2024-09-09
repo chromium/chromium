@@ -287,6 +287,9 @@ void PickerSearchResultsView::AddResultToSection(
 
   if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  } else if (auto* image_item_view =
+                 views::AsViewClass<PickerImageItemView>(view)) {
+    image_item_view->SetAction(delegate_->GetActionForResult(result));
   }
 }
 

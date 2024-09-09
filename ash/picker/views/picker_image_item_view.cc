@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -26,16 +28,38 @@ PickerImageItemView::PickerImageItemView(
     std::u16string accessible_name,
     SelectItemCallback select_item_callback)
     : PickerItemView(std::move(select_item_callback),
-                     FocusIndicatorStyle::kFocusRingWithInsetGap) {
+                     FocusIndicatorStyle::kFocusRingWithInsetGap),
+      accessible_name_(std::move(accessible_name)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerImageItemCornerRadius);
-  GetViewAccessibility().SetName(std::move(accessible_name));
+  GetViewAccessibility().SetName(accessible_name_);
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);
 }
 
 PickerImageItemView::~PickerImageItemView() = default;
+
+void PickerImageItemView::SetAction(PickerActionType action) {
+  switch (action) {
+    case PickerActionType::kDo:
+      GetViewAccessibility().SetName(accessible_name_);
+      break;
+    case PickerActionType::kInsert:
+      GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+          IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME,
+          accessible_name_));
+      break;
+    case PickerActionType::kOpen:
+      GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+          IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME, accessible_name_));
+      break;
+    case PickerActionType::kCreate:
+      // TODO: b/345303965 - Add internal strings for Create.
+      GetViewAccessibility().SetName(accessible_name_);
+      break;
+  }
+}
 
 BEGIN_METADATA(PickerImageItemView)
 END_METADATA

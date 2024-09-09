@@ -576,6 +576,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title1", base::DoNothing()));
+  item->SetAction(ash::PickerActionType::kInsert);
   section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
       std::make_unique<views::ImageView>(
           ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
@@ -583,8 +584,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([item]() { item->RequestFocus(); });
 
-  // TODO: b/362129770 - Announce the action as well.
-  sm_.ExpectSpeechPattern("title1");
+  sm_.ExpectSpeechPattern("Insert title1");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 1");
   sm_.ExpectSpeechPattern("Table Image Row, 1 by 3");
@@ -640,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title1", base::DoNothing()));
+  item->SetAction(ash::PickerActionType::kInsert);
   section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
       std::make_unique<views::ImageView>(
           ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
@@ -651,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([item]() { item->RequestFocus(); });
 
-  // TODO: b/362129770 - Announce the action as well.
-  sm_.ExpectSpeechPattern("title1");
+  sm_.ExpectSpeechPattern("Insert title1");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
   sm_.ExpectSpeechPattern("1 of 3");

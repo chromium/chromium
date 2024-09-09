@@ -18,6 +18,7 @@
 #include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -222,6 +223,9 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
 
   if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  } else if (auto* image_item_view =
+                 views::AsViewClass<PickerImageItemView>(view)) {
+    image_item_view->SetAction(delegate_->GetActionForResult(result));
   }
 }
 
