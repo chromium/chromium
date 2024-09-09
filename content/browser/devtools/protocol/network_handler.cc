@@ -2257,8 +2257,6 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
       // is marked as successful and no blocking reason is reported.
       NOTREACHED_IN_MIGRATION();
       return protocol::Network::BlockedReasonEnum::Other;
-    case blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
-      return protocol::Network::BlockedReasonEnum::Other;
   }
   NOTREACHED_IN_MIGRATION();
   return protocol::Network::BlockedReasonEnum::Other;

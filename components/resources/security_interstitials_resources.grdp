@@ -10,6 +10,7 @@
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_HTML" file="../security_interstitials/content/resources/connection_help.html" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_CSS" file="../security_interstitials/content/resources/connection_help.css" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_JS" file="${root_gen_dir}/components/security_interstitials/content/resources/tsc/connection_help.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_SECURITY_INTERSTITIAL_SUPERVISED_USER_HTML" file="../security_interstitials/core/browser/resources/interstitial_webview_supervised_user.html" flattenhtml="true" type="BINDATA" />
   <include name="IDR_KNOWN_INTERCEPTION_HTML" file="../security_interstitials/content/resources/known_interception_disclosure.html" type="BINDATA" />
   <include name="IDR_KNOWN_INTERCEPTION_CSS" file="../security_interstitials/content/resources/known_interception_disclosure.css" type="BINDATA" />
   <include name="IDR_KNOWN_INTERCEPTION_ICON_1X_PNG" file="../security_interstitials/core/browser/resources/images/1x/triangle_red.png" type="BINDATA" />

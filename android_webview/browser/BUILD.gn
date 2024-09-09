@@ -220,6 +220,8 @@ source_set("browser") {
     "sensitive_content/aw_sensitive_content_client.h",
     "state_serializer.cc",
     "state_serializer.h",
+    "supervised_user/aw_supervised_user_blocking_page.cc",
+    "supervised_user/aw_supervised_user_blocking_page.h",
     "supervised_user/aw_supervised_user_throttle.cc",
     "supervised_user/aw_supervised_user_throttle.h",
     "supervised_user/aw_supervised_user_url_classifier.cc",

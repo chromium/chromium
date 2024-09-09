@@ -22,6 +22,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/favicon_base",
   "+components/flags_ui",
+  "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
   "+components/keyed_service/core",

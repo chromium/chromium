@@ -7,8 +7,8 @@
 
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace android_webview {
 
@@ -24,34 +24,30 @@ namespace android_webview {
 // Methods on this class should be called on the UI thread. Instances of this
 // class can be created on any thread.
 //
-// Lifetime: Temporary. Created and destroyed for every URL request.
-class AwSupervisedUserThrottle : public blink::URLLoaderThrottle {
+// Lifetime: Temporary. This is scoped to content::NavigationRequest, which
+// lives from navigation start until the navigation has been committed.
+class AwSupervisedUserThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<AwSupervisedUserThrottle> Create(
+      content::NavigationHandle* navigation_handle,
       AwSupervisedUserUrlClassifier* bridge);
 
   explicit AwSupervisedUserThrottle(
+      content::NavigationHandle* navigation_handle,
       AwSupervisedUserUrlClassifier* url_classifier);
   AwSupervisedUserThrottle(const AwSupervisedUserThrottle&) = delete;
   AwSupervisedUserThrottle& operator=(const AwSupervisedUserThrottle&) = delete;
   ~AwSupervisedUserThrottle() override;
 
-  // blink::URLLoaderThrottle:
-  void WillStartRequest(network::ResourceRequest* request,
-                        bool* defer) override;
-  void WillRedirectRequest(
-      net::RedirectInfo* redirect_info,
-      const network::mojom::URLResponseHead& response_head,
-      bool* defer,
-      std::vector<std::string>* to_be_removed_request_headers,
-      net::HttpRequestHeaders* modified_request_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
-  void WillProcessResponse(const GURL& response_url,
-                           network::mojom::URLResponseHead* response_head,
-                           bool* defer) override;
+  // content::NavigationThrottle :
+  ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
+  const char* GetNameForLogging() override;
 
  private:
-  void CheckShouldBlockUrl(const GURL& url);
+  content::NavigationThrottle::ThrottleCheckResult CheckShouldBlockUrl(
+      const GURL& url);
   void OnShouldBlockUrlResult(bool shouldBlockUrl);
 
   bool deferred_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
