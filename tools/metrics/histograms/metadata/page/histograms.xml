@@ -24,11 +24,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="BackgroundSuffix">
   <variant name="" summary="never backgrounded during the navigation"/>
-  <variant name=".WasAppBackgrounded"
-      summary="app backgrounded at least once during the navigation"/>
   <variant name=".WasBackgrounded"
-      summary="backgrounded at least once during the navigation (this was
-               renamed to WasAppBackgrounded)"/>
+      summary="backgrounded at least once during the navigation"/>
 </variants>
 
 <variants name="BrowserInitializationStatus">
@@ -44,10 +41,7 @@ chromium-metrics-reviews@google.com.
 <variants name="HiddenSuffix">
   <variant name="" summary="never hidden during the navigation"/>
   <variant name=".WasHidden"
-      summary="hidden at least once during the navigation (this was renamed
-               to WasTabHidden)"/>
-  <variant name=".WasTabHidden"
-      summary="tab hidden at least once during the navigation"/>
+      summary="hidden at least once during the navigation"/>
 </variants>
 
 <variants name="IncognitoSuffix">
