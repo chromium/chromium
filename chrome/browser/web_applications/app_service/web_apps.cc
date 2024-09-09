@@ -31,6 +31,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
@@ -56,7 +57,6 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
-      device_info_manager_(profile_),
 #endif
       publisher_helper_(profile_, provider_, this) {
   Initialize();
@@ -121,7 +121,10 @@ void WebApps::Launch(const std::string& app_id,
   // it is then cached in the DeviceInfoManager for subsequent launches.
   // TODO(b/331702863): Remove this custom integration.
   if (chromeos::features::IsCrosMallWebAppEnabled() && app_id == kMallAppId) {
-    device_info_manager_.GetDeviceInfo(base::BindOnce(
+    apps::DeviceInfoManager* device_info_manager =
+        apps::DeviceInfoManagerFactory::GetForProfile(profile());
+    CHECK(device_info_manager);
+    device_info_manager->GetDeviceInfo(base::BindOnce(
         &WebApps::LaunchMallWithContext, weak_ptr_factory_.GetWeakPtr(),
         event_flags, launch_source, std::move(window_info)));
 

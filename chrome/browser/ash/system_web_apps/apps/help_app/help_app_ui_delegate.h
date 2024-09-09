@@ -15,10 +15,6 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace apps {
-class DeviceInfoManager;
-}  // namespace apps
-
 namespace ash {
 
 /**
@@ -49,7 +45,6 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
-  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 
 }  // namespace ash

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -79,9 +80,7 @@ void DeviceInfoCallback(
 }  // namespace
 
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
-    : web_ui_(web_ui),
-      device_info_manager_(std::make_unique<apps::DeviceInfoManager>(
-          Profile::FromWebUI(web_ui))) {}
+    : web_ui_(web_ui) {}
 
 ChromeHelpAppUIDelegate::~ChromeHelpAppUIDelegate() = default;
 
@@ -161,7 +160,11 @@ void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
 void ChromeHelpAppUIDelegate::GetDeviceInfo(
     ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  device_info_manager_->GetDeviceInfo(base::BindOnce(
+
+  apps::DeviceInfoManager* device_info_manager =
+      apps::DeviceInfoManagerFactory::GetForProfile(profile);
+  CHECK(device_info_manager);
+  device_info_manager->GetDeviceInfo(base::BindOnce(
       &DeviceInfoCallback, std::move(callback), profile->GetWeakPtr()));
 }
 

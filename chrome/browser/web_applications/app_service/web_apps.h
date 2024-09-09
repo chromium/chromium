@@ -179,7 +179,6 @@ class WebApps final : public apps::AppPublisher,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const raw_ptr<apps::InstanceRegistry> instance_registry_;
-  apps::DeviceInfoManager device_info_manager_;
 #endif
 
   WebAppPublisherHelper publisher_helper_;

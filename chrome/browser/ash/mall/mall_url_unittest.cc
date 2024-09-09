@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -33,9 +34,10 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
                                                "SHIBA D0G-F4N-C1UB");
 
   base::test::TestFuture<apps::DeviceInfo> device_info;
-  apps::DeviceInfoManager manager(&profile);
+  apps::DeviceInfoManager* manager =
+      apps::DeviceInfoManagerFactory::GetForProfile(&profile);
 
-  manager.GetDeviceInfo(device_info.GetCallback());
+  manager->GetDeviceInfo(device_info.GetCallback());
 
   GURL launch_url = GetMallLaunchUrl(device_info.Get());
 
