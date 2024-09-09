@@ -35,16 +35,15 @@ SessionMetrics::SessionMetrics() = default;
 SessionMetrics::~SessionMetrics() = default;
 
 // static
-SessionMetrics* SessionMetrics::FromBrowserState(
-    ChromeBrowserState* browser_state) {
-  SessionMetrics* session_metrics = static_cast<SessionMetrics*>(
-      browser_state->GetUserData(&kSessionMetricsKey));
+SessionMetrics* SessionMetrics::FromProfile(ProfileIOS* profile) {
+  SessionMetrics* session_metrics =
+      static_cast<SessionMetrics*>(profile->GetUserData(&kSessionMetricsKey));
 
   if (!session_metrics) {
-    browser_state->SetUserData(&kSessionMetricsKey,
-                               std::make_unique<SessionMetrics>());
-    session_metrics = static_cast<SessionMetrics*>(
-        browser_state->GetUserData(&kSessionMetricsKey));
+    profile->SetUserData(&kSessionMetricsKey,
+                         std::make_unique<SessionMetrics>());
+    session_metrics =
+        static_cast<SessionMetrics*>(profile->GetUserData(&kSessionMetricsKey));
   }
 
   DCHECK(session_metrics);

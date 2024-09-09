@@ -502,17 +502,14 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.startupInformation setIsColdStart:NO];
 
   // Record session metrics.
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    SessionMetrics::FromBrowserState(browserState)
-        ->RecordAndClearSessionMetrics(
-            MetricsToRecordFlags::kActivatedTabCount);
+    SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
+        MetricsToRecordFlags::kActivatedTabCount);
 
-    if (browserState->HasOffTheRecordChromeBrowserState()) {
-      ChromeBrowserState* otrChromeBrowserState =
-          browserState->GetOffTheRecordChromeBrowserState();
-
-      SessionMetrics::FromBrowserState(otrChromeBrowserState)
+    if (profile->HasOffTheRecordChromeBrowserState()) {
+      ProfileIOS* otrProifle = profile->GetOffTheRecordChromeBrowserState();
+      SessionMetrics::FromProfile(otrProifle)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
   }

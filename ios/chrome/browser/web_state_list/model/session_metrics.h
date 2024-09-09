@@ -31,8 +31,8 @@ MetricsToRecordFlagSet operator|(MetricsToRecordFlags lhs,
 class SessionMetrics : public base::SupportsUserData::Data {
  public:
   // Retrieves the instance of SessionMetrics that is attached
-  // to the specified ChromeBrowserState.
-  static SessionMetrics* FromBrowserState(ChromeBrowserState* browser_state);
+  // to the specified ProfileIOS.
+  static SessionMetrics* FromProfile(ProfileIOS* profile);
 
   // Constructable by tests.
   SessionMetrics();
