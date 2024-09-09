@@ -19,6 +19,7 @@
 
 @interface ManualFillAllPlusAddressCoordinator () <
     ManualFillAllPlusAddressViewControllerDelegate,
+    ManualFillPlusAddressMediatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -61,6 +62,9 @@
 
   // Fetch all plus addresses before setting the consumer.
   [_plusAddressMediator fetchAllPlusAddresses];
+  _plusAddressMediator.contentInjector = self.injectionHandler;
+  _plusAddressMediator.delegate = self;
+
   _plusAddressMediator.consumer = _plusAddressViewController;
 
   _plusAddressViewController.imageDataSource = _plusAddressMediator;
@@ -93,6 +97,13 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  [self.manualFillAllPlusAddressCoordinatorDelegate
+      manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
+}
+
+#pragma mark - ManualFillPlusAddressMediatorDelegate
+
+- (void)manualFillPlusAddressMediatorWillInjectContent {
   [self.manualFillAllPlusAddressCoordinatorDelegate
       manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
 }

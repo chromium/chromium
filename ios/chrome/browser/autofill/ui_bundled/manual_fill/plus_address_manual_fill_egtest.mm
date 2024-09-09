@@ -161,6 +161,14 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Verify that the `fieldName` has been filled with `value`.
+- (void)verifyFieldHasBeenFilledWithValue:(std::u16string)value {
+  NSString* fillCondition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kNameFieldID, base::SysUTF16ToNSString(value)];
+  [ChromeEarlGrey waitForJavaScriptCondition:fillCondition];
+}
+
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
 - (void)testPlusAddressFallback {
@@ -186,7 +194,10 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       selectElementWithMatcher:
           manual_fill::ChipButton(
               plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:
+            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
 }
 
 // Tests that the plus address manage action are shown in the address and
@@ -242,10 +253,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetButton]
       performAction:grey_tap()];
 
-  NSString* condition = [NSString
-      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
-                       kNameFieldID, @"plus+remote@plus.plus"];
-  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+  [self verifyFieldHasBeenFilledWithValue:
+            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
 }
 
 // Tests that tapping on the create plus address action in the password manual
@@ -300,7 +309,9 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:u"plus+foo@plus.plus"];
 }
 
 // Tests that tapping on the select plus address action shows a sheet with the
@@ -371,7 +382,9 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_replaceText(@"foo.com")];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [self verifyFieldHasBeenFilledWithValue:u"plus+foo@plus.plus"];
 }
 
 @end

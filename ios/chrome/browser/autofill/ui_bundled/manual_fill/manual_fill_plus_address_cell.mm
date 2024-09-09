@@ -283,7 +283,11 @@ CGFloat GetFaviconSize() {
 }
 
 - (void)userDidTapPlusAddressButton:(UIButton*)button {
-  // TODO(crbug.com/327838014): Implement.
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_PlusAddress_SelectPlusAddress"));
+  [self.contentInjector userDidPickContent:self.plusAddress.plusAddress
+                             passwordField:NO
+                             requiresHTTPS:NO];
 }
 
 // Configure the favicon with the given `attributes`.

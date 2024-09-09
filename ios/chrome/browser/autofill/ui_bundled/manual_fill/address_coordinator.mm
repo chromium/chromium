@@ -76,6 +76,7 @@
     _addressMediator.contentInjector = super.injectionHandler;
     _addressMediator.consumer = _addressViewController;
     if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.contentInjector = super.injectionHandler;
       manualFillPlusAddressMediator.consumer = _addressViewController;
       manualFillPlusAddressMediator.navigator = self;
     }

@@ -25,6 +25,9 @@
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
+@interface ManualFillPlusAddressMediator () <ManualFillContentInjector>
+@end
+
 @implementation ManualFillPlusAddressMediator {
   // The favicon loader used in the cell.
   FaviconLoader* _faviconLoader;
@@ -114,6 +117,40 @@
                                                 filteredPlusAddresses]];
 }
 
+#pragma mark - ManualFillContentInjector
+
+- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
+                       requiresHTTPS:(BOOL)requiresHTTPS {
+  NOTREACHED_NORETURN();
+}
+
+- (void)userDidPickContent:(NSString*)content
+             passwordField:(BOOL)passwordField
+             requiresHTTPS:(BOOL)requiresHTTPS {
+  // If the "Select Plus Address" view is presented, close the sheet and then
+  // initiate the filling.
+  if (self.delegate) {
+    [self.delegate manualFillPlusAddressMediatorWillInjectContent];
+  }
+  [self.contentInjector userDidPickContent:content
+                             passwordField:passwordField
+                             requiresHTTPS:requiresHTTPS];
+}
+
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+  NOTREACHED_NORETURN();
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+  NOTREACHED_NORETURN();
+}
+
+- (BOOL)isActiveFormAPasswordForm {
+  NOTREACHED_NORETURN();
+}
+
 #pragma mark - Private
 
 // Initiates the process of fetching and presenting Plus Addresses to the
@@ -170,7 +207,7 @@
             "count", plusAddressesCount, "position", i + 1));
     ManualFillPlusAddressItem* item = [[ManualFillPlusAddressItem alloc]
                 initWithPlusAddress:plusAddresses[i]
-                    contentInjector:_contentInjector
+                    contentInjector:self
                         menuActions:@[]
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
     [items addObject:item];

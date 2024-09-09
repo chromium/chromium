@@ -92,6 +92,7 @@
     _passwordViewController.imageDataSource = _passwordMediator;
 
     if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.contentInjector = injectionHandler;
       manualFillPlusAddressMediator.consumer = _passwordViewController;
       manualFillPlusAddressMediator.navigator = self;
     }
