@@ -1928,6 +1928,7 @@ message AnimationFrameScriptTimingInfo {
     GOOGLE_ADS_LIBRARIES = 14;
     FUNDING_CHOICES = 15;
     ELEMENTOR = 16;
+    SLIDER_REVOLUTION = 17;
   }
   optional ThirdPartyTechnology third_party_technology = 10;
 }

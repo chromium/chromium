@@ -70,6 +70,8 @@ constexpr char kThirdPartyTechnologiesSourceLocationRegexString[] =
     "|(googlesyndication\\.com/[^\"]+/(?:ufs_web_display|reactive_library_fy))"
     // Funding Choices
     "|(fundingchoicesmessages\\.google\\.com)"
+    // Slider Revolution
+    "|(/wp-content/plugins/revslider)"
     // WordPress
     "|(/wp-(?:content|includes)/"
     "|wp-embed\\.min\\.js)";
@@ -98,6 +100,7 @@ ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
                             Technology::kGooglePublisherTag,
                             Technology::kGoogleAdsLibraries,
                             Technology::kFundingChoices,
+                            Technology::kSliderRevolution,
                             Technology::kWordPress};
                         return vector;
                       }()));
