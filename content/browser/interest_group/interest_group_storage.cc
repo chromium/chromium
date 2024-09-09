@@ -1013,7 +1013,7 @@ bool MaybeCreateKAnonEntryForV17DatabaseUpgrade(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV29Schema(sql::Database& db) {
+bool CreateCurrentSchema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -5593,7 +5593,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    bool create_schema_result = CreateV29Schema(*db_);
+    bool create_schema_result = CreateCurrentSchema(*db_);
     ReportCreateSchemaResult(
         /*create_schema_result=*/create_schema_result,
         /*raze_if_incompatible_result=*/raze_if_incompatible_result,
