@@ -19,7 +19,7 @@ _DUMMY_RTXT_INDEX = '1'
 
 
 def _ResourceNameToJavaSymbol(resource_name):
-  return re.sub('[\.:]', '_', resource_name)
+  return re.sub(r'[\.:]', '_', resource_name)
 
 
 class RTxtGenerator:

@@ -295,8 +295,8 @@ def _GenerateStubs(natives):
 
 def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
                                    java_functions_string, short_gen_jni_class):
-  switch_case_method_name_re = re.compile('return (\w+)\(')
-  java_function_call_re = re.compile('public static \S+ (\w+)\(')
+  switch_case_method_name_re = re.compile(r'return (\w+)\(')
+  java_function_call_re = re.compile(r'public static \S+ (\w+)\(')
   method_to_switch_num = {}
   for signature, cases in sorted(signature_to_cpp_calls.items()):
     for i, case in enumerate(cases):

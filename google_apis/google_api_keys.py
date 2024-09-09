@@ -28,7 +28,7 @@ def _GetTokenFromOfficialFile(token_name):
   if not os.path.isfile(official_path):
     return None
 
-  line_regexp = '^#define\s*%s\s*"([^"]+)"' % token_name
+  line_regexp = r'^#define\s*%s\s*"([^"]+)"' % token_name
   line_pattern = re.compile(line_regexp)
   def ParseLine(current_line):
     result = line_pattern.match(current_line)
