@@ -103,6 +103,10 @@ class SyncService;
 class UserEventService;
 }  // namespace syncer
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -186,6 +190,8 @@ class CommonControllerBuilder {
           supervised_user_settings_service);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+  void SetTabGroupSyncService(
+      tab_groups::TabGroupSyncService* tab_group_sync_service);
   void SetTemplateURLService(TemplateURLService* template_url_service);
   void SetUserEventService(syncer::UserEventService* user_event_service);
 
@@ -286,6 +292,8 @@ class CommonControllerBuilder {
       product_specifications_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
+  SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>
+      tab_group_sync_service_;
   SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
 };
 

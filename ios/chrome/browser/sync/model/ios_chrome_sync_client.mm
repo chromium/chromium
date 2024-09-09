@@ -30,7 +30,6 @@
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/features.h"
@@ -215,29 +214,17 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   builder.SetSupervisedUserSettingsService(
       SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state_));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  builder.SetTabGroupSyncService(
+      IsTabGroupSyncEnabled()
+          ? tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+                browser_state_)
+          : nullptr);
   builder.SetTemplateURLService(nullptr);
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForBrowserState(browser_state_));
 
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
-
-  if (IsTabGroupSyncEnabled()) {
-    syncer::DataTypeControllerDelegate* delegate =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            browser_state_)
-            ->GetSavedTabGroupControllerDelegate()
-            .get();
-    // TODO(crbug.com/344893270): Move this controller to
-    // CreateCommonDataTypeControllers().
-    controllers.push_back(std::make_unique<syncer::DataTypeController>(
-        syncer::SAVED_TAB_GROUP, /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate)));
-  }
 
   return controllers;
 }

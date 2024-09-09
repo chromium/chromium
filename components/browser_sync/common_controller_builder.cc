@@ -47,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_data_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -312,6 +313,11 @@ void CommonControllerBuilder::SetSupervisedUserSettingsService(
   supervised_user_settings_service_.Set(supervised_user_settings_service);
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+void CommonControllerBuilder::SetTabGroupSyncService(
+    tab_groups::TabGroupSyncService* tab_group_sync_service) {
+  tab_group_sync_service_.Set(tab_group_sync_service);
+}
 
 void CommonControllerBuilder::SetTemplateURLService(
     TemplateURLService* template_url_service) {
@@ -631,6 +637,42 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                       kTransportModeWithSingleModel
                 : SyncableServiceBasedDataTypeController::DelegateMode::
                       kLegacyFullSyncModeOnly));
+  }
+
+  if (!disabled_types.Has(syncer::SAVED_TAB_GROUP) &&
+      tab_group_sync_service_.value()) {
+    syncer::DataTypeControllerDelegate* delegate =
+        tab_group_sync_service_.value()
+            ->GetSavedTabGroupControllerDelegate()
+            .get();
+
+    controllers.push_back(std::make_unique<syncer::DataTypeController>(
+        syncer::SAVED_TAB_GROUP,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate)));
+  }
+
+  if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
+      tab_group_sync_service_.value() &&
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    syncer::DataTypeControllerDelegate* delegate =
+        tab_group_sync_service_.value()
+            ->GetSharedTabGroupControllerDelegate()
+            .get();
+
+    controllers.push_back(std::make_unique<syncer::DataTypeController>(
+        syncer::SHARED_TAB_GROUP_DATA,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate)));
   }
 
   if (!disabled_types.Has(syncer::SHARING_MESSAGE) &&

@@ -108,6 +108,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   controller_builder.SetSupervisedUserSettingsService(nullptr);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  controller_builder.SetTabGroupSyncService(nullptr);
   controller_builder.SetTemplateURLService(nullptr);
   controller_builder.SetUserEventService(nullptr);
 

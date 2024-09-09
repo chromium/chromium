@@ -63,12 +63,10 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
 #include "components/browser_sync/sync_engine_factory_impl.h"
-#include "components/data_sharing/public/features.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/data_type.h"
@@ -214,38 +212,31 @@ bool ShouldSyncAppsTypesInTransportMode() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-syncer::DataTypeControllerDelegate* GetSavedTabGroupControllerDelegate(
-    Profile* profile) {
+// Returns TabGroupSyncService or null if the feature is disabled.
+// Tab group sync is enabled via separate feature flags on different platforms.
+tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
+  CHECK(profile);
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   tab_groups::TabGroupSyncService* service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
   CHECK(service);
-  return service->GetSavedTabGroupControllerDelegate().get();
+  return service;
 #elif BUILDFLAG(IS_ANDROID)
-  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
-      ->GetSavedTabGroupControllerDelegate()
-      .get();
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
-}
-
-syncer::DataTypeControllerDelegate* GetSharedTabGroupControllerDelegate(
-    Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+  const bool enable_tab_group_sync =
+      tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) &&
+      !base::FeatureList::IsEnabled(
+          tab_groups::kTabGroupSyncDisableNetworkLayer);
+  tab_groups::TabGroupTrial::OnTabgroupSyncEnabled(enable_tab_group_sync);
+  if (!enable_tab_group_sync) {
+    return nullptr;
+  }
   tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   CHECK(service);
-  return service->GetSharedTabGroupControllerDelegate().get();
-#elif BUILDFLAG(IS_ANDROID)
-  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
-      ->GetSharedTabGroupControllerDelegate()
-      .get();
+  return service;
 #else
-  NOTREACHED();
+  return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 }
@@ -415,6 +406,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   builder.SetProductSpecificationsService(
       commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
           profile_));
+  builder.SetTabGroupSyncService(GetTabGroupSyncService(profile_));
   builder.SetTemplateURLService(
 #if BUILDFLAG(IS_ANDROID)
       nullptr
@@ -520,51 +512,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         profile_));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    // Tab group sync is enabled via separate feature flags on different
-    // platforms.
-    bool enable_tab_group_sync = false;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-    enable_tab_group_sync = true;
-#elif BUILDFLAG(IS_ANDROID)
-    enable_tab_group_sync =
-        tab_groups::IsTabGroupSyncEnabled(GetPrefService()) &&
-        !base::FeatureList::IsEnabled(
-            tab_groups::kTabGroupSyncDisableNetworkLayer);
-    tab_groups::TabGroupTrial::OnTabgroupSyncEnabled(enable_tab_group_sync);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
-
-    if (enable_tab_group_sync) {
-      syncer::DataTypeControllerDelegate* delegate =
-          GetSavedTabGroupControllerDelegate(profile_);
-
-      controllers.push_back(std::make_unique<syncer::DataTypeController>(
-          syncer::SAVED_TAB_GROUP,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate)));
-    }
-
-    if (base::FeatureList::IsEnabled(
-            data_sharing::features::kDataSharingFeature)) {
-      syncer::DataTypeControllerDelegate* delegate =
-          GetSharedTabGroupControllerDelegate(profile_);
-      controllers.push_back(std::make_unique<syncer::DataTypeController>(
-          syncer::SHARED_TAB_GROUP_DATA,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate)));
-    }
-
-// Chrome prefers OS provided spell checkers where they exist. So only sync the
-// custom dictionary on platforms that typically don't provide one.
+    // Chrome prefers OS provided spell checkers where they exist. So only sync
+    // the custom dictionary on platforms that typically don't provide one.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     // Dictionary sync is enabled by default.
     if (GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
