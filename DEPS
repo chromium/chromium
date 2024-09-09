@@ -277,7 +277,7 @@ vars = {
   'screen_ai_windows_386': 'version:126.5',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:578c7a731c5efa9fde8ef210e34e38df0bcf0d34',
+  'siso_version': 'git_revision:eaee19cf51478b64614e2e8daad77378238a3c6c',
 
   # download libaom test data
   'download_libaom_testdata': False,
