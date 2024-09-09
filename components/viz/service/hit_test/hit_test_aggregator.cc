@@ -52,6 +52,11 @@ void HitTestAggregator::Aggregate(const SurfaceId& display_surface_id) {
   SendHitTestData();
 }
 
+const std::vector<AggregatedHitTestRegion>& HitTestAggregator::GetHitTestData()
+    const {
+  return hit_test_data_;
+}
+
 void HitTestAggregator::SendHitTestData() {
   hit_test_data_.resize(hit_test_data_size_);
   delegate_->OnAggregatedHitTestRegionListUpdated(root_frame_sink_id_,

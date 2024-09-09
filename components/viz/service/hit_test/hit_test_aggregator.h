@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/hit_test/hit_test_manager.h"
@@ -26,7 +27,7 @@ struct HitTestRegion;
 // information is obtained from the HitTestManager. The resulting list is sent
 // to HitTestQuery for event targeting. This is intended to be created in the
 // viz or GPU process.
-class VIZ_SERVICE_EXPORT HitTestAggregator {
+class VIZ_SERVICE_EXPORT HitTestAggregator : public HitTestQuery::DataProvider {
  public:
   // |delegate| owns and outlives HitTestAggregator.
   HitTestAggregator(
@@ -40,12 +41,19 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   HitTestAggregator(const HitTestAggregator&) = delete;
   HitTestAggregator& operator=(const HitTestAggregator&) = delete;
 
-  ~HitTestAggregator();
+  ~HitTestAggregator() override;
 
   // Called after surfaces have been aggregated into the DisplayFrame.
   // In this call HitTestRegionList structures received from active surfaces
   // are aggregated into |hit_test_data_|.
   void Aggregate(const SurfaceId& display_surface_id);
+
+  // HitTestQuery::DataProvider override.
+  const std::vector<AggregatedHitTestRegion>& GetHitTestData() const override;
+
+  base::SafeRef<HitTestQuery::DataProvider> GetDataProviderSafeRef() {
+    return weak_ptr_factory_.GetSafeRef();
+  }
 
  private:
   friend class TestHitTestAggregator;
