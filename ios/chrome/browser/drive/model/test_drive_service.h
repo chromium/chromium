@@ -14,6 +14,8 @@ class TestDriveService final : public DriveService {
   TestDriveService();
   ~TestDriveService() final;
 
+  // Sets file downloader to be returned by `CreateFileDownloader(...)`.
+  void SetFileDownloader(std::unique_ptr<DriveFileDownloader> downloader);
   // Sets file uploader to be returned by `CreateFileUploader(...)`.
   void SetFileUploader(std::unique_ptr<DriveFileUploader> uploader);
   // Sets Drive list object to be returned by `CreateList(...)`.
@@ -29,6 +31,7 @@ class TestDriveService final : public DriveService {
   std::string GetSuggestedFolderName() const final;
 
  private:
+  std::unique_ptr<DriveFileDownloader> file_downloader_;
   std::unique_ptr<DriveFileUploader> file_uploader_;
   std::unique_ptr<DriveList> drive_list_;
 };

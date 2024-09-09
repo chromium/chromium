@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -133,6 +134,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
   _loadingIndicator.hidesWhenStopped = YES;
   self.tableView.tableFooterView = _loadingIndicator;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if ([self isMovingFromParentViewController]) {
+    [self.delegate viewControllerDidDisappear:self];
+  }
 }
 
 #pragma mark - DriveFilePickerConsumer

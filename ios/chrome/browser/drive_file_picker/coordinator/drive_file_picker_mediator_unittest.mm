@@ -10,6 +10,7 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/drive/model/test_drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/test_drive_list.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
@@ -39,6 +40,8 @@
 @property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
 @property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
 
+@property(nonatomic, assign) BOOL fileSelectionSubmitted;
+
 @end
 
 @implementation FakeDriveFilePickerMediatorDelegate
@@ -60,15 +63,18 @@
   self.sortingDirection = sortingDirection;
 }
 
+- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+  self.fileSelectionSubmitted = YES;
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.
 @interface FakeDriveFilePickerConsumer : NSObject <DriveFilePickerConsumer>
 
+@property(nonatomic, assign) DriveFileDownloadStatus downloadStatus;
 @property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
-
 @property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
-
 @property(nonatomic, strong) NSArray<DriveItemIdentifier*>* driveItems;
 
 @end
@@ -93,6 +99,7 @@
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
+  _downloadStatus = downloadStatus;
 }
 
 - (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
@@ -129,6 +136,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     StartChoosingFiles();
     mediator_ = [[DriveFilePickerMediator alloc]
              initWithWebState:web_state_.get()
+                       isRoot:YES
                      identity:[FakeSystemIdentity fakeIdentity1]
                         title:nil
                         query:{}
@@ -154,6 +162,11 @@ class DriveFilePickerMediatorTest : public PlatformTest {
         std::make_unique<TestDriveList>([FakeSystemIdentity fakeIdentity1]);
     drive_list_ = drive_list.get();
     GetTestDriveService()->SetDriveList(std::move(drive_list));
+    std::unique_ptr<TestDriveFileDownloader> file_downloader =
+        std::make_unique<TestDriveFileDownloader>(
+            [FakeSystemIdentity fakeIdentity1]);
+    file_downloader_ = file_downloader.get();
+    GetTestDriveService()->SetFileDownloader(std::move(file_downloader));
   }
 
   // Starts file selection in the WebState.
@@ -191,9 +204,10 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
   FakeDriveFilePickerConsumer* fake_consumer_;
   raw_ptr<TestDriveList> drive_list_;
+  raw_ptr<TestDriveFileDownloader> file_downloader_;
 };
 
-// Tests that disconnecting the mediator stops the file selection.
+// Tests that disconnecting the root mediator stops the file selection.
 TEST_F(DriveFilePickerMediatorTest, StopsChoosingFiles) {
   EXPECT_TRUE(choose_file_tab_helper_->IsChoosingFiles());
   // Disconnect the mediator.
@@ -268,4 +282,41 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   task_environment_.RunUntilQuit();
   EXPECT_NE(nil, fake_consumer_.driveItems);
   fake_consumer_.driveItems = nil;
+}
+
+// Tests that selecting a file and submitting the selection works as expected.
+TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
+  // Set up Drive list to return a downloadable file.
+  DriveItem file_to_select;
+  file_to_select.is_folder = false;
+  file_to_select.can_download = true;
+  file_to_select.identifier = [[NSUUID UUID] UUIDString];
+  file_to_select.name = @"Fake File";
+  DriveListResult fake_result;
+  fake_result.items = {file_to_select};
+  drive_list_->SetDriveListResult(fake_result);
+
+  // Fetch items.
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ fetchNextPage];
+  task_environment_.RunUntilQuit();
+  EXPECT_NE(nil, fake_consumer_.driveItems);
+  EXPECT_EQ(1U, fake_consumer_.driveItems.count);
+  EXPECT_NSEQ(file_to_select.identifier,
+              fake_consumer_.driveItems[0].identifier);
+
+  // Download the file.
+  file_downloader_->SetDownloadFileCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  EXPECT_EQ(DriveFileDownloadStatus::kNotStarted,
+            fake_consumer_.downloadStatus);
+  [mediator_ selectDriveItem:fake_consumer_.driveItems[0]];
+  EXPECT_EQ(DriveFileDownloadStatus::kInProgress,
+            fake_consumer_.downloadStatus);
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(DriveFileDownloadStatus::kSuccess, fake_consumer_.downloadStatus);
+  EXPECT_FALSE(fake_delegate_.fileSelectionSubmitted);
+  [mediator_ submitFileSelection];
+  EXPECT_TRUE(fake_delegate_.fileSelectionSubmitted);
 }

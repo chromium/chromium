@@ -6,6 +6,7 @@ source_set("coordinator") {
   sources = [
     "browse_drive_file_picker_coordinator.h",
     "browse_drive_file_picker_coordinator.mm",
+    "browse_drive_file_picker_coordinator_delegate.h",
     "drive_file_picker_mediator.h",
     "drive_file_picker_mediator.mm",
     "drive_file_picker_mediator_delegate.h",

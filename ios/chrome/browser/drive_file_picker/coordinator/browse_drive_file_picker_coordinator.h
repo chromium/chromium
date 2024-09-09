@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol BrowseDriveFilePickerCoordinatorDelegate;
 struct DriveListQuery;
 @protocol SystemIdentity;
 
@@ -18,6 +19,9 @@ class WebState;
 
 // Coordinator of the Browse Drive file picker.
 @interface BrowseDriveFilePickerCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<BrowseDriveFilePickerCoordinatorDelegate>
+    delegate;
 
 // Creates a coordinator that uses `viewController`, `browser`, `webState` and
 // `folder`.

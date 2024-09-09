@@ -10,6 +10,7 @@ source_set("ui") {
     "drive_file_picker_navigation_controller.mm",
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
+    "drive_file_picker_table_view_controller_delegate.h",
     "drive_item_identifier.h",
     "drive_item_identifier.mm",
     "root_drive_file_picker_table_view_controller.h",

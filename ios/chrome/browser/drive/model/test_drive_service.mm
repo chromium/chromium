@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 
+#import "ios/chrome/browser/drive/model/test_drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/test_drive_list.h"
 
@@ -13,6 +14,11 @@ TestDriveService::TestDriveService() = default;
 TestDriveService::~TestDriveService() = default;
 
 #pragma mark - Public
+
+void TestDriveService::SetFileDownloader(
+    std::unique_ptr<DriveFileDownloader> downloader) {
+  file_downloader_ = std::move(downloader);
+}
 
 void TestDriveService::SetFileUploader(
     std::unique_ptr<DriveFileUploader> uploader) {
@@ -40,9 +46,11 @@ std::unique_ptr<DriveFileUploader> TestDriveService::CreateFileUploader(
 
 std::unique_ptr<DriveFileDownloader> TestDriveService::CreateFileDownloader(
     id<SystemIdentity> identity) {
-  // TODO(crbug.com/344812969): Return a TestDriveList which fakes API requests,
-  // similarly to TestDriveFileUploader.
-  return nullptr;
+  std::unique_ptr<DriveFileDownloader> result = std::move(file_downloader_);
+  if (!result) {
+    result = std::make_unique<TestDriveFileDownloader>(identity);
+  }
+  return result;
 }
 
 std::unique_ptr<DriveList> TestDriveService::CreateList(

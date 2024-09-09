@@ -24,6 +24,9 @@
                          sortingDirection:
                              (DriveItemsSortingOrder)sortingDirection;
 
+// Called when the mediator has submitted file selection to the web page.
+- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_DELEGATE_H_

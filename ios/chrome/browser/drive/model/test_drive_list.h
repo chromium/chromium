@@ -17,6 +17,9 @@ class TestDriveList final : public DriveList {
   // Returns values reported by callbacks of `DriveList` methods.
   DriveListResult GetDriveListResult() const;
 
+  // Sets DriveListResult to be reported by `ListItems()`.
+  void SetDriveListResult(const DriveListResult& result);
+
   // Set quit closures.
   void SetListItemsCompletionQuitClosure(base::RepeatingClosure quit_closure);
 

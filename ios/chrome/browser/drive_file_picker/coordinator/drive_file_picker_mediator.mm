@@ -299,10 +299,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   DriveItemsSortingOrder _sortingDirection;
   // The page token to use to continue the current list/search.
   NSString* _pageToken;
+  // Whether this mediator is the root mediator of the file picker, in which
+  // case file selection in the WebState should be stopped when disconnected.
+  BOOL _isRoot;
 }
 
 - (instancetype)
          initWithWebState:(web::WebState*)webState
+                   isRoot:(BOOL)isRoot
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
                     query:(DriveListQuery)query
@@ -320,6 +324,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     CHECK(identity);
     CHECK(accountManagerService);
     _webState = webState->GetWeakPtr();
+    _isRoot = isRoot;
     _identity = identity;
     _driveService = driveService;
     _accountManagerService = accountManagerService;
@@ -341,19 +346,19 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)disconnect {
-  if (_webState) {
+  if (_isRoot && _webState && !_webState->IsBeingDestroyed()) {
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
     if (tab_helper->IsChoosingFiles()) {
       tab_helper->StopChoosingFiles();
     }
-    _webState = nullptr;
-    _driveService = nullptr;
-    _driveList = nullptr;
-    _driveDownloader = nullptr;
-    _accountManagerService = nullptr;
-    _imageFetcher = nullptr;
   }
+  _webState = nullptr;
+  _driveService = nullptr;
+  _driveList = nullptr;
+  _driveDownloader = nullptr;
+  _accountManagerService = nullptr;
+  _imageFetcher = nullptr;
 }
 
 - (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
@@ -481,18 +486,19 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)submitFileSelection {
-  if (!_webState) {
+  if (!_webState || _webState->IsBeingDestroyed()) {
     [self.driveFilePickerHandler hideDriveFilePicker];
     return;
   }
-
   ChooseFileTabHelper* tab_helper =
       ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
-  if (tab_helper->IsChoosingFiles()) {
-    CHECK(_selectedFileDestinationURL);
-    tab_helper->StopChoosingFiles(@[ _selectedFileDestinationURL ], nil, nil);
+  if (!tab_helper->IsChoosingFiles()) {
+    [self.driveFilePickerHandler hideDriveFilePicker];
+    return;
   }
-  [self.driveFilePickerHandler hideDriveFilePicker];
+  CHECK(_selectedFileDestinationURL);
+  tab_helper->StopChoosingFiles(@[ _selectedFileDestinationURL ], nil, nil);
+  [self.delegate mediatorDidSubmitFileSelection:self];
 }
 
 - (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes {
