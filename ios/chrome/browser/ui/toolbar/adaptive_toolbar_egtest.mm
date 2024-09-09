@@ -779,7 +779,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the location bar is above the keyboard when tapping a text
 // field on web. Tapping it should dismiss the keyboard.
-- (void)testTapLocationBarAboveTheKeyboard {
+// TODO(crbug.com/363988044): Flaky on iphone-simulator.
+- (void)FLAKY_testTapLocationBarAboveTheKeyboard {
   [self verifyTapLocationBarAboveTheKeyboardWithMatcher:
             FormInputAccessoryOmniboxTypingShield()];
 }
