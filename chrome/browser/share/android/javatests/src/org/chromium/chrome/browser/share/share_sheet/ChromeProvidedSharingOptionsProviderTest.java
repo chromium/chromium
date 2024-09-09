@@ -161,6 +161,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
         Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        Mockito.when(mTabProvider.get()).thenReturn(null);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =

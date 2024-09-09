@@ -320,7 +320,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private boolean isPdfTab() {
-        return mTabProvider.get().isNativePage() && mTabProvider.get().getNativePage().isPdf();
+        return mTabProvider.hasValue()
+                && mTabProvider.get().isNativePage()
+                && mTabProvider.get().getNativePage().isPdf();
     }
 
     private static boolean isAutomotive() {
