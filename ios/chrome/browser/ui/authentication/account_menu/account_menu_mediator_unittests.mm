@@ -336,3 +336,50 @@ TEST_F(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   OCMExpect([delegate_ openPassphraseDialogWithModalPresentation:YES]);
   [mediator_ didTapErrorButton];
 }
+
+// Tests the effect of didTapManageYourGoogleAccount.
+TEST_F(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
+  OCMExpect([delegate_ didTapManageYourGoogleAccount]);
+  [mediator_ didTapManageYourGoogleAccount];
+}
+
+// Tests the effect of didTapEditAccountList.
+TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
+  OCMExpect([delegate_ didTapEditAccountList]);
+  [mediator_ didTapEditAccountList];
+}
+
+// Tests the effect of didTapAddAccount.
+TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
+  base::RunLoop run_loop;
+  base::RepeatingClosure closure = run_loop.QuitClosure();
+
+  OCMExpect([delegate_ didTapAddAccount:[OCMArg checkWithBlock:^BOOL(id value) {
+                         closure.Run();
+                         return true;
+                       }]]);
+  [mediator_ didTapAddAccount];
+  run_loop.Run();
+}
+
+// Tests the effect of signOutFromTargetRect.
+TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
+  base::RunLoop run_loop;
+  base::RepeatingClosure closure = run_loop.QuitClosure();
+
+  CGRect rect = CGRectMake(0, 0, 40, 24);
+
+  __block void (^callback)(BOOL) = nil;
+  OCMExpect([delegate_
+      signOutFromTargetRect:rect
+                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
+                     callback = value;
+                     return true;
+                   }]]);
+  [mediator_ signOutFromTargetRect:rect
+                          callback:^(BOOL success) {
+                            closure.Run();
+                          }];
+  callback(YES);
+  run_loop.Run();
+}

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
@@ -147,7 +146,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_ManageAccount"));
-                [self.delegate didTapManageYourGoogleAccount];
+                [self.mutator didTapManageYourGoogleAccount];
               }];
   // TODO(crbug.com/336719423): Add the primary account email as subtitle.
 
@@ -160,7 +159,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_EditAccountList"));
-                [self.delegate didTapEditAccountList];
+                [self.mutator didTapEditAccountList];
               }];
 
   UIMenu* ellipsisMenu = [UIMenu
@@ -273,7 +272,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)userTappedOnClose {
   base::RecordAction(base::UserMetricsAction("Signin_AccountMenu_Close"));
-  [self.delegate viewControllerWantsToBeClosed:self];
+  [self.mutator viewControllerWantsToBeClosed:self];
 }
 
 - (void)setUpTableContent {
@@ -359,7 +358,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       case RowIdentifierAddAccount:
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_AddAccount"));
-        [self.delegate didTapAddAccount];
+        [self.mutator didTapAddAccount];
         break;
       case RowIdentifierErrorExplanation:
         break;
@@ -372,7 +371,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_Signout"));
         CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
-        [self.delegate signOutFromTargetRect:cellRect callback:nil];
+        [self.mutator signOutFromTargetRect:cellRect callback:nil];
         break;
     }
   }
@@ -449,7 +448,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate viewControllerWantsToBeClosed:self];
+  [self.mutator viewControllerWantsToBeClosed:self];
 }
 
 @end

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
 @class AccountMenuMediator;
@@ -26,6 +27,22 @@
 
 - (void)triggerAccountSwitchSnackbarWithIdentity:
     (id<SystemIdentity>)systemIdentity;
+
+// Sign out, display a toast, and call `callback` with argument stating whether
+// it’s a success.
+- (void)signOutFromTargetRect:(CGRect)targetRect
+                     callback:(void (^)(BOOL))callback;
+
+// Shows https://myaccount.google.com/ for the account currently signed-in
+// to Chrome. The content is displayed in a new view in the stack, i.e.
+// it doesn't close the current view.
+- (void)didTapManageYourGoogleAccount;
+
+// The user tapped on "Edit account list".
+- (void)didTapEditAccountList;
+
+// The user tapped on "Add account…".
+- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
 
 @end
 

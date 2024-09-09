@@ -12,7 +12,6 @@
 
 @protocol AccountMenuDataSource;
 @protocol AccountMenuMutator;
-@protocol AccountMenuViewControllerPresentationDelegate;
 
 // Identifier for the "manage your account" menu entry.
 extern const char kManageYourGoogleAccountIdentifier[];
@@ -21,10 +20,6 @@ extern const char kEditAccountListIdentifier[];
 
 @interface AccountMenuViewController
     : ChromeTableViewController <AccountMenuConsumer>
-
-// The delegate for the view controller.
-@property(nonatomic, weak) id<AccountMenuViewControllerPresentationDelegate>
-    delegate;
 
 // The mutator for the account menu.
 @property(nonatomic, weak) id<AccountMenuMutator> mutator;

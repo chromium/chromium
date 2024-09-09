@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -50,7 +50,6 @@ const FakeSystemIdentity* kManagedIdentity =
 
 @interface AccountMenuCoordinator (Testing) <
     AccountMenuMediatorDelegate,
-    AccountMenuViewControllerPresentationDelegate,
     SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
@@ -120,13 +119,10 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     [coordinator_.mediator disconnect];
     mediator_ = OCMStrictClassMock([AccountMenuMediator class]);
     coordinator_.mediator = mediator_;
-    OCMStub([mediator_ signOutFlowInProgress]).andReturn(NO);
-    OCMStub([mediator_ addAccountOperationInProgress]).andReturn(NO);
   }
 
   void TearDown() override {
     OCMExpect(view_controller_.dataSource = nil);
-    OCMExpect(view_controller_.delegate = nil);
     OCMExpect(view_controller_.mutator = nil);
     OCMExpect(mediator_.consumer = nil);
     OCMExpect([mediator_ disconnect]);
@@ -163,31 +159,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   // The view owned by the view controller.
   UIView* view_;
 
-  // Expects `setSignoutFlowInProgress:in_progress` and ensure any request to
-  // `signoutFlowInProgress` returns `in_progress`.
-  void ExpectSetSignoutFlowInProgress(bool in_progress) {
-    OCMExpect([mediator_ setSignOutFlowInProgress:in_progress])
-        .andDo(^(NSInvocation* invocation) {
-          OCMStub([mediator_ signOutFlowInProgress]).andReturn(in_progress);
-        });
-  }
-
-  // Expects that the sign-out flow gets set to YES and then NO.
-  void ExpectSetSignoutFlowInProgressOnAndOff() {
-    ExpectSetSignoutFlowInProgress(YES);
-    ExpectSetSignoutFlowInProgress(NO);
-  }
-
-  // Expects `setAddAccountOperationInProgress:in_progress` and ensure any
-  // request to `addAccountOperationInProgress` returns `in_progress`.
-  void ExpectAddAccountOperation(bool in_progress) {
-    OCMExpect([mediator_ setAddAccountOperationInProgress:in_progress])
-        .andDo(^(NSInvocation* invocation) {
-          OCMStub([mediator_ addAccountOperationInProgress])
-              .andReturn(in_progress);
-        });
-  }
-
  private:
   // Signs in primary_identity() as primary identity.
   void SigninWithPrimaryIdentity() {
@@ -221,14 +192,6 @@ class AccountMenuCoordinatorManagedTest : public AccountMenuCoordinatorTest {
   }
 };
 
-#pragma mark - AccountMenuViewControllerPresentationDelegate
-
-// Tests view controller requesting to be closed.
-TEST_F(AccountMenuCoordinatorNonManagedTest, testWantsToBeClosed) {
-  OCMExpect([delegate_ acountMenuCoordinatorShouldStop:coordinator_]);
-  [coordinator_ viewControllerWantsToBeClosed:coordinator_.viewController];
-}
-
 // Tests that `didTapManageYourGoogleAccount` requests the view controller to
 // present a view.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testManageYourGoogleAccount) {
@@ -254,8 +217,6 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testSignOut) {
   OCMExpect([mock_snackbar_commands_handler_
       showSnackbarMessage:[OCMArg isNotNil]
              bottomOffset:0]);
-  ExpectSetSignoutFlowInProgressOnAndOff();
-  ExpectSetSignoutFlowInProgressOnAndOff();
   [coordinator_ signOutFromTargetRect:rect
                              callback:^(BOOL success) {
                                EXPECT_TRUE(success);
@@ -270,10 +231,23 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testSignOut) {
 // Tests that `didTapAddAccount` requests the appllication commands handler to
 // show signin.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testAddAccount) {
-  ExpectAddAccountOperation(YES);
-  OCMExpect([mock_application_commands_handler_ showSignin:[OCMArg any]
-                                        baseViewController:[OCMArg any]]);
-  [coordinator_ didTapAddAccount];
+  base::RunLoop run_loop;
+  base::RepeatingClosure closure = run_loop.QuitClosure();
+  __block ShowSigninCommand* command = nil;
+  OCMExpect([mock_application_commands_handler_
+              showSignin:[OCMArg
+                             checkWithBlock:^BOOL(ShowSigninCommand* param) {
+                               command = param;
+                               return true;
+                             }]
+      baseViewController:[OCMArg any]]);
+  [coordinator_ didTapAddAccount:^(SigninCoordinatorResult result,
+                                   SigninCompletionInfo* info) {
+    closure.Run();
+  }];
+  command.callback(SigninCoordinatorResult::SigninCoordinatorResultSuccess,
+                   nil);
+  run_loop.Run();
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -294,8 +268,6 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
-  ExpectSetSignoutFlowInProgressOnAndOff();
-  ExpectSetSignoutFlowInProgressOnAndOff();
   [coordinator_ triggerSignoutWithTargetRect:rect
                                   completion:^(BOOL success) {
                                     EXPECT_TRUE(success);

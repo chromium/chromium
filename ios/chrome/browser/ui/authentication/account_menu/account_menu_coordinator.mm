@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
@@ -52,8 +51,6 @@
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
-    AccountMenuViewControllerPresentationDelegate,
-    SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -105,7 +102,6 @@
 
   _viewController = [[AccountMenuViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  _viewController.delegate = self;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -156,7 +152,6 @@
   _navigationController.delegate = nil;
   _navigationController = nil;
   _viewController.dataSource = nil;
-  _viewController.delegate = nil;
   _viewController.mutator = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
@@ -175,7 +170,15 @@
   [super stop];
 }
 
-#pragma mark - AccountMenuViewControllerPresentationDelegate
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate acountMenuCoordinatorShouldStop:self];
+  _navigationController = nil;
+}
+
+#pragma mark - AccountMenuMediatorDelegate
 
 - (void)viewControllerWantsToBeClosed:
     (AccountMenuViewController*)viewController {
@@ -211,10 +214,6 @@
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
                      callback:(void (^)(BOOL))callback {
-  if (_mediator.signOutFlowInProgress ||
-      _mediator.addAccountOperationInProgress) {
-    return;
-  }
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // This could happen in very rare cases, if the account somehow got removed
@@ -228,7 +227,6 @@
                             view:_viewController.view
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutInAccountMenu];
-  _signoutActionSheetCoordinator.delegate = self;
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.completion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
@@ -242,20 +240,7 @@
   [_signoutActionSheetCoordinator start];
 }
 
-- (void)didTapAddAccount {
-  if (_mediator.signOutFlowInProgress ||
-      _mediator.addAccountOperationInProgress) {
-    return;
-  }
-  _mediator.addAccountOperationInProgress = YES;
-  __weak __typeof(self) weakSelf = self;
-  ShowSigninCommandCompletionCallback callback =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
-        __typeof(self) strongSelf = weakSelf;
-        if (strongSelf) {
-          strongSelf->_mediator.addAccountOperationInProgress = NO;
-        }
-      };
+- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback {
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
@@ -267,28 +252,6 @@
                baseViewController:_navigationController];
 }
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self.delegate acountMenuCoordinatorShouldStop:self];
-  _navigationController = nil;
-}
-
-#pragma mark - SignoutActionSheetCoordinatorDelegate
-
-- (void)signoutActionSheetCoordinatorPreventUserInteraction:
-    (SignoutActionSheetCoordinator*)coordinator {
-  _mediator.signOutFlowInProgress = YES;
-}
-
-- (void)signoutActionSheetCoordinatorAllowUserInteraction:
-    (SignoutActionSheetCoordinator*)coordinator {
-  _mediator.signOutFlowInProgress = NO;
-}
-
-#pragma mark - AccountMenuMediatorDelegate
-
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
   [self.delegate acountMenuCoordinatorShouldStop:self];
@@ -296,8 +259,6 @@
 
 - (void)triggerSignoutWithTargetRect:(CGRect)targetRect
                           completion:(void (^)(BOOL success))completion {
-  CHECK(!_mediator.signOutFlowInProgress &&
-        !_mediator.addAccountOperationInProgress);
   CHECK(
       _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
       base::NotFatalUntil::M130)
@@ -311,7 +272,6 @@
                             view:_viewController.view
                       withSource:signin_metrics::ProfileSignout::
                                      kChangeAccountInAccountMenu];
-  _signoutActionSheetCoordinator.delegate = self;
   _signoutActionSheetCoordinator.accountSwitch = YES;
 
   __weak __typeof(self) weakSelf = self;

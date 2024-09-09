@@ -54,7 +54,6 @@ source_set("account_menu_ui") {
     "account_menu_mutator.h",
     "account_menu_view_controller.h",
     "account_menu_view_controller.mm",
-    "account_menu_view_controller_presentation_delegate.h",
   ]
   deps = [
     ":constants",
@@ -120,6 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells",
