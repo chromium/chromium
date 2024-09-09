@@ -139,6 +139,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
@@ -231,7 +232,7 @@ public class TabListMediatorUnitTest {
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
             new PropertyKey[] {
-                TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                TabProperties.TAB_ACTION_BUTTON_DATA,
                 TabProperties.TAB_CLICK_LISTENER,
                 TabProperties.TAB_LONG_CLICK_LISTENER,
                 TabProperties.IS_SELECTED,
@@ -239,7 +240,7 @@ public class TabListMediatorUnitTest {
 
     public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
             new PropertyKey[] {
-                TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                TabProperties.TAB_ACTION_BUTTON_DATA,
                 TabProperties.TAB_CLICK_LISTENER,
                 TabProperties.TAB_LONG_CLICK_LISTENER,
                 TabProperties.CONTENT_DESCRIPTION_STRING,
@@ -913,7 +914,8 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
@@ -932,7 +934,8 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
@@ -951,7 +954,8 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
@@ -969,7 +973,8 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(true);
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
@@ -982,7 +987,8 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.isIncognito()).thenReturn(true);
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
@@ -4100,8 +4106,9 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
         mMediator.resetWithListOfTabs(tabs, false);
 
-        // Assert that a tab group status was recorded.
-        assertTrue(mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_INFO).getIsTabGroup());
+        assertEquals(
+                TabActionButtonType.OVERFLOW,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
     }
 
     @Test
@@ -4117,7 +4124,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
@@ -4141,7 +4148,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID, /* collaborationId= */ null);
@@ -4165,7 +4172,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
@@ -4185,7 +4192,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
@@ -4552,10 +4559,10 @@ public class TabListMediatorUnitTest {
                 instanceOf(TabListMediator.TabActionListener.class));
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
+                mModel.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).tabActionListener,
                 instanceOf(TabListMediator.TabActionListener.class));
         assertThat(
-                mModel.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
+                mModel.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).tabActionListener,
                 instanceOf(TabListMediator.TabActionListener.class));
     }
 

@@ -15,8 +15,8 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -62,7 +62,7 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabActionListener> TAB_ACTION_BUTTON_LISTENER =
+    public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
 
     /**
@@ -122,9 +122,6 @@ public class TabProperties {
     /** The {@link TabGroupColorId} for a tab group representation's color in TabListMode only. */
     public static final WritableIntPropertyKey TAB_GROUP_COLOR_ID = new WritableIntPropertyKey();
 
-    public static final WritableObjectPropertyKey<TabGroupInfo> TAB_GROUP_INFO =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
             new WritableBooleanPropertyKey();
 
@@ -138,7 +135,7 @@ public class TabProperties {
                 IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
@@ -158,7 +155,6 @@ public class TabProperties {
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_ID,
-                TAB_GROUP_INFO,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
                 HAS_NOTIFICATION_BUBBLE,
@@ -170,7 +166,7 @@ public class TabProperties {
                 TAB_ID,
                 IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
@@ -180,7 +176,7 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey[] TAB_ACTION_STATE_OBJECT_KEYS =
             new WritableObjectPropertyKey[] {
-                TAB_ACTION_BUTTON_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 ACTION_BUTTON_DESCRIPTION_STRING,

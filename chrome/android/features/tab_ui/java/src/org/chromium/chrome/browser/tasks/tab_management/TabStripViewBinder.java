@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,8 +61,10 @@ class TabStripViewBinder {
             if (model.get(TabProperties.IS_SELECTED)) {
                 button.setOnClickListener(
                         v -> {
-                            model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                                    .run(v, model.get(TabProperties.TAB_ID));
+                            TabActionButtonData data =
+                                    model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+                            assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
+                            data.tabActionListener.run(v, model.get(TabProperties.TAB_ID));
                         });
                 button.setContentDescription(
                         view.getContext()

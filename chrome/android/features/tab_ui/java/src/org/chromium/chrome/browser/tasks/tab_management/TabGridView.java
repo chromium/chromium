@@ -173,9 +173,12 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         }
     }
 
-    void setTabActionButtonDrawable(boolean isTabGroup) {
+    void setTabActionButtonDrawable(boolean showOverflowButton) {
         assert mTabActionState != TabActionState.UNSET;
-        if (isTabGroup) {
+
+        if (mTabActionState != TabActionState.CLOSABLE) return;
+
+        if (showOverflowButton) {
             mActionButton.setImageDrawable(
                     ResourcesCompat.getDrawable(
                             getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));

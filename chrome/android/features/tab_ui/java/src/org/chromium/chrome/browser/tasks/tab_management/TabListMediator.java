@@ -196,6 +196,48 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
+     * Holder class for a {@link TabActionListener} with a {@link TabActionButtonType} describing
+     * what the listener does to determine which drawable to show in the UI.
+     */
+    static class TabActionButtonData {
+        @IntDef({
+            TabActionButtonType.CLOSE,
+            TabActionButtonType.SELECT,
+            TabActionButtonType.OVERFLOW
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        @interface TabActionButtonType {
+            int CLOSE = 0;
+            int SELECT = 1;
+            int OVERFLOW = 2;
+        }
+
+        public final @TabActionButtonType int type;
+        public final TabActionListener tabActionListener;
+
+        TabActionButtonData(@TabActionButtonType int type, TabActionListener tabActionListener) {
+            this.type = type;
+            this.tabActionListener = tabActionListener;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+
+            if (other instanceof TabActionButtonData otherData) {
+                return this.type == otherData.type
+                        && Objects.equals(this.tabActionListener, otherData.tabActionListener);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.type, this.tabActionListener);
+        }
+    }
+
+    /**
      * An interface to get a SelectionDelegate that contains the selected items for a selectable tab
      * list.
      */
@@ -281,25 +323,6 @@ class TabListMediator implements TabListNotificationHandler {
                                                         mTab.getId(),
                                                         shoppingPersistedTabData.getPriceDrop()));
                             });
-        }
-    }
-
-    /** A class that stores shared info regarding a tab group's state. */
-    static class TabGroupInfo {
-        private boolean mIsTabGroupSyncEnabled;
-        private boolean mIsTabGroup;
-
-        TabGroupInfo(boolean isTabGroupSyncEnabled, boolean isTabGroup) {
-            mIsTabGroupSyncEnabled = isTabGroupSyncEnabled;
-            mIsTabGroup = isTabGroup;
-        }
-
-        boolean getIsTabGroupSyncEnabled() {
-            return mIsTabGroupSyncEnabled;
-        }
-
-        boolean getIsTabGroup() {
-            return mIsTabGroup;
         }
     }
 
@@ -1633,22 +1656,6 @@ class TabListMediator implements TabListNotificationHandler {
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
             updateFaviconForTab(tab, null, null);
         }
-        // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
-        // setting the property keys on the model. Both properties modify the onClickListener
-        // so ensure that the default behavior (close on click) is set first, and tab groups
-        // under valid circumstances will override the listener with alternate behavior.
-        if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
-        }
-        // Only set this for tab group representation cards. An onClickListener will be set in the
-        // view as part of the accompanying logic.
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            model.set(
-                    TabProperties.TAB_GROUP_INFO,
-                    new TabGroupInfo(
-                            TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
-        }
-
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
         model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
@@ -1886,15 +1893,22 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private TabListMediator.TabActionListener getTabActionButtonListener(
+    private TabActionButtonData getTabActionButtonData(
             Tab tab, @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
-            return mSelectableTabOnClickListener;
-        } else {
-            return isTabInTabGroup(tab)
-                    ? getTabGroupOverflowMenuClickListener()
-                    : mTabClosedListener;
+            return new TabActionButtonData(
+                    TabActionButtonData.TabActionButtonType.SELECT, mSelectableTabOnClickListener);
         }
+        // A tab is deemed a tab group card representation if it is part of a tab group and
+        // based in the tab switcher.
+        boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
+        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() && isTabGroup) {
+            return new TabActionButtonData(
+                    TabActionButtonData.TabActionButtonType.OVERFLOW,
+                    getTabGroupOverflowMenuClickListener());
+        }
+        return new TabActionButtonData(
+                TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
     }
 
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
@@ -1952,8 +1966,7 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.IS_SELECTED, isTabSelected(tabActionState, tab));
 
         model.set(
-                TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                getTabActionButtonListener(tab, tabActionState));
+                TabProperties.TAB_ACTION_BUTTON_DATA, getTabActionButtonData(tab, tabActionState));
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabClickListener(tab, tabActionState));
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
         model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
@@ -1964,24 +1977,6 @@ class TabListMediator implements TabListNotificationHandler {
                     TabModelUtils.getCurrentTabId(
                                     mCurrentTabModelFilterSupplier.get().getTabModel())
                             == tab.getId());
-            // A tab is deemed a tab group card representation if it is part of a tab group and
-            // based in the tab switcher.
-            boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
-            // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
-            // setting the property keys on the model. Both properties modify the onClickListener
-            // so ensure that the default behavior (close on click) is set first, and tab groups
-            // under valid circumstances will override the listener with alternate behavior.
-            if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-                model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
-            }
-            // Only set this for tab group representation cards. An onClickListener will be set in
-            // the view as part of the accompanying logic.
-            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                model.set(
-                        TabProperties.TAB_GROUP_INFO,
-                        new TabGroupInfo(
-                                TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
-            }
 
             updateDescriptionString(tab, model);
             updateActionButtonDescriptionString(tab, model);

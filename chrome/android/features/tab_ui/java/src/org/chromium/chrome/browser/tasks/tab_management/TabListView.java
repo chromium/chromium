@@ -62,6 +62,7 @@ public class TabListView extends SelectableItemViewBase<Integer> {
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.btn_close);
         Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
         mActionButton.setImageBitmap(bitmap);
+        mActionButton.setBackground(null);
     }
 
     private void setTabActionButtonSelectionDrawable() {
