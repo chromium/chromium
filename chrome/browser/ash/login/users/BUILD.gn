@@ -185,6 +185,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/userdataauth",
