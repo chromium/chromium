@@ -85,7 +85,7 @@ const CGFloat kVerticalPadding = 12.;
 const CGFloat kHorizontalPadding = 16.;
 const CGFloat kHorizontalGap = 16.;
 // The offset between texts.
-const CGFloat kTextOffset = 6.;
+const CGFloat kTextOffset = 2.;
 
 }  // namespace
 
