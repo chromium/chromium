@@ -84,7 +84,6 @@ group("resources") {
       "ash/inline_login:resources",
       "ash/settings:resources",
       "chromeos:resources",
-      "nearby_internals:resources",
     ]
   }
 
