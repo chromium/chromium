@@ -9,6 +9,10 @@
 
 @implementation TestLensOverlayController
 
+- (BOOL)isPanningSelectionUI {
+  return NO;
+}
+
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate {
   // NO-OP
 }

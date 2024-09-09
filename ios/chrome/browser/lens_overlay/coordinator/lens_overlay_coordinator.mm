@@ -345,9 +345,20 @@ const CGFloat kMenuSymbolSize = 18;
   UISheetPresentationController* sheet =
       base::apple::ObjCCastStrict<UISheetPresentationController>(
           presentationController);
-  return (![sheet.selectedDetentIdentifier
-      isEqualToString:UISheetPresentationControllerDetent.largeDetent
-                          .identifier]);
+  BOOL isInLargestDetent = [sheet.selectedDetentIdentifier
+      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
+
+  // If the user is actively adjusting a selection (by moving the selection
+  // frame), it means the sheet dismissal was incidental and shouldn't be
+  // processed. Only when the sheet is directly dragged downwards should the
+  // dismissal intent be considered.
+  BOOL isSelecting = _selectionViewController.isPanningSelectionUI;
+
+  if (isSelecting || isInLargestDetent) {
+    return NO;
+  }
+
+  return YES;
 }
 
 - (void)presentationControllerWillDismiss:

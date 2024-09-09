@@ -31,6 +31,9 @@
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
 
+// Whether the user is currently panning the selection UI.
+@property(nonatomic, readonly) BOOL isPanningSelectionUI;
+
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
 
