@@ -101,7 +101,7 @@ const CGFloat kProgressBarFull = 1.0f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
   // Webview container.
@@ -131,7 +131,8 @@ const CGFloat kProgressBarFull = 1.0f;
 
   // Omnibox container.
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  _omniboxContainer.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   _omniboxContainer.layer.cornerRadius = 21;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
@@ -271,10 +272,6 @@ const CGFloat kProgressBarFull = 1.0f;
   AddSameConstraints(_webView, self.webViewContainer);
 }
 
-- (void)setBackgroundColor:(UIColor*)backgroundColor {
-  self.view.backgroundColor = backgroundColor;
-}
-
 - (void)setLoadingProgress:(float)progress {
   [self updateProgressBarVisibilityForProgress:progress];
   [_progressBar setProgress:progress animated:YES completion:nil];
@@ -300,6 +297,10 @@ const CGFloat kProgressBarFull = 1.0f;
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter {
   return self;
+}
+
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
 - (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {

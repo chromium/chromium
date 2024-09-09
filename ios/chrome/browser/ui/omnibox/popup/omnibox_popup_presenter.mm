@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -72,12 +71,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _viewController = viewController;
     _layoutGuideCenter = layoutGuideCenter;
 
-    // Popup uses same colors as the toolbar, so the ToolbarConfiguration is
-    // used to get the style.
-    ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
-        initWithStyle:incognito ? ToolbarStyle::kIncognito
-                                : ToolbarStyle::kNormal];
-
     UIView* containerView = [[UIView alloc] init];
     [containerView addSubview:viewController.view];
     _popupContainerView = containerView;
@@ -95,7 +88,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       _popupContainerView.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor];
     } else {
-      _popupContainerView.backgroundColor = configuration.backgroundColor;
+      _popupContainerView.backgroundColor =
+          [self.delegate popupBackgroundColorForPresenter:self];
     }
 
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;

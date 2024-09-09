@@ -163,29 +163,4 @@ TEST_F(LensResultPageMediatorTest, ShouldAllowAnyNavigationNotInMainFrame) {
                                      /*target_frame_is_main=*/false));
 }
 
-// Tests that updating the background color calls the consumer.
-TEST_F(LensResultPageMediatorTest, BackgroundColorUpdates) {
-  AttachFakeWebState();
-
-  // Make the consumer mock strict.
-  mock_consumer_ =
-      [OCMockObject mockForProtocol:@protocol(LensResultPageConsumer)];
-  OCMExpect([mock_consumer_ setWebView:[OCMArg any]]);
-  mediator_.consumer = mock_consumer_;
-
-  // Background color is not updated if nil.
-  fake_web_state_->SetUnderPageBackgroundColor(nil);
-
-  // Background color is updated when it changes.
-  OCMExpect([mock_consumer_ setBackgroundColor:UIColor.blackColor]);
-  fake_web_state_->SetUnderPageBackgroundColor(UIColor.blackColor);
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  // Background color is updated when the navigation finishes.
-  OCMExpect([mock_consumer_ setBackgroundColor:UIColor.blackColor]);
-  web::FakeNavigationContext context;
-  fake_web_state_->OnNavigationFinished(&context);
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
 }  // namespace

@@ -124,7 +124,6 @@ const CGFloat kProgressBarFull = 1.0f;
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
   [self.consumer setWebView:_webState->GetView()];
-  [self updateBackgroundColor];
 }
 
 - (void)setWebStateDelegate:
@@ -201,11 +200,6 @@ const CGFloat kProgressBarFull = 1.0f;
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   _isInflightRequestLensInitiated = NO;
-  [self updateBackgroundColor];
-}
-
-- (void)webStateDidChangeUnderPageBackgroundColor:(web::WebState*)webState {
-  [self updateBackgroundColor];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -332,14 +326,6 @@ const CGFloat kProgressBarFull = 1.0f;
     [self.consumer setWebView:_webState->GetView()];
   }
   [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
-}
-
-/// Updates the consumer's background color.
-- (void)updateBackgroundColor {
-  UIColor* backgroundColor = _webState->GetUnderPageBackgroundColor();
-  if (backgroundColor) {
-    [self.consumer setBackgroundColor:backgroundColor];
-  }
 }
 
 #pragma mark - CRWWebStateObserver

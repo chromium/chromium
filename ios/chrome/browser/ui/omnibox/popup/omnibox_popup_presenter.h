@@ -24,6 +24,10 @@
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter;
 
+/// Returns the background color for the popup to match the style of the
+/// toolbar.
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter;
+
 /// Returns the layout guide name used to anchor the omnibox popup to the
 /// omnibox textfield. If nil, the popup will be fully expanded inside of the
 /// parent view, from `popupParentViewForPresenter`.
