@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -604,29 +605,33 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 - (void)updateResultOnConsumer:
     (const browsing_data::BrowsingDataCounter::Result*)result {
   std::string prefName = result->source()->GetPrefName();
+  browsing_data::TimePeriod timeRange = static_cast<browsing_data::TimePeriod>(
+      _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+  NSString* summary =
+      quick_delete_util::GetCounterTextFromResult(*result, timeRange);
 
   if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
-    [_consumer updateHistoryWithResult:*result];
+    [_consumer setHistorySummary:summary];
     return;
   }
 
   if (prefName == browsing_data::prefs::kCloseTabs) {
-    [_consumer updateTabsWithResult:*result];
+    [_consumer setTabsSummary:summary];
     return;
   }
 
   if (prefName == browsing_data::prefs::kDeleteCache) {
-    [_consumer updateCacheWithResult:*result];
+    [_consumer setCacheSummary:summary];
     return;
   }
 
   if (prefName == browsing_data::prefs::kDeletePasswords) {
-    [_consumer updatePasswordsWithResult:*result];
+    [_consumer setPasswordsSummary:summary];
     return;
   }
 
   if (prefName == browsing_data::prefs::kDeleteFormData) {
-    [_consumer updateAutofillWithResult:*result];
+    [_consumer setAutofillSummary:summary];
     return;
   }
 }
@@ -635,6 +640,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
     [_consumer setTimeRange:static_cast<browsing_data::TimePeriod>(
                                 _prefs->GetInteger(preferenceName))];
+    // Maybe update cache summary.
     return;
   }
 

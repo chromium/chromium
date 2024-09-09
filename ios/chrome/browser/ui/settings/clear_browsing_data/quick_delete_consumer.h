@@ -11,9 +11,9 @@ namespace browsing_data {
 enum class TimePeriod;
 }
 
-// Consumer for the QuickDeleteMediator to update the
+// Consumer for the QuickDeleteMediator to set the
 // QuickDeleteViewController.
-@protocol QuickDeleteConsumer
+@protocol QuickDeleteConsumer <NSObject>
 
 // Sets the ViewController with initial value for the deletion `timeRange`.
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange;
@@ -25,25 +25,20 @@ enum class TimePeriod;
 // footer string or not.
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter;
 
-// Updates the ViewController with the result of history counter.
-- (void)updateHistoryWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result;
+// Sets the ViewController with the history summary.
+- (void)setHistorySummary:(NSString*)historySummary;
 
-// Updates the ViewController with the result of cache counter.
-- (void)updateTabsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result;
+// Sets the ViewController with the tabs summary.
+- (void)setTabsSummary:(NSString*)tabsSummary;
 
-// Updates the ViewController with the result of tabs counter.
-- (void)updateCacheWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result;
+// Sets the ViewController with the cache summary.
+- (void)setCacheSummary:(NSString*)cacheSummary;
 
-// Updates the ViewController with the result of passwords counter.
-- (void)updatePasswordsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result;
+// Sets the ViewController with the passwords summary.
+- (void)setPasswordsSummary:(NSString*)passwordsSummary;
 
-// Updates the ViewController with the result of autofill counter.
-- (void)updateAutofillWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result;
+// Sets the ViewController with the autofill summary.
+- (void)setAutofillSummary:(NSString*)autofillSummary;
 
 // Sets the boolean value for the history pref selection.
 - (void)setHistorySelection:(BOOL)selected;

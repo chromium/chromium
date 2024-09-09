@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -52,7 +51,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @interface QuickDeleteBrowsingDataViewController () <
     TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
-  browsing_data::TimePeriod _timeRange;
+
   NSString* _historySummary;
   NSString* _tabsSummary;
   NSString* _cacheSummary;
@@ -183,15 +182,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
-  if (_timeRange == timeRange) {
-    return;
-  }
-  _timeRange = timeRange;
+  // No-op: This ViewController doesn't make user of the selected time range.
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
-  // TODO(crbug.com/353211728): Remove this after refactoring the main page
-  // summary to use the new methods for results & selection.
+  // No-op: This ViewController doesn't show the overall browsing data summary.
 }
 
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
@@ -208,38 +203,28 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-- (void)updateHistoryWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _historySummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setHistorySummary:(NSString*)historySummary {
+  _historySummary = historySummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
-- (void)updateTabsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _tabsSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setTabsSummary:(NSString*)tabsSummary {
+  _tabsSummary = tabsSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
 }
 
-- (void)updateCacheWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _cacheSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setCacheSummary:(NSString*)cacheSummary {
+  _cacheSummary = cacheSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
-- (void)updatePasswordsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _passwordsSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setPasswordsSummary:(NSString*)passwordsSummary {
+  _passwordsSummary = passwordsSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
 
-- (void)updateAutofillWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  _autofillSummary =
-      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+- (void)setAutofillSummary:(NSString*)autofillSummary {
+  _autofillSummary = autofillSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
 }
 

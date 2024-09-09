@@ -297,53 +297,59 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                   }];
 }
 
-- (void)updateHistoryWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setHistorySummary:(NSString*)historySummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateTabsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setTabsSummary:(NSString*)tabsSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateCacheWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setCacheSummary:(NSString*)cacheSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updatePasswordsWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setPasswordsSummary:(NSString*)passwordsSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
-- (void)updateAutofillWithResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/353211728): Refactor summary using this result.
+- (void)setAutofillSummary:(NSString*)autofillSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
 }
 
 - (void)setHistorySelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)setTabsSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)setCacheSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
-  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+  // No-op: This ViewController doesn't show the selection for each browsing
+  // data type.
 }
 
 - (void)deletionInProgress {
