@@ -13,8 +13,8 @@ namespace tracing {
 // This class is a data source that populates a ChromeMetadataPacket
 // field in a perfetto trace. Currently only field trial hashes
 // and version code (for official Android builds) are recorded
-// when the tracing session is stopping.
-// This data source supports multiple concurrent sessions,
+// when the tracing session is flushed (to cover the cases when a session is
+// cloned) or stopped. This data source supports multiple concurrent sessions,
 // unlike TraceEventMetadataSource in trace_event_data_source.h
 class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
     : public perfetto::DataSource<MetadataDataSource> {
@@ -22,7 +22,11 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
   static void Register();
 
   void OnStart(const StartArgs&) override;
+  void OnFlush(const FlushArgs&) override;
   void OnStop(const StopArgs&) override;
+
+ private:
+  void WriteMetadata();
 };
 
 }  // namespace tracing
