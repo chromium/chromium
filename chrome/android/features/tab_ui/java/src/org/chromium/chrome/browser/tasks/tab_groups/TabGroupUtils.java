@@ -55,10 +55,6 @@ public class TabGroupUtils {
                 accessibilityTextId =
                         R.string.iph_tab_groups_tap_to_see_another_tab_accessibility_text;
                 break;
-            case FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE:
-                textId = R.string.iph_tab_groups_your_tabs_together_text;
-                accessibilityTextId = textId;
-                break;
             default:
                 assert false;
                 return;

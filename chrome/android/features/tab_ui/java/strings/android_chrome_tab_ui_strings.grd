@@ -179,9 +179,6 @@
       <message name="IDS_IPH_TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_TEXT" desc="This in-product help text points to the strip of favicons at the bottom of the page. The favicons indicate all the open tabs within the tab group. The text informs the user that they can tap on any favicon to switch to that tab.">
         Tap to see another tab
       </message>
-      <message name="IDS_IPH_TAB_GROUPS_YOUR_TABS_TOGETHER_TEXT" desc="This in-product help text points to a group of tabs within the Tab Switcher. The text informs the user that they can find existing tab groups in the Tab Switcher.">
-        Your tabs are grouped together here
-      </message>
       <message name="IDS_IPH_TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_ACCESSIBILITY_TEXT" desc="This in-product help accessibility text points to the strip of favicons at the bottom of the page. The favicons indicate all the open tabs within the tab group. The text informs the user that they can tap on any favicon to switch to that tab.">
         Switch between tabs in your tab group near bottom of screen
       </message>

@@ -84,7 +84,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupSyncOnStripFeature,
-    &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,

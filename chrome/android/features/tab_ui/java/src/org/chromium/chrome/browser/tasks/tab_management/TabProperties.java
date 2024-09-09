@@ -13,7 +13,6 @@ import android.view.View.AccessibilityDelegate;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
@@ -82,9 +81,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<IphProvider> IPH_PROVIDER =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
@@ -141,7 +137,6 @@ public class TabProperties {
                 IS_SELECTED,
                 GRID_CARD_SIZE,
                 THUMBNAIL_FETCHER,
-                IPH_PROVIDER,
                 TITLE,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
