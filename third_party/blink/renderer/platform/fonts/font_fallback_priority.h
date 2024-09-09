@@ -23,10 +23,11 @@ enum class FontFallbackPriority {
   kEmojiEmoji,
   // For emoji in emoji presentation with variation selector 16
   kEmojiEmojiWithVS,
-  kInvalid
+  kInvalid,
 
-  // When adding values, ensure `kFontFallbackPriorityBits` in
-  // `InlineItemSegment` is in sync.
+  // When adding values, ensure `kMaxEnumValue` is the largest value to store
+  // (values that can be returned for non-empty inputs).
+  kMaxEnumValue = kEmojiEmojiWithVS,
 };
 
 inline bool IsNonTextFallbackPriority(FontFallbackPriority fallback_priority) {
