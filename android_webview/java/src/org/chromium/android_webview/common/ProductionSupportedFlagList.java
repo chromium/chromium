@@ -1050,7 +1050,10 @@ public final class ProductionSupportedFlagList {
                 "SqlWALModeOnWebDatabase",
                 "Enables Write-Ahead Logging (WAL) mode for the SQLite database used by the"
                         + " Chromium components that WebView relies on"),
-        Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization")
+        Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_DIGITAL_ASSET_LINKS_LOAD_INCLUDES,
+                "Enable loading include statements when checking digital asset links."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

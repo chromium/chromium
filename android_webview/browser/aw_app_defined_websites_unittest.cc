@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_asset_domain_list_include_handler.h"
+#include "android_webview/common/aw_features.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -14,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -346,6 +348,162 @@ TEST_F(AppDefinedWebsitesTest,
 
             runloop.Quit();
           }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest, IsAppDefinedDomainWithoutIncludes) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
+                    {"asset-statement.example"});
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://asset-statement.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_TRUE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest,
+       IsAppDefinedDomainWithoutIncludes_emptyListIsNotAppDefined) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements, {});
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://asset-statement.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_FALSE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest,
+       IsAppDefinedDomainWithoutIncludes_otherDomainIsNotRelated) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
+                    {"other.domain.example"});
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://asset-statement.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_FALSE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest, IsAppDefinedDomainWithIncludes) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements, {});
+  SetAppIncludeLinksResults({kOriginIncludeUrl});
+  test_url_loader_factory_.AddResponse(kOriginIncludeUrl,
+                                       kOriginIncludeResponse);
+
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://assetsite.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_TRUE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest,
+       IsAppDefinedDomainWithIncludes_loadFromManifestDirectly) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
+                    {"asset-statement.example"});
+  SetAppIncludeLinksResults({kOriginIncludeUrl});
+  test_url_loader_factory_.AddResponse(kOriginIncludeUrl,
+                                       kOriginIncludeResponse);
+
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://asset-statement.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_TRUE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest,
+       IsAppDefinedDomainWithIncludes_emptyListIsNotAppDefined) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements, {});
+  SetAppIncludeLinksResults({kOriginIncludeUrl});
+  test_url_loader_factory_.AddResponse(kOriginIncludeUrl, "");
+
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://assetsite.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_FALSE(is_app_defined);
+        runloop.Quit();
+      }));
+
+  runloop.Run();
+}
+
+TEST_F(AppDefinedWebsitesTest,
+       IsAppDefinedDomainWithIncludes_otherDomainIsNotRelated) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      features::kWebViewDigitalAssetLinksLoadIncludes);
+
+  SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements, {});
+  SetAppIncludeLinksResults({kOriginIncludeUrl});
+  test_url_loader_factory_.AddResponse(kOriginIncludeUrl,
+                                       kOriginIncludeResponse);
+
+  url::Origin top_level_origin =
+      url::Origin::Create(GURL("https://unrelated.example"));
+  base::RunLoop runloop;
+  unit_under_test_.AppDeclaresDomainInAssetStatements(
+      GetDomainListIncludeHandler(), top_level_origin,
+      base::BindLambdaForTesting([&runloop](bool is_app_defined) {
+        EXPECT_FALSE(is_app_defined);
+        runloop.Quit();
+      }));
 
   runloop.Run();
 }

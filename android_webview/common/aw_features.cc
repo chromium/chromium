@@ -7,8 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "services/network/public/cpp/features.h"
 
-namespace android_webview {
-namespace features {
+namespace android_webview::features {
 
 // Alphabetical:
 
@@ -29,6 +28,11 @@ BASE_FEATURE(kWebViewBackForwardCache,
 BASE_FEATURE(kWebViewCheckPakFileDescriptors,
              "WebViewCheckPakFileDescriptors",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable loading include statements when checking digital asset links
+BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
+             "WebViewDigitalAssetLinksLoadIncludes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows JS DataTransfer Files from content URIs in drag-drop.
 BASE_FEATURE(kWebViewDragDropFiles,
@@ -248,5 +252,4 @@ BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              "CreateSpareRendererOnBrowserContextCreation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace android_webview
+}  // namespace android_webview::features

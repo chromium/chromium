@@ -9,8 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
-namespace android_webview {
-namespace features {
+namespace android_webview::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
@@ -19,6 +18,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kWebViewAutoSAA);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
 BASE_DECLARE_FEATURE(kWebViewCheckPakFileDescriptors);
+BASE_DECLARE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes);
 BASE_DECLARE_FEATURE(kWebViewDisplayCutout);
 BASE_DECLARE_FEATURE(kWebViewDragDropFiles);
 BASE_DECLARE_FEATURE(kWebViewEnumerateDevicesCache);
@@ -58,7 +58,6 @@ BASE_DECLARE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU);
 BASE_DECLARE_FEATURE(kWebViewHyperlinkContextMenu);
 BASE_DECLARE_FEATURE(kCreateSpareRendererOnBrowserContextCreation);
 
-}  // namespace features
-}  // namespace android_webview
+}  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

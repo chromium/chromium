@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/origin.h"
 
 namespace android_webview {
 
@@ -75,6 +76,16 @@ class AppDefinedWebsites {
   void GetAssetStatmentsWithIncludes(
       std::unique_ptr<AssetDomainListIncludeHandler> domain_list_loader,
       AppDomainSetCallback callback);
+
+  // Check if the provided `origin` is defined by the app's asset statement
+  // domains. This method may cause network requests if there are any include
+  // statements in the asset list and they have not been loaded yet. The
+  // `domain_list_loader` will be used to load included references from the
+  // network. The `callback` is executed on the calling sequence.
+  void AppDeclaresDomainInAssetStatements(
+      std::unique_ptr<AssetDomainListIncludeHandler> domain_list_loader,
+      const url::Origin& origin,
+      base::OnceCallback<void(bool)> callback);
 
  private:
   friend class base::NoDestructor<AppDefinedWebsites>;

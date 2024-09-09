@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_asset_domain_list_include_handler.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -17,6 +18,7 @@
 #include "base/barrier_callback.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
@@ -153,6 +155,31 @@ void AppDefinedWebsites::GetAssetStatmentsWithIncludes(
       base::BindOnce(&AppDefinedWebsites::AssetIncludeStatementsReturned,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(domain_list_loader)));
+}
+
+void AppDefinedWebsites::AppDeclaresDomainInAssetStatements(
+    std::unique_ptr<AssetDomainListIncludeHandler> domain_list_loader,
+    const url::Origin& origin,
+    base::OnceCallback<void(bool)> callback) {
+  AppDomainCallback callback_wrapper = base::BindOnce(
+      [](const url::Origin origin,
+         base::OnceCallback<void(bool)> defined_callback,
+         const std::vector<std::string>& domains) {
+        bool is_defined = std::find_if(domains.begin(), domains.end(),
+                                       [&origin](const std::string& domain) {
+                                         return origin.DomainIs(domain);
+                                       }) != domains.end();
+        std::move(defined_callback).Run(is_defined);
+      },
+      origin, std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewDigitalAssetLinksLoadIncludes)) {
+    GetAssetStatmentsWithIncludes(std::move(domain_list_loader),
+                                  std::move(callback_wrapper));
+  } else {
+    GetAppDefinedDomains(AppDefinedDomainCriteria::kAndroidAssetStatements,
+                         std::move(callback_wrapper));
+  }
 }
 
 namespace {

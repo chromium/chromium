@@ -18,6 +18,8 @@ found in the LICENSE file.
           \"namespace\": \"web\",
           \"site\": \"http://localhost\"
         }
+      }, {
+        \"include\": \"http://localhost:2024/includedstatements.json\"
       }]
     </string>
 </resources>
