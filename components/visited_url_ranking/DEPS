@@ -8,6 +8,7 @@ include_rules = [
   "+components/segmentation_platform/internal/metadata",
   "+components/strings",
   "+components/sessions/core",
+  "+components/sync/protocol",
   "+components/sync_device_info",
   "+components/sync_sessions",
   "+ui/base",

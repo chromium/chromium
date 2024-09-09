@@ -61,6 +61,9 @@ const URLVisitAggregate::TabData* GetTabDataIfExists(
 const URLVisitAggregate::Tab* GetTabIfExists(
     const URLVisitAggregate& url_visit_aggregate);
 
+const URLVisitAggregate::HistoryData* GetHistoryDataIfExists(
+    const URLVisitAggregate& url_visit_aggregate);
+
 // Returns a history entry if it exists for a `URLVisitAggregate`.
 const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
     const URLVisitAggregate& url_visit_aggregate);

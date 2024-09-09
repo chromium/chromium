@@ -303,10 +303,10 @@ const URLVisitAggregate::TabData* GetTabDataIfExists(
     const URLVisitAggregate& url_visit_aggregate) {
   const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
   for (const auto& fetcher : {Fetcher::kTabModel, Fetcher::kSession}) {
-    if (fetcher_data_map.find(fetcher) != fetcher_data_map.end()) {
+    auto it = fetcher_data_map.find(fetcher);
+    if (it != fetcher_data_map.end()) {
       const URLVisitAggregate::TabData* tab_data =
-          std::get_if<URLVisitAggregate::TabData>(
-              &fetcher_data_map.at(fetcher));
+          std::get_if<URLVisitAggregate::TabData>(&it->second);
       return tab_data;
     }
   }
@@ -333,6 +333,19 @@ const URLVisitAggregate::Tab* GetTabIfExists(
     if (tab_data) {
       return &tab_data->last_active_tab;
     }
+  }
+
+  return nullptr;
+}
+
+const URLVisitAggregate::HistoryData* GetHistoryDataIfExists(
+    const URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  auto it = fetcher_data_map.find(Fetcher::kHistory);
+  if (it != fetcher_data_map.end()) {
+    const URLVisitAggregate::HistoryData* history_data =
+        std::get_if<URLVisitAggregate::HistoryData>(&it->second);
+    return history_data;
   }
 
   return nullptr;

@@ -7,6 +7,7 @@
 #import "components/history_clusters/core/config.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #import "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #import "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/visited_url_ranking/model/ios_tab_model_url_visit_data_fetcher.h"
 
@@ -41,6 +43,7 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 // static
@@ -77,10 +80,12 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
   auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
       browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service) {
+    syncer::DeviceInfoSyncService* device_info_sync_service =
+        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
     data_fetchers.emplace(
         visited_url_ranking::Fetcher::kHistory,
         std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(
-            history_service));
+            history_service, device_info_sync_service));
   }
 
   std::map<visited_url_ranking::URLVisitAggregatesTransformType,

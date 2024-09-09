@@ -42,7 +42,8 @@ struct URLVisit {
            const std::u16string& title_arg,
            const base::Time& last_modified_arg,
            syncer::DeviceInfo::FormFactor device_type_arg,
-           Source source_arg);
+           Source source_arg,
+           const std::optional<std::string>& client_name = std::nullopt);
   URLVisit(const URLVisit&);
   ~URLVisit();
 
@@ -58,6 +59,9 @@ struct URLVisit {
       syncer::DeviceInfo::FormFactor::kUnknown;
   // The source from which the visit originated (i.e. local or remote).
   Source source = Source::kNotApplicable;
+  // The visit's user visible client name, if applicable. Only set for remote
+  // sources.
+  std::optional<std::string> client_name;
 };
 
 /**
@@ -105,7 +109,10 @@ struct URLVisitAggregate {
   };
 
   struct HistoryData {
-    explicit HistoryData(history::AnnotatedVisit annotated_visit);
+    explicit HistoryData(history::AnnotatedVisit annotated_visit,
+                         std::optional<std::string> client_name = std::nullopt,
+                         syncer::DeviceInfo::FormFactor device_type_arg =
+                             syncer::DeviceInfo::FormFactor::kUnknown);
     HistoryData(const HistoryData&) = delete;
     HistoryData(HistoryData&& other);
     HistoryData& operator=(HistoryData&& other);
@@ -115,8 +122,11 @@ struct URLVisitAggregate {
     // time period.
     history::AnnotatedVisit last_visited;
 
-    // The last `app_id` value if any for any of the visits associated with the
-    // URL visit aggregate.
+    // Associated URL visit data.
+    URLVisit visit;
+
+    // The last `app_id` value if any for any of the visits associated with
+    // the URL visit aggregate.
     std::optional<std::string> last_app_id = std::nullopt;
 
     // Whether any of the annotated visits for the given URL visit aggregate are

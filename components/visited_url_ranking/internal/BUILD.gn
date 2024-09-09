@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/sessions",
+    "//components/sync/protocol",
     "//components/sync_sessions",
     "//components/url_deduplication",
     "//components/visited_url_ranking/public",

@@ -14,6 +14,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/local_device_info_util.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -64,8 +66,10 @@ using Source = URLVisit::Source;
 using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
 
 HistoryURLVisitDataFetcher::HistoryURLVisitDataFetcher(
-    history::HistoryService* history_service)
-    : history_service_(history_service) {}
+    history::HistoryService* history_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service)
+    : history_service_(history_service),
+      device_info_sync_service_(device_info_sync_service) {}
 
 HistoryURLVisitDataFetcher::~HistoryURLVisitDataFetcher() = default;
 
@@ -116,11 +120,25 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
         1, 100, 100);
   }
 
-  std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
+  std::map<std::string, std::pair<std::string, syncer::DeviceInfo::FormFactor>>
+      sync_device_info;
+  syncer::DeviceInfoTracker* device_info_tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+  if (device_info_tracker) {
+    for (const syncer::DeviceInfo* device_info :
+         device_info_tracker->GetAllDeviceInfo()) {
+      sync_device_info[device_info->guid()] = {device_info->client_name(),
+                                               device_info->form_factor()};
+    }
+  }
+
   base::Time::Exploded time_exploded;
   config.clock->Now().LocalExplode(&time_exploded);
   DayGroup current_day_group = GetDayGroupForExplodedTime(time_exploded);
   TimeGroup current_time_group = GetTimeGroupForExplodedTime(time_exploded);
+  syncer::DeviceInfo::FormFactor local_device_form_factor =
+      syncer::GetLocalDeviceFormFactor();
+  std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
   for (auto& annotated_visit : annotated_visits) {
     // The `originator_cache_guid` field is only set for foreign session visits.
     Source current_visit_source =
@@ -135,10 +153,27 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
                                       annotated_visit.url_row.title(),
                                       config.deduplication_helper);
     if (url_annotations.find(url_key) == url_annotations.end()) {
+      std::optional<std::string> client_name = std::nullopt;
+      syncer::DeviceInfo::FormFactor device_type =
+          syncer::DeviceInfo::FormFactor::kUnknown;
+      if (annotated_visit.visit_row.originator_cache_guid.empty()) {
+        device_type = local_device_form_factor;
+      } else {
+        auto it = sync_device_info.find(
+            annotated_visit.visit_row.originator_cache_guid);
+        if (it != sync_device_info.end()) {
+          client_name = it->second.first;
+          device_type = it->second.second;
+        }
+      }
+
       // `GetAnnotatedVisits` returns a reverse-chronological sorted list of
-      // annotated visits, thus, the first visit in the vector is the last
-      // active (i.e. most recent) visit for a given URL.
-      url_annotations.emplace(url_key, std::move(annotated_visit));
+      // annotated visits, thus, the first visit in the vector is the most
+      // recently navigated visit for a given URL.
+      url_annotations.emplace(std::piecewise_construct,
+                              std::forward_as_tuple(url_key),
+                              std::forward_as_tuple(std::move(annotated_visit),
+                                                    client_name, device_type));
     } else {
       auto& history = url_annotations.at(url_key);
       history.visit_count += 1;
