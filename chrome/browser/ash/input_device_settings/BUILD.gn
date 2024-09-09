@@ -31,3 +31,20 @@ static_library("input_device_settings") {
     "//services/network/public/cpp",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "peripherals_app_delegate_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":input_device_settings",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

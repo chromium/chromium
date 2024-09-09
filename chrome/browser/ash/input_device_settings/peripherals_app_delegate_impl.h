@@ -22,8 +22,11 @@ class SharedURLLoaderFactory;
 namespace apps {
 class AlmanacAppIconLoader;
 struct QueryError;
+class DeviceInfoManager;
+struct DeviceInfo;
 }  // namespace apps
 
+class GURL;
 class Profile;
 
 namespace ash {
@@ -42,6 +45,14 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
   void GetCompanionAppInfo(const std::string& device_key,
                            GetCompanionAppInfoCallback callback) override;
 
+  // Returns the GURL for the endpoint. Exposed for tests.
+  GURL GetServerUrl();
+
+  void set_profile_for_testing(Profile* profile) {
+    profile_for_testing_ = profile;
+    is_testing_ = true;
+  }
+
  private:
   void ConvertPeripheralsResponseProto(
       base::WeakPtr<Profile> active_user_profile_weak_ptr,
@@ -53,8 +64,23 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
                        mojom::CompanionAppInfo info,
                        apps::IconValuePtr icon_value);
 
+  void OnDeviceInfoFetched(base::WeakPtr<Profile> active_user_profile_weak_ptr,
+                           GetCompanionAppInfoCallback callback,
+                           const std::string& device_key,
+                           apps::DeviceInfo device_info);
+
+  // Retrieves the active user profile, considering testing scenarios.
+  // Returns:
+  //   - A pointer to the active user profile.
+  //   - If 'is_testing_' is true, returns 'profile_for_testing_'.
+  //   - Otherwise, delegates to ProfileManager to get the active profile.
+  Profile* GetActiveUserProfile();
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<apps::AlmanacAppIconLoader> icon_loader_;
+  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
+  raw_ptr<Profile> profile_for_testing_ = nullptr;
+  bool is_testing_ = false;
   base::WeakPtrFactory<PeripheralsAppDelegateImpl> weak_factory_{this};
 };
 
