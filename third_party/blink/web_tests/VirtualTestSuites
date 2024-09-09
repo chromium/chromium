@@ -1447,9 +1447,7 @@
     "prefix": "html-anchor-attribute-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/popovers"
-    ],
+    "bases": ["external/wpt/html/semantics/popovers"],
     "args": ["--disable-blink-features=HTMLAnchorAttribute"],
     "expires": "Jun 1, 2025"
   },
@@ -1460,6 +1458,14 @@
     "bases": ["external/wpt/css/css-anchor-position"],
     "args": ["--enable-blink-features=CSSPositionTryOptions"],
     "expires": "Dec 1, 2024"
+  },
+  {
+    "prefix": "popover-anchor-relationships-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/html/semantics/popovers"],
+    "args": ["--disable-blink-features=PopoverAnchorRelationships"],
+    "expires": "Jun 1, 2025"
   },
   {
     "owners": [
