@@ -85,8 +85,8 @@ const char kAbandonReasonHidden[] = "Hidden";
 const char kAbandonReasonErrorPage[] = "ErrorPage";
 const char kAbandonReasonAppBackgrounded[] = "AppBackgrounded";
 
-const char kSuffixWasBackgrounded[] = ".WasBackgrounded";
-const char kSuffixWasHidden[] = ".WasHidden";
+const char kSuffixWasBackgrounded[] = ".WasAppBackgrounded";
+const char kSuffixWasHidden[] = ".WasTabHidden";
 const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 
 const char kMilestoneNavigationStart[] = "NavigationStart";
@@ -571,7 +571,7 @@ AbandonedPageLoadMetricsObserver::OnStart(
 
   if (!started_in_foreground) {
     page_load_metrics::mojom::PageLoadTiming empty_timing;
-    FlushMetricsOnAppEnterBackground(empty_timing);
+    OnHidden(empty_timing);
   }
 
   return CONTINUE_OBSERVING;
