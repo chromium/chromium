@@ -38,10 +38,10 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
 
   virtual bool isFile() const { return false; }
   virtual bool isDirectory() const { return false; }
-  const char* kind() const {
-    const auto kind = isFile() ? V8FileSystemHandleKind::Enum::kFile
-                               : V8FileSystemHandleKind::Enum::kDirectory;
-    return V8FileSystemHandleKind(kind).AsCStr();
+  V8FileSystemHandleKind kind() const {
+    return V8FileSystemHandleKind(
+        isFile() ? V8FileSystemHandleKind::Enum::kFile
+                 : V8FileSystemHandleKind::Enum::kDirectory);
   }
   const String& name() const { return name_; }
 

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_change_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -30,7 +31,7 @@ class FileSystemChangeRecord : public ScriptWrappable {
   const Vector<String>& relativePathComponents() const {
     return relative_path_components_;
   }
-  const char* type() const;
+  V8FileSystemChangeType type() const;
   std::optional<Vector<String>> relativePathMovedFrom() const;
 
   void Trace(Visitor* visitor) const override;

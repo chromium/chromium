@@ -51,7 +51,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
                  FileSystemReadWriteOptions* options,
                  ExceptionState&);
 
-  const char* mode();
+  String mode();
 
  private:
   FileSystemAccessFileDelegate* file_delegate() { return file_delegate_.Get(); }

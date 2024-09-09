@@ -45,7 +45,7 @@ class FileSystemWritableFileStream final : public WritableStream {
   ScriptPromise<IDLUndefined> seek(ScriptState*,
                                    uint64_t offset,
                                    ExceptionState&);
-  const char* mode() const;
+  String mode() const;
 
  private:
   Member<FileSystemUnderlyingSink> underlying_sink_;
