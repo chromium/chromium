@@ -2744,7 +2744,6 @@ crbug.com/356913453 external/wpt/css/motion/offset-path-shape-ellipse-007.html [
 crbug.com/356955226 external/wpt/fedcm/lfedcm-identity.create-store-collect.tentative.sub.https.html [ Timeout ]
 crbug.com/356955226 external/wpt/fedcm/lfedcm-identity.discovery.tentative.sub.https.html [ Timeout ]
 crbug.com/356428750 external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]
-crbug.com/356441927 [ Mac11 ] external/wpt/css/css-masking/animations/mask-border-outset-interpolation.html [ Failure Timeout ]
 crbug.com/356428750 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]
 crbug.com/356436572 external/wpt/css/css-box/margin-trim/block-container-block-end-collapsed-margins.html [ Failure ]
 crbug.com/356436572 external/wpt/css/css-box/margin-trim/block-container-block-end-self-collapsing-item-has-larger-block-end.html [ Failure ]
