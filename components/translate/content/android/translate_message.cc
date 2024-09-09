@@ -20,6 +20,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -536,13 +537,15 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
   return bridge_->ConstructMenuItemArray(
       env,
       base::android::ToJavaArrayOfStrings(env,
-                                          base::make_span(titles, item_count)),
+                                          base::span(titles).first(item_count)),
       base::android::ToJavaArrayOfStrings(
-          env, base::make_span(subtitles, item_count)),
-      base::android::ToJavaBooleanArray(env, has_checkmarks, item_count),
-      base::android::ToJavaIntArray(env, overflow_menu_item_ids, item_count),
+          env, base::span(subtitles).first(item_count)),
+      base::android::ToJavaBooleanArray(
+          env, base::span(has_checkmarks).first(item_count)),
+      base::android::ToJavaIntArray(
+          env, base::span(overflow_menu_item_ids).first(item_count)),
       base::android::ToJavaArrayOfStrings(
-          env, base::make_span(language_codes, item_count)));
+          env, base::span(language_codes).first(item_count)));
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
@@ -728,7 +731,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
       base::android::ToJavaArrayOfStrings(env, subtitles),
       /*has_checkmarks=*/
       base::android::ToJavaBooleanArray(
-          env, std::make_unique<bool[]>(titles.size()).get(), titles.size()),
+          env, base::HeapArray<bool>::WithSize(titles.size())),
       base::android::ToJavaIntArray(env, overflow_menu_item_ids),
       base::android::ToJavaArrayOfStrings(env, language_codes));
 }

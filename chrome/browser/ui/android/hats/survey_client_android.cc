@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/heap_array.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_config_android.h"
@@ -58,8 +59,8 @@ void SurveyClientAndroid::LaunchSurvey(
   // Parse bit PSDs.
   std::vector<std::string> bits_fields;
   auto bits_values =
-      std::make_unique<bool[]>(product_specific_bits_data.size());
-  int value_iterator = 0;
+      base::HeapArray<bool>::WithSize(product_specific_bits_data.size());
+  size_t value_iterator = 0u;
   base::ranges::for_each(
       product_specific_bits_data.begin(), product_specific_bits_data.end(),
       [&bits_fields, &bits_values,
@@ -70,8 +71,7 @@ void SurveyClientAndroid::LaunchSurvey(
   ScopedJavaLocalRef<jobjectArray> jpsd_bits_data_fields =
       base::android::ToJavaArrayOfStrings(env, bits_fields);
   ScopedJavaLocalRef<jbooleanArray> jpsd_bits_data_vals =
-      base::android::ToJavaBooleanArray(env, bits_values.get(),
-                                        bits_fields.size());
+      base::android::ToJavaBooleanArray(env, bits_values);
 
   // Parse string PSDs.
   std::vector<std::string> string_fields;
