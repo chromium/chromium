@@ -199,10 +199,7 @@ public class TemplateUrlServiceTest {
         // Ensure known state of default search index before running test.
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                searchEngines,
-                defaultSearchEngine,
-                /* isEeaChoiceCountry= */ false,
-                mTemplateUrlService.shouldShowUpdatedSettings());
+                searchEngines, defaultSearchEngine, /* isEeaChoiceCountry= */ false);
 
         // Outside of the EEA, where prepopulated engines are always sorted by ID, Google has the
         // lowest ID and will be at the index 0 in the sorted list.

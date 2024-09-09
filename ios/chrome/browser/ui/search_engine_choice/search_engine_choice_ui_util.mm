@@ -34,8 +34,7 @@ void GetSearchEngineFavicon(
     TemplateURLService* template_url_service,
     FaviconLoader* favicon_loader,
     FaviconLoader::FaviconAttributesCompletionBlock favicon_block_handler) {
-  if (search_engine_choice_service->ShouldShowUpdatedSettings() &&
-      search_engines::IsEeaChoiceCountry(
+  if (search_engines::IsEeaChoiceCountry(
           search_engine_choice_service->GetCountryId()) &&
       template_url.prepopulate_id() > 0) {
     // For EEA countries, embedded favicons should be prefered, with a fall

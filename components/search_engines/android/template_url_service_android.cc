@@ -524,7 +524,3 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(
 jboolean TemplateUrlServiceAndroid::IsEeaChoiceCountry(JNIEnv* env) {
   return template_url_service_->IsEeaChoiceCountry();
 }
-
-jboolean TemplateUrlServiceAndroid::ShouldShowUpdatedSettings(JNIEnv* env) {
-  return template_url_service_->ShouldShowUpdatedSettings();
-}

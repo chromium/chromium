@@ -138,11 +138,6 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // returns.
   jboolean IsEeaChoiceCountry(JNIEnv* env);
 
-  // Returns whether the version of the search engines settings screen showing
-  // additional search engine info should be shown.
-  // TODO(b/318824817): To be removed post-launch.
-  jboolean ShouldShowUpdatedSettings(JNIEnv* env);
-
  private:
   bool IsDefaultSearchEngineGoogle();
 

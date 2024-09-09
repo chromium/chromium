@@ -28,20 +28,13 @@ SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-  CHECK(search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog));
 }
 
 // static
 bool SearchEngineChoiceTabHelper::IsHelperNeeded() {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kDialog)) {
-    // TODO(crbug.com/347223092): Replace this with a check of availability of
-    // `SearchEngineChoiceDialogService`. However we need to be mindful of how
-    // this might affect metrics, see https://b/351778022.
-    return false;
-  }
-
+  // TODO(crbug.com/347223092): Replace this with a check of availability of
+  // `SearchEngineChoiceDialogService`. However we need to be mindful of how
+  // this might affect metrics, see https://b/351778022.
   // We can't get a browser at this point, so checking the eligibility of the
   // browser itself is not possible now.
 

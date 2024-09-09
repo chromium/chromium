@@ -71,7 +71,6 @@ android_resources("java_resources") {
     "java/res/drawable/search_sogou.xml",
     "java/res/layout/blocking_choice_dialog.xml",
     "java/res/layout/default_search_engine_dialog_view.xml",
-    "java/res/layout/search_engine.xml",
     "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_recent_title.xml",
     "java/res/layout/search_engine_with_logo.xml",

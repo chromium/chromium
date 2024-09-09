@@ -209,8 +209,7 @@ public class SearchEngineAdapter extends BaseAdapter
         sortAndFilterUnnecessaryTemplateUrl(
                 templateUrls,
                 defaultSearchEngineTemplateUrl,
-                templateUrlService.isEeaChoiceCountry(),
-                templateUrlService.shouldShowUpdatedSettings());
+                templateUrlService.isEeaChoiceCountry());
         boolean forceRefresh = mIsLocationPermissionChanged;
         mIsLocationPermissionChanged = false;
         if (!didSearchEnginesChange(templateUrls)) {
@@ -265,11 +264,10 @@ public class SearchEngineAdapter extends BaseAdapter
     public static void sortAndFilterUnnecessaryTemplateUrl(
             List<TemplateUrl> templateUrls,
             TemplateUrl defaultSearchEngine,
-            boolean isEeaChoiceCountry,
-            boolean shouldShowUpdatedSettings) {
+            boolean isEeaChoiceCountry) {
         // In the EEA and when the new settings design is shown, we want to avoid re-sorting, to
         // stick to the order of prepopulated engines provided by the service.
-        boolean sortPrepopulatedEngines = !(shouldShowUpdatedSettings && isEeaChoiceCountry);
+        boolean sortPrepopulatedEngines = !isEeaChoiceCountry;
         templateUrls.sort(templateUrlsComparatorWith(defaultSearchEngine, sortPrepopulatedEngines));
 
         int recentEngineNum = 0;
@@ -431,7 +429,6 @@ public class SearchEngineAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        final boolean showLogo = templateUrlService.shouldShowUpdatedSettings();
 
         View view = convertView;
         int itemViewType = getItemViewType(position);
@@ -443,7 +440,7 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (convertView == null) {
-            int layoutId = showLogo ? R.layout.search_engine_with_logo : R.layout.search_engine;
+            int layoutId = R.layout.search_engine_with_logo;
             view = mLayoutInflater.inflate(layoutId, null);
         }
 
@@ -465,14 +462,12 @@ public class SearchEngineAdapter extends BaseAdapter
             url.setVisibility(View.GONE);
         }
 
-        if (showLogo) {
-            ImageView logoView = view.findViewById(R.id.logo);
-            GURL faviconUrl =
-                    new GURL(
-                            templateUrlService.getSearchEngineUrlFromTemplateUrl(
-                                    templateUrl.getKeyword()));
-            updateLogo(logoView, faviconUrl);
-        }
+        ImageView logoView = view.findViewById(R.id.logo);
+        GURL faviconUrl =
+                new GURL(
+                        templateUrlService.getSearchEngineUrlFromTemplateUrl(
+                                templateUrl.getKeyword()));
+        updateLogo(logoView, faviconUrl);
 
         // To improve the explore-by-touch experience, the radio button is hidden from accessibility
         // and instead, "checked" or "not checked" is read along with the search engine's name, e.g.

@@ -200,10 +200,6 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
-bool SearchEngineChoiceService::ShouldShowUpdatedSettings() {
-  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
-}
-
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     const policy::PolicyService& policy_service,
@@ -214,10 +210,6 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   // TODO(b/319050536): Remove the function declaration on these platforms.
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
-  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
-  }
-
   if (!is_regular_profile) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
     // kiosk, etc. are not supported and belongs in this bucked more than in
@@ -346,10 +338,6 @@ void SearchEngineChoiceService::RecordChoiceMade(
     TemplateURLService* template_url_service) {
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
 
-  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    return;
-  }
-
   // Don't modify the pref if the user is not in the EEA region.
   if (!IsEeaChoiceCountry(GetCountryId())) {
     return;
@@ -454,10 +442,6 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
 }
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
-  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    return;
-  }
-
   // Allow re-triggering the choice screen for testing the screen itself.
   // This flag is deliberately only clearing the prefs instead of more
   // forcefully triggering the screen because this allows to more easily test
@@ -614,10 +598,6 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
   // On Android, ChromeOS and Linux, `country_codes::kCountryIDAtInstall` is
   // computed asynchronously using platform-specific signals, and may not be
   // available yet.
-  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
-  }
-
   if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
     return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
   }

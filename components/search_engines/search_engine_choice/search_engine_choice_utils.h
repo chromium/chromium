@@ -132,15 +132,6 @@ enum class SearchEngineChoiceScreenEvents {
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenEvents)
 
-enum class ChoicePromo {
-  // Any path of getting the choice screen.
-  kAny = 0,
-  // Showing the screen to existing users in a dialog.
-  kDialog = 1,
-  // Showing to new users in the First Run Experience.
-  kFre = 2,
-};
-
 // The cause for wiping the search engine choice preferences. Only used for
 // metrics.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -260,10 +251,6 @@ std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride();
 // Returns whether the search engine list is overridden in the command line to
 // return the default list or the list of all eea engines.
 bool HasSearchEngineCountryListOverride();
-
-// Whether the choice screen flag is generally enabled for the specific flow.
-// TODO(b/318824817): To be removed post-launch.
-bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
 // Returns whether the provided `country_id` is eligible for the EEA default
 // search engine choice prompt.

@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 
 #import "base/notreached.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
@@ -27,7 +25,7 @@
   [screens addObject:@(kHistorySync)];
 
   if (ShouldDisplaySearchEngineChoiceScreen(
-          *browserState, search_engines::ChoicePromo::kFre,
+          *browserState, /*is_first_run_entrypoint=*/true,
           /*app_started_via_external_intent=*/false)) {
     [screens addObject:@(kChoice)];
   }

@@ -42,11 +42,6 @@ class SearchEngineChoiceService : public KeyedService {
                             variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
-  // Returns whether the version of the search engines settings screen showing
-  // additional search engine info should be shown.
-  // TODO(b/318824817): To be removed post-launch.
-  bool ShouldShowUpdatedSettings();
-
   // Returns the choice screen eligibility condition most relevant for the
   // profile associated with `profile_prefs` and `template_url_service`. Only
   // checks dynamic conditions, that can change from one call to the other

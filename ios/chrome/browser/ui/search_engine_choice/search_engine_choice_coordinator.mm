@@ -83,11 +83,8 @@
   // Make sure we use the original browser state (non-incognito).
   ChromeBrowserState* originalBrowserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  const search_engines::ChoicePromo choicePromo =
-      _firstRun ? search_engines::ChoicePromo::kFre
-                : search_engines::ChoicePromo::kDialog;
   if (!ShouldDisplaySearchEngineChoiceScreen(
-          *originalBrowserState, choicePromo,
+          *originalBrowserState, _firstRun,
           /*app_started_via_external_intent=*/false)) {
     // If the search engine enterprise pocliy has been loaded, just before to
     // open the Search Engine Choice dialog, it should be skipped.

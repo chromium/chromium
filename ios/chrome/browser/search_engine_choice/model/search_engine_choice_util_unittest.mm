@@ -73,7 +73,7 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
 TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
   EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), search_engines::ChoicePromo::kDialog,
+      browser_state(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -83,7 +83,7 @@ TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
 TEST_F(SearchEngineChoiceUtilTest,
        ShowChoiceScreenIfPoliciesAreNotSetStartedByExternalIntent) {
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), search_engines::ChoicePromo::kDialog,
+      browser_state(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -102,7 +102,7 @@ TEST_F(
       switches::kSearchEngineChoiceMaximumSkipCount.Get() - 1);
 
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), search_engines::ChoicePromo::kDialog,
+      browser_state(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -120,7 +120,7 @@ TEST_F(
       switches::kSearchEngineChoiceMaximumSkipCount.Get());
 
   EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), search_engines::ChoicePromo::kDialog,
+      browser_state(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -139,7 +139,7 @@ TEST_F(SearchEngineChoiceUtilTest,
           std::make_unique<TemplateURL>(template_url_data)));
 
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), search_engines::ChoicePromo::kDialog,
+      browser_state(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,

@@ -65,8 +65,7 @@ public class SearchEngineSettings extends ListFragment
         listView.setItemsCanFocus(true);
 
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        if (templateUrlService.shouldShowUpdatedSettings()
-                && templateUrlService.isEeaChoiceCountry()) {
+        if (templateUrlService.isEeaChoiceCountry()) {
             View headerView =
                     getLayoutInflater()
                             .inflate(R.layout.search_engine_choice_header, listView, false);

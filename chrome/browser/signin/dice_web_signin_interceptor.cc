@@ -1138,12 +1138,8 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
   std::u16string profile_name =
       profiles::GetDefaultNameForNewSignedInProfile(account_info);
   ProfilePresets profile_presets(profile_color);
-
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    profile_presets.search_engine_choice_data =
-        SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
-  }
+  profile_presets.search_engine_choice_data =
+      SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
 
   DCHECK(!state_->dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
@@ -1299,11 +1295,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
 
       // The new profile inherits the default search provider and the search
       // engine choice timestamp from the previous profile.
-      if (search_engines::IsChoiceScreenFlagEnabled(
-              search_engines::ChoicePromo::kAny)) {
-        SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
-            *new_profile, profile_presets->search_engine_choice_data);
-      }
+      SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
+          *new_profile, profile_presets->search_engine_choice_data);
     }
 
     // TODO(crbug.com/40269992): Move this to DiceSignedInProfileCreator when

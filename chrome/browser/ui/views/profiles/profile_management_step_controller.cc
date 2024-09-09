@@ -311,12 +311,7 @@ class SearchEngineChoiceStepController
             bool reset_state) override {
     CHECK(reset_state);
 
-    bool should_show_search_engine_choice_step =
-        search_engine_choice_dialog_service_ &&
-        search_engines::IsChoiceScreenFlagEnabled(
-            search_engines::ChoicePromo::kAny);
-
-    if (!should_show_search_engine_choice_step) {
+    if (!search_engine_choice_dialog_service_) {
       // Forward `step_shown_callback`, as this step is skipped.
       std::move(step_completed_callback_).Run(std::move(step_shown_callback));
       return;
