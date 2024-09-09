@@ -6153,7 +6153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mouse.ScrollSensitivity" enum="PointerSensitivity"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>zhangwenyu@google.com</owner>
