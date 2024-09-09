@@ -117,8 +117,6 @@ import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
-import org.chromium.components.signin.AccountManagerFacadeImpl;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
@@ -212,11 +210,6 @@ public class ProcessInitializationHandler {
     /** Performs the shared class initialization. */
     @CallSuper
     protected void handlePreNativeInitialization() {
-        // Initialize the AccountManagerFacade with the correct AccountManagerDelegate. Must be done
-        // only once and before AccountManagerFacadeProvider.getInstance() is invoked.
-        AccountManagerFacadeProvider.setInstance(
-                new AccountManagerFacadeImpl(AppHooks.get().createAccountManagerDelegate()));
-
         setProcessStateSummaryForAnrs(false);
     }
 
