@@ -17,6 +17,17 @@
 
 class GURL;
 
+// LINT.IfChange(FamilyLinkUserReauthenticationInterstitialState)
+// State of the re-authentication interstitial indicatins if the user
+// has interacted with the sign-in flow.
+enum class FamilyLinkUserReauthenticationInterstitialState : int {
+  kInterstitialShown = 0,
+  kReauthenticationStarted = 1,
+  kReauthenticationCompleted = 2,
+  kMaxValue = kReauthenticationCompleted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserReauthenticationInterstitialState)
+
 // This class is responsible for showing/hiding the interstitial page that
 // occurs when a supervised user tries to access a page that requires
 // verification.
@@ -75,7 +86,9 @@ class SupervisedUserVerificationPage
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+  void RecordReauthStatusMetrics(Status status);
   void RecordYouTubeReauthStatusUkm(Status status);
+  void RecordBlockedUrlReauthStatusUma(Status status);
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;

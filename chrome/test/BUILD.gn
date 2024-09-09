@@ -6337,6 +6337,7 @@ test("unit_tests") {
       "../browser/search_engine_choice/search_engine_choice_dialog_service_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
+      "../browser/supervised_user/supervised_user_verification_page_unittest.cc",
       "../browser/ui/autofill/autofill_popup_controller_impl_unittest.cc",
       "../browser/ui/download/download_bubble_row_list_view_info_unittest.cc",
       "../browser/ui/download/download_bubble_row_view_info_unittest.cc",

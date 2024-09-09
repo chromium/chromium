@@ -191,6 +191,23 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserReauthenticationInterstitialState) -->
+
+<enum name="FamilyLinkUserReauthenticationInterstitialState">
+  <int value="0" label="InterstitialShown">
+    Recorded when the re-authentication interstitial is displayed.
+  </int>
+  <int value="1" label="ReauthenticationStarted">
+    The user initiates re-authentication from the interstitial.
+  </int>
+  <int value="2" label="ReauthenticationCompleted">
+    The user successfully re-authenticates and can continue navigation, and
+    vice-versa for failed reauthentication.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_verification_page.h:FamilyLinkUserReauthenticationInterstitialState) -->
+
 <enum name="FamilyLinkWebFilterType">
   <int value="0" label="Allow All Sites"/>
   <int value="1" label="Try To Block Mature Sites"/>

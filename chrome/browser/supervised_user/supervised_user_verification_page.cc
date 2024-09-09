@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -19,6 +20,11 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using security_interstitials::MetricsHelper;
+
+namespace {
+constexpr char kBlockedSiteVerifyItsYouInterstitialStateHistogramName[] =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
+}  // namespace
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -51,7 +57,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
         child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
             &SupervisedUserVerificationPage::OnReauthenticationCompleted,
             base::Unretained(this)));
-    RecordYouTubeReauthStatusUkm(Status::SHOWN);
+    RecordReauthStatusMetrics(Status::SHOWN);
   }
 }
 
@@ -63,7 +69,7 @@ SupervisedUserVerificationPage::GetTypeForTesting() {
 }
 
 void SupervisedUserVerificationPage::OnReauthenticationCompleted() {
-  RecordYouTubeReauthStatusUkm(Status::REAUTH_COMPLETED);
+  RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
   controller()->Reload();
 }
 
@@ -128,11 +134,22 @@ void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
   load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
 }
 
+void SupervisedUserVerificationPage::RecordReauthStatusMetrics(Status status) {
+  switch (verification_purpose_) {
+    case VerificationPurpose::REAUTH_REQUIRED_SITE:
+      RecordYouTubeReauthStatusUkm(status);
+      break;
+    case VerificationPurpose::BLOCKED_SITE:
+      RecordBlockedUrlReauthStatusUma(status);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void SupervisedUserVerificationPage::RecordYouTubeReauthStatusUkm(
     Status status) {
-  if (verification_purpose_ != VerificationPurpose::REAUTH_REQUIRED_SITE) {
-    return;
-  }
+  CHECK_EQ(verification_purpose_, VerificationPurpose::REAUTH_REQUIRED_SITE);
 
   auto builder =
       ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id_);
@@ -147,9 +164,33 @@ void SupervisedUserVerificationPage::RecordYouTubeReauthStatusUkm(
       builder.SetReauthenticationCompleted(true);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void SupervisedUserVerificationPage::RecordBlockedUrlReauthStatusUma(
+    Status status) {
+  CHECK_EQ(verification_purpose_, VerificationPurpose::BLOCKED_SITE);
+
+  auto state =
+      FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
+  switch (status) {
+    case Status::SHOWN:
+      break;
+    case Status::REAUTH_STARTED:
+      state = FamilyLinkUserReauthenticationInterstitialState::
+          kReauthenticationStarted;
+      break;
+    case Status::REAUTH_COMPLETED:
+      state = FamilyLinkUserReauthenticationInterstitialState::
+          kReauthenticationCompleted;
+      break;
+    default:
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration(
+      kBlockedSiteVerifyItsYouInterstitialStateHistogramName, state);
 }
 
 void SupervisedUserVerificationPage::CommandReceived(
@@ -165,7 +206,7 @@ void SupervisedUserVerificationPage::CommandReceived(
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN:
-      RecordYouTubeReauthStatusUkm(Status::REAUTH_STARTED);
+      RecordReauthStatusMetrics(Status::REAUTH_STARTED);
       controller()->OpenUrlInNewForegroundTab(
           signin::GetChromeReauthURL({.email = email_to_reauth_}));
       break;
