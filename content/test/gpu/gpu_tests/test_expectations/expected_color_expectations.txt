@@ -119,8 +119,9 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 # Gardener 2024-03-18
 crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
-# Gardener 2024-04-29 - page reported failure
+# Longstanding flaking test - page reported failure
 crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Tests are hitting an assertion, root cause needs to be tracked down.
 crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
