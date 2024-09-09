@@ -51,10 +51,18 @@ class SendTabToSelfToolbarIconController
 
   void LogNotificationDismissed();
 
+  void ClearDelegateListForTesting() { delegate_list_.clear(); }
+
  private:
+  void StorePendingEntry(
+      const SendTabToSelfEntry* new_entry_pending_notification);
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  std::unique_ptr<SendTabToSelfEntry> entry_;
+  // In the case that we cannot immediately display a new entry
+  // (e.g. the active browser is incognito or a different profile), we store it
+  // here and wait until an appropriate browser becomes active to display it.
+  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
 
   std::vector<raw_ptr<SendTabToSelfToolbarIconControllerDelegate>>
       delegate_list_;

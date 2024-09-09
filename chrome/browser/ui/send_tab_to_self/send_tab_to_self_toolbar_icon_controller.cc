@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -28,24 +29,40 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // TODO(crbug.com/40180897): Any entries that were never shown are lost.
   // This is consistent with current behavior and we don't have UI for
   // showing multiple entries with this iteration.
-  if (new_entries.empty())
-    return;
-
-  if (GetActiveDelegate()) {
-    ShowToolbarButton(*new_entries.at(0));
+  if (new_entries.empty()) {
     return;
   }
 
-  const bool had_entry_pending_notification = entry_ != nullptr;
-
   // Select semi-randomly the first new entry from the list because there is no
   // UI to show multiple entries.
-  const SendTabToSelfEntry* new_entry_pending_notification =
-      new_entries.front();
+  const SendTabToSelfEntry* new_entry = new_entries.front();
 
-  // |entry_| might already be set, but it's better to overwrite it with a
-  // fresher value.
-  entry_ = std::make_unique<SendTabToSelfEntry>(
+  // If the active browser matches `profile_`, show the toolbar icon.
+  // Otherwise, we will store this entry and wait to show on the next active
+  // appropriate browser.
+  if (features::IsToolbarPinningEnabled()) {
+    auto* browser = chrome::FindLastActiveWithProfile(profile_);
+    if (browser && browser->IsActive()) {
+      ShowToolbarButton(*new_entry);
+      return;
+    }
+  } else {
+    if (GetActiveDelegate()) {
+      ShowToolbarButton(*new_entry);
+      return;
+    }
+  }
+
+  StorePendingEntry(new_entry);
+}
+
+void SendTabToSelfToolbarIconController::StorePendingEntry(
+    const SendTabToSelfEntry* new_entry_pending_notification) {
+  const bool had_entry_pending_notification = pending_entry_ != nullptr;
+
+  // |pending_entry_| might already be set, but it's better to overwrite
+  // it with a fresher value.
+  pending_entry_ = std::make_unique<SendTabToSelfEntry>(
       new_entry_pending_notification->GetGUID(),
       new_entry_pending_notification->GetURL(),
       new_entry_pending_notification->GetTitle(),
@@ -56,8 +73,9 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // Prevent adding the observer several times. This might happen when the
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).
-  if (!had_entry_pending_notification)
+  if (!had_entry_pending_notification) {
     BrowserList::AddObserver(this);
+  }
 }
 
 void SendTabToSelfToolbarIconController::DismissEntries(
@@ -71,19 +89,33 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
-  if (!GetActiveDelegate())
-    return;
+  if (features::IsToolbarPinningEnabled()) {
+    if (!GetActiveDelegate() || browser->profile() != profile_.get()) {
+      return;
+    }
+  } else {
+    if (!GetActiveDelegate()) {
+      return;
+    }
+  }
   BrowserList::RemoveObserver(this);
 
-  // Reset |entry_| because it's used to determine if the BrowserListObserver is
-  // added in DisplayNewEntries().
-  std::unique_ptr<SendTabToSelfEntry> entry = std::move(entry_);
+  // Reset |pending_entry_| because it's used to determine if the
+  // BrowserListObserver is added in `DisplayNewEntries()`.
+  std::unique_ptr<SendTabToSelfEntry> entry = std::move(pending_entry_);
 
-  if (!profile_ || !entry)
+  if (!profile_ || !entry) {
     return;
-  if (browser == chrome::FindBrowserWithProfile(profile_)) {
+  }
+
+  if (features::IsToolbarPinningEnabled()) {
     ShowToolbarButton(*entry);
-    entry_ = nullptr;
+    pending_entry_ = nullptr;
+  } else {
+    if (browser == chrome::FindBrowserWithProfile(profile_)) {
+      ShowToolbarButton(*entry);
+      pending_entry_ = nullptr;
+    }
   }
 }
 
