@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.BackgroundRefresh.InitStages"
+<histogram name="IOS.BackgroundRefresh.InitStage"
     enum="InitStageDuringBackgroundRefreshType" expires_after="2024-12-31">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
