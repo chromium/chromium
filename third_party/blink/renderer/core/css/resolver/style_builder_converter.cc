@@ -2056,7 +2056,8 @@ StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
 
   const auto& list = To<CSSValueList>(value);
   DCHECK(list.length() == 1 || list.length() == 2);
-  const float size = To<CSSPrimitiveValue>(list.Item(0)).GetFloatValue();
+  const float size = To<CSSPrimitiveValue>(list.Item(0))
+                         .ComputeNumber(state.CssToLengthConversionData());
   DCHECK_GE(size, 1);
   if (list.length() == 1) {
     return StyleInitialLetter(size);

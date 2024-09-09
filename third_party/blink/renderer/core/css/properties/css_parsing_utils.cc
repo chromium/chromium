@@ -6783,7 +6783,8 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
           ConsumeIdent<CSSValueID::kDrop, CSSValueID::kRaise>(stream)) {
     if (auto* size = ConsumeNumber(
             stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
-      if (size->GetFloatValue() < 1) {
+      auto* numeric_size = DynamicTo<CSSNumericLiteralValue>(size);
+      if (numeric_size && numeric_size->DoubleValue() < 1) {
         return nullptr;
       }
       list->Append(*size);
@@ -6798,7 +6799,8 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
   // number[1, Inf] integer[1, Inf]
   if (auto* size = ConsumeNumber(stream, context,
                                  CSSPrimitiveValue::ValueRange::kNonNegative)) {
-    if (size->GetFloatValue() < 1) {
+    auto* numeric_size = DynamicTo<CSSNumericLiteralValue>(size);
+    if (numeric_size && numeric_size->DoubleValue() < 1) {
       return nullptr;
     }
     list->Append(*size);
