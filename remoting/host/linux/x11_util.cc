@@ -17,16 +17,6 @@
 
 namespace remoting {
 
-ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
-    : connection_(connection) {
-  connection_->GrabServer();
-}
-
-ScopedXGrabServer::~ScopedXGrabServer() {
-  connection_->UngrabServer();
-  connection_->Flush();
-}
-
 bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore) {
   if (!connection->xtest().present()) {
     return false;

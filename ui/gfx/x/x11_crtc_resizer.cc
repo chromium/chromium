@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/x11_crtc_resizer.h"
+#include "ui/gfx/x/x11_crtc_resizer.h"
 
 #include <iterator>
 #include <utility>
@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "ui/base/x/x11_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 
 namespace {
@@ -23,9 +23,23 @@ namespace {
 constexpr auto kInvalidMode = static_cast<x11::RandR::Mode>(0);
 constexpr auto kDisabledCrtc = static_cast<x11::RandR::Crtc>(0);
 
+// TODO(jamiewalch): Use the correct DPI for the mode: http://crbug.com/172405.
+const int kDefaultDPI = 96;
+
+int PixelsToMillimeters(int pixels, int dpi) {
+  DCHECK(dpi != 0);
+
+  const double kMillimetersPerInch = 25.4;
+
+  // (pixels / dpi) is the length in inches. Multiplying by
+  // kMillimetersPerInch converts to mm. Multiplication is done first to
+  // avoid integer division.
+  return static_cast<int>(kMillimetersPerInch * pixels / dpi);
+}
+
 }  // namespace
 
-namespace remoting {
+namespace x11 {
 
 X11CrtcResizer::CrtcInfo::CrtcInfo() = default;
 X11CrtcResizer::CrtcInfo::CrtcInfo(
@@ -300,6 +314,33 @@ void X11CrtcResizer::ApplyActiveCrtcs() {
   updated_crtcs_.clear();
 }
 
+void X11CrtcResizer::UpdateRootWindow(x11::Window root) {
+  // Disable any CRTCs that have been changed, so that the root window can be
+  // safely resized to the bounding-box of the new CRTCs.
+  // This is non-optimal: the only CRTCs that need disabling are those whose
+  // original rectangles don't fit into the new root window - they are the ones
+  // that would prevent resizing the root window. But figuring these out would
+  // involve keeping track of all the original rectangles as well as the new
+  // ones. So, to keep the implementation simple (and working for any arbitrary
+  // layout algorithm), all changed CRTCs are disabled here.
+  DisableChangedCrtcs();
+
+  // Get the dimensions to resize the root window to.
+  auto dimensions = GetBoundingBox();
+
+  // TODO(lambroslambrou): Use the DPI from client size information.
+  uint32_t width_mm = PixelsToMillimeters(dimensions.width(), kDefaultDPI);
+  uint32_t height_mm = PixelsToMillimeters(dimensions.height(), kDefaultDPI);
+  randr_->SetScreenSize({root, static_cast<uint16_t>(dimensions.width()),
+                         static_cast<uint16_t>(dimensions.height()), width_mm,
+                         height_mm});
+
+  MoveApplicationWindows();
+
+  // Apply the new CRTCs, which will re-enable any that were disabled.
+  ApplyActiveCrtcs();
+}
+
 void X11CrtcResizer::SetCrtcsForTest(
     std::vector<x11::RandR::GetCrtcInfoReply> crtcs) {
   int id = 1;
@@ -509,4 +550,4 @@ x11::Window X11CrtcResizer::FindAppWindow(
   return x11::Window::None;
 }
 
-}  // namespace remoting
+}  // namespace x11

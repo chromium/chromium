@@ -727,12 +727,7 @@ static_library("common") {
 }
 
 source_set("display_layout") {
-  sources = [
-    "desktop_display_layout_util.cc",
-    "desktop_display_layout_util.h",
-    "desktop_geometry.cc",
-    "desktop_geometry.h",
-  ]
+  sources = [ "desktop_geometry.h" ]
   deps = [ "//ui/gfx" ]
 }
 
@@ -745,10 +740,6 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "linux/gnome_display_config_dbus_client.h",
       "linux/scoped_glib.cc",
       "linux/scoped_glib.h",
-      "x11_crtc_resizer.cc",
-      "x11_crtc_resizer.h",
-      "x11_desktop_resizer.cc",
-      "x11_desktop_resizer.h",
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
@@ -761,6 +752,7 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "//ui/base",
       "//ui/base/x",
       "//ui/gfx/geometry",
+      "//ui/gfx/x",
     ]
   }
 }
@@ -828,7 +820,6 @@ source_set("unit_tests") {
     "corp_host_status_logger_unittest.cc",
     "daemon_process_unittest.cc",
     "desktop_display_info_unittest.cc",
-    "desktop_display_layout_util_unittest.cc",
     "desktop_process_unittest.cc",
     "desktop_session_agent_unittest.cc",
     "ftl_echo_message_listener_unittest.cc",
@@ -945,10 +936,7 @@ source_set("unit_tests") {
   }
 
   if (remoting_use_x11) {
-    sources += [
-      "x11_crtc_resizer_unittest.cc",
-      "x11_display_util_unittest.cc",
-    ]
+    sources += [ "x11_display_util_unittest.cc" ]
     deps += [
       ":x11_display_utils",
       "//ui/gfx/x",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_X11_CRTC_RESIZER_H_
-#define REMOTING_HOST_X11_CRTC_RESIZER_H_
+#ifndef UI_GFX_X_X11_CRTC_RESIZER_H_
+#define UI_GFX_X_X11_CRTC_RESIZER_H_
 
 #include <vector>
 
@@ -13,11 +13,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/randr.h"
 
-namespace remoting {
+namespace x11 {
 
 // Helper class for DesktopResizerX11 which handles much of the logic
 // for arranging and resizing a set of active CRTCs.
-class X11CrtcResizer {
+class COMPONENT_EXPORT(X11) X11CrtcResizer {
  public:
   X11CrtcResizer(x11::RandR::GetScreenResourcesCurrentReply* resources,
                  x11::Connection* connection);
@@ -95,6 +95,10 @@ class X11CrtcResizer {
   // Applies any changed CRTCs back to the X server. This will re-enable any
   // outputs/CRTCs that were disabled.
   void ApplyActiveCrtcs();
+
+  // Updates the root window using the bounding box of the CRTCs, then
+  // re-activate all CRTCs.
+  void UpdateRootWindow(x11::Window root);
 
   // Initializes the active CRTCs from a list of fake X11 replies. As the
   // replies don't include the CRTC IDs, these will be created sequentially
@@ -217,6 +221,6 @@ class X11CrtcResizer {
   x11::Atom wm_state_atom_;
 };
 
-}  // namespace remoting
+}  // namespace x11
 
-#endif  // REMOTING_HOST_X11_CRTC_RESIZER_H_
+#endif  // UI_GFX_X_X11_CRTC_RESIZER_H_

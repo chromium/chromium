@@ -603,6 +603,21 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   std::unique_ptr<PropertyCache> wm_props_;
 };
 
+// Grab/release the X server connection within a scope. This can help avoid race
+// conditions that would otherwise lead to X errors.
+class COMPONENT_EXPORT(X11) ScopedXGrabServer {
+ public:
+  explicit ScopedXGrabServer(x11::Connection* connection);
+
+  ScopedXGrabServer(const ScopedXGrabServer&) = delete;
+  ScopedXGrabServer& operator=(const ScopedXGrabServer&) = delete;
+
+  ~ScopedXGrabServer();
+
+ private:
+  raw_ptr<x11::Connection> connection_;
+};
+
 }  // namespace x11
 
 namespace base {

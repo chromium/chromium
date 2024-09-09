@@ -8,9 +8,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
-#include "remoting/host/x11_desktop_resizer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/test/virtual_display_util.h"
+#include "ui/gfx/x/randr_output_manager.h"
 
 namespace display {
 class Display;
@@ -58,26 +58,26 @@ class VirtualDisplayUtilLinux : public display::DisplayObserver,
 
   std::unique_ptr<base::RunLoop> run_loop_;
   raw_ptr<Screen> screen_;
-  std::unique_ptr<remoting::X11DesktopResizer> desktop_resizer_;
+  std::unique_ptr<x11::RandROutputManager> randr_output_manager_;
   // Initial layout when this class was instantiated that should be restored.
-  remoting::DesktopLayoutSet initial_layout_;
-  // Current layout calculated by `desktop_resizer_` after an operation.
-  remoting::DesktopLayoutSet current_layout_;
-  // Last layout request sent to `desktop_resizer_`.
-  remoting::DesktopLayoutSet last_requested_layout_;
+  x11::RandRMonitorLayout initial_layout_;
+  // Current layout calculated by `randr_output_manager_` after an operation.
+  x11::RandRMonitorLayout current_layout_;
+  // Last layout request sent to `randr_output_manager_`.
+  x11::RandRMonitorLayout last_requested_layout_;
 
   // There are lots of IDS to track here:
   //  1. The user-requested ID set in AddDisplay().
-  //  2. The resizer (xrandr) display ID
+  //  2. The xrandr display ID
   //  3. The display ID detected by the display::Screen implementation.
   using RequestedId = uint8_t;
-  using ResizerDisplayId = int64_t;
   using DisplayId = int64_t;
 
   // Queue of displays added via OnDisplayAdded. Removed as they are reconciled
-  // and moved to `display_id_to_resizer_id_`.
+  // and moved to `display_id_to_randr_id_`.
   base::circular_deque<DisplayId> detected_added_display_ids_;
-  base::flat_map<DisplayId, ResizerDisplayId> display_id_to_resizer_id_;
+  base::flat_map<DisplayId, x11::RandRMonitorConfig::ScreenId>
+      display_id_to_randr_id_;
 
   // Tracks display IDs requested in AddDisplay(). The IDs don't do anything in
   // this implementation, but they are tracked to prevent the user from

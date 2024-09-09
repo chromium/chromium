@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/x11_crtc_resizer.h"
+#include "ui/gfx/x/x11_crtc_resizer.h"
 
-#include "inttypes.h"
+#include <inttypes.h>
 
 #include <string>
 
@@ -31,7 +31,7 @@ void ExpectEqual(const gfx::Rect& rect1, const gfx::Rect& rect2) {
 
 }  // namespace
 
-namespace remoting {
+namespace x11 {
 
 TEST(X11CrtcResizerTest, ShiftToMakeRoomHorizontally) {
   X11CrtcResizer resizer(nullptr, nullptr);
@@ -121,4 +121,4 @@ TEST(X11CrtcResizerTest, MiddleAlignmentKept) {
   ExpectEqual(result[1], gfx::Rect(150, 100, 100, 100));
 }
 
-}  // namespace remoting
+}  // namespace x11

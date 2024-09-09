@@ -29,9 +29,10 @@ gfx::Vector2d GetMonitorDpi(const x11::RandR::MonitorInfo& monitor) {
       CalculateDpi(monitor.height, monitor.height_in_millimeters));
 }
 
-DesktopLayout ToVideoTrackLayout(const x11::RandR::MonitorInfo& monitor) {
-  return DesktopLayout(
-      static_cast<DesktopScreenId>(monitor.name),
+x11::RandRMonitorConfig ToVideoTrackLayout(
+    const x11::RandR::MonitorInfo& monitor) {
+  return x11::RandRMonitorConfig(
+      static_cast<x11::RandRMonitorConfig::ScreenId>(monitor.name),
       gfx::Rect(monitor.x, monitor.y, monitor.width, monitor.height),
       GetMonitorDpi(monitor));
 }

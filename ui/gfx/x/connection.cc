@@ -970,4 +970,14 @@ void Connection::OnWmSynced() {
   synced_with_wm_ = true;
 }
 
+ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
+    : connection_(connection) {
+  connection_->GrabServer();
+}
+
+ScopedXGrabServer::~ScopedXGrabServer() {
+  connection_->UngrabServer();
+  connection_->Flush();
+}
+
 }  // namespace x11
