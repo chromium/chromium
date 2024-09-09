@@ -107,7 +107,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // group to their saved tab guid. This mapping will be used in
   // ConnectToLocalTabGroup in order to observe any changes to the tabs over
   // time.
-  std::pair<SavedTabGroup, std::map<content::WebContents*, base::Uuid>>
+  std::pair<SavedTabGroup, std::map<tabs::TabModel*, base::Uuid>>
   CreateSavedTabGroupAndTabMapping(const tab_groups::TabGroupId& group_id);
 
   // The LocalTabGroupListeners for each saved tab group that's currently open.

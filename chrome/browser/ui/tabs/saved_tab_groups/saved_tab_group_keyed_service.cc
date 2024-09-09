@@ -324,7 +324,6 @@ TabGroupId SavedTabGroupKeyedService::AddOpenedTabsToGroup(
                         saved_group.local_group_id().value());
 
   std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-
   std::transform(
       tab_guid_mapping.begin(), tab_guid_mapping.end(),
       std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
