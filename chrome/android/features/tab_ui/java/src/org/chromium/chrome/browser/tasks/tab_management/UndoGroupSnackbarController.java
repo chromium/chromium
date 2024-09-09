@@ -219,14 +219,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             int rootId = info.tabOriginalRootId;
             if (info.tab.getRootId() == rootId) continue;
 
-            filter.deleteTabGroupTitle(rootId);
-
-            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                filter.deleteTabGroupColor(rootId);
-            }
-            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                filter.deleteTabGroupCollapsed(rootId);
-            }
+            filter.deleteTabGroupVisualData(rootId);
         }
     }
 

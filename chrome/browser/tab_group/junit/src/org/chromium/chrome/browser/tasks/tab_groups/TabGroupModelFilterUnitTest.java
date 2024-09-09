@@ -47,6 +47,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -2055,6 +2056,27 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(mTab6.getTabGroupId(), TAB5_TAB_GROUP_ID);
         assertEquals(mTab2.getTabGroupId(), TAB5_TAB_GROUP_ID);
         assertEquals(mTab3.getTabGroupId(), TAB5_TAB_GROUP_ID);
+    }
+
+    @Test
+    public void mergeGroupToGroupNonAdjacent_doNotNotifyFilterObserver() {
+        SharedPreferences.Editor titleEditor = Mockito.mock(SharedPreferences.Editor.class);
+        when(mSharedPreferencesTitle.edit()).thenReturn(titleEditor);
+        when(titleEditor.remove(anyString())).thenReturn(titleEditor);
+
+        mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), true);
+        verify(mTabGroupModelFilterObserver, never())
+                .didCreateNewGroup(mTab2, mTabGroupModelFilter);
+        verify(mTabGroupModelFilterObserver, never())
+                .didCreateGroup(
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyString(),
+                        anyInt(),
+                        anyBoolean());
+        verify(titleEditor, times(2)).remove(String.valueOf(TAB2_ROOT_ID));
     }
 
     @Test
