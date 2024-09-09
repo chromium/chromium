@@ -70,6 +70,8 @@ const char kSelectDriveIdentityEntryActionsHistogram[] =
     "Mobile.ContextMenu.SelectDriveIdentityEntry.Actions";
 const char kTabGroupIndicatorEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupIndicatorEntry.Actions";
+const char kAutofillManualFallbackPlusAddressEntryActionsHistogram[] =
+    "Mobile.ContextMenu.AutofillManualFallbackPlusAddressEntry.Actions";
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/histograms.xml)
 }  // namespace
 
@@ -140,6 +142,8 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kSelectDriveIdentityEntryActionsHistogram;
     case kMenuScenarioHistogramTabGroupIndicatorEntry:
       return kTabGroupIndicatorEntryActionsHistogram;
+    case kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry:
+      return kAutofillManualFallbackPlusAddressEntryActionsHistogram;
     case kMenuScenarioHistogramCount:
       NOTREACHED();
   }

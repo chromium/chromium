@@ -222,6 +222,10 @@ class TabGroup;
 // Creates a UIAction instance to add an account to choose drive files from.
 - (UIAction*)actionToAddAccountForDriveWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance whose title and icon are configured for showing
+// manage in a new tab, which will invoke the given `block` when executed.
+- (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

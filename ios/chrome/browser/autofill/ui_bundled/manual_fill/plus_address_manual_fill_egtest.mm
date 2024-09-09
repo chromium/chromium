@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -60,6 +61,22 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
 
   [ChromeEarlGrey loadURL:test_server->GetURL(form_url)];
   [ChromeEarlGrey waitForWebStateContainingText:form_text];
+}
+
+// Matcher for the overflow menu button shown in the cells.
+id<GREYMatcher> OverflowMenuButton() {
+  return grey_allOf(
+      grey_accessibilityID(
+          manual_fill::kExpandedManualFillPlusAddressOverflowMenuID),
+      grey_interactable(), nullptr);
+}
+
+// Matcher for the "Manage" action made available by the overflow menu
+// button.
+id<GREYMatcher> OverflowMenuManageAction() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB),
+                    grey_interactable(), nullptr);
 }
 
 // Returns a matcher for the button to dismiss select plus address in manual
@@ -385,6 +402,62 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_tap()];
 
   [self verifyFieldHasBeenFilledWithValue:u"plus+foo@plus.plus"];
+}
+
+// Tests that for the plus address manual fallback suggestion, in the overflow
+// menu, there is an option to manage the plus address.
+- (void)testOverflowMenuManageActionInAddressManualFillMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          manual_fill::ChipButton(
+              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the overflow menu button.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Check that the manage option is available.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the "Manage" action in the overflow menu is displayed in the
+// select plus address view.
+- (void)testOverflowMenuManageActionInSelectPlusAddressView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
+  }
+
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+  [PlusAddressAppInterface addPlusAddressProfile];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+  id<GREYMatcher> selectPlusAddressMatcher = grey_accessibilityID(
+      manual_fill::kSelectPlusAddressAccessibilityIdentifier);
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [[EarlGrey selectElementWithMatcher:selectPlusAddressMatcher]
+      performAction:grey_tap()];
+
+  // Tap the overflow menu button.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Check that the manage option is available.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -7,6 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -263,6 +264,12 @@ CGFloat GetFaviconSize() {
 
   self.siteNameLabel = CreateLabel();
   self.overflowMenuButton = CreateOverflowMenuButton();
+  // In the tests, the overflow menu of the chips for the other data types, can
+  // have the same accessibility identifier, therefore, override for the plus
+  // address ones to distinguish them.
+  self.overflowMenuButton.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillPlusAddressOverflowMenuID;
+
   self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
                                      self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];

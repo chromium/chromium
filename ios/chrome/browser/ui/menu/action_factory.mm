@@ -735,4 +735,15 @@
                          block:block];
 }
 
+- (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kExternalLinkSymbol, kSymbolActionPointSize);
+
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB)
+                         image:image
+                          type:MenuActionType::ManageInNewTab
+                         block:block];
+}
+
 @end

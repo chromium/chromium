@@ -6375,6 +6375,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the CVC chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's CVC.">
         Autofill the CVC
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB" desc="The iOS menu item for managing a selected item. [iOS only]">
+        Manage
+      </message>
     </messages>
   </release>
 </grit>

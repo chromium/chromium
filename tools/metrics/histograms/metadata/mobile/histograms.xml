@@ -180,6 +180,8 @@ chromium-metrics-reviews@google.com.
         summary="Autofill manual fallback password entry"/>
     <variant name="AutofillManualFallbackPaymentEntry"
         summary="Autofill manual fallback payment entry"/>
+    <variant name="AutofillManualFallbackPlusAddressEntry"
+        summary="Autofill manual fallback plus address entry"/>
     <variant name="BookmarkEntry" summary="Bookmark entry"/>
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>

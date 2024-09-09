@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -199,6 +201,10 @@
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
 
+  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
+                                        ? @[ [self createManageMenuAction] ]
+                                        : @[];
+
   for (int i = 0; i < plusAddressesCount; i++) {
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
@@ -208,7 +214,7 @@
     ManualFillPlusAddressItem* item = [[ManualFillPlusAddressItem alloc]
                 initWithPlusAddress:plusAddresses[i]
                     contentInjector:self
-                        menuActions:@[]
+                        menuActions:menuActions
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
     [items addObject:item];
   }
@@ -319,6 +325,20 @@
   if (actions.count > 0) {
     [self.consumer presentPlusAddressActions:actions];
   }
+}
+
+// Creates a "Manage" UIAction to be used with a UIMenu. Tapping on it, would
+// open the manage view for the plus address.
+- (UIAction*)createManageMenuAction {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:
+          kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry];
+
+  UIAction* manageAction = [actionFactory actionToManageLinkInNewTabWithBlock:^{
+      // TODO(crbug.com/327838014): Implement manage action.
+  }];
+
+  return manageAction;
 }
 
 @end
