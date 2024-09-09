@@ -3,10 +3,11 @@ URL: http://tukaani.org/xz/
 Source URL: http://git.tukaani.org/xz.git
 Version: 5.0.5
 Revision: a1bfda3214ed4a39a28fe609364be133c9f0f200
-Date: 2013-06-30 19:55:49 +0300
+Date: 2013-06-30
 License: Public domain
 License File: LICENSE
 Shipped: yes
+Security critical: yes
 
 Description:
 XZ Utils is general-purpose data compression software implementing the
