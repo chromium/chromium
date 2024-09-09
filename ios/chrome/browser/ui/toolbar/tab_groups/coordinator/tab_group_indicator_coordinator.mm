@@ -47,7 +47,7 @@
   CHECK(IsTabGroupIndicatorEnabled());
   _view = [[TabGroupIndicatorView alloc] init];
   _view.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-
+  _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());

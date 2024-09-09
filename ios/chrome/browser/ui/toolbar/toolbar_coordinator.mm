@@ -146,6 +146,8 @@
       self.locationBarCoordinator.toolbarOmniboxConsumer;
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
+  self.primaryToolbarCoordinator.toolbarHeightDelegate =
+      self.toolbarHeightDelegate;
   [self.primaryToolbarCoordinator start];
   self.secondaryToolbarCoordinator.toolbarHeightDelegate =
       self.toolbarHeightDelegate;

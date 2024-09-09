@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -66,7 +67,12 @@
 
 // Updates the view's visibility.
 - (void)updateVisibility {
-  self.hidden = _groupTitle == nil || !_available;
+  BOOL hidden = _groupTitle == nil || !_available;
+  if (hidden == self.hidden) {
+    return;
+  }
+  self.hidden = hidden;
+  [_toolbarHeightDelegate toolbarsHeightChanged];
 }
 
 // Returns the container view.

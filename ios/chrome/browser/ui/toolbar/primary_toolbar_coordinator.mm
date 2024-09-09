@@ -73,6 +73,8 @@
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
+    _tabGroupIndicatorCoordinator.toolbarHeightDelegate =
+        self.toolbarHeightDelegate;
     [_tabGroupIndicatorCoordinator start];
     [self.viewController
         setTabGroupIndicatorView:_tabGroupIndicatorCoordinator.view];

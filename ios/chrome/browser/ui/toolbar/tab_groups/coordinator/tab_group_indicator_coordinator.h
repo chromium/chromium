@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class TabGroupIndicatorView;
+@protocol ToolbarHeightDelegate;
 
 // Coordinator for the tab group indicator.
 @interface TabGroupIndicatorCoordinator : ChromeCoordinator
@@ -16,6 +17,9 @@
 // This coordinator does not manage a view controller, but the view is
 // assigned to the PrimaryToolbarCoordinator's viewController.
 @property(nonatomic, strong, readonly) TabGroupIndicatorView* view;
+
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 @end
 
