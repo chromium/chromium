@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -43,7 +44,7 @@ namespace {
 constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Height and width of the buttons.
-constexpr CGFloat kButtonSize = 22;
+constexpr CGFloat kButtonSize = 24;
 
 constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
@@ -118,22 +119,31 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Sets up the navigation controller’s buttons.
 - (void)setUpNavigationController {
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kButtonSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorNamed:kTextSecondaryColor],
+    [UIColor colorNamed:kUpdatedTertiaryBackgroundColor]
+  ];
   // Stop button
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom != UIUserInterfaceIdiomPad) {
-    UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                             target:self
-                             action:@selector(userTappedOnClose)];
+    UIImage* closeImage =
+        SymbolWithPalette(DefaultSymbolWithConfiguration(@"xmark.circle.fill",
+                                                         symbolConfiguration),
+                          colors);
+    UIBarButtonItem* closeButton =
+        [[UIBarButtonItem alloc] initWithImage:closeImage
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(userTappedOnClose)];
     closeButton.accessibilityIdentifier = kAccountMenuCloseButtonId;
     self.navigationItem.rightBarButtonItem = closeButton;
   }
 
   // Ellipsis button
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kButtonSize
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleMedium];
   UIAction* manageYourAccountAction = [UIAction
       actionWithTitle:
           l10n_util::GetNSString(
@@ -163,12 +173,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   UIMenu* ellipsisMenu = [UIMenu
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
-  UIImage* ellipsisImage = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(@"ellipsis.circle.fill",
-                                     symbolConfiguration),
-      @[
-        [UIColor colorNamed:kGrey500Color], [UIColor colorNamed:kGrey300Color]
-      ]);
+  UIImage* ellipsisImage =
+      SymbolWithPalette(DefaultSymbolWithConfiguration(@"ellipsis.circle.fill",
+                                                       symbolConfiguration),
+                        colors);
   UIBarButtonItem* ellipsisButton =
       [[UIBarButtonItem alloc] initWithImage:ellipsisImage menu:ellipsisMenu];
   ellipsisButton.accessibilityIdentifier =
