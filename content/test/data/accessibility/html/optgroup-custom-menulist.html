@@ -12,27 +12,15 @@
 @AURALINUX-ALLOW:setsize*
 @AURALINUX-ALLOW:enabled
 @AURALINUX-ALLOW:*popup*
+@DEFAULT-ACTION-ON:Transformer
 -->
 <!DOCTYPE html>
 <html>
+<style>
+  select { appearance: base-select; }
+</style>
 <body>
-
-<select size="10" id="listbox">
-<optgroup label="Enabled" id="listbox_optgroup_enabled">
-    <option value="listbox_e1" id="listbox_option_enabled_one">One</option>
-    <option value="listbox_e2">Two</option>
-    <option value="listbox_e3">Three</option>
-    <option value="listbox_e4">Four</option>
-</optgroup>
-<optgroup label="Disabled" disabled id="listbox_optgroup_disabled">
-    <option value="listbox_d1" id="listbox_option_disabled_one">One</option>
-    <option value="listbox_d2">Two</option>
-    <option value="listbox_d3">Three</option>
-    <option value="listbox_d4">Four</option>
-</optgroup>
-</select>
-
-<select id="menulist">
+<select id="menulist" aria-label="Transformer">
   <option>Random Transformer</option>
   <optgroup label="group 1">
     <option>Optimus Prime</option>
@@ -45,6 +33,5 @@
     <option>Brawl</option>
   </optgroup>
 </select>
-
 </body>
 </html>

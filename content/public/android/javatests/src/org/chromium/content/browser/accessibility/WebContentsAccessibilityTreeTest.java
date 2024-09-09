@@ -2174,6 +2174,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_optgroupMenulist() {
+        performHtmlTest("optgroup-menulist.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_optgroupCustomMenulist() {
+        performHtmlTest("optgroup-custom-menulist.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_output() {
         performHtmlTest("output.html");
     }
