@@ -219,6 +219,7 @@
 
   // Testing with 'currentColor'
   fuzzy_test_computed_color_using_currentcolor(`hsl(from currentColor h s l)`, `color(srgb 0.4 0.2 0.6)`);
+  fuzzy_test_computed_color_using_currentcolor(`hsl(from currentColor calc((h / 360) * 360deg) s l)`, `color(srgb 0.2 0.2 0.6)`);
 
   // color-mix
   fuzzy_test_computed_color(`hsl(from color-mix(in srgb, red, red) h s l / alpha)`, `color(srgb 1 0 0)`);

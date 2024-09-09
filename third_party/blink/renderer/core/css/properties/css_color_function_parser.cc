@@ -231,12 +231,7 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     color_space_ = ColorSpaceFromFunctionName(function_id);
   }
 
-  auto function_entry = ColorFunction::kColorSpaceMap.find(color_space_);
-  CHECK(function_entry != ColorFunction::kColorSpaceMap.end());
-  auto function_metadata_entry =
-      ColorFunction::kMetadataMap.find(function_entry->second);
-  CHECK(function_metadata_entry != ColorFunction::kMetadataMap.end());
-  function_metadata_ = &function_metadata_entry->second;
+  function_metadata_ = &ColorFunction::MetadataForColorSpace(color_space_);
 
   if (unresolved_origin_color_) {
     origin_color_ = TryResolveAtParseTime(*unresolved_origin_color_);

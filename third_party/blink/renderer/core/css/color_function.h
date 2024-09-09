@@ -102,6 +102,14 @@ class ColorFunction {
           {Color::ColorSpace::kHSL, MetadataEntry::kHsl},
           {Color::ColorSpace::kHWB, MetadataEntry::kHwb},
       });
+
+  static const Metadata& MetadataForColorSpace(Color::ColorSpace color_space) {
+    auto function_entry = kColorSpaceMap.find(color_space);
+    CHECK(function_entry != ColorFunction::kColorSpaceMap.end());
+    auto function_metadata_entry = kMetadataMap.find(function_entry->second);
+    CHECK(function_metadata_entry != kMetadataMap.end());
+    return function_metadata_entry->second;
+  }
 };
 
 }  // namespace blink

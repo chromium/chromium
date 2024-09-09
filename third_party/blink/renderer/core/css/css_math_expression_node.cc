@@ -843,6 +843,13 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
       return PixelsAndPercent(value_->GetFloatValue() * length_resolver.Zoom(),
                               0.0f, /*has_explicit_pixels=*/true,
                               /*has_explicit_percent=*/false);
+    case kCalcAngle:
+      // Treat angles as pixels to support calc() expressions on hue angles in
+      // relative color syntax. This allows converting such expressions to
+      // CalculationValues.
+      return PixelsAndPercent(value_->GetFloatValue(), 0.0f,
+                              /*has_explicit_pixels=*/true,
+                              /*has_explicit_percent=*/false);
     default:
       NOTREACHED_IN_MIGRATION();
       return {};

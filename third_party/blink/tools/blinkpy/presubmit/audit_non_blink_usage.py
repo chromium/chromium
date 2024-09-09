@@ -1011,6 +1011,12 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/css/style_color.cc'],
+        'allowed': [
+            'base::flat_map',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/editing/ime'],
         'allowed': [
             'ui::ImeTextSpan',

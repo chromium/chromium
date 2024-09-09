@@ -7724,6 +7724,7 @@ crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-a98rgb-01.html [ Crash Failure Timeout ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-displayp3-01.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-hsl-01.html [ Crash Failure Timeout ]
+crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-hsl-02.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-hwb-01.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-lab-01.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-lch-01.html [ Crash Failure ]
@@ -7733,11 +7734,9 @@ crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-rec2020-01.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-rec2020-02.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-rgb-01.html [ Crash Failure ]
+crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-rgb-02.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-xyzd50-01.html [ Crash Failure ]
 crbug.com/325309578 virtual/css-relative-currentcolor-disabled/external/wpt/css/css-color/relative-currentcolor-xyzd65-01.html [ Crash Failure ]
-# Failures with or without CSSRelativeColorSupportsCurrentcolor enabled
-crbug.com/325309578 external/wpt/css/css-color/relative-currentcolor-hsl-02.html [ Crash Failure ]
-crbug.com/325309578 external/wpt/css/css-color/relative-currentcolor-rgb-02.html [ Crash Failure ]
 
 # Branch Gardener 2024-04-10
 crbug.com/333639341 [ Fuchsia ] fast/writing-mode/english-lr-text.html [ Failure Pass ]
