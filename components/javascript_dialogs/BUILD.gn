@@ -75,6 +75,13 @@ static_library("javascript_dialogs") {
       "//ui/android",
     ]
   }
+
+  if (is_ios) {
+    sources += [
+      "ios/tab_modal_dialog_view_ios.h",
+      "ios/tab_modal_dialog_view_ios.mm",
+    ]
+  }
 }
 
 source_set("unit_tests") {

@@ -41,6 +41,7 @@ source_set("content") {
     "//base",
     "//build:blink_buildflags",
     "//components/embedder_support/ios:web_contents_delegate",
+    "//components/javascript_dialogs",
     "//components/js_injection/browser",
     "//content/public/browser",
     "//ios/web/annotations",
@@ -79,6 +80,8 @@ source_set("ui") {
   sources = [
     "ui/content_context_menu_controller.h",
     "ui/content_context_menu_controller.mm",
+    "ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_ios.h",
+    "ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_ios.mm",
     "ui/web_contents_view_delegate_impl.h",
     "ui/web_contents_view_delegate_impl.mm",
   ]
@@ -86,6 +89,7 @@ source_set("ui") {
   deps = [
     ":content",
     "//base",
+    "//components/javascript_dialogs",
     "//content/public/browser",
     "//ios/web/public:public",
     "//ios/web/public/ui:ui",

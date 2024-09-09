@@ -37,6 +37,7 @@ class FileChooserParams;
 
 namespace content {
 class FileSelectListener;
+class JavaScriptDialogManager;
 class NavigationEntry;
 class NavigationHandle;
 class RenderFrameHost;
@@ -223,6 +224,9 @@ class ContentWebState : public WebState,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) override;
 
  private:
   // Helper method to register notification observers.
