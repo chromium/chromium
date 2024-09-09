@@ -35,6 +35,7 @@ class BirchChipContextMenuModel : public ui::SimpleMenuModel {
     kHideCoralSuggestions,      // Hide all coral related chips.
     kCustomizeSuggestions,  // Pop out the expanded bar menu with customizing
                             // suggestions options.
+    kProvideFeedback,       // Pop out UI for collecting feature feedback.
   };
 
   BirchChipContextMenuModel(ui::SimpleMenuModel::Delegate* delegate,

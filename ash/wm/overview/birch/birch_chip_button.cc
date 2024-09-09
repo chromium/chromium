@@ -7,6 +7,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
@@ -393,6 +394,12 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
     case base::to_underlying(CommandId::kHideCoralSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
                                                   /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kProvideFeedback):
+      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+          ShellDelegate::FeedbackSource::kOverview,
+          /*description_template=*/std::string(),
+          /*category_tag=*/"Coral");
       break;
     default:
       birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
