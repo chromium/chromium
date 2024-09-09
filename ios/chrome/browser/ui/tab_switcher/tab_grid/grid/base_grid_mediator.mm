@@ -537,7 +537,6 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // consumer will filter it out in the method's implementation.
     [self.consumer removeItemWithIdentifier:identifierToRemove
                      selectedItemIdentifier:[self activeIdentifier]];
-    [self removeFromSelectionItemID:identifierToRemove];
   }
 
   // The pinned WebState could be detached only in case it was displayed in
@@ -1265,7 +1264,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   for (GridItemIdentifier* itemID in _selectedEditingItems.itemsIdentifiers) {
     switch (itemID.type) {
       case GridItemType::kInactiveTabsButton:
-        // Inactive Tabs button is not dragable and not stored in
+        // Inactive Tabs button is not draggable and not stored in
         // `_selectedEditingItems`.
         NOTREACHED();
       case GridItemType::kTab: {

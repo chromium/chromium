@@ -110,7 +110,7 @@
   }
 
   if (enabled) {
-    // Set the disabled boolean before modifiying the toolbar configuration
+    // Set the disabled boolean before modifying the toolbar configuration
     // because the configuration setup is skipped when disabled.
     _isDisabled = NO;
     [self setToolbarConfiguration:_previousConfiguration];
@@ -119,7 +119,7 @@
     [self setToolbarConfiguration:
               [TabGridToolbarsConfiguration
                   disabledConfigurationForPage:TabGridPageRegularTabs]];
-    // Set the disabled boolean after modifiying the toolbar configuration
+    // Set the disabled boolean after modifying the toolbar configuration
     // because the configuration setup is skipped when disabled.
     _isDisabled = YES;
   }
