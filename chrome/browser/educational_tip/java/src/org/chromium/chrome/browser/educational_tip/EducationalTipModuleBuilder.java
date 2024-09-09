@@ -13,12 +13,12 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
-import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -28,22 +28,20 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Runnable mShowTabSwitcher;
+    private final ShowHubPaneCallback mShowHubPaneCallback;
     private final Supplier<ViewGroup> mParentViewSupplier;
-
-    private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
 
     /** Pass in the dependencies needed to build {@link EducationalTipModuleCoordinator}. */
     public EducationalTipModuleBuilder(
             @NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
+            @NonNull ShowHubPaneCallback showHubPaneCallback,
             @NonNull Supplier<ViewGroup> parentViewSupplier) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mShowTabSwitcher = showTabSwitcherRunnable;
+        mShowHubPaneCallback = showHubPaneCallback;
         mParentViewSupplier = parentViewSupplier;
     }
 
@@ -62,7 +60,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
                         moduleDelegate,
                         mBottomSheetController,
                         mModalDialogManagerSupplier,
-                        mShowTabSwitcher,
+                        mShowHubPaneCallback,
                         mParentViewSupplier);
         onModuleBuiltCallback.onResult(coordinator);
         return true;

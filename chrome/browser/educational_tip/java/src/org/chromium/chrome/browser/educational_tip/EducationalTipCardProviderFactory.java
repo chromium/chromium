@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -42,14 +45,28 @@ public class EducationalTipCardProviderFactory {
     static TabGroupPromoCoordinator createInstance(
             @NonNull Context context,
             @NonNull Runnable onModuleClickedCallback,
+            @NonNull CallbackController callbackController,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
+            @NonNull ShowHubPaneCallback showHubPaneCallback,
             @NonNull Supplier<ViewGroup> parentViewSupplier) {
         return new TabGroupPromoCoordinator(
                 context,
                 onModuleClickedCallback,
+                callbackController,
                 modalDialogManagerSupplier,
-                showTabSwitcherRunnable,
+                showHubPaneCallback,
                 parentViewSupplier);
+    }
+
+    /**
+     * @return An instance of TabGroupPromoSyncCoordinator.
+     */
+    static TabGroupSyncPromoCoordinator createInstance(
+            @NonNull Context context,
+            @NonNull Runnable onModuleClickedCallback,
+            @NonNull CallbackController callbackController,
+            @NonNull ShowHubPaneCallback showHubPaneCallback) {
+        return new TabGroupSyncPromoCoordinator(
+                context, onModuleClickedCallback, callbackController, showHubPaneCallback);
     }
 }

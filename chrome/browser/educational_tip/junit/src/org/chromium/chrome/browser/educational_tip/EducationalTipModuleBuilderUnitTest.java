@@ -29,6 +29,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -47,7 +48,7 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private Callback<ModuleProvider> mBuildCallback;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ViewGroup mParentView;
-    @Mock private Runnable mShowTabSwitcherRunnable;
+    @Mock private ShowHubPaneCallback mShowHubPaneCallback;
 
     private EducationalTipModuleBuilder mModuleBuilder;
     private ObservableSupplierImpl<ViewGroup> mParentViewSupplier;
@@ -62,7 +63,7 @@ public class EducationalTipModuleBuilderUnitTest {
                         RuntimeEnvironment.application,
                         mBottomSheetController,
                         new ObservableSupplierImpl<>(),
-                        mShowTabSwitcherRunnable,
+                        mShowHubPaneCallback,
                         mParentViewSupplier);
     }
 

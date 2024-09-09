@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -26,7 +27,7 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
+            @NonNull ShowHubPaneCallback showHubPaneCallback,
             @NonNull Supplier<ViewGroup> parentViewSupplier) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
         mMediator =
@@ -36,7 +37,7 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
                         moduleDelegate,
                         bottomSheetController,
                         modalDialogManagerSupplier,
-                        showTabSwitcherRunnable,
+                        showHubPaneCallback,
                         parentViewSupplier);
     }
 

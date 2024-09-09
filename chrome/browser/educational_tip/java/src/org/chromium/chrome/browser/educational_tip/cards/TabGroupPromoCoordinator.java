@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -24,7 +25,7 @@ public class TabGroupPromoCoordinator implements EducationalTipCardProvider {
     private final Context mContext;
 
     private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Runnable mShowTabSwitcherRunnable;
+    private final ShowHubPaneCallback mShowHubPaneCallback;
     private final Supplier<ViewGroup> mParentViewSupplier;
     private final Runnable mOnClickedRunnable;
     private CallbackController mCallbackController;
@@ -34,21 +35,22 @@ public class TabGroupPromoCoordinator implements EducationalTipCardProvider {
      * @param context The Context of the application.
      * @param onModuleClickedCallback The callback to be called when the module is clicked.
      * @param modalDialogManagerSupplier The supplier of {@link ModalDialogManager} instance.
-     * @param showTabSwitcherRunnable The runnable to open the tab switcher.
+     * @param showHubPaneCallback The callback to open a Hub pane.
      * @param parentViewSupplier The supplier of the parent view.
      */
     public TabGroupPromoCoordinator(
             @NonNull Context context,
             @NonNull Runnable onModuleClickedCallback,
+            @NonNull CallbackController callbackController,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
+            @NonNull ShowHubPaneCallback showHubPaneCallback,
             @NonNull Supplier<ViewGroup> parentViewSupplier) {
         mContext = context;
+        mCallbackController = callbackController;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mShowTabSwitcherRunnable = showTabSwitcherRunnable;
+        mShowHubPaneCallback = showHubPaneCallback;
         mParentViewSupplier = parentViewSupplier;
 
-        mCallbackController = new CallbackController();
         mOnClickedRunnable =
                 mCallbackController.makeCancelable(
                         () -> {
@@ -59,7 +61,7 @@ public class TabGroupPromoCoordinator implements EducationalTipCardProvider {
                                 mTabGridIphDialogCoordinator.setParentView(
                                         mParentViewSupplier.get());
                             }
-                            mShowTabSwitcherRunnable.run();
+                            mShowHubPaneCallback.onClick(PaneId.TAB_SWITCHER);
                             mTabGridIphDialogCoordinator.showIph();
                             onModuleClickedCallback.run();
                         });
@@ -91,7 +93,6 @@ public class TabGroupPromoCoordinator implements EducationalTipCardProvider {
         if (mTabGridIphDialogCoordinator != null) {
             mTabGridIphDialogCoordinator.setParentView(null);
         }
-        mCallbackController.destroy();
     }
 
     public void setTabGridIphDialogCoordinatorForTesting(

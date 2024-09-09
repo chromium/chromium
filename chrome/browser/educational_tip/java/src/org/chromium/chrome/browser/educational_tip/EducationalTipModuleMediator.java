@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -22,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator for the educational tip module. */
 public class EducationalTipModuleMediator {
     private static final String FORCE_TAB_GROUP = "force_tab_group";
+    private static final String FORCE_TAB_GROUP_SYNC = "force_tab_group_sync";
 
     private final Context mContext;
     private final @ModuleType int mModuleType;
@@ -29,8 +32,9 @@ public class EducationalTipModuleMediator {
     private final ModuleDelegate mModuleDelegate;
     private final BottomSheetController mBottomSheetController;
     private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Runnable mShowTabSwitcherRunnable;
+    private final ShowHubPaneCallback mShowHubPaneCallback;
     private final Supplier<ViewGroup> mParentViewSupplier;
+    private final CallbackController mCallbackController;
 
     private EducationalTipCardProvider mEducationalTipCardProvider;
 
@@ -40,7 +44,7 @@ public class EducationalTipModuleMediator {
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Runnable showTabSwitcherRunnable,
+            @NonNull ShowHubPaneCallback showHubPaneCallback,
             @NonNull Supplier<ViewGroup> parentViewSupplier) {
         mContext = context;
         mModuleType = ModuleType.EDUCATIONAL_TIP;
@@ -48,8 +52,10 @@ public class EducationalTipModuleMediator {
         mModuleDelegate = moduleDelegate;
         mBottomSheetController = bottomSheetController;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mShowTabSwitcherRunnable = showTabSwitcherRunnable;
+        mShowHubPaneCallback = showHubPaneCallback;
         mParentViewSupplier = parentViewSupplier;
+
+        mCallbackController = new CallbackController();
     }
 
     /** Show the educational tip module. */
@@ -61,10 +67,17 @@ public class EducationalTipModuleMediator {
                     EducationalTipCardProviderFactory.createInstance(
                             mContext,
                             this::removeModule,
+                            mCallbackController,
                             mModalDialogManagerSupplier,
-                            mShowTabSwitcherRunnable,
+                            mShowHubPaneCallback,
                             mParentViewSupplier);
-
+        } else if (type == EducationalTipCardType.TAB_GROUP_SYNC) {
+            mEducationalTipCardProvider =
+                    EducationalTipCardProviderFactory.createInstance(
+                            mContext,
+                            this::removeModule,
+                            mCallbackController,
+                            mShowHubPaneCallback);
         } else {
             mEducationalTipCardProvider =
                     EducationalTipCardProviderFactory.createInstance(
@@ -95,6 +108,9 @@ public class EducationalTipModuleMediator {
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_TAB_GROUP, false)) {
             return EducationalTipCardType.TAB_GROUPS;
+        } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_TAB_GROUP_SYNC, false)) {
+            return EducationalTipCardType.TAB_GROUP_SYNC;
         }
         return EducationalTipCardType.DEFAULT_BROWSER_PROMO;
     }
@@ -109,6 +125,7 @@ public class EducationalTipModuleMediator {
             mEducationalTipCardProvider.destroy();
             mEducationalTipCardProvider = null;
         }
+        mCallbackController.destroy();
     }
 
     /**

@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.educational_tip;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -24,56 +22,38 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
-import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
-/** Test relating to {@link TabGroupPromoCoordinator} */
+/** Test relating to {@link TabGroupSyncPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
-public class TabGroupPromoCoordinatorUnitTest {
+public class TabGroupSyncPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnModuleClickedCallback;
     @Mock private ShowHubPaneCallback mShowHubPaneCallback;
-    @Mock private Supplier<ViewGroup> mParentViewSupplier;
-    @Mock private ViewGroup mParentView;
-    @Mock private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
 
-    private ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier;
-
-    private TabGroupPromoCoordinator mTabGroupPromoCoordinator;
+    private TabGroupSyncPromoCoordinator mTabGroupSyncPromoCoordinator;
     private CallbackController mCallbackController;
 
     @Before
     public void setUp() {
-        mModalDialogManagerSupplier = new ObservableSupplierImpl<>();
-        mModalDialogManagerSupplier.set(mModalDialogManager);
-
-        when(mParentViewSupplier.get()).thenReturn(mParentView);
         mCallbackController = new CallbackController();
 
-        mTabGroupPromoCoordinator =
-                new TabGroupPromoCoordinator(
+        mTabGroupSyncPromoCoordinator =
+                new TabGroupSyncPromoCoordinator(
                         mContext,
                         mOnModuleClickedCallback,
                         mCallbackController,
-                        mModalDialogManagerSupplier,
-                        mShowHubPaneCallback,
-                        mParentViewSupplier);
-        mTabGroupPromoCoordinator.setTabGridIphDialogCoordinatorForTesting(
-                mTabGridIphDialogCoordinator);
+                        mShowHubPaneCallback);
     }
 
     @Test
@@ -82,16 +62,8 @@ public class TabGroupPromoCoordinatorUnitTest {
     public void testClickTabGroupPromoCard() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
-        mTabGroupPromoCoordinator.onCardClicked();
-        verify(mTabGridIphDialogCoordinator).showIph();
-        verify(mShowHubPaneCallback).onClick(eq(PaneId.TAB_SWITCHER));
+        mTabGroupSyncPromoCoordinator.onCardClicked();
+        verify(mShowHubPaneCallback).onClick(eq(PaneId.TAB_GROUPS));
         verify(mOnModuleClickedCallback).run();
-    }
-
-    @Test
-    @SmallTest
-    public void testDestroy() {
-        mTabGroupPromoCoordinator.destroy();
-        verify(mTabGridIphDialogCoordinator).setParentView(eq(null));
     }
 }

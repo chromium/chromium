@@ -2238,10 +2238,14 @@ const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
 
 const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group[] = {
     {"force_tab_group", "true"}};
+const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group_sync[] =
+    {{"force_tab_group_sync", "true"}};
 
 const FeatureEntry::FeatureVariation kEducationalTipModuleVariations[] = {
     {"Show tab group promo", kEducationalTipModule_force_tab_group,
      std::size(kEducationalTipModule_force_tab_group), nullptr},
+    {"Show tab group sync promo", kEducationalTipModule_force_tab_group_sync,
+     std::size(kEducationalTipModule_force_tab_group_sync), nullptr},
 };
 
 const FeatureEntry::FeatureParam

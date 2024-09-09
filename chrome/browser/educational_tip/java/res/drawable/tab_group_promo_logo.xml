@@ -14,11 +14,11 @@ found in the LICENSE file.
 
     <path android:fillAlpha="0.05" android:fillColor="@color/gm3_baseline_surface_tint_light" android:pathData="M11.31,0L60.69,0A11.31,11.31 0,0 1,72 11.31L72,60.69A11.31,11.31 0,0 1,60.69 72L11.31,72A11.31,11.31 0,0 1,0 60.69L0,11.31A11.31,11.31 0,0 1,11.31 0z"/>
 
-    <path android:fillColor="#00000000"
+    <path android:fillColor="@android:color/transparent"
         android:pathData="M17.603,25C18.666,23.542 19.866,22.134 21.201,20.799C31.505,10.495 46.155,8.214 55,15.174M55,48.906C54.176,49.941 53.28,50.945 52.314,51.912C43.516,60.71 31.549,63.659 22.734,60"
         android:strokeColor="#1B6EF3" android:strokeLineCap="round" android:strokeWidth="2"/>
 
-    <path android:fillColor="#00000000"
+    <path android:fillColor="@android:color/transparent"
         android:pathData="M55,15.174C49.207,10.615 40.922,10.021 33,13.05M43.175,58.5C35.948,62.057 28.134,62.54 22,59.677"
         android:strokeColor="#1B6EF3" android:strokeLineCap="round" android:strokeWidth="2"/>
 

@@ -119,6 +119,7 @@ import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
+import org.chromium.chrome.browser.hub.HubShowPaneHelper;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
@@ -2281,8 +2282,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             this,
                             mRootUiCoordinator.getBottomSheetController(),
                             getModalDialogManagerSupplier(),
-                            () -> {
+                            (paneId) -> {
                                 if (mLayoutManager != null) {
+                                    HubShowPaneHelper hubShowPaneHelper =
+                                            mHubProvider.getHubShowPaneHelper();
+                                    hubShowPaneHelper.setPaneToShow(paneId);
                                     mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
                                 }
                             },
