@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import androidx.annotation.Nullable;
@@ -84,7 +85,8 @@ import org.chromium.url.GURL;
     }
 
     void updateProposedPlusAddress(String plusAddress) {
-        mBottomSheetContent.setProposedPlusAddress(plusAddress);
+        mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
     }
 
     void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {

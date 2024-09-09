@@ -46,6 +46,9 @@ public class PlusAddressCreationCoordinator {
                 model,
                 bottomSheetContent,
                 PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
+
+        // TODO: crbug.com/364181540 - Make the UI info a property of the model.
+        bottomSheetContent.setProposedPlusAddress(info.getProposedPlusAddressPlaceholder());
     }
 
     public void requestShowContent() {

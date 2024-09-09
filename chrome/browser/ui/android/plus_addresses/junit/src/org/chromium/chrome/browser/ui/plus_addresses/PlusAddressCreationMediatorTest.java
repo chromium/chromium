@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.junit.Before;
@@ -40,7 +42,7 @@ public final class PlusAddressCreationMediatorTest {
 
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
-    private static final String PROPOSED_PLUS_ADDRESS = "foo@bar.com";
+    private static final String PLUS_ADDRESS = "foo@bar.com";
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
             new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
@@ -87,8 +89,9 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testUpdateProposedPlusAddress_callsBottomSheetSetProposedPlusAddress() {
-        mMediator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
-        verify(mBottomSheetContent).setProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        mMediator.updateProposedPlusAddress(PLUS_ADDRESS);
+
+        assertEquals(mModel.get(PROPOSED_PLUS_ADDRESS), PLUS_ADDRESS);
     }
 
     @Test

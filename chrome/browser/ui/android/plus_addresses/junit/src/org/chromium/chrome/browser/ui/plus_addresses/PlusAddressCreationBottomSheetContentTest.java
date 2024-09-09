@@ -117,9 +117,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         assertEquals(modalTitleView.getText().toString(), INFO.getTitle());
         assertEquals(modalDescriptionView.getText().toString(), INFO.getDescription());
-        assertEquals(
-                modalPlusAddressPlaceholderView.getText().toString(),
-                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
         assertEquals(modalConfirmButton.getText().toString(), INFO.getConfirmText());
 
         // Validate updates to the bottomsheet.
@@ -201,7 +198,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
 
         refreshIcon.callOnClick();
         verify(mDelegate).onRefreshClicked();
@@ -213,7 +210,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
 
         refreshIcon.callOnClick();
         refreshIcon.callOnClick();
@@ -226,10 +223,10 @@ public class PlusAddressCreationBottomSheetContentTest {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
 
         refreshIcon.callOnClick();
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
 
         refreshIcon.callOnClick();
         verify(mDelegate, times(2)).onRefreshClicked();
@@ -248,17 +245,12 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    public void testConfirmButton_disabledUntilPlusAddressIsSet() {
+    public void testConfirmButton_disabledByDefault() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-
         assertFalse(modalConfirmButton.isEnabled());
-        // Update the bottomsheet to show the plus address.
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        assertTrue(modalConfirmButton.isEnabled());
 
-        // Updating it while the button is enabled doesn't have an effect.
-        mBottomSheetContent.setProposedPlusAddress("other@plus.plus");
+        mBottomSheetContent.setConfirmButtonEnabled(true);
         assertTrue(modalConfirmButton.isEnabled());
     }
 
@@ -268,7 +260,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
         // Set the plus address to enable the Confirm button.
-        mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mBottomSheetContent.setConfirmButtonEnabled(true);
         assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
@@ -281,9 +273,6 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testLegacyErrorHandling_displaysErrorMessage() {
         TextView modalPlusAddressPlaceholderView =
                 mBottomSheetContent.getContentView().findViewById(R.id.proposed_plus_address);
-        assertEquals(
-                modalPlusAddressPlaceholderView.getText().toString(),
-                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
         assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.VISIBLE);
 
         TextViewWithClickableSpans plusAddressErrorReportView =

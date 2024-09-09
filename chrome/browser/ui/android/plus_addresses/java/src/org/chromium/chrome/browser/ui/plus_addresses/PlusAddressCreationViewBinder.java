@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -18,6 +19,8 @@ class PlusAddressCreationViewBinder {
             PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
+        } else if (propertyKey == PROPOSED_PLUS_ADDRESS) {
+            view.setProposedPlusAddress(model.get(PROPOSED_PLUS_ADDRESS));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

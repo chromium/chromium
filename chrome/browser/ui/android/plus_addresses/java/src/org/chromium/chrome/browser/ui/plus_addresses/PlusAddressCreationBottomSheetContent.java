@@ -81,8 +81,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         maybeShowFirstTimeUseNotice(activity, info.getNotice(), info.getLearnMoreUrl());
 
-        mProposedPlusAddress.setText(info.getProposedPlusAddressPlaceholder());
-
         NoUnderlineClickableSpan errorReportLink =
                 new NoUnderlineClickableSpan(
                         activity,
@@ -146,9 +144,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         }
     }
 
-    public void setProposedPlusAddress(String proposedPlusAddress) {
+    void setProposedPlusAddress(String proposedPlusAddress) {
         mProposedPlusAddress.setText(proposedPlusAddress);
-        mPlusAddressConfirmButton.setEnabled(true);
+    }
+
+    void setConfirmButtonEnabled(boolean enabled) {
+        mPlusAddressConfirmButton.setEnabled(enabled);
     }
 
     /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
