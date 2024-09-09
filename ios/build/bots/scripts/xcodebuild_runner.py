@@ -32,6 +32,12 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
 from plugin_utils import init_plugins_from_args
 from test_plugin_service import TestPluginServicerWrapper, TestPluginServicer
 
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
+
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
 XTDEVICE_FOLDER = os.path.expanduser('~/Library/Developer/XCTestDevices')
@@ -177,8 +183,10 @@ class LaunchCommand(object):
     overall_launch_command_result = ResultCollection()
     clones = self.clones
     running_tests = set(self.egtests_app.get_all_tests())
+    attempt_count = measures.count('test_attempts', 'eg')
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
+      attempt_count.record()
       # Cleanup any running plugin process before each attempt
       if self.test_plugin_service:
         self.test_plugin_service.reset()

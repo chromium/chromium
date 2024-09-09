@@ -37,7 +37,16 @@ import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
 
-from result_sink_util import ExceptionResults, ResultSinkClient
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.extend([
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
+])
+import measures
+import exception_recorder
+
+from result_sink_util import ResultSinkClient
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -98,13 +107,14 @@ class Runner():
     tr = None
     is_legacy_xcode = True
     self.parse_args(args)
+
     try:
-      # This logic is run by default before the otool command is invoked such
-      # that otool has the correct Xcode selected for command line dev tools.
-      install_success, is_legacy_xcode = xcode.install_xcode(
-          self.args.mac_toolchain_cmd, self.args.xcode_build_version,
-          self.args.xcode_path, self.args.runtime_cache_prefix,
-          self.args.version)
+      with measures.time_consumption(
+          'mac_toolchain', 'Download and Install', 'Xcode and Runtime'):
+        install_success, is_legacy_xcode = xcode.install_xcode(
+            self.args.mac_toolchain_cmd, self.args.xcode_build_version,
+            self.args.xcode_path, self.args.runtime_cache_prefix,
+            self.args.version)
       if not install_success:
         raise test_runner_errors.XcodeInstallFailedError(
             self.args.xcode_build_version)
@@ -223,7 +233,7 @@ class Runner():
       summary['step_text'] = format_exception_step_text(e)
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
-      ExceptionResults.add_result(e)
+      exception_recorder.register(e)
       return 3
     except Exception as e:
       sys.stderr.write(traceback.format_exc())
@@ -231,7 +241,7 @@ class Runner():
       # test_runner.Launch returns 0 on success, 1 on failure, so return 2
       # on exception to distinguish between a test failure, and a failure
       # to launch the test at all.
-      ExceptionResults.add_result(e)
+      exception_recorder.register(e)
       return 2
     finally:
       if tr:
@@ -268,9 +278,9 @@ class Runner():
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')
 
-      if ExceptionResults.results:
+      if exception_recorder.size() > 0 or measures.size() > 0:
         result_sink_client = ResultSinkClient()
-        result_sink_client.post_exceptions(ExceptionResults.results)
+        result_sink_client.post_extended_properties()
 
   def parse_args(self, args):
     """Parse the args into args and test_args.

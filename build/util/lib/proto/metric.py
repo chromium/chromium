@@ -17,6 +17,12 @@ class Metric:
   def register(self, metric: Measure) -> None:
     self._metrics.append(metric)
 
+  def size(self) -> int:
+    return len(self._metrics)
+
+  def clear(self) -> None:
+    self._metrics.clear()
+
   def dump(self) -> TestScriptMetrics:
     result = TestScriptMetrics()
     result.metrics.extend([m.dump() for m in self._metrics])
