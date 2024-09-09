@@ -6879,6 +6879,21 @@
             ]
         }
     ],
+    "CrOSLateBootSuspendAwareSwapZramWriteback": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSuspendAwareSwapZramWriteback"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSwapZramCompAlgorithm": [
         {
             "platforms": [
