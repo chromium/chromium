@@ -12,6 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -855,8 +856,11 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForForegroundWindowCount:1];
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:@"Image"];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kContextMenuImagePreviewAccessibilityIdentifier)];
 
+  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:@"Image"];
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
        expectCount:1

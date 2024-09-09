@@ -12,6 +12,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
@@ -125,6 +126,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
+  UIContextMenuContentPreviewProvider previewProvider =
+      [self contextMenuContentPreviewProviderForWebState:webState
+                                                  params:params];
+
   UIContextMenuActionProvider actionProvider =
       [self contextMenuActionProviderForWebState:webState params:params];
   if (!actionProvider) {
@@ -132,7 +137,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   }
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
+                                              previewProvider:previewProvider
                                                actionProvider:actionProvider];
 }
 
@@ -144,6 +149,27 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 }
 
 #pragma mark - Private
+
+// Returns a preview for the images in contextual menu for a given image web
+// state.
+- (UIContextMenuContentPreviewProvider)
+    contextMenuContentPreviewProviderForWebState:(web::WebState*)webState
+                                          params:
+                                              (web::ContextMenuParams)params {
+  if (!base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) ||
+      !params.src_url.is_valid() || params.link_url.is_valid()) {
+    return nil;
+  }
+
+  ImagePreviewViewController* previewViewController =
+      [[ImagePreviewViewController alloc]
+          initWithSrcURL:net::NSURLWithGURL(params.src_url)
+                webState:webState];
+  [previewViewController loadPreview];
+  return ^() {
+    return previewViewController;
+  };
+}
 
 // Returns an action based contextual menu for a given web state (link, image,
 // copy and intent detection actions).
