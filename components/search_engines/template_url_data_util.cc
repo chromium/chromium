@@ -26,7 +26,7 @@ namespace {
 
 // Converts the C-style string `str` to a std::string_view making sure to avoid
 // dereferencing nullptrs.
-std::string_view ToStringPiece(const char* str) {
+std::string_view ToStringView(const char* str) {
   return str ? std::string_view(str) : std::string_view();
 }
 
@@ -349,24 +349,23 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 
   return std::make_unique<TemplateURLData>(
       ToU16StringView(engine.name), ToU16StringView(engine.keyword),
-      ToStringPiece(engine.search_url), ToStringPiece(engine.suggest_url),
-      ToStringPiece(engine.image_url),
-      ToStringPiece(engine.image_translate_url),
-      ToStringPiece(engine.new_tab_url),
-      ToStringPiece(engine.contextual_search_url),
-      ToStringPiece(engine.logo_url), ToStringPiece(engine.doodle_url),
-      ToStringPiece(engine.search_url_post_params),
-      ToStringPiece(engine.suggest_url_post_params),
-      ToStringPiece(engine.image_url_post_params),
-      ToStringPiece(engine.side_search_param),
-      ToStringPiece(engine.side_image_search_param),
-      ToStringPiece(engine.image_translate_source_language_param_key),
-      ToStringPiece(engine.image_translate_target_language_param_key),
-      std::move(search_intent_params), ToStringPiece(engine.favicon_url),
-      ToStringPiece(engine.encoding), image_search_branding_label,
+      ToStringView(engine.search_url), ToStringView(engine.suggest_url),
+      ToStringView(engine.image_url), ToStringView(engine.image_translate_url),
+      ToStringView(engine.new_tab_url),
+      ToStringView(engine.contextual_search_url), ToStringView(engine.logo_url),
+      ToStringView(engine.doodle_url),
+      ToStringView(engine.search_url_post_params),
+      ToStringView(engine.suggest_url_post_params),
+      ToStringView(engine.image_url_post_params),
+      ToStringView(engine.side_search_param),
+      ToStringView(engine.side_image_search_param),
+      ToStringView(engine.image_translate_source_language_param_key),
+      ToStringView(engine.image_translate_target_language_param_key),
+      std::move(search_intent_params), ToStringView(engine.favicon_url),
+      ToStringView(engine.encoding), image_search_branding_label,
       alternate_urls,
-      ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED",
-      ToStringPiece(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
+      ToStringView(engine.preconnect_to_search_url) == "ALLOWED",
+      ToStringView(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
       base::span<const TemplateURLData::RegulatoryExtension>(
           engine.regulatory_extensions, engine.regulatory_extensions_size));
 }
@@ -535,7 +534,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
   turl->SetShortName(l10n_util::GetStringUTF16(engine.name_message_id));
   turl->SetKeyword(u"@" + l10n_util::GetStringUTF16(engine.keyword_message_id));
   turl->SetURL(engine.search_url);
-  turl->favicon_url = GURL(ToStringPiece(engine.favicon_url));
+  turl->favicon_url = GURL(ToStringView(engine.favicon_url));
   turl->starter_pack_id = engine.id;
   turl->GenerateSyncGUID();
   turl->safe_for_autoreplace = true;
