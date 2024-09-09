@@ -1353,15 +1353,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Notifies the handler that the share button was pressed by the user.
 - (void)onShareButtonPressed {
   CHECK(self.handler);
-
-  // Replace `_shareButton` with a spinner.
-  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
-  [spinner startAnimating];
-  UIBarButtonItem* spinnerBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:spinner];
-  self.navigationItem.rightBarButtonItems =
-      @[ self.navigationItem.rightBarButtonItem, spinnerBarButtonItem ];
-
   [self.handler onShareButtonPressed];
 }
 
@@ -1726,12 +1717,18 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   self.navigationItem.leftBarButtonItem = self.customLeftBarButtonItem;
 }
 
-// TODO(crbug.com/322967526): Add timer to display the spinner for min amount of
-// time and possibly a completion to only proceed with sharing views after share
-// button is back.
 - (void)showShareButton {
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, _shareButton ];
+}
+
+- (void)showSpinnerOnRightNavigationBar {
+  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
+  [spinner startAnimating];
+  UIBarButtonItem* spinnerBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:spinner];
+  self.navigationItem.rightBarButtonItems =
+      @[ self.navigationItem.rightBarButtonItem, spinnerBarButtonItem ];
 }
 
 @end

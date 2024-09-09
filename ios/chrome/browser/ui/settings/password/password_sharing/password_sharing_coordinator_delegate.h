@@ -17,7 +17,7 @@
 // Called when recipients data is fetched from the backend in order to notify
 // the parent coordinator (password details) that the spinner button can be now
 // replaced back with the share button.
-- (void)shareFlowEntered;
+- (void)shareDataFetched;
 
 @end
 
