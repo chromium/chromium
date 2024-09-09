@@ -336,6 +336,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.16.3 -> 1.17.1"
 notes = "Unsafe review comments can be found in https://crrev.com/c/5813463"
 
+[[audits.bytemuck]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.17.1 -> 1.18.0"
+notes = "No code changes - just altering feature flag arrangements"
+
 [[audits.bytemuck_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

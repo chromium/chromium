@@ -1,12 +1,13 @@
 # `bytemuck` changelog
 
+## 1.18
+
+* Adds the `latest_stable_rust` cargo feature, which is a blanket feature that turns all other features on that are both sound and compatible with Stable rust.
+
 ## 1.17.1
 
 * Adds `#[repr(C)]` to the `union Transmute<A, B>` type that's used internally
-  for most of the transmutations. This doesn't matter in any current case and
-  there's no actual bug being fixed here, but it's a mild futureproof, and it's
-  probably best practice to have for when people who know the code less deeply
-  try to copy what we're doing into other contexts, so we'll go with it.
+  for most of the transmutations.
 
 ## 1.17.0
 

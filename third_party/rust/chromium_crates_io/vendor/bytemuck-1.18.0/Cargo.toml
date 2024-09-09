@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.17.1"
+version = "1.18.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
@@ -37,28 +37,16 @@ repository = "https://github.com/Lokathor/bytemuck"
 [package.metadata.docs.rs]
 features = [
     "nightly_docs",
-    "derive",
+    "latest_stable_rust",
     "extern_crate_alloc",
     "extern_crate_std",
-    "zeroable_maybe_uninit",
-    "zeroable_atomics",
-    "min_const_generics",
-    "wasm_simd",
-    "must_cast",
-    "const_zeroed",
 ]
 
 [package.metadata.playground]
 features = [
-    "derive",
+    "latest_stable_rust",
     "extern_crate_alloc",
     "extern_crate_std",
-    "zeroable_maybe_uninit",
-    "zeroable_atomics",
-    "min_const_generics",
-    "wasm_simd",
-    "must_cast",
-    "const_zeroed",
 ]
 
 [lib]
@@ -112,6 +100,17 @@ const_zeroed = []
 derive = ["bytemuck_derive"]
 extern_crate_alloc = []
 extern_crate_std = ["extern_crate_alloc"]
+latest_stable_rust = [
+    "aarch64_simd",
+    "align_offset",
+    "const_zeroed",
+    "derive",
+    "min_const_generics",
+    "must_cast",
+    "wasm_simd",
+    "zeroable_atomics",
+    "zeroable_maybe_uninit",
+]
 min_const_generics = []
 must_cast = []
 nightly_docs = []
