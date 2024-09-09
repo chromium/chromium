@@ -45,6 +45,10 @@ TEST(TemplateURLDataTest, Trim) {
 
   EXPECT_EQ(u"othershortname", data.short_name());
   EXPECT_EQ(u"otherkeyword", data.keyword());
+
+  data.SetKeyword(u" other other keyword ");
+
+  EXPECT_EQ(u"otherotherkeyword", data.keyword());
 }
 
 TEST(TemplateURLDataTest, AcceptKnownRegulatoryKeywords) {

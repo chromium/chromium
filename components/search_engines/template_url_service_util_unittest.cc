@@ -221,7 +221,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
   // Modify the keyword and title for original_turl and set safe_for_autoreplace
   // to false to simulate a "user edited" template url.
   original_turl_data->SetShortName(u"modified name");
-  original_turl_data->SetKeyword(u"new keyword");
+  original_turl_data->SetKeyword(u"newkeyword");
   original_turl_data->safe_for_autoreplace = false;
 
   std::unique_ptr<TemplateURL> original_turl =
@@ -245,7 +245,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
 
   EXPECT_FALSE(url_to_update->safe_for_autoreplace);
   EXPECT_EQ(url_to_update->short_name(), u"modified name");
-  EXPECT_EQ(url_to_update->keyword(), u"new keyword");
+  EXPECT_EQ(url_to_update->keyword(), u"newkeyword");
 }
 
 class TemplateURLServiceUtilLoadTest : public testing::Test {

@@ -265,8 +265,6 @@ TEST_F(ProfileWriterTest, AddKeywords) {
   // keyword.
   keywords.push_back(CreateTemplateURL("key1", "http://key1_1.com", "n1_1"));
   keywords.push_back(CreateTemplateURL("key2", "http://key2.com", "n2"));
-  // This entry will not be added since the keyword contains spaces.
-  keywords.push_back(CreateTemplateURL("key 3", "http://key3.com", "n3"));
 
   auto profile_writer = base::MakeRefCounted<TestProfileWriter>(profile());
   profile_writer->AddKeywords(std::move(keywords), false);
