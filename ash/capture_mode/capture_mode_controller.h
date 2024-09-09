@@ -638,8 +638,6 @@ class ASH_EXPORT CaptureModeController
   void PerformScreenshotOfGivenWindow(aura::Window* given_window,
                                       BehaviorType behavior_type);
 
-  bool ShouldClearCaptureRegion(BehaviorType behavior_type) const;
-
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 

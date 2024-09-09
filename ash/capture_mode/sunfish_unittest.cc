@@ -181,32 +181,6 @@ TEST_F(SunfishTest, PerformFullScreenshot) {
   EXPECT_EQ(file_saved_path.DirName(), default_folder);
 }
 
-// Tests that the capture region is reset if sunfish is restarted.
-TEST_F(SunfishTest, ResetCaptureRegion) {
-  // Start sunfish, then select a region.
-  auto* controller = CaptureModeController::Get();
-  controller->StartSunfishSession();
-  auto* session = controller->capture_mode_session();
-  ASSERT_EQ(BehaviorType::kSunfish,
-            session->active_behavior()->behavior_type());
-
-  const gfx::Rect capture_region(100, 100, 600, 500);
-  SelectCaptureModeRegion(GetEventGenerator(), capture_region,
-                          /*release_mouse=*/false);
-  EXPECT_EQ(capture_region, controller->user_capture_region());
-
-  // Exit sunfish, then restart sunfish.
-  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  ASSERT_FALSE(controller->IsActive());
-
-  controller->StartSunfishSession();
-  EXPECT_TRUE(controller->user_capture_region().IsEmpty());
-  CaptureModeSessionTestApi test_api(session);
-  auto* capture_label = test_api.GetCaptureLabelInternalView();
-  EXPECT_TRUE(capture_label->GetVisible());
-  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
-}
-
 // Tests the sunfish capture mode bar view.
 TEST_F(SunfishTest, CaptureBarView) {
   auto* controller = CaptureModeController::Get();
