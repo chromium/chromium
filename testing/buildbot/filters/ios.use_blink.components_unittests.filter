@@ -349,3 +349,14 @@
 -AutofillAcrossIframesTest.FrameAndFormIdsDontMatch
 -AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
 -AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
+
+# TODO(crbug.com/365245828): These tests have been failing since
+# https://crrev.com/c/5829970.
+-BackgroundTracingUtilsTest.SetupBackgroundTracingFromProtoConfigFile
+-BackgroundTracingUtilsTest.SetupBackgroundTracingFromProtoConfigFile
+-BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrial
+-BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrial
+-BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
+-BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
+-BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
+-BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
