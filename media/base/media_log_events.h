@@ -6,8 +6,10 @@
 #define MEDIA_BASE_MEDIA_LOG_EVENTS_H_
 
 #include <string>
+
 #include "media/base/media_export.h"
 #include "media/base/media_log_type_enforcement.h"
+#include "media/base/media_track.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -81,6 +83,10 @@ enum class MediaLogEvent {
   // These logs only apply to HTMLVideoElement. Other media elements will not
   // log these events.
   kVideoOcclusionState,
+
+  // Triggered whenever WMPI handles a track change.
+  kAudioTrackChange,
+  kVideoTrackChange,
 };
 
 // Sometimes URLs can have encoded data that can be exteremly large.
@@ -123,6 +129,13 @@ MEDIA_LOG_EVENT_NAMED_DATA(
     kBufferingStateChanged,
     SerializableBufferingState<SerializableBufferingStateType::kPipeline>,
     "pipeline_buffering_state");
+
+MEDIA_LOG_EVENT_NAMED_DATA(kAudioTrackChange,
+                           std::vector<MediaTrack::Id>,
+                           "audio_tracks_enabled");
+MEDIA_LOG_EVENT_NAMED_DATA(kVideoTrackChange,
+                           std::optional<MediaTrack::Id>,
+                           "video_track_selected");
 
 }  // namespace media
 

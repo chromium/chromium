@@ -1249,33 +1249,38 @@ bool WebMediaPlayerImpl::HasAudio() const {
   return pipeline_metadata_.has_audio;
 }
 
-void WebMediaPlayerImpl::EnabledAudioTracksChanged(
-    const WebVector<WebMediaPlayer::TrackId>& enabledTrackIds) {
+void WebMediaPlayerImpl::OnEnabledAudioTracksChanged(
+    std::vector<media::MediaTrack::Id> enabled) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media_log_->AddEvent<MediaLogEvent::kAudioTrackChange>(enabled);
+  pipeline_controller_->OnEnabledAudioTracksChanged(enabled);
+}
 
-  std::ostringstream logstr;
-  std::vector<MediaTrack::Id> enabledMediaTrackIds;
-  for (const auto& blinkTrackId : enabledTrackIds) {
-    const auto track_id = MediaTrack::Id(blinkTrackId.Utf8().data());
-    logstr << track_id << " ";
-    enabledMediaTrackIds.push_back(track_id);
+void WebMediaPlayerImpl::OnSelectedVideoTrackChanged(
+    std::optional<media::MediaTrack::Id> selected) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media_log_->AddEvent<MediaLogEvent::kVideoTrackChange>(selected);
+  pipeline_controller_->OnSelectedVideoTrackChanged(selected);
+}
+
+void WebMediaPlayerImpl::EnabledAudioTracksChanged(
+    const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  std::vector<MediaTrack::Id> enabled_tracks;
+  for (const auto& blinkTrackId : enabled_track_ids) {
+    enabled_tracks.push_back(MediaTrack::Id(blinkTrackId.Utf8().data()));
   }
-  MEDIA_LOG(INFO, media_log_.get())
-      << "Enabled audio tracks: [" << logstr.str() << "]";
-  pipeline_controller_->OnEnabledAudioTracksChanged(enabledMediaTrackIds);
+  OnEnabledAudioTracksChanged(std::move(enabled_tracks));
 }
 
 void WebMediaPlayerImpl::SelectedVideoTrackChanged(
-    WebMediaPlayer::TrackId* selectedTrackId) {
+    std::optional<WebMediaPlayer::TrackId> selected_track_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  std::optional<MediaTrack::Id> selected_video_track_id;
-  if (selectedTrackId && !video_track_disabled_)
-    selected_video_track_id = MediaTrack::Id(selectedTrackId->Utf8().data());
-  MEDIA_LOG(INFO, media_log_.get())
-      << "Selected video track: ["
-      << selected_video_track_id.value_or(MediaTrack::Id()) << "]";
-  pipeline_controller_->OnSelectedVideoTrackChanged(selected_video_track_id);
+  std::optional<MediaTrack::Id> selected_track;
+  if (selected_track_id.has_value()) {
+    selected_track = MediaTrack::Id(selected_track_id->Utf8().data());
+  }
+  OnSelectedVideoTrackChanged(selected_track);
 }
 
 gfx::Size WebMediaPlayerImpl::NaturalSize() const {
@@ -3785,8 +3790,7 @@ void WebMediaPlayerImpl::EnableVideoTrackIfNeeded() {
   if (video_track_disabled_) {
     video_track_disabled_ = false;
     if (client_->HasSelectedVideoTrack()) {
-      WebMediaPlayer::TrackId trackId = client_->GetSelectedVideoTrackId();
-      SelectedVideoTrackChanged(&trackId);
+      SelectedVideoTrackChanged(client_->GetSelectedVideoTrackId());
     }
   }
 }
@@ -3800,7 +3804,7 @@ void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
 
   if (!video_track_disabled_ && ShouldDisableVideoWhenHidden()) {
     video_track_disabled_ = true;
-    SelectedVideoTrackChanged(nullptr);
+    SelectedVideoTrackChanged(std::nullopt);
   }
 }
 

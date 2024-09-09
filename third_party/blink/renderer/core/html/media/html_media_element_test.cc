@@ -97,7 +97,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD1(SetLatencyHint, void(double));
   MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
   MOCK_METHOD1(EnabledAudioTracksChanged, void(const WebVector<TrackId>&));
-  MOCK_METHOD1(SelectedVideoTrackChanged, void(TrackId*));
+  MOCK_METHOD1(SelectedVideoTrackChanged, void(std::optional<TrackId>));
   MOCK_METHOD4(
       Load,
       WebMediaPlayer::LoadTiming(LoadType load_type,

@@ -16,6 +16,7 @@
 #include "media/base/cdm_config.h"
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
+#include "media/base/media_track.h"
 #include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
@@ -556,6 +557,13 @@ struct MediaSerializer<gfx::ColorSpace::RangeID> {
       ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, FULL);
       ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, DERIVED);
     }
+  }
+};
+
+template <>
+struct MediaSerializer<MediaTrack::Id> {
+  static inline base::Value Serialize(MediaTrack::Id id) {
+    return base::Value(id.value());
   }
 };
 

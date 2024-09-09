@@ -334,8 +334,8 @@ class WebMediaPlayer {
 
   virtual void EnabledAudioTracksChanged(
       const WebVector<TrackId>& enabled_track_ids) {}
-  // |selected_track_id| is null if no track is selected.
-  virtual void SelectedVideoTrackChanged(TrackId* selected_track_id) {}
+  virtual void SelectedVideoTrackChanged(
+      std::optional<TrackId> selected_track_id) {}
 
   // Callback called whenever the media element may have received or last native
   // controls. It might be called twice with the same value: the caller has to
