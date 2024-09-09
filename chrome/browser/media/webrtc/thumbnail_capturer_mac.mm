@@ -41,13 +41,6 @@
 BASE_FEATURE(kUseSCContentSharingPicker,
              "UseSCContentSharingPicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker) on
-// MacOS 14 Sonoma and later. This flag will use the built-in picker for all
-// MacOS versions where it is supported.
-BASE_FEATURE(kUseSCContentSharingPickerSonoma,
-             "UseSCContentSharingPickerSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 using SampleCallback =
@@ -1009,11 +1002,6 @@ void ThumbnailCapturerMac::OnCapturedFrame(
 bool ShouldUseSCContentSharingPicker() {
   if (@available(macOS 15.0, *)) {
     if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
-      return true;
-    }
-  }
-  if (@available(macOS 14.4, *)) {
-    if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
       return true;
     }
   }
