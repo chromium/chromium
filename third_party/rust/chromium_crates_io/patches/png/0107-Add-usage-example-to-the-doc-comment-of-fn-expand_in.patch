@@ -1,0 +1,76 @@
+From ddb54b298bc87079c2216d3bdc16749477d73cc1 Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Fri, 30 Aug 2024 20:49:06 +0000
+Subject: [PATCH 107/107] Add usage example to the doc comment of `fn
+ expand_interlaced_row`.
+
+---
+ src/adam7.rs | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.13/src/adam7.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.13/src/adam7.rs
+index 4d65be8..8016b8b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.13/src/adam7.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.13/src/adam7.rs
+@@ -13,6 +13,31 @@ pub struct Adam7Info {
+     pub(crate) width: u32,
+ }
+ 
++impl Adam7Info {
++    /// Creates a new `Adam7Info`.  May panic if the arguments are out of range (e.g. if `pass` is
++    /// 0 or greater than 8).
++    ///
++    /// * `pass` corresponds to a pass of the
++    ///   [the Adam7 algorithm](https://en.wikipedia.org/wiki/Adam7_algorithm)
++    /// * `line` is the number of a line within a pass (starting with 0).  For example,
++    ///   in an image of height 8, `line` can be beteween `0..4` in the 7th `pass`
++    ///   (those 4 interlaced rows correspond to 2nd, 4th, 6th, and 8th row of the full image).
++    /// * `width` describes how many pixels are in an interlaced row.  For example,
++    ///   in the 7th `pass`, the `width` is be the same as full image width, but in
++    ///   in the 1st `pass`, the `width` is be 1/8th of the image width (rounded up as
++    ///   necessary).
++    ///
++    /// Note that in typical usage, `Adam7Info`s are returned by [Reader::next_interlaced_row]
++    /// and there is no need to create them by calling `Adam7Info::new`.  `Adam7Info::new` is
++    /// nevertheless exposed as a public API, because it helps to provide self-contained example
++    /// usage of [expand_interlaced_row].
++    pub fn new(pass: u8, line: u32, width: u32) -> Self {
++        assert!(1 <= pass && pass <= 7);
++        assert!(width > 0);
++        Self { pass, line, width }
++    }
++}
++
+ /// This iterator iterates over the different passes of an image Adam7 encoded
+ /// PNG image
+ /// The pattern is:
+@@ -166,6 +191,26 @@ fn expand_adam7_bits(
+ /// `bits_per_pixel` matches that of `img`.  Note that in initial Adam7 passes the `interlaced_row`
+ /// may contain less pixels that the width of the frame being decoded (e.g. it contains only 1/8th
+ /// of pixels in the initial pass).
++///
++/// Example:
++///
++/// ```
++/// use png::{expand_interlaced_row, Adam7Info};
++/// let info = Adam7Info::new(5, 0, 4);  // 1st line of 5th pass has 4 pixels.
++/// let mut img = vec![0; 8 * 8];
++/// let row = vec![1, 2, 3, 4];
++/// expand_interlaced_row(&mut img, 8, &row, &info, 8);
++/// assert_eq!(&img, &[
++///     0, 0, 0, 0, 0, 0, 0, 0,
++///     0, 0, 0, 0, 0, 0, 0, 0,
++///     1, 0, 2, 0, 3, 0, 4, 0,  // <= this is where the 1st line of 5s appears
++///     0, 0, 0, 0, 0, 0, 0, 0,  //    in the schematic drawing of the passes at
++///     0, 0, 0, 0, 0, 0, 0, 0,  //    https://en.wikipedia.org/wiki/Adam7_algorithm
++///     0, 0, 0, 0, 0, 0, 0, 0,
++///     0, 0, 0, 0, 0, 0, 0, 0,
++///     0, 0, 0, 0, 0, 0, 0, 0,
++/// ]);
++/// ```
+ pub fn expand_pass(
+     img: &mut [u8],
+     img_row_stride: usize,
+-- 
+2.46.0.598.g6f2099f65c-goog
+

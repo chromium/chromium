@@ -145,7 +145,7 @@ pub(crate) enum TextDecodingError {
 
 /// A generalized text chunk trait
 pub trait EncodableTextChunk {
-    /// Encode text chunk as Vec<u8> to a `Write`
+    /// Encode text chunk as `Vec<u8>` to a `Write`
     fn encode<W: Write>(&self, w: &mut W) -> Result<(), EncodingError>;
 }
 

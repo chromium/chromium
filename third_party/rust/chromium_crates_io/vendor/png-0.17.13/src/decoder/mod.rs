@@ -99,19 +99,26 @@ impl<'data> InterlacedRow<'data> {
         self.data
     }
 
-    pub fn interlace(&self) -> InterlaceInfo {
-        self.interlace
+    pub fn interlace(&self) -> &InterlaceInfo {
+        &self.interlace
     }
 }
 
+/// Describes which interlacing algorithm applies to a decoded row.
+///
 /// PNG (2003) specifies two interlace modes, but reserves future extensions.
+///
+/// See also [Reader::next_interlaced_row].
 #[derive(Clone, Copy, Debug)]
 pub enum InterlaceInfo {
-    /// the null method means no interlacing
+    /// The `null` method means no interlacing.
     Null,
-    /// Adam7 derives its name from doing 7 passes over the image, only decoding a subset of all pixels in each pass.
-    /// The following table shows pictorially what parts of each 8x8 area of the image is found in each pass:
+    /// [The `Adam7` algorithm](https://en.wikipedia.org/wiki/Adam7_algorithm) derives its name
+    /// from doing 7 passes over the image, only decoding a subset of all pixels in each pass.
+    /// The following table shows pictorially what parts of each 8x8 area of the image is found in
+    /// each pass:
     ///
+    /// ```txt
     /// 1 6 4 6 2 6 4 6
     /// 7 7 7 7 7 7 7 7
     /// 5 6 5 6 5 6 5 6
@@ -120,7 +127,17 @@ pub enum InterlaceInfo {
     /// 7 7 7 7 7 7 7 7
     /// 5 6 5 6 5 6 5 6
     /// 7 7 7 7 7 7 7 7
-    Adam7 { pass: u8, line: u32, width: u32 },
+    /// ```
+    Adam7(adam7::Adam7Info),
+}
+
+impl InterlaceInfo {
+    fn get_adam7_info(&self) -> Option<&adam7::Adam7Info> {
+        match self {
+            InterlaceInfo::Null => None,
+            InterlaceInfo::Adam7(adam7info) => Some(adam7info),
+        }
+    }
 }
 
 /// A row of data without interlace information.
@@ -520,20 +537,19 @@ impl<R: Read> Reader<R> {
         self.data_stream.clear();
         self.current_start = 0;
         self.prev_start = 0;
-        let width = self.info().width;
         if self.info().interlaced {
+            let stride = self.output_line_size(self.info().width);
+            let samples = color_type.samples() as u8;
+            let bits_pp = samples * (bit_depth as u8);
             while let Some(InterlacedRow {
                 data: row,
                 interlace,
                 ..
             }) = self.next_interlaced_row()?
             {
-                let (line, pass) = match interlace {
-                    InterlaceInfo::Adam7 { line, pass, .. } => (line, pass),
-                    InterlaceInfo::Null => unreachable!("expected interlace information"),
-                };
-                let samples = color_type.samples() as u8;
-                adam7::expand_pass(buf, width, row, pass, line, samples * (bit_depth as u8));
+                // `unwrap` won't panic, because we checked `self.info().interlaced` above.
+                let adam7info = interlace.get_adam7_info().unwrap();
+                adam7::expand_pass(buf, stride, row, &adam7info, bits_pp);
             }
         } else {
             for row in buf
@@ -583,7 +599,7 @@ impl<R: Read> Reader<R> {
             None => return Ok(None),
         };
 
-        let width = if let InterlaceInfo::Adam7 { width, .. } = interlace {
+        let width = if let InterlaceInfo::Adam7(adam7::Adam7Info { width, .. }) = interlace {
             width
         } else {
             self.subframe.width
@@ -699,12 +715,12 @@ impl<R: Read> Reader<R> {
         match self.subframe.interlace {
             InterlaceIter::Adam7(ref mut adam7) => {
                 let last_pass = adam7.current_pass();
-                let (pass, line, width) = adam7.next()?;
-                let rowlen = self.info().raw_row_length_from_width(width);
-                if last_pass != pass {
+                let adam7info = adam7.next()?;
+                let rowlen = self.info().raw_row_length_from_width(adam7info.width);
+                if last_pass != adam7info.pass {
                     self.prev_start = self.current_start;
                 }
-                Some((rowlen, InterlaceInfo::Adam7 { pass, line, width }))
+                Some((rowlen, InterlaceInfo::Adam7(adam7info)))
             }
             InterlaceIter::None(ref mut height) => {
                 let _ = height.next()?;
