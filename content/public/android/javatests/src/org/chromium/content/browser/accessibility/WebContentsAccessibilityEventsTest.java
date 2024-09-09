@@ -157,14 +157,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    public void test_addAlertWithEmptyText() {
-        performTest(
-                "add-alert-with-empty-text.html",
-                "add-alert-with-empty-text-expected-android.txt");
-    }
-
-    @Test
-    @SmallTest
     public void test_addAlertContent() {
         performTest("add-alert-content.html", "add-alert-content-expected-android.txt");
     }

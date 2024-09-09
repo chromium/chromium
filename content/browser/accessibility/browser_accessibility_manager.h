@@ -496,10 +496,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
  protected:
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
-  FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithEmptyName);
-  FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithNonEmptyName);
 
   explicit BrowserAccessibilityManager(
       ui::AXNodeIdDelegate& node_id_delegate,
