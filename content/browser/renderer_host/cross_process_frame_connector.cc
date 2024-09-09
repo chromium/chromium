@@ -408,6 +408,12 @@ void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
     bool include_visual_properties) {
   intersection_state_ = intersection_state;
   if (view_) {
+    CHECK(current_child_frame_host());
+    current_child_frame_host()
+        ->delegate()
+        ->OnRemoteSubframeViewportIntersectionStateChanged(
+            current_child_frame_host(), intersection_state);
+
     // Only ship over the visual properties if they were included in the update
     // viewport intersection message.
     view_->UpdateViewportIntersection(

@@ -617,13 +617,13 @@ TEST_F(FrameNodeImplTest, ViewportIntersectionState) {
   EXPECT_FALSE(child_frame_node->GetViewportIntersectionState().has_value());
 
   EXPECT_CALL(obs, OnViewportIntersectionStateChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersectionState(
+  child_frame_node->SetViewportIntersectionStateForTesting(
       ViewportIntersectionState::kNotIntersecting);
   EXPECT_EQ(child_frame_node->GetViewportIntersectionState().value(),
             ViewportIntersectionState::kNotIntersecting);
 
   EXPECT_CALL(obs, OnViewportIntersectionStateChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersectionState(
+  child_frame_node->SetViewportIntersectionStateForTesting(
       ViewportIntersectionState::kIntersecting);
   EXPECT_EQ(child_frame_node->GetViewportIntersectionState().value(),
             ViewportIntersectionState::kIntersecting);

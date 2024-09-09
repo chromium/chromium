@@ -512,6 +512,17 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                                         bool is_audible) {}
 
+  // Notifies observers if a remote subframe's intersection with the viewport
+  // has changed.
+  //
+  // Note: This is only called for remote frames. If you only care about if the
+  // frame intersects or not with the viewport, use OnFrameVisibilityChanged()
+  // below, as it is called for all frames.
+  virtual void OnRemoteSubframeViewportIntersectionStateChanged(
+      RenderFrameHostImpl* host,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) {}
+
   // Notifies observers that the frame's visibility has changed.
   virtual void OnFrameVisibilityChanged(
       RenderFrameHostImpl* host,

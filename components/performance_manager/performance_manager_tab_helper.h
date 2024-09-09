@@ -72,6 +72,10 @@ class PerformanceManagerTabHelper
   void OnAudioStateChanged(bool audible) override;
   void OnFrameAudioStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_audible) override;
+  void OnRemoteSubframeViewportIntersectionStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) override;
   void OnFrameVisibilityChanged(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::FrameVisibility visibility) override;

@@ -10433,6 +10433,20 @@ void WebContentsImpl::OnFrameVisibilityChanged(
                              host, visibility);
 }
 
+void WebContentsImpl::OnRemoteSubframeViewportIntersectionStateChanged(
+    RenderFrameHostImpl* host,
+    const blink::mojom::ViewportIntersectionState&
+        viewport_intersection_state) {
+  OPTIONAL_TRACE_EVENT2(
+      "content",
+      "WebContentsImpl::OnRemoteSubframeViewportIntersectionStateChanged",
+      "render_frame_host", host, "viewport_intersection_state",
+      viewport_intersection_state);
+  observers_.NotifyObservers(
+      &WebContentsObserver::OnRemoteSubframeViewportIntersectionStateChanged,
+      host, viewport_intersection_state);
+}
+
 void WebContentsImpl::OnFrameIsCapturingMediaStreamChanged(
     RenderFrameHostImpl* host,
     bool is_capturing_media_stream) {
