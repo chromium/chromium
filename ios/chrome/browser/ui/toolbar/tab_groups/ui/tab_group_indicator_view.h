@@ -27,6 +27,9 @@
 // Whether the view is displayed in Incognito mode.
 @property(nonatomic, assign) BOOL incognito;
 
+// Whether or not to display the separator at the bottom.
+@property(nonatomic, assign) BOOL showSeparator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_

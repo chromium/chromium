@@ -6,11 +6,13 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
@@ -26,6 +28,8 @@
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
+  // Separator view.
+  UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
 }
@@ -38,10 +42,12 @@
     _containerView = [self containerView];
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
+    _separatorView = [self setUpSeparatorView];
     _menuButton = [self menuButton];
 
     [self addSubview:_containerView];
     [self addSubview:_menuButton];
+    [self addSubview:_separatorView];
     [_containerView addSubview:_coloredDotView];
     [_containerView addSubview:_titleView];
 
@@ -111,6 +117,14 @@
   return dotView;
 }
 
+// Sets the separator view up.
+- (UIView*)setUpSeparatorView {
+  UIView* separatorView = [[UIView alloc] init];
+  separatorView.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  return separatorView;
+}
+
 // Returns the menu button.
 - (UIButton*)menuButton {
   UIButton* button = [[UIButton alloc] init];
@@ -156,12 +170,21 @@
 - (void)setContraints {
   [NSLayoutConstraint activateConstraints:@[
     [_containerView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
+        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                    constant:kTabGroupIndicatorVerticalMargin],
     [_containerView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.trailingAnchor],
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                 constant:-kTabGroupIndicatorVerticalMargin],
     [_containerView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [_containerView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     [_containerView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+
+    [_separatorView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+    [_separatorView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [_separatorView.topAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_separatorView.heightAnchor
+        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                      kToolbarSeparatorHeight)],
 
     [_titleView.leadingAnchor
         constraintEqualToAnchor:_coloredDotView.trailingAnchor
@@ -189,6 +212,11 @@
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
   [self setMenuButton];
+}
+
+- (void)setShowSeparator:(BOOL)showSeparator {
+  _showSeparator = showSeparator;
+  _separatorView.hidden = !showSeparator;
 }
 
 - (void)setGroupTitle:(NSString*)title {

@@ -188,6 +188,7 @@
     [NSLayoutConstraint
         activateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
   }
+  self.tabGroupIndicatorView.showSeparator = !isTopOmnibox;
 
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.superview);
   BOOL isAvailable = !IsCompactHeight(self.superview) && !canShowTabStrip;
@@ -219,11 +220,9 @@
   id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     [self.tabGroupIndicatorView.leadingAnchor
-        constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kTabGroupIndicatorVerticalMargin],
+        constraintEqualToAnchor:safeArea.leadingAnchor],
     [self.tabGroupIndicatorView.trailingAnchor
-        constraintEqualToAnchor:safeArea.trailingAnchor
-                       constant:-kTabGroupIndicatorVerticalMargin],
+        constraintEqualToAnchor:safeArea.trailingAnchor],
     [self.tabGroupIndicatorView.heightAnchor
         constraintEqualToConstant:kTabGroupIndicatorHeight],
   ]];
