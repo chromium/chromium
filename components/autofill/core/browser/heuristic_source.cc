@@ -43,16 +43,4 @@ std::optional<PatternSource> HeuristicSourceToPatternSource(
   NOTREACHED();
 }
 
-HeuristicSource PatternSourceToHeuristicSource(PatternSource source) {
-  switch (source) {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    case PatternSource::kLegacy:
-      return HeuristicSource::kLegacy;
-#else
-    case PatternSource::kDefault:
-      return HeuristicSource::kDefault;
-#endif
-  }
-  NOTREACHED();
-}
 }  // namespace autofill

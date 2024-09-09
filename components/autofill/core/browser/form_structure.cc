@@ -207,11 +207,12 @@ void FormStructure::DetermineHeuristicTypes(
 
   // The active heuristic source might not be a pattern source.
   std::optional<FieldCandidatesMap> active_predictions;
-  if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
+  HeuristicSource active_heuristic_source = GetActiveHeuristicSource();
+  if (std::optional<PatternSource> pattern_source =
+          HeuristicSourceToPatternSource(active_heuristic_source)) {
     context.pattern_source = *pattern_source;
     active_predictions = ParseFieldTypesWithPatterns(context);
-    AssignBestFieldTypes(*active_predictions,
-                         PatternSourceToHeuristicSource(*pattern_source));
+    AssignBestFieldTypes(*active_predictions, active_heuristic_source);
   }
   DetermineNonActiveHeuristicTypes(std::move(active_predictions), context);
 

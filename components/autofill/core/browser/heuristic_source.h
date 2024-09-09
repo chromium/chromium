@@ -41,7 +41,6 @@ HeuristicSource GetActiveHeuristicSource();
 // source is not a `PatternSource` then a nullopt is returned.
 std::optional<PatternSource> HeuristicSourceToPatternSource(
     HeuristicSource source);
-HeuristicSource PatternSourceToHeuristicSource(PatternSource source);
 
 }  // namespace autofill
 

@@ -284,14 +284,13 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   yield ''
 
   language_array = sorted(
-      set(lang for lang_to_id_to_patternrefs in
+      set(f'"{lang}"' for lang_to_id_to_patternrefs in
           name_to_lang_to_id_to_patternrefs.values()
           for lang in lang_to_id_to_patternrefs.keys() if lang != ''))
   yield '// The set of language codes across all language source ids and'
   yield '// pattern names.'
   yield 'constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({'
-  quoted_languages = [f'"{lang}"' for lang in language_array]
-  yield f'  {", ".join(quoted_languages)}'
+  yield f'  {", ".join(language_array)}'
   yield '}, LanguageComparator());'
 
 def generate_cpp_lines(id_to_name_to_lang_to_patterns):
@@ -302,14 +301,12 @@ def generate_cpp_lines(id_to_name_to_lang_to_patterns):
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 
-#include <algorithm>
 #include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/types/cxx23_to_underlying.h"
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/dense_set.h"
