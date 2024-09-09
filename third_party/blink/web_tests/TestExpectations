@@ -2636,7 +2636,6 @@ crbug.com/364744930 external/wpt/css/css-lists/parsing/counter-increment-compute
 crbug.com/364744930 external/wpt/css/css-lists/parsing/counter-reset-computed.html [ Crash Pass ]
 crbug.com/364744930 external/wpt/css/css-lists/parsing/counter-set-computed.html [ Crash Pass ]
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
-crbug.com/364754341 external/wpt/css/css-text/parsing/tab-size-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/364970783 external/wpt/css/css-tables/table-intrinsic-size-003.html [ Failure ]
