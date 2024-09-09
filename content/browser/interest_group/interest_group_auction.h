@@ -25,6 +25,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/additional_bid_result.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
@@ -175,6 +176,11 @@ class CONTENT_EXPORT InterestGroupAuction
 
   using RealTimeReportingContributions =
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
+
+  using PrivateAggregationAllParticipantsDataPtrs =
+      std::array<const PrivateAggregationParticipantData*,
+                 base::checked_cast<size_t>(
+                     PrivateAggregationPhase::kNumPhases)>;
 
   struct CONTENT_EXPORT BidState {
     explicit BidState(const SingleStorageInterestGroup&& bidder);
@@ -664,6 +670,11 @@ class CONTENT_EXPORT InterestGroupAuction
   std::map<std::string, PrivateAggregationRequests>
   TakeNonReservedPrivateAggregationRequests();
 
+  // Assembles per-participant metrics values relevant to the buyer and
+  // seller(s) of the winning bid.
+  InterestGroupAuctionReporter::PrivateAggregationAllParticipantsData
+  ComputePrivateAggregationParticipantData();
+
   // Retrieves all real time report contributions.
   std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
   TakeRealTimeReportingContributions();
@@ -1037,7 +1048,7 @@ class CONTENT_EXPORT InterestGroupAuction
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta scoring_latency,
+      auction_worklet::mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
       auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
           score_ad_dependency_latencies,
       const std::vector<std::string>& errors) override;
@@ -1095,6 +1106,10 @@ class CONTENT_EXPORT InterestGroupAuction
       const url::Origin& bid_owner,
       PostAuctionSignals& signals_out,
       std::optional<PostAuctionSignals>& top_level_signals_out);
+
+  // Fills in `seller_metrics_` based on the collected state.
+  // Used by TakeDebugReportUrlsAndFillInPrivateAggregationRequests().
+  void FillInSellerParticipantDataMetrics();
 
   // Returns the multi-bid limit configured for `buyer` by `config_`,
   // ensuring that it's at least 1.
@@ -1413,6 +1428,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
+
+  // Metrics for this auction's seller.
+  PrivateAggregationParticipantData seller_metrics_;
+  AuctionMetricsRecorder::LatencyAggregator code_fetch_time_;
 
   // Stores all pending Private Aggregation API report requests of reserved
   // event type from the bidding and scoring phase. These are passed to the

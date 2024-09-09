@@ -633,6 +633,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   // Deleted once load has completed.
   std::unique_ptr<WorkletLoader> worklet_loader_;
+  base::TimeTicks code_download_start_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
 
   // Lives on `v8_runners_`. Since it's deleted there, tasks can be safely
   // posted from main thread to it with an Unretained pointer.

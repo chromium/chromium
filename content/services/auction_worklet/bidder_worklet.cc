@@ -1960,6 +1960,7 @@ void BidderWorklet::Start() {
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.BiddingScriptJS",
       script_source_url_.spec().size());
+  code_download_start_ = base::TimeTicks::Now();
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(),
       /*auction_network_events_handler=*/
@@ -1991,6 +1992,7 @@ void BidderWorklet::OnScriptDownloaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
+  js_fetch_latency_ = base::TimeTicks::Now() - code_download_start_;
 
   // Use `worklet_scripts[0]` for metrics and for the failure check. All the
   // results should be the same.
@@ -2031,6 +2033,7 @@ void BidderWorklet::OnWasmDownloaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
+  wasm_fetch_latency_ = base::TimeTicks::Now() - code_download_start_;
 
   // Use `worklet_scripts[0]` for metrics and for the failure check. All the
   // results should be the same.
@@ -2474,7 +2477,10 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       debug_win_report_url, set_priority,
       std::move(update_priority_signals_overrides), std::move(pa_requests),
       std::move(non_kanon_pa_requests), std::move(real_time_contributions),
-      bidding_latency,
+      mojom::BidderTimingMetrics::New(
+          /*js_fetch_latency=*/js_fetch_latency_,
+          /*wasm_fetch_latency=*/wasm_fetch_latency_,
+          /*script_latency=*/bidding_latency),
       mojom::GenerateBidDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*config_promises_latency=*/NullOptIfZero(task->wait_promises),
@@ -2514,7 +2520,11 @@ void BidderWorklet::DeliverReportWinOnUserThread(
                 load_code_error_msgs_.end());
   std::move(task->callback)
       .Run(std::move(report_url), std::move(ad_beacon_map),
-           std::move(ad_macro_map), std::move(pa_requests), reporting_latency,
+           std::move(ad_macro_map), std::move(pa_requests),
+           mojom::BidderTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*wasm_fetch_latency=*/wasm_fetch_latency_,
+               /*script_latency=*/reporting_latency),
            std::move(errors));
   report_win_tasks_.erase(task);
 }

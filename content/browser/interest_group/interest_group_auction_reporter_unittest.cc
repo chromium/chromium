@@ -288,6 +288,7 @@ class InterestGroupAuctionReporterTest
             std::move(debug_loss_report_urls_), k_anon_keys_to_join_,
             std::move(private_aggregation_requests_reserved_),
             std::move(private_aggregation_event_map_),
+            std::move(all_participanta_data_),
             std::move(real_time_contributions_));
     interest_group_auction_reporter_->Start(
         base::BindOnce(&InterestGroupAuctionReporterTest::OnCompleteCallback,
@@ -755,6 +756,9 @@ class InterestGroupAuctionReporterTest
   std::map<std::string,
            InterestGroupAuctionReporter::PrivateAggregationRequests>
       private_aggregation_event_map_;
+
+  InterestGroupAuctionReporter::PrivateAggregationAllParticipantsData
+      all_participanta_data_;
 
   // The real time reporting histograms passed in to the constructor.
   std::map<url::Origin,

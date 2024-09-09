@@ -142,6 +142,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively, to return `delta`.
   void SetBidderTrustedSignalsFetchLatency(base::TimeDelta delta);
   void SetBiddingLatency(base::TimeDelta delta);
+  void SetCodeFetchLatencies(std::optional<base::TimeDelta> js_fetch_latency,
+                             std::optional<base::TimeDelta> wasm_fetch_latency);
 
   // Same for `reporting_latency` for ReportWin()
   void SetReportingLatency(base::TimeDelta delta) {
@@ -242,6 +244,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively,
   base::TimeDelta trusted_signals_fetch_latency_;
   base::TimeDelta bidding_latency_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  std::optional<base::TimeDelta> wasm_fetch_latency_;
 
   // To be fed as `reporting_latency` to ReportWin() callback.
   base::TimeDelta reporting_latency_;
@@ -376,6 +380,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     expect_send_pending_signals_requests_called_ = value;
   }
 
+  void SetCodeFetchLatency(std::optional<base::TimeDelta> js_fetch_latency) {
+    js_fetch_latency_ = js_fetch_latency;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> score_ad_run_loop_;
   std::list<ScoreAdParams> score_ad_params_;
@@ -388,6 +396,9 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   // To be fed as `reporting_latency` to ReportResult() callback.
   base::TimeDelta reporting_latency_;
+
+  // Used for reporting callback as well.
+  std::optional<base::TimeDelta> js_fetch_latency_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.

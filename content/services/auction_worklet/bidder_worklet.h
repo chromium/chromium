@@ -787,6 +787,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // These are deleted once each resource is loaded.
   std::unique_ptr<WorkletLoader> worklet_loader_;
   std::unique_ptr<WorkletWasmLoader> wasm_loader_;
+  base::TimeTicks code_download_start_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  std::optional<base::TimeDelta> wasm_fetch_latency_;
 
   // Lives on `v8_runners_`. Since it's deleted there via DeleteSoon, tasks can
   // be safely posted from main thread to it with an Unretained pointer.

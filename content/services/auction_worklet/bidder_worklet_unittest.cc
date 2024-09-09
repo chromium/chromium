@@ -159,7 +159,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta bidding_latency,
+      mojom::BidderTimingMetricsPtr generate_bid_metrics,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
       mojom::RejectReason reject_reason,
@@ -212,7 +212,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
            PrivateAggregationRequests pa_requests,
            PrivateAggregationRequests non_kanon_pa_requests,
            RealTimeReportingContributions real_time_contributions,
-           base::TimeDelta bidding_latency,
+           mojom::BidderTimingMetricsPtr generate_bid_metrics,
            mojom::GenerateBidDependencyLatenciesPtr
                generate_bid_dependency_latencies,
            mojom::RejectReason reject_reason,
@@ -253,7 +253,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta bidding_latency,
+      mojom::BidderTimingMetricsPtr generate_bid_metrics,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
       mojom::RejectReason reject_reason,
@@ -266,7 +266,8 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
              debug_win_report_url, set_priority,
              std::move(update_priority_signals_overrides),
              std::move(pa_requests), std::move(non_kanon_pa_requests),
-             std::move(real_time_contributions), bidding_latency,
+             std::move(real_time_contributions),
+             std::move(generate_bid_metrics),
              std::move(generate_bid_dependency_latencies), reject_reason,
              errors);
   }
@@ -627,7 +628,7 @@ class BidderWorkletTest : public testing::Test {
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
-               base::TimeDelta reporting_latency,
+               auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
@@ -637,7 +638,7 @@ class BidderWorkletTest : public testing::Test {
               if (expected_reporting_latency_timeout) {
                 // We only know that about the time of the timeout should have
                 // elapsed, and there may also be some thread skew.
-                EXPECT_GE(reporting_latency,
+                EXPECT_GE(timing_metrics->script_latency,
                           (reporting_timeout.has_value()
                                ? reporting_timeout.value()
                                : AuctionV8Helper::kScriptTimeout) *
@@ -870,7 +871,7 @@ class BidderWorkletTest : public testing::Test {
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta bidding_latency,
+      mojom::BidderTimingMetricsPtr generate_bid_metrics,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
       mojom::RejectReason reject_reason,
@@ -893,6 +894,7 @@ class BidderWorkletTest : public testing::Test {
     pa_requests_ = std::move(pa_requests);
     non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
     real_time_contributions_ = std::move(real_time_contributions);
+    generate_bid_metrics_ = std::move(generate_bid_metrics);
     generate_bid_dependency_latencies_ =
         std::move(generate_bid_dependency_latencies);
     reject_reason_ = reject_reason;
@@ -1072,6 +1074,7 @@ class BidderWorkletTest : public testing::Test {
   PrivateAggregationRequests pa_requests_;
   PrivateAggregationRequests non_kanon_pa_requests_;
   RealTimeReportingContributions real_time_contributions_;
+  mojom::BidderTimingMetricsPtr generate_bid_metrics_;
   mojom::GenerateBidDependencyLatenciesPtr generate_bid_dependency_latencies_;
   mojom::RejectReason reject_reason_ = mojom::RejectReason::kNotAvailable;
   std::vector<std::string> bid_errors_;
@@ -4553,7 +4556,7 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
                   PrivateAggregationRequests pa_requests,
                   PrivateAggregationRequests non_kanon_pa_requests,
                   RealTimeReportingContributions real_time_contributions,
-                  base::TimeDelta bidding_latency,
+                  mojom::BidderTimingMetricsPtr generate_bid_metrics,
                   mojom::GenerateBidDependencyLatenciesPtr
                       generate_bid_dependency_latencies,
                   mojom::RejectReason reject_reason,
@@ -4674,7 +4677,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta bidding_latency,
+                mojom::BidderTimingMetricsPtr generate_bid_metrics,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
                 mojom::RejectReason reject_reason,
@@ -4804,7 +4807,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta bidding_latency,
+                mojom::BidderTimingMetricsPtr generate_bid_metrics,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
                 mojom::RejectReason reject_reason,
@@ -4940,7 +4943,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta bidding_latency,
+                mojom::BidderTimingMetricsPtr generate_bid_metrics,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
                 mojom::RejectReason reject_reason,
@@ -5055,7 +5058,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta bidding_latency,
+                mojom::BidderTimingMetricsPtr generate_bid_metrics,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
                 mojom::RejectReason reject_reason,
@@ -6016,7 +6019,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
               const base::flat_map<std::string, GURL>& ad_beacon_map,
               const base::flat_map<std::string, std::string>& ad_macro_map,
               PrivateAggregationRequests pa_requests,
-              base::TimeDelta reporting_latency,
+              auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
               const std::vector<std::string>& errors) { run_loop.Quit(); }));
   base::RunLoop().RunUntilIdle();
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
@@ -7815,7 +7818,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
              const base::flat_map<std::string, GURL>& ad_beacon_map,
              const base::flat_map<std::string, std::string>& ad_macro_map,
              PrivateAggregationRequests pa_requests,
-             base::TimeDelta reporting_latency,
+             auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
              const std::vector<std::string>& errors) {
             ADD_FAILURE()
                 << "Callback should not be invoked since worklet deleted";
@@ -7874,7 +7877,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   const base::flat_map<std::string, std::string>& ad_macro_map,
                   PrivateAggregationRequests pa_requests,
-                  base::TimeDelta reporting_latency,
+                  auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(GURL(base::StringPrintf("https://foo.test/%zu", i)),
                           report_url);
@@ -7930,7 +7933,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                const base::flat_map<std::string, std::string>& ad_macro_map,
                PrivateAggregationRequests pa_requests,
-               base::TimeDelta reporting_latency,
+               auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "Callback should not be invoked.";
             }));
@@ -8527,7 +8530,7 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
                 const base::flat_map<std::string, GURL>& ad_beacon_map,
                 const base::flat_map<std::string, std::string>& ad_macro_map,
                 PrivateAggregationRequests pa_requests,
-                base::TimeDelta reporting_latency,
+                auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
               EXPECT_TRUE(errors.empty());
@@ -9861,7 +9864,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
              const base::flat_map<std::string, GURL>& ad_beacon_map,
              const base::flat_map<std::string, std::string>& ad_macro_map,
              PrivateAggregationRequests pa_requests,
-             base::TimeDelta reporting_latency,
+             auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
              const std::vector<std::string>& errors) {
             ADD_FAILURE() << "Callback should not be invoked.";
           }));
@@ -12481,6 +12484,130 @@ TEST_F(BidderWorkletLatenciesTest, GenerateBidLatenciesAreReturned) {
   EXPECT_EQ(
       base::Milliseconds(250),
       *generate_bid_dependency_latencies_->trusted_bidding_signals_latency);
+}
+
+TEST_F(BidderWorkletLatenciesTest, GenerateBidFetchMetrics) {
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+      bid_finalizer;
+  BeginGenerateBid(bidder_worklet.get(),
+                   bid_finalizer.BindNewEndpointAndPassReceiver());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(bids_.empty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateBasicGenerateBidScript());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(bids_.empty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(240));
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/std::nullopt, ToyWasm());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(bids_.empty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(230));
+
+  // Now feed in the rest of the arguments.
+  bid_finalizer->FinishGenerateBid(
+      auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+      per_buyer_currency_,
+      /*direct_from_seller_per_buyer_signals=*/std::nullopt,
+      /*direct_from_seller_per_buyer_signals_header_ad_slot=*/std::nullopt,
+      /*direct_from_seller_auction_signals=*/std::nullopt,
+      /*direct_from_seller_auction_signals_header_ad_slot=*/std::nullopt);
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  generate_bid_run_loop_->Run();
+  ASSERT_EQ(1u, bids_.size());
+  EXPECT_EQ("[\"ad\"]", bids_[0]->ad);
+  EXPECT_EQ(1, bids_[0]->bid);
+  EXPECT_THAT(bid_errors_, testing::ElementsAre());
+
+  ASSERT_TRUE(generate_bid_metrics_->js_fetch_latency.has_value());
+  EXPECT_EQ(base::Milliseconds(250), *generate_bid_metrics_->js_fetch_latency);
+  ASSERT_TRUE(generate_bid_metrics_->wasm_fetch_latency.has_value());
+  EXPECT_EQ(base::Milliseconds(490),
+            *generate_bid_metrics_->wasm_fetch_latency);
+
+  generate_bid_metrics_.reset();
+
+  // Do another call, metrics should be the same.
+  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+      bid_finalizer2;
+  BeginGenerateBid(bidder_worklet.get(),
+                   bid_finalizer2.BindNewEndpointAndPassReceiver());
+  bid_finalizer2->FinishGenerateBid(
+      auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+      per_buyer_currency_,
+      /*direct_from_seller_per_buyer_signals=*/std::nullopt,
+      /*direct_from_seller_per_buyer_signals_header_ad_slot=*/std::nullopt,
+      /*direct_from_seller_auction_signals=*/std::nullopt,
+      /*direct_from_seller_auction_signals_header_ad_slot=*/std::nullopt);
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  generate_bid_run_loop_->Run();
+
+  ASSERT_TRUE(generate_bid_metrics_->js_fetch_latency.has_value());
+  EXPECT_EQ(base::Milliseconds(250), *generate_bid_metrics_->js_fetch_latency);
+  ASSERT_TRUE(generate_bid_metrics_->wasm_fetch_latency.has_value());
+  EXPECT_EQ(base::Milliseconds(490),
+            *generate_bid_metrics_->wasm_fetch_latency);
+}
+
+TEST_F(BidderWorkletLatenciesTest, ReportWinFetchMetrics) {
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+
+  base::RunLoop run_loop;
+  bidder_worklet->ReportWin(
+      is_for_additional_bid_, interest_group_name_reporting_id_,
+      buyer_reporting_id_, buyer_and_seller_reporting_id_,
+      selected_buyer_and_seller_reporting_id_, auction_signals_,
+      per_buyer_signals_, direct_from_seller_per_buyer_signals_,
+      direct_from_seller_per_buyer_signals_header_ad_slot_,
+      direct_from_seller_auction_signals_,
+      direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
+      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
+      browser_signal_bid_, browser_signal_bid_currency_,
+      browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
+      browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
+      browser_signal_modeling_signals_, browser_signal_join_count_,
+      browser_signal_recency_report_win_, browser_signal_seller_origin_,
+      browser_signal_top_level_seller_origin_,
+      browser_signal_reporting_timeout_, data_version_,
+
+      /*trace_id=*/1,
+      base::BindOnce(
+          [](base::OnceClosure done_closure,
+             const std::optional<GURL>& report_url,
+             const base::flat_map<std::string, GURL>& ad_beacon_map,
+             const base::flat_map<std::string, std::string>& ad_macro_map,
+             PrivateAggregationRequests pa_requests,
+             auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
+             const std::vector<std::string>& errors) {
+            ASSERT_TRUE(timing_metrics->js_fetch_latency.has_value());
+            EXPECT_EQ(base::Milliseconds(250),
+                      *timing_metrics->js_fetch_latency);
+            ASSERT_TRUE(timing_metrics->wasm_fetch_latency.has_value());
+            EXPECT_EQ(base::Milliseconds(490),
+                      *timing_metrics->wasm_fetch_latency);
+            std::move(done_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateBasicGenerateBidScript());
+  task_environment_.RunUntilIdle();
+
+  task_environment_.FastForwardBy(base::Milliseconds(240));
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/std::nullopt, ToyWasm());
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(230));
+  run_loop.Run();
 }
 
 // Tests both reporting latency, and default reporting timeout.

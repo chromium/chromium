@@ -1846,6 +1846,7 @@ void SellerWorklet::Start() {
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
 
+  code_download_start_ = base::TimeTicks::Now();
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
@@ -1862,6 +1863,7 @@ void SellerWorklet::OnDownloadComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
+  js_fetch_latency_ = base::TimeTicks::Now() - code_download_start_;
 
   // Use `worklet_scripts[0]` for metrics and for the failure check. All the
   // results should be the same.
@@ -2180,7 +2182,10 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
       score, reject_reason, std::move(component_auction_modified_bid_params),
       std::move(bid_in_seller_currency), scoring_signals_data_version,
       debug_loss_report_url, debug_win_report_url, std::move(pa_requests),
-      std::move(real_time_contributions), scoring_latency,
+      std::move(real_time_contributions),
+      mojom::SellerTimingMetrics::New(
+          /*js_fetch_latency=*/js_fetch_latency_,
+          /*script_latency=*/scoring_latency),
       mojom::ScoreAdDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*direct_from_seller_signals_latency=*/
@@ -2302,7 +2307,11 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
 
   std::move(task->callback)
       .Run(signals_for_winner, report_url, ad_beacon_map,
-           std::move(pa_requests), reporting_latency, std::move(errors));
+           std::move(pa_requests),
+           mojom::SellerTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*script_latency=*/reporting_latency),
+           std::move(errors));
   report_result_tasks_.erase(task);
 }
 

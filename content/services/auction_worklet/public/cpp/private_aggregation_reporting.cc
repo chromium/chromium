@@ -27,7 +27,7 @@ constexpr auto kReservedEventTypes =
          {"reserved.once",
           auction_worklet::mojom::ReservedEventType::kReservedOnce}});
 
-bool RequiresAdditionalExtensions(
+bool RequiresAdditionalExtensionsForReservedEventType(
     auction_worklet::mojom::ReservedEventType type) {
   return type == auction_worklet::mojom::ReservedEventType::kReservedOnce;
 }
@@ -42,7 +42,8 @@ std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
     return std::nullopt;
   }
   auction_worklet::mojom::ReservedEventType keyword = it->second;
-  if (!additional_extensions_allowed && RequiresAdditionalExtensions(keyword)) {
+  if (!additional_extensions_allowed &&
+      RequiresAdditionalExtensionsForReservedEventType(keyword)) {
     return std::nullopt;
   }
   return keyword;
@@ -82,8 +83,19 @@ bool IsValidPrivateAggregationRequestForAdditionalExtensions(
       *request.contribution->get_for_event_contribution();
 
   if (for_event_contrib.event_type->is_reserved() &&
-      RequiresAdditionalExtensions(
+      RequiresAdditionalExtensionsForReservedEventType(
           for_event_contrib.event_type->get_reserved())) {
+    return false;
+  }
+
+  if (for_event_contrib.bucket->is_signal_bucket() &&
+      RequiresAdditionalExtensions(
+          for_event_contrib.bucket->get_signal_bucket()->base_value)) {
+    return false;
+  }
+  if (for_event_contrib.value->is_signal_value() &&
+      RequiresAdditionalExtensions(
+          for_event_contrib.value->get_signal_value()->base_value)) {
     return false;
   }
 

@@ -455,6 +455,8 @@ void TakePrivateAggregationRequestsForBidState(
     const InterestGroupAuction::PostAuctionSignals& signals,
     const std::optional<InterestGroupAuction::PostAuctionSignals>&
         top_level_signals,
+    const InterestGroupAuction::PrivateAggregationAllParticipantsDataPtrs&
+        all_participant_data,
     std::map<PrivateAggregationKey,
              InterestGroupAuctionReporter::PrivateAggregationRequests>&
         private_aggregation_requests_reserved,
@@ -483,6 +485,10 @@ void TakePrivateAggregationRequestsForBidState(
           top_level_signals.has_value() ? top_level_signals->winning_bid : 0.0;
     }
 
+    const PrivateAggregationParticipantData* participant_data =
+        all_participant_data[static_cast<size_t>(phase)];
+    CHECK(participant_data);
+
     for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
          requests) {
       bool reserved_once = IsPrivateAggregationRequestReservedOnce(*request);
@@ -493,7 +499,7 @@ void TakePrivateAggregationRequestsForBidState(
           FillInPrivateAggregationRequest(
               std::move(request), winning_bid_to_use,
               highest_scoring_other_bid_to_use, state->reject_reason,
-              state->pa_timings(phase), is_winner);
+              *participant_data, state->pa_timings(phase), is_winner);
       if (converted_request.has_value()) {
         PrivateAggregationRequestWithEventType converted_request_value =
             std::move(converted_request.value());
@@ -527,11 +533,16 @@ void TakePrivateAggregationRequestsForBidState(
         continue;
       }
 
+      const PrivateAggregationParticipantData* participant_data =
+          all_participant_data[static_cast<size_t>(
+              PrivateAggregationPhase::kBidder)];
+      CHECK(participant_data);
       std::optional<PrivateAggregationRequestWithEventType> converted_request =
           FillInPrivateAggregationRequest(
               std::move(request), signals.winning_bid,
               signals.highest_scoring_other_bid,
               auction_worklet::mojom::RejectReason::kBelowKAnonThreshold,
+              *participant_data,
               state->pa_timings(PrivateAggregationPhase::kBidder), false);
       if (converted_request.has_value()) {
         PrivateAggregationKey agg_key = {bidder,
@@ -1363,7 +1374,7 @@ class InterestGroupAuction::BuyerHelper
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta bidding_latency,
+      auction_worklet::mojom::BidderTimingMetricsPtr generate_bid_metrics,
       auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
       auction_worklet::mojom::RejectReason reject_reason,
@@ -1371,8 +1382,15 @@ class InterestGroupAuction::BuyerHelper
     BidState* state = generate_bid_client_receiver_set_.current_context();
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
     state->pa_timings(PrivateAggregationPhase::kBidder).script_run_time =
-        bidding_latency;
-    auction_->ReportBiddingLatency(interest_group, bidding_latency);
+        generate_bid_metrics->script_latency;
+    auction_->ReportBiddingLatency(interest_group,
+                                   generate_bid_metrics->script_latency);
+    if (generate_bid_metrics->js_fetch_latency.has_value()) {
+      code_fetch_time_.RecordLatency(*generate_bid_metrics->js_fetch_latency);
+    }
+    if (generate_bid_metrics->wasm_fetch_latency.has_value()) {
+      code_fetch_time_.RecordLatency(*generate_bid_metrics->wasm_fetch_latency);
+    }
 
     // This is intentionally recorded here as opposed to in
     // OnGenerateBidCompleteInternal in order to exclude bids that were
@@ -1426,6 +1444,18 @@ class InterestGroupAuction::BuyerHelper
   size_t num_potential_bidders() const { return bid_states_.size(); }
 
   const url::Origin& owner() const { return owner_; }
+
+  const PrivateAggregationParticipantData& buyer_metrics() const {
+    return buyer_metrics_;
+  }
+
+  void FillInBidderParticipantDataMetrics() {
+    if (code_fetch_time_.GetNumRecords() != 0) {
+      buyer_metrics_.average_code_fetch_time =
+          code_fetch_time_.GetMeanLatency();
+    }
+    buyer_metrics_.participating_interest_group_count = bid_states_.size();
+  }
 
   void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const {
@@ -1491,6 +1521,8 @@ class InterestGroupAuction::BuyerHelper
       const std::optional<PostAuctionSignals>& top_level_signals,
       const BidState* non_top_level_seller_once_rep,
       const BidState* top_level_seller_once_rep,
+      const PrivateAggregationParticipantData* non_top_level_seller_data,
+      const PrivateAggregationParticipantData* top_level_seller_data,
       std::map<PrivateAggregationKey, PrivateAggregationRequests>&
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>&
@@ -1499,11 +1531,21 @@ class InterestGroupAuction::BuyerHelper
       return;
     }
 
+    FillInBidderParticipantDataMetrics();
+
     PrivateAggregationReservedOnceReps reps;
+    PrivateAggregationAllParticipantsDataPtrs all_participant_data;
     reps[static_cast<size_t>(PrivateAggregationPhase::kTopLevelSeller)] =
         top_level_seller_once_rep;
+    all_participant_data[static_cast<size_t>(
+        PrivateAggregationPhase::kTopLevelSeller)] = top_level_seller_data;
     reps[static_cast<size_t>(PrivateAggregationPhase::kNonTopLevelSeller)] =
         non_top_level_seller_once_rep;
+    all_participant_data[static_cast<size_t>(
+        PrivateAggregationPhase::kNonTopLevelSeller)] =
+        non_top_level_seller_data;
+    all_participant_data[static_cast<size_t>(
+        PrivateAggregationPhase::kBidder)] = &buyer_metrics_;
 
     // Figure out which bidder rep to use, out of those that didn't get blocked
     // by cumulative timeout.
@@ -1534,7 +1576,7 @@ class InterestGroupAuction::BuyerHelper
       TakePrivateAggregationRequestsForBidState(
           state, /*is_component_auction=*/auction_->parent_, winner,
           non_kanon_winner, reps, signals, top_level_signals,
-          private_aggregation_requests_reserved,
+          all_participant_data, private_aggregation_requests_reserved,
           private_aggregation_requests_non_reserved);
     }
   }
@@ -2491,6 +2533,10 @@ class InterestGroupAuction::BuyerHelper
   // Records the time at which StartGeneratingBids was called for UKM.
   base::TimeTicks start_generating_bids_time_;
 
+  // Per-buyer PA metrics.
+  PrivateAggregationParticipantData buyer_metrics_;
+  AuctionMetricsRecorder::LatencyAggregator code_fetch_time_;
+
   // True if any interest group owned by `owner_` participating in this auction
   // has `use_biddings_signals_prioritization` set to true. When this is true,
   // all GenerateBid() calls will be deferred until OnBiddingSignalsReceived()
@@ -3176,6 +3222,7 @@ InterestGroupAuction::CreateReporter(
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
       TakeReservedPrivateAggregationRequests(),
       TakeNonReservedPrivateAggregationRequests(),
+      ComputePrivateAggregationParticipantData(),
       TakeRealTimeReportingContributions());
 
   // Avoid dangling pointers for things transferred to the reporter.
@@ -3693,15 +3740,27 @@ void InterestGroupAuction::
     DCHECK(!leader.highest_scoring_other_bid_owner.has_value());
   }
 
-  // Figure out appropriate seller reps for "reserved.once".
+  // Summarize various metrics we collected in format convenient for using them
+  // as private aggregation base values. If `parent_ != nullptr`, it would have
+  // called this before it recursed to us.
+  FillInSellerParticipantDataMetrics();
+
+  // Figure out appropriate seller reps for "reserved.once", and which metrics
+  // go to which level.
   const BidState* non_top_level_seller_once_rep;
+  const PrivateAggregationParticipantData* non_top_level_seller_data;
   const BidState* top_level_seller_once_rep;
+  const PrivateAggregationParticipantData* top_level_seller_data;
   if (parent_) {
     non_top_level_seller_once_rep = seller_reserved_once_rep_;
+    non_top_level_seller_data = &seller_metrics_;
     top_level_seller_once_rep = parent_->seller_reserved_once_rep_;
+    top_level_seller_data = &parent_->seller_metrics_;
   } else {
     non_top_level_seller_once_rep = nullptr;
+    non_top_level_seller_data = nullptr;
     top_level_seller_once_rep = seller_reserved_once_rep_;
+    top_level_seller_data = &seller_metrics_;
   }
 
   std::map<PrivateAggregationKey, PrivateAggregationRequests>
@@ -3721,6 +3780,7 @@ void InterestGroupAuction::
     buyer_helper->TakePrivateAggregationRequests(
         winner, non_kanon_winner, signals, top_level_signals,
         non_top_level_seller_once_rep, top_level_seller_once_rep,
+        non_top_level_seller_data, top_level_seller_data,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
 
@@ -3728,12 +3788,19 @@ void InterestGroupAuction::
   }
 
   PrivateAggregationReservedOnceReps additional_bid_reps;
+  PrivateAggregationAllParticipantsDataPtrs additional_bid_data;
   additional_bid_reps[static_cast<size_t>(
       PrivateAggregationPhase::kTopLevelSeller)] = top_level_seller_once_rep;
+  additional_bid_data[static_cast<size_t>(
+      PrivateAggregationPhase::kTopLevelSeller)] = top_level_seller_data;
   additional_bid_reps[static_cast<size_t>(
       PrivateAggregationPhase::kNonTopLevelSeller)] =
       non_top_level_seller_once_rep;
+  additional_bid_data[static_cast<size_t>(
+      PrivateAggregationPhase::kNonTopLevelSeller)] = non_top_level_seller_data;
   additional_bid_reps[static_cast<size_t>(PrivateAggregationPhase::kBidder)] =
+      nullptr;
+  additional_bid_data[static_cast<size_t>(PrivateAggregationPhase::kBidder)] =
       nullptr;
 
   for (std::unique_ptr<BidState>& bid_state : bid_states_for_additional_bids_) {
@@ -3742,7 +3809,7 @@ void InterestGroupAuction::
     TakePrivateAggregationRequestsForBidState(
         bid_state, /*is_component_auction=*/parent_ != nullptr, winner,
         non_kanon_winner, additional_bid_reps, signals, top_level_signals,
-        private_aggregation_requests_reserved,
+        additional_bid_data, private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
     TakeDebugReportUrlsForBidState(
         bid_state, winner, signals, top_level_signals, owner, config_->seller,
@@ -3830,6 +3897,40 @@ InterestGroupAuction::TakeNonReservedPrivateAggregationRequests() {
     }
   }
   return std::move(private_aggregation_requests_non_reserved_);
+}
+
+InterestGroupAuctionReporter::PrivateAggregationAllParticipantsData
+InterestGroupAuction::ComputePrivateAggregationParticipantData() {
+  InterestGroupAuctionReporter::PrivateAggregationAllParticipantsData
+      all_participant_data;
+
+  ScoredBid* winner = leader_info().top_bid.get();
+  BidState* winner_bid_state = winner->bid->bid_state;
+
+  // For non-additional bids, find their BuyerHelper to get their metrics.
+  if (!winner_bid_state->additional_bid_buyer) {
+    const url::Origin& bid_origin =
+        winner_bid_state->bidder->interest_group.owner;
+    for (const auto& buyer_helper : winner->bid->auction->buyer_helpers_) {
+      if (buyer_helper->owner() == bid_origin) {
+        all_participant_data[static_cast<size_t>(
+            PrivateAggregationPhase::kBidder)] = buyer_helper->buyer_metrics();
+        break;
+      }
+    }
+  }
+
+  // `this` is always a top-level seller.
+  all_participant_data[static_cast<size_t>(
+      PrivateAggregationPhase::kTopLevelSeller)] = seller_metrics_;
+
+  if (winner->bid->auction != this) {
+    // There is a component seller as well.
+    all_participant_data[static_cast<size_t>(
+        PrivateAggregationPhase::kNonTopLevelSeller)] =
+        winner->bid->auction->seller_metrics_;
+  }
+  return all_participant_data;
 }
 
 std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
@@ -4066,6 +4167,12 @@ void InterestGroupAuction::ComputePostAuctionSignals(
         top_level_signals_out->made_winning_bid,
         top_level_signals_out->winning_bid,
         top_level_signals_out->winning_bid_currency);
+  }
+}
+
+void InterestGroupAuction::FillInSellerParticipantDataMetrics() {
+  if (code_fetch_time_.GetNumRecords() != 0) {
+    seller_metrics_.average_code_fetch_time = code_fetch_time_.GetMeanLatency();
   }
 }
 
@@ -5019,7 +5126,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     const std::optional<GURL>& debug_win_report_url,
     PrivateAggregationRequests pa_requests,
     RealTimeReportingContributions real_time_contributions,
-    base::TimeDelta scoring_latency,
+    auction_worklet::mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
     auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
         score_ad_dependency_latencies,
     const std::vector<std::string>& errors) {
@@ -5039,14 +5146,19 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   auction_metrics_recorder_->RecordScoreAdFlowLatency(
       base::TimeTicks::Now() - bid->seller_worklet_score_ad_start);
-  auction_metrics_recorder_->RecordScoreAdLatency(scoring_latency);
+  auction_metrics_recorder_->RecordScoreAdLatency(
+      score_ad_timing_metrics->script_latency);
   auction_metrics_recorder_->RecordScoreAdDependencyLatencies(
       *score_ad_dependency_latencies);
+  if (score_ad_timing_metrics->js_fetch_latency.has_value()) {
+    code_fetch_time_.RecordLatency(*score_ad_timing_metrics->js_fetch_latency);
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", ScoreAdTraceEventName(*bid),
                                   bid->TraceIdForScoring());
   bid->EndTracingForScoring();
-  bid->bid_state->pa_timings(seller_phase()).script_run_time = scoring_latency;
+  bid->bid_state->pa_timings(seller_phase()).script_run_time =
+      score_ad_timing_metrics->script_latency;
   bid->bid_state->pa_timings(seller_phase()).signals_fetch_time =
       score_ad_dependency_latencies->trusted_scoring_signals_latency.value_or(
           base::TimeDelta());

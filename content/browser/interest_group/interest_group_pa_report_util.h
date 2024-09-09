@@ -48,6 +48,17 @@ struct CONTENT_EXPORT PrivateAggregationTimings {
   base::TimeDelta signals_fetch_time;
 };
 
+struct CONTENT_EXPORT PrivateAggregationParticipantData {
+  // These metrics are set on bidders only; on sellers they are always 0.
+
+  // Number of interest groups that got selected to make bids (after filtering,
+  // capabilities checks, discarding those w/o ads, etc).
+  int participating_interest_group_count = 0;
+
+  // These metrics are set for both bidders and sellers.
+  base::TimeDelta average_code_fetch_time;
+};
+
 // Key used to group Private aggregation signals.
 struct CONTENT_EXPORT PrivateAggregationKey {
   PrivateAggregationKey(
@@ -118,6 +129,7 @@ FillInPrivateAggregationRequest(
     double winning_bid,
     double highest_scoring_other_bid,
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings,
     bool is_winner);
 

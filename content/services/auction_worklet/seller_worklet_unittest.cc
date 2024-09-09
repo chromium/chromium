@@ -135,7 +135,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta scoring_latency,
+      mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
       const std::vector<std::string>& errors)>;
 
@@ -166,7 +166,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       RealTimeReportingContributions real_time_contributions,
-      base::TimeDelta scoring_latency,
+      mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
       const std::vector<std::string>& errors) override {
     std::move(score_ad_complete_callback_)
@@ -175,7 +175,8 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
              std::move(bid_in_seller_currency),
              std::move(scoring_signals_data_version), debug_loss_report_url,
              debug_win_report_url, std::move(pa_requests),
-             std::move(real_time_contributions), scoring_latency,
+             std::move(real_time_contributions),
+             std::move(score_ad_timing_metrics),
              std::move(score_ad_dependency_latencies), errors);
   }
 
@@ -190,7 +191,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
            const std::optional<GURL>& debug_win_report_url,
            PrivateAggregationRequests pa_requests,
            RealTimeReportingContributions real_time_contributions,
-           base::TimeDelta scoring_latency,
+           mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
            mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
            const std::vector<std::string>& errors) {
           ADD_FAILURE() << "Callback should not be invoked";
@@ -441,7 +442,7 @@ class SellerWorkletTest : public testing::Test {
                const std::optional<GURL>& debug_win_report_url,
                PrivateAggregationRequests pa_requests,
                RealTimeReportingContributions real_time_contributions,
-               base::TimeDelta scoring_latency,
+               mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                mojom::ScoreAdDependencyLatenciesPtr
                    score_ad_dependency_latencies,
                const std::vector<std::string>& errors) {
@@ -469,7 +470,7 @@ class SellerWorkletTest : public testing::Test {
               if (expected_score_ad_timeout) {
                 // We only know that about the time of the timeout should have
                 // elapsed, and there may also be some thread skew.
-                EXPECT_GE(scoring_latency,
+                EXPECT_GE(score_ad_timing_metrics->script_latency,
                           expected_score_ad_timeout.value() * 0.9);
               }
               if (expected_signals_fetch_latency) {
@@ -662,7 +663,7 @@ class SellerWorkletTest : public testing::Test {
                const std::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
-               base::TimeDelta reporting_latency,
+               auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               if (signals_for_winner && expected_signals_for_winner) {
                 // If neither is null, used fancy base::Value comparison, which
@@ -680,7 +681,7 @@ class SellerWorkletTest : public testing::Test {
               if (expected_reporting_latency_timeout) {
                 // We only know that about the time of the timeout should have
                 // elapsed, and there may also be some thread skew.
-                EXPECT_GE(reporting_latency,
+                EXPECT_GE(timing_metrics->script_latency,
                           (reporting_timeout.has_value()
                                ? reporting_timeout.value()
                                : AuctionV8Helper::kScriptTimeout) *
@@ -720,7 +721,7 @@ class SellerWorkletTest : public testing::Test {
                const std::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
-               base::TimeDelta reporting_latency,
+               auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "This should not be invoked";
             }));
@@ -2137,6 +2138,50 @@ TEST_F(SellerWorkletTest, ScoreAdCodeReadyLatency) {
       /*expected_code_ready_latency=*/kDelay, run_loop.QuitClosure());
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(kDelay);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(/*raw_return_value=*/"1", ""));
+  run_loop.Run();
+}
+
+TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  seller_worklet->ScoreAd(
+      ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+      direct_from_seller_seller_signals_,
+      direct_from_seller_seller_signals_header_ad_slot_,
+      direct_from_seller_auction_signals_,
+      direct_from_seller_auction_signals_header_ad_slot_,
+      browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
+      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_buyer_and_seller_reporting_id_,
+      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_render_size_,
+      browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+      seller_timeout_,
+      /*trace_id=*/1,
+      TestScoreAdClient::Create(base::BindLambdaForTesting(
+          [&run_loop](double score, mojom::RejectReason reject_reason,
+                      mojom::ComponentAuctionModifiedBidParamsPtr
+                          component_auction_modified_bid_params,
+                      std::optional<double> bid_in_seller_currency,
+                      std::optional<uint32_t> scoring_signals_data_version,
+                      const std::optional<GURL>& debug_loss_report_url,
+                      const std::optional<GURL>& debug_win_report_url,
+                      PrivateAggregationRequests pa_requests,
+                      RealTimeReportingContributions real_time_contributions,
+                      mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
+                      mojom::ScoreAdDependencyLatenciesPtr
+                          score_ad_dependency_latencies,
+                      const std::vector<std::string>& errors) {
+            ASSERT_TRUE(score_ad_timing_metrics->js_fetch_latency.has_value());
+            EXPECT_EQ(base::Milliseconds(235),
+                      *score_ad_timing_metrics->js_fetch_latency);
+            run_loop.Quit();
+          })));
+  task_environment_.FastForwardBy(base::Milliseconds(235));
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         CreateScoreAdScript(/*raw_return_value=*/"1", ""));
   run_loop.Run();
@@ -3875,6 +3920,45 @@ TEST_F(SellerWorkletTest, ReportResultDataVersion) {
       /*expected_report_url=*/std::nullopt);
 }
 
+TEST_F(SellerWorkletTest, ReportResultJsFetchLatency) {
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  seller_worklet->ReportResult(
+      auction_ad_config_non_shared_params_, direct_from_seller_seller_signals_,
+      direct_from_seller_seller_signals_header_ad_slot_,
+      direct_from_seller_auction_signals_,
+      direct_from_seller_auction_signals_header_ad_slot_,
+      browser_signals_other_seller_.Clone(),
+      browser_signal_interest_group_owner_,
+      browser_signal_buyer_and_seller_reporting_id_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_render_url_, bid_, bid_currency_,
+      browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
+      browser_signals_component_auction_report_result_params_.Clone(),
+      browser_signal_data_version_,
+      /*trace_id=*/1,
+      base::BindOnce(
+          [](base::OnceClosure done_closure,
+             const std::optional<std::string>& signals_for_winner,
+             const std::optional<GURL>& report_url,
+             const base::flat_map<std::string, GURL>& ad_beacon_map,
+             PrivateAggregationRequests pa_requests,
+             auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
+             const std::vector<std::string>& errors) {
+            ASSERT_TRUE(timing_metrics->js_fetch_latency.has_value());
+            EXPECT_EQ(base::Milliseconds(235),
+                      *timing_metrics->js_fetch_latency);
+            std::move(done_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  task_environment_.FastForwardBy(base::Milliseconds(235));
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(/*raw_return_value=*/"1", ""));
+  run_loop.Run();
+}
+
 // It shouldn't matter the order in which network fetches complete. For each
 // required and optional reportResult() URL load prerequisite, ensure that
 // reportResult() completes when that URL is the last loaded URL.
@@ -4001,7 +4085,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
                   const std::optional<GURL>& debug_win_report_url,
                   PrivateAggregationRequests pa_requests,
                   RealTimeReportingContributions real_time_contributions,
-                  base::TimeDelta scoring_latency,
+                  mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                   mojom::ScoreAdDependencyLatenciesPtr
                       score_ad_dependency_latencies,
                   const std::vector<std::string>& errors) {
@@ -4038,7 +4122,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
                   const std::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   PrivateAggregationRequests pa_requests,
-                  base::TimeDelta reporting_latency,
+                  auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ("2", signals_for_winner);
                 EXPECT_TRUE(errors.empty());
@@ -4103,7 +4187,7 @@ TEST_F(SellerWorkletTest,
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta scoring_latency,
+                mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
                 const std::vector<std::string>& errors) {
@@ -4133,12 +4217,13 @@ TEST_F(SellerWorkletTest,
       browser_signal_data_version_,
       /*trace_id=*/1,
       base::BindLambdaForTesting(
-          [&run_loop](const std::optional<std::string>& signals_for_winner,
-                      const std::optional<GURL>& report_url,
-                      const base::flat_map<std::string, GURL>& ad_beacon_map,
-                      PrivateAggregationRequests pa_requests,
-                      base::TimeDelta reporting_latency,
-                      const std::vector<std::string>& errors) {
+          [&run_loop](
+              const std::optional<std::string>& signals_for_winner,
+              const std::optional<GURL>& report_url,
+              const base::flat_map<std::string, GURL>& ad_beacon_map,
+              PrivateAggregationRequests pa_requests,
+              auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
+              const std::vector<std::string>& errors) {
             EXPECT_EQ("2", signals_for_winner);
             EXPECT_TRUE(errors.empty());
             run_loop.Quit();
@@ -4207,7 +4292,7 @@ TEST_F(
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta scoring_latency,
+                mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
                 const std::vector<std::string>& errors) {
@@ -4237,12 +4322,13 @@ TEST_F(
       browser_signal_data_version_,
       /*trace_id=*/1,
       base::BindLambdaForTesting(
-          [&run_loop](const std::optional<std::string>& signals_for_winner,
-                      const std::optional<GURL>& report_url,
-                      const base::flat_map<std::string, GURL>& ad_beacon_map,
-                      PrivateAggregationRequests pa_requests,
-                      base::TimeDelta reporting_latency,
-                      const std::vector<std::string>& errors) {
+          [&run_loop](
+              const std::optional<std::string>& signals_for_winner,
+              const std::optional<GURL>& report_url,
+              const base::flat_map<std::string, GURL>& ad_beacon_map,
+              PrivateAggregationRequests pa_requests,
+              auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
+              const std::vector<std::string>& errors) {
             EXPECT_EQ("2", signals_for_winner);
             EXPECT_TRUE(errors.empty());
             run_loop.Quit();
@@ -4319,7 +4405,7 @@ TEST_F(
                     const std::optional<GURL>& debug_win_report_url,
                     PrivateAggregationRequests pa_requests,
                     RealTimeReportingContributions real_time_contributions,
-                    base::TimeDelta scoring_latency,
+                    mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                     mojom::ScoreAdDependencyLatenciesPtr
                         score_ad_dependency_latencies,
                     const std::vector<std::string>& errors) {
@@ -4358,7 +4444,8 @@ TEST_F(
                     const std::optional<GURL>& report_url,
                     const base::flat_map<std::string, GURL>& ad_beacon_map,
                     PrivateAggregationRequests pa_requests,
-                    base::TimeDelta reporting_latency,
+                    auction_worklet::mojom::SellerTimingMetricsPtr
+                        timing_metrics,
                     const std::vector<std::string>& errors) {
                   EXPECT_EQ("2", signals_for_winner);
                   EXPECT_TRUE(errors.empty());
@@ -4435,7 +4522,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta scoring_latency,
+                mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
                 const std::vector<std::string>& errors) {
@@ -4497,7 +4584,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
                 RealTimeReportingContributions real_time_contributions,
-                base::TimeDelta scoring_latency,
+                mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
                 const std::vector<std::string>& errors) {
@@ -4565,14 +4652,16 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_,
       /*trace_id=*/1,
-      base::BindOnce([](const std::optional<std::string>& signals_for_winner,
-                        const std::optional<GURL>& report_url,
-                        const base::flat_map<std::string, GURL>& ad_beacon_map,
-                        PrivateAggregationRequests pa_requests,
-                        base::TimeDelta reporting_latency,
-                        const std::vector<std::string>& errors) {
-        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
-      }));
+      base::BindOnce(
+          [](const std::optional<std::string>& signals_for_winner,
+             const std::optional<GURL>& report_url,
+             const base::flat_map<std::string, GURL>& ad_beacon_map,
+             PrivateAggregationRequests pa_requests,
+             auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
+             const std::vector<std::string>& errors) {
+            ADD_FAILURE()
+                << "Callback should not be invoked since worklet deleted";
+          }));
   base::RunLoop().RunUntilIdle();
   seller_worklet.reset();
   event_handle->Signal();
@@ -6449,7 +6538,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                         const std::optional<GURL>& debug_win_report_url,
                         PrivateAggregationRequests pa_requests,
                         RealTimeReportingContributions real_time_contributions,
-                        base::TimeDelta scoring_latency,
+                        mojom::SellerTimingMetricsPtr score_ad_timing_metrics,
                         mojom::ScoreAdDependencyLatenciesPtr
                             score_ad_dependency_latencies,
                         const std::vector<std::string>& errors) {

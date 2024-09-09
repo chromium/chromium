@@ -219,6 +219,13 @@ void MockBidderWorklet::SetBiddingLatency(base::TimeDelta delta) {
   bidding_latency_ = delta;
 }
 
+void MockBidderWorklet::SetCodeFetchLatencies(
+    std::optional<base::TimeDelta> js_fetch_latency,
+    std::optional<base::TimeDelta> wasm_fetch_latency) {
+  js_fetch_latency_ = js_fetch_latency;
+  wasm_fetch_latency_ = wasm_fetch_latency;
+}
+
 void MockBidderWorklet::InvokeGenerateBidCallback(
     std::optional<double> bid,
     const std::optional<blink::AdCurrency>& bid_currency,
@@ -282,7 +289,11 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         /*pa_requests=*/std::move(pa_requests),
         /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
         /*real_time_contributions=*/{},
-        /*bidding_latency=*/bidding_latency_,
+        /*generate_bid_metrics=*/
+        auction_worklet::mojom::BidderTimingMetrics::New(
+            /*js_fetch_latency=*/js_fetch_latency_,
+            /*wasm_fetch_latency=*/wasm_fetch_latency_,
+            /*script_latency=*/bidding_latency_),
         /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
         reject_reason,
         /*errors=*/std::vector<std::string>());
@@ -307,7 +318,11 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       /*pa_requests=*/std::move(pa_requests),
       /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
       /*real_time_contributions=*/std::move(real_time_contributions),
-      /*bidding_latency=*/bidding_latency_,
+      /*generated_bid_metrics=*/
+      auction_worklet::mojom::BidderTimingMetrics::New(
+          /*js_fetch_latency=*/js_fetch_latency_,
+          /*wasm_fetch_latency=*/wasm_fetch_latency_,
+          /*script_latency=*/bidding_latency_),
       /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
       reject_reason,
       /*errors=*/std::vector<std::string>());
@@ -334,7 +349,12 @@ void MockBidderWorklet::InvokeReportWinCallback(
   DCHECK(report_win_callback_);
   std::move(report_win_callback_)
       .Run(report_url, std::move(ad_beacon_map), std::move(ad_macro_map),
-           std::move(pa_requests), reporting_latency_, std::move(errors));
+           std::move(pa_requests),
+           auction_worklet::mojom::BidderTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*wasm_fetch_latency=*/wasm_fetch_latency_,
+               /*script_latency=*/reporting_latency_),
+           std::move(errors));
 }
 
 void MockBidderWorklet::Flush() {
@@ -516,7 +536,11 @@ void MockSellerWorklet::InvokeReportResultCallback(
   DCHECK(report_result_callback_);
   std::move(report_result_callback_)
       .Run(/*signals_for_winner=*/std::nullopt, std::move(report_url),
-           ad_beacon_map, std::move(pa_requests), reporting_latency_, errors);
+           ad_beacon_map, std::move(pa_requests),
+           auction_worklet::mojom::SellerTimingMetrics::New(
+               /*js_fetch_latency=*/js_fetch_latency_,
+               /*script_latency=*/reporting_latency_),
+           errors);
 }
 
 void MockSellerWorklet::Flush() {

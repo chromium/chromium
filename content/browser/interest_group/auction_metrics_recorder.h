@@ -63,6 +63,26 @@ class CONTENT_EXPORT AuctionMetricsRecorderManager {
 //   OnAuctionEnd, just before the Event is written to the UkmRecorder.
 class CONTENT_EXPORT AuctionMetricsRecorder {
  public:
+  // Helper class for aggregating latencies for events that occur many times
+  // during the auction, for which we want to produce aggregate measurements
+  // to record using separate metrics.
+  class LatencyAggregator {
+   public:
+    LatencyAggregator() = default;
+    LatencyAggregator(const LatencyAggregator&) = delete;
+    LatencyAggregator& operator=(const LatencyAggregator&) = delete;
+
+    void RecordLatency(base::TimeDelta latency);
+    int32_t GetNumRecords();
+    base::TimeDelta GetMeanLatency();
+    base::TimeDelta GetMaxLatency();
+
+   private:
+    int32_t num_records_ = 0;
+    base::TimeDelta sum_latency_;
+    base::TimeDelta max_latency_;
+  };
+
   // This object's construction time is that recorded as the auction's start
   // time for measuring end-to-end latency, LoadInterestGroupPhase latency,
   // ConfigPromisesResolved latency, etc.
@@ -205,26 +225,6 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
  private:
   using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
   using EntrySetFunction = UkmEntry& (UkmEntry::*)(int64_t value);
-
-  // Helper class for aggregating latencies for events that occur many times
-  // during the auction, for which we want to produce aggregate measurements
-  // to record using separate metrics.
-  class LatencyAggregator {
-   public:
-    LatencyAggregator() = default;
-    LatencyAggregator(const LatencyAggregator&) = delete;
-    LatencyAggregator& operator=(const LatencyAggregator&) = delete;
-
-    void RecordLatency(base::TimeDelta latency);
-    int32_t GetNumRecords();
-    base::TimeDelta GetMeanLatency();
-    base::TimeDelta GetMaxLatency();
-
-   private:
-    int32_t num_records_ = 0;
-    base::TimeDelta sum_latency_;
-    base::TimeDelta max_latency_;
-  };
 
   // Helper class for keeping track of the earliest recorded time among events
   // that may occur many times during the auction, and specifically phase start

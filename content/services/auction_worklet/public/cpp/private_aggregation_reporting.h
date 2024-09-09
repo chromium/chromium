@@ -22,6 +22,13 @@ auction_worklet::mojom::EventTypePtr ParsePrivateAggregationEventType(
     const std::string& event_type_str,
     bool additional_extensions_allowed);
 
+// Returns true if `value` requires the feature
+// kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be used.
+CONTENT_EXPORT inline bool RequiresAdditionalExtensions(
+    mojom::BaseValue value) {
+  return value > mojom::BaseValue::kBidRejectReason;
+}
+
 // Returns whether the request is valid or not, checking whether it uses
 // features enabled based on `additional_extensions_allowed`.
 CONTENT_EXPORT bool IsValidPrivateAggregationRequestForAdditionalExtensions(
