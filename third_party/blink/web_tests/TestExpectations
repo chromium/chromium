@@ -8039,3 +8039,7 @@ crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Failure Pass ]
 crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Failure Pass ]
 crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Failure Pass ]
+
+# Gardener 2024-09-09
+crbug.com/365432212 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure Pass ]
+crbug.com/365432212 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure Pass ]
