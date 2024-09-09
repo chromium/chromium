@@ -378,6 +378,30 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return 0;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (section == [self.tableView numberOfSections] - 1) {
+    //  No footer space for last section.
+    return 0;
+  }
+  return 16;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  return [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  return [[UIView alloc] initWithFrame:CGRectZero];
+}
+
 #pragma mark - AccountMenuConsumer
 
 - (void)updatePrimaryAccount {
