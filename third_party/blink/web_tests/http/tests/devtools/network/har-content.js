@@ -23,7 +23,10 @@ import * as Common from 'devtools/core/common/common.js';
     var stream = new TestRunner.StringOutputStream(onSaved);
     var progress = new Common.Progress.Progress();
     await NetworkTestRunner.writeHARLog(
-        stream, NetworkTestRunner.networkRequests(), progress);
+        stream,
+        NetworkTestRunner.networkRequests(),
+        {sanitize: false},
+        progress);
     progress.done();
     stream.close();
   }
