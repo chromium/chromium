@@ -1,0 +1,118 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("weekly_time") {
+  output_name = "chromeos_ash_components_policy_weekly_time"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public_deps = [
+    ":weekly_time_checked",
+    ":weekly_time_internal",
+  ]
+}
+
+source_set("weekly_time_internal") {
+  visibility = [ ":weekly_time" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public = [
+    "time_utils.h",
+    "weekly_time.h",
+    "weekly_time_interval.h",
+  ]
+
+  sources = [
+    "time_utils.cc",
+    "weekly_time.cc",
+    "weekly_time_interval.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/icu",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//components/policy/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "time_utils_unittest.cc",
+    "weekly_time_interval_unittest.cc",
+    "weekly_time_unittest.cc",
+  ]
+
+  deps = [
+    ":weekly_time",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//components/policy/proto",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+}
+
+source_set("weekly_time_checked") {
+  visibility = [ ":weekly_time" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public = [
+    "checked_util.h",
+    "weekly_time_checked.h",
+    "weekly_time_interval_checked.h",
+  ]
+
+  sources = [
+    "checked_util.cc",
+    "weekly_time_checked.cc",
+    "weekly_time_interval_checked.cc",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = []
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "test_support.h" ]
+
+  sources = [ "test_support.cc" ]
+
+  public_deps = [
+    ":weekly_time",
+    "//base",
+  ]
+
+  deps = [ "//testing/gtest" ]
+}
+
+source_set("unit_tests_checked") {
+  testonly = true
+
+  sources = [
+    "checked_util_unittest.cc",
+    "weekly_time_checked_unittest.cc",
+    "weekly_time_interval_checked_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":weekly_time",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
