@@ -8,6 +8,7 @@
 
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
+#include "power_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -83,10 +84,10 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
 
   // Pretend the device has gone off battery power
   source().GeneratePowerStateEvent(
-      PowerStateObserver::BatteryPowerStatus::kExternalPower);
+      PowerStateObserver::BatteryPowerStatus::kUnknown);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
   EXPECT_EQ(observers[0].last_power_status(),
-            PowerStateObserver::BatteryPowerStatus::kExternalPower);
+            PowerStateObserver::BatteryPowerStatus::kUnknown);
 
   // Repeated indications the device is off battery power should be suppressed.
   source().GeneratePowerStateEvent(

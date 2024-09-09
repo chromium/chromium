@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
@@ -42,7 +43,8 @@ class BatteryStatusListenerImpl : public BatteryStatusListener,
   void UpdateBatteryPercentage(bool force);
 
   // base::PowerStateObserver implementation.
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
+                                      battery_power_status) override;
 
   // Cached battery percentage.
   int battery_percentage_;

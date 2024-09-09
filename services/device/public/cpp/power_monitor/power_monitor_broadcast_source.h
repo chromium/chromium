@@ -68,6 +68,7 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
     }
 
     // device::mojom::PowerMonitorClient implementation
+    // TODO(b/339859756): Change this to broadcast enum instead of boolean.
     void PowerStateChange(bool on_battery_power) override;
     void Suspend() override;
     void Resume() override;

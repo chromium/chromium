@@ -23,7 +23,8 @@ int BatteryStatusListenerImpl::GetBatteryPercentage() {
 }
 
 bool BatteryStatusListenerImpl::IsOnBatteryPower() const {
-  return base::PowerMonitor::GetInstance()->IsOnBatteryPower();
+  return (base::PowerMonitor::GetInstance()->GetBatteryPowerStatus() ==
+          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 void BatteryStatusListenerImpl::Start(Observer* observer) {
@@ -56,9 +57,12 @@ void BatteryStatusListenerImpl::UpdateBatteryPercentage(bool force) {
   last_battery_query_ = base::Time::Now();
 }
 
-void BatteryStatusListenerImpl::OnPowerStateChange(bool on_battery_power) {
+void BatteryStatusListenerImpl::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   if (observer_)
-    observer_->OnPowerStateChange(on_battery_power);
+    observer_->OnPowerStateChange(
+        battery_power_status ==
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 }  // namespace download

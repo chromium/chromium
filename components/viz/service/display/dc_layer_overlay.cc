@@ -711,8 +711,11 @@ void DCLayerOverlayProcessor::UpdateAutoHDRVideoProcessorSupport() {
   has_auto_hdr_video_processor_support_ = gl::VideoProcessorAutoHDRSupported();
 }
 
-void DCLayerOverlayProcessor::OnPowerStateChange(bool on_battery_power) {
-  is_on_battery_power_ = on_battery_power;
+void DCLayerOverlayProcessor::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  is_on_battery_power_ =
+      (battery_power_status ==
+       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 // Called on the Viz Compositor thread.

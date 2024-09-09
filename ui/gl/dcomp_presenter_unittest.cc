@@ -213,7 +213,8 @@ class DCompPresenterTestBase : public testing::Test {
         GLTestHelper::CreateOffscreenGLSurfaceAndContext();
 
     // These tests are assumed to run on battery.
-    fake_power_monitor_source_.SetOnBatteryPower(true);
+    fake_power_monitor_source_.SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
     // All bots run on non-blocklisted hardware that supports DComp (>Win7)
     ASSERT_TRUE(DirectCompositionSupported());

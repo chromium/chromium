@@ -104,7 +104,10 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
             run_loop.QuitClosure());
     performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
         ->AddObserver(observer.get());
-    environment_.power_monitor_source()->SetOnBatteryPower(on_battery_power);
+    environment_.power_monitor_source()->SetBatteryPowerStatus(
+        on_battery_power
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
         ->RemoveObserver(observer.get());

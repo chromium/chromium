@@ -36,7 +36,8 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
                      power_monitor_client) override;
 
   // base::PowerStateObserver:
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
+                                      battery_power_status) override;
 
   // base::PowerSuspendObserver:
   void OnSuspend() override;
@@ -45,7 +46,8 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
  private:
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
-  bool on_battery_power_ = false;
+  base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown;
 };
 
 }  // namespace device

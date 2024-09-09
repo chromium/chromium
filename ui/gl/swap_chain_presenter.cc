@@ -505,7 +505,8 @@ SwapChainPresenter::SwapChainPresenter(
       dcomp_device_(dcomp_device),
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
-              ->AddPowerStateObserverAndReturnOnBatteryState(this)) {}
+              ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
+          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {}
 
 SwapChainPresenter::~SwapChainPresenter() {
   base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
@@ -2336,8 +2337,11 @@ bool SwapChainPresenter::ReallocateSwapChain(
   return true;
 }
 
-void SwapChainPresenter::OnPowerStateChange(bool on_battery_power) {
-  is_on_battery_power_ = on_battery_power;
+void SwapChainPresenter::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  is_on_battery_power_ =
+      (battery_power_status ==
+       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 }
 
 bool SwapChainPresenter::ShouldUseVideoProcessorScaling() {

@@ -84,7 +84,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // DirectCompositionOverlayCapsObserver implementation.
   void OnOverlayCapsChanged() override;
   // base::PowerStateObserver implementation.
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
 
   void UpdateHasHwOverlaySupport();
   void UpdateSystemHDRStatus();

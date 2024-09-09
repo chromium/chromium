@@ -7,16 +7,20 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 
 namespace performance_manager {
 
 class FakePowerMonitorSource : public base::PowerMonitorSource {
  public:
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
+  void SetBatteryPowerStatus(
+      base::PowerStateObserver::BatteryPowerStatus battery_power_status);
   bool IsOnBatteryPower() const override;
-  void SetOnBatteryPower(bool on_battery_power);
 
  private:
-  bool on_battery_power_ = false;
+  base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      base::PowerStateObserver::BatteryPowerStatus::kUnknown;
 };
 
 }  // namespace performance_manager

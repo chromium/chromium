@@ -265,7 +265,8 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   std::vector<base::Bucket> count_buckets;
   count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
 
-  EXPECT_FALSE(power_monitor_source_.IsOnBatteryPower());
+  EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 
   // Generates a resume event that should end up calling the
   // |ReportTabCountOnResume| method of the reporting delegate.
@@ -293,8 +294,10 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
   std::sort(count_buckets.begin(), count_buckets.end(), CompareHistogramBucket);
 
-  power_monitor_source_.GeneratePowerStateEvent(true);
-  EXPECT_TRUE(power_monitor_source_.IsOnBatteryPower());
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
+            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   // Generates another resume event.
   power_monitor_source_.GenerateSuspendEvent();
   power_monitor_source_.GenerateResumeEvent();
@@ -334,7 +337,8 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
 
   TabsStats stats = tab_stats_tracker_->data_store()->tab_stats();
 
-  EXPECT_FALSE(power_monitor_source_.IsOnBatteryPower());
+  EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
   // Trigger the daily event.
   tab_stats_tracker_->TriggerDailyEvent();
 
@@ -381,8 +385,10 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
   EXPECT_EQ(expected_window_count, static_cast<size_t>(pref_service_.GetInteger(
                                        prefs::kTabStatsWindowCountMax)));
 
-  power_monitor_source_.GeneratePowerStateEvent(true);
-  EXPECT_TRUE(power_monitor_source_.IsOnBatteryPower());
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
+            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // Trigger the daily event.
   tab_stats_tracker_->TriggerDailyEvent();

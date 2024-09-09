@@ -98,7 +98,7 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
   EXPECT_EQ(observer.last_power_status(),
-            base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 
   // Repeated indications the device is off battery power should be suppressed.
   client()->PowerStateChange(false);

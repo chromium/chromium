@@ -38,13 +38,15 @@ TEST(HiResTimerManagerTest, ToggleOnOff) {
     EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
 
     // Simulate a on-battery power event.
-    power_monitor_source.GeneratePowerStateEvent(true);
+    power_monitor_source.GeneratePowerStateEvent(
+        PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
     EXPECT_FALSE(manager.hi_res_clock_available());
     EXPECT_FALSE(base::Time::IsHighResolutionTimerInUse());
 
     // Back to on-AC power.
-    power_monitor_source.GeneratePowerStateEvent(false);
+    power_monitor_source.GeneratePowerStateEvent(
+        PowerStateObserver::BatteryPowerStatus::kExternalPower);
     EXPECT_TRUE(manager.hi_res_clock_available());
     EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
 

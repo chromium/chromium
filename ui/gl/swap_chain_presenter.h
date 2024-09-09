@@ -221,7 +221,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   void RecordPresentationStatistics();
 
   // base::PowerStateObserver
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
 
   // If connected with a power source, let the Intel video processor to do
   // the upscaling because it produces better results.

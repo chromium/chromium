@@ -47,12 +47,16 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Platform-specific method to check whether the system is currently
   // running on battery power.
+  // TODO(339859756): remove this method and make `GetBatteryPowerStatus`
+  // virtual.
   virtual bool IsOnBatteryPower() const = 0;
 
+  // TOOD(339859756): using `kUnknown` here is temporary and should be cleaned
+  // up once we remove `IsOnBatteryPower`.
   PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const {
     return IsOnBatteryPower()
                ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
-               : PowerStateObserver::BatteryPowerStatus::kExternalPower;
+               : PowerStateObserver::BatteryPowerStatus::kUnknown;
   }
 
 #if BUILDFLAG(IS_ANDROID)
