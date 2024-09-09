@@ -869,6 +869,19 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
+      TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
+    auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(browser->profile());
+    if (tab_organization_service) {
+      AddItemWithStringIdAndVectorIcon(
+          this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
+      SetIsNewFeatureAt(
+          GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(),
+          browser->window()->MaybeShowNewBadgeFor(features::kTabOrganization));
+    }
+  }
+
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
 
@@ -1876,18 +1889,6 @@ void AppMenuModel::Build() {
         kShowSearchCompanion);
   }
 #endif
-  if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
-      TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
-    auto* const tab_organization_service =
-        TabOrganizationServiceFactory::GetForProfile(browser_->profile());
-    if (tab_organization_service) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
-      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(),
-                        browser()->window()->MaybeShowNewBadgeFor(
-                            features::kTabOrganization));
-    }
-  }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,
                                    kTranslateIcon);

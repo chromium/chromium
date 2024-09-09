@@ -372,9 +372,10 @@ TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();
+  ToolsMenuModel toolModel(&model, browser());
   size_t organize_tabs_index =
-      model.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
-  EXPECT_TRUE(model.IsEnabledAt(organize_tabs_index));
+      toolModel.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
+  EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
