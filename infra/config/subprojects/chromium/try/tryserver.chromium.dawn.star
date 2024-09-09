@@ -44,6 +44,9 @@ try_.builder(
         "ci/Dawn Chromium Presubmit",
     ],
     builder_config_settings = builder_config.try_settings(
+        analyze_names = [
+            "dawn_chromium_presubmit",
+        ],
         retry_failed_shards = False,
         retry_without_patch = False,
     ),

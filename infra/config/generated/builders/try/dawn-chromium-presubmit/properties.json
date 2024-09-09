@@ -4,6 +4,9 @@
       "additional_exclusions": [
         "infra/config/generated/builders/try/dawn-chromium-presubmit/gn-args.json"
       ],
+      "analyze_names": [
+        "dawn_chromium_presubmit"
+      ],
       "builder_db": {
         "entries": [
           {

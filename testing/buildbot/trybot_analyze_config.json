@@ -78,6 +78,12 @@
       "ui/webui/resources/.*(css|html|js)"
     ]
   },
+  "dawn_chromium_presubmit": {
+    "exclusions": [
+      "third_party/dawn/webgpu-cts/compat-expectations.txt",
+      "third_party/dawn/webgpu-cts/expectations.txt"
+    ]
+  },
   "fuchsia": {
     "exclusions": [
       "build/fuchsia/.*py"
