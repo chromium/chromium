@@ -1,0 +1,202 @@
+{
+  "description": "Tests that sources with outdated scopes are deleted using expected scope ordering.",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "0",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "2"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "1",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "3"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "2",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "3",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "1"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "4",
+                // "4" and "5" should be stored, leaving room for 2 existing
+                // scopes to be retained. Of the existing ones, "1" comes from
+                // the most recent source, and "3" is greater than "2".
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "4",
+                    "5"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                // The sources associated with "2" should have been removed.
+                "attribution_scopes": ["2"],
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                // The sources associated with "3" should not have been removed.
+                "attribution_scopes": ["3"],
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+          "body": {
+            "attribution_destination": "https://destination.test"
+          },
+          "type": "trigger-no-matching-source"
+        }],
+        "report_time": "5",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "1",
+          "source_type": "navigation",
+          "trigger_data": "0"
+        },
+        "report_time": "172800001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}
