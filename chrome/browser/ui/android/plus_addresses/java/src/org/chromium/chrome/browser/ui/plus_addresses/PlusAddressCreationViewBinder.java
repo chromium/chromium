@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
@@ -21,6 +22,8 @@ class PlusAddressCreationViewBinder {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == PROPOSED_PLUS_ADDRESS) {
             view.setProposedPlusAddress(model.get(PROPOSED_PLUS_ADDRESS));
+        } else if (propertyKey == DELEGATE) {
+            view.setDelegate(model.get(DELEGATE));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

@@ -54,27 +54,28 @@ public final class PlusAddressCreationMediatorTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
+    @Mock private PlusAddressCreationDelegate mDelegate;
 
     private PropertyModel mModel;
     private PlusAddressCreationMediator mMediator;
 
     @Before
     public void setUp() {
-        mModel = PlusAddressCreationProperties.createDefaultModel();
+        mModel = PlusAddressCreationCoordinator.createDefaultModel(mDelegate);
         mMediator =
                 new PlusAddressCreationMediator(
-                        mModel,
-                        mBottomSheetContent,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
                         mTabModelSelector,
                         mBridge);
+
+        mMediator.setModel(mModel);
+        mMediator.setBottomSheetContent(mBottomSheetContent);
     }
 
     @Test
     public void testConstructor_setsUpBottomSheetContentAndAddsObservers() {
-        verify(mBottomSheetContent).setDelegate(mMediator);
         verify(mBottomSheetController).addObserver(mMediator);
         verify(mLayoutStateProvider).addObserver(mMediator);
         verify(mTabModel).addObserver(mMediator);

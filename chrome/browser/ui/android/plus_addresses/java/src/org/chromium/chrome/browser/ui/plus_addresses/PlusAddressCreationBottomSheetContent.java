@@ -152,6 +152,11 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressConfirmButton.setEnabled(enabled);
     }
 
+    /** Sets the delegate listening for actions the user performs on this bottom sheet. */
+    void setDelegate(PlusAddressCreationDelegate delegate) {
+        mDelegate = delegate;
+    }
+
     /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
     public void showConfirmationLoadingState() {
         // This also changes the color of the refresh icon to disabled.
@@ -212,11 +217,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
     public void hideRefreshButton() {
         mRefreshIcon.setVisibility(View.GONE);
-    }
-
-    /** Sets the delegate listening for actions the user performs on this bottom sheet. */
-    public void setDelegate(PlusAddressCreationDelegate delegate) {
-        mDelegate = delegate;
     }
 
     // BottomSheetContent implementation follows:

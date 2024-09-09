@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -28,19 +33,20 @@ public class PlusAddressCreationCoordinator {
             PlusAddressCreationViewBridge bridge,
             PlusAddressCreationNormalStateInfo info,
             boolean refreshSupported) {
-        PropertyModel model = PlusAddressCreationProperties.createDefaultModel();
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(
-                        activity, bottomSheetController, info, refreshSupported);
         mMediator =
                 new PlusAddressCreationMediator(
-                        model,
-                        bottomSheetContent,
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel,
                         tabModelSelector,
                         bridge);
+        PropertyModel model = createDefaultModel(mMediator);
+        PlusAddressCreationBottomSheetContent bottomSheetContent =
+                new PlusAddressCreationBottomSheetContent(
+                        activity, bottomSheetController, info, refreshSupported);
+
+        mMediator.setModel(model);
+        mMediator.setBottomSheetContent(bottomSheetContent);
 
         PropertyModelChangeProcessor.create(
                 model,
@@ -77,5 +83,13 @@ public class PlusAddressCreationCoordinator {
 
     public void setMediatorForTesting(PlusAddressCreationMediator mediator) {
         mMediator = mediator;
+    }
+
+    static PropertyModel createDefaultModel(PlusAddressCreationDelegate delegate) {
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(VISIBLE, false)
+                .with(PROPOSED_PLUS_ADDRESS, "")
+                .with(DELEGATE, delegate)
+                .build();
     }
 }

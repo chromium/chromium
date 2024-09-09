@@ -37,18 +37,17 @@ import org.chromium.url.GURL;
  */
 /*package*/ class PlusAddressCreationMediator extends EmptyBottomSheetObserver
         implements PlusAddressCreationDelegate, TabModelObserver, LayoutStateObserver {
-    private final PropertyModel mModel;
-    private final PlusAddressCreationBottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModelSelector mTabModelSelector;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
+    private PropertyModel mModel;
+    private PlusAddressCreationBottomSheetContent mBottomSheetContent;
 
     /**
      * Creates the mediator.
      *
-     * @param bottomSheetContent The bottom sheet content to be shown.
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
@@ -58,25 +57,33 @@ import org.chromium.url.GURL;
      * @param bridge The bridge to signal UI flow events (onConfirmed, onCanceled, etc.) to.
      */
     PlusAddressCreationMediator(
-            PropertyModel model,
-            PlusAddressCreationBottomSheetContent bottomSheetContent,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge) {
-        mModel = model;
-        mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
         mTabModelSelector = tabModelSelector;
         mBridge = bridge;
 
-        mBottomSheetContent.setDelegate(this);
         mBottomSheetController.addObserver(this);
         mLayoutStateProvider.addObserver(this);
         mTabModel.addObserver(this);
+    }
+
+    void setModel(PropertyModel model) {
+        mModel = model;
+    }
+
+    /**
+     * TODO: crbug.com/364181540 - Remove dependency on the View component.
+     *
+     * @param bottomSheetContent - The UI surface this mediator manages.
+     */
+    void setBottomSheetContent(PlusAddressCreationBottomSheetContent bottomSheetContent) {
+        mBottomSheetContent = bottomSheetContent;
     }
 
     /** Requests to show the bottom sheet content. */
