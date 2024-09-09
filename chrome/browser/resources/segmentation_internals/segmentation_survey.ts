@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {getRequiredElement} from 'chrome://resources/js/util.js';
-
 import type {ClientInfo, SegmentInfo} from './segmentation_internals.mojom-webui.js';
 import {SegmentationInternalsBrowserProxy} from './segmentation_internals_browser_proxy.js';
 
@@ -38,20 +35,25 @@ function openSurvey(result: string|undefined) {
           safeURL = safeURL! + '&option=' + encodeURIComponent(result);
         }
         window.location.href = safeURL;
+        return true;
       }
     }
   } catch (error) {
   }
-  const div = getRequiredElement('client-container');
-  div.innerHTML =
-      getTrustedHTML`Failed to open. Please check instructions in email.`;
+  return false;
+}
+
+function openError() {
+  window.location.href = 'chrome://network-error/-404';
 }
 
 function processPredictionResult(segmentInfo: SegmentInfo) {
   const result = String(segmentInfo.predictionResult) +
       ' Timestamp: ' + String(segmentInfo.predictionTimestamp.internalValue);
   const encoded = window.btoa(result);
-  openSurvey(encoded);
+  if (!openSurvey(encoded)) {
+    openError();
+  }
 }
 
 function processClientInfo(info: ClientInfo) {
@@ -61,11 +63,11 @@ function processClientInfo(info: ClientInfo) {
 }
 
 function initialize() {
-  const div = getRequiredElement('client-container');
-  div.innerHTML = getTrustedHTML`Loading...`;
+  // Timeout to wait for segmentation results.
+  const timeoutSec = 3000;
   setTimeout(() => {
-    openSurvey(undefined);
-  }, 1000);
+    openError();
+  }, timeoutSec);
 
   getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
       (clientInfos: ClientInfo[]) => {
