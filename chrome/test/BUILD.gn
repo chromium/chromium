@@ -10919,6 +10919,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
       "../browser/ui/performance_controls/tab_resource_usage_tab_helper_interactive_uitest.cc",
+      "../browser/ui/plus_addresses/plus_address_error_dialog_interactive_uitest.cc",
       "../browser/ui/search/instant_extended_interactive_uitest.cc",
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",

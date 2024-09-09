@@ -185,6 +185,26 @@
       Something went wrong
     </message>
 
+    <!-- Error modal for inline creation strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_TITLE" desc="The title in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      Oops! We found an affiliated plus address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      We found <ph name="DOMAIN">$1<ex>foo.com</ex></ph> that can be used for: <ph name="PLUS_ADDRESS">$2<ex>foo@bar.com</ex></ph> Use this one instead of creating a new one.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      Fill with existing address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE" desc="The title in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Can't save plus address.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Try again
+    </message>
+
     <!-- IPH strings -->
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH" desc="Text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
       Placeholder Plus Address Create Suggestion IPH String
