@@ -650,7 +650,7 @@ void BaseFile::AnnotateWithSourceInformation(
         authority_url, referrer_url));
 
     quarantine_service_->QuarantineFile(
-        full_path_, authority_url, referrer_url, client_guid,
+        full_path_, authority_url, referrer_url, request_initiator, client_guid,
         base::BindOnce(&BaseFile::OnFileQuarantined,
                        weak_factory_.GetWeakPtr()));
   }

@@ -59,7 +59,8 @@ TEST_F(QuarantineServiceTest, QuarantineFile) {
 
   base::RunLoop run_loop;
   quarantine_->QuarantineFile(
-      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), std::string(),
+      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL),
+      /*request_initiator=*/std::nullopt, std::string(),
       base::BindOnce(&QuarantineServiceTest::OnFileQuarantined,
                      base::Unretained(this), test_file,
                      run_loop.QuitClosure()));

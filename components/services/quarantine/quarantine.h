@@ -58,6 +58,9 @@ using mojom::QuarantineFileResult;
 //   |source_url|: URL from which the file content was downloaded. This is empty
 //     for off-the-record download.
 //   |referrer_url|: Referring URL. This is empty for off-the-record download.
+//   `request_initiator`: Origin initiating the request. This is meant to
+//     replace the source URL when the source URL is not suitable for use in an
+//     annotation (e.g. a data URL).
 //   |client_guid|: Only used on Windows. Identifies the client application
 //     that downloaded the file.
 //   |callback|: Will be called with the quarantine result on completion.
@@ -70,6 +73,7 @@ using mojom::QuarantineFileResult;
 void QuarantineFile(const base::FilePath& file,
                     const GURL& source_url,
                     const GURL& referrer_url,
+                    const std::optional<url::Origin>& request_initiator,
                     const std::string& client_guid,
                     mojom::Quarantine::QuarantineFileCallback callback);
 

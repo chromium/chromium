@@ -344,6 +344,9 @@ void FileSystemAccessSafeMoveHelper::DidFileDoQuarantine(
     quarantine::mojom::Quarantine* raw_quarantine = quarantine_remote.get();
     raw_quarantine->QuarantineFile(
         target_url.path(), authority_url, referrer_url,
+        // TODO(crbug.com/351165321): Consider propagating request_initiator
+        // information here.
+        /*request_initiator=*/std::nullopt,
         GetContentClient()
             ->browser()
             ->GetApplicationClientGUIDForQuarantineCheck(),

@@ -96,6 +96,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
 void QuarantineFile(const base::FilePath& file,
                     const GURL& source_url_unsafe,
                     const GURL& referrer_url_unsafe,
+                    const std::optional<url::Origin>& request_initiator,
                     const std::string& client_guid,
                     mojom::Quarantine::QuarantineFileCallback callback) {
   if (!base::PathExists(file)) {
@@ -111,6 +112,9 @@ void QuarantineFile(const base::FilePath& file,
 
   GURL source_url = SanitizeUrlForQuarantine(source_url_unsafe);
   GURL referrer_url = SanitizeUrlForQuarantine(referrer_url_unsafe);
+  if (source_url.is_empty() && request_initiator.has_value()) {
+    source_url = SanitizeUrlForQuarantine(request_initiator->GetURL());
+  }
 
   // Don't consider it an error if we fail to add origin metadata.
   AddOriginMetadataToFile(file, source_url, referrer_url);

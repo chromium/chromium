@@ -225,6 +225,7 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
 void QuarantineFile(const base::FilePath& file,
                     const GURL& source_url_unsafe,
                     const GURL& referrer_url_unsafe,
+                    const std::optional<url::Origin>& request_initiator,
                     const std::string& client_guid,
                     mojom::Quarantine::QuarantineFileCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -245,6 +246,10 @@ void QuarantineFile(const base::FilePath& file,
   }
 
   GURL source_url = SanitizeUrlForQuarantine(source_url_unsafe);
+  if (source_url.is_empty() && request_initiator.has_value()) {
+    source_url = SanitizeUrlForQuarantine(request_initiator->GetURL());
+  }
+
   GURL referrer_url = SanitizeUrlForQuarantine(referrer_url_unsafe);
 
   if (file_size == 0 || IsEqualGUID(guid, GUID_NULL)) {
