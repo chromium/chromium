@@ -9420,7 +9420,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.HapticFeedback.Changed" enum="BooleanEnabled"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -9430,7 +9430,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.HapticFeedback.Started" enum="BooleanEnabled"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
