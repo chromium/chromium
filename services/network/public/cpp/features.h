@@ -186,6 +186,9 @@ extern const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders;
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kTreatNullIPAsPublicAddressSpace);
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

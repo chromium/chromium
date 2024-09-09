@@ -392,8 +392,12 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   }
 
   if (!disable_web_security_) {
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer =
-        GetDevToolsObserver(resource_request);
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+    const bool always_clone = !base::FeatureList::IsEnabled(
+        network::features::kCloneDevToolsConnectionOnlyIfRequested);
+    if (always_clone || resource_request.devtools_request_id.has_value()) {
+      devtools_observer = GetDevToolsObserver(resource_request);
+    }
 
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
         shared_dictionary_storage_;

@@ -475,4 +475,10 @@ BASE_FEATURE(kTreatNullIPAsPublicAddressSpace,
              "TreatNullIPAsPublicAddressSpace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the CORS URL loader will clone the DevTools connection for a
+// resource request only if the request includes a DevTools request id.
+BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
+             "CloneDevToolsConnectionOnlyIfRequested",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

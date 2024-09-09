@@ -5554,6 +5554,25 @@
             ]
         }
     ],
+    "CloneDevToolsConnectionOnlyIfRequested": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CloneDevToolsConnectionOnlyIfRequested"
+                    ]
+                }
+            ]
+        }
+    ],
     "CoalesceSelectionchangeEvent": [
         {
             "platforms": [

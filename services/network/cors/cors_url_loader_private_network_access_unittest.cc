@@ -884,6 +884,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -962,6 +963,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1115,6 +1117,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockPreflightNoTimeout) {
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1424,6 +1427,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1902,6 +1906,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1983,6 +1988,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -2065,6 +2071,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 

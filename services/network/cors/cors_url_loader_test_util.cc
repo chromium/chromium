@@ -203,6 +203,7 @@ void CorsURLLoaderTestBase::CreateLoaderAndStart(
   if (request.mode == mojom::RequestMode::kNavigate)
     request.navigation_redirect_chain.push_back(url);
   request.request_initiator = url::Origin::Create(origin);
+  request.devtools_request_id = "devtools";
   if (devtools_observer_for_next_request_) {
     request.trusted_params = ResourceRequest::TrustedParams();
     request.trusted_params->devtools_observer =
