@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1444443021901415601">Chrome beleži teme koje vas interesuju na osnovu nedavne istorije pregledanja</translation>
 <translation id="2252052615723281030">Kada se prijavite u Chrome, ovo podešavanje ne dozvoljava otkrivanje IP adrese. Ako Chrome sumnja da vas neki sajt možda prati, deo saobraćaja će možda ići preko servera za privatnost.</translation>
+<translation id="2793385791865768072">Chromium beleži teme koje vas interesuju na osnovu nedavne istorije pregledanja</translation>
 <translation id="33479675708419823">Kada se prijavite u Chrome, ovo podešavanje ne dozvoljava otkrivanje IP adrese. Ako Chrome sumnja da vas neki sajt možda prati, deo saobraćaja će možda ići preko servera za privatnost. Saznajte više o tome <ph name="LINK_BEGIN" />kako zaštita IP-a radi<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Saznajte više o skrivanju IP adrese</translation>
+<translation id="4041687306270459969">Teme oglasa starije od 4 nedelje se automatski brišu. Teme obuhvataju stvari kao što su Sport, Odeća i drugo</translation>
+<translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="4301151630239508244">Teme oglasa su samo jedna od mnogih stvari koje sajt može da koristi za personalizaciju oglasa. Čak i bez tema oglasa, sajtovi i dalje mogu da vam prikazuju oglase, ali oni mogu da budu manje personalizovani. Saznajte više o <ph name="BEGIN_LINK_1" />upravljanju privatnošću sa oglasima<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Možete da vidite teme oglasa u podešavanjima Chromium-a i da blokirate one koje ne želite da delite sa sajtovima</translation>
 <translation id="4598427486995631491">Sakrijte IP adresu</translation>
+<translation id="4692439979815346597">Teme oglasa možete da vidite u podešavanjima Chrome-a i da blokirate one koje ne želite da delite sa sajtovima</translation>
+<translation id="5413586988657235240">Sajtovi koje posećujete mogu da zatraže od Chromium-a teme da bi vam prikazivali relevantne oglase dok štite vašu istoriju pregledanja i identitet</translation>
+<translation id="6186536480878693792">Sajtovi koje posećujete mogu da zatraže od Chrome-a teme da bi vam prikazivali relevantne oglase dok štite vašu istoriju pregledanja i identitet</translation>
 <translation id="6371812158043974664">Kada se prijavite u Chromium, ovo podešavanje ne dozvoljava otkrivanje IP adrese. Ako Chromium sumnja da vas neki sajt možda prati, deo saobraćaja će možda ići preko servera za privatnost. Saznajte više o tome <ph name="LINK_BEGIN" />kako zaštita IP-a radi<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261">Saznajte <ph name="BEGIN_LINK" />kako zaštita IP-a radi<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Pregledajte podešavanje tema oglasa</translation>
 </translationbundle>

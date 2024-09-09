@@ -917,6 +917,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4209973997261364186">WLAN ist aktiviert</translation>
 <translation id="4212246570487010370">Mehr ansehen</translation>
 <translation id="4212472694152630271">Zu PIN wechseln</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, Ein/Aus-Schaltfläche, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-Einstellungen</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installierte App, pausiert</translation>

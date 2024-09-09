@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Wi-Fi 已開啟</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">改用 PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />，<ph name="EFFECT_NAME" />，切換按鈕，<ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已經安裝嘅應用程式，已經暫停</translation>

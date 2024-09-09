@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Wi-Fi はオンです</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4212472694152630271">PIN に切り替え</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />、<ph name="EFFECT_NAME" />、切り替えボタン、<ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>

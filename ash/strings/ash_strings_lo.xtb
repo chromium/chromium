@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2360398059912971776">ແບັດເຕີຣີ</translation>
 <translation id="2361210043495191221">ສະຫຼັບ Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">ເອັບເຟັກຮູບລັກ</translation>
 <translation id="236574664504281623">ສົ່ງຈາກ <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບຫາ Chromebook ຂອງທ່ານໄດ້</translation>
 <translation id="2367972762794486313">ສະແດງແອັບ</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">ປິດ</translation>
 <translation id="3604801046548457007">ສ້າງເດັສ <ph name="DESK_TITILE" /> ແລ້ວ</translation>
 <translation id="3606978283550408104">ການສະແດງຕົວໜັງສືນູນເຊື່ອມ​ຕໍ່ແລ້ວ​.</translation>
+<translation id="3612634595000403645">ການຕັ້ງຄ່າເອັບເຟັກຮູບລັກ</translation>
 <translation id="3615926715408477684">ການເປີດນຳໃຊ້ອິນເຕີເນັດມືຖືຈະເປີດນຳໃຊ້ Bluetooth</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3616883743181209306">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຂວາຂອງໜ້າຈໍ.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">ຍ້າຍໄປຮອດຈຸດສິ້ນສຸດຂອງຄຳຖັດໄປ</translation>
 <translation id="4146833061457621061">ຫຼິ້ນເພງ</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>
+<translation id="4151054805501931758">ປັບແຕ່ງພາບບຸກຄົນ</translation>
 <translation id="4156293514828496577">ແບັດເຕີຣີເຫຼືອຢູ່ <ph name="PERCENTAGE" />% (ໃຊ້ໄດ້ອີກປະມານ <ph name="TIME_LEFT" />).
 ລະບົບຈຳກັດຄຸນສົມບັດບາງຢ່າງເພື່ອເພີ່ມອາຍຸການໃຊ້ແບັດເຕີຣີ.</translation>
 <translation id="4160919062868802509">ກວດພົບແຫຼ່ງທີ່ມາຂອງສຽງຫຼາຍແຫ່ງ</translation>
@@ -1969,6 +1972,7 @@
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7769299611924763557">GIF ຂອງທ່ານຈະພ້ອມໃນໄວໆນີ້</translation>
 <translation id="7773536009433685931">ເປີດ Wi-Fi ແທນ</translation>
+<translation id="77747521138552256">ພະຍາຍາມໃສ່ PIN ຫຼາຍເທື່ອເກີນໄປ. ກະລຸນາລໍຖ້າ <ph name="TIME_LEFT" /> ແລ້ວລອງໃສ່ PIN ອີກຄັ້ງ ຫຼື ລະບຸລະຫັດຜ່ານເພື່ອເຂົ້າສູ່ລະບົບທັນທີ.</translation>
 <translation id="7780094051999721182">ທາງລັດ</translation>
 <translation id="7780159184141939021">ໝຸນໜ້າຈໍ</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>

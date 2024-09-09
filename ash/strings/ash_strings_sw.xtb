@@ -917,6 +917,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4209973997261364186">Wi-Fi imewashwa</translation>
 <translation id="4212246570487010370">Endelea kuvinjari</translation>
 <translation id="4212472694152630271">Tumia PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, kitufe cha kugeuza <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Mipangilio ya VPN</translation>
 <translation id="4217571870635786043">Kuandika kwa kutamka</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imesitishwa</translation>
@@ -1498,7 +1499,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6099678161144790572">Ilibadilishwa mwezi uliopita</translation>
 <translation id="6103838137565245112">mfumo</translation>
 <translation id="610395411842312282">Weka pamoja madirisha mawili ya upande kwa upande</translation>
-<translation id="6108952804512516814">Kutayarisha kwa kutumia AI</translation>
+<translation id="6108952804512516814">Buni ukitumia AI</translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Usahihishaji wa rangi</translation>
