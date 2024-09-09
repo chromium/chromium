@@ -20,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/callback_tags.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,11 +27,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
@@ -529,20 +523,13 @@ class IndexedDBConnectionCoordinator::DeleteRequest
         indexed_db::kBackingStoreActionUmaName,
         indexed_db::IndexedDBAction::kDatabaseDeleteAttempt);
     // This is used to check if this class is still alive after the destruction
-    // of the TransactionalLevelDBTransaction, which can synchronously cause the
-    // system to be shut down if the disk is really bad.
+    // of the backing store, which can synchronously cause the system to be shut
+    // down if the disk is really bad.
     base::WeakPtr<DeleteRequest> weak_ptr = weak_factory_.GetWeakPtr();
     if (db_->backing_store()) {
-      scoped_refptr<TransactionalLevelDBTransaction> txn;
-      TransactionalLevelDBDatabase* db = db_->backing_store()->db();
-      if (db) {
-        txn = db->class_factory()->CreateLevelDBTransaction(
-            db, db->scopes()->CreateScope(std::move(lock_receiver_.locks)));
-        txn->set_commit_cleanup_complete_callback(
-            std::move(on_database_deleted_));
-      }
-      saved_leveldb_status_ =
-          db_->backing_store()->DeleteDatabase(db_->metadata_.name, txn.get());
+      saved_leveldb_status_ = db_->backing_store()->DeleteDatabase(
+          db_->metadata_.name, std::move(lock_receiver_.locks),
+          std::move(on_database_deleted_));
       base::UmaHistogramEnumeration(
           "WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus",
           leveldb_env::GetLevelDBStatusUMAValue(saved_leveldb_status_),

@@ -1418,14 +1418,19 @@ Status IndexedDBBackingStore::CreateDatabase(
   return s;
 }
 
-Status IndexedDBBackingStore::DeleteDatabase(
-    const std::u16string& name,
-    TransactionalLevelDBTransaction* transaction) {
+Status IndexedDBBackingStore::DeleteDatabase(const std::u16string& name,
+                                             std::vector<PartitionedLock> locks,
+                                             base::OnceClosure on_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
   TRACE_EVENT0("IndexedDB", "IndexedDBBackingStore::DeleteDatabase");
+
+  scoped_refptr<TransactionalLevelDBTransaction> transaction =
+      transactional_leveldb_factory_->CreateLevelDBTransaction(
+          db(), db()->scopes()->CreateScope(std::move(locks)));
+  transaction->set_commit_cleanup_complete_callback(std::move(on_complete));
 
   Status s;
   bool success = false;
@@ -1464,11 +1469,11 @@ Status IndexedDBBackingStore::DeleteDatabase(
   bool database_has_blob_references =
       active_blob_registry()->MarkDatabaseDeletedAndCheckIfReferenced(id);
   if (database_has_blob_references) {
-    s = MergeDatabaseIntoActiveBlobJournal(transaction, id);
+    s = MergeDatabaseIntoActiveBlobJournal(transaction.get(), id);
     if (!s.ok())
       return s;
   } else {
-    s = MergeDatabaseIntoRecoveryBlobJournal(transaction, id);
+    s = MergeDatabaseIntoRecoveryBlobJournal(transaction.get(), id);
     if (!s.ok())
       return s;
     need_cleanup = true;

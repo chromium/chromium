@@ -342,10 +342,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  TransactionalLevelDBFactory& transactional_leveldb_factory() const {
-    return *transactional_leveldb_factory_;
-  }
-
  private:
   friend IndexedDBBucketContextHandle;
   friend class IndexedDBBackingStoreTest;

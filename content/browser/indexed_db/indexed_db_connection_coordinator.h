@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
-#include "content/browser/indexed_db/list_set.h"
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 

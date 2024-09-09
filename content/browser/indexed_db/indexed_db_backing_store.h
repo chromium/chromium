@@ -418,9 +418,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // `max_object_store_id` fields are outputs.
   virtual leveldb::Status CreateDatabase(
       blink::IndexedDBDatabaseMetadata& metadata);
-  virtual leveldb::Status DeleteDatabase(
-      const std::u16string& name,
-      TransactionalLevelDBTransaction* transaction);
+  virtual leveldb::Status DeleteDatabase(const std::u16string& name,
+                                         std::vector<PartitionedLock> locks,
+                                         base::OnceClosure on_complete);
   // Changes the database version to |version|.
   [[nodiscard]] virtual leveldb::Status SetDatabaseVersion(
       Transaction* transaction,
