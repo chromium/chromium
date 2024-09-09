@@ -2621,6 +2621,21 @@
       },
     },
 
+    'gpu_dawn_gtests_use_tint_ir': {
+      'dawn_end2end_use_tint_ir_tests': {
+        'test': 'dawn_end2end_tests',
+        'mixins': [
+          'dawn_end2end_gpu_test',
+        ],
+        'args': [
+          '--enable-toggles=use_tint_ir',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+    },
+
     'gpu_dawn_gtests_with_validation': {
       'dawn_end2end_validation_layers_tests': {
         'test': 'dawn_end2end_tests',
@@ -6149,6 +6164,13 @@
     'gpu_dawn_integration_gtests_passthrough': [
       'gpu_common_gtests_passthrough',
       'gpu_dawn_gtests',
+      'gpu_dawn_gtests_with_validation',
+    ],
+
+    'gpu_dawn_integration_gtests_passthrough_macos': [
+      'gpu_common_gtests_passthrough',
+      'gpu_dawn_gtests',
+      'gpu_dawn_gtests_use_tint_ir',
       'gpu_dawn_gtests_with_validation',
     ],
 

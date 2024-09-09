@@ -1127,6 +1127,17 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "dawn_end2end_use_tint_ir_tests",
+    mixins = [
+        "dawn_end2end_gpu_test",
+    ],
+    args = [
+        "--enable-toggles=use_tint_ir",
+    ],
+    binary = "dawn_end2end_tests",
+)
+
+targets.tests.gtest_test(
     name = "fuzzing_unittests",
 )
 

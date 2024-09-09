@@ -2324,6 +2324,17 @@ targets.legacy_basic_suite(
     },
 )
 
+targets.legacy_basic_suite(
+    name = "gpu_dawn_gtests_use_tint_ir",
+    tests = {
+        "dawn_end2end_use_tint_ir_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+    },
+)
+
 # GPU gtests that test only Dawn with backend validation layers
 targets.legacy_basic_suite(
     name = "gpu_dawn_gtests_with_validation",
