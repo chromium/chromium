@@ -1959,6 +1959,7 @@ static_library("browser") {
     "//chrome/browser/search_engines",
     "//chrome/browser/share",
     "//chrome/browser/sharing:buildflags",
+    "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
@@ -4263,6 +4264,8 @@ static_library("browser") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/tabs:tabs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -4271,6 +4274,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:impl",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/web_applications",
@@ -4386,6 +4391,8 @@ static_library("browser") {
       "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/picture_in_picture:impl",
+      "//chrome/browser/ui/signin:impl",
+      "//chrome/browser/ui/webui/signin:impl",
     ]
 
     #!is_android

@@ -455,6 +455,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shell_delegate",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/ui/webui/signin",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos:test_utils",

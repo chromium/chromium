@@ -2,10 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 source_set("identity_manager_provider") {
   sources = [
     "identity_manager_provider.cc",
     "identity_manager_provider.h",
   ]
   deps = [ "//base" ]
+}
+
+# TODO(crbug.com/364667553): complete modularization of //c/b/signin.
+# At the moment, it's hard to complete it at once as it pulls deps, which
+# result in circular deps. Modularization of others to resolve that is
+# non-trivial and is hard to complete at once.
+source_set("signin") {
+  sources = []
+  public_deps = []
+
+  if (enable_dice_support) {
+    sources = [
+      "web_signin_interceptor.cc",
+      "web_signin_interceptor.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/webui/signin",
+      "//components/keyed_service/core",
+      "//components/signin/public/identity_manager",
+      "//google_apis",
+      "//skia",
+    ]
+  }
 }

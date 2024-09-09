@@ -699,6 +699,7 @@ static_library("test_support") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/constrained_window",
       "//components/performance_manager",
@@ -1983,6 +1984,8 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/permission_bubble:browser_tests",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts",
@@ -1994,6 +1997,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/web_applications:browser_tests",
@@ -3847,7 +3851,6 @@ if (!is_android) {
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/autofill/autofill_signin_promo_tab_helper_browsertest.cc",
         "../browser/ui/profiles/signin_intercept_first_run_experience_dialog_browsertest.cc",
-        "../browser/ui/signin/signin_view_controller_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
         "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",
@@ -4627,8 +4630,6 @@ if (!is_android) {
       }
       if (!is_chromeos) {
         sources += [
-          "../browser/ui/signin/chrome_signout_confirmation_prompt_browsertest.cc",
-          "../browser/ui/signin/cookie_clear_on_exit_migration_notice_browsertest.cc",
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
@@ -5219,7 +5220,6 @@ if (!is_android) {
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
-        "../browser/ui/signin/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/webui/signin/turn_sync_on_helper_browsertest.cc",
       ]
 
@@ -5591,6 +5591,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/ui/chromeos",
       "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
+      "//chrome/browser/ui/webui/signin",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:prevent_close_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -8278,6 +8279,7 @@ test("unit_tests") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:unit_tests",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/signin",
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",
       "//chrome/browser/ui/views/bubble",
@@ -8287,6 +8289,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+      "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/zoom",
@@ -10593,8 +10596,10 @@ if (!is_android) {
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/autofill/payments:test_support_ui",
+      "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/signin",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
@@ -10919,7 +10924,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/search/instant_test_base.h",
       "../browser/ui/search/third_party_ntp_uitest.cc",
       "../browser/ui/side_search/side_search_tab_contents_helper_interactive_uitest.cc",
-      "../browser/ui/signin/signin_view_controller_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
       "../browser/ui/test/browser_ui_interactive_uitest.cc",
@@ -11532,11 +11536,6 @@ if (!is_android && !is_chromeos_device) {
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
       ]
-
-      # These tests are not applicable on Chrome OS.
-      sources -= [
-        "../browser/ui/signin/signin_view_controller_interactive_uitest.cc",
-      ]
     } else {  # ! is_chromeos_ash
       # Non-ChromeOS notifications tests.
       sources += [
@@ -11544,6 +11543,9 @@ if (!is_android && !is_chromeos_device) {
         "../browser/notifications/notification_interactive_uitest_support.cc",
         "../browser/notifications/notification_interactive_uitest_support.h",
       ]
+
+      # Non-ChromeOS tests.
+      deps += [ "//chrome/browser/ui/signin:interactive_ui_tests" ]
     }
 
     if (is_chromeos) {
