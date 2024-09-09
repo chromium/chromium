@@ -356,9 +356,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsHighlightOn() { return controller_->IsHighlightOn(); }
 
-  void TurnedHighlightOn() { controller_->TurnedHighlightOn(); }
-
-  void TurnedHighlightOff() { controller_->TurnedHighlightOff(); }
+  void OnHighlightGranularityChanged(const int value) {
+    controller_->OnHighlightGranularityChanged(value);
+  }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
@@ -2350,7 +2350,8 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {
                   read_anything::mojom::HighlightGranularity::kOff))
       .Times(0);
 
-  TurnedHighlightOn();
+  OnHighlightGranularityChanged(
+      static_cast<int>(read_anything::mojom::HighlightGranularity::kOn));
 
   EXPECT_TRUE(IsHighlightOn());
 }
@@ -2365,7 +2366,8 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
                   read_anything::mojom::HighlightGranularity::kOff))
       .Times(1);
 
-  TurnedHighlightOff();
+  OnHighlightGranularityChanged(
+      static_cast<int>(read_anything::mojom::HighlightGranularity::kOff));
 
   EXPECT_FALSE(IsHighlightOn());
 }

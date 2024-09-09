@@ -99,7 +99,8 @@ suite('AppStyleUpdater', () => {
       '--color-read-anything-current-read-aloud-highlight-dark':
           expectedDarkColor,
     });
-    chrome.readingMode.turnedHighlightOn();
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.autoHighlighting);
     chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
     updater.setHighlight();
     assertEquals(
@@ -110,7 +111,8 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedDarkColor, computeStyle('--current-highlight-bg-color'));
 
-    chrome.readingMode.turnedHighlightOff();
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.noHighlighting);
     chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
     updater.setHighlight();
     assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
@@ -195,7 +197,8 @@ suite('AppStyleUpdater', () => {
       '--color-read-anything-link-visited-yellow': expectedYellowLinkVisited,
       '--color-read-anything-link-visited-dark': expectedDarkLinkVisited,
     });
-    chrome.readingMode.turnedHighlightOn();
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.autoHighlighting);
 
     // Verify default theme colors.
     chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
@@ -263,7 +266,8 @@ suite('AppStyleUpdater', () => {
     chrome.readingMode.letterSpacing = 3;
     chrome.readingMode.fontName = 'Andika';
     chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
-    chrome.readingMode.turnedHighlightOn();
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.autoHighlighting);
     const expectedBlueBackground = 'rgb(1, 2, 3)';
     const expectedBlueForeground = 'rgb(4, 5, 6)';
     const expectedBlueCurrentHighlight = 'rgb(7, 8, 9)';

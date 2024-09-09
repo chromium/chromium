@@ -202,10 +202,6 @@ declare namespace chrome {
     // via the webui language menu.
     function onLanguagePrefChange(lang: string, enabled: boolean): void;
 
-    // Called when the highlight granularity is changed via the webui toolbar.
-    function turnedHighlightOn(): void;
-    function turnedHighlightOff(): void;
-
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
     function getLineSpacingValue(lineSpacing: number): number;

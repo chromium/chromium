@@ -356,12 +356,12 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitHighlight(highlightOn: boolean) {
-      if (highlightOn) {
-        chrome.readingMode.turnedHighlightOn();
-      } else {
-        chrome.readingMode.turnedHighlightOff();
-      }
-      emitEvent(app, ToolbarEvent.HIGHLIGHT_TOGGLE);
+      const highlightValue = highlightOn ? chrome.readingMode.autoHighlighting :
+                                           chrome.readingMode.noHighlighting;
+      chrome.readingMode.onHighlightGranularityChanged(highlightValue);
+      emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+        detail: {data: highlightValue},
+      });
       return microtasksFinished();
     }
 

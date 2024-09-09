@@ -885,10 +885,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnLanguagePrefChange)
       .SetMethod("getLanguagesEnabledInPref",
                  &ReadAnythingAppController::GetLanguagesEnabledInPref)
-      .SetMethod("turnedHighlightOn",
-                 &ReadAnythingAppController::TurnedHighlightOn)
-      .SetMethod("turnedHighlightOff",
-                 &ReadAnythingAppController::TurnedHighlightOff)
       .SetMethod("onHighlightGranularityChanged",
                  &ReadAnythingAppController::OnHighlightGranularityChanged)
       .SetMethod("getLineSpacingValue",
@@ -1554,18 +1550,6 @@ void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
                                                      bool enabled) {
   page_handler_->OnLanguagePrefChange(lang, enabled);
   read_aloud_model_.SetLanguageEnabled(lang, enabled);
-}
-
-void ReadAnythingAppController::TurnedHighlightOn() {
-  auto granularity = read_anything::mojom::HighlightGranularity::kOn;
-  page_handler_->OnHighlightGranularityChanged(granularity);
-  read_aloud_model_.set_highlight_granularity((int)granularity);
-}
-
-void ReadAnythingAppController::TurnedHighlightOff() {
-  auto granularity = read_anything::mojom::HighlightGranularity::kOff;
-  page_handler_->OnHighlightGranularityChanged(granularity);
-  read_aloud_model_.set_highlight_granularity((int)granularity);
 }
 
 void ReadAnythingAppController::OnHighlightGranularityChanged(

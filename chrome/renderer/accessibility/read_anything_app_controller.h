@@ -218,8 +218,6 @@ class ReadAnythingAppController
   void OnVoiceChange(const std::string& voice, const std::string& lang);
   void OnLanguagePrefChange(const std::string& lang, bool enabled);
   bool RequiresDistillation();
-  void TurnedHighlightOn();
-  void TurnedHighlightOff();
   void OnHighlightGranularityChanged(int granularity);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;

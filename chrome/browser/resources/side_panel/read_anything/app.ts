@@ -364,6 +364,7 @@ export class AppElement extends AppElementBase {
       theme: chrome.readingMode.colorTheme,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
+      highlightGranularity: chrome.readingMode.highlightGranularity,
     };
 
     document.onselectionchange = () => {
@@ -2233,6 +2234,7 @@ export class AppElement extends AppElementBase {
       theme: chrome.readingMode.colorTheme,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
+      highlightGranularity: chrome.readingMode.highlightGranularity,
     };
     this.styleUpdater_.setAllTextStyles();
     // TODO(crbug.com/40927698): Remove this call. Using this.settingsPrefs_
@@ -2340,10 +2342,6 @@ export class AppElement extends AppElementBase {
     this.styleUpdater_.setFontSize();
   }
 
-  protected onHighlightToggle_() {
-    this.styleUpdater_.setHighlight();
-  }
-
   protected onThemeChange_() {
     this.styleUpdater_.setTheme();
   }
@@ -2356,6 +2354,16 @@ export class AppElement extends AppElementBase {
     const shouldScroll =
         (event.detail.overflowLength >= minOverflowLengthToScroll);
     this.styleUpdater_.overflowToolbar(shouldScroll);
+  }
+
+  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
+    // Handler for HIGHLIGHT_CHANGE.
+    const changedHighlight = event.detail.data;
+    chrome.readingMode.onHighlightGranularityChanged(changedHighlight);
+    // Apply highlighting changes to the DOM.
+    this.styleUpdater_.setHighlight();
+    // TODO(crbug.com/364546547): Log these highlight granularity changes when
+    // the phrase menu is shown. (Toggles are already logged in the toolbar.)
   }
 
   // If the screen is locked during speech, we should stop speaking.
