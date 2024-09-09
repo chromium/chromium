@@ -71,7 +71,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,14 +107,9 @@ constexpr char kDoNothingCRXRun[] = "qualification_app";
 #endif
 
 std::string GetHashHex(const base::FilePath& file) {
-  std::unique_ptr<crypto::SecureHash> hasher(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   base::MemoryMappedFile mmfile;
   EXPECT_TRUE(mmfile.Initialize(file));  // Note: This fails with an empty file.
-  hasher->Update(mmfile.data(), mmfile.length());
-  uint8_t actual_hash[crypto::kSHA256Length] = {0};
-  hasher->Finish(actual_hash, sizeof(actual_hash));
-  return base::HexEncode(actual_hash);
+  return base::HexEncode(crypto::SHA256Hash(mmfile.bytes()));
 }
 
 std::string GetUpdateResponseForApp(

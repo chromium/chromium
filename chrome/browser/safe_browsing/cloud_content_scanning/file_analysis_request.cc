@@ -113,14 +113,14 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
           path, std::string_view(buf.data(), bytes_currently_read.value()));
     }
 
-    secure_hash->Update(buf.data(), bytes_currently_read.value());
+    secure_hash->Update(
+        base::as_byte_span(buf).subspan(0, bytes_currently_read.value()));
     bytes_read += bytes_currently_read.value();
   }
 
-  file_data.hash.resize(crypto::kSHA256Length);
-  secure_hash->Finish(std::data(file_data.hash), crypto::kSHA256Length);
-  file_data.hash =
-      base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
+  std::array<uint8_t, crypto::kSHA256Length> hash;
+  secure_hash->Finish(hash);
+  file_data.hash = base::HexEncode(hash);
 
   return {file_data.size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS

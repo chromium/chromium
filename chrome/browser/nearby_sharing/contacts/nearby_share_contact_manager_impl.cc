@@ -89,10 +89,10 @@ std::string ComputeHash(
   std::unique_ptr<crypto::SecureHash> hasher =
       crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
   for (const std::string& serialized_contact : serialized_contacts_set) {
-    hasher->Update(serialized_contact.data(), serialized_contact.size());
+    hasher->Update(base::as_byte_span(serialized_contact));
   }
   std::vector<uint8_t> hash(hasher->GetHashLength());
-  hasher->Finish(hash.data(), hash.size());
+  hasher->Finish(hash);
 
   return base::HexEncode(hash);
 }
