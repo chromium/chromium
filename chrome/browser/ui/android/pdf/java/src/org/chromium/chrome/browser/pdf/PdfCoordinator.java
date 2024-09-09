@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -75,9 +76,13 @@ public class PdfCoordinator {
         /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
 
+        /** The timestamp when the pdf document starts to load. */
+        long mDocumentLoadStartTimestamp;
+
         @Override
         public void onLoadDocumentSuccess() {
             mIsLoadDocumentSuccess = true;
+            PdfUtils.recordPdfLoadTime(SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp);
             PdfUtils.recordPdfLoadResult(true);
         }
 
@@ -157,6 +162,9 @@ public class PdfCoordinator {
                     transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment);
                     transaction.commitAllowingStateLoss();
                     mFragmentManager.executePendingTransactions();
+                    PdfUtils.recordPdfLoad();
+                    mChromePdfViewerFragment.mDocumentLoadStartTimestamp =
+                            SystemClock.elapsedRealtime();
                     mChromePdfViewerFragment.setDocumentUri(uri);
                 }
             } catch (NullPointerException e) {

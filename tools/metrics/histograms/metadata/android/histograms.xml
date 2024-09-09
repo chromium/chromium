@@ -3614,6 +3614,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DocumentLoad" enum="Boolean"
+    expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Recorded when the pdf load starts. Used to compare against
+    Android.Pdf.DocumentLoadResult, which is recorded when the pdf load is
+    complete, to determine how many pdf loads are not complete.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoadResult" enum="Boolean"
     expires_after="2025-03-02">
   <owner>shuyng@google.com</owner>
@@ -3621,6 +3632,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the pdf document load results. True means success and false means
     failure. Recorded when the pdf load is complete.
+  </summary>
+</histogram>
+
+<histogram name="Android.Pdf.DocumentLoadTime" units="ms"
+    expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load time. Recorded when the pdf load is complete.
+    Records successful pdf loads only.
   </summary>
 </histogram>
 
