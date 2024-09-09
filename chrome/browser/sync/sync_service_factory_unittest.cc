@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -21,6 +22,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -28,6 +30,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+#include "chrome/browser/spellchecker/spellcheck_factory.h"
+#include "chrome/browser/spellchecker/spellcheck_service.h"
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -66,6 +73,17 @@ class SyncServiceFactoryTest : public testing::Test {
     // Some services will only be created if there is a WebDataService.
     builder.AddTestingFactory(WebDataServiceFactory::GetInstance(),
                               WebDataServiceFactory::GetDefaultFactory());
+
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+    builder.AddTestingFactory(
+        SpellcheckServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting(
+            [](content::BrowserContext* browser_context) {
+              return std::unique_ptr<KeyedService>(
+                  std::make_unique<SpellcheckService>(browser_context));
+            })));
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
+
     profile_ = builder.Build();
   }
 

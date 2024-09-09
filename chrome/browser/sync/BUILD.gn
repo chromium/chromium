@@ -13,6 +13,8 @@ source_set("sync") {
     "account_bookmark_sync_service_factory.h",
     "chrome_sync_client.cc",
     "chrome_sync_client.h",
+    "chrome_sync_controller_builder.cc",
+    "chrome_sync_controller_builder.h",
     "data_type_store_service_factory.cc",
     "data_type_store_service_factory.h",
     "device_info_sync_client_impl.cc",
