@@ -19215,36 +19215,6 @@
             ]
         }
     ],
-    "ReadAnythingReadAloudRollout": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnythingReadAloud"
-                    ]
-                },
-                {
-                    "name": "LanguageDownloads_Enabled",
-                    "enable_features": [
-                        "ReadAloudLanguagePackDownloading",
-                        "ReadAnythingReadAloud"
-                    ]
-                },
-                {
-                    "name": "LanguageDownloadsAndVoiceSwitching_Enabled",
-                    "enable_features": [
-                        "ReadAloudAutoVoiceSwitching",
-                        "ReadAloudLanguagePackDownloading",
-                        "ReadAnythingReadAloud"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingReadAloudWordHighlighting": [
         {
             "platforms": [
