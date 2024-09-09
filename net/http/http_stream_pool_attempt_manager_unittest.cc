@@ -3589,6 +3589,39 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnOk) {
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnExistingSession) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  AddQuicData();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first request. It should create a QUIC session.
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination).RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_EQ(requester1.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  // The second request. The request disables alternative services but the
+  // QUIC session should be used because QUIC is forced by the
+  // HttpNetworkSession. If the second request doesn't use the existing session
+  // this test fails because we call AddQuicData() only once so we only added
+  // mock reads and writes for only one QUIC connection.
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(false)
+      .RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnFail) {
   origins_to_force_quic_on().insert(
       HostPortPair::FromURL(GURL(kDefaultDestination)));

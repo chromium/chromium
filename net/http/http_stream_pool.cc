@@ -368,8 +368,11 @@ bool HttpStreamPool::CanUseExistingQuicSession(
     const QuicSessionKey& quic_session_key,
     bool enable_ip_based_pooling,
     bool enable_alternative_services) {
-  return CanUseQuic(stream_key, enable_ip_based_pooling,
-                    enable_alternative_services) &&
+  const bool force_quic = http_network_session()->ShouldForceQuic(
+      stream_key.destination(), ProxyInfo::Direct(),
+      /*is_websocket=*/false);
+  return (force_quic || CanUseQuic(stream_key, enable_ip_based_pooling,
+                                   enable_alternative_services)) &&
          http_network_session()->quic_session_pool()->CanUseExistingSession(
              quic_session_key, stream_key.destination());
 }
