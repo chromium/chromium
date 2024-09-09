@@ -151,8 +151,7 @@ void TextSearcherICU::SetPattern(const StringView& pattern,
   SetCaseSensitivity(!options.IsCaseInsensitive());
   SetPattern(pattern.Characters16(), pattern.length());
   if (ContainsKanaLetters(pattern.ToString())) {
-    NormalizeCharactersIntoNFCForm(pattern.Characters16(), pattern.length(),
-                                   normalized_search_text_);
+    normalized_search_text_ = NormalizeCharactersIntoNfc(pattern.Span16());
   }
 }
 
@@ -218,12 +217,10 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(
 
 bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
                                          const MatchResultICU& result) const {
-  Vector<UChar> normalized_match;
-  NormalizeCharactersIntoNFCForm(text + result.start, result.length,
-                                 normalized_match);
-  return CheckOnlyKanaLettersInStrings(
-      normalized_search_text_.data(), normalized_search_text_.size(),
-      normalized_match.data(), normalized_match.size());
+  Vector<UChar> normalized_match = NormalizeCharactersIntoNfc(
+      base::span<const UChar>(text + result.start, result.length));
+  return CheckOnlyKanaLettersInStrings(base::span(normalized_search_text_),
+                                       base::span(normalized_match));
 }
 
 void TextSearcherICU::SetPattern(const UChar* pattern, wtf_size_t length) {

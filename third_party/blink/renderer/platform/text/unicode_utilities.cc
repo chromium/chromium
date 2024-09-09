@@ -25,11 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 
 #include <unicode/normalizer2.h>
@@ -67,9 +62,10 @@ static inline CharType FoldQuoteMarkOrSoftHyphen(CharType c) {
   }
 }
 
-void FoldQuoteMarksAndSoftHyphens(UChar* data, size_t length) {
-  for (size_t i = 0; i < length; ++i)
-    data[i] = FoldQuoteMarkOrSoftHyphen(data[i]);
+void FoldQuoteMarksAndSoftHyphens(base::span<UChar> data) {
+  for (UChar& ch : data) {
+    ch = FoldQuoteMarkOrSoftHyphen(ch);
+  }
 }
 
 void FoldQuoteMarksAndSoftHyphens(String& s) {
@@ -92,7 +88,7 @@ static bool IsNonLatin1Separator(UChar32 character) {
 
 bool IsSeparator(UChar32 character) {
   // clang-format off
-  static constexpr int kLatin1SeparatorTable[256] = {
+  static constexpr auto kLatin1SeparatorTable = std::to_array<uint8_t>({
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       // space ! " # $ % & ' ( ) * + , - . /
@@ -115,7 +111,7 @@ bool IsSeparator(UChar32 character) {
       0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
-  };
+  });
   // clang-format on
   if (character < 256)
     return static_cast<bool>(kLatin1SeparatorTable[character]);
@@ -308,17 +304,15 @@ bool ContainsKanaLetters(const String& pattern) {
   return false;
 }
 
-void NormalizeCharactersIntoNFCForm(const UChar* characters,
-                                    unsigned length,
-                                    Vector<UChar>& buffer) {
-  DCHECK(length);
+Vector<UChar> NormalizeCharactersIntoNfc(base::span<const UChar> characters) {
+  DCHECK(characters.size());
 
   UErrorCode status = U_ZERO_ERROR;
   const icu::Normalizer2* normalizer = icu::Normalizer2::getNFCInstance(status);
   DCHECK(U_SUCCESS(status));
-  int32_t input_length = static_cast<int32_t>(length);
+  int32_t input_length = static_cast<int32_t>(characters.size());
   // copy-on-write.
-  icu::UnicodeString normalized(false, characters, input_length);
+  icu::UnicodeString normalized(false, characters.data(), input_length);
   // In the vast majority of cases, input is already NFC. Run a quick check
   // to avoid normalizing the entire input unnecessarily.
   int32_t normalized_prefix_length =
@@ -331,9 +325,11 @@ void NormalizeCharactersIntoNFCForm(const UChar* characters,
   int32_t buffer_size = normalized.length();
   DCHECK(buffer_size);
 
+  Vector<UChar> buffer;
   buffer.resize(static_cast<wtf_size_t>(buffer_size));
   normalized.extract(buffer.data(), buffer_size, status);
   DCHECK(U_SUCCESS(status));
+  return buffer;
 }
 
 // This function returns kNotFound if |first| and |second| contain different
@@ -342,11 +338,11 @@ void NormalizeCharactersIntoNFCForm(const UChar* characters,
 // Pointers to both strings increase simultaneously so so it is possible to use
 // one offset value.
 static inline size_t CompareKanaLetterAndComposedVoicedSoundMarks(
-    const UChar* first,
-    const UChar* first_end,
-    const UChar* second,
-    const UChar* second_end) {
-  const UChar* start = first;
+    base::span<const UChar>::iterator first,
+    base::span<const UChar>::iterator first_end,
+    base::span<const UChar>::iterator second,
+    base::span<const UChar>::iterator second_end) {
+  auto start = first;
   // Check for differences in the kana letter character itself.
   if (IsSmallKanaLetter(*first) != IsSmallKanaLetter(*second))
     return kNotFound;
@@ -372,25 +368,21 @@ static inline size_t CompareKanaLetterAndComposedVoicedSoundMarks(
   }
 }
 
-bool CheckOnlyKanaLettersInStrings(const UChar* first_data,
-                                   unsigned first_length,
-                                   const UChar* second_data,
-                                   unsigned second_length) {
-  const UChar* a = first_data;
-  const UChar* a_end = first_data + first_length;
+bool CheckOnlyKanaLettersInStrings(base::span<const UChar> first_data,
+                                   base::span<const UChar> second_data) {
+  auto a = first_data.begin();
+  auto a_end = first_data.end();
 
-  const UChar* b = second_data;
-  const UChar* b_end = second_data + second_length;
+  auto b = second_data.begin();
+  auto b_end = second_data.end();
   while (true) {
     // Skip runs of non-kana-letter characters. This is necessary so we can
     // correctly handle strings where the |firstData| and |secondData| have
     // different-length runs of characters that match, while still double
     // checking the correctness of matches of kana letters with other kana
     // letters.
-    while (a != a_end && !IsKanaLetter(*a))
-      ++a;
-    while (b != b_end && !IsKanaLetter(*b))
-      ++b;
+    a = std::find_if(a, a_end, IsKanaLetter);
+    b = std::find_if(b, b_end, IsKanaLetter);
 
     // If we reached the end of either the target or the match, we should have
     // reached the end of both; both should have the same number of kana
@@ -411,15 +403,13 @@ bool CheckOnlyKanaLettersInStrings(const UChar* first_data,
   }
 }
 
-bool CheckKanaStringsEqual(const UChar* first_data,
-                           unsigned first_length,
-                           const UChar* second_data,
-                           unsigned second_length) {
-  const UChar* a = first_data;
-  const UChar* a_end = first_data + first_length;
+bool CheckKanaStringsEqual(base::span<const UChar> first_data,
+                           base::span<const UChar> second_data) {
+  auto a = first_data.begin();
+  auto a_end = first_data.end();
 
-  const UChar* b = second_data;
-  const UChar* b_end = second_data + second_length;
+  auto b = second_data.begin();
+  auto b_end = second_data.end();
   while (true) {
     // Check for non-kana-letter characters.
     while (a != a_end && !IsKanaLetter(*a) && b != b_end && !IsKanaLetter(*b)) {

@@ -452,7 +452,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
     node = FlatTreeTraversal::Next(*node);
   }
   node_after_block_ = node;
-  FoldQuoteMarksAndSoftHyphens(buffer_.data(), buffer_.size());
+  FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
 }
 
 void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
