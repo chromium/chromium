@@ -99,6 +99,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationModuleTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java",
   ]
   deps = [

@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
+
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 
@@ -37,6 +40,7 @@ import org.chromium.url.GURL;
  */
 /*package*/ class PlusAddressCreationMediator extends EmptyBottomSheetObserver
         implements PlusAddressCreationDelegate, TabModelObserver, LayoutStateObserver {
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModelSelector mTabModelSelector;
@@ -48,6 +52,7 @@ import org.chromium.url.GURL;
     /**
      * Creates the mediator.
      *
+     * @param context Current application context.
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
@@ -57,11 +62,13 @@ import org.chromium.url.GURL;
      * @param bridge The bridge to signal UI flow events (onConfirmed, onCanceled, etc.) to.
      */
     PlusAddressCreationMediator(
+            Context context,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
@@ -93,10 +100,11 @@ import org.chromium.url.GURL;
 
     void updateProposedPlusAddress(String plusAddress) {
         mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
-        mBottomSheetContent.setConfirmButtonEnabled(true);
+        mModel.set(CONFIRM_BUTTON_ENABLED, true);
     }
 
     void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mBottomSheetContent.showError(errorStateInfo);
     }
 
@@ -115,11 +123,18 @@ import org.chromium.url.GURL;
     // PlusAddressCreationDelegate implementation:
     @Override
     public void onRefreshClicked() {
+        mModel.set(
+                PROPOSED_PLUS_ADDRESS,
+                mContext.getString(
+                        R.string.plus_address_model_refresh_temporary_label_content_android));
+        mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mBridge.onRefreshClicked();
     }
 
     @Override
     public void onConfirmRequested() {
+        mBottomSheetContent.showConfirmationLoadingState();
+        mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mBridge.onConfirmRequested();
     }
 

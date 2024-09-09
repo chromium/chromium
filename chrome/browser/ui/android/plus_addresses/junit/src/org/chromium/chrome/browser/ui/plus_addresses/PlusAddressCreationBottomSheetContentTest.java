@@ -8,9 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 import android.text.style.ClickableSpan;
@@ -184,56 +182,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    public void testRefreshButton_NotClickableUntilPlusAddressIsSet() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        refreshIcon.callOnClick();
-        verifyNoInteractions(mDelegate);
-    }
-
-    @Test
-    @SmallTest
-    public void testRefreshButton_ClickableAfterPlusAddressIsSet() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setConfirmButtonEnabled(true);
-
-        refreshIcon.callOnClick();
-        verify(mDelegate).onRefreshClicked();
-    }
-
-    @Test
-    @SmallTest
-    public void testRefreshButton_OnlyOneClickIsHandledPerRefresh() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setConfirmButtonEnabled(true);
-
-        refreshIcon.callOnClick();
-        refreshIcon.callOnClick();
-        verify(mDelegate).onRefreshClicked();
-    }
-
-    @Test
-    @SmallTest
-    public void testRefreshButton_RefreshSeveralTimes() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-        mBottomSheetContent.setConfirmButtonEnabled(true);
-
-        refreshIcon.callOnClick();
-        mBottomSheetContent.setConfirmButtonEnabled(true);
-
-        refreshIcon.callOnClick();
-        verify(mDelegate, times(2)).onRefreshClicked();
-    }
-
-    @Test
-    @SmallTest
     public void testRefreshButton_HideRefreshButton() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
@@ -252,20 +200,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         mBottomSheetContent.setConfirmButtonEnabled(true);
         assertTrue(modalConfirmButton.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testLegacyErrorHandling_confirmDisabledIfConfirmRequestFails() {
-        Button modalConfirmButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        // Set the plus address to enable the Confirm button.
-        mBottomSheetContent.setConfirmButtonEnabled(true);
-        assertTrue(modalConfirmButton.isEnabled());
-
-        // Assume a Confirm request was made and failed.
-        mBottomSheetContent.showError(/* errorStateInfo= */ null);
-        assertFalse(modalConfirmButton.isEnabled());
     }
 
     @Test

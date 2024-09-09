@@ -97,7 +97,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         plusAddressErrorReportView.setMovementMethod(LinkMovementMethod.getInstance());
         plusAddressErrorReportView.setVisibility(View.GONE);
 
-        mPlusAddressConfirmButton.setEnabled(false);
         mPlusAddressConfirmButton.setText(info.getConfirmText());
         mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
@@ -111,11 +110,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             mRefreshIcon.setOnClickListener(
                     v -> {
                         if (mPlusAddressConfirmButton.isEnabled()) {
-                            mPlusAddressConfirmButton.setEnabled(false);
-
-                            mProposedPlusAddress.setText(
-                                    R.string
-                                            .plus_address_model_refresh_temporary_label_content_android);
                             mDelegate.onRefreshClicked();
                         }
                     });
@@ -189,7 +183,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
             // Disable Confirm button if attempts to Confirm() fail.
             mPlusAddressConfirmButton.setVisibility(View.VISIBLE);
-            mPlusAddressConfirmButton.setEnabled(false);
             if (mShowingNotice) {
                 mPlusAddressCancelButton.setVisibility(View.VISIBLE);
             }
