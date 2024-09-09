@@ -102,10 +102,12 @@ HttpStreamPool::Group::~Group() {
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
     NextProto expected_protocol,
-    bool is_http1_allowed) {
+    bool is_http1_allowed,
+    ProxyInfo proxy_info) {
   EnsureAttemptManager();
   return std::make_unique<Job>(delegate, attempt_manager_.get(),
-                               expected_protocol, is_http1_allowed);
+                               expected_protocol, is_http1_allowed,
+                               std::move(proxy_info));
 }
 
 void HttpStreamPool::Group::StartJob(

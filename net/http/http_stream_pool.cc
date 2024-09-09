@@ -149,6 +149,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
+  CHECK(switching_info.proxy_info.is_direct());
+
   const HttpStreamKey& stream_key = switching_info.stream_key;
   if (delegate_for_testing_) {
     delegate_for_testing_->OnRequestStream(stream_key);
@@ -188,11 +190,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
   job_controllers_.emplace(std::move(controller));
 
   return controller_raw_ptr->RequestStream(
-      delegate, stream_key, priority, allowed_bad_certs,
-      enable_ip_based_pooling, enable_alternative_services,
-      switching_info.is_http1_allowed,
-      std::move(switching_info.alternative_service_info),
-      switching_info.quic_version, net_log);
+      delegate, std::move(switching_info), priority, allowed_bad_certs,
+      enable_ip_based_pooling, enable_alternative_services, net_log);
 }
 
 int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,

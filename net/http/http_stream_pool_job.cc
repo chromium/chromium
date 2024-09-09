@@ -14,9 +14,11 @@
 #include "net/base/net_export.h"
 #include "net/base/port_util.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
@@ -29,11 +31,13 @@ namespace net {
 HttpStreamPool::Job::Job(Delegate* delegate,
                          AttemptManager* attempt_manager,
                          NextProto expected_protocol,
-                         bool is_http1_allowed)
+                         bool is_http1_allowed,
+                         ProxyInfo proxy_info)
     : delegate_(delegate),
       attempt_manager_(attempt_manager),
       expected_protocol_(expected_protocol),
-      is_http1_allowed_(is_http1_allowed) {
+      is_http1_allowed_(is_http1_allowed),
+      proxy_info_(std::move(proxy_info)) {
   CHECK(is_http1_allowed_ || expected_protocol_ != NextProto::kProtoHTTP11);
 }
 
@@ -98,6 +102,12 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
     OnStreamFailed(result, NetErrorDetails(), ResolveErrorInfo());
     return;
   }
+
+  attempt_manager_->group()
+      ->http_network_session()
+      ->proxy_resolution_service()
+      ->ReportSuccess(proxy_info_);
+
   // Always use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
   // TODO(crbug.com/346835898): Avoid using PostTask here if possible.

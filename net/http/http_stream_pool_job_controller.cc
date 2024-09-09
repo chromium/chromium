@@ -20,6 +20,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -36,17 +37,16 @@ HttpStreamPool::JobController::~JobController() = default;
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     HttpStreamRequest::Delegate* delegate,
-    const HttpStreamKey& stream_key,
+    HttpStreamPoolSwitchingInfo switching_info,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
-    bool is_http1_allowed,
-    AlternativeServiceInfo alternative_service_info,
-    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   CHECK(!delegate_);
   CHECK(!request_);
+
+  const HttpStreamKey& stream_key = switching_info.stream_key;
 
   network_anonymization_key_ = stream_key.network_anonymization_key();
 
@@ -58,20 +58,25 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
 
   // Currently we only support a single HTTP/2 alternative service. This
   // behavior is the same as HttpStreamFactory::JobController.
-  if (alternative_service_info.protocol() == NextProto::kProtoHTTP2) {
+  if (switching_info.alternative_service_info.protocol() ==
+      NextProto::kProtoHTTP2) {
     HttpStreamKey alt_stream_key(
-        url::SchemeHostPort(url::kHttpsScheme,
-                            alternative_service_info.host_port_pair().host(),
-                            alternative_service_info.host_port_pair().port()),
+        url::SchemeHostPort(
+            url::kHttpsScheme,
+            switching_info.alternative_service_info.host_port_pair().host(),
+            switching_info.alternative_service_info.host_port_pair().port()),
         stream_key.privacy_mode(), stream_key.socket_tag(),
         stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
         stream_key.disable_cert_network_fetches());
 
-    alternative_service_info_ = std::move(alternative_service_info);
+    alternative_service_info_ =
+        std::move(switching_info.alternative_service_info);
 
-    alternative_job_ = pool_->GetOrCreateGroup(alt_stream_key)
-                           .CreateJob(this, alternative_service_info.protocol(),
-                                      is_http1_allowed);
+    alternative_job_ =
+        pool_->GetOrCreateGroup(alt_stream_key)
+            .CreateJob(this, alternative_service_info_.protocol(),
+                       switching_info.is_http1_allowed,
+                       switching_info.proxy_info);
     alternative_job_->Start(priority, allowed_bad_certs,
                             enable_ip_based_pooling,
                             enable_alternative_services,
@@ -80,11 +85,13 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_job_result_ = OK;
   }
 
-  origin_job_ =
-      pool_->GetOrCreateGroup(stream_key)
-          .CreateJob(this, NextProto::kProtoUnknown, is_http1_allowed);
+  origin_job_ = pool_->GetOrCreateGroup(stream_key)
+                    .CreateJob(this, NextProto::kProtoUnknown,
+                               switching_info.is_http1_allowed,
+                               switching_info.proxy_info);
   origin_job_->Start(priority, allowed_bad_certs, enable_ip_based_pooling,
-                     enable_alternative_services, quic_version, net_log);
+                     enable_alternative_services, switching_info.quic_version,
+                     net_log);
 
   return request;
 }

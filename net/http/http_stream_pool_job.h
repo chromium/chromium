@@ -61,7 +61,8 @@ class HttpStreamPool::Job {
   Job(Delegate* delegate,
       AttemptManager* attempt_manager,
       NextProto expected_protocol,
-      bool is_http1_allowed);
+      bool is_http1_allowed,
+      ProxyInfo proxy_info);
 
   Job& operator=(const Job&) = delete;
 
@@ -118,6 +119,7 @@ class HttpStreamPool::Job {
   raw_ptr<AttemptManager> attempt_manager_;
   const NextProto expected_protocol_;
   const bool is_http1_allowed_;
+  const ProxyInfo proxy_info_;
 
   ConnectionAttempts connection_attempts_;
 

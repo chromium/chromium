@@ -74,7 +74,8 @@ class HttpStreamPool::Group {
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
                                  NextProto expected_protocol,
-                                 bool is_http1_allowed);
+                                 bool is_http1_allowed,
+                                 ProxyInfo proxy_info);
 
   // Starts a Job. Will call one of Job::Delegate methods to notify results.
   void StartJob(Job* job,

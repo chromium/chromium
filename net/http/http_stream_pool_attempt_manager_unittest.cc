@@ -28,6 +28,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -42,6 +43,7 @@
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/test_net_log.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
@@ -168,7 +170,8 @@ class Preconnector {
   int Preconnect(HttpStreamPool& pool) {
     int rv = pool.Preconnect(
         HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
-                                    quic_version_, is_http1_allowed_),
+                                    quic_version_, is_http1_allowed_,
+                                    proxy_info_),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -203,11 +206,10 @@ class Preconnector {
   size_t num_streams_ = 1;
 
   AlternativeServiceInfo alternative_service_info_;
-
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
-
   bool is_http1_allowed_ = true;
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
 
   std::optional<int> result_;
   base::OnceClosure wait_result_closure_;
@@ -259,6 +261,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_proxy_info(ProxyInfo proxy_info) {
+    proxy_info_ = std::move(proxy_info);
+    return *this;
+  }
+
   StreamRequester& set_privacy_mode(PrivacyMode privacy_mode) {
     key_builder_.set_privacy_mode(privacy_mode);
     return *this;
@@ -282,7 +289,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     request_ = pool.RequestStream(
         this,
         HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    quic_version_, is_http1_allowed_),
+                                    quic_version_, is_http1_allowed_,
+                                    proxy_info_),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
         enable_alternative_services_, NetLogWithSource());
     return request_.get();
@@ -390,13 +398,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
 
   bool enable_ip_based_pooling_ = true;
-
   bool enable_alternative_services_ = true;
-
   bool is_http1_allowed_ = true;
-
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
-
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
 
@@ -471,6 +476,10 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
   SSLConfigService* ssl_config_service() {
     return session_deps_.ssl_config_service.get();
+  }
+
+  HttpNetworkSession* http_network_session() {
+    return http_network_session_.get();
   }
 
   HttpServerProperties* http_server_properties() {
@@ -4055,6 +4064,36 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DisallowH1) {
   requester.RequestStream(pool());
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_H2_OR_QUIC_REQUIRED)));
+}
+
+// Tests that a bad proxy is reported to a ProxyResolutionService when falling
+// back to the direct connection succeeds.
+TEST_F(HttpStreamPoolAttemptManagerTest, ReportBadProxyAfterSuccessOnDirect) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  // Simulate that we have a bad proxy.
+  ProxyInfo proxy_info;
+  proxy_info.UsePacString("PROXY badproxy:80; DIRECT");
+  proxy_info.Fallback(ERR_PROXY_CONNECTION_FAILED, NetLogWithSource());
+
+  StreamRequester requester;
+  requester.set_proxy_info(proxy_info).RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  // The ProxyResolutionService should know that the proxy is bad.
+  auto proxy_chain = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTP, "badproxy", 80);
+  const ProxyRetryInfoMap retry_info_map =
+      http_network_session()->proxy_resolution_service()->proxy_retry_info();
+  auto it = retry_info_map.find(proxy_chain);
+  ASSERT_TRUE(it != retry_info_map.end());
+  EXPECT_THAT(it->second.net_error, IsError(ERR_PROXY_CONNECTION_FAILED));
 }
 
 }  // namespace net
