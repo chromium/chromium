@@ -830,6 +830,15 @@ crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2.html [ Failure ]
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2a.html [ Failure ]
 
+# Unblock https://crrev.com/c/5836833
+crbug.com/361717594 http/tests/devtools/resource-har-conversion.js [ Pass Failure ]
+crbug.com/361717594 http/tests/devtools/resource-har-headers.js [ Pass Failure ]
+crbug.com/361717594 http/tests/devtools/resource-parameters-ipv6.js [ Crash Pass Failure ]
+crbug.com/361717594 http/tests/devtools/resource-parameters.js [ Pass Failure ]
+crbug.com/361717594 http/tests/devtools/network/har-content.js [ Pass Failure ]
+crbug.com/361717594 http/tests/devtools/network/har-post.js [ Pass Failure ]
+crbug.com/361717594 http/tests/devtools/websocket/har-websocket.js [ Pass Failure ]
+
 ##### This one passes only when it includes an iframe. Removing the iframe makes the test fail.
 crbug.com/327723279 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-033.html [ Failure ]
 
@@ -1796,7 +1805,6 @@ crbug.com/528062 [ Win ] http/tests/security/XFrameOptions/x-frame-options-cache
 # By about a quarter or less of a pixel.
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
-crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
 crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
