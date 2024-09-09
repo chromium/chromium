@@ -1617,8 +1617,7 @@ void Document::SetContent(const String& content) {
 
 using AllowState = blink::Document::DeclarativeShadowRootAllowState;
 void Document::SetContentFromDOMParser(const String& content) {
-  if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
-      contentType() == "text/html" && IsA<HTMLDocument>(this)) {
+  if (contentType() == "text/html" && IsA<HTMLDocument>(this)) {
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
     HTMLFragmentParsingBehaviorSet parser_behavior(
         {HTMLFragmentParsingBehavior::kStripInitialWhitespaceForBody});

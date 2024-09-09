@@ -1564,13 +1564,6 @@
       name: "DOMExceptionV8CaptureStackTraceDisableWorkaround",
       status: "experimental"
     },
-    // Controls whether DOMParser.parseFromString() attempts to use the
-    // html fast path parser. This flag is to be used as a killswitch in case
-    // of any issues.
-    {
-      name: "DOMParserUsesHTMLFastPathParser",
-      status: "stable"
-    },
     {
       name: "DOMPartsAPI",
       status: "experimental",
