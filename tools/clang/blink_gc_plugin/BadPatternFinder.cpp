@@ -575,9 +575,8 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
 
 class GCedVarOrField : public MatchFinder::MatchCallback {
  public:
-  GCedVarOrField(DiagnosticsReporter& diagnostics,
-                 const clang::SourceManager& source_manager)
-      : diagnostics_(diagnostics), source_manager_(source_manager) {}
+  explicit GCedVarOrField(DiagnosticsReporter& diagnostics)
+      : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
     auto gced_field =
@@ -607,14 +606,14 @@ class GCedVarOrField : public MatchFinder::MatchCallback {
     }
     const auto* field = result.Nodes.getNodeAs<clang::FieldDecl>("bad_field");
     if (field) {
-      if (Config::IsIgnoreAnnotated(field) || IsPartOfGTest(field)) {
+      if (Config::IsIgnoreAnnotated(field)) {
         return;
       }
       diagnostics_.GCedField(field, gctype);
     } else {
       const auto* var = result.Nodes.getNodeAs<clang::VarDecl>("bad_var");
       assert(var);
-      if (Config::IsIgnoreAnnotated(var) || IsPartOfGTest(var)) {
+      if (Config::IsIgnoreAnnotated(var)) {
         return;
       }
       diagnostics_.GCedVar(var, gctype);
@@ -622,16 +621,7 @@ class GCedVarOrField : public MatchFinder::MatchCallback {
   }
 
  private:
-  // Ignore violation in gtest since we can't change gtest and it won't affect
-  // production code.
-  bool IsPartOfGTest(const clang::Decl* decl) {
-    std::string filename =
-        source_manager_.getFilename(decl->getLocation()).str();
-    return filename.find("gtest") != std::string::npos;
-  }
-
   DiagnosticsReporter& diagnostics_;
-  const clang::SourceManager& source_manager_;
 };
 
 }  // namespace
@@ -671,7 +661,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   WeakPtrToGCedMatcher weak_ptr_to_gced(diagnostics);
   weak_ptr_to_gced.Register(match_finder);
 
-  GCedVarOrField gced_var_or_field(diagnostics, ast_context.getSourceManager());
+  GCedVarOrField gced_var_or_field(diagnostics);
   gced_var_or_field.Register(match_finder);
 
   OptionalMemberMatcher optional_member(diagnostics, record_cache);
