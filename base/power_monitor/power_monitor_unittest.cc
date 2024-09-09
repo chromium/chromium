@@ -84,10 +84,10 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
 
   // Pretend the device has gone off battery power
   source().GeneratePowerStateEvent(
-      PowerStateObserver::BatteryPowerStatus::kUnknown);
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
   EXPECT_EQ(observers[0].last_power_status(),
-            PowerStateObserver::BatteryPowerStatus::kUnknown);
+            PowerStateObserver::BatteryPowerStatus::kExternalPower);
 
   // Repeated indications the device is off battery power should be suppressed.
   source().GeneratePowerStateEvent(

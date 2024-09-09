@@ -21,8 +21,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   // Retrieve current states.
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
       const override;
-  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
-  bool IsOnBatteryPower() const override;
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const override;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();
@@ -86,11 +85,6 @@ void PowerMonitorTestSource::GenerateResumeEvent() {
 PowerStateObserver::BatteryPowerStatus
 PowerMonitorTestSource::GetBatteryPowerStatus() const {
   return test_power_status_;
-}
-
-bool PowerMonitorTestSource::IsOnBatteryPower() const {
-  return test_power_status_ ==
-         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }
 
 void PowerMonitorTestSource::GenerateThermalThrottlingEvent(

@@ -16,9 +16,5 @@ void FakePowerMonitorSource::SetBatteryPowerStatus(
   battery_power_status_ = battery_power_status;
   ProcessPowerEvent(POWER_STATE_EVENT);
 }
-bool FakePowerMonitorSource::IsOnBatteryPower() const {
-  return GetBatteryPowerStatus() ==
-         base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
-}
 
 }  // namespace performance_manager

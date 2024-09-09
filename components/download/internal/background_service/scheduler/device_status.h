@@ -13,6 +13,7 @@ namespace download {
 enum class BatteryStatus {
   CHARGING = 0,
   NOT_CHARGING = 1,
+  UNKNOWN = 2,
 };
 
 // NetworkStatus should mostly one to one map to

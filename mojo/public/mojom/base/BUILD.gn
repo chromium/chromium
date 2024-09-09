@@ -12,6 +12,7 @@ mojom_component("base") {
   sources = [
     "absl_status.mojom",
     "application_state.mojom",
+    "battery_power_status.mojom",
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
@@ -543,6 +544,20 @@ mojom_component("base") {
         },
       ]
       traits_headers = [ "//mojo/public/cpp/base/thread_type_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.BatteryPowerStatus"
+          cpp = "::base::PowerStateObserver::BatteryPowerStatus"
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/battery_power_status_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:typemap_traits",

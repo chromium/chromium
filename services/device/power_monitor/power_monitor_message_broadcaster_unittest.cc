@@ -23,7 +23,8 @@ class MockClient : public PowerMonitorBroadcastSource::Client {
   ~MockClient() override = default;
 
   // Implement device::mojom::PowerMonitorClient
-  void PowerStateChange(bool on_battery_power) override {
+  void PowerStateChange(base::PowerStateObserver::BatteryPowerStatus
+                            battery_power_status) override {
     power_state_changes_++;
     if (service_connected_)
       std::move(service_connected_).Run();

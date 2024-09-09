@@ -13,10 +13,10 @@ namespace performance_manager {
 
 class FakePowerMonitorSource : public base::PowerMonitorSource {
  public:
-  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const override;
   void SetBatteryPowerStatus(
       base::PowerStateObserver::BatteryPowerStatus battery_power_status);
-  bool IsOnBatteryPower() const override;
 
  private:
   base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =

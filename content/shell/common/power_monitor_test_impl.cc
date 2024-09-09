@@ -46,9 +46,7 @@ void PowerMonitorTestImpl::OnBatteryPowerStatusChange(
 }
 
 void PowerMonitorTestImpl::ReportState() {
-  std::move(callback_).Run(
-      battery_power_status_ ==
-      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  std::move(callback_).Run(battery_power_status_);
   need_to_report_ = false;
 }
 

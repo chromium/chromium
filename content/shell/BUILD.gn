@@ -1047,6 +1047,7 @@ mojom("content_browsertests_mojom") {
     "common/render_frame_test_helper.mojom",
   ]
   public_deps = [
+    "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/tokens",
   ]

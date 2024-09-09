@@ -50,10 +50,7 @@ void PowerMonitorMessageBroadcaster::AddClient(
   // new client if battery power status isn't unknown;
   if (battery_power_status_ !=
       base::PowerStateObserver::BatteryPowerStatus::kUnknown) {
-    clients_.Get(element_id)
-        ->PowerStateChange(
-            battery_power_status ==
-            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+    clients_.Get(element_id)->PowerStateChange(battery_power_status_);
   }
 }
 
@@ -61,9 +58,7 @@ void PowerMonitorMessageBroadcaster::OnBatteryPowerStatusChange(
     base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   battery_power_status_ = battery_power_status;
   for (auto& client : clients_)
-    client->PowerStateChange(
-        battery_power_status_ ==
-        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+    client->PowerStateChange(battery_power_status_);
 }
 
 void PowerMonitorMessageBroadcaster::OnSuspend() {
