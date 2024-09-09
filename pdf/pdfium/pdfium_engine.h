@@ -205,7 +205,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void RotateClockwise();
   void RotateCounterclockwise();
   bool IsReadOnly() const;
-  void SetReadOnly(bool enable);
+  void SetReadOnly(bool read_only);
   void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
   void DisplayAnnotations(bool display);
 
