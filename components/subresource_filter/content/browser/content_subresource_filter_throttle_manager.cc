@@ -647,6 +647,7 @@ ContentSubresourceFilterThrottleManager::MaybeCreateChildNavigationThrottle(
   return parent_filter
              ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
                    navigation_handle, parent_filter,
+                   profile_interaction_manager_->AsWeakPtr(),
                    base::BindRepeating([](const GURL& url) {
                      return base::StringPrintf(
                          kDisallowChildFrameConsoleMessageFormat,

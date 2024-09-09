@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace subresource_filter {
 
@@ -21,6 +22,11 @@ BASE_DECLARE_FEATURE(kDelayUnsafeAds);
 // an optimization which parallelizes filter list checks and navigation request
 // start.
 BASE_DECLARE_FEATURE(kTPCDAdHeuristicSubframeRequestTagging);
+
+// Param which governs whether to check if a third-party cookie exception
+// applies to a network request before removing the optimization which
+// parallelizes its start with filter list checks.
+extern const base::FeatureParam<bool> kCheckFor3pcException;
 
 // Param which governs how much to delay non-secure (i.e. http) subresources for
 // DelayUnsafeAds.

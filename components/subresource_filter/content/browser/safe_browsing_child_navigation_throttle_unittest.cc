@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
@@ -19,6 +20,8 @@
 #include "url/gurl.h"
 
 namespace subresource_filter {
+
+class ProfileInteractionManager;
 
 class SafeBrowsingChildNavigationThrottleTest
     : public ChildFrameNavigationFilteringThrottleTestHarness {
@@ -41,6 +44,8 @@ class SafeBrowsingChildNavigationThrottleTest
     if (parent_filter_) {
       auto throttle = std::make_unique<SafeBrowsingChildNavigationThrottle>(
           navigation_handle, parent_filter_.get(),
+          /*profile_interaction_manager=*/
+          base::WeakPtr<ProfileInteractionManager>(),
           base::BindRepeating([](const GURL& filtered_url) {
             return base::StringPrintf(
                 kDisallowChildFrameConsoleMessageFormat,

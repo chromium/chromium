@@ -2940,6 +2940,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.DeferredForTagging"
+    enum="Boolean" expires_after="2025-02-05">
+  <owner>jdh@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Records whether the start of a child frame navigation was deferred to allow
+    ad tagging to be completed first or not. Recorded only when the
+    TPCDAdHeuristicSubframeRequestTagging feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"
     enum="CrossOriginAdStatus" expires_after="2025-07-10">
   <owner>johnidel@chromium.org</owner>

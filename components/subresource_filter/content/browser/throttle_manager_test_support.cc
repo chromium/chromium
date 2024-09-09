@@ -6,6 +6,7 @@
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -18,11 +19,18 @@ ThrottleManagerTestSupport::ThrottleManagerTestSupport(
     content::WebContents* web_contents) {
   // Set up the state that's required by ProfileInteractionManager.
   HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+  content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
   settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-      &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
-      false /* restore_session */, false /* should_record_metrics */);
-  profile_context_ =
-      std::make_unique<SubresourceFilterProfileContext>(settings_map_.get());
+      &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
+      /*restore_session=*/false, /*should_record_metrics=*/false);
+  cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
+      settings_map_.get(), &prefs_,
+      /*tracking_protection_settings=*/nullptr,
+      /*is_incognito=*/false,
+      content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+      /*tpcd_metadata_manager=*/nullptr, "");
+  profile_context_ = std::make_unique<SubresourceFilterProfileContext>(
+      settings_map_.get(), cookie_settings_.get());
 
   // ProfileInteractionManager assumes that this object is present in the
   // context of the passed-in WebContents.

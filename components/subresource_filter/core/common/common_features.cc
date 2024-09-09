@@ -12,4 +12,8 @@ BASE_FEATURE(kTPCDAdHeuristicSubframeRequestTagging,
              "TPCDAdHeuristicSubframeRequestTagging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kCheckFor3pcException{
+    &kTPCDAdHeuristicSubframeRequestTagging, /*name=*/"check_exceptions",
+    /*default_value=*/true};
+
 }  // namespace subresource_filter
