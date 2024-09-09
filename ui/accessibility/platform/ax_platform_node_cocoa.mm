@@ -48,10 +48,6 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 namespace {
 
-// https://crbug.com/40889544 - to be removed once we gather some info on
-// the reason for the macOS exception being thrown.
-size_t lengthWithInvisibles = 0;
-
 // Same length as web content/WebKit.
 int kLiveRegionDebounceMillis = 20;
 
@@ -788,10 +784,6 @@ void CollectAncestorRoles(
   int anchorStartOffset = 0;
   std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
 
-  // https://crbug.com/40889544 - to be removed once we gather some info on
-  // the reason for the macOS exception being thrown.
-  NSUInteger leafTextIndex = 0;
-
   [attributedString beginEditing];
   for (const AXRange& leafTextRange : *axRange) {
     DCHECK(!leafTextRange.IsNull());
@@ -836,39 +828,6 @@ void CollectAncestorRoles(
     DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
               attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
-
-    // https://crbug.com/40889544 - to be removed once we gather some info on
-    // the reason for the macOS exception being thrown.
-    // Capture info about the suspected cause of
-    // "NSRangeException: NSMutableRLEArray objectAtIndex:effectiveRange:: Out
-    // of bounds", which is thrown if the range provided to
-    // addAttribute:value:range: is out of bounds.
-    leafTextIndex++;
-    if (NSMaxRange(leafRange) > attributedString.length) {
-      // Capture:
-      //   * Current leaf text index and total number of leaves
-      //   * Current leaf text's range
-      //   * The attributed string's length if we had created it by concating
-      //     the GetText()s of the individual leaves, instead of using
-      //     _node->GetTextContentUTF16() in -AXAttributedStringForRange:
-      //   * The attributed string's length if _node->GetTextContentUTF16()
-      //     included invisible elements.
-      NSUInteger numberOfLeaves = 0;
-      NSUInteger lengthFromGetTextsOfLeafRanges = 0;
-      for (const AXRange& nextRange : *axRange) {
-        numberOfLeaves++;
-        lengthFromGetTextsOfLeafRanges += nextRange.GetText().length();
-      }
-
-      NSString* info = [NSString
-          stringWithFormat:@"%lu of %lu %lu,%lu %lu %lu", leafTextIndex,
-                           numberOfLeaves, leafRange.location, leafRange.length,
-                           lengthFromGetTextsOfLeafRanges,
-                           lengthWithInvisibles];
-      SCOPED_CRASH_KEY_STRING256("AXPlatformNodeCocoa", "addTextAnnotations",
-                                 base::SysNSStringToUTF8(info));
-      base::debug::DumpWithoutCrashing();
-    }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
 
@@ -2084,7 +2043,6 @@ void CollectAncestorRoles(
   std::u16string textContent = _node->GetTextContentUTF16();
   if (NSMaxRange(range) > textContent.length())
     return nil;
-  lengthWithInvisibles = _node->GetTextContentUTF16WithInvisibles().length();
 
   // We potentially need to add text attributes to the whole text content
   // because a spelling mistake might start or end outside the given range.
