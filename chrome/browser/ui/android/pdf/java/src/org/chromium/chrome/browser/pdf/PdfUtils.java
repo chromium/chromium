@@ -286,6 +286,10 @@ public class PdfUtils {
         }
     }
 
+    static void recordPdfLoadResult(boolean isLoadSuccess) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoadResult", isLoadSuccess);
+    }
+
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }

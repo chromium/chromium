@@ -78,12 +78,12 @@ public class PdfCoordinator {
         @Override
         public void onLoadDocumentSuccess() {
             mIsLoadDocumentSuccess = true;
-            // TODO: capture metrics
+            PdfUtils.recordPdfLoadResult(true);
         }
 
         @Override
         public void onLoadDocumentError(@NonNull Throwable throwable) {
-            // TODO: capture metrics
+            PdfUtils.recordPdfLoadResult(false);
         }
     }
 
