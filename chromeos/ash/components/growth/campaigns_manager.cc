@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
 #include <optional>
+#include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -14,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -38,8 +41,6 @@ CampaignsManager* g_instance = nullptr;
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
 inline constexpr char kEventKey[] = "event_to_be_cleared";
-inline constexpr char kEventTemplate[] =
-    "name:%s;comparator:any;window:3650;storage:3650";
 
 inline constexpr char kOobeCompleteFlagFilePath[] =
     "/home/chronos/.oobe_completed";
@@ -211,12 +212,11 @@ const std::string& CampaignsManager::GetOpenedAppId() const {
   return matcher_.opened_app_id();
 }
 
-void CampaignsManager::SetOpenedApp(const std::string& app_id) {
-  matcher_.SetOpenedApp(app_id);
-
+void CampaignsManager::SetOpenedApp(std::string app_id) {
   if (!app_id.empty()) {
     RecordEvent(GetEventName(CampaignEvent::kAppOpened, app_id));
   }
+  matcher_.SetOpenedApp(std::move(app_id));
 }
 
 const Trigger& CampaignsManager::GetTrigger() const {
@@ -284,16 +284,16 @@ void CampaignsManager::PerformAction(int campaign_id,
           action_type));
 }
 
-void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
+void CampaignsManager::ClearEvent(CampaignEvent event, std::string_view id) {
   ClearEvent(GetEventName(event, id));
 }
 
-void CampaignsManager::ClearEvent(const std::string& event) {
+void CampaignsManager::ClearEvent(std::string_view event) {
   std::map<std::string, std::string> conditions_params;
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] =
-      base::StringPrintf(kEventTemplate, event.c_str());
+  conditions_params[kEventKey] = base::StrCat(
+      {"name:", event, ";comparator:any;window:3650;storage:3650"});
   client_->ClearConfig(conditions_params);
 }
 

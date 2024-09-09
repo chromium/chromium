@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -374,8 +375,8 @@ void CampaignsMatcher::FilterAndSetCampaigns(CampaignsPerSlot* campaigns) {
   campaigns_ = campaigns;
 }
 
-void CampaignsMatcher::SetOpenedApp(const std::string& app_id) {
-  opened_app_id_ = app_id;
+void CampaignsMatcher::SetOpenedApp(std::string app_id) {
+  opened_app_id_ = std::move(app_id);
 }
 
 void CampaignsMatcher::SetActiveUrl(const GURL& url) {

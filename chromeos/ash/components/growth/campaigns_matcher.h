@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 
+#include <string>
+
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -30,7 +32,7 @@ class CampaignsMatcher {
   void FilterAndSetCampaigns(CampaignsPerSlot* campaigns);
 
   const std::string& opened_app_id() const { return opened_app_id_; }
-  void SetOpenedApp(const std::string& app_id);
+  void SetOpenedApp(std::string app_id);
   void SetOobeCompleteTime(base::Time time);
 
   const Trigger& trigger() const { return trigger_; }

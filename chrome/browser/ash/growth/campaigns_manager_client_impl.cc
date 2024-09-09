@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
@@ -50,8 +52,8 @@ namespace {
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
 
 // A util function to add the `kGrowthCampaignsEventNamePrefix`.
-std::string AddEventPrefix(const std::string& event) {
-  return growth::GetGrowthCampaignsEventNamePrefix() + event;
+std::string AddEventPrefix(std::string_view event) {
+  return base::StrCat({growth::GetGrowthCampaignsEventNamePrefix(), event});
 }
 
 Profile* GetProfile() {
