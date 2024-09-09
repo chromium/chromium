@@ -484,25 +484,22 @@ TrustedSignalsFetcher::ParseCompressionGroup(
     ttl = base::Milliseconds(std::max(0, ttl_ms_value->GetInt()));
   }
 
-  const std::string* content = compression_group_dict.FindString("content");
+  const auto* content = compression_group_dict.FindBlob("content");
   if (!content) {
-    return base::unexpected(CreateError(
-        base::StringPrintf("Compression group %i missing content string",
-                           *compression_group_id_opt)));
+    return base::unexpected(CreateError(base::StringPrintf(
+        "Compression group %i missing binary string \"content\"",
+        *compression_group_id_opt)));
   }
 
   compression_group_id = *compression_group_id_opt;
 
   CompressionGroupResult result;
   result.compression_scheme = compression_scheme_;
-  // TODO(crbug.com/333445540): This copy is unnecessary, since Value::Dict
-  // allows its values to be moved. Instead, make `compression_group_data` a
-  // std::string. Can then either switch the API to using a mojom::BigString and
-  // pass to Mojo as a std::string, and have the other end use BigBuffer
-  // directly (Which is what mojom::BigString is typemapped to), or continue to
-  // use mojom::BigBuffer pass as a span<uint8_t>.
-  result.compression_group_data =
-      std::vector<uint8_t>(content->begin(), content->end());
+  // TODO(crbug.com/333445540): This copy is only necessary because Value::Dict
+  // does not allow blob/binary types to be moved, unlike std::strings. Modify
+  // base::Value to allow that, and switch this code to take advantage of the
+  // capability.
+  result.compression_group_data = *content;
   result.ttl = ttl;
   return result;
 }
