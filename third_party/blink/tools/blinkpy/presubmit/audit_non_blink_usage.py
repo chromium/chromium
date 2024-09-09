@@ -90,6 +90,7 @@ _CONFIG = [
             'base::HashingLRUCache',
             'base::HashInts',
             'base::HeapArray',
+            'base::Hertz',
             'base::HexStringToUInt64',
             'base::Hours',
             'base::i18n::TextDirection',

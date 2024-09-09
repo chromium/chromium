@@ -321,8 +321,8 @@ enum class TaskDeferralPolicy {
   // All per-frame task types are deferrable.
   kAllTypes,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<TaskDeferralPolicy>
-    kTaskDeferralPolicyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(TaskDeferralPolicy,
+                                               kTaskDeferralPolicyParam);
 // Constants to expose the policy in about:flags.
 BLINK_COMMON_EXPORT extern const char
     kDeferRendererTasksAfterInputPolicyParamName[];
@@ -1671,14 +1671,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleInstallingServiceWorker);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInstallingServiceWorkerOutstandingThrottledLimit;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInstallingServiceWorkerOutstandingThrottledLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleUnimportantFrameTimers);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kUnimportantFrameTimersThrottledWakeUpIntervalMills;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLargeFrameSizePercentThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kUnimportantFrameTimersThrottledWakeUpIntervalMills);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kLargeFrameSizePercentThreshold);
 
 // If enabled, the HTMLDocumentParser will use a budget based on elapsed time
 // rather than token count.
@@ -1701,7 +1703,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePageViewportInLCP);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseZstdForParkableStrings);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kZstdCompressionLevel;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kZstdCompressionLevel);
 
 // Causes MediaStreamVideoSource video frames to be transported on a
 // SequencedTaskRunner backed by the threadpool instead of the normal IO thread.
@@ -1719,8 +1721,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableFileBackedBlobFactory);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
 // Feature parameter controlling WebRTC VSyncDecoding tick durations during
 // occluded tabs.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kVSyncDecodingHiddenOccludedTickDuration;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kVSyncDecodingHiddenOccludedTickDuration);
 
 // Feature flag for driving encoding with the Metronome by VSyncs.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncEncoding);
@@ -1821,14 +1824,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // If kCullRectExpansionDPRCoef equals 1, the expansion will be
 // kCullRectPixelDistanceToExpand in device coordinates.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kCullRectPixelDistanceToExpand;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kCullRectExpansionDPRCoef;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kCullRectPixelDistanceToExpand);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                               kCullRectExpansionDPRCoef);
 // If this is enabled, a non-root scroller with an area below a threshold will
 // use a minimal cull rect expansion instead of the above expansion.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSmallScrollersUseMinCullRect;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kSmallScrollersUseMinCullRect);
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

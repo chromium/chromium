@@ -619,10 +619,12 @@ const base::FeatureParam<TaskDeferralPolicy>::Option kTaskDeferralOptions[] = {
     {TaskDeferralPolicy::kAllTypes,
      kDeferRendererTasksAfterInputAllTypesPolicyName}};
 
-const base::FeatureParam<TaskDeferralPolicy> kTaskDeferralPolicyParam{
-    &kDeferRendererTasksAfterInput,
-    kDeferRendererTasksAfterInputPolicyParamName,
-    TaskDeferralPolicy::kAllDeferrableTypes, &kTaskDeferralOptions};
+BASE_FEATURE_ENUM_PARAM(TaskDeferralPolicy,
+                        kTaskDeferralPolicyParam,
+                        &kDeferRendererTasksAfterInput,
+                        kDeferRendererTasksAfterInputPolicyParamName,
+                        TaskDeferralPolicy::kAllDeferrableTypes,
+                        &kTaskDeferralOptions);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
@@ -2414,8 +2416,11 @@ BASE_FEATURE(kThreadedPreloadScanner,
 BASE_FEATURE(kThrottleInstallingServiceWorker,
              "ThrottleInstallingServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kInstallingServiceWorkerOutstandingThrottledLimit{
-    &kThrottleInstallingServiceWorker, "limit", 3};
+BASE_FEATURE_PARAM(int,
+                   kInstallingServiceWorkerOutstandingThrottledLimit,
+                   &kThrottleInstallingServiceWorker,
+                   "limit",
+                   3);
 
 // Throttles Javascript timer wake ups of unimportant frames (cross origin
 // frames with small proportion of the page's visible area and no user
@@ -2426,15 +2431,18 @@ BASE_FEATURE(kThrottleUnimportantFrameTimers,
 // Interval between Javascript timer wake ups for unimportant frames (small
 // cross origin frames with no user activation) when the
 // "ThrottleUnimportantFrameTimers" feature is enabled.
-const base::FeatureParam<int>
-    kUnimportantFrameTimersThrottledWakeUpIntervalMills{
-        &features::kThrottleUnimportantFrameTimers,
-        "unimportant_frame_timers_throttled_wake_up_interval_millis", 32};
+BASE_FEATURE_PARAM(int,
+                   kUnimportantFrameTimersThrottledWakeUpIntervalMills,
+                   &features::kThrottleUnimportantFrameTimers,
+                   "unimportant_frame_timers_throttled_wake_up_interval_millis",
+                   32);
 // The percentage of the page's visible area below which a frame is considered
 // small. Only small frames can be throttled by ThrottleUnimportantFrameTimers.
-const base::FeatureParam<int> kLargeFrameSizePercentThreshold{
-    &features::kThrottleUnimportantFrameTimers,
-    "large_frame_size_percent_threshold", 75};
+BASE_FEATURE_PARAM(int,
+                   kLargeFrameSizePercentThreshold,
+                   &features::kThrottleUnimportantFrameTimers,
+                   "large_frame_size_percent_threshold",
+                   75);
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
@@ -2503,8 +2511,11 @@ BASE_FEATURE(kUseZstdForParkableStrings,
 // - Roughly as fast as snappy, with a better compression ratio.
 //
 // And even -3 should be smaller *and* faster than snappy.
-const base::FeatureParam<int> kZstdCompressionLevel{
-    &features::kUseZstdForParkableStrings, "compression_level", 1};
+BASE_FEATURE_PARAM(int,
+                   kZstdCompressionLevel,
+                   &features::kUseZstdForParkableStrings,
+                   "compression_level",
+                   1);
 
 BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
              "UseThreadPoolForMediaStreamVideoTaskRunner",
@@ -2513,9 +2524,11 @@ BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
 BASE_FEATURE(kVSyncDecoding,
              "VSyncDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kVSyncDecodingHiddenOccludedTickDuration{
-        &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVSyncDecodingHiddenOccludedTickDuration,
+                   &kVSyncDecoding,
+                   "occluded_tick_duration",
+                   base::Hertz(10));
 
 BASE_FEATURE(kVSyncEncoding,
              "VSyncEncoding",
@@ -2703,14 +2716,21 @@ bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
-const base::FeatureParam<double>
-    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr_coef", 0);
-const base::FeatureParam<bool> kSmallScrollersUseMinCullRect(
-    &kExpandCompositedCullRect,
-    "small_scroller_opt",
-    false);
+BASE_FEATURE_PARAM(int,
+                   kCullRectPixelDistanceToExpand,
+                   &kExpandCompositedCullRect,
+                   "pixels",
+                   4000);
+BASE_FEATURE_PARAM(double,
+                   kCullRectExpansionDPRCoef,
+                   &kExpandCompositedCullRect,
+                   "dpr_coef",
+                   0);
+BASE_FEATURE_PARAM(bool,
+                   kSmallScrollersUseMinCullRect,
+                   &kExpandCompositedCullRect,
+                   "small_scroller_opt",
+                   false);
 
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",

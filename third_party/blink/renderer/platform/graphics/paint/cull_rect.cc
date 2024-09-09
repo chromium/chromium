@@ -44,10 +44,8 @@ int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& local_transform,
     float expansion_ratio) {
-  static const int pixel_distance_to_expand =
-      features::kCullRectPixelDistanceToExpand.Get();
-  static const bool small_scrollers_use_min_cull_rect =
-      features::kSmallScrollersUseMinCullRect.Get();
+  const int pixel_distance_to_expand = features::kCullRectPixelDistanceToExpand.Get();
+  const bool small_scrollers_use_min_cull_rect = features::kSmallScrollersUseMinCullRect.Get();
 
   const int min_expansion = MinimumLocalPixelDistanceToExpand(expansion_ratio);
   if (small_scrollers_use_min_cull_rect &&
