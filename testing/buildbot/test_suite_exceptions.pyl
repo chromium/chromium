@@ -5000,12 +5000,6 @@
     ],
   },
   'webgpu_cts_tests': {
-    'remove_from': [
-      # Tests kill Swarming on Mac AMD machines crbug.com/365027668
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 Experimental Release (AMD)',
-      'Dawn Mac x64 Release (AMD)',
-    ],
     'modifications': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
         'ci_only': True,
@@ -5061,10 +5055,6 @@
   },
   'webgpu_cts_with_validation_tests': {
     'remove_from': [
-      # Tests kill Swarming on Mac AMD machines crbug.com/365027668
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 Experimental Release (AMD)',
-      'Dawn Mac x64 Release (AMD)',
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Experimental Release (Intel)',
