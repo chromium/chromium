@@ -123,6 +123,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // `GetProfiles()` returns local-or-syncable and account profiles. Using
   // `GetProfilesByRecordType()`, profiles from a single record type can be
   // retrieved. The profiles are returned in the specified `order`.
+  // Incomplete H/W addresses (lat/long) are filtered, since they are not
+  // useful for autofilling. They are exposed to Chrome to decide if a promotion
+  // flow is applicable.
   std::vector<const AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
   std::vector<const AutofillProfile*> GetProfilesByRecordType(
