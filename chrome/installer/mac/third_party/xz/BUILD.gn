@@ -15,13 +15,16 @@ _coder_lzma1 = false
 _coder_lzma2 = true
 _coder_delta = false
 _coder_bcj_arm = false
+_coder_bcj_arm64 = false
 _coder_bcj_armthumb = false
 _coder_bcj_ia64 = false
 _coder_bcj_powerpc = false
+_coder_bcj_riscv = false
 _coder_bcj_sparc = false
 _coder_bcj_x86 = true
-_coder_simple = _coder_bcj_arm || _coder_bcj_armthumb || _coder_bcj_ia64 ||
-                _coder_bcj_powerpc || _coder_bcj_sparc || _coder_bcj_x86
+_coder_simple = _coder_bcj_arm || _coder_bcj_arm64 || _coder_bcj_armthumb ||
+                _coder_bcj_ia64 || _coder_bcj_powerpc || _coder_bcj_riscv ||
+                _coder_bcj_sparc || _coder_bcj_x86
 _small = true
 
 config("common_config") {
@@ -61,6 +64,9 @@ config("decompress_config") {
   visibility = [ ":*" ]
   defines = []
 
+  if (_coder_simple) {
+    defines += [ "HAVE_DECODERS=1" ]
+  }
   if (_coder_lzma1) {
     defines += [ "HAVE_DECODER_LZMA1=1" ]
   }
@@ -73,6 +79,9 @@ config("decompress_config") {
   if (_coder_bcj_arm) {
     defines += [ "HAVE_DECODER_ARM=1" ]
   }
+  if (_coder_bcj_arm64) {
+    defines += [ "HAVE_DECODER_ARM64=1" ]
+  }
   if (_coder_bcj_armthumb) {
     defines += [ "HAVE_DECODER_ARMTHUMB=1" ]
   }
@@ -81,6 +90,9 @@ config("decompress_config") {
   }
   if (_coder_bcj_powerpc) {
     defines += [ "HAVE_DECODER_POWERPC=1" ]
+  }
+  if (_coder_bcj_riscv) {
+    defines += [ "HAVE_DECODER_RISCV=1" ]
   }
   if (_coder_bcj_sparc) {
     defines += [ "HAVE_DECODER_SPARC=1" ]
@@ -94,6 +106,9 @@ config("compress_config") {
   visibility = [ ":*" ]
   defines = []
 
+  if (_coder_simple) {
+    defines += [ "HAVE_ENCODERS=1" ]
+  }
   if (_coder_lzma1) {
     defines += [ "HAVE_ENCODER_LZMA1=1" ]
   }
@@ -106,6 +121,9 @@ config("compress_config") {
   if (_coder_bcj_arm) {
     defines += [ "HAVE_ENCODER_ARM=1" ]
   }
+  if (_coder_bcj_arm64) {
+    defines += [ "HAVE_ENCODER_ARM64=1" ]
+  }
   if (_coder_bcj_armthumb) {
     defines += [ "HAVE_ENCODER_ARMTHUMB=1" ]
   }
@@ -114,6 +132,9 @@ config("compress_config") {
   }
   if (_coder_bcj_powerpc) {
     defines += [ "HAVE_ENCODER_POWERPC=1" ]
+  }
+  if (_coder_bcj_riscv) {
+    defines += [ "HAVE_ENCODER_RISCV=1" ]
   }
   if (_coder_bcj_sparc) {
     defines += [ "HAVE_ENCODER_SPARC=1" ]
@@ -132,15 +153,19 @@ source_set("common") {
   ]
 
   sources = [
+    "xz/src/common/tuklib_cpucores.c",
     "xz/src/common/tuklib_physmem.c",
     "xz/src/liblzma/check/check.c",
     "xz/src/liblzma/common/block_util.c",
     "xz/src/liblzma/common/common.c",
     "xz/src/liblzma/common/easy_preset.c",
     "xz/src/liblzma/common/filter_common.c",
+    "xz/src/liblzma/common/hardware_cputhreads.c",
     "xz/src/liblzma/common/hardware_physmem.c",
     "xz/src/liblzma/common/index.c",
+    "xz/src/liblzma/common/outqueue.c",
     "xz/src/liblzma/common/stream_flags_common.c",
+    "xz/src/liblzma/common/string_conversion.c",
     "xz/src/liblzma/common/vli_size.c",
     "xz/src/liblzma/lzma/lzma_encoder_presets.c",
     "xz/src/liblzma/rangecoder/price_table.c",
@@ -190,6 +215,9 @@ source_set("common") {
   if (_coder_bcj_arm) {
     sources += [ "xz/src/liblzma/simple/arm.c" ]
   }
+  if (_coder_bcj_arm64) {
+    sources += [ "xz/src/liblzma/simple/arm64.c" ]
+  }
   if (_coder_bcj_armthumb) {
     sources += [ "xz/src/liblzma/simple/armthumb.c" ]
   }
@@ -198,6 +226,9 @@ source_set("common") {
   }
   if (_coder_bcj_powerpc) {
     sources += [ "xz/src/liblzma/simple/powerpc.c" ]
+  }
+  if (_coder_bcj_riscv) {
+    sources += [ "xz/src/liblzma/simple/riscv.c" ]
   }
   if (_coder_bcj_sparc) {
     sources += [ "xz/src/liblzma/simple/sparc.c" ]
@@ -224,13 +255,16 @@ source_set("decompress") {
     "xz/src/liblzma/common/block_decoder.c",
     "xz/src/liblzma/common/block_header_decoder.c",
     "xz/src/liblzma/common/easy_decoder_memusage.c",
+    "xz/src/liblzma/common/file_info.c",
     "xz/src/liblzma/common/filter_buffer_decoder.c",
     "xz/src/liblzma/common/filter_decoder.c",
     "xz/src/liblzma/common/filter_flags_decoder.c",
     "xz/src/liblzma/common/index_decoder.c",
     "xz/src/liblzma/common/index_hash.c",
+    "xz/src/liblzma/common/lzip_decoder.c",
     "xz/src/liblzma/common/stream_buffer_decoder.c",
     "xz/src/liblzma/common/stream_decoder.c",
+    "xz/src/liblzma/common/stream_decoder_mt.c",
     "xz/src/liblzma/common/stream_flags_decoder.c",
     "xz/src/liblzma/common/vli_decoder.c",
     "xz/src/liblzma/lz/lz_decoder.c",
@@ -274,6 +308,7 @@ source_set("compress") {
     "xz/src/liblzma/common/index_encoder.c",
     "xz/src/liblzma/common/stream_buffer_encoder.c",
     "xz/src/liblzma/common/stream_encoder.c",
+    "xz/src/liblzma/common/stream_encoder_mt.c",
     "xz/src/liblzma/common/stream_flags_encoder.c",
     "xz/src/liblzma/common/vli_encoder.c",
     "xz/src/liblzma/lz/lz_encoder.c",
@@ -362,7 +397,6 @@ executable("xz") {
   ]
 
   sources = [
-    "xz/src/common/tuklib_cpucores.c",
     "xz/src/common/tuklib_exit.c",
     "xz/src/common/tuklib_mbstr_fw.c",
     "xz/src/common/tuklib_mbstr_width.c",
@@ -375,6 +409,7 @@ executable("xz") {
     "xz/src/xz/list.c",
     "xz/src/xz/main.c",
     "xz/src/xz/message.c",
+    "xz/src/xz/mytime.c",
     "xz/src/xz/options.c",
     "xz/src/xz/signals.c",
     "xz/src/xz/suffix.c",

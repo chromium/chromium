@@ -1,0 +1,13 @@
+diff --git a/src/xz/args.c b/src/xz/args.c
+index eba1b97dc464..0eedfa10199e 100644
+--- a/src/xz/args.c
++++ b/src/xz/args.c
+@@ -478,7 +478,7 @@ parse_real(args_info *args, int argc, char **argv)
+ 		case OPT_FILTERS_HELP:
+ 			// This doesn't return.
+ 			message_filters_help();
+-			break;
++			// break;
+ 
+ 		case OPT_X86:
+ 			coder_add_filter(LZMA_FILTER_X86,

@@ -1103,7 +1103,7 @@ deps = {
   },
 
   'src/chrome/installer/mac/third_party/xz/xz': {
-      'url': Var('chromium_git') + '/chromium/deps/xz.git' + '@' + 'eecaf55632ca72e90eb2641376bce7cdbc7284f7',
+      'url': Var('chromium_git') + '/chromium/deps/xz.git' + '@' + '10d236393a338a55830db628356f022a91978b61',
       'condition': 'checkout_mac',
   },
 
