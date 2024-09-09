@@ -144,8 +144,8 @@ class BASE_EXPORT RunLoop {
   // Note that Quit() itself is thread-safe and may be invoked directly if you
   // have access to the RunLoop reference from another thread (e.g. from a
   // capturing lambda or test observer).
-  [[nodiscard]] RepeatingClosure QuitClosure();
-  [[nodiscard]] RepeatingClosure QuitWhenIdleClosure();
+  [[nodiscard]] RepeatingClosure QuitClosure() &;
+  [[nodiscard]] RepeatingClosure QuitWhenIdleClosure() &;
 
   // Returns true if Quit() or QuitWhenIdle() was called.
   bool AnyQuitCalled();

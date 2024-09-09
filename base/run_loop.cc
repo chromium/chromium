@@ -196,7 +196,7 @@ void RunLoop::QuitWhenIdle() {
   quit_when_idle_called_ = true;
 }
 
-RepeatingClosure RunLoop::QuitClosure() {
+RepeatingClosure RunLoop::QuitClosure() & {
   // Obtaining the QuitClosure() is not thread-safe; either obtain the
   // QuitClosure() from the owning thread before Run() or invoke Quit() directly
   // (which is thread-safe).
@@ -207,7 +207,7 @@ RepeatingClosure RunLoop::QuitClosure() {
       BindRepeating(&RunLoop::Quit, weak_factory_.GetWeakPtr()));
 }
 
-RepeatingClosure RunLoop::QuitWhenIdleClosure() {
+RepeatingClosure RunLoop::QuitWhenIdleClosure() & {
   // Obtaining the QuitWhenIdleClosure() is not thread-safe; either obtain the
   // QuitWhenIdleClosure() from the owning thread before Run() or invoke
   // QuitWhenIdle() directly (which is thread-safe).

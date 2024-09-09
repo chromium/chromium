@@ -4168,6 +4168,7 @@ if (enable_nocompile_tests) {
       "metrics/histogram_nocompile.nc",
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
+      "run_loop_nocompile.nc",
       "sequence_checker_nocompile.nc",
       "strings/cstring_view_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
