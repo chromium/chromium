@@ -543,6 +543,10 @@ inline ScopedStyleResolver* ParentScopedResolverFor(
   if (!tree_scope) {
     return nullptr;
   }
+  ScopedStyleResolver* parent_resolver = tree_scope->GetScopedStyleResolver();
+  if (!parent_resolver) {
+    return nullptr;
+  }
   const AtomicString& shadow_pseudo_id = element.ShadowPseudoId();
   bool is_vtt = element.IsVTTElement();
   if (shadow_pseudo_id.empty() && !is_vtt) {
@@ -555,17 +559,15 @@ inline ScopedStyleResolver* ParentScopedResolverFor(
   // number of existing uses with :-webkit-* and :-internal-* pseudo
   // elements that do not override the style attribute, we do not apply
   // this (developer-expected) behavior to those existing
-  // pseudo-elements, or to VTT.  (Other than VTT, it's possible that we
-  // could, but it would require a good bit of compatibility analysis.)
+  // pseudo-elements.  (It's possible that we could, but it would
+  // require a good bit of compatibility analysis.)
   DCHECK(shadow_pseudo_id.empty() || !shadow_pseudo_id.StartsWith("-") ||
          shadow_pseudo_id.StartsWith("-webkit-") ||
          shadow_pseudo_id.StartsWith("-internal-"))
       << "shadow pseudo IDs should either begin with -webkit- or -internal- "
          "or not begin with a -";
-  *parent_scope_contains_style_attribute =
-      is_vtt || shadow_pseudo_id.StartsWith("-") ||
-      shadow_pseudo_id == TextTrackCue::CueShadowPseudoId();
-  return tree_scope->GetScopedStyleResolver();
+  *parent_scope_contains_style_attribute = shadow_pseudo_id.StartsWith("-");
+  return parent_resolver;
 }
 
 // Matches :host and :host-context rules if the element is a shadow host.
@@ -694,10 +696,9 @@ void MatchVTTRules(const Element& element,
   }
 }
 
-void MatchStyleAttributeAndVTTRules(const Element& element,
-                                    ElementRuleCollector& collector,
-                                    StyleRuleUsageTracker* tracker) {
-  MatchVTTRules(element, collector, tracker);
+void MatchStyleAttribute(const Element& element,
+                         ElementRuleCollector& collector,
+                         StyleRuleUsageTracker* tracker) {
   if (element.IsStyledElement() && element.InlineStyle() &&
       collector.GetPseudoId() == kPseudoIdNone) {
     // Do not add styles depending on style attributes to the
@@ -735,7 +736,7 @@ void MatchElementScopeRules(const Element& element,
   }
 
   if (!parent_scope_contains_style_attribute) {
-    MatchStyleAttributeAndVTTRules(element, collector, tracker);
+    MatchStyleAttribute(element, collector, tracker);
   }
 
   if (parent_scope_resolver) {
@@ -751,10 +752,11 @@ void MatchElementScopeRules(const Element& element,
     parent_scope_resolver->CollectMatchingElementScopeRules(collector);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
-  }
-
-  if (parent_scope_contains_style_attribute) {
-    MatchStyleAttributeAndVTTRules(element, collector, tracker);
+    if (parent_scope_contains_style_attribute) {
+      MatchStyleAttribute(element, collector, tracker);
+    }
+  } else {
+    CHECK(!parent_scope_contains_style_attribute);
   }
 }
 
@@ -842,6 +844,7 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
   MatchPseudoPartRules(element, collector);
+  MatchVTTRules(element, collector, tracker_);
   MatchPositionTryRules(collector);
 }
 
