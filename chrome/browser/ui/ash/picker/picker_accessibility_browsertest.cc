@@ -624,6 +624,44 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       ImageGridItemAnnouncesTitle) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  ash::PickerSectionView* section = view->AddSection();
+  section->AddTitleLabel(u"Section1");
+  ash::PickerImageItemView* item =
+      section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
+          std::make_unique<views::ImageView>(
+              ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+          u"title1", base::DoNothing()));
+  section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+      u"title2", base::DoNothing()));
+  section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+      u"title3", base::DoNothing()));
+
+  sm_.Call([item]() { item->RequestFocus(); });
+
+  // TODO: b/362129770 - Announce the action as well.
+  sm_.ExpectSpeechPattern("title1");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("1 of 3");
+  sm_.ExpectSpeechPattern("List with 3 items");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        FocusingItemInSectionListViewAnnouncesSizeAndPosition) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()

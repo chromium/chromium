@@ -48,7 +48,8 @@ TEST(PickerImageItemGridViewTest, OneGifItem) {
   // Two columns, one item in the first column.
   EXPECT_THAT(
       item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item))),
+      ElementsAre(Pointee(Property(&views::View::children,
+                                   ElementsAre(item->parent()))),
                   Pointee(Property(&views::View::children, IsEmpty()))));
 }
 
@@ -61,11 +62,11 @@ TEST(PickerImageItemGridViewTest, TwoGifItems) {
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // Two columns, one item in each column.
-  EXPECT_THAT(
-      item_grid.children(),
-      ElementsAre(
-          Pointee(Property(&views::View::children, ElementsAre(item1))),
-          Pointee(Property(&views::View::children, ElementsAre(item2)))));
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1->parent()))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2->parent())))));
 }
 
 TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
@@ -83,9 +84,11 @@ TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
   // One item in first column, three items in second column.
   EXPECT_THAT(
       item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item1))),
+      ElementsAre(Pointee(Property(&views::View::children,
+                                   ElementsAre(item1->parent()))),
                   Pointee(Property(&views::View::children,
-                                   ElementsAre(item2, item3, item4)))));
+                                   ElementsAre(item2->parent(), item3->parent(),
+                                               item4->parent())))));
 }
 
 // TODO: b/357146181 - Re-enable once Gifs are used again.
@@ -122,11 +125,12 @@ TEST(PickerImageItemGridViewTest, GetsTopItem) {
   PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
-  EXPECT_THAT(
-      item_grid.children(),
-      ElementsAre(
-          Pointee(Property(&views::View::children, ElementsAre(item1, item3))),
-          Pointee(Property(&views::View::children, ElementsAre(item2)))));
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(
+                              &views::View::children,
+                              ElementsAre(item1->parent(), item3->parent()))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2->parent())))));
   EXPECT_EQ(item_grid.GetTopItem(), item1);
 }
 
@@ -146,11 +150,12 @@ TEST(PickerImageItemGridViewTest, GetsBottomItem) {
   PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
-  EXPECT_THAT(
-      item_grid.children(),
-      ElementsAre(
-          Pointee(Property(&views::View::children, ElementsAre(item1, item3))),
-          Pointee(Property(&views::View::children, ElementsAre(item2)))));
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(
+                              &views::View::children,
+                              ElementsAre(item1->parent(), item3->parent()))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2->parent())))));
   EXPECT_EQ(item_grid.GetBottomItem(), item3);
 }
 
@@ -172,11 +177,13 @@ TEST(PickerImageItemGridViewTest, GetsItemAbove) {
   PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(item1, item3))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(item2, item4)))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item1->parent(), item3->parent()))),
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item2->parent(), item4->parent())))));
   EXPECT_EQ(item_grid.GetItemAbove(item1), nullptr);
   EXPECT_EQ(item_grid.GetItemAbove(item2), nullptr);
   EXPECT_EQ(item_grid.GetItemAbove(item3), item1);
@@ -203,11 +210,13 @@ TEST(PickerImageItemGridViewTest, GetsItemBelow) {
   PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(item1, item3))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(item2, item4)))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item1->parent(), item3->parent()))),
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item2->parent(), item4->parent())))));
   EXPECT_EQ(item_grid.GetItemBelow(item1), item3);
   EXPECT_EQ(item_grid.GetItemBelow(item2), item4);
   EXPECT_EQ(item_grid.GetItemBelow(item3), nullptr);
@@ -234,11 +243,13 @@ TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
   PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(item1, item3))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(item2, item4)))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item1->parent(), item3->parent()))),
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item2->parent(), item4->parent())))));
   EXPECT_EQ(item_grid.GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(item_grid.GetItemLeftOf(item2), item1);
   EXPECT_EQ(item_grid.GetItemLeftOf(item3), nullptr);
@@ -255,11 +266,12 @@ TEST(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
-  EXPECT_THAT(
-      item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item1))),
-                  Pointee(Property(&views::View::children,
-                                   ElementsAre(item2, item3)))));
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1->parent()))),
+                          Pointee(Property(
+                              &views::View::children,
+                              ElementsAre(item2->parent(), item3->parent())))));
   EXPECT_EQ(item_grid.GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(item_grid.GetItemLeftOf(item2), item1);
   EXPECT_EQ(item_grid.GetItemLeftOf(item3), item1);
@@ -285,11 +297,13 @@ TEST(PickerImageItemGridViewTest, GetsItemRightOf) {
   PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(item1, item3))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(item2, item4)))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item1->parent(), item3->parent()))),
+          Pointee(Property(&views::View::children,
+                           ElementsAre(item2->parent(), item4->parent())))));
   EXPECT_EQ(item_grid.GetItemRightOf(item1), item2);
   EXPECT_EQ(item_grid.GetItemRightOf(item2), nullptr);
   EXPECT_EQ(item_grid.GetItemRightOf(item3), item4);
