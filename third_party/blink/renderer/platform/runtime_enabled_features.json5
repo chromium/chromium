@@ -2061,10 +2061,6 @@
       name: "FontFamilyStyleMatchingCTMigration",
     },
     {
-      name: "FontMatchingCTMigration",
-      status: "stable",
-    },
-    {
       name: "FontPresentWin",
       status: "stable",
     },
