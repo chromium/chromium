@@ -256,8 +256,11 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the use of biometric authentication for showing passwords in password manager or via autofil.
-BASE_FEATURE(kBiometricsInPasswordManager, "BiometricsInPasswordManager", base::FEATURE_DISABLED_BY_DEFAULT);
+// Enable the use of biometric authentication for showing passwords in password
+// manager or via autofil.
+BASE_FEATURE(kBiometricsInPasswordManager,
+             "BiometricsInPasswordManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Display coral information in birch UI.
 BASE_FEATURE(kBirchCoral, "BirchCoral", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3600,7 +3603,8 @@ bool IsBatterySaverAlwaysOn() {
 }
 
 bool IsBiometricsInPasswordManagerEnabled() {
-  return base::FeatureList::IsEnabled(kBiometricsInPasswordManager) && IsUseAuthPanelInSessionEnabled();
+  return base::FeatureList::IsEnabled(kBiometricsInPasswordManager) &&
+         IsUseAuthPanelInSessionEnabled();
 }
 
 bool IsBirchCoralEnabled() {
