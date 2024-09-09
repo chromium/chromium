@@ -4,13 +4,14 @@
 
 #include <vector>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base {
 
-static constinit NoDestructor<int> an_int;
+static PA_CONSTINIT NoDestructor<int> an_int;
 
 static auto& GetVector() {
   static NoDestructor<std::vector<int>> a_vec({1, 2, 3});
