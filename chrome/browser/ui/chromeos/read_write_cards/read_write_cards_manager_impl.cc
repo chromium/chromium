@@ -48,9 +48,6 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
 
   if (chromeos::features::IsMahiEnabled()) {
     mahi_menu_controller_.emplace(ui_controller_);
-  }
-
-  if (chromeos::features::IsMagicBoostEnabled()) {
     magic_boost_card_controller_.emplace();
   }
 }
@@ -123,6 +120,7 @@ ReadWriteCardsManagerImpl::GetControllers(
 
     // Always set the transition action to handle the edge case that this code
     // path is hit more than once with different actions.
+    CHECK(magic_boost_card_controller_);
     magic_boost_card_controller_->set_transition_action(action);
 
     magic_boost_card_controller_->SetOptInFeature(opt_in_features.value());
@@ -147,7 +145,8 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
       base::unexpected(MagicBoostState::Error::kUninitialized);
-  if (chromeos::features::IsMagicBoostEnabled()) {
+  if (magic_boost_card_controller_ &&
+      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
     hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
 
     // Ensure the disclaimer view is closed before moving to the next step
@@ -206,7 +205,8 @@ std::optional<OptInFeatures>
 ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
     const content::ContextMenuParams& params,
     const editor_menu::EditorContext& editor_context) {
-  if (!magic_boost_card_controller_) {
+  if (!magic_boost_card_controller_ ||
+      !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
     return std::nullopt;
   }
 
@@ -233,11 +233,7 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
   // Check if we should go through Magic Boost opt-in flow when we should show
   // Quick Answers and/or Mahi card.
   base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
-      base::unexpected(MagicBoostState::Error::kUninitialized);
-  if (chromeos::features::IsMagicBoostEnabled()) {
-    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
-  }
-
+      MagicBoostState::Get()->hmr_consent_status();
   if ((ShouldShowQuickAnswers(params) || ShouldShowMahi(params)) &&
       hmr_consent_status == HMRConsentStatus::kUnset) {
     return should_opt_in_orca ? OptInFeatures::kOrcaAndHmr

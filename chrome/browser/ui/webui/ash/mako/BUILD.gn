@@ -27,6 +27,7 @@ static_library("mako") {
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/top_chrome",
     "//chromeos/ash/services/orca/public/mojom",
+    "//chromeos/components/magic_boost/public/cpp",
     "//skia:skia_core_public_headers",
     "//third_party/abseil-cpp:absl",
     "//ui/base/cursor",
