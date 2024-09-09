@@ -81,9 +81,3 @@
         var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
     border-radius: 8px;
   }
-
-  #startProbe,
-  #endProbe {
-    position: sticky;
-    top: 0;
-  }
