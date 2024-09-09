@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -100,6 +101,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     SetupFeatureList();
+    InitializeActionIdStringMapping();
     BrowserWithTestWindowTest::SetUp();
 
     mock_pinned_toolbar_actions_model_ =

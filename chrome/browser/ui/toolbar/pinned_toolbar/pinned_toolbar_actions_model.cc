@@ -10,18 +10,21 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -86,10 +89,21 @@ void PinnedToolbarActionsModel::UpdatePinnedState(
   }
 
   const bool is_pinned = Contains(action_id);
+  const std::optional<std::string> metrics_name =
+      actions::ActionIdMap::ActionIdToString(action_id);
+  CHECK(metrics_name.has_value());
   if (!is_pinned && should_pin) {
     PinAction(action_id);
+    base::RecordComputedAction(base::StrCat(
+        {"Actions.PinnedToolbarButton.Pinned.", metrics_name.value()}));
+    base::RecordAction(
+        base::UserMetricsAction("Actions.PinnedToolbarButton.Pinned"));
   } else if (is_pinned && !should_pin) {
     UnpinAction(action_id);
+    base::RecordComputedAction(base::StrCat(
+        {"Actions.PinnedToolbarButton.Unpinned.", metrics_name.value()}));
+    base::RecordAction(
+        base::UserMetricsAction("Actions.PinnedToolbarButton.Unpinned"));
   }
 }
 

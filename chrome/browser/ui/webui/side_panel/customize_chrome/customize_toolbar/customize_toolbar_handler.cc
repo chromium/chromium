@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -320,6 +322,15 @@ void CustomizeToolbarHandler::PinAction(
       break;
     default:
       model_->UpdatePinnedState(chrome_action.value(), pin);
+      const std::optional<std::string> metrics_name =
+          actions::ActionIdMap::ActionIdToString(chrome_action.value());
+      CHECK(metrics_name.has_value());
+      base::RecordComputedAction(base::StrCat(
+          {"Actions.PinnedToolbarButton.", pin ? "Pinned" : "Unpinned",
+           ".ByCustomizeChromeSidePanel.", metrics_name.value()}));
+      base::RecordComputedAction(base::StrCat({"Actions.PinnedToolbarButton.",
+                                               pin ? "Pinned" : "Unpinned",
+                                               ".ByCustomizeChromeSidePanel"}));
   }
 }
 
