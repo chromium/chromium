@@ -214,10 +214,7 @@ class PLATFORM_EXPORT CanvasResource
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
   gfx::ColorSpace GetColorSpace() const;
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  ContextProviderWrapper() const = 0;
 
   // Prepares GPU TransferableResource from the resource's ClientSharedImage.
   // Invoked if the resource is accelerated and UsesClientSharedImage() returns
@@ -285,6 +282,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
   bool SupportsAcceleratedCompositing() const final { return false; }
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const override {
+    return nullptr;
+  }
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
   gfx::Size Size() const final;
