@@ -15,6 +15,7 @@ android_library("base_module_java") {
   deps = [
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/preferences:java",
     "//components/language/android:java",
     "//components/language/android:ulp_delegate_java",

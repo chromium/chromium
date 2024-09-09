@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.LocaleUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.language.LocaleManagerDelegate;
@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Provides utility functions to assist with overriding the application language.
- * This class manages the AppLanguagePref.
+ * Provides utility functions to assist with overriding the application language. This class manages
+ * the AppLanguagePref.
  */
 public class AppLocaleUtils {
     private AppLocaleUtils() {}
@@ -159,7 +159,7 @@ public class AppLocaleUtils {
         // If this is not a bundle build or the default system language is being used the language
         // split should not be installed. Instead indicate that the listener completed successfully
         // since the language resources will already be present.
-        if (!BundleUtils.isBundle() || isFollowSystemLanguage(languageName)) {
+        if (!BuildConfig.IS_BUNDLE || isFollowSystemLanguage(languageName)) {
             wrappedListener.onComplete(true);
         } else {
             LanguageSplitInstaller.getInstance().installLanguage(languageName, wrappedListener);

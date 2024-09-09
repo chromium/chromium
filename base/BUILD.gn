@@ -5112,7 +5112,6 @@ if (is_android) {
     srcjar_deps = [ ":base_java_test_support_uncommon_jni" ]
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
-      "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",

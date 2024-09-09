@@ -1899,8 +1899,8 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_CHROME_BRANDED" ]
       }
 
-      if (defined(invoker.bundles_supported) && invoker.bundles_supported) {
-        defines += [ "_BUNDLES_SUPPORTED" ]
+      if (defined(invoker.is_bundle) && invoker.is_bundle) {
+        defines += [ "_IS_BUNDLE" ]
       }
 
       if (defined(invoker.isolated_splits_enabled) &&
@@ -1970,7 +1970,6 @@ if (!is_robolectric && enable_java_templates) {
   #
   # Variables:
   #   build_config: Path to build_config used for locale lists.
-  #   is_bundle_module: Whether or not this target is part of a bundle build.
   #   java_package: Java package for the generated class.
   #   use_chromium_linker:
   template("generate_product_config_srcjar") {
@@ -1988,11 +1987,7 @@ if (!is_robolectric && enable_java_templates) {
 
       _use_chromium_linker =
           defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-      _is_bundle = defined(invoker.is_bundle_module) && invoker.is_bundle_module
-      defines += [
-        "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker",
-        "IS_BUNDLE_VALUE=$_is_bundle",
-      ]
+      defines += [ "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker" ]
       if (defined(invoker.build_config)) {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
         _rebased_build_config =
@@ -2629,11 +2624,7 @@ if (!is_robolectric && enable_java_templates) {
                                  "disable_strict_mode_context",
                                  "isolated_splits_enabled",
                                ])
-        _bundles_supported = _is_bundle_module
-        if (defined(invoker.bundles_supported)) {
-          _bundles_supported = invoker.bundles_supported
-        }
-        bundles_supported = _bundles_supported
+        is_bundle = _is_bundle_module
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
         version_code = _version_code
@@ -2662,7 +2653,6 @@ if (!is_robolectric && enable_java_templates) {
         _locale_target_name =
             "${_template_name}_${_package}__product_config_srcjar"
         generate_product_config_srcjar("$_locale_target_name") {
-          forward_variables_from(invoker, [ "is_bundle_module" ])
           build_config = _build_config
           java_package = _package
           use_chromium_linker = _use_chromium_linker

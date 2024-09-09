@@ -188,7 +188,6 @@ common_java_sources = [
 
 generate_product_config_srcjar("product_config_for_browser") {
   java_package = "org.chromium.chromecast.shell"
-  is_bundle_module = false
 }
 
 generate_jni("jni_headers") {

@@ -279,9 +279,6 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (_is_bundle) {
       is_base_module = true
-
-      # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
-      isolated_splits_enabled = true
     }
 
     product_config_java_packages = [ "org.chromium.chrome.browser" ]
@@ -738,7 +735,6 @@ template("chrome_common_apk_or_module_tmpl") {
     }
 
     if (_is_test) {
-      bundles_supported = true
       deps += [ "//third_party/androidx:androidx_test_runner_java" ]
 
       # For EmbeddedTestServer.
