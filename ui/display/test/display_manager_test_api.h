@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/util/display_manager_util.h"
+#include "ui/display/test/virtual_display_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace gfx {
@@ -28,14 +30,18 @@ class ManagedDisplayInfo;
 
 namespace test {
 
-class DISPLAY_EXPORT DisplayManagerTestApi {
+class DISPLAY_EXPORT DisplayManagerTestApi : public VirtualDisplayUtil {
  public:
   explicit DisplayManagerTestApi(DisplayManager* display_manager);
-
   DisplayManagerTestApi(const DisplayManagerTestApi&) = delete;
   DisplayManagerTestApi& operator=(const DisplayManagerTestApi&) = delete;
 
-  virtual ~DisplayManagerTestApi();
+  ~DisplayManagerTestApi() override;
+
+  // VirtualDisplayUtil:
+  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
+  void RemoveDisplay(int64_t display_id) override;
+  void ResetDisplays() override;
 
   void set_maximum_display(size_t maximum_display_num) {
     maximum_support_display_ = maximum_display_num;
@@ -87,6 +93,9 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   static size_t maximum_support_display_;
 
   raw_ptr<DisplayManager> display_manager_;  // not owned
+
+  // TODO(crbug.com/40271794): Remove this once AddDisplay id is removed.
+  base::flat_map<uint64_t, uint8_t> display_id_to_add_display_id_;
 };
 
 class DISPLAY_EXPORT ScopedSetInternalDisplayId {
