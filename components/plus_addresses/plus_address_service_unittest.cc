@@ -24,6 +24,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -83,7 +84,9 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAre;
 
@@ -638,7 +641,8 @@ TEST_F(PlusAddressServiceRequestsTest,
       callback,
       Run(ElementsAre(
               PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion()),
-          _));
+          AutofillSuggestionTriggerSource::
+              kPlusAddressUpdatedInBrowserProcess));
 
   Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
   inline_suggestion.payload = Suggestion::PlusAddressPayload();
@@ -671,6 +675,47 @@ TEST_F(PlusAddressServiceRequestsTest,
       callback.Get());
 
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
+}
+
+// Tests that if an inline suggestion is accepted, a server call to the create
+// endpoint is made. On success, the popup is hidden and the plus address is
+// filled.
+TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
+      update_callback;
+  base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
+  base::MockCallback<PlusAddressCallback> fill_callback;
+
+  PlusProfile profile = test::CreatePlusProfile();
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload =
+      Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*profile.plus_address));
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    EXPECT_CALL(update_callback, Run(ElementsAre(IsCreateInlineSuggestion(
+                                         /*has_proposed_address=*/true)),
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(hide_callback,
+                Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(fill_callback, Run(*profile.plus_address));
+  }
+  service().OnAcceptedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      /*current_suggestion_index=*/0, update_callback.Get(),
+      hide_callback.Get(), fill_callback.Get());
+  check.Call();
+
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

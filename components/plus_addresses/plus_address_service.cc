@@ -21,6 +21,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -641,7 +642,12 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
     HideSuggestionsCallback hide_suggestions_callback,
     PlusAddressCallback fill_field_callback) {
   // TODO(crbug.com/362445807): Record metrics.
+  const std::u16string suggested_address =
+      current_suggestions[current_suggestion_index]
+          .GetPayload<Suggestion::PlusAddressPayload>()
+          .address.value();
 
+  // First, update the suggestions to show a loading state.
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
   updated_suggestions[current_suggestion_index].is_loading =
@@ -650,7 +656,27 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
       .Run(
           std::move(updated_suggestions),
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
-  // TODO(crbug.com/362445807): Send network call for creation.
+
+  // Next, send the network request for creation.
+  PlusAddressRequestCallback callback = base::BindOnce(
+      [](HideSuggestionsCallback hide_callback,
+         PlusAddressCallback fill_callback,
+         const PlusProfileOrError& profile_or_error) {
+        // Always hide the popup.
+        std::move(hide_callback)
+            .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
+        if (!profile_or_error.has_value()) {
+          // TODO(crbug.com/362445807): Handle errors during creation.
+        }
+        // TODO(crbug.com/362445807): Handle the case in which the returned
+        // plus address is not the requested one.
+
+        std::move(fill_callback).Run(profile_or_error->plus_address.value());
+      },
+      std::move(hide_suggestions_callback), std::move(fill_field_callback));
+  ConfirmPlusAddress(primary_main_frame_origin,
+                     PlusAddress(base::UTF16ToUTF8(suggested_address)),
+                     std::move(callback));
 }
 
 }  // namespace plus_addresses
