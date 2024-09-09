@@ -170,13 +170,11 @@ WolvicContentMainDelegate* WolvicContentMainDelegate::Get() {
 }
 
 absl::optional<int> WolvicContentMainDelegate::BasicStartupComplete() {
-  LOG(ERROR) << "WolvicLifecycle BasicStartupComplete()";
   Compositor::Initialize();
 
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   InitLogging(command_line);
-  LOG(ERROR) << "WolvicLifecycle command_line="
-             << command_line.GetCommandLineString();
+  LOG(INFO) << "Command line: " << command_line.GetCommandLineString();
   RegisterShellPathProvider();
 
   return absl::nullopt;
@@ -297,7 +295,6 @@ ContentClient* WolvicContentMainDelegate::CreateContentClient() {
 }
 
 ContentBrowserClient* WolvicContentMainDelegate::CreateContentBrowserClient() {
-  LOG(ERROR) << "WolvicLifecycle CreateContentBrowserClient()";
   browser_client_ = std::make_unique<WolvicContentBrowserClient>();
   return browser_client_.get();
 }
