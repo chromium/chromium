@@ -1225,6 +1225,7 @@ android_library("cronet_common_javatests") {
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsInterceptor.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
+    "test/javatests/src/org/chromium/net/impl/TestLogger.java",
   ]
   deps = [
            ":cronet_all_java",
