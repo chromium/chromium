@@ -5,10 +5,7 @@
   }
 
   #product-specifications-info-text {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0 auto;
-    padding: 6px 10px 8px;
+    padding: 6px 10px 8px 8px;
     color: var(--cr-secondary-text-color);
     font-size: 11px;
     font-weight: 400;
@@ -26,6 +23,14 @@
     padding-right: 0;
     padding-bottom: var(--card-first-last-item-padding);
     margin-bottom: var(--card-padding-between);
+  }
+
+  #product-list-padding-container {
+    padding: 0 var(--card-padding-side);
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   #card-title-header {
@@ -55,8 +60,17 @@
     overflow-x: hidden;
     text-align: center;
   }
-</style>
 
+  .centered-message {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 100%;
+  }
+
+  #sync-or-error-message-picture-and-text-container {
+    height: 100%;
+  }
+</style>
 <div class="sync-or-error-message-container"
     id="sync-or-error-message-picture-and-text-container"
     hidden="[[!hideHistoryList_(productSpecificationsFeatureState_.*)]]">
@@ -90,13 +104,15 @@
 </div>
 
 <!-- Product specs history list, including empty state. -->
-<div hidden="[[hideHistoryList_(productSpecificationsFeatureState_.*)]]">
-  <div id="product-specifications-info-text" class="history-cards">
-    $i18n{compareHistoryInfo}
-  </div>
+<div hidden="[[hideHistoryList_(productSpecificationsFeatureState_.*)]]"
+  id="product-list-padding-container">
   <div class="centered-message"
       hidden$="[[hasResults_(displayedItems_.length)]]">
     $i18n{compareHistoryEmpty}
+  </div>
+  <div id="product-specifications-info-text" class="history-cards"
+    hidden$="[[!hasResults_(displayedItems_.length)]]">
+    $i18n{compareHistoryInfo}
   </div>
   <div class="history-cards" id="product-list-container"
       hidden$="[[!hasResults_(displayedItems_.length)]]">
