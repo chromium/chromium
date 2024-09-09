@@ -1886,7 +1886,7 @@
   {
     "name": "crostini-qt-ime-support",
     "owners": [ "timloh@chromium.org", "sophialin@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "crostini-reset-lxd-db",
