@@ -40,6 +40,9 @@ namespace {
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
 // Advertisement flag indicating BR/EDR support
 constexpr uint8_t kBrEdrNotSupportedFlag = 0x04;
+// Key-based Pairing Extended Response Flag indicating if the Provider is LE
+// only device
+constexpr uint8_t kLEOnly = 0x80;
 // Key-based Pairing Extended Response Flag indicating if the Provider prefers
 // LE bonding
 constexpr uint8_t kPrefersLEBonding = 0x40;
@@ -213,10 +216,11 @@ void FastPairPairerImpl::StartPairing() {
               base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
                              weak_ptr_factory_.GetWeakPtr()));
           // On Floss, always connect via classic unless device explicitly
-          // doesn't support BREDR
+          // doesn't support BREDR or indicates it prefers LE.
           if (floss::features::IsFlossEnabled() &&
               !(bt_device->GetAdvertisingDataFlags().value_or(0) &
-                kBrEdrNotSupportedFlag)) {
+                    kBrEdrNotSupportedFlag ||
+                pairing_flags & kLEOnly || pairing_flags & kPrefersLEBonding)) {
             bt_device->ConnectClassic(
                 /*pairing_delegate=*/this,
                 base::BindOnce(&FastPairPairerImpl::OnConnected,
@@ -264,10 +268,12 @@ void FastPairPairerImpl::StartPairing() {
       if (bt_device) {
         pairing_flow_ = FastPairPairingFlow::kPair;
         // On Floss, always connect via classic unless device explicitly
-        // doesn't support BREDR. ConnectClassic is equivalent to Pair.
+        // doesn't support BREDR or indicates it prefers LE. ConnectClassic is
+        // equivalent to Pair.
         if (floss::features::IsFlossEnabled() &&
             !(bt_device->GetAdvertisingDataFlags().value_or(0) &
-              kBrEdrNotSupportedFlag)) {
+                  kBrEdrNotSupportedFlag ||
+              pairing_flags & kLEOnly || pairing_flags & kPrefersLEBonding)) {
           bt_device->ConnectClassic(
               /*pairing_delegate=*/this,
               base::BindOnce(&FastPairPairerImpl::OnPairConnected,
@@ -311,9 +317,12 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
     CD_LOG(INFO, Feature::FP) << __func__ << " on Floss";
 
     // Always connect via classic unless device explicitly
-    // doesn't support BREDR. ConnectClassic is equivalent to Pair.
+    // doesn't support BREDR or indicates it prefers LE. ConnectClassic is
+    // equivalent to Pair.
+    uint8_t pairing_flags = device_->key_based_pairing_flags().value_or(0);
     if (!(device->GetAdvertisingDataFlags().value_or(0) &
-          kBrEdrNotSupportedFlag)) {
+              kBrEdrNotSupportedFlag ||
+          pairing_flags & kLEOnly || pairing_flags & kPrefersLEBonding)) {
       device->ConnectClassic(
           /*pairing_delegate=*/this,
           base::BindOnce(&FastPairPairerImpl::OnPairConnected,
