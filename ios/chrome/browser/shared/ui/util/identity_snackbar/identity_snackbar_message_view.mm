@@ -244,8 +244,8 @@ const CGFloat kTextOffset = 2.;
                          constant:kHorizontalPadding],
     ]];
     if (_managementView) {
-      [_managementView.topAnchor
-          constraintEqualToAnchor:_emailView.bottomAnchor]
+      [_managementView.topAnchor constraintEqualToAnchor:_emailView.bottomAnchor
+                                                constant:kTextOffset]
           .active = YES;
     }
 
