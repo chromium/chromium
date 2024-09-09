@@ -451,9 +451,8 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     base::span<const uint8_t> credential_id,
     device::PublicKeyCredentialRpEntity rp,
     device::PublicKeyCredentialUserEntity user) {
-  return InjectResidentKey(std::move(credential_id), std::move(rp),
-                           std::move(user), /*signature_counter=*/0,
-                           PrivateKey::FreshP256Key());
+  return InjectResidentKey(credential_id, std::move(rp), std::move(user),
+                           /*signature_counter=*/0, PrivateKey::FreshP256Key());
 }
 
 bool VirtualFidoDevice::State::InjectResidentKey(

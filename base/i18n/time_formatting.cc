@@ -195,7 +195,7 @@ std::u16string TimeFormatFriendlyDate(const Time& time) {
 
 std::u16string LocalizedTimeFormatWithPattern(const Time& time,
                                               std::string_view pattern) {
-  return TimeFormat(CreateSimpleDateFormatter(std::move(pattern)), time);
+  return TimeFormat(CreateSimpleDateFormatter(pattern), time);
 }
 
 std::string UnlocalizedTimeFormatWithPattern(const Time& time,
@@ -259,7 +259,7 @@ std::string UnlocalizedTimeFormatWithPattern(const Time& time,
 
   // Format any remaining pattern.
   if (!pattern.empty()) {
-    output += format_time(time, std::move(pattern));
+    output += format_time(time, pattern);
   }
   return output;
 }

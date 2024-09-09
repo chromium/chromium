@@ -35,7 +35,7 @@ void ChromeSyncInternalsMessageHandler::SendEventToPage(
   // std::vector<const base::ValueView> above is not an option, because
   // vector elements must be mutable.
   web_ui()->CallJavascriptFunctionUnsafe("cr.webUIListenerCallback",
-                                         std::move(mutable_span));
+                                         mutable_span);
 }
 
 void ChromeSyncInternalsMessageHandler::ResolvePageCallback(

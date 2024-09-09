@@ -70,7 +70,7 @@ PacResultElementToSchemeAndHostPort(std::string_view pac_result_element) {
   // And everything to the right of the space is the
   // <host>[":" <port>].
   std::string_view host_and_port = pac_result_element.substr(space);
-  return std::make_tuple(std::move(scheme), std::move(host_and_port));
+  return std::make_tuple(scheme, host_and_port);
 }
 
 }  // namespace
