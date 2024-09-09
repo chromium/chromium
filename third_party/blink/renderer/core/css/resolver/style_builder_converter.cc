@@ -803,7 +803,9 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
   if (primitive_value.IsPercentage()) {
     return FontDescription::Size(
-        0, (primitive_value.GetFloatValue() * parent_size.value / 100.0f),
+        /*keyword=*/0,
+        (primitive_value.ComputePercentage(conversion_data) *
+         parent_size.value / 100.0f),
         parent_size.is_absolute);
   }
 
@@ -815,7 +817,8 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
       To<CSSNumericLiteralValue>(primitive_value).GetType() ==
           CSSPrimitiveValue::UnitType::kRems;
   return FontDescription::Size(
-      0, ComputeFontSize(conversion_data, primitive_value, parent_size),
+      /*keyword=*/0,
+      ComputeFontSize(conversion_data, primitive_value, parent_size),
       is_absolute);
 }
 
