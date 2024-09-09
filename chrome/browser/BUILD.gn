@@ -6629,12 +6629,15 @@ static_library("browser") {
   }
 
   if (enterprise_data_controls) {
+    sources += [
+      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
+      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
+    ]
+
     # TODO(b/352728209): Update the logic for which file compiles on Android
     # when the proper methods have been migrated to components/.
     if (!is_android) {
       sources += [
-        "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
-        "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
         "//chrome/browser/enterprise/data_protection/paste_allowed_request.cc",
         "//chrome/browser/enterprise/data_protection/paste_allowed_request.h",
       ]
