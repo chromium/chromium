@@ -55,8 +55,6 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
-#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/eol/eol_notification.h"
 #include "chrome/browser/ash/first_run/first_run.h"
@@ -2310,30 +2308,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     return;
   }
 
-  // Call this before `RestartToApplyPerSessionFlagsIfNeed()` in the login
-  // process.
-  BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
-
   if (RestartToApplyPerSessionFlagsIfNeed(profile, false))
     return;
-
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-          user->GetAccountId(), user->username_hash(),
-          ash::standalone_browser::migrator_util::PolicyInitState::
-              kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run profile migration.";
-    return;
-  }
-
-  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-          user->GetAccountId(), user->username_hash(),
-          ash::standalone_browser::migrator_util::PolicyInitState::
-              kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
-    return;
-  }
 
   if (LoginDisplayHost::default_host()) {
     SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);

@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -774,16 +773,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
     user->AddProfileCreatedObserver(
         base::BindOnce(&SetLoginExtensionApiCanLockManagedGuestSessionPref,
                        user_context.GetAccountId(), true));
-  }
-
-  if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
-          g_browser_process->local_state(), user_context.GetAccountId(),
-          user_context.GetUserIDHash(),
-          ash::standalone_browser::migrator_util::PolicyInitState::
-              kAfterInit)) {
-    // TODO(crbug.com/40799062): Add an UMA.
-    LOG(WARNING) << "Restarting Chrome to resume move migration.";
-    return;
   }
 
   UserSessionManager::StartSessionType start_session_type =

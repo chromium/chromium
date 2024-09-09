@@ -75,20 +75,6 @@ ScopedRestartAttemptForTesting::~ScopedRestartAttemptForTesting() {
   g_attempt_restart = nullptr;
 }
 
-bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
-    PrefService* local_state,
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  if (!MoveMigrator::ResumeRequired(local_state, user_id_hash)) {
-    return false;
-  }
-
-  LOG(WARNING) << "Calling RestartToMigrate() to resume move migration.";
-  return RestartToMigrate(account_id, user_id_hash, local_state,
-                          policy_init_state);
-}
-
 // static
 void BrowserDataMigratorImpl::AttemptRestart() {
   if (g_attempt_restart) {
@@ -99,19 +85,6 @@ void BrowserDataMigratorImpl::AttemptRestart() {
   chrome::AttemptRestart();
 }
 
-// static
-bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  if (!MaybeRestartToMigrateInternal(account_id, user_id_hash,
-                                     policy_init_state)) {
-    return false;
-  }
-  return RestartToMigrate(account_id, user_id_hash,
-                          user_manager::UserManager::Get()->GetLocalState(),
-                          policy_init_state);
-}
 
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
     const AccountId& account_id,

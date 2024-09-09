@@ -63,8 +63,6 @@
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/camera/camera_general_survey_handler.h"
-#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/lacros_availability_policy_observer.h"
@@ -1098,30 +1096,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     std::string user_id_hash =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kLoginProfile);
-
-    if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
-            g_browser_process->local_state(), account_id, user_id_hash,
-            ash::standalone_browser::migrator_util::PolicyInitState::
-                kBeforeInit)) {
-      LOG(WARNING) << "Restarting chrome to resume move migration.";
-      return;
-    }
-
-    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-            account_id, user_id_hash,
-            ash::standalone_browser::migrator_util::PolicyInitState::
-                kBeforeInit)) {
-      LOG(WARNING) << "Restarting chrome to run profile migration.";
-      return;
-    }
-
-    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-            account_id, user_id_hash,
-            ash::standalone_browser::migrator_util::PolicyInitState::
-                kBeforeInit)) {
-      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
-      return;
-    }
 
     session_manager::SessionManager::Get()->CreateSessionForRestart(
         account_id, user_id_hash);

@@ -736,8 +736,6 @@ source_set("unit_tests") {
   sources = [
     "audio_service_ash_unittest.cc",
     "browser_data_back_migrator_metrics_unittest.cc",
-    "browser_data_back_migrator_unittest.cc",
-    "browser_data_migrator_unittest.cc",
     "browser_data_migrator_util_unittest.cc",
     "browser_launcher_unittest.cc",
     "browser_loader_unittest.cc",
@@ -876,8 +874,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "browser_data_back_migrator_browsertest.cc",
-    "browser_data_migrator_browsertest.cc",
     "file_change_service_bridge_ash_browsertest.cc",
     "magic_boost_ash_browsertest.cc",
     "mahi_ash_browsertest.cc",

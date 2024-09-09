@@ -142,29 +142,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // in scope.
   static void AttemptRestart();
 
-  // Check if move migration has to be resumed. This has to be checked before a
-  // Profile object is created using the user's profile data directory. Like
-  // `MaybeRestartToMigrate()` it returns true if the D-Bus call to the
-  // session_manager is made and successful. The return value of true means that
-  // `chrome::AttemptRestart()` has been called.
-  static bool MaybeForceResumeMoveMigration(
-      PrefService* local_state,
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      ash::standalone_browser::migrator_util::PolicyInitState
-          policy_init_state);
-
-  // Checks if migration is required for the user identified by `user_id_hash`
-  // and if it is required, calls a D-Bus method to session_manager and
-  // terminates ash-chrome. It returns true if the D-Bus call to the
-  // session_manager is made and successful. The return value of true means that
-  // `chrome::AttemptRestart()` has been called.
-  static bool MaybeRestartToMigrate(
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      ash::standalone_browser::migrator_util::PolicyInitState
-          policy_init_state);
-
   // Very similar to `MaybeRestartToMigrate`, but this checks the disk space in
   // addition, and reports an error if out of disk space case.
   // |callback| will be called on completion.
