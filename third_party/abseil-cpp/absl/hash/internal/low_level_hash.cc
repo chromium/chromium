@@ -40,8 +40,8 @@ uint64_t LowLevelHashLenGt16(const void* data, size_t len, uint64_t seed,
 
   if (len > 64) {
     // If we have more than 64 bytes, we're going to handle chunks of 64
-    // bytes at a time. We're going to build up two separate hash states
-    // which we will then hash together.
+    // bytes at a time. We're going to build up four separate hash states
+    // which we will then hash together. This avoids short dependency chains.
     uint64_t duplicated_state0 = current_state;
     uint64_t duplicated_state1 = current_state;
     uint64_t duplicated_state2 = current_state;

@@ -545,7 +545,10 @@ enum InvalidCapacity : size_t {
   kAboveMaxValidCapacity = ~size_t{} - 100,
   kReentrance,
   kDestroyed,
+
+  // These two must be last because we use `>= kMovedFrom` to mean moved-from.
   kMovedFrom,
+  kSelfMovedFrom,
 };
 
 // Returns a pointer to a control byte group that can be used by empty tables.
@@ -2911,7 +2914,7 @@ class raw_hash_set {
 
   ABSL_ATTRIBUTE_REINITIALIZES void clear() {
     if (SwisstableGenerationsEnabled() &&
-        capacity() == InvalidCapacity::kMovedFrom) {
+        capacity() >= InvalidCapacity::kMovedFrom) {
       common().set_capacity(DefaultCapacity());
     }
     AssertNotDebugCapacity();
@@ -3596,7 +3599,7 @@ class raw_hash_set {
 
   inline void destructor_impl() {
     if (SwisstableGenerationsEnabled() &&
-        capacity() == InvalidCapacity::kMovedFrom) {
+        capacity() >= InvalidCapacity::kMovedFrom) {
       return;
     }
     if (capacity() == 0) return;
@@ -3778,7 +3781,8 @@ class raw_hash_set {
     // than using NDEBUG) to avoid issues in which NDEBUG is enabled in some
     // translation units but not in others.
     if (SwisstableGenerationsEnabled()) {
-      that.common().set_capacity(InvalidCapacity::kMovedFrom);
+      that.common().set_capacity(this == &that ? InvalidCapacity::kSelfMovedFrom
+                                               : InvalidCapacity::kMovedFrom);
     }
     if (!SwisstableGenerationsEnabled() || capacity() == DefaultCapacity() ||
         capacity() > kAboveMaxValidCapacity) {
@@ -3908,7 +3912,12 @@ class raw_hash_set {
     assert(capacity() != InvalidCapacity::kDestroyed &&
            "Use of destroyed hash table.");
     if (SwisstableGenerationsEnabled() &&
-        ABSL_PREDICT_FALSE(capacity() == InvalidCapacity::kMovedFrom)) {
+        ABSL_PREDICT_FALSE(capacity() >= InvalidCapacity::kMovedFrom)) {
+      if (capacity() == InvalidCapacity::kSelfMovedFrom) {
+        // If this log triggers, then a hash table was move-assigned to itself
+        // and then used again later without being reinitialized.
+        ABSL_RAW_LOG(FATAL, "Use of self-move-assigned hash table.");
+      }
       ABSL_RAW_LOG(FATAL, "Use of moved-from hash table.");
     }
   }
