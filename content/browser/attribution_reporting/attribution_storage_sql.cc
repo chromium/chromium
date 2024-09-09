@@ -965,6 +965,8 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
                                        base::span_from_ref(destination));
 
     std::vector<Record> records;
+    std::vector<StoredSource::Id> source_ids_to_delete;
+    std::vector<StoredSource::Id> source_ids_to_deactivate;
 
     while (statement.Step()) {
       // Note: This causes a single corrupt source to fail every
@@ -994,6 +996,15 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
           continue;
         }
 
+        if (remaining_scopes_allowed == 0) {
+          AssignSourceForDeactivationOrDeletion(source_id, has_reports,
+                                                source_ids_to_delete,
+                                                source_ids_to_deactivate);
+          // Ensure that each source is only assigned once, avoiding the need to
+          // call `DeduplicateSourceIds()` below.
+          break;
+        }
+
         records.emplace_back(std::move(scope), source_id, has_reports,
                              this_source_time);
       }
@@ -1002,27 +1013,26 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
       return false;
     }
 
-    base::ranges::sort(records);
+    if (remaining_scopes_allowed > 0) {
+      base::ranges::sort(records);
 
-    std::vector<StoredSource::Id> source_ids_to_delete;
-    std::vector<StoredSource::Id> source_ids_to_deactivate;
-
-    // We use a `std::set` here instead of `base::flat_set` because the number
-    // of insertions may be large. We use `std::string_view` to avoid having to
-    // move values out of `records`.
-    for (std::set<std::string_view> selected_scopes;
-         const auto& record : records) {
-      if (selected_scopes.size() < remaining_scopes_allowed) {
-        selected_scopes.insert(record.scope);
-      } else if (!selected_scopes.contains(record.scope)) {
-        AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
-                                              source_ids_to_delete,
-                                              source_ids_to_deactivate);
+      // We use a `std::set` here instead of `base::flat_set` because the number
+      // of insertions may be large. We use `std::string_view` to avoid having
+      // to move values out of `records`.
+      for (std::set<std::string_view> selected_scopes;
+           const auto& record : records) {
+        if (selected_scopes.size() < remaining_scopes_allowed) {
+          selected_scopes.insert(record.scope);
+        } else if (!selected_scopes.contains(record.scope)) {
+          AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
+                                                source_ids_to_delete,
+                                                source_ids_to_deactivate);
+        }
       }
-    }
 
-    DeduplicateSourceIds(source_ids_to_delete);
-    DeduplicateSourceIds(source_ids_to_deactivate);
+      DeduplicateSourceIds(source_ids_to_delete);
+      DeduplicateSourceIds(source_ids_to_deactivate);
+    }
 
     if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
             source_ids_to_deactivate, source_time) ||
