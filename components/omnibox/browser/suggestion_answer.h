@@ -248,7 +248,6 @@ class SuggestionAnswer {
   GURL image_url_;
   ImageLine first_line_;
   ImageLine second_line_;
-  int type_ = -1;
 
   FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
   FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, LogAnswerUsed);
