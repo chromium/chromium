@@ -120,6 +120,9 @@ struct HistoryGraph: View {
   /// The width of the entire chart.
   @State private var chartWidth: CGFloat?
 
+  /// Indicates whether the graph has been interacted with for the current session.
+  @State private var hasGraphInteracted: Bool = false
+
   /// Color scheme environment value .
   @Environment(\.colorScheme) var colorScheme
 
@@ -226,6 +229,7 @@ struct HistoryGraph: View {
               updateSelectionData(location: location, geometry: geometry, chart: proxy)
               updateTooltipPosition(geometry: geometry, chart: proxy)
             case .ended:
+              recordGraphInteraction()
               break
             }
           })
@@ -242,6 +246,9 @@ struct HistoryGraph: View {
                   updateSelectionData(location: drag.location, geometry: geometry, chart: proxy)
                   updateTooltipPosition(geometry: geometry, chart: proxy)
                 }
+              }
+              .onEnded { _ in
+                recordGraphInteraction()
               }
           )
       }
@@ -271,6 +278,14 @@ struct HistoryGraph: View {
     let currentX = location.x - startX
     if let index: Date = chart.value(atX: currentX) {
       selectedDate = closestDate(to: index, in: history)
+    }
+  }
+
+  // Records user interactions with the history graph.
+  private func recordGraphInteraction() {
+    if !hasGraphInteracted {
+      hasGraphInteracted = true
+      UserMetricsUtils.recordAction("Commerce.PriceInsights.HistoryGraphInteraction")
     }
   }
 
