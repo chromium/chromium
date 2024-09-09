@@ -86,19 +86,18 @@ class ManagedUIHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUIDataSource> source_;
 };
 
-// TODO(crbug.com/355288951): fix these tests.
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIDisabledByDefault) {
+TEST_F(ManagedUIHandlerTest, ManagedUIDisabledByDefault) {
   InitializeHandler();
   EXPECT_FALSE(IsSourceManaged());
 }
 
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIEnabledWhenManaged) {
+TEST_F(ManagedUIHandlerTest, ManagedUIEnabledWhenManaged) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
   InitializeHandler();
   EXPECT_TRUE(IsSourceManaged());
 }
 
-TEST_F(ManagedUIHandlerTest, DISABLED_ManagedUIBecomesEnabledByProfile) {
+TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
   InitializeHandler();
   EXPECT_FALSE(IsSourceManaged());
 
