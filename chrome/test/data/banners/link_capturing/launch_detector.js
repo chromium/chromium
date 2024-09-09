@@ -52,3 +52,12 @@ function signalNavigationComplete(delay, forLaunchUrl) {
     domAutomationController.send(doneMessage);
   }, delay);
 }
+
+function showParams(params) {
+  let output = decodeURI(params);
+  console.log('Query params passed in: ' + output);
+  // Make the query params easier to read on the page.
+  output = output.replace('?', '\n');
+  output = output.replace('&', '\n');
+  document.getElementById('debug').textContent = 'Params: ' + output;
+}
