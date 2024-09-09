@@ -59,36 +59,36 @@ UStringSearch* CreateSearcher() {
   return searcher;
 }
 
-class ICULockableSearcher {
+class SearcherFactory {
   STACK_ALLOCATED();
 
  public:
-  ICULockableSearcher(const ICULockableSearcher&) = delete;
-  ICULockableSearcher& operator=(const ICULockableSearcher&) = delete;
+  SearcherFactory(const SearcherFactory&) = delete;
+  SearcherFactory& operator=(const SearcherFactory&) = delete;
 
   static UStringSearch* AcquireSearcher() {
-    Instance().lock();
+    Instance().Lock();
     return Instance().searcher_;
   }
 
-  static void ReleaseSearcher() { Instance().unlock(); }
+  static void ReleaseSearcher() { Instance().Unlock(); }
 
  private:
-  static ICULockableSearcher& Instance() {
-    static ICULockableSearcher searcher(CreateSearcher());
-    return searcher;
+  static SearcherFactory& Instance() {
+    static SearcherFactory factory(CreateSearcher());
+    return factory;
   }
 
-  explicit ICULockableSearcher(UStringSearch* searcher) : searcher_(searcher) {}
+  explicit SearcherFactory(UStringSearch* searcher) : searcher_(searcher) {}
 
-  void lock() {
+  void Lock() {
 #if DCHECK_IS_ON()
     DCHECK(!locked_);
     locked_ = true;
 #endif
   }
 
-  void unlock() {
+  void Unlock() {
 #if DCHECK_IS_ON()
     DCHECK(locked_);
     locked_ = false;
@@ -133,7 +133,7 @@ static bool IsWholeWordMatch(const UChar* text,
 // If we ever have a reason to do more than once search buffer at once, we'll
 // have to move to multiple searchers.
 TextSearcherICU::TextSearcherICU()
-    : searcher_(ICULockableSearcher::AcquireSearcher()) {}
+    : searcher_(SearcherFactory::AcquireSearcher()) {}
 
 TextSearcherICU::~TextSearcherICU() {
   // Leave the static object pointing to valid strings (pattern=target,
@@ -141,7 +141,7 @@ TextSearcherICU::~TextSearcherICU() {
   // error.
   SetPattern(&kNewlineCharacter, 1);
   SetText(&kNewlineCharacter, 1);
-  ICULockableSearcher::ReleaseSearcher();
+  SearcherFactory::ReleaseSearcher();
 }
 
 void TextSearcherICU::SetPattern(const StringView& pattern,
