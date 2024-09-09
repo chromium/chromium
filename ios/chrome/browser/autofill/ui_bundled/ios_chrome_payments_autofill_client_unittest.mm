@@ -77,6 +77,9 @@
 - (void)showEditAddressBottomSheet {
 }
 
+- (void)dismissEditAddressBottomSheet {
+}
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
   _errorContext = std::move(errorContext);

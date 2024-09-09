@@ -1519,9 +1519,8 @@ enum class ToolbarKind {
   _quickDeleteCoordinator = nil;
 
   [self hideDriveFilePicker];
-
   [self hideContextualSheet];
-
+  [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
 }
 
@@ -1845,6 +1844,14 @@ enum class ToolbarKind {
           initWithBaseViewController:self.viewController
                              browser:self.browser];
   [self.autofillEditProfileBottomSheetCoordinator start];
+}
+
+- (void)dismissEditAddressBottomSheet {
+  if (self.autofillEditProfileBottomSheetCoordinator) {
+    [self.autofillEditProfileBottomSheetCoordinator stop];
+  }
+
+  self.autofillEditProfileBottomSheetCoordinator = nil;
 }
 
 - (void)showAutofillErrorDialog:

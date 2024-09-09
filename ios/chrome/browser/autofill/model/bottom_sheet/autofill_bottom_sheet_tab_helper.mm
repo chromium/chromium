@@ -95,6 +95,11 @@ void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {
 
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     id<AutofillCommands> commands_handler) {
+  if (!commands_handler) {
+    // Means that the web state has been destroyed therefore dismiss the edit
+    // address bottom sheet if it's shown.
+    [commands_handler_ dismissEditAddressBottomSheet];
+  }
   commands_handler_ = commands_handler;
 }
 
