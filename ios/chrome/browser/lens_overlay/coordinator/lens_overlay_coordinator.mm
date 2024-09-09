@@ -350,14 +350,13 @@ const CGFloat kMenuSymbolSize = 18;
                           .identifier]);
 }
 
-- (void)presentationControllerDidDismiss:
+- (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
   UIViewController* presentedViewController =
       presentationController.presentedViewController;
 
   if (presentedViewController == _resultViewController) {
-    [self stopResultPage];
-    return;
+    [self destroyLensUI:YES];
   }
 }
 
