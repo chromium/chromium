@@ -14,6 +14,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -39,7 +41,9 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
       u"gif", base::DoNothing());
 }
 
-TEST(PickerImageItemGridViewTest, OneGifItem) {
+using PickerImageItemGridViewTest = views::ViewsTestBase;
+
+TEST_F(PickerImageItemGridViewTest, OneGifItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item =
@@ -53,7 +57,7 @@ TEST(PickerImageItemGridViewTest, OneGifItem) {
                   Pointee(Property(&views::View::children, IsEmpty()))));
 }
 
-TEST(PickerImageItemGridViewTest, TwoGifItems) {
+TEST_F(PickerImageItemGridViewTest, TwoGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -69,7 +73,7 @@ TEST(PickerImageItemGridViewTest, TwoGifItems) {
                                            ElementsAre(item2->parent())))));
 }
 
-TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
+TEST_F(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -92,7 +96,7 @@ TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
 }
 
 // TODO: b/357146181 - Re-enable once Gifs are used again.
-TEST(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
+TEST_F(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -104,7 +108,7 @@ TEST(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
             item2->GetPreferredSize().width());
 }
 
-TEST(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
+TEST_F(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   constexpr gfx::Size kGifDimensions(100, 200);
@@ -115,7 +119,7 @@ TEST(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
             GetAspectRatio(kGifDimensions));
 }
 
-TEST(PickerImageItemGridViewTest, GetsTopItem) {
+TEST_F(PickerImageItemGridViewTest, GetsTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -134,13 +138,13 @@ TEST(PickerImageItemGridViewTest, GetsTopItem) {
   EXPECT_EQ(item_grid.GetTopItem(), item1);
 }
 
-TEST(PickerImageItemGridViewTest, EmptyGridHasNoTopItem) {
+TEST_F(PickerImageItemGridViewTest, EmptyGridHasNoTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   EXPECT_EQ(item_grid.GetTopItem(), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, GetsBottomItem) {
+TEST_F(PickerImageItemGridViewTest, GetsBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -159,13 +163,13 @@ TEST(PickerImageItemGridViewTest, GetsBottomItem) {
   EXPECT_EQ(item_grid.GetBottomItem(), item3);
 }
 
-TEST(PickerImageItemGridViewTest, EmptyGridHasNoBottomItem) {
+TEST_F(PickerImageItemGridViewTest, EmptyGridHasNoBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   EXPECT_EQ(item_grid.GetBottomItem(), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, GetsItemAbove) {
+TEST_F(PickerImageItemGridViewTest, GetsItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -190,7 +194,7 @@ TEST(PickerImageItemGridViewTest, GetsItemAbove) {
   EXPECT_EQ(item_grid.GetItemAbove(item4), item2);
 }
 
-TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
+TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -198,7 +202,7 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
   EXPECT_EQ(item_grid.GetItemAbove(item_not_in_grid.get()), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, GetsItemBelow) {
+TEST_F(PickerImageItemGridViewTest, GetsItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -223,7 +227,7 @@ TEST(PickerImageItemGridViewTest, GetsItemBelow) {
   EXPECT_EQ(item_grid.GetItemBelow(item4), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
+TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -231,7 +235,7 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
   EXPECT_EQ(item_grid.GetItemBelow(item_not_in_grid.get()), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
+TEST_F(PickerImageItemGridViewTest, GetsItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -256,7 +260,7 @@ TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item4), item3);
 }
 
-TEST(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
+TEST_F(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -277,7 +281,7 @@ TEST(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item3), item1);
 }
 
-TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
+TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -285,7 +289,7 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item_not_in_grid.get()), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, GetsItemRightOf) {
+TEST_F(PickerImageItemGridViewTest, GetsItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -310,12 +314,75 @@ TEST(PickerImageItemGridViewTest, GetsItemRightOf) {
   EXPECT_EQ(item_grid.GetItemRightOf(item4), nullptr);
 }
 
-TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
+TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
 
   EXPECT_EQ(item_grid.GetItemRightOf(item_not_in_grid.get()), nullptr);
+}
+
+TEST_F(PickerImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerImageItemGridView* item_grid = widget->SetContentsView(
+      std::make_unique<PickerImageItemGridView>(kDefaultGridWidth));
+
+  PickerItemView* item1 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  PickerItemView* item2 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  PickerItemView* item3 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  PickerItemView* item4 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  views::FocusManager* focus_manager = item_grid->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item1, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
+            item2);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item2, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
+            item3);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item3, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
+            item4);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item4, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
+            nullptr);
+}
+
+TEST_F(PickerImageItemGridViewTest,
+       ReverseTabFocusTraversesInReverseOrderAdded) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerImageItemGridView* item_grid = widget->SetContentsView(
+      std::make_unique<PickerImageItemGridView>(kDefaultGridWidth));
+
+  PickerItemView* item1 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  PickerItemView* item2 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  PickerItemView* item3 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  PickerItemView* item4 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  views::FocusManager* focus_manager = item_grid->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item1, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
+            nullptr);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item2, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
+            item1);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item3, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
+            item2);
+  EXPECT_EQ(focus_manager->GetNextFocusableView(
+                item4, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
+            item3);
 }
 
 }  // namespace

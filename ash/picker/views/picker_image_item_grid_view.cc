@@ -63,7 +63,11 @@ std::unique_ptr<views::View> CreateListItemView() {
 }  // namespace
 
 PickerImageItemGridView::PickerImageItemGridView(int grid_width)
-    : grid_width_(grid_width) {
+    : grid_width_(grid_width),
+      focus_search_(std::make_unique<FocusSearch>(
+          this,
+          base::BindRepeating(&PickerImageItemGridView::GetFocusableItems,
+                              base::Unretained(this)))) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
                   /*v_align=*/views::LayoutAlignment::kStretch,
@@ -89,6 +93,10 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
 }
 
 PickerImageItemGridView::~PickerImageItemGridView() = default;
+
+views::FocusTraversable* PickerImageItemGridView::GetPaneFocusTraversable() {
+  return focus_search_.get();
+}
 
 views::View* PickerImageItemGridView::GetTopItem() {
   views::View* column = children().front();
@@ -173,14 +181,83 @@ PickerImageItemView* PickerImageItemGridView::AddImageItem(
                         /*proj=*/[](const views::View* v) {
                           return v->GetPreferredSize().height();
                         });
-  return shortest_column->AddChildView(CreateListItemView())
-      ->AddChildView(std::move(image_item));
+  PickerImageItemView* new_item =
+      shortest_column->AddChildView(CreateListItemView())
+          ->AddChildView(std::move(image_item));
+  focusable_items_.push_back(new_item);
+  return new_item;
+}
+
+PickerImageItemGridView::FocusSearch::FocusSearch(
+    views::View* view,
+    const GetFocusableViewsCallback& callback)
+    : views::FocusSearch(/*root=*/view,
+                         /*cycle=*/true,
+                         /*accessibility_mode=*/true),
+      view_(view),
+      get_focusable_views_callback_(callback) {}
+
+PickerImageItemGridView::FocusSearch::~FocusSearch() = default;
+
+views::View* PickerImageItemGridView::FocusSearch::FindNextFocusableView(
+    views::View* starting_view,
+    SearchDirection search_direction,
+    TraversalDirection traversal_direction,
+    StartingViewPolicy check_starting_view,
+    AnchoredDialogPolicy can_go_into_anchored_dialog,
+    views::FocusTraversable** focus_traversable,
+    views::View** focus_traversable_view) {
+  // The callback polls the currently focusable views.
+  const views::View::Views& focusable_views =
+      get_focusable_views_callback_.Run();
+  if (focusable_views.empty()) {
+    return nullptr;
+  }
+
+  int delta =
+      search_direction == FocusSearch::SearchDirection::kForwards ? 1 : -1;
+  int focusable_views_size = static_cast<int>(focusable_views.size());
+  for (int i = 0; i < focusable_views_size; ++i) {
+    // If current view from the set is found to be focused, return the view
+    // next (or previous) to it as next focusable view.
+    if (focusable_views[i] == starting_view) {
+      const int next_index = i + delta;
+      if (next_index >= 0 && next_index < focusable_views_size) {
+        return focusable_views[next_index];
+      } else {
+        return nullptr;
+      }
+    }
+  }
+
+  // Case when none of the views are already focused.
+  return (search_direction == FocusSearch::SearchDirection::kForwards)
+             ? focusable_views.front()
+             : focusable_views.back();
+}
+
+views::FocusSearch* PickerImageItemGridView::FocusSearch::GetFocusSearch() {
+  return this;
+}
+
+views::FocusTraversable*
+PickerImageItemGridView::FocusSearch::GetFocusTraversableParent() {
+  return nullptr;
+}
+
+views::View*
+PickerImageItemGridView::FocusSearch::GetFocusTraversableParentView() {
+  return nullptr;
 }
 
 views::View* PickerImageItemGridView::GetColumnContaining(views::View* item) {
   views::View* column =
       item->parent() == nullptr ? nullptr : item->parent()->parent();
   return column && column->parent() == this ? column : nullptr;
+}
+
+const views::View::Views& PickerImageItemGridView::GetFocusableItems() const {
+  return focusable_items_;
 }
 
 BEGIN_METADATA(PickerImageItemGridView)
