@@ -1,3 +1,4 @@
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 ../resources/tests2.dat:
 36
 37

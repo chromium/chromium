@@ -1,5 +1,12 @@
 CONSOLE MESSAGE: PASS
 CONSOLE MESSAGE: FOO<span>BAR</span>BAZ
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 ../resources/webkit01.dat:
 31
 

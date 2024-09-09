@@ -928,6 +928,10 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kSelect:
       if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
           tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.");
         // Don't allow nested <select>s. This is the exact same logic as
         // <button>s.
         ParseError(token);
@@ -1522,6 +1526,10 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
           return;
         case HTMLTag::kSelect: {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "A <select> tag was parsed within another <select> tag and was converted into </select>. This behavior will change in a future browser version. Please add the missing </select> end tag.");
           ParseError(token);
           AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
           ProcessEndTag(&end_select);
