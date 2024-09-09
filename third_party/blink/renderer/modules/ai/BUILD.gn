@@ -18,6 +18,7 @@ blink_modules_sources("ai") {
     "ai_capability_availability.h",
     "ai_metrics.cc",
     "ai_metrics.h",
+    "ai_mojo_session_create_client.h",
     "ai_rewriter.cc",
     "ai_rewriter.h",
     "ai_rewriter_factory.cc",

@@ -6,9 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/web/web_console_message.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -52,30 +51,20 @@ mojom::blink::AISummarizerLength ToMojoSummarizerLength(
   }
 }
 
-// TODO(crbug.com/364805756): Add a template class for the AI
-// summarizer/writer/rewriter creation clients.
 class CreateSummarizerClient
     : public GarbageCollected<CreateSummarizerClient>,
-      public ExecutionContextLifecycleObserver,
+      public AIMojoSessionCreateClient<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(AI* ai,
                                   const AISummarizerCreateOptions* options,
                                   ScriptPromiseResolver<AISummarizer>* resolver)
-      : ExecutionContextLifecycleObserver(ai->GetExecutionContext()),
-        ai_(ai),
-        resolver_(resolver),
-        abort_signal_(options->getSignalOr(nullptr)),
-        receiver_(this, GetExecutionContext()),
+      : AIMojoSessionCreateClient(ai, resolver, options->getSignalOr(nullptr)),
+        receiver_(this, ai->GetExecutionContext()),
         type_(options->type()),
         format_(options->format()),
         length_(options->length()),
-        shared_context_(options->getSharedContextOr(WTF::String())) {
-    if (abort_signal_) {
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &CreateSummarizerClient::OnAborted, WrapWeakPersistent(this)));
-    }
-  }
+        shared_context_(options->getSharedContextOr(WTF::String())) {}
 
   ~CreateSummarizerClient() override = default;
 
@@ -83,8 +72,8 @@ class CreateSummarizerClient
     mojo::PendingRemote<mojom::blink::AIManagerCreateSummarizerClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   ai_->GetTaskRunner());
-    ai_->GetAIRemote()->CreateSummarizer(
+                   GetAI()->GetTaskRunner());
+    GetAI()->GetAIRemote()->CreateSummarizer(
         std::move(client_remote),
         mojom::blink::AISummarizerCreateOptions::New(
             shared_context_, ToMojoSummarizerType(type_),
@@ -92,66 +81,31 @@ class CreateSummarizerClient
   }
 
   void Trace(Visitor* visitor) const override {
-    ExecutionContextLifecycleObserver::Trace(visitor);
-    visitor->Trace(ai_);
-    visitor->Trace(abort_signal_);
-    visitor->Trace(abort_handle_);
-    visitor->Trace(resolver_);
+    AIMojoSessionCreateClient::Trace(visitor);
     visitor->Trace(receiver_);
   }
 
   void OnResult(mojo::PendingRemote<mojom::blink::AISummarizer>
                     remote_summarizer) override {
-    if (!resolver_) {
+    if (!GetResolver()) {
       // The creation was aborted by the user.
       return;
     }
-    if (!GetExecutionContext() || !remote_summarizer) {
-      resolver_->Reject(DOMException::Create(
+    if (!GetAI()->GetExecutionContext() || !remote_summarizer) {
+      GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateSession,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
     } else {
       AISummarizer* summarizer = MakeGarbageCollected<AISummarizer>(
-          GetExecutionContext(), ai_->GetTaskRunner(),
+          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
           std::move(remote_summarizer), shared_context_, type_, format_,
           length_);
-      resolver_->Resolve(summarizer);
+      GetResolver()->Resolve(summarizer);
     }
     Cleanup();
   }
-
-  void ContextDestroyed() override { Cleanup(); }
 
  private:
-  void OnAborted() {
-    if (!resolver_) {
-      return;
-    }
-    resolver_->Reject(DOMException::Create(
-        "Aborted", DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
-    Cleanup();
-  }
-
-  void Cleanup() {
-    ai_.Clear();
-    if (resolver_) {
-      resolver_->Reject(DOMException::Create(
-          kExceptionMessageUnableToCreateSession,
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
-    }
-    resolver_.Clear();
-    receiver_.reset();
-    if (abort_handle_) {
-      abort_signal_->RemoveAlgorithm(abort_handle_);
-      abort_handle_ = nullptr;
-    }
-  }
-
-  Member<AI> ai_;
-  Member<ScriptPromiseResolver<AISummarizer>> resolver_;
-  Member<AbortSignal> abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> abort_handle_;
-
   HeapMojoReceiver<mojom::blink::AIManagerCreateSummarizerClient,
                    CreateSummarizerClient>
       receiver_;
