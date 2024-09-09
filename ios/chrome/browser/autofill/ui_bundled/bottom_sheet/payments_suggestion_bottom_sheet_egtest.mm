@@ -474,7 +474,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Close the context menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Reopen the bottom sheet.
