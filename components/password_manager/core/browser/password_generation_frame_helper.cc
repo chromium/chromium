@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -147,6 +148,16 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   }
 
   return false;
+}
+
+bool PasswordGenerationFrameHelper::IsManualGenerationEnabledField(
+    autofill::FieldRendererId field_renderer_id) const {
+  return generation_enabled_fields_.contains(field_renderer_id);
+}
+
+void PasswordGenerationFrameHelper::AddManualGenerationEnabledField(
+    autofill::FieldRendererId field_renderer_id) {
+  generation_enabled_fields_.insert(field_renderer_id);
 }
 
 std::u16string PasswordGenerationFrameHelper::GeneratePassword(

@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -321,6 +322,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
               (const std::u16string& password),
+              (override));
+  MOCK_METHOD(PasswordGenerationFrameHelper*,
+              GetPasswordGenerationHelper,
+              (),
               (override));
 };
 
@@ -4312,7 +4317,7 @@ TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
 }
 
 // Checks that a password form with a clear-text account creation field results
-// in marking the password field as eligible for password generation.
+// in marking the password field as eligible for manual password generation.
 TEST_P(PasswordManagerTest,
        MarkServerPredictedClearTextPasswordFieldEligibleForGeneration) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
@@ -4339,15 +4344,26 @@ TEST_P(PasswordManagerTest,
   password_field.set_renderer_id(password_field_id);
   test_api(form_data).Append(password_field);
 
+  // TODO: crbug/356817239 - Delete this check once we stop sending text
+  // password fields to renderer.
   autofill::PasswordFormGenerationData form_generation_data;
   EXPECT_CALL(driver_, FormEligibleForGenerationFound)
       .WillOnce(SaveArg<0>(&form_generation_data));
+
+  PasswordGenerationFrameHelper password_generation_frame_helper =
+      PasswordGenerationFrameHelper(&client_, &driver_);
+  EXPECT_CALL(driver_, GetPasswordGenerationHelper)
+      .WillRepeatedly(Return(&password_generation_frame_helper));
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(form_data.url()));
   manager()->ProcessAutofillPredictions(
       &driver_, form_data,
       CreateServerPredictions(form_data,
                               {{1, FieldType::ACCOUNT_CREATION_PASSWORD}}));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(password_field_id, form_generation_data.new_password_renderer_id);
+  EXPECT_TRUE(password_generation_frame_helper.IsManualGenerationEnabledField(
+      form_generation_data.new_password_renderer_id));
 }
 
 // Checks that username is suggested in the save prompt and saved on username

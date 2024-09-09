@@ -1136,12 +1136,7 @@ bool RenderViewContextMenu::IsInProgressiveWebApp() const {
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_PASSWORD) &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    AppendPasswordItems();
-  }
+  AppendPasswordItems();
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
     AppendPageItems();
@@ -2675,11 +2670,18 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
 }
 
 void RenderViewContextMenu::AppendPasswordItems() {
-  bool add_separator = false;
-
   password_manager::ContentPasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           GetRenderFrameHost());
+
+  if (!driver ||
+      !driver->IsPasswordFieldForPasswordManager(
+          autofill::FieldRendererId(params_.field_renderer_id), params_)) {
+    return;
+  }
+
+  bool add_separator = false;
+
   // Don't show the item for guest or incognito profiles and also when the
   // automatic generation feature is disabled.
   if (password_manager_util::ManualPasswordGenerationEnabled(driver)) {

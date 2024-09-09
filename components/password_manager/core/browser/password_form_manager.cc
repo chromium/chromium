@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -1142,7 +1143,14 @@ void PasswordFormManager::FillNow() {
   metrics_recorder_->CacheParsingResultInFillingMode(
       *parsed_observed_form_.get());
 
+  // TODO: crbug/356817239 - Consider deleting the `IsBlocklisted()` check.
   if (form_parsing_result.is_new_password_reliable && !IsBlocklisted()) {
+    PasswordGenerationFrameHelper* password_generation_helper =
+        driver_->GetPasswordGenerationHelper();
+    if (password_generation_helper) {
+      password_generation_helper->AddManualGenerationEnabledField(
+          parsed_observed_form_->new_password_element_renderer_id);
+    }
     driver_->FormEligibleForGenerationFound({
 #if BUILDFLAG(IS_IOS)
         .form_renderer_id = parsed_observed_form_->form_data.renderer_id(),

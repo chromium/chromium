@@ -522,9 +522,10 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
   CHECK(element);
 
   if (element.FormControlTypeForAutofill() != kInputPassword) {
-    // Do not show password generation suggestion for non-password field.
-    // TODO: crbug/356817239 - Update the comment once manual generation is
-    // fixed.
+    // Do not show password generation suggestion for non-password fields,
+    // unless the user triggered manual generation on the field. In such case,
+    // `WebInputElement::SetHasBeenPasswordField()` will be called and the field
+    // will be considered as password field for Password Manager.
     return false;
   }
   auto it =
