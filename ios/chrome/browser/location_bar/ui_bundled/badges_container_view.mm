@@ -46,14 +46,6 @@
   return accessibleElements;
 }
 
-- (void)updateForFullscreen:(BOOL)fullscreen {
-  if (fullscreen) {
-    _placeholderView.hidden = YES;
-  } else {
-    [self updatePlaceholderVisibility];
-  }
-}
-
 #pragma mark - BadgeViewVisibilityDelegate
 
 - (void)setBadgeViewHidden:(BOOL)hidden {

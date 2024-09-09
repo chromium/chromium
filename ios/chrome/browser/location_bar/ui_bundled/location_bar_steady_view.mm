@@ -249,7 +249,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
     AddSameConstraints(self, _locationButton);
 
-    // Badges (infobar badge & Contextual Panel entrypoint) container view.
+    // Badges (infobar badge , Contextual Panel & Lens Overlay entypoints)
+    // container view.
     _badgesContainerView = [[LocationBarBadgesContainerView alloc] init];
     _badgesContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -476,8 +477,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (!self.badgesContainerView.badgeView) {
     return;
   }
-
-  [self.badgesContainerView updateForFullscreen:isFullScreenCollapsed];
 
   if (isFullScreenCollapsed) {
     [NSLayoutConstraint
