@@ -2910,7 +2910,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMapWithRole) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityMapWithAriaOwns) {
+                       AccessibilityMapWithAriaOwns) {
   RunHtmlTest(FILE_PATH_LITERAL("map-with-aria-owns.html"));
 }
 
@@ -3092,15 +3092,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("optgroup-custom-menulist.html"));
 }
 
-// TODO(crbug.com/40848920): test timeouts on Fuchsia
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilityOpenModal DISABLED_AccessibilityOpenModal
-#else
-#define MAYBE_AccessibilityOpenModal AccessibilityOpenModal
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityOpenModal) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOpenModal) {
   RunHtmlTest(FILE_PATH_LITERAL("open-modal.html"));
 }
 
@@ -3382,14 +3374,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySub) {
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
 
-// TODO(crbug.com/40930250): Flaky
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilitySub DISABLED_AccessibilitySub
-#else
-#define MAYBE_AccessibilitySub AccessibilitySub
-#endif
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySub) {
+                       AccessibilitySub) {
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
 
@@ -3397,13 +3383,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
   RunHtmlTest(FILE_PATH_LITERAL("sup.html"));
 }
 
-// TODO(crbug.com/40758178): fails on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilitySummary DISABLED_AccessibilitySummary
-#else
-#define MAYBE_AccessibilitySummary AccessibilitySummary
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilitySummary) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySummary) {
   RunHtmlTest(FILE_PATH_LITERAL("summary.html"));
 }
 
@@ -3631,14 +3611,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTitleChanged) {
   RunHtmlTest(FILE_PATH_LITERAL("title-changed.html"));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Flaky on Win/Mac: crbug.com/508532
-#define MAYBE_AccessibilityTransition DISABLED_AccessibilityTransition
-#else
-#define MAYBE_AccessibilityTransition AccessibilityTransition
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityTransition) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTransition) {
   RunHtmlTest(FILE_PATH_LITERAL("transition.html"));
 }
 
@@ -3673,16 +3646,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoTextOnly) {
   RunHtmlTest(FILE_PATH_LITERAL("video-text-only.html"));
 }
 
-// TODO(crbug.com/40874552): This test is failing on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityNodeChangedCrashInEditableText \
-  DISABLED_AccessibilityNodeChangedCrashInEditableText
-#else
-#define MAYBE_AccessibilityNodeChangedCrashInEditableText \
-  AccessibilityNodeChangedCrashInEditableText
-#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityNodeChangedCrashInEditableText) {
+                       AccessibilityNodeChangedCrashInEditableText) {
   RunHtmlTest(FILE_PATH_LITERAL("node-changed-crash-in-editable-text.html"));
 }
 
