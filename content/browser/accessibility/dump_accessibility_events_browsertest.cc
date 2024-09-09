@@ -1186,16 +1186,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/40868032): Test is flaky on Windows ASAN and Mac.
-#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
-  DISABLED_AccessibilityEventsMenubarShowHideMenus
-#else
-#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
-  AccessibilityEventsMenubarShowHideMenus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsMenubarShowHideMenus) {
+                       AccessibilityEventsMenubarShowHideMenus) {
   RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
 }
 
