@@ -1979,13 +1979,14 @@ void DownloadItemImpl::OnDownloadCompleting() {
 
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&DownloadFile::RenameAndAnnotate,
-                     base::Unretained(download_file_.get()),
-                     GetTargetFilePath(),
-                     delegate_->GetApplicationClientIdForFileScanning(),
-                     delegate_->IsOffTheRecord() ? GURL() : GetURL(),
-                     delegate_->IsOffTheRecord() ? GURL() : GetReferrerUrl(),
-                     std::move(quarantine), std::move(rename_callback)));
+      base::BindOnce(
+          &DownloadFile::RenameAndAnnotate,
+          base::Unretained(download_file_.get()), GetTargetFilePath(),
+          delegate_->GetApplicationClientIdForFileScanning(),
+          delegate_->IsOffTheRecord() ? GURL() : GetURL(),
+          delegate_->IsOffTheRecord() ? GURL() : GetReferrerUrl(),
+          delegate_->IsOffTheRecord() ? std::nullopt : GetRequestInitiator(),
+          std::move(quarantine), std::move(rename_callback)));
 }
 
 void DownloadItemImpl::OnRenameAndAnnotateDone(

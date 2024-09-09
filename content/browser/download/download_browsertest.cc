@@ -303,6 +303,7 @@ class DownloadFileWithDelay : public download::DownloadFileImpl {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) override;
 
@@ -383,11 +384,13 @@ void DownloadFileWithDelay::RenameAndAnnotate(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     RenameCompletionCallback callback) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
   download::DownloadFileImpl::RenameAndAnnotate(
-      full_path, client_guid, source_url, referrer_url, mojo::NullRemote(),
+      full_path, client_guid, source_url, referrer_url, request_initiator,
+      mojo::NullRemote(),
       base::BindOnce(DownloadFileWithDelay::RenameCallbackWrapper, owner_,
                      std::move(callback)));
 }

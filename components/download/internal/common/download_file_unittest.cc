@@ -427,7 +427,8 @@ class DownloadFileTest : public testing::Test {
       case RENAME_AND_ANNOTATE:
         download_file_->RenameAndAnnotate(
             full_path, "12345678-ABCD-1234-DCBA-123456789ABC", GURL(), GURL(),
-            mojo::NullRemote(), std::move(completion_callback));
+            /*request_initiator=*/std::nullopt, mojo::NullRemote(),
+            std::move(completion_callback));
         break;
     }
   }

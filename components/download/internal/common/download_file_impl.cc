@@ -382,6 +382,7 @@ void DownloadFileImpl::RenameAndAnnotate(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     RenameCompletionCallback callback) {
   std::unique_ptr<RenameParameters> parameters(new RenameParameters(
@@ -389,6 +390,7 @@ void DownloadFileImpl::RenameAndAnnotate(
   parameters->client_guid = client_guid;
   parameters->source_url = source_url;
   parameters->referrer_url = referrer_url;
+  parameters->request_initiator = request_initiator;
   parameters->remote_quarantine = std::move(remote_quarantine);
   RenameWithRetryInternal(std::move(parameters));
 }
@@ -476,7 +478,8 @@ void DownloadFileImpl::RenameWithRetryInternal(
     // QuarantineFile when kPreventDownloadsWithSamePath is disabled.
     file_.AnnotateWithSourceInformation(
         parameters->client_guid, parameters->source_url,
-        parameters->referrer_url, std::move(parameters->remote_quarantine),
+        parameters->referrer_url, parameters->request_initiator,
+        std::move(parameters->remote_quarantine),
         base::BindOnce(&DownloadFileImpl::OnRenameComplete,
                        weak_factory_.GetWeakPtr(), new_path,
                        std::move(parameters->completion_callback)));

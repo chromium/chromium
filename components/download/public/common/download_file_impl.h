@@ -71,6 +71,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) override;
   void Detach() override;
@@ -237,6 +238,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     std::string client_guid;  // See BaseFile::AnnotateWithSourceInformation()
     GURL source_url;          // See BaseFile::AnnotateWithSourceInformation()
     GURL referrer_url;        // See BaseFile::AnnotateWithSourceInformation()
+    std::optional<url::Origin>
+        request_initiator;  // See BaseFile::AnnotateWithSourceInformation()
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine;
     int retries_left;         // RenameWithRetryInternal() will
                               // automatically retry until this

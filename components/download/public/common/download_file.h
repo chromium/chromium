@@ -91,6 +91,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) = 0;
 
