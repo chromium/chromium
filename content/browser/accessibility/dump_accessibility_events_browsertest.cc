@@ -478,40 +478,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("add-child-of-body.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialog DISABLED_AccessibilityEventsAddDialog
-#else
-#define MAYBE_AccessibilityEventsAddDialog AccessibilityEventsAddDialog
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialog) {
+                       AccessibilityEventsAddDialog) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialogDescribedBy \
-  DISABLED_AccessibilityEventsAddDialogDescribedBy
-#else
-#define MAYBE_AccessibilityEventsAddDialogDescribedBy \
-  AccessibilityEventsAddDialogDescribedBy
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialogDescribedBy) {
+                       AccessibilityEventsAddDialogDescribedBy) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-described-by.html"));
 }
 
-// TODO(crbug.com/40823869): Flaky on Win7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAddDialogNoInfo \
-  DISABLED_AccessibilityEventsAddDialogNoInfo
-#else
-#define MAYBE_AccessibilityEventsAddDialogNoInfo \
-  AccessibilityEventsAddDialogNoInfo
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAddDialogNoInfo) {
+                       AccessibilityEventsAddDialogNoInfo) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-no-info.html"));
 }
 
