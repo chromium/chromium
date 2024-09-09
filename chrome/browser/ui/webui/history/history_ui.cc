@@ -136,6 +136,11 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"title", IDS_HISTORY_TITLE},
+      {"compareHistorySyncMessage", IDS_COMPARE_SYNC_PROMO_MESSAGE},
+      {"compareHistorySyncDescription", IDS_COMPARE_SYNC_PROMO_DESCRIPTION},
+      {"compareHistorySyncButton", IDS_COMPARE_SYNC_PROMO_BUTTON},
+      {"compareHistoryErrorMessage", IDS_COMPARE_ERROR_TITLE},
+      {"compareHistoryErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
   };
   source->AddLocalizedStrings(kStrings);
 
