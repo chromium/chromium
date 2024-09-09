@@ -20,7 +20,7 @@ namespace {
 IntegrityLevel GetProcessIntegrityLevelInternal(
     std::optional<win::AccessToken> token) {
   if (!token) {
-    PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
+    PLOG(ERROR) << "AccessToken `token` is invalid";
     return INTEGRITY_UNKNOWN;
   }
   DWORD integrity_level = token->IntegrityLevel();
