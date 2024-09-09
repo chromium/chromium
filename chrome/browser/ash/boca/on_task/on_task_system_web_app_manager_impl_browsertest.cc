@@ -8,11 +8,14 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -25,7 +28,7 @@ using ::testing::NotNull;
 namespace ash::boca {
 namespace {
 
-constexpr char kTestUrl[] = "https://www.google.com";
+constexpr char kTestUrl[] = "https://www.test.com";
 
 class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
  protected:
@@ -143,13 +146,24 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Create tab from the url and verify that Boca has the tab.
   system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl));
+      boca_app_browser->session_id(), GURL(kTestUrl),
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   content::WebContents* web_contents =
       boca_app_browser->tab_strip_model()->GetWebContentsAt(1);
   content::TestNavigationObserver observer(web_contents);
   observer.Wait();
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kTestUrl));
+
+  // Verify that the restriction is applied to the tab.
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  OnTaskBlocklist* const blocklist = window_tracker->on_task_blocklist();
+  EXPECT_EQ(
+      blocklist
+          ->parent_tab_to_nav_filters()[sessions::SessionTabHelper::IdForTab(
+              web_contents)],
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
 }
 
 }  // namespace

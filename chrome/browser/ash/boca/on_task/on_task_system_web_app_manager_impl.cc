@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
@@ -146,16 +148,24 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
 
 void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
     SessionID window_id,
-    GURL url) {
+    GURL url,
+    OnTaskBlocklist::RestrictionLevel restriction_level) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
   }
-
-  // TODO (b/353758782): Set navigation restrictions for the URL.
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
   navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  Navigate(&navigate_params);
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&navigate_params);
+  content::WebContents* const tab = navigation_handle->GetWebContents();
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  if (!window_tracker) {
+    return;
+  }
+  window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
+      tab, restriction_level);
 }
 
 }  // namespace ash::boca

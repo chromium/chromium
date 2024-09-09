@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -24,6 +25,22 @@ namespace {
 
 // Delay in seconds before we attempt to add a tab.
 constexpr int kRetryAddTabTime = 3;
+
+OnTaskBlocklist::RestrictionLevel NavigationTypeToRestrictionLevel(
+    ::boca::LockedNavigationOptions::NavigationType navigation_type) {
+  switch (navigation_type) {
+    case ::boca::LockedNavigationOptions::OPEN_NAVIGATION:
+      return OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
+    case ::boca::LockedNavigationOptions::BLOCK_NAVIGATION:
+      return OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
+    case ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION:
+      return OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation;
+    case ::boca::LockedNavigationOptions::LIMITED_NAVIGATION:
+      return OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation;
+    default:
+      return OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
+  }
+}
 
 }  // namespace
 
@@ -67,7 +84,25 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());
     const GURL url(content_config.url());
-    system_web_app_launch_helper_->AddTab(url);
+    OnTaskBlocklist::RestrictionLevel restriction_level;
+    if (content_config.has_locked_navigation_options()) {
+      ::boca::LockedNavigationOptions_NavigationType navigation_type =
+          content_config.locked_navigation_options().navigation_type();
+      restriction_level = NavigationTypeToRestrictionLevel(navigation_type);
+    } else {
+      restriction_level = OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
+    }
+    // TODO (b/358197253): Stop the window tracker briefly while adding the new
+    // tabs before resuming it.
+    system_web_app_launch_helper_->AddTab(url, restriction_level);
+  }
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
+    bool is_lock_mode = bundle.locked();
+    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
+        /*pinned=*/is_lock_mode, window_id);
   }
 }
 
@@ -86,20 +121,23 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(GURL url) {
+void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(
+    GURL url,
+    OnTaskBlocklist::RestrictionLevel restriction_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SystemWebAppLaunchHelper::AddTab,
-                       weak_ptr_factory_.GetWeakPtr(), url),
+                       weak_ptr_factory_.GetWeakPtr(), url, restriction_level),
         base::Seconds(kRetryAddTabTime));
     return;
   }
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
-    system_web_app_manager_->CreateBackgroundTabWithUrl(window_id, url);
+    system_web_app_manager_->CreateBackgroundTabWithUrl(window_id, url,
+                                                        restriction_level);
   }
 }
 

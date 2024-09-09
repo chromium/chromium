@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "url/gurl.h"
 
@@ -33,7 +34,10 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
   void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
-  void CreateBackgroundTabWithUrl(SessionID window_id, GURL url) override;
+  void CreateBackgroundTabWithUrl(
+      SessionID window_id,
+      GURL url,
+      OnTaskBlocklist::RestrictionLevel restriction_level) override;
 
  private:
   raw_ptr<Profile> profile_;
