@@ -3642,7 +3642,8 @@
       "external/wpt/css/css-values/attr-pseudo-elem-invalidation.html",
       "external/wpt/css/css-values/attr-px-invalid-cast.html",
       "external/wpt/css/css-values/attr-px-valid.html",
-      "external/wpt/css/css-values/attr-all-types.html"
+      "external/wpt/css/css-values/attr-all-types.html",
+      "external/wpt/css/css-values/attr-security.html"
     ],
     "exclusive_tests": "ALL",
     "args": [

@@ -15,6 +15,7 @@
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -1668,6 +1669,9 @@ CSSUrlData CollectUrlData(const StringView& url,
 // will be overwritten once we move to the next one.
 CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+  stream.EnsureLookAhead();
+
   CSSParserToken token = stream.Peek();
   if (token.GetType() == kUrlToken) {
     stream.ConsumeIncludingWhitespace();
@@ -1683,6 +1687,10 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
     DCHECK_EQ(token.GetType(), kStringToken);
     stream.ConsumeWhitespace();
   } else {
+    return CSSParserToken(kEOFToken);
+  }
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+  if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
     return CSSParserToken(kEOFToken);
   }
   return IsFetchRestricted(token.Value(), context)
@@ -3386,8 +3394,17 @@ CSSValue* ConsumeImage(
     return CreateCSSImageValueWithReferrer(uri.Value(), context);
   }
   if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
+    wtf_size_t value_start_offset = stream.LookAheadOffset();
     String uri_string = ConsumeStringAsString(stream);
     if (!uri_string.IsNull()) {
+      wtf_size_t value_end_offset = stream.LookAheadOffset();
+      if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+        // https://drafts.csswg.org/css-values-5/#attr-security
+        // “Additionally, attr() is not allowed to be used in any <url> value,
+        // whether directly or indirectly. Doing so makes the property it’s used
+        // in invalid.”
+        return nullptr;
+      }
       if (IsFetchRestricted(uri_string, context)) {
         uri_string = "";
       }

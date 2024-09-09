@@ -87,6 +87,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   String Serialize() const;
 
   bool operator==(const CSSVariableData& other) const;
+  bool EqualsIgnoringTaint(const CSSVariableData& other) const;
 
   bool IsAnimationTainted() const { return is_animation_tainted_; }
 

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -960,17 +961,31 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
     return false;
   }
 
+  String new_text;
+
   StringView other_text = sequence.original_text_;
-  other_text =
+  StringView stripped_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
 
-  CSSTokenizer tokenizer(other_text);
+  StringView trailer = StringView(other_text, stripped_text.length());
+  if (IsAttrTainted(trailer)) {
+    // We stripped away the taint token from the fallback value,
+    // so add it back here. This is a somewhat slower path,
+    // but should be rare.
+    StringBuilder sb;
+    sb.Append(stripped_text);
+    sb.Append(GetCSSAttrTaintToken());
+    new_text = sb.ReleaseString();
+    stripped_text = new_text;
+  }
+
+  CSSTokenizer tokenizer(stripped_text);
   CSSParserToken first_token = tokenizer.TokenizeSingleWithComments();
 
   if (NeedsInsertedComment(last_token_, first_token)) {
     original_text_.Append("/**/");
   }
-  original_text_.Append(other_text);
+  original_text_.Append(stripped_text);
   last_token_ = last_non_whitespace_token_ =
       sequence.last_non_whitespace_token_;
 
@@ -1676,6 +1691,14 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
                            FunctionContext{}, out);
 }
 
+// Mark the value as tainted, so that ConsumeUrl() and similar can check
+// that they should not create URLs from it. Note that we do this _after_
+// the value, not before, so that we are sure that lookahead does not
+// accidentally consume it.
+void StyleCascade::AppendTaintToken(TokenSequence& out) {
+  out.Append(CSSParserToken(kCommentToken), GetCSSAttrTaintToken());
+}
+
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
@@ -1698,6 +1721,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
       return false;
     }
     if (!substitution_value.has_value()) {
+      AppendTaintToken(out);
       return out.AppendFallback(fallback, CSSVariableData::kMaxVariableBytes);
     }
   }
@@ -1708,6 +1732,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     // the empty string if omitted.
     // https://drafts.csswg.org/css-values-5/#funcdef-attr
     out.Append(CSSParserToken(kStringToken, g_empty_atom), g_empty_atom);
+    AppendTaintToken(out);
     return true;
   }
 
@@ -1715,6 +1740,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     StringBuilder serialized_substitution_value;
     substitution_value->Serialize(serialized_substitution_value);
     out.Append(*substitution_value, serialized_substitution_value);
+    AppendTaintToken(out);
     return true;
   }
 

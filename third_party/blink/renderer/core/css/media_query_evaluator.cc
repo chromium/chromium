@@ -1761,7 +1761,9 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     CSSVariableData* computed =
         container->ComputedStyleRef().GetVariableData(property_name);
 
-    if (base::ValuesEquivalent(computed, query_computed)) {
+    if (computed == query_computed ||
+        (computed && query_computed &&
+         computed->EqualsIgnoringTaint(*query_computed))) {
       return KleeneValue::kTrue;
     }
     return KleeneValue::kFalse;
