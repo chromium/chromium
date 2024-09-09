@@ -27260,22 +27260,6 @@ Called by update_use_counter_css.py.-->
   <int value="18" label="isolated-app"/>
 </enum>
 
-<enum name="NavigationTransitionCacheHitOrMissReason">
-  <int value="0" label="kCacheHit"/>
-  <int value="1" label="kSentScreenshotRequest"/>
-  <int value="2" label="kCapturedEmptyBitmap"/>
-  <int value="3" label="kCacheMissSubframe"/>
-  <int value="4" label="kCacheMissEvicted"/>
-  <int value="5" label="kCacheMissPurgedMemoryPressure"/>
-  <int value="6" label="kCacheMissColdStart"/>
-  <int value="7" label="kCacheMissClonedNavigationEntry"/>
-  <int value="8" label="kCacheMissEmbeddedPages"/>
-  <int value="9" label="kCacheMissCCNS"/>
-  <int value="10" label="kCacheMissInvisible"/>
-  <int value="11" label="kCacheMissPrefersReducedMotion"/>
-  <int value="12" label="kCacheMissScreenshotOrientation"/>
-</enum>
-
 <enum name="NetErrorCodes">
 <!-- Generated from net/base/net_error_list.h.
 Called by update_net_error_codes.py.-->

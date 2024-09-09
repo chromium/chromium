@@ -403,6 +403,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
 
+<enum name="NavigationTransitionCacheHitOrMissReason">
+  <int value="0" label="Cache Hit"/>
+  <int value="1" label="Sent Screenshot Request"/>
+  <int value="2" label="Captured Empty Bitmap"/>
+  <int value="3" label="Cache Miss Subframe"/>
+  <int value="4" label="Cache Miss Evicted"/>
+  <int value="5" label="Cache Miss Purged Memory Pressure"/>
+  <int value="6" label="Cache Miss Cold Start"/>
+  <int value="7" label="Cache Miss Cloned Navigation Entry"/>
+  <int value="8" label="Cache Miss Embedded Pages"/>
+  <int value="9" label="Cache Miss CCNS"/>
+  <int value="10" label="Cache Miss Invisible"/>
+  <int value="11" label="Cache Miss Prefers Reduced Motion"/>
+  <int value="12" label="Cache Miss Screenshot Orientation"/>
+</enum>
+
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>
   <int value="1" label="Navigation was served from cache"/>
