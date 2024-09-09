@@ -442,9 +442,9 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   std::optional<int> index = GetIndexOf(group_id);
   saved_tab_groups_[index.value()].MoveTabLocally(tab_id, new_index);
 
-  for (auto& observer : observers_) {
+  for (SavedTabGroupModelObserver& observer : observers_) {
     // TODO(crbug.com/40919583): Consider further optimizations.
-    observer.SavedTabGroupTabsReorderedLocally(group_id);
+    observer.SavedTabGroupTabMovedLocally(group_id, copy_tab_id);
   }
 }
 

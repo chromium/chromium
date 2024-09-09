@@ -84,7 +84,8 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Process creation of a new shared group. The added group must be shared.
   void SavedTabGroupAddedLocally(const base::Uuid& guid);
 
-  // Process update to the existing group. The group must be shared.
+  // Process update to the existing group or tab (including moved tab). The
+  // group must be shared.
   void SavedTabGroupUpdatedLocally(const base::Uuid& group_guid,
                                    const std::optional<base::Uuid>& tab_guid);
 
@@ -92,8 +93,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
 
   // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid);
-  // void SavedTabGroupReorderedLocally();
   // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid);
 
  private:

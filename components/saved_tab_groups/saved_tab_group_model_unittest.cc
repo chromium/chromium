@@ -111,8 +111,8 @@ class SavedTabGroupModelObserverTest
   }
 
   void SavedTabGroupReorderedLocally() override { reordered_called_ = true; }
-  void SavedTabGroupTabsReorderedLocally(
-      const base::Uuid& group_guid) override {
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override {
     tabs_reodered_called_ = true;
   }
 

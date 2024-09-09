@@ -145,6 +145,11 @@ class ModelObserverForwarder : public SavedTabGroupModelObserver {
     bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
   }
 
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override {
+    bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+  }
+
  private:
   raw_ref<SavedTabGroupModel> model_;
   raw_ref<SharedTabGroupDataSyncBridge> bridge_;
@@ -1226,6 +1231,47 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   ASSERT_THAT(model()->Get(group.saved_guid())->saved_tabs(), SizeIs(3));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs()[1].saved_tab_guid(),
             new_tab.saved_tab_guid());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldUpdateUniquePositionOnLocalMove) {
+  const std::string kCollaborationId = "collaboration";
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  SavedTabGroupTab tab_to_move =
+      test::CreateSavedTabGroupTab("http://google.com/1", u"tab to move",
+                                   group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab_2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+  group.AddTabLocally(tab_to_move);
+  group.AddTabLocally(tab_2);
+  model()->Add(group);
+
+  // Generate unique position for the moved tab.
+  sync_pb::UniquePosition unique_position =
+      GenerateRandomUniquePosition().ToProto();
+  EXPECT_CALL(mock_processor(),
+              UniquePositionAfter(StorageKeyForTab(tab_2),
+                                  HasClientTagHashForTab(tab_to_move)))
+      .WillOnce(Return(unique_position));
+
+  // Only the moved tab is expected to be committed.
+  EXPECT_CALL(
+      mock_processor(),
+      Put(StorageKeyForTab(tab_to_move),
+          Pointee(HasTabEntityDataWithPosition("tab to move", unique_position)),
+          _));
+  EXPECT_CALL(mock_processor(), Put(StorageKeyForTab(tab_2), _, _)).Times(0);
+  model()->MoveTabInGroupTo(group.saved_guid(), tab_to_move.saved_tab_guid(),
+                            /*index=*/1);
+
+  EXPECT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      ElementsAre(HasTabMetadata("tab 2", "http://google.com/2"),
+                  HasTabMetadata("tab to move", "http://google.com/1")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {

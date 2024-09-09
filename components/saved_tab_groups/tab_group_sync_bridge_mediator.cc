@@ -149,8 +149,9 @@ void TabGroupSyncBridgeMediator::SavedTabGroupSharedStateUpdatedLocally(
   shared_bridge_->SavedTabGroupAddedLocally(group_guid);
 }
 
-void TabGroupSyncBridgeMediator::SavedTabGroupTabsReorderedLocally(
-    const base::Uuid& group_guid) {
+void TabGroupSyncBridgeMediator::SavedTabGroupTabMovedLocally(
+    const base::Uuid& group_guid,
+    const base::Uuid& tab_guid) {
   const SavedTabGroup* group = model_->Get(group_guid);
   if (!group) {
     return;
@@ -158,9 +159,13 @@ void TabGroupSyncBridgeMediator::SavedTabGroupTabsReorderedLocally(
 
   if (group->is_shared_tab_group()) {
     CHECK(shared_bridge_);
-    // TODO(crbug.com/351357559): support handling positions.
+    // Shared tab groups may handle individual tab moves because it uses
+    // relative (unique) positions.
+    shared_bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
   } else {
     CHECK(saved_bridge_);
+    // Positions of the other tabs could also be updated, hence handle
+    // reordering of all tabs in the group.
     saved_bridge_->SavedTabGroupTabsReorderedLocally(group_guid);
   }
 }

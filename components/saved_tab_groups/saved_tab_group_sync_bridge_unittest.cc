@@ -88,8 +88,8 @@ class ModelObserverForwarder : public SavedTabGroupModelObserver {
     bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
   }
 
-  void SavedTabGroupTabsReorderedLocally(
-      const base::Uuid& group_guid) override {
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override {
     bridge_->SavedTabGroupTabsReorderedLocally(group_guid);
   }
 

@@ -65,7 +65,8 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
       const std::optional<base::Uuid>& tab_guid) override;
   void SavedTabGroupSharedStateUpdatedLocally(
       const base::Uuid& group_guid) override;
-  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
+  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
+                                    const base::Uuid& tab_guid) override;
   void SavedTabGroupReorderedLocally() override;
   void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
   void SavedTabGroupLastUserInteractionTimeUpdated(
