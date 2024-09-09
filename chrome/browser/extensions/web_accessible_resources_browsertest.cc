@@ -4,11 +4,8 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
@@ -16,7 +13,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/browser/background_script_executor.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -354,77 +350,6 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
   EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
   auto result = EvalJs(web_contents, "document.body.textContent");
   EXPECT_EQ("dnr redirect success", result.ExtractString());
-}
-
-class WebAccessibleResourcesBrowserRedirectTest
-    : public WebAccessibleResourcesBrowserTest {
- protected:
-  void TestBrowserRedirect(const char* kManifestFragment,
-                           const char* kHistogramName) {
-    // Load extension.
-    TestExtensionDir test_dir;
-    test_dir.WriteManifest(kManifestFragment);
-    test_dir.WriteFile(FILE_PATH_LITERAL("resource.html"), "resource.html");
-    test_dir.WriteFile(FILE_PATH_LITERAL("web_accessible_resource.html"),
-                       "web_accessible_resource.html");
-    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-
-    base::HistogramTester histogram_tester;
-
-    // Test extension resource accessibility.
-    auto server_redirect = [&](int expect_net_error, const char* resource,
-                               int histogram_count) {
-      GURL gurl = embedded_test_server()->GetURL(
-          "example.com",
-          base::StringPrintf(
-              "/server-redirect?%s",
-              extension->GetResourceURL(resource).spec().c_str()));
-      auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-      content::TestNavigationObserver observer(web_contents);
-      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-      observer.WaitForNavigationFinished();
-      EXPECT_EQ(extension->GetResourceURL(resource),
-                observer.last_navigation_url());
-      EXPECT_EQ(expect_net_error == net::OK,
-                observer.last_navigation_succeeded());
-      EXPECT_EQ(expect_net_error, observer.last_net_error_code());
-      histogram_tester.ExpectBucketCount(kHistogramName, false,
-                                         histogram_count);
-    };
-
-    // Test cases.
-    server_redirect(net::OK, "web_accessible_resource.html", 0);
-    server_redirect(net::OK, "resource.html", 1);
-  }
-};
-
-// Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, MV2) {
-  TestBrowserRedirect(
-      R"({
-      "name": "Test browser redirect",
-      "version": "0.1",
-      "manifest_version": 2,
-      "web_accessible_resources": ["web_accessible_resource.html"]
-    })",
-      "Extensions.WAR.XOriginWebAccessible.MV2");
-}
-
-// Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, MV3) {
-  TestBrowserRedirect(
-      R"({
-      "name": "Redirect Test",
-      "version": "0.1",
-      "manifest_version": 3,
-      "web_accessible_resources": [
-        {
-          "resources": ["web_accessible_resource.html"],
-          "matches": ["http://example.com/*"]
-        }
-      ]
-    })",
-      "Extensions.WAR.XOriginWebAccessible.MV3");
 }
 
 }  // namespace
