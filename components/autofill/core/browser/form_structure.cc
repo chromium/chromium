@@ -257,6 +257,7 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
   }
   // When a non-default source is active, shadow predictions between this
   // non-default source and default are emitted. Compute default predictions.
+  context.pattern_source = PatternSource::kDefault;
   context.active_features.clear();
   AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
                        HeuristicSource::kDefault);
