@@ -21,6 +21,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - chrome.*
 - chrome_os
 items:

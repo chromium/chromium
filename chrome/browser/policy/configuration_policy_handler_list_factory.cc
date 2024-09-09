@@ -41,6 +41,7 @@
 #include "chrome/browser/policy/drive_file_sync_available_policy_handler.h"
 #include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
+#include "chrome/browser/policy/gen_ai_default_settings_policy_handler.h"
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
 #include "chrome/browser/policy/webhid_device_policy_handler.h"
@@ -279,7 +280,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/policy/gen_ai_default_settings_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -2409,34 +2409,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           optimization_guide::model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
       false));
-
-  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
-      gen_ai_default_policies;
-  gen_ai_default_policies.emplace_back(
-      key::kHelpMeWriteSettings,
-      optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
-      key::kTabOrganizerSettings,
-      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
-      key::kCreateThemesSettings,
-      optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
-                                       prefs::kDevToolsGenAiSettings);
-  gen_ai_default_policies.emplace_back(
-      key::kHistorySearchSettings,
-      optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
-      key::kTabCompareSettings,
-      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
-#if BUILDFLAG(IS_CHROMEOS)
-  gen_ai_default_policies.emplace_back(key::kGenAIWallpaperSettings,
-                                       ash::prefs::kGenAIWallpaperSettings);
-  gen_ai_default_policies.emplace_back(key::kGenAIVcBackgroundSettings,
-                                       ash::prefs::kGenAIVcBackgroundSettings);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-      std::move(gen_ai_default_policies)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -3213,6 +3185,38 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                               /*max=*/2,
                                               /*clamp=*/false)));
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  gen_ai_default_policies.emplace_back(
+      key::kHelpMeWriteSettings,
+      optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabOrganizerSettings,
+      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kCreateThemesSettings,
+      optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
+                                       prefs::kDevToolsGenAiSettings);
+  gen_ai_default_policies.emplace_back(
+      key::kHistorySearchSettings,
+      optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabCompareSettings,
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  gen_ai_default_policies.emplace_back(key::kGenAIWallpaperSettings,
+                                       ash::prefs::kGenAIWallpaperSettings);
+  gen_ai_default_policies.emplace_back(key::kGenAIVcBackgroundSettings,
+                                       ash::prefs::kGenAIVcBackgroundSettings);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies)));
 
   return handlers;
 }

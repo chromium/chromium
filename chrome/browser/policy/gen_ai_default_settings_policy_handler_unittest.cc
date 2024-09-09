@@ -22,11 +22,15 @@ namespace policy {
 
 namespace {
 
-constexpr char kHelpMeWriteSettingsPrefs[] = "HelpMeWriteSettings";
-constexpr char kTabOrganizerSettingsPrefs[] = "TabOrganizerSettings";
-constexpr char kCreateThemesSettingsPrefs[] = "CreateThemesSettings";
-constexpr char kDevToolsGenAiSettingsPrefs[] = "DevToolsGenAiSettings";
-constexpr char kHistorySearchSettingsPrefs[] = "HistorySearchSettings";
+constexpr char kGenAiPolicy1Name[] = "GenAiPolicy1";
+constexpr char kGenAiPolicy2Name[] = "GenAiPolicy2";
+constexpr char kGenAiPolicy3Name[] = "GenAiPolicy3";
+constexpr char kGenAiPolicy4Name[] = "GenAiPolicy4";
+
+constexpr char kGenAiPolicy1PrefPath[] = "GenAiPolicy1PrefPath";
+constexpr char kGenAiPolicy2PrefPath[] = "GenAiPolicy2PrefPath";
+constexpr char kGenAiPolicy3PrefPath[] = "GenAiPolicy3PrefPath";
+constexpr char kGenAiPolicy4PrefPath[] = "GenAiPolicy4PrefPath";
 
 constexpr int kDefaultValue = 2;
 
@@ -37,26 +41,23 @@ class GenAiDefaultSettingsPolicyHandlerTest : public testing::Test {
   void SetUp() override {
     std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
         gen_ai_default_policies;
-    gen_ai_default_policies.emplace_back(key::kHelpMeWriteSettings,
-                                         kHelpMeWriteSettingsPrefs);
-    gen_ai_default_policies.emplace_back(key::kTabOrganizerSettings,
-                                         kTabOrganizerSettingsPrefs);
-    gen_ai_default_policies.emplace_back(key::kCreateThemesSettings,
-                                         kCreateThemesSettingsPrefs);
-    gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
-                                         kDevToolsGenAiSettingsPrefs);
-    gen_ai_default_policies.emplace_back(key::kHistorySearchSettings,
-                                         kHistorySearchSettingsPrefs);
+    gen_ai_default_policies.emplace_back(kGenAiPolicy1Name,
+                                         kGenAiPolicy1PrefPath);
+    gen_ai_default_policies.emplace_back(kGenAiPolicy2Name,
+                                         kGenAiPolicy2PrefPath);
+    gen_ai_default_policies.emplace_back(kGenAiPolicy3Name,
+                                         kGenAiPolicy3PrefPath);
+    gen_ai_default_policies.emplace_back(kGenAiPolicy4Name,
+                                         kGenAiPolicy4PrefPath);
     handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
         std::move(gen_ai_default_policies));
 
-    policies_.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1),
-                  nullptr);
-    policies_.Set(key::kTabOrganizerSettings, POLICY_LEVEL_RECOMMENDED,
+    policies_.Set(kGenAiPolicy1Name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                  POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+    policies_.Set(kGenAiPolicy2Name, POLICY_LEVEL_RECOMMENDED,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM, base::Value(1),
                   nullptr);
-    policies_.Set(key::kCreateThemesSettings, POLICY_LEVEL_MANDATORY,
+    policies_.Set(kGenAiPolicy3Name, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
                   base::Value(1), nullptr);
   }
@@ -86,13 +87,11 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, DefaultSet) {
 
   int pref_value;
   // The handler doesn't set prefs whose policies are set in `PolicyMap`.
-  EXPECT_FALSE(prefs_.GetInteger(kHelpMeWriteSettingsPrefs, &pref_value));
-  EXPECT_FALSE(prefs_.GetInteger(kTabOrganizerSettingsPrefs, &pref_value));
-  EXPECT_FALSE(prefs_.GetInteger(kCreateThemesSettingsPrefs, &pref_value));
+  EXPECT_FALSE(prefs_.GetInteger(kGenAiPolicy1PrefPath, &pref_value));
+  EXPECT_FALSE(prefs_.GetInteger(kGenAiPolicy2PrefPath, &pref_value));
+  EXPECT_FALSE(prefs_.GetInteger(kGenAiPolicy3PrefPath, &pref_value));
   // The handler sets prefs whose policies are unset in `PolicyMap`.
-  EXPECT_TRUE(prefs_.GetInteger(kDevToolsGenAiSettingsPrefs, &pref_value));
-  EXPECT_EQ(kDefaultValue, pref_value);
-  EXPECT_TRUE(prefs_.GetInteger(kHistorySearchSettingsPrefs, &pref_value));
+  EXPECT_TRUE(prefs_.GetInteger(kGenAiPolicy4PrefPath, &pref_value));
   EXPECT_EQ(kDefaultValue, pref_value);
 }
 
