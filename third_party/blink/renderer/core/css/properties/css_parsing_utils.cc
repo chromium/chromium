@@ -5151,15 +5151,13 @@ CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
     if (!counter_name) {
       break;
     }
-    int value = default_value;
+    CSSPrimitiveValue* value = CSSNumericLiteralValue::Create(
+        default_value, CSSPrimitiveValue::UnitType::kInteger);
     if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
-      value = ClampTo<int>(counter_value->GetDoubleValue());
+      value = counter_value;
     }
     list->Append(*MakeGarbageCollected<CSSValuePair>(
-        counter_name,
-        CSSNumericLiteralValue::Create(value,
-                                       CSSPrimitiveValue::UnitType::kInteger),
-        CSSValuePair::kDropIdenticalValues));
+        counter_name, value, CSSValuePair::kDropIdenticalValues));
   } while (!stream.AtEnd());
   if (list->length() == 0) {
     return nullptr;
