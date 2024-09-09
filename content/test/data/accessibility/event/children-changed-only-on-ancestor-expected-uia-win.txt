@@ -1,19 +1,5 @@
-AriaProperties changed on role=tree
-Name changed on role=tree
-Name changed on role=tree
-Name changed on role=tree
 StructureChanged/ChildRemoved on role=tree
 StructureChanged/ChildrenReordered on role=tree
-StructureChanged/ChildrenReordered on role=tree
-StructureChanged/ChildrenReordered on role=tree
-StructureChanged/ChildrenReordered on role=tree
 === Start Continuation ===
-AriaProperties changed on role=article
-Name changed on role=treeitem, name=grandchild1
-Name changed on role=treeitem, name=grandchild2
-Name changed on role=treeitem, name=grandchild3
 StructureChanged/ChildAdded on role=article
 StructureChanged/ChildrenReordered on role=tree
-StructureChanged/ChildrenReordered on role=treeitem, name=grandchild1
-StructureChanged/ChildrenReordered on role=treeitem, name=grandchild2
-StructureChanged/ChildrenReordered on role=treeitem, name=grandchild3
