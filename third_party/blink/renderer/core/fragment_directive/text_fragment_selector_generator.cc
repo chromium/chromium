@@ -249,8 +249,8 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // because block limits are also word limits.
     String start_text = corrected_start->textContent();
     start_text.Ensure16Bit();
-    corrected_start_offset = FindWordStartBoundary(
-        start_text.Characters16(), start_text.length(), corrected_start_offset);
+    corrected_start_offset =
+        FindWordStartBoundary(start_text.Span16(), corrected_start_offset);
   }
 
   // If end node has no text or given end position point to the first visible
@@ -274,11 +274,10 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // If |selection_end_pos| is at the beginning of a new word then don't
     // search for the word end as it will be the end of the next word, which was
     // not included in the selection.
-    if (corrected_end_offset != FindWordStartBoundary(end_text.Characters16(),
-                                                      end_text.length(),
-                                                      corrected_end_offset)) {
-      corrected_end_offset = FindWordEndBoundary(
-          end_text.Characters16(), end_text.length(), corrected_end_offset);
+    if (corrected_end_offset !=
+        FindWordStartBoundary(end_text.Span16(), corrected_end_offset)) {
+      corrected_end_offset =
+          FindWordEndBoundary(end_text.Span16(), corrected_end_offset);
     }
   }
 

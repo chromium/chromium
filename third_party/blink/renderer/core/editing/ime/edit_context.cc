@@ -520,8 +520,7 @@ void EditContext::DeleteWordBackward() {
     String text16bit(text_);
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
-    SetSelection(FindNextWordBackward(text16bit.Characters16(),
-                                      text16bit.length(), selection_end_),
+    SetSelection(FindNextWordBackward(text16bit.Span16(), selection_end_),
                  selection_end_);
   }
 
@@ -534,8 +533,7 @@ void EditContext::DeleteWordForward() {
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
     SetSelection(selection_start_,
-                 FindNextWordForward(text16bit.Characters16(),
-                                     text16bit.length(), selection_start_));
+                 FindNextWordForward(text16bit.Span16(), selection_start_));
   }
 
   DeleteCurrentSelection();

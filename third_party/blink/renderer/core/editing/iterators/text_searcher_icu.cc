@@ -121,12 +121,12 @@ static bool IsWholeWordMatch(const UChar* text,
   wtf_size_t word_break_search_start = result_end;
   while (word_break_search_start > result.start) {
     word_break_search_start =
-        FindNextWordBackward(text, text_length, word_break_search_start);
+        FindNextWordBackward({text, text_length}, word_break_search_start);
   }
   if (word_break_search_start != result.start)
     return false;
   return result_end == static_cast<wtf_size_t>(FindWordEndBoundary(
-                           text, text_length, word_break_search_start));
+                           {text, text_length}, word_break_search_start));
 }
 
 // Grab the single global searcher.
