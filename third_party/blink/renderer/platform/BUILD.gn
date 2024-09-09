@@ -2623,6 +2623,18 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
+# This source set is used by image decoder fuzzers to initialize their decoders.
+source_set("blink_image_decoder_fuzzer_test_support") {
+  testonly = true
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "*" ]
+  sources = [
+    "image-decoders/image_decoder_fuzzer_utils.cc",
+    "image-decoders/image_decoder_fuzzer_utils.h",
+  ]
+  deps = [ ":platform" ]
+}
+
 # Fuzzer for WTF::unicode::MathVariant.
 fuzzer_test("math_transform_fuzzer") {
   sources = [ "math_transform_fuzzer.cc" ]
@@ -2772,6 +2784,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
   sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
     "//third_party/libpng",
   ]
@@ -2788,10 +2801,25 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
   sources = [ "image-decoders/jpeg/jpeg_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+fuzzer_test("blink_bmp_decoder_fuzzer") {
+  sources = [ "image-decoders/bmp/bmp_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/bmp-suite/good" ]
+
+  # TODO: crbug.com/324586211 - raise the memory limit to avoid OOMs in the
+  # fuzzer harness. This can be removed once the global memory limit is raised.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 # Fuzzer for blink::WEBPImageDecoder.
