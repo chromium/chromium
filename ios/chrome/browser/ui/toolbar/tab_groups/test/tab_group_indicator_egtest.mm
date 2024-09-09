@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -25,6 +26,8 @@ namespace {
 
 NSString* const kTab1Title = @"Tab1";
 NSString* const kTab2Title = @"Tab2";
+
+NSString* const kGroupTitle = @"Group Title";
 
 // Matcher for the tab group indicator view.
 id<GREYMatcher> TabGroupIndicatorViewMatcher() {
@@ -280,6 +283,38 @@ void CreateDefaultTabGroupAndOpenMenu(
   // Check that there are now 0 tab.
   GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
+
+  // Tap on the snackbar action.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGroupSnackBarAction()]
+      performAction:grey_tap()];
+
+  // Check that the Tab Groups Panel is shown.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupsPanel()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that deleting a tab group from the tab group indicator menu works.
+- (void)testTabGroupIndicatorMenuActionsDeleteGroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "Delete Group" button.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      performAction:grey_tap()];
+
+  // Confirm deleting a group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          DeleteGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that there are now 0 tab.
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected 0 tab to be present.");
 }
 
 // Tests that deleting a tab group from the tab group indicator menu works when
@@ -299,6 +334,59 @@ void CreateDefaultTabGroupAndOpenMenu(
   // Check that there are now 0 tab.
   GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
+}
+
+// Tests that renaming a tab group from the tab group indicator menu works.
+- (void)testTabGroupIndicatorMenuActionsRenameGroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "Rename Group" button.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+      performAction:grey_tap()];
+
+  // Rename the tab group to `kGroupTitle`.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kCreateTabGroupViewIdentifier)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kCreateTabGroupTextFieldIdentifier)]
+      performAction:grey_replaceText(kGroupTitle)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kCreateTabGroupViewIdentifier)];
+
+  // Check that the group has been renamed.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   kGroupTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that ungrouping a tab group from the tab group indicator menu works.
+- (void)testTabGroupIndicatorMenuActionsUngroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "Ungroup" button.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+      performAction:grey_tap()];
+
+  // Confirm ungrouping.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::UngroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the indicator is not visible.
+  [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

@@ -7,22 +7,15 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-class Browser;
 @class TabGroupIndicatorView;
 
 // Coordinator for the tab group indicator.
 @interface TabGroupIndicatorCoordinator : ChromeCoordinator
 
-// A read-only reference to the TabGroupIndicatorView instance, which is
-// assigned by the PrimaryToolbarCoordinator to its associated viewController.
+// A read-only reference to the TabGroupIndicatorView instance.
+// This coordinator does not manage a view controller, but the view is
+// assigned to the PrimaryToolbarCoordinator's viewController.
 @property(nonatomic, strong, readonly) TabGroupIndicatorView* view;
-
-// Initializes this Coordinator with its `browser` and a nil base view
-// controller.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

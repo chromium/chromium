@@ -126,7 +126,7 @@
                   [weakSelf.mutator addNewTabInGroup];
                 }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.mutator unGroup];
+                  [weakSelf.mutator unGroupWithConfirmation:YES];
                 }]];
   if (IsTabGroupSyncEnabled()) {
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
@@ -134,12 +134,12 @@
                   }]];
     if (!_incognito) {
       [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.mutator deleteGroup];
+                      [weakSelf.mutator deleteGroupWithConfirmation:YES];
                     }]];
     }
   } else {
     [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.mutator deleteGroup];
+                    [weakSelf.mutator deleteGroupWithConfirmation:NO];
                   }]];
   }
 

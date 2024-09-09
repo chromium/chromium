@@ -14,14 +14,16 @@
 // Adds a new tab to the current group.
 - (void)addNewTabInGroup;
 
-// Ungroups the current group.
-- (void)unGroup;
-
 // Closes the current group.
 - (void)closeGroup;
 
+// Ungroups the current group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)unGroupWithConfirmation:(BOOL)confirmation;
+
 // Deletes the current group.
-- (void)deleteGroup;
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)deleteGroupWithConfirmation:(BOOL)confirmation;
 
 @end
 

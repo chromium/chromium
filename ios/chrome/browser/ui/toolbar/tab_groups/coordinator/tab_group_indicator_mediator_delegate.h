@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,7 +13,7 @@ class TabGroup;
 enum class TabGroupActionType;
 
 // Delegate for actions happening in the TabGroupIndicatorMediator.
-@protocol TabGroupIndicatorCoordinatorDelegate
+@protocol TabGroupIndicatorMediatorDelegate
 
 // Shows tab group editing view.
 - (void)showTabGroupIndicatorEditionForGroup:
@@ -29,4 +29,4 @@ enum class TabGroupActionType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_

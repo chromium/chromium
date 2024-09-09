@@ -15,14 +15,14 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 @protocol TabGroupIndicatorConsumer;
-@protocol TabGroupIndicatorCoordinatorDelegate;
+@protocol TabGroupIndicatorMediatorDelegate;
 class WebStateList;
 
 // Mediator used to propagate tab group updates to the TabGroupIndicatorView.
 @interface TabGroupIndicatorMediator : NSObject <TabGroupIndicatorMutator>
 
 // Delegate for actions happening in the mediator.
-@property(nonatomic, weak) id<TabGroupIndicatorCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<TabGroupIndicatorMediatorDelegate> delegate;
 
 // Creates an instance of the mediator.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
