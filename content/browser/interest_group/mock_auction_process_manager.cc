@@ -262,6 +262,12 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
             /*generate_bid_finish_time=*/base::TimeTicks::Now());
   }
 
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      non_kanon_pa_requests;
+  for (const auto& request : non_kanon_pa_requests_) {
+    non_kanon_pa_requests.push_back(request->Clone());
+  }
+
   std::vector<auction_worklet::mojom::BidderWorkletBidPtr> bids;
   if (!bid.has_value()) {
     DCHECK(further_bids.empty());
@@ -274,7 +280,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
-        /*non_kanon_pa_requests=*/{},
+        /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
         /*real_time_contributions=*/{},
         /*bidding_latency=*/bidding_latency_,
         /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
@@ -299,7 +305,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
-      /*non_kanon_pa_requests=*/{},
+      /*non_kanon_pa_requests=*/std::move(non_kanon_pa_requests),
       /*real_time_contributions=*/std::move(real_time_contributions),
       /*bidding_latency=*/bidding_latency_,
       /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),

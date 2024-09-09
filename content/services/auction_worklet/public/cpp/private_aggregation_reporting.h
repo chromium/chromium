@@ -28,6 +28,12 @@ CONTENT_EXPORT bool IsValidPrivateAggregationRequestForAdditionalExtensions(
     const auction_worklet::mojom::PrivateAggregationRequest& request,
     bool additional_extensions_allowed);
 
+// Returns true if `request` is asking to record reject-reason, and therefore
+// can be used to report kBelowKAnonThreshold for the bid that would have
+// won if not for k-anonymity.
+CONTENT_EXPORT bool HasKAnonFailureComponent(
+    const mojom::PrivateAggregationRequest& request);
+
 }  // namespace auction_worklet
 
 #endif  // CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_PRIVATE_AGGREGATION_REPORTING_H_

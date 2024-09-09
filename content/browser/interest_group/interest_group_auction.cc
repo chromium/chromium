@@ -72,6 +72,7 @@
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -923,17 +924,12 @@ bool ValidateBidderPrivateAggregationRequests(
     return false;
   }
 
-  if (base::ranges::any_of(
-          non_kanon_pa_requests,
-          [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                 request_ptr) {
-            return request_ptr->contribution->is_histogram_contribution() &&
-                   request_ptr->contribution->get_histogram_contribution()
-                       ->filtering_id.has_value();
-          })) {
-    generate_bid_client_receiver_set.ReportBadMessage(
-        "Filtering ID set inappropriately");
-    return false;
+  for (const auto& non_kanon_request : non_kanon_pa_requests) {
+    if (!auction_worklet::HasKAnonFailureComponent(*non_kanon_request)) {
+      generate_bid_client_receiver_set.ReportBadMessage(
+          "Incorrect non-kanon Private Aggregation request");
+      return false;
+    }
   }
 
   return true;

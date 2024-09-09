@@ -18161,6 +18161,70 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyerReservedOnceFeatureDisabled) {
               testing::UnorderedElementsAre());
 }
 
+TEST_F(AuctionRunnerTest, PrivateAggregationBuyerReservedOnceFeatureDisabled2) {
+  // Test that the validation happens on the non-k-anon list, too.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> pa_requests;
+  pa_requests.push_back(
+      BuildPrivateAggregationForEventRequest(
+          /*bucket=*/123, /*value=*/4,
+          /*event_type=*/
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce),
+          /*filtering_id=*/std::nullopt)
+          .Clone());
+
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  bidder1_worklet->SetNonKAnonPARequests(std::move(pa_requests));
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/6, /*bid_currency=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://ad1.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt,
+      /*duration=*/base::TimeDelta(),
+      /*bidding_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt,
+      /*pa_requests=*/{},
+      /*real_time_contributions=*/{},
+      /*dependency_latencies=*/
+      auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
+      auction_worklet::mojom::RejectReason::kNotAvailable);
+  // Bidder 2 doesn't bid.
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/std::nullopt);
+
+  // Since there's no acceptable bid, the seller worklet is never asked to
+  // score a bid.
+  auction_run_loop_->Run();
+
+  EXPECT_EQ("Private Aggregation request using disabled features",
+            TakeBadMessage());
+
+  // No bidder won.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_TRUE(result_.ad_component_descriptors.empty());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre());
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+}
+
 TEST_F(AuctionRunnerTest, PrivateAggregationSellerReservedOnceFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -18296,6 +18360,66 @@ TEST_F(AuctionRunnerTest, RealTimeReportingBuyerBadContribution) {
 
     EXPECT_TRUE(result_.real_time_contributions.empty());
   }
+}
+
+// Test that non-kanon PA contributions gets its special checks for the right
+// form. (It should get rejected since it doesn't use reject-reason).
+TEST_F(AuctionRunnerTest, PrivateAggregationNonKAnonBadContribution) {
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> pa_requests;
+  pa_requests.push_back(
+      BuildPrivateAggregationForEventRequest(
+          /*bucket=*/123, /*value=*/4,
+          /*event_type=*/
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways),
+          /*filtering_id=*/std::nullopt)
+          .Clone());
+
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  bidder1_worklet->SetNonKAnonPARequests(std::move(pa_requests));
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/6, /*bid_currency=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://ad1.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt,
+      /*duration=*/base::TimeDelta(),
+      /*bidding_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt,
+      /*pa_requests=*/{},
+      /*real_time_contributions=*/{},
+      /*dependency_latencies=*/
+      auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
+      auction_worklet::mojom::RejectReason::kNotAvailable);
+  // Bidder 2 doesn't bid.
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/std::nullopt);
+
+  // Since there's no acceptable bid, the seller worklet is never asked to
+  // score a bid.
+  auction_run_loop_->Run();
+
+  EXPECT_EQ("Incorrect non-kanon Private Aggregation request",
+            TakeBadMessage());
+
+  // No bidder won.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_TRUE(result_.ad_component_descriptors.empty());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre());
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
 }
 
 TEST_F(AuctionRunnerTest, RealTimeReportingSellerBadContribution) {

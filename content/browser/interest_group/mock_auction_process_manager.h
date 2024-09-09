@@ -148,6 +148,14 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
     reporting_latency_ = delta;
   }
 
+  // Controls what's passed to `non_kanon_pa_requests` of the generate bid
+  // callback.
+  void SetNonKAnonPARequests(
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+          non_kanon_pa_requests) {
+    non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
+  }
+
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
   // should be offered. Waits for the GenerateBid() call first, if needed.
   void InvokeGenerateBidCallback(
@@ -209,6 +217,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   bool pipe_closed_ = false;
 
   std::optional<std::string> selected_buyer_and_seller_reporting_id_;
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      non_kanon_pa_requests_;
 
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
   std::unique_ptr<base::RunLoop> report_win_run_loop_;

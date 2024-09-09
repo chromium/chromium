@@ -72,6 +72,56 @@ class PaReportingTest : public testing::Test {
                   /*filtering_id=*/std::nullopt)),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
+
+  // Using kWinningBid base_value for bucket and value.
+  const mojom::PrivateAggregationRequestPtr kWinningBid =
+      mojom::PrivateAggregationRequest::New(
+          mojom::AggregatableReportContribution::NewForEventContribution(
+              mojom::AggregatableReportForEventContribution::New(
+                  mojom::ForEventSignalBucket::NewSignalBucket(
+                      mojom::SignalBucket::New(mojom::BaseValue::kWinningBid,
+                                               1.0,
+                                               mojom::BucketOffsetPtr())),
+                  mojom::ForEventSignalValue::NewSignalValue(
+                      mojom::SignalValue::New(mojom::BaseValue::kWinningBid,
+                                              1.0,
+                                              0)),
+                  /*filtering_id=*/std::nullopt,
+                  mojom::EventType::NewNonReserved("event_type"))),
+          blink::mojom::AggregationServiceMode::kDefault,
+          blink::mojom::DebugModeDetails::New());
+
+  // Using kRejectReason for value.
+  const mojom::PrivateAggregationRequestPtr kWithRejectReasonValue =
+      mojom::PrivateAggregationRequest::New(
+          mojom::AggregatableReportContribution::NewForEventContribution(
+              mojom::AggregatableReportForEventContribution::New(
+                  mojom::ForEventSignalBucket::NewIdBucket(1),
+                  mojom::ForEventSignalValue::NewSignalValue(
+                      mojom::SignalValue::New(
+                          mojom::BaseValue::kBidRejectReason,
+                          1.0,
+                          0)),
+                  /*filtering_id=*/std::nullopt,
+                  mojom::EventType::NewNonReserved("event_type"))),
+          blink::mojom::AggregationServiceMode::kDefault,
+          blink::mojom::DebugModeDetails::New());
+
+  // Using kRejectReason for bucket.
+  const mojom::PrivateAggregationRequestPtr kWithRejectReasonBucket =
+      mojom::PrivateAggregationRequest::New(
+          mojom::AggregatableReportContribution::NewForEventContribution(
+              mojom::AggregatableReportForEventContribution::New(
+                  mojom::ForEventSignalBucket::NewSignalBucket(
+                      mojom::SignalBucket::New(
+                          mojom::BaseValue::kBidRejectReason,
+                          1.0,
+                          mojom::BucketOffsetPtr())),
+                  mojom::ForEventSignalValue::NewIntValue(2),
+                  /*filtering_id=*/std::nullopt,
+                  mojom::EventType::NewNonReserved("event_type"))),
+          blink::mojom::AggregationServiceMode::kDefault,
+          blink::mojom::DebugModeDetails::New());
 };
 
 TEST_F(PaReportingTest,
@@ -95,6 +145,15 @@ TEST_F(PaReportingTest,
       *kNonEvent, /*additional_extensions_allowed=*/true));
   EXPECT_TRUE(IsValidPrivateAggregationRequestForAdditionalExtensions(
       *kNonEvent, /*additional_extensions_allowed=*/false));
+}
+
+TEST_F(PaReportingTest, HasKAnonFailureComponent) {
+  EXPECT_FALSE(HasKAnonFailureComponent(*kNonEvent));
+  EXPECT_FALSE(HasKAnonFailureComponent(*kNonReserved));
+  EXPECT_FALSE(HasKAnonFailureComponent(*kWithReservedAlways));
+  EXPECT_FALSE(HasKAnonFailureComponent(*kWinningBid));
+  EXPECT_TRUE(HasKAnonFailureComponent(*kWithRejectReasonValue));
+  EXPECT_TRUE(HasKAnonFailureComponent(*kWithRejectReasonBucket));
 }
 
 }  // namespace

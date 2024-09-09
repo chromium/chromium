@@ -90,4 +90,23 @@ bool IsValidPrivateAggregationRequestForAdditionalExtensions(
   return true;
 }
 
+bool HasKAnonFailureComponent(const mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+  const mojom::AggregatableReportForEventContributionPtr& event_contribution =
+      request.contribution->get_for_event_contribution();
+  if (event_contribution->bucket->is_signal_bucket() &&
+      event_contribution->bucket->get_signal_bucket()->base_value ==
+          mojom::BaseValue::kBidRejectReason) {
+    return true;
+  }
+  if (event_contribution->value->is_signal_value() &&
+      event_contribution->value->get_signal_value()->base_value ==
+          mojom::BaseValue::kBidRejectReason) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace auction_worklet

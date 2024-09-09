@@ -42,6 +42,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -135,26 +136,6 @@ v8::Local<v8::Value> GetDirectFromSellerSignals(
   }
 
   return subresource_bundle_result.GetSignals(v8_helper, context, errors);
-}
-
-bool HasKAnonFailureComponent(
-    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
-  if (request->contribution->is_histogram_contribution()) {
-    return false;
-  }
-  const auction_worklet::mojom::AggregatableReportForEventContributionPtr&
-      event_contribution = request->contribution->get_for_event_contribution();
-  if (event_contribution->bucket->is_signal_bucket() &&
-      event_contribution->bucket->get_signal_bucket()->base_value ==
-          auction_worklet::mojom::BaseValue::kBidRejectReason) {
-    return true;
-  }
-  if (event_contribution->value->is_signal_value() &&
-      event_contribution->value->get_signal_value()->base_value ==
-          auction_worklet::mojom::BaseValue::kBidRejectReason) {
-    return true;
-  }
-  return false;
 }
 
 std::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
@@ -1282,7 +1263,7 @@ void BidderWorklet::V8State::GenerateBid(
         std::erase_if(
             non_kanon_pa_requests,
             [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                   request) { return !HasKAnonFailureComponent(request); });
+                   request) { return !HasKAnonFailureComponent(*request); });
 
         // We are enforcing the k-anonymity, so the restricted result is the one
         // to use for reporting, etc., and needs to succeed.
