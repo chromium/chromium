@@ -35,12 +35,12 @@ void LogAverageOverdrawCountUMA(float overdraw) {
   // integers while preserving the desired level of decimal precision.
   constexpr int kConversionFactor = 100'000;
 
-  // The expected overdraw ranges is [1, 6].
+  // The expected overdraw ranges is [1, 12].
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       kAverageOverdrawHistogramName,
       base::ClampRound<int>(overdraw * kConversionFactor),
       /*minimum=*/1 * kConversionFactor,
-      /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
+      /*maximum=*/(12 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
 
 }  // namespace
