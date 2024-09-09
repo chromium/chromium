@@ -59,6 +59,8 @@ _IGNORE_WARNINGS = (
     r'Missing class android.adservices.common.AdServicesOutcomeReceiver',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
+    # Happens on internal builds. It's a real failure, but happens in dead code.
+    r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',   # pylint: disable=line-too-long
 
     # Ignore MethodParameter attribute count isn't matching in espresso.
     # This is a banner warning and each individual file affected will have
