@@ -481,6 +481,13 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
+# flaky and worth retrying.
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 
 
 ####################
