@@ -2662,6 +2662,11 @@ class HttpStreamFactoryBidirectionalQuicTest
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()) {
+    // Explicitly disable HappyEyeballsV3 because it doesn't support
+    // bidirectional streams.
+    // TODO(crbug.com/346835898): Support bidirectional streams in
+    // HappyEyeballsV3.
+    feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic_context_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
     quic::QuicEnableVersion(version_);
@@ -2738,6 +2743,7 @@ class HttpStreamFactoryBidirectionalQuicTest
   MockHostResolver* host_resolver() { return &host_resolver_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   MockQuicContext quic_context_;
