@@ -127,19 +127,17 @@
   return gaiaIDs;
 }
 
-- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID {
-  for (id<SystemIdentity> identity : _identities) {
-    if (gaiaID == identity.gaiaID) {
-      TableViewAccountItem* item =
-          [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];
-      item.text = identity.userFullName;
-      item.detailText = identity.userEmail;
-      item.image = _accountManagerService->GetIdentityAvatarWithIdentity(
-          identity, IdentityAvatarSize::TableViewIcon);
-      return item;
-    }
-  }
-  NOTREACHED();
+- (NSString*)nameForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userFullName;
+}
+
+- (NSString*)emailForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userEmail;
+}
+
+- (UIImage*)imageForGaiaID:(NSString*)gaiaID {
+  return _accountManagerService->GetIdentityAvatarWithIdentity(
+      [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
 }
 
 - (NSString*)primaryAccountEmail {
@@ -421,6 +419,15 @@
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
+}
+
+- (id<SystemIdentity>)identityForGaiaID:(NSString*)gaiaID {
+  for (id<SystemIdentity> identity : _identities) {
+    if (gaiaID == identity.gaiaID) {
+      return identity;
+    }
+  }
+  NOTREACHED();
 }
 
 @end

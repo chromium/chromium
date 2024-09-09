@@ -73,23 +73,29 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 }
 
 // The only acceptable argument is the ID of a secondary id.
-- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID {
-  const FakeSystemIdentity* identity;
+- (const FakeSystemIdentity*)identityForGaiaID:(NSString*)gaiaID {
   if (gaiaID == kSecondaryIdentity.gaiaID) {
-    identity = kSecondaryIdentity;
+    return kSecondaryIdentity;
   } else if (gaiaID == kSecondaryIdentity2.gaiaID) {
-    identity = kSecondaryIdentity2;
+    return kSecondaryIdentity2;
   } else {
     NOTREACHED();
   }
-  TableViewAccountItem* item =
-      [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];
-  item.text = identity.userFullName;
-  item.detailText = identity.userEmail;
-  item.image = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::Regular);
-  return item;
 }
+
+- (NSString*)nameForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userFullName;
+}
+
+- (NSString*)emailForGaiaID:(NSString*)gaiaID {
+  return [self identityForGaiaID:gaiaID].userEmail;
+}
+
+- (UIImage*)imageForGaiaID:(NSString*)gaiaID {
+  return _accountManagerService->GetIdentityAvatarWithIdentity(
+      [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
+}
+
 @end
 
 class AccountMenuViewControllerTest : public PlatformTest {

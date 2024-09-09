@@ -38,8 +38,14 @@ struct ManagementState;
 // The management state of this browser and profile.
 @property(nonatomic, readonly) ManagementState managementState;
 
-// The identity for the value at `itemIndex` in the table.
-- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID;
+// The identity for the user with `gaiaID`.
+- (NSString*)nameForGaiaID:(NSString*)gaiaID;
+
+// The identity for the user with `gaiaID`.
+- (NSString*)emailForGaiaID:(NSString*)gaiaID;
+
+// The image for the user with `gaiaID`.
+- (UIImage*)imageForGaiaID:(NSString*)gaiaID;
 
 @end
 

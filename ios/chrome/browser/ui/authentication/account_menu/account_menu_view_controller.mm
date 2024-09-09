@@ -183,10 +183,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
   if (gaiaID) {
     // `itemIdentifier` is a gaia id.
-    TableViewAccountItem* item = [self.dataSource identityItemForGaiaID:gaiaID];
     TableViewAccountCell* cell =
         DequeueTableViewCell<TableViewAccountCell>(tableView);
-    [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+    cell.accessibilityTraits = UIAccessibilityTraitButton;
+
+    cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
+    cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
+    cell.detailTextLabel.text = [self.dataSource emailForGaiaID:gaiaID];
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    cell.userInteractionEnabled = YES;
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
     BOOL lastSecondaryIdentity =
         (indexPath.row == [_accountMenuDataSource tableView:self.tableView

@@ -215,15 +215,24 @@ TEST_F(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 
 #pragma mark - AccountMenuDataSource and SyncObserverModelBridge
 
-// Tests the result of secondaryAccountsGaiaIDs.
-TEST_F(AccountMenuMediatorTest, identityItemForGaiaID) {
-  TableViewAccountItem* item =
-      [mediator_ identityItemForGaiaID:kSecondaryIdentity.gaiaID];
-  EXPECT_NSEQ(item.text, kSecondaryIdentity.userFullName);
-  EXPECT_NSEQ(item.detailText, kSecondaryIdentity.userEmail);
-  EXPECT_NSEQ(item.image,
-              account_manager_service_->GetIdentityAvatarWithIdentity(
-                  kSecondaryIdentity, IdentityAvatarSize::TableViewIcon));
+// Tests the result of nameForGaiaID.
+TEST_F(AccountMenuMediatorTest, nameForGaiaID) {
+  EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaID],
+              kSecondaryIdentity.userFullName);
+}
+
+// Tests the result of emailForGaiaID.
+TEST_F(AccountMenuMediatorTest, emailForGaiaID) {
+  EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaID],
+              kSecondaryIdentity.userEmail);
+}
+
+// Tests the result of imageForGaiaID.
+TEST_F(AccountMenuMediatorTest, imageForGaiaID) {
+  EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaID],
+              account_manager_service_ -> GetIdentityAvatarWithIdentity(
+                                           kSecondaryIdentity,
+                                           IdentityAvatarSize::TableViewIcon));
 }
 
 // Tests the result of primaryAccountEmail.
