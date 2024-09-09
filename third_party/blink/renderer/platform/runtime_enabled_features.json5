@@ -3880,12 +3880,6 @@
       status: "stable",
     },
     {
-      // Skips calling update type if the HTMLInputElement is created by parser.
-      // This flag can be removed in M127 if no issues reported.
-      name: "SkipUpdateTypeForHTMLInputElementCreatedByParser",
-      status: "stable",
-    },
-    {
       name: "SmartCard",
       status: {"Android": "", "default": "test"},
     },
