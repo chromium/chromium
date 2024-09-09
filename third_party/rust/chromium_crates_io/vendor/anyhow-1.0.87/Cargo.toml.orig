@@ -1,6 +1,6 @@
 [package]
 name = "anyhow"
-version = "1.0.86"
+version = "1.0.87"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["rust-patterns", "no-std"]
 description = "Flexible concrete Error type built on std::error::Error"
@@ -34,4 +34,4 @@ doc-scrape-examples = false
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
-rustdoc-args = ["--cfg", "doc_cfg", "--generate-link-to-definition"]
+rustdoc-args = ["--generate-link-to-definition"]

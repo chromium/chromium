@@ -4,7 +4,7 @@ use core::convert::Infallible;
 use core::fmt::{self, Debug, Display, Write};
 
 #[cfg(error_generic_member_access)]
-use std::error::Request;
+use core::error::Request;
 
 mod ext {
     use super::*;
@@ -15,10 +15,10 @@ mod ext {
             C: Display + Send + Sync + 'static;
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     impl<E> StdError for E
     where
-        E: std::error::Error + Send + Sync + 'static,
+        E: crate::StdError + Send + Sync + 'static,
     {
         fn ext_context<C>(self, context: C) -> Error
         where

@@ -4,9 +4,9 @@
 
 #![feature(error_generic_member_access)]
 
+use core::error::{self, Error, Request};
+use core::fmt::{self, Debug, Display};
 use std::backtrace::Backtrace;
-use std::error::{self, Error, Request};
-use std::fmt::{self, Debug, Display};
 
 struct MyError(Thing);
 struct Thing;

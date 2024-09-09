@@ -1,21 +1,20 @@
 use crate::backtrace::Backtrace;
 use crate::chain::Chain;
-#[cfg(any(feature = "std", anyhow_no_ptr_addr_of))]
+#[cfg(any(feature = "std", not(anyhow_no_core_error), anyhow_no_ptr_addr_of))]
 use crate::ptr::Mut;
 use crate::ptr::{Own, Ref};
 use crate::{Error, StdError};
 use alloc::boxed::Box;
 use core::any::TypeId;
+#[cfg(error_generic_member_access)]
+use core::error::{self, Request};
 use core::fmt::{self, Debug, Display};
 use core::mem::ManuallyDrop;
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
+use core::ops::{Deref, DerefMut};
 #[cfg(not(anyhow_no_ptr_addr_of))]
 use core::ptr;
 use core::ptr::NonNull;
-#[cfg(error_generic_member_access)]
-use std::error::{self, Request};
-
-#[cfg(feature = "std")]
-use core::ops::{Deref, DerefMut};
 
 impl Error {
     /// Create a new error object from any error type.
@@ -25,8 +24,7 @@ impl Error {
     ///
     /// If the error type does not provide a backtrace, a backtrace will be
     /// created here to ensure that a backtrace exists.
-    #[cfg(feature = "std")]
-    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
     #[must_use]
     pub fn new<E>(error: E) -> Self
@@ -83,7 +81,7 @@ impl Error {
         Error::from_adhoc(message, backtrace!())
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
     pub(crate) fn from_std<E>(error: E, backtrace: Option<Backtrace>) -> Self
     where
@@ -120,7 +118,7 @@ impl Error {
         let vtable = &ErrorVTable {
             object_drop: object_drop::<MessageError<M>>,
             object_ref: object_ref::<MessageError<M>>,
-            #[cfg(all(feature = "std", anyhow_no_ptr_addr_of))]
+            #[cfg(all(any(feature = "std", not(anyhow_no_core_error)), anyhow_no_ptr_addr_of))]
             object_mut: object_mut::<MessageError<M>>,
             object_boxed: object_boxed::<MessageError<M>>,
             object_downcast: object_downcast::<M>,
@@ -149,7 +147,7 @@ impl Error {
         let vtable = &ErrorVTable {
             object_drop: object_drop::<DisplayError<M>>,
             object_ref: object_ref::<DisplayError<M>>,
-            #[cfg(all(feature = "std", anyhow_no_ptr_addr_of))]
+            #[cfg(all(any(feature = "std", not(anyhow_no_core_error)), anyhow_no_ptr_addr_of))]
             object_mut: object_mut::<DisplayError<M>>,
             object_boxed: object_boxed::<DisplayError<M>>,
             object_downcast: object_downcast::<M>,
@@ -168,7 +166,7 @@ impl Error {
         unsafe { Error::construct(error, vtable, backtrace) }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
     pub(crate) fn from_context<C, E>(context: C, error: E, backtrace: Option<Backtrace>) -> Self
     where
@@ -198,7 +196,7 @@ impl Error {
         unsafe { Error::construct(error, vtable, backtrace) }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
     pub(crate) fn from_boxed(
         error: Box<dyn StdError + Send + Sync>,
@@ -325,7 +323,7 @@ impl Error {
         let vtable = &ErrorVTable {
             object_drop: object_drop::<ContextError<C, Error>>,
             object_ref: object_ref::<ContextError<C, Error>>,
-            #[cfg(all(feature = "std", anyhow_no_ptr_addr_of))]
+            #[cfg(all(any(feature = "std", not(anyhow_no_core_error)), anyhow_no_ptr_addr_of))]
             object_mut: object_mut::<ContextError<C, Error>>,
             object_boxed: object_boxed::<ContextError<C, Error>>,
             object_downcast: context_chain_downcast::<C>,
@@ -399,8 +397,7 @@ impl Error {
     ///     None
     /// }
     /// ```
-    #[cfg(feature = "std")]
-    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
     pub fn chain(&self) -> Chain {
         unsafe { ErrorImpl::chain(self.inner.by_ref()) }
@@ -411,8 +408,7 @@ impl Error {
     ///
     /// The root cause is the last error in the iterator produced by
     /// [`chain()`][Error::chain].
-    #[cfg(feature = "std")]
-    #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     pub fn root_cause(&self) -> &(dyn StdError + 'static) {
         self.chain().last().unwrap()
     }
@@ -554,8 +550,7 @@ impl Error {
     }
 }
 
-#[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 impl<E> From<E> for Error
 where
     E: StdError + Send + Sync + 'static,
@@ -567,8 +562,7 @@ where
     }
 }
 
-#[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 impl Deref for Error {
     type Target = dyn StdError + Send + Sync + 'static;
 
@@ -577,8 +571,7 @@ impl Deref for Error {
     }
 }
 
-#[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 impl DerefMut for Error {
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe { ErrorImpl::error_mut(self.inner.by_mut()) }
@@ -609,7 +602,7 @@ impl Drop for Error {
 struct ErrorVTable {
     object_drop: unsafe fn(Own<ErrorImpl>),
     object_ref: unsafe fn(Ref<ErrorImpl>) -> Ref<dyn StdError + Send + Sync + 'static>,
-    #[cfg(all(feature = "std", anyhow_no_ptr_addr_of))]
+    #[cfg(all(any(feature = "std", not(anyhow_no_core_error)), anyhow_no_ptr_addr_of))]
     object_mut: unsafe fn(Mut<ErrorImpl>) -> &mut (dyn StdError + Send + Sync + 'static),
     object_boxed: unsafe fn(Own<ErrorImpl>) -> Box<dyn StdError + Send + Sync + 'static>,
     object_downcast: unsafe fn(Ref<ErrorImpl>, TypeId) -> Option<Ref<()>>,
@@ -661,7 +654,7 @@ where
 
 // Safety: requires layout of *e to match ErrorImpl<E>, and for `e` to be derived
 // from a `&mut`
-#[cfg(all(feature = "std", anyhow_no_ptr_addr_of))]
+#[cfg(all(any(feature = "std", not(anyhow_no_core_error)), anyhow_no_ptr_addr_of))]
 unsafe fn object_mut<E>(e: Mut<ErrorImpl>) -> &mut (dyn StdError + Send + Sync + 'static)
 where
     E: StdError + Send + Sync + 'static,
@@ -734,7 +727,7 @@ fn no_backtrace(e: Ref<ErrorImpl>) -> Option<&Backtrace> {
 }
 
 // Safety: requires layout of *e to match ErrorImpl<ContextError<C, E>>.
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 unsafe fn context_downcast<C, E>(e: Ref<ErrorImpl>, target: TypeId) -> Option<Ref<()>>
 where
     C: 'static,
@@ -774,7 +767,7 @@ where
 }
 
 // Safety: requires layout of *e to match ErrorImpl<ContextError<C, E>>.
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 unsafe fn context_drop_rest<C, E>(e: Own<ErrorImpl>, target: TypeId)
 where
     C: 'static,
@@ -906,7 +899,7 @@ impl ErrorImpl {
         unsafe { (vtable(this.ptr).object_ref)(this).deref() }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     pub(crate) unsafe fn error_mut(this: Mut<Self>) -> &mut (dyn StdError + Send + Sync + 'static) {
         // Use vtable to attach E's native StdError vtable for the right
         // original type E.
@@ -1009,14 +1002,14 @@ impl From<Error> for Box<dyn StdError + 'static> {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 impl AsRef<dyn StdError + Send + Sync> for Error {
     fn as_ref(&self) -> &(dyn StdError + Send + Sync + 'static) {
         &**self
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 impl AsRef<dyn StdError> for Error {
     fn as_ref(&self) -> &(dyn StdError + 'static) {
         &**self

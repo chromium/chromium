@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.39"
 name = "anyhow"
-version = "1.0.86"
+version = "1.0.87"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autobins = false
@@ -35,11 +35,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/anyhow"
 
 [package.metadata.docs.rs]
-rustdoc-args = [
-    "--cfg",
-    "doc_cfg",
-    "--generate-link-to-definition",
-]
+rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
@@ -48,60 +44,60 @@ path = "src/lib.rs"
 doc-scrape-examples = false
 
 [[test]]
-name = "test_ensure"
-path = "tests/test_ensure.rs"
-
-[[test]]
-name = "test_chain"
-path = "tests/test_chain.rs"
-
-[[test]]
-name = "test_fmt"
-path = "tests/test_fmt.rs"
-
-[[test]]
-name = "test_source"
-path = "tests/test_source.rs"
-
-[[test]]
-name = "test_repr"
-path = "tests/test_repr.rs"
+name = "compiletest"
+path = "tests/compiletest.rs"
 
 [[test]]
 name = "test_autotrait"
 path = "tests/test_autotrait.rs"
 
 [[test]]
-name = "test_boxed"
-path = "tests/test_boxed.rs"
-
-[[test]]
 name = "test_backtrace"
 path = "tests/test_backtrace.rs"
 
 [[test]]
-name = "test_convert"
-path = "tests/test_convert.rs"
+name = "test_boxed"
+path = "tests/test_boxed.rs"
 
 [[test]]
-name = "test_macros"
-path = "tests/test_macros.rs"
-
-[[test]]
-name = "compiletest"
-path = "tests/compiletest.rs"
+name = "test_chain"
+path = "tests/test_chain.rs"
 
 [[test]]
 name = "test_context"
 path = "tests/test_context.rs"
 
 [[test]]
-name = "test_ffi"
-path = "tests/test_ffi.rs"
+name = "test_convert"
+path = "tests/test_convert.rs"
 
 [[test]]
 name = "test_downcast"
 path = "tests/test_downcast.rs"
+
+[[test]]
+name = "test_ensure"
+path = "tests/test_ensure.rs"
+
+[[test]]
+name = "test_ffi"
+path = "tests/test_ffi.rs"
+
+[[test]]
+name = "test_fmt"
+path = "tests/test_fmt.rs"
+
+[[test]]
+name = "test_macros"
+path = "tests/test_macros.rs"
+
+[[test]]
+name = "test_repr"
+path = "tests/test_repr.rs"
+
+[[test]]
+name = "test_source"
+path = "tests/test_source.rs"
 
 [dependencies.backtrace]
 version = "0.3.51"

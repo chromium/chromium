@@ -206,9 +206,8 @@
 //! will require an explicit `.map_err(Error::msg)` when working with a
 //! non-Anyhow error type inside a function that returns Anyhow's error type.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.85")]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.87")]
 #![cfg_attr(error_generic_member_access, feature(error_generic_member_access))]
-#![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![no_std]
 #![deny(dead_code, unused_imports, unused_mut)]
 #![cfg_attr(
@@ -266,13 +265,16 @@ use crate::error::ErrorImpl;
 use crate::ptr::Own;
 use core::fmt::Display;
 
-#[cfg(not(feature = "std"))]
+#[cfg(all(not(feature = "std"), anyhow_no_core_error))]
 use core::fmt::Debug;
 
 #[cfg(feature = "std")]
 use std::error::Error as StdError;
 
-#[cfg(not(feature = "std"))]
+#[cfg(not(any(feature = "std", anyhow_no_core_error)))]
+use core::error::Error as StdError;
+
+#[cfg(all(not(feature = "std"), anyhow_no_core_error))]
 trait StdError: Debug + Display {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         None
@@ -407,8 +409,7 @@ pub struct Error {
 ///     None
 /// }
 /// ```
-#[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg(any(feature = "std", not(anyhow_no_core_error)))]
 #[derive(Clone)]
 pub struct Chain<'a> {
     state: crate::chain::ChainState<'a>,
@@ -670,7 +671,7 @@ pub mod __private {
         #[doc(hidden)]
         pub use crate::kind::{AdhocKind, TraitKind};
 
-        #[cfg(feature = "std")]
+        #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
         #[doc(hidden)]
         pub use crate::kind::BoxedKind;
     }

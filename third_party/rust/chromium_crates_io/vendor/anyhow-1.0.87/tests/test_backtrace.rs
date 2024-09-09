@@ -1,7 +1,7 @@
 #![allow(clippy::let_underscore_untyped)]
 
 #[rustversion::not(nightly)]
-#[ignore]
+#[ignore = "requires nightly"]
 #[test]
 fn test_backtrace() {}
 

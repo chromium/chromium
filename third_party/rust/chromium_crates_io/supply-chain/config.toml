@@ -53,7 +53,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."anstyle:1.0.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."anyhow:1.0.86"]
+[policy."anyhow:1.0.87"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."base64:0.13.1"]
@@ -337,7 +337,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 
 [[exemptions.cxx]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -355,7 +355,7 @@ Exemption updated to 1.0.128 in September 2024.
 
 [[exemptions.cxxbridge-macro]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
