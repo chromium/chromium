@@ -79,7 +79,8 @@ enum class PatternSource : uint8_t {
   kMaxValue = kLegacy
 #else
   kDefault,
-  kMaxValue = kDefault
+  kPredictionImprovements,
+  kMaxValue = kPredictionImprovements
 #endif
 };
 

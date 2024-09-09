@@ -37,6 +37,8 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 #else
     case PatternSource::kDefault:
       return it->second[0];
+    case PatternSource::kPredictionImprovements:
+      return it->second[1];
 #endif
   }
   NOTREACHED();

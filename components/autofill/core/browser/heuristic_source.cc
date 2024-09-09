@@ -35,6 +35,8 @@ std::optional<PatternSource> HeuristicSourceToPatternSource(
 #else
     case HeuristicSource::kDefault:
       return PatternSource::kDefault;
+    case HeuristicSource::kPredictionImprovements:
+      return PatternSource::kPredictionImprovements;
     case HeuristicSource::kExperimental:
 #endif
     case autofill::HeuristicSource::kMachineLearning:

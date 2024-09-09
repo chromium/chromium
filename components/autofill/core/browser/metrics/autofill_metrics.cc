@@ -2393,6 +2393,10 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         case HeuristicSource::kExperimental:
           heuristic_experimental_type = event->field_type;
           break;
+        case HeuristicSource::kPredictionImprovements:
+          // Prediction improvements are currently ignored for Autofill based
+          // UKM logging.
+          break;
 #endif
         case HeuristicSource::kMachineLearning:
           NOTREACHED();

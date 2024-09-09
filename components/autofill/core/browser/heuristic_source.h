@@ -29,6 +29,7 @@ enum class HeuristicSource {
 #else
   kDefault,
   kExperimental,
+  kPredictionImprovements,
 #endif
   kMachineLearning,
   kMaxValue = kMachineLearning
