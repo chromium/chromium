@@ -2065,10 +2065,6 @@
       status: "stable",
     },
     {
-      name: "FontPaletteAnimation",
-      status: "stable",
-    },
-    {
       name: "FontPresentWin",
       status: "stable",
     },

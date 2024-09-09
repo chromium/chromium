@@ -249,8 +249,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     Vector<FontPalette::FontPaletteOverride> color_overrides;
     std::optional<uint16_t> palette_index = std::nullopt;
     PaletteInterpolation palette_interpolation(base_typeface_);
-    if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-        palette->IsInterpolablePalette()) {
+    if (palette->IsInterpolablePalette()) {
       color_overrides =
           palette_interpolation.ComputeInterpolableFontPalette(palette);
       palette_index = 0;

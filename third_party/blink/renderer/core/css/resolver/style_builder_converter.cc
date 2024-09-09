@@ -622,8 +622,6 @@ scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
 scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
     const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
-  DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-
   auto* palette_mix_value = DynamicTo<cssvalue::CSSPaletteMixValue>(value);
   if (palette_mix_value) {
     scoped_refptr<FontPalette> palette1 =
@@ -696,11 +694,7 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertFontPalette(
     return FontPalette::Create(custom_identifier->Value());
   }
 
-  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled()) {
-    return ConvertPaletteMix(length_resolver, value);
-  } else {
-    return nullptr;
-  }
+  return ConvertPaletteMix(length_resolver, value);
 }
 
 float MathScriptScaleFactor(StyleResolverState& state) {

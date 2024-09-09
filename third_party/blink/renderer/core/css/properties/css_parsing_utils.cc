@@ -5218,8 +5218,6 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream& stream,
   // palette-mix() = palette-mix(<color-interpolation-method> , [ [normal |
   // light | dark | <palette-identifier> | <palette-mix()>] && <percentage
   // [0,100]>? ]#{2})
-  DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-
   if (stream.Peek().FunctionId() != CSSValueID::kPaletteMix) {
     return nullptr;
   }
@@ -5307,8 +5305,7 @@ CSSValue* ConsumeFontPalette(CSSParserTokenStream& stream,
     return css_parsing_utils::ConsumeIdent(stream);
   }
 
-  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-      stream.Peek().FunctionId() == CSSValueID::kPaletteMix) {
+  if (stream.Peek().FunctionId() == CSSValueID::kPaletteMix) {
     return ConsumePaletteMixFunction(stream, context);
   }
 

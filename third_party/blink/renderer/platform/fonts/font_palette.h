@@ -137,31 +137,26 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   AtomicString GetMatchFamilyName() { return match_font_family_; }
 
   scoped_refptr<const FontPalette> GetStart() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return start_;
   }
 
   scoped_refptr<const FontPalette> GetEnd() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return end_;
   }
 
   double GetStartPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return percentages_.start;
   }
 
   double GetEndPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return percentages_.end;
   }
 
   double GetNormalizedPercentage() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return normalized_percentage_;
   }
@@ -174,20 +169,17 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   }
 
   double GetAlphaMultiplier() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK((IsInterpolablePalette()));
     return alpha_multiplier_;
   }
 
   Color::ColorSpace GetColorInterpolationSpace() const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return color_interpolation_space_;
   }
 
   std::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
       const {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return hue_interpolation_method_;
   }

@@ -306,10 +306,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                 used_property));
         break;
       case blink::CSSPropertyID::kFontPalette:
-        if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled()) {
-          applicable_types->push_back(
-              std::make_unique<CSSFontPaletteInterpolationType>(used_property));
-        }
+        applicable_types->push_back(
+            std::make_unique<CSSFontPaletteInterpolationType>(used_property));
         break;
       case CSSPropertyID::kVisibility:
         applicable_types->push_back(

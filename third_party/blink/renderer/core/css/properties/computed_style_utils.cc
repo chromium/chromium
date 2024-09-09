@@ -103,7 +103,6 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       // palette-mix(<color-interpolation-method> , [ [normal | light | dark |
       // <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>?
       // ]#{2})
-      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
       CSSFunctionValue* result =
           MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteMix);
 

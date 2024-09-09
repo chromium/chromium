@@ -72,7 +72,6 @@ String FontPalette::ToString() const {
     case kCustomPalette:
       return palette_values_name_.GetString();
     case kInterpolablePalette:
-      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
       StringBuilder builder;
       builder.Append("palette-mix(in ");
       if (hue_interpolation_method_.has_value()) {
@@ -97,11 +96,9 @@ String FontPalette::ToString() const {
 
 bool FontPalette::operator==(const FontPalette& other) const {
   if (IsInterpolablePalette() != other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return false;
   }
   if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
            *end_.get() == *other.end_.get() &&
            percentages_ == other.percentages_ &&
