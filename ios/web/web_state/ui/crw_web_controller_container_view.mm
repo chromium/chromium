@@ -37,6 +37,18 @@
     self.backgroundColor = [UIColor whiteColor];
     self.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      NSArray<UITrait>* traits = @[
+        UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self,
+        UITraitPreferredContentSizeCategory.self
+      ];
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -80,28 +92,16 @@
 
 #pragma mark Layout
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ((self.traitCollection.verticalSizeClass !=
-       previousTraitCollection.verticalSizeClass) ||
-      (self.traitCollection.horizontalSizeClass !=
-       previousTraitCollection.horizontalSizeClass) ||
-      self.traitCollection.preferredContentSizeCategory !=
-          previousTraitCollection.preferredContentSizeCategory) {
-    // Reset zoom scale when the window is resized (portrait to landscape,
-    // landscape to portrait or multi-window resizing), or if text size is
-    // modified as websites can adjust to the preferred content size (using
-    // font: -apple-system-body;). It avoids being in a different zoomed
-    // position from where the user initially zoomed.
-    UIScrollView* scrollView = self.contentViewProxy.contentView.scrollView;
-    scrollView.zoomScale = scrollView.minimumZoomScale;
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    // In case the preferred content size changes, the layout is dirty.
-    [self setNeedsLayout];
-  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)layoutSubviews {
   [super layoutSubviews];
@@ -199,6 +199,29 @@
       [self.webViewContentView
           setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
     }
+  }
+}
+
+//
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if ((self.traitCollection.verticalSizeClass !=
+       previousTraitCollection.verticalSizeClass) ||
+      (self.traitCollection.horizontalSizeClass !=
+       previousTraitCollection.horizontalSizeClass) ||
+      self.traitCollection.preferredContentSizeCategory !=
+          previousTraitCollection.preferredContentSizeCategory) {
+    // Reset zoom scale when the window is resized (portrait to landscape,
+    // landscape to portrait or multi-window resizing), or if text size is
+    // modified as websites can adjust to the preferred content size (using
+    // font: -apple-system-body;). It avoids being in a different zoomed
+    // position from where the user initially zoomed.
+    UIScrollView* scrollView = self.contentViewProxy.contentView.scrollView;
+    scrollView.zoomScale = scrollView.minimumZoomScale;
+  }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    // In case the preferred content size changes, the layout is dirty.
+    [self setNeedsLayout];
   }
 }
 
