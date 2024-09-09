@@ -33,6 +33,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -45,7 +46,13 @@ namespace {
 
 class LensOverlayCoordinatorTest : public PlatformTest {
  public:
-  LensOverlayCoordinatorTest() {
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+      GTEST_SKIP() << "Feature unsupported on iPad";
+    }
+
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
     root_view_controller_ = [[UIViewController alloc] init];
@@ -132,16 +139,21 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     }));
   }
 
-  ~LensOverlayCoordinatorTest() override {
-    // Dismisses `base_view_controller_` and waits for the dismissal to finish.
-    __block bool dismissal_finished = NO;
-    [root_view_controller_ dismissViewControllerAnimated:NO
-                                              completion:^{
-                                                dismissal_finished = YES;
-                                              }];
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-      return dismissal_finished;
-    }));
+  void TearDown() override {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+      // Dismisses `base_view_controller_` and waits for the dismissal to
+      // finish.
+      __block bool dismissal_finished = NO;
+      [root_view_controller_ dismissViewControllerAnimated:NO
+                                                completion:^{
+                                                  dismissal_finished = YES;
+                                                }];
+      EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+        return dismissal_finished;
+      }));
+    }
+
+    PlatformTest::TearDown();
   }
 
  protected:

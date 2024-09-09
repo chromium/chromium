@@ -20,18 +20,21 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
 class LensOverlayTabHelperTest : public PlatformTest {
  public:
-  LensOverlayTabHelperTest() {
-    browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
-  }
-
   void SetUp() override {
     PlatformTest::SetUp();
+
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+      GTEST_SKIP() << "Feature unsupported on iPad";
+    }
+
+    browser_state_ = profile_manager_.AddProfileWithBuilder(
+        TestChromeBrowserState::Builder());
 
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
