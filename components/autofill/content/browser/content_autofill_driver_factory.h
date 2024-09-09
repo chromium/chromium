@@ -122,8 +122,10 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   // The map should be empty at destruction time because its elements are erased
   // in RenderFrameDeleted(). In case it is not empty, is must be destroyed
   // before `router_` because ~ContentAutofillDriver() may access `router_`.
-  base::flat_map<content::RenderFrameHost*,
-                 std::unique_ptr<ContentAutofillDriver>>
+  //
+  // The map type must be so that `driver_map_.emplace()` does *not* invalidate
+  // references. Otherwise, recursive DriverForFrame() calls are unsafe.
+  std::map<content::RenderFrameHost*, std::unique_ptr<ContentAutofillDriver>>
       driver_map_;
 
   // The maximum number of coexisting drivers over the lifetime of this factory.

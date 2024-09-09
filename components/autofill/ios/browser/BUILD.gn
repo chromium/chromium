@@ -109,6 +109,7 @@ optimize_ts("suggestion_controller_js") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "autofill_driver_ios_factory_test_api.h",
     "autofill_driver_ios_test_api.h",
     "credit_card_save_manager_test_observer_bridge.h",
     "credit_card_save_manager_test_observer_bridge.mm",

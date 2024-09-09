@@ -46,6 +46,7 @@ using ::testing::AllOf;
 using ::testing::AtLeast;
 using ::testing::Between;
 using ::testing::DoAll;
+using ::testing::Each;
 using ::testing::InSequence;
 using ::testing::Property;
 using ::testing::Ref;
@@ -97,7 +98,7 @@ class ContentAutofillDriverFactoryTest
 
   ContentAutofillDriver& driver(content::RenderFrameHost* rfh = nullptr) {
     return CHECK_DEREF(
-        test_api(factory()).GetOrCreateDriver(rfh ? rfh : main_frame()));
+        test_api(factory()).DriverForFrame(rfh ? rfh : main_frame()));
   }
 
   content::RenderFrameHost* main_frame() {
@@ -121,6 +122,74 @@ TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
   EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
             main_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
+}
+
+enum class SourceOfRecursion {
+  kOnAutofillDriverCreated,
+  kOnAutofillDriverStateChanged
+};
+
+// The parameter specifies where the recursive events come from.
+class ContentAutofillDriverFactoryTest_Recursion
+    : public ContentAutofillDriverFactoryTest,
+      public ::testing::WithParamInterface<SourceOfRecursion> {
+ public:
+  SourceOfRecursion source_of_recursion() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ContentAutofillDriverFactoryTest,
+    ContentAutofillDriverFactoryTest_Recursion,
+    testing::Values(SourceOfRecursion::kOnAutofillDriverCreated,
+                    SourceOfRecursion::kOnAutofillDriverStateChanged));
+
+// Tests that DriverForFrame() tolerates recursive calls. These recursive calls
+// come from ContentAutofillDriverFactory::Observer events.
+TEST_P(ContentAutofillDriverFactoryTest_Recursion, RecursiveDriverForFrame) {
+  // Creates 100 frames without associated drivers.
+  NavigateMainFrame("https://a.com/");
+  std::set<content::RenderFrameHost*> frames;
+  std::set<ContentAutofillDriver*> drivers;
+  while (frames.size() < 100) {
+    frames.insert(
+        content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+  }
+
+  // Creates all the drivers in recursive DriverForFrame() calls.
+  auto create_drivers = [&](ContentAutofillDriverFactory& factory,
+                            ContentAutofillDriver& driver, auto...) {
+    for (auto& rfh : frames) {
+      drivers.insert(test_api(factory).DriverForFrame(rfh));
+    }
+  };
+  MockContentAutofillDriverFactoryObserver observer;
+  factory().AddObserver(&observer);
+  switch (source_of_recursion()) {
+    case SourceOfRecursion::kOnAutofillDriverCreated:
+      EXPECT_CALL(observer, OnContentAutofillDriverCreated)
+          .WillRepeatedly(create_drivers);
+      break;
+    case SourceOfRecursion::kOnAutofillDriverStateChanged:
+      EXPECT_CALL(observer, OnContentAutofillDriverStateChanged)
+          .WillRepeatedly(create_drivers);
+      break;
+  }
+
+  // Triggers the recursion.
+  EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
+  EXPECT_EQ(frames.size(), 100u);
+  EXPECT_EQ(drivers.size(), 0u);
+  test_api(factory()).DriverForFrame(*frames.begin());
+  EXPECT_EQ(frames.size(), 100u);
+  EXPECT_EQ(drivers.size(), 100u);
+  EXPECT_EQ(test_api(factory()).num_drivers(), 101u);
+  factory().RemoveObserver(&observer);
+
+  // Validate that the drivers are still registered.
+  EXPECT_THAT(
+      frames, Each(Truly([&](content::RenderFrameHost* rfh) {
+        return drivers.contains(test_api(factory()).DriverForFrame(rfh));
+      })));
 }
 
 // Test case with two frames: the main frame and one child frame.
