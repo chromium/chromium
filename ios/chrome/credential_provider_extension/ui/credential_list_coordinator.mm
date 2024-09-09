@@ -143,21 +143,27 @@
         // self.requestParameters.userVerificationPreference.
 
         __weak __typeof(self) weakSelf = self;
-        FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
-          CredentialListCoordinator* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
+        auto completion =
+            ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
+              CredentialListCoordinator* strongSelf = weakSelf;
+              if (!strongSelf) {
+                return;
+              }
 
-          ASPasskeyAssertionCredential* passkeyCredential =
-              PerformPasskeyAssertion(
-                  credential, strongSelf.requestParameters.clientDataHash,
-                  strongSelf.allowedCredentials, securityDomainSecret);
-          [strongSelf.credentialResponseHandler
-              userSelectedPasskey:passkeyCredential];
-        };
+              ASPasskeyAssertionCredential* passkeyCredential =
+                  PerformPasskeyAssertion(
+                      credential, strongSelf.requestParameters.clientDataHash,
+                      strongSelf.allowedCredentials, keyList);
+              [strongSelf.credentialResponseHandler
+                  userSelectedPasskey:passkeyCredential];
+            };
 
-        FetchSecurityDomainSecret(completion);
+        // TODO(crbug.com/355047459): Add navigation controller.
+        FetchSecurityDomainSecret(
+            credential.gaia,
+            /*navigation_controller =*/nil,
+            PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt,
+            completion);
       }
     }
   }];

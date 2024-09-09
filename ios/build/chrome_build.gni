@@ -47,6 +47,10 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
+  # Label of the target providing implementation for PasskeyKeychainProvider.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_passkey_keychain_provider_target = "//ios/chrome/credential_provider_extension:passkey_keychain_provider_implementation"
+
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"

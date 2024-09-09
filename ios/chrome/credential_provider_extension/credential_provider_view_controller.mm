@@ -233,7 +233,7 @@ UIColor* BackgroundColor() {
           passkeyCredentialRequest.credentialIdentity);
 
   __weak __typeof(self) weakSelf = self;
-  FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
+  auto completion = ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
     CredentialProviderViewController* strongSelf = weakSelf;
     if (!strongSelf) {
       return;
@@ -242,8 +242,7 @@ UIColor* BackgroundColor() {
     ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
         PerformPasskeyCreation(passkeyCredentialRequest.clientDataHash,
                                identity.relyingPartyIdentifier,
-                               identity.userName, identity.userHandle,
-                               securityDomainSecret);
+                               identity.userName, identity.userHandle, keyList);
     if (passkeyRegistrationCredential) {
       [strongSelf completeRegistrationRequestWithSelectedPasskeyCredential:
                       passkeyRegistrationCredential];
@@ -252,7 +251,11 @@ UIColor* BackgroundColor() {
     }
   };
 
-  FetchSecurityDomainSecret(completion);
+  // TODO(crbug.com/355047459): Add navigation controller.
+  FetchSecurityDomainSecret(
+      [self gaia],
+      /*navigation_controller =*/nil,
+      PasskeyKeychainProvider::ReauthenticatePurpose::kEncrypt, completion);
 }
 
 #pragma mark - Properties
@@ -373,24 +376,29 @@ UIColor* BackgroundColor() {
       ASPasskeyCredentialRequest* passkeyCredentialRequest =
           base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
               credentialRequest);
-      // TODO(crbug.com/330355124): Handle
+      // TODO(crbug.com/355047459): Handle
       // passkeyCredentialRequest.userVerificationPreference.
 
       __weak __typeof(self) weakSelf = self;
-      FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
-        CredentialProviderViewController* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
+      auto completion =
+          ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
+            CredentialProviderViewController* strongSelf = weakSelf;
+            if (!strongSelf) {
+              return;
+            }
 
-        ASPasskeyAssertionCredential* passkeyCredential =
-            PerformPasskeyAssertion(credential,
-                                    passkeyCredentialRequest.clientDataHash,
-                                    nil, securityDomainSecret);
-        [strongSelf userSelectedPasskey:passkeyCredential];
-      };
+            ASPasskeyAssertionCredential* passkeyCredential =
+                PerformPasskeyAssertion(credential,
+                                        passkeyCredentialRequest.clientDataHash,
+                                        nil, keyList);
+            [strongSelf userSelectedPasskey:passkeyCredential];
+          };
 
-      FetchSecurityDomainSecret(completion);
+      // TODO(crbug.com/355047459): Add navigation controller.
+      FetchSecurityDomainSecret(
+          credential.gaia,
+          /*navigation_controller =*/nil,
+          PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt, completion);
       return;
     }
   }
@@ -535,6 +543,20 @@ UIColor* BackgroundColor() {
   [self presentViewController:savingEnterpriseDisabledViewController
                      animated:YES
                    completion:nil];
+}
+
+- (NSString*)gaia {
+  // TODO(crbug.com/355041765): Get gaia from ios keychain instead of the
+  // credential store, since that would fail if there are no synced credentials
+  // in the store.
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return credential.gaia.length > 0;
+      }];
+  return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
+                                       : nil;
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
