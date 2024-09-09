@@ -78,7 +78,8 @@ std::optional<std::u16string> GetTooltipForConfigureNetworkEntry(
     case NetworkType::kCellular:
       [[fallthrough]];
     case NetworkType::kMobile:
-      return l10n_util::GetStringUTF16(GetAddESimTooltipMessageId());
+      return l10n_util::GetStringUTF16(
+          GetCellularInhibitReasonMessageId(GetCellularInhibitReason()));
     default:
       NOTREACHED();
   }

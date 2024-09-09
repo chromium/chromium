@@ -45,8 +45,13 @@ ASH_EXPORT void RecordNetworkTypeToggled(
     chromeos::network_config::mojom::NetworkType network_type,
     bool new_state);
 
-// Returns the add esim entry tooltip message id.
-ASH_EXPORT int GetAddESimTooltipMessageId();
+// Returns the cellular device inhibit reason.
+ASH_EXPORT chromeos::network_config::mojom::InhibitReason
+GetCellularInhibitReason();
+
+// Returns the message ID corresponding to the cellular device inhibit reason.
+ASH_EXPORT int GetCellularInhibitReasonMessageId(
+    chromeos::network_config::mojom::InhibitReason inhibit_reason);
 
 // Returns the subtext to display for a connected network in a portal state.
 // This is used in the network menu, the tooltip, and for a11y.

@@ -54,6 +54,7 @@ using ::chromeos::network_config::mojom::DeviceStateProperties;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::GlobalPolicy;
+using ::chromeos::network_config::mojom::InhibitReason;
 using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
@@ -193,6 +194,10 @@ void NetworkListViewControllerImpl::NetworkListChanged() {
   GetNetworkStateList();
 }
 
+void NetworkListViewControllerImpl::DeviceStateListChanged() {
+  UpdateMobileSection();
+}
+
 void NetworkListViewControllerImpl::GlobalPolicyChanged() {
   UpdateMobileSection();
   GetNetworkStateList();
@@ -287,7 +292,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
         &previous_network_views);
 
     // Add mobile status message to NetworkDetailedNetworkView's
-    // `mobile_network_list_view_` if it exist.
+    // `mobile_network_list_view_` if it exists.
     if (mobile_status_message_) {
       network_detailed_network_view()
           ->GetNetworkList(GetMobileSectionNetworkType())
@@ -815,6 +820,19 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
                                           /*animate_toggle=*/true);
       network_detailed_network_view()->UpdateMobileStatus(true);
 
+      if (has_cellular_networks_ || has_tether_networks_) {
+        RemoveAndResetViewIfExists(&mobile_status_message_);
+        return;
+      }
+      const InhibitReason inhibit_reason = GetCellularInhibitReason();
+      if (inhibit_reason == InhibitReason::kInstallingProfile ||
+          inhibit_reason == InhibitReason::kRefreshingProfileList ||
+          inhibit_reason == InhibitReason::kRequestingAvailableProfiles) {
+        CreateInfoLabelIfMissingAndUpdate(
+            GetCellularInhibitReasonMessageId(inhibit_reason),
+            &mobile_status_message_);
+        return;
+      }
       RemoveAndResetViewIfExists(&mobile_status_message_);
       return;
     }
