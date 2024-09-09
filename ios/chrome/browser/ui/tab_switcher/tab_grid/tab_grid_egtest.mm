@@ -1281,7 +1281,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item between windows.
-- (void)testDragAndDropBetweenWindows {
+// TODO(crbug.com/40868899): Flaky on iPad devices and simulators.
+- (void)FLAKY_testDragAndDropBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
