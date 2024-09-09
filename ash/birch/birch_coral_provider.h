@@ -31,6 +31,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Called from birch model to request coral information to be displayed.
   void RequestBirchDataFetch() override;
 
+  const coral_util::CoralRequest& request_for_test() const { return request_; }
+
  private:
   // Whether we should handle post-login or in-session data.
   bool HasValidPostLoginData() const;

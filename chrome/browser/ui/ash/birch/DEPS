@@ -30,3 +30,12 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "birch_coral_provider_browsertest.cc": [
+    "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
+    "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+gmock/gmock.h",
+  ],
+}

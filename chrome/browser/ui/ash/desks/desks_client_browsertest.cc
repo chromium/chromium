@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -288,54 +289,25 @@ void DeleteDeskTemplate(const base::Uuid& uuid) {
   run_loop.Run();
 }
 
-webapps::AppId CreateSystemWebApp(Profile* profile,
-                                  apps::AppLaunchParams params) {
-  const webapps::AppId app_id = params.app_id;
-  base::RunLoop launch_wait;
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      std::move(params),
-      base::BindLambdaForTesting(
-          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
-  launch_wait.Run();
-  return app_id;
-}
-
-// Creates the app launch params for `app_type` for testing.
-apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
-                                         ash::SystemWebAppType app_type) {
-  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
-  return apps::AppLaunchParams(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-}
-
 webapps::AppId CreateFilesSystemWebApp(Profile* profile) {
-  apps::AppLaunchParams params =
-      GetAppLaunchParams(profile, ash::SystemWebAppType::FILE_MANAGER);
-  return CreateSystemWebApp(profile, std::move(params));
+  return ash::test::CreateSystemWebApp(profile,
+                                       ash::SystemWebAppType::FILE_MANAGER);
 }
 
 webapps::AppId CreateSettingsSystemWebApp(Profile* profile) {
-  apps::AppLaunchParams params =
-      GetAppLaunchParams(profile, ash::SystemWebAppType::SETTINGS);
-  params.restore_id = kSettingsWindowId;
-  return CreateSystemWebApp(profile, std::move(params));
+  return ash::test::CreateSystemWebApp(profile, ash::SystemWebAppType::SETTINGS,
+                                       kSettingsWindowId);
 }
 
 webapps::AppId CreateHelpSystemWebApp(Profile* profile) {
-  apps::AppLaunchParams params =
-      GetAppLaunchParams(profile, ash::SystemWebAppType::HELP);
-  params.restore_id = kHelpWindowId;
-  return CreateSystemWebApp(profile, std::move(params));
+  return ash::test::CreateSystemWebApp(profile, ash::SystemWebAppType::HELP,
+                                       kHelpWindowId);
 }
 
 webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
                                               const GURL& override_url) {
-  apps::AppLaunchParams params =
-      GetAppLaunchParams(profile, ash::SystemWebAppType::OS_URL_HANDLER);
-  params.restore_id = kTestWindowId;
-  params.override_url = override_url;
-  return CreateSystemWebApp(profile, std::move(params));
+  return ash::test::CreateOsUrlHandlerSystemWebApp(profile, kTestWindowId,
+                                                   override_url);
 }
 
 void SendKey(ui::KeyboardCode key_code) {
@@ -586,17 +558,9 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     LaunchTemplate(desk_template_ptr->uuid());
   }
 
-  Browser* CreateBrowser(
-      const std::vector<GURL>& urls,
-      std::optional<size_t> active_url_index = std::nullopt) {
-    Browser* browser = CreateBrowserImpl(urls, active_url_index);
-    browser->window()->Show();
-    return browser;
-  }
-
   Browser* CreateBrowserWithPinnedTabs(const std::vector<GURL>& urls,
                                        int first_non_pinned_tab_index) {
-    Browser* browser = CreateBrowserImpl(urls, std::nullopt);
+    Browser* browser = ash::test::CreateBrowser(profile(), urls, std::nullopt);
 
     chrome_desks_util::SetBrowserPinnedTabs(first_non_pinned_tab_index,
                                             browser);
@@ -607,28 +571,11 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   Browser* CreateBrowserWithTabGroups(
       const std::vector<GURL>& urls,
       const std::vector<tab_groups::TabGroupInfo>& tab_groups) {
-    Browser* browser = CreateBrowserImpl(urls, std::nullopt);
+    Browser* browser = ash::test::CreateBrowser(profile(), urls, std::nullopt);
 
     chrome_desks_util::AttachTabGroupsToBrowserInstance(tab_groups, browser);
     browser->window()->Show();
     return browser;
-  }
-
-  Browser* InstallAndLaunchPWA(const GURL& start_url, bool launch_in_browser) {
-    auto web_app_info =
-        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-    web_app_info->scope = start_url.GetWithoutFilename();
-    if (!launch_in_browser) {
-      web_app_info->user_display_mode =
-          web_app::mojom::UserDisplayMode::kStandalone;
-    }
-    web_app_info->title = u"A Web App";
-    const webapps::AppId app_id =
-        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-
-    return launch_in_browser
-               ? web_app::LaunchBrowserForWebAppInTab(profile(), app_id)
-               : web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   }
 
   // This navigates the browser to a page that will show a close confirmation
@@ -662,30 +609,14 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   }
 
  private:
-  Browser* CreateBrowserImpl(const std::vector<GURL>& urls,
-                             std::optional<size_t> active_url_index) {
-    Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
-                                 /*user_gesture=*/false);
-    Browser* browser = Browser::Create(params);
-    // Create a new tab and make sure the urls have loaded.
-    for (size_t i = 0; i < urls.size(); i++) {
-      content::TestNavigationObserver navigation_observer(urls[i]);
-      navigation_observer.StartWatchingNewWebContents();
-      chrome::AddTabAt(
-          browser, urls[i], /*index=*/-1,
-          /*foreground=*/!active_url_index || active_url_index.value() == i);
-      navigation_observer.Wait();
-    }
-    return browser;
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a browser's urls can be captured correctly in the desk template.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
-  Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
 
   const int32_t browser_window_id =
@@ -1079,8 +1010,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
   const size_t browser_active_index = 1;
-  Browser* browser = CreateBrowser(
-      {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
       /*active_url_index=*/browser_active_index);
 
   // Verify that the active tab is correct.
@@ -1300,14 +1231,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
 
   // Create a new browser and set its bounds.
   std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
-  Browser* browser_1 = CreateBrowser(browser_urls_1);
+  Browser* browser_1 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
   aura::Window* window_1 = browser_1->window()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
   std::vector<GURL> browser_urls_2 = {GURL(kExampleUrl1)};
-  Browser* browser_2 = CreateBrowser(browser_urls_2);
+  Browser* browser_2 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
   aura::Window* window_2 = browser_2->window()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
@@ -1316,7 +1249,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
 
   // Create a new maximized browser.
   std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
-  Browser* browser_3 = CreateBrowser(browser_urls_3);
+  Browser* browser_3 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_3);
   browser_3->window()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
@@ -1355,8 +1289,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
@@ -1403,8 +1337,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
@@ -1449,8 +1383,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/false);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const std::string* app_name =
@@ -1486,8 +1420,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const int32_t pwa_window_id =
       pwa_window->GetProperty(app_restore::kWindowIdKey);
@@ -1587,8 +1521,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
   const size_t browser_active_index = 1;
-  Browser* browser = CreateBrowser(
-      {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
       /*active_url_index=*/browser_active_index);
 
   // Verify that the active tab is correct.
@@ -1639,7 +1573,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
 // Tests that a browser's urls can be captured correctly in the desk template.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
-  Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
 
   const int32_t browser_window_id =
@@ -2078,14 +2013,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, OsUrlHandlerSWARestoreTest) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   // Create a new browser and set its bounds.
   std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
-  Browser* browser_1 = CreateBrowser(browser_urls_1);
+  Browser* browser_1 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
   aura::Window* window_1 = browser_1->window()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
   std::vector<GURL> browser_urls_2 = {GURL(kExampleUrl1)};
-  Browser* browser_2 = CreateBrowser(browser_urls_2);
+  Browser* browser_2 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
   aura::Window* window_2 = browser_2->window()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
@@ -2094,7 +2031,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
 
   // Create a new maximized browser.
   std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
-  Browser* browser_3 = CreateBrowser(browser_urls_3);
+  Browser* browser_3 =
+      ash::test::CreateAndShowBrowser(profile(), browser_urls_3);
   browser_3->window()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
@@ -2134,8 +2072,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
@@ -2186,8 +2124,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
 // window works as expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUILaunchTemplateWithPWAInBrowser) {
-  Browser* pwa_browser =
-      InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
+  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+      profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
   const int32_t pwa_window_id =
       pwa_window->GetProperty(app_restore::kWindowIdKey);
@@ -2356,8 +2294,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   CreateFilesSystemWebApp(browser()->profile());
   CreateFilesSystemWebApp(browser()->profile());
 
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
 
   // Save a template.
   ash::ToggleOverview();
@@ -2562,7 +2502,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   base::HistogramTester histogram_tester;
 
   // Create a new browser.
-  CreateBrowser({});
+  ash::test::CreateAndShowBrowser(profile(), {});
 
   // Save a template.
   ash::ToggleOverview();
@@ -2587,8 +2527,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateRecordsLoadTimeMetric) {
   // Create the settings app, which is a system web app.
   CreateSettingsSystemWebApp(browser()->profile());
 
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
 
   // Save and launch a template.
   ash::ToggleOverview();
@@ -2632,7 +2574,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
 
   ash::DeskSwitchAnimationWaiter waiter;
   // Creates a new window.
-  CreateBrowser({});
+  ash::test::CreateAndShowBrowser(profile(), {});
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(DesksClient::Get()->RemoveDesk(
       desk_id, ash::DeskCloseType::kCloseAllWindows));
@@ -2787,7 +2729,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, UndoLaunchedDesk) {
 // Tests setting first window to show on all desk and then unset it.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SetWindowProperties) {
   // Create a new browser window.
-  CreateBrowser({});
+  ash::test::CreateAndShowBrowser(profile(), {});
 
   auto* desks_controller = ash::DesksController::Get();
 
@@ -2838,7 +2780,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, ThrottleImmediateDeskAction) {
 // Tests save an empty desk should fail.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
   // Create a new browser and add a few tabs to it.
-  Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
 
   const int32_t browser_window_id =
@@ -2866,7 +2809,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
 // Tests save an active desk to library and remove it from desk list.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
-  Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  Browser* browser = ash::test::CreateAndShowBrowser(
+      profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
 
   const int32_t browser_window_id =
@@ -2896,7 +2840,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, DeleteSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
 
   // Create a new browser and add a few tabs to it.
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kSaveAndRecall);
@@ -2913,7 +2858,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
   EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
   // Create a new browser and add a few tabs to it.
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kSaveAndRecall);
@@ -2922,7 +2868,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
   EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
   // Restart browser process.
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   base::RunLoop loop;
   DesksClient::Get()->LaunchDeskTemplate(
       desk_template->uuid(),
@@ -2999,7 +2946,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByInvalidDeskId) {
 // for saved desks functionality.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
   // Create a new browser and add a few tabs to it.
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  ash::test::CreateAndShowBrowser(profile(),
+                                  {GURL(kExampleUrl1), GURL(kExampleUrl2)});
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(
           ash::DeskTemplateType::kFloatingWorkspace);
@@ -3390,7 +3338,8 @@ class SnapGroupDesksClientTest : public DesksClientTest {
 
 IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   // Create 1 other window to create a snap group.
-  Browser* browser2 = CreateBrowser({GURL(kExampleUrl2)});
+  Browser* browser2 =
+      ash::test::CreateAndShowBrowser(profile(), {GURL(kExampleUrl2)});
   aura::Window* w1 = browser()->window()->GetNativeWindow();
   aura::Window* w2 = browser2->window()->GetNativeWindow();
 

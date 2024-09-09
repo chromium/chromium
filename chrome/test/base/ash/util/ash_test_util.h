@@ -6,10 +6,13 @@
 #define CHROME_TEST_BASE_ASH_UTIL_ASH_TEST_UTIL_H_
 
 #include <string_view>
+#include <vector>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/events/event_constants.h"
 
+class Browser;
 class Profile;
 
 namespace base {
@@ -37,7 +40,31 @@ void InstallSystemAppsForTesting(Profile* profile);
 
 // Creates a system web app window (os settings, camera, files, etc.). Note that
 // a test needs to call `InstallSystemWebAppsForTesting()` prior to using this.
-void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type);
+webapps::AppId CreateSystemWebApp(
+    Profile* profile,
+    ash::SystemWebAppType app_type,
+    std::optional<int32_t> window_id = std::nullopt);
+
+// Creates a OS URL handler system web with given `window_id` and
+// `override_url`.
+webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
+                                              int32_t window_id,
+                                              const GURL& override_url);
+// Creates a browser and tabs with given `urls`. The active tab is indicated by
+// `active_url_index`. The browser is not shown after creation.
+Browser* CreateBrowser(Profile* profile,
+                       const std::vector<GURL>& urls,
+                       std::optional<size_t> active_url_index);
+
+Browser* CreateAndShowBrowser(
+    Profile* profile,
+    const std::vector<GURL>& urls,
+    std::optional<size_t> active_url_index = std::nullopt);
+
+Browser* InstallAndLaunchPWA(Profile* profile,
+                             const GURL& start_url,
+                             bool launch_in_browser,
+                             const std::u16string& app_title = u"A Web App");
 
 }  // namespace ash::test
 
