@@ -175,4 +175,11 @@
   }];
 }
 
+- (void)openManagePlusAddress {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openManagePlusAddress];
+  }];
+}
+
 @end

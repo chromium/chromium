@@ -14,6 +14,9 @@
 // Requests to open the list of all plus addresses.
 - (void)openAllPlusAddressList;
 
+// Requests to open the manage plus address page.
+- (void)openManagePlusAddress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_PLUS_ADDRESS_LIST_NAVIGATOR_H_

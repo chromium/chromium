@@ -239,8 +239,18 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey
       selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
       performAction:grey_tap()];
+
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
   [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 // Tests that tapping on the create plus address action in the address manual
@@ -425,9 +435,17 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
       performAction:grey_tap()];
 
-  // Check that the manage option is available.
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
   [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 // Tests that the "Manage" action in the overflow menu is displayed in the
@@ -455,9 +473,17 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
       performAction:grey_tap()];
 
-  // Check that the manage option is available.
+  // Take note of how many tabs are open before clicking the manage,
+  // which should simply open a new tab.
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
+
   [[EarlGrey selectElementWithMatcher:OverflowMenuManageAction()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // A new tab should open after tapping the manage action.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 @end

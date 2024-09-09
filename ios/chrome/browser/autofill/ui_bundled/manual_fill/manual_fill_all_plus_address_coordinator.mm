@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_plus_address_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
@@ -20,6 +21,7 @@
 @interface ManualFillAllPlusAddressCoordinator () <
     ManualFillAllPlusAddressViewControllerDelegate,
     ManualFillPlusAddressMediatorDelegate,
+    PlusAddressListNavigator,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -66,6 +68,7 @@
   _plusAddressMediator.delegate = self;
 
   _plusAddressMediator.consumer = _plusAddressViewController;
+  _plusAddressMediator.navigator = self;
 
   _plusAddressViewController.imageDataSource = _plusAddressMediator;
 
@@ -114,6 +117,21 @@
     (ManualFillAllPlusAddressViewController*)selectPlusAddressViewController {
   [self.manualFillAllPlusAddressCoordinatorDelegate
       manualFillAllPlusAddressCoordinatorWantsToBeDismissed:self];
+}
+
+#pragma mark - PlusAddressListNavigator
+
+- (void)openCreatePlusAddressSheet {
+  NOTREACHED_NORETURN();
+}
+
+- (void)openAllPlusAddressList {
+  NOTREACHED_NORETURN();
+}
+
+- (void)openManagePlusAddress {
+  [self.manualFillAllPlusAddressCoordinatorDelegate
+          dismissManualFillAllPlusAddressAndOpenManagePlusAddress];
 }
 
 @end

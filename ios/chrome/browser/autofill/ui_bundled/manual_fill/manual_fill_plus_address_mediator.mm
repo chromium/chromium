@@ -269,6 +269,8 @@
   NSMutableArray<ManualFillActionItem*>* actions =
       [[NSMutableArray alloc] init];
 
+  __weak __typeof(self) weakSelf = self;
+
   // Offer manage action if there are any plus addresses for the domain.
   if (hasPlusAddresses) {
     NSString* managePlusAddressesTitle = l10n_util::GetNSString(
@@ -278,13 +280,13 @@
                action:^{
                  base::RecordAction(base::UserMetricsAction(
                      "ManualFallback_PlusAddress_OpenManagePlusAddress"));
+                 [weakSelf.navigator openManagePlusAddress];
                }];
     managePlusAddressItem.accessibilityIdentifier =
         manual_fill::kManagePlusAddressAccessibilityIdentifier;
     [actions addObject:managePlusAddressItem];
   }
 
-  __weak __typeof(self) weakSelf = self;
   // Offer plus address creation if it's supported for the current user session
   // and if the user doesn't have any plus addresses created for the current
   // domain.
@@ -334,8 +336,9 @@
       initWithScenario:
           kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry];
 
+  __weak __typeof(self) weakSelf = self;
   UIAction* manageAction = [actionFactory actionToManageLinkInNewTabWithBlock:^{
-      // TODO(crbug.com/327838014): Implement manage action.
+    [weakSelf.navigator openManagePlusAddress];
   }];
 
   return manageAction;

@@ -30,6 +30,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
+#import "components/plus_addresses/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -563,6 +564,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self stopManualFillAllPlusAddressCoordinator];
 }
 
+- (void)dismissManualFillAllPlusAddressAndOpenManagePlusAddress {
+  [self stopManualFillAllPlusAddressCoordinator];
+  [self openManagePlusAddress];
+}
+
 #pragma mark - CardCoordinatorDelegate
 
 - (void)cardCoordinatorDidTriggerOpenCardSettings:
@@ -658,6 +664,16 @@ const base::Feature* FetchIPHFeatureFromEnum(
                 injectionHandler:self.injectionHandler];
   _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
   [_allPlusAddressCoordinator start];
+}
+
+- (void)openManagePlusAddress {
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:
+          GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 #pragma mark - ExpandedManualFillCoordinatorDelegate
