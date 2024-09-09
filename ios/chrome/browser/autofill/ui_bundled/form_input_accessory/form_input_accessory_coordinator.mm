@@ -952,9 +952,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     (password_manager::CredentialUIEntry)credential {
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showPasswordDetailsForCredential:credential
-                                         inEditMode:YES
-                                   showCancelButton:YES];
+  [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
 }
 
 @end

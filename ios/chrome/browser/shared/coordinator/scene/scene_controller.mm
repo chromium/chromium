@@ -2277,14 +2277,12 @@ using UserFeedbackDataCallback =
 
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton {
+                              inEditMode:(BOOL)editMode {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showPasswordDetailsForCredential:credential
-                              inEditMode:editMode
-                        showCancelButton:showCancelButton];
+                              inEditMode:editMode];
     return;
   }
   Browser* browser = self.mainInterface.browser;
@@ -2292,8 +2290,7 @@ using UserFeedbackDataCallback =
       passwordDetailsControllerForBrowser:browser
                                  delegate:self
                                credential:credential
-                               inEditMode:editMode
-                         showCancelButton:showCancelButton];
+                               inEditMode:editMode];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

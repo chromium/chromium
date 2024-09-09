@@ -3732,9 +3732,7 @@ enum class ToolbarKind {
     (password_manager::CredentialUIEntry)credential {
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(_dispatcher, SettingsCommands);
-  [settingsHandler showPasswordDetailsForCredential:credential
-                                         inEditMode:NO
-                                   showCancelButton:YES];
+  [settingsHandler showPasswordDetailsForCredential:credential inEditMode:NO];
 }
 
 #pragma mark - MiniMapCommands

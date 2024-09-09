@@ -326,16 +326,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                        delegate
                              credential:
                                  (password_manager::CredentialUIEntry)credential
-                             inEditMode:(BOOL)editMode
-                       showCancelButton:(BOOL)showCancelButton {
+                             inEditMode:(BOOL)editMode {
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
   [navigationController showPasswordDetailsForCredential:credential
-                                              inEditMode:editMode
-                                        showCancelButton:showCancelButton];
+                                              inEditMode:editMode];
 
   return navigationController;
 }
@@ -845,8 +843,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton {
+                              inEditMode:(BOOL)editMode {
   // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
@@ -859,7 +856,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                context:DetailsContext::kOutsideSettings];
   self.passwordDetailsCoordinator.delegate = self;
   self.passwordDetailsCoordinator.openInEditMode = editMode;
-  self.passwordDetailsCoordinator.showCancelButton = showCancelButton;
   [self.passwordDetailsCoordinator start];
 }
 

@@ -1187,8 +1187,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
                                           kExampleUsername))]
       performAction:grey_replaceText(@"new username")];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
 
-  // Tap Done Button.
+  // Tap the "Done" button to dismiss the view.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 

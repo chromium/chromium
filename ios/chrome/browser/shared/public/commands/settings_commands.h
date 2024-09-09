@@ -52,13 +52,10 @@ enum class PasswordCheckReferrer;
                                     showCancelButton:(BOOL)showCancelButton;
 
 // Shows the password details page for a credential. `editMode` indicates
-// whether the details page should be opened in edit mode. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the password details view.
+// whether the details page should be opened in edit mode.
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton;
+                              inEditMode:(BOOL)editMode;
 
 // Shows the address details view. `editMode` indicates whether the details page
 // should be opened in edit mode. `offerMigrateToAccount` indicates whether or

@@ -49,9 +49,6 @@
 // Shows the password details in edit mode without requiring any authentication.
 - (void)showEditViewWithoutAuthentication;
 
-// Setup the cancel button on the navigation's left bar button.
-- (void)setupLeftCancelButton;
-
 // Brings back share button replaced with a spinner for the time when the
 // necessary sharing info was being fetched.
 - (void)showShareButton;

@@ -188,9 +188,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   if (self.openInEditMode) {
     [self.viewController editButtonPressed];
   }
-  if (self.showCancelButton) {
-    [self.viewController setupLeftCancelButton];
-  }
 
   BOOL requireAuth = [self shouldRequireAuthOnStart];
 
