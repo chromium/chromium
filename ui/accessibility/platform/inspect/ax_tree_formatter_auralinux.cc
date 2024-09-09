@@ -474,34 +474,18 @@ void AXTreeFormatterAuraLinux::AddTableCellProperties(
   int row = 0, col = 0, row_span = 0, col_span = 0;
   int n_row_headers = 0, n_column_headers = 0;
 
-  // Properties obtained via AtkTableCell, if possible. If we do not have at
-  // least ATK 2.12, use the same logic in our AtkTableCell implementation so
-  // that tests can still be run.
-  if (AtkTableCellInterface::Exists()) {
-    AtkTableCell* cell = G_TYPE_CHECK_INSTANCE_CAST(
-        (atk_object), AtkTableCellInterface::GetType(), AtkTableCell);
+  AtkTableCell* cell = G_TYPE_CHECK_INSTANCE_CAST(
+      (atk_object), atk_table_cell_get_type(), AtkTableCell);
 
-    AtkTableCellInterface::GetRowColumnSpan(cell, &row, &col, &row_span,
-                                            &col_span);
+  atk_table_cell_get_row_column_span(cell, &row, &col, &row_span, &col_span);
 
-    GPtrArray* column_headers =
-        AtkTableCellInterface::GetColumnHeaderCells(cell);
-    n_column_headers = column_headers->len;
-    g_ptr_array_unref(column_headers);
+  GPtrArray* column_headers = atk_table_cell_get_column_header_cells(cell);
+  n_column_headers = column_headers->len;
+  g_ptr_array_unref(column_headers);
 
-    GPtrArray* row_headers = AtkTableCellInterface::GetRowHeaderCells(cell);
-    n_row_headers = row_headers->len;
-    g_ptr_array_unref(row_headers);
-  } else {
-    row = node->GetTableRow().value_or(-1);
-    col = node->GetTableColumn().value_or(-1);
-    row_span = node->GetTableRowSpan().value_or(0);
-    col_span = node->GetTableColumnSpan().value_or(0);
-    if (role == ATK_ROLE_TABLE_CELL) {
-      n_column_headers = node->GetDelegate()->GetColHeaderNodeIds(col).size();
-      n_row_headers = node->GetDelegate()->GetRowHeaderNodeIds(row).size();
-    }
-  }
+  GPtrArray* row_headers = atk_table_cell_get_row_header_cells(cell);
+  n_row_headers = row_headers->len;
+  g_ptr_array_unref(row_headers);
 
   std::vector<std::string> cell_info;
   cell_info.push_back(base::StringPrintf("row=%i", row));
