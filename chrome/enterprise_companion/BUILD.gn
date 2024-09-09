@@ -310,7 +310,10 @@ static_library("installer_paths") {
     "//base",
   ]
 
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/updater:*",
+  ]
 
   if (is_linux) {
     sources += [ "installer_paths_linux.cc" ]
@@ -348,7 +351,10 @@ static_library("constants_test") {
     "//base",
     "//url",
   ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/updater:*",
+  ]
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
 }
 

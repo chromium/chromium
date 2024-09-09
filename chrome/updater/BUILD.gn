@@ -815,6 +815,8 @@ if (is_win || is_mac || is_linux) {
       "//base",
       "//base/test:test_support",
       "//chrome/common:constants",
+      "//chrome/enterprise_companion:constants_test",
+      "//chrome/enterprise_companion:installer_paths",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/updater/protos:omaha_proto",
       "//components/crx_file",
@@ -854,6 +856,7 @@ if (is_win || is_mac || is_linux) {
 
     data_deps = [
       ":updater_selfupdate_test_crx",
+      "//chrome/enterprise_companion:enterprise_companion_test",
       "//chrome/updater/test/test_installer:app_installers",
     ]
 

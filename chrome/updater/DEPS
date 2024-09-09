@@ -3,6 +3,8 @@ include_rules = [
   "+chrome/enterprise_companion:client",
   "+chrome/enterprise_companion/enterprise_companion_client.h",
   "+chrome/enterprise_companion/device_management_storage",
+  "+chrome/enterprise_companion/global_constants.h",
+  "+chrome/enterprise_companion/installer_paths.h",
   "+chrome/enterprise_companion/mojom",
   "+chrome/installer/util",
   "+components/crash/core/common",

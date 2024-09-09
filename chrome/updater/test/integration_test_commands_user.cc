@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_test_commands.h"
@@ -462,6 +463,15 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void DMCleanup() override { updater::test::DMCleanup(updater_scope_); }
+
+  void InstallEnterpriseCompanionApp(
+      const base::Value::Dict& external_overrides) override {
+    updater::test::InstallEnterpriseCompanionApp(external_overrides);
+  }
+
+  void UninstallEnterpriseCompanionApp() override {
+    updater::test::UninstallEnterpriseCompanionApp();
+  }
 
  private:
   ~IntegrationTestCommandsUser() override = default;

@@ -477,6 +477,11 @@ void AppTestHelper::FirstTaskRun() {
            WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
           {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
           {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
+          {"install_enterprise_companion_app",
+           WithSwitch("external_overrides",
+                      Wrap(&InstallEnterpriseCompanionApp))},
+          {"uninstall_enterprise_companion_app",
+           Wrap(&UninstallEnterpriseCompanionApp)},
       };
 
   const base::CommandLine* command_line =

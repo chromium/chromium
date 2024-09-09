@@ -36,6 +36,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
+#include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -44,10 +45,6 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
-
-#if BUILDFLAG(IS_POSIX)
-#include "chrome/updater/ipc/ipc_support.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/debug/alias.h"
@@ -160,12 +157,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // and reports the crash.
   CHECK(!command_line->HasSwitch(kCrashMeSwitch)) << "--crash-me was used.";
 
-#if BUILDFLAG(IS_POSIX)
   // As long as this object is alive, all Mojo API surface relevant to IPC
   // connections is usable, and message pipes which span a process boundary will
   // continue to function.
   ScopedIPCSupportWrapper ipc_support;
-#endif
 
   // Only tasks and timers are supported on the main sequence.
   base::SingleThreadTaskExecutor main_task_executor;

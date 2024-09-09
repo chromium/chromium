@@ -56,6 +56,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
@@ -678,6 +679,15 @@ class IntegrationTest : public ::testing::Test {
   void DMDeregisterDevice() { test_commands_->DMDeregisterDevice(); }
 
   void DMCleanup() { test_commands_->DMCleanup(); }
+
+  void InstallEnterpriseCompanionApp(
+      const base::Value::Dict& external_overrides) {
+    test_commands_->InstallEnterpriseCompanionApp(external_overrides);
+  }
+
+  void UninstallEnterpriseCompanionApp() {
+    test_commands_->UninstallEnterpriseCompanionApp();
+  }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
@@ -1826,10 +1836,14 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
       GTEST_SKIP();
     }
     DMCleanup();
+    UninstallEnterpriseCompanionApp();
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(true));
   }
 
   void TearDown() override {
+    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+      UninstallEnterpriseCompanionApp();
+    }
     DMCleanup();
     IntegrationTest::TearDown();
   }
@@ -2063,6 +2077,60 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, FetchPolicyViaCompanionApp) {
+  net::test_server::EmbeddedTestServer null_server;
+  ASSERT_TRUE(null_server.Start());
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  InstallEnterpriseCompanionApp(
+      base::Value::Dict()
+          .Set("crash_upload_url", test_server_->crash_upload_url().spec())
+          .Set("dm_encrypted_reporting_url", null_server.base_url().spec())
+          .Set("dm_realtime_reporting_url", null_server.base_url().spec())
+          .Set("dm_server_url", test_server_->device_management_url().spec())
+          .Set("event_logging_url", null_server.base_url().spec()));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_install_default(
+      enterprise_management::INSTALL_DEFAULT_DISABLED);
+  omaha_settings.set_download_preference("not-cacheable");
+  ApplicationSettings app;
+  app.set_app_guid(kApp1.appid);
+  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequestViaCompanionApp(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestViaCompanionApp(
+      test_server_.get(), kDMToken, omaha_settings);
+
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Verify the policies downloaded by the companion app.
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_NE(dm_storage, nullptr);
+  std::optional<OmahaSettingsClientProto> omaha_policy =
+      GetOmahaPolicySettings(dm_storage);
+  ASSERT_TRUE(omaha_policy);
+  EXPECT_EQ(omaha_policy->install_default(),
+            enterprise_management::INSTALL_DEFAULT_DISABLED);
+  EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
+  ASSERT_GT(omaha_policy->application_settings_size(), 0);
+  const ApplicationSettings& app_policy =
+      omaha_policy->application_settings()[0];
+  EXPECT_EQ(app_policy.app_guid(), kApp1.appid);
+  EXPECT_EQ(app_policy.update(), enterprise_management::AUTOMATIC_UPDATES_ONLY);
+
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
