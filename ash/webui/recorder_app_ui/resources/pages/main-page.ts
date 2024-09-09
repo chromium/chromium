@@ -152,6 +152,8 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly currentPlayingId = signal<string|null>(null);
 
+  private readonly actionsContainerRef = createRef<HTMLElement>();
+
   private readonly currentPlayingRecordingLength = computed(() => {
     const id = this.currentPlayingId.value;
     if (id === null) {
@@ -195,6 +197,10 @@ export class MainPage extends ReactiveLitElement {
 
   get recordingFileListForTest(): RecordingFileList {
     return assertExists(this.recordingFileList.value);
+  }
+
+  get actionsContainer(): HTMLElement {
+    return assertExists(this.actionsContainerRef.value);
   }
 
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
@@ -342,6 +348,8 @@ export class MainPage extends ReactiveLitElement {
           id="actions"
           aria-label=${i18n.mainRecordingBarLandmarkAriaLabel}
           role="region"
+          part="actions"
+          ${ref(this.actionsContainerRef)}
         >
           <mic-selection-button></mic-selection-button>
           ${this.renderRecordButton()}${this.renderSettingsButton()}

@@ -52,7 +52,7 @@ export class TestHelper {
    * to start the test.
    */
   static goToMainPage(): void {
-    navigateTo('index');
+    navigateTo('main');
   }
 
   /**
@@ -180,8 +180,7 @@ export class TestHelper {
    * @return Number of recording files in the main Page.
    */
   static getRecordingFileCount(): number {
-    return app()
-      .mainPageForTest.recordingFileListForTest.recordingFileCountForTest();
+    return app().mainPage.recordingFileListForTest.recordingFileCountForTest();
   }
 
   /**
@@ -225,9 +224,9 @@ const UI_COMPONENTS = {
       .playbackPageForTest.recordingTitleForTest.titleSuggestionForTest
       .firstSuggestedTitleForTest,
   firstRecordingCard: () => app()
-                              .mainPageForTest.recordingFileListForTest
+                              .mainPage.recordingFileListForTest
                               .firstRecordingForTest.recordingCardForTest,
-  mainPage: () => app().mainPageForTest,
+  mainPage: () => app().mainPage,
   playbackBackButton: () => app().playbackPageForTest.backButtonForTest,
   playbackPage: () => app().playbackPageForTest,
   playbackPauseButton: () => app().playbackPageForTest.pauseButtonForTest,
@@ -241,7 +240,7 @@ const UI_COMPONENTS = {
     app().playbackPageForTest.recordingTitleForTest.suggestTitleButtonForTest,
   summaryContainer: () =>
     app().playbackPageForTest.summarizationViewForTest.summaryContainerForTest,
-  startRecordingButton: () => app().mainPageForTest.startRecordingButtonForTest,
+  startRecordingButton: () => app().mainPage.startRecordingButtonForTest,
   stopRecordingButton: () => app().recordPageForTest.stopRecordingButtonForTest,
   toggleSummaryButton: () =>
     app()

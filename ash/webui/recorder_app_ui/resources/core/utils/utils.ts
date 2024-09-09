@@ -166,3 +166,18 @@ export function isObjectEmpty(obj: Record<string, unknown>): boolean {
   }
   return true;
 }
+
+/**
+ * Wrapper for the View Transition API for unsupported browser.
+ *
+ * @return Promise when the transition is finished.
+ */
+export function startViewTransition(fn: () => void): Promise<void> {
+  if (document.startViewTransition === undefined) {
+    fn();
+    return Promise.resolve();
+  } else {
+    const transition = document.startViewTransition(fn);
+    return transition.finished;
+  }
+}

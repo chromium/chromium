@@ -78,6 +78,12 @@ export class RecordPage extends ReactiveLitElement {
   static override styles = css`
     :host {
       background-color: var(--cros-sys-app_base);
+      display: block;
+      height: 100%;
+      width: 100%;
+    }
+
+    #container {
       box-sizing: border-box;
       display: flex;
       flex-flow: column;
@@ -403,7 +409,7 @@ export class RecordPage extends ReactiveLitElement {
         // Permission denied, maybe user clicked cancel. Return to the main
         // page in this case.
         // TODO(pihsun): Better error handling/reporting and ask user to retry.
-        navigateTo('index');
+        navigateTo('main');
       } else {
         console.error(e);
       }
@@ -581,7 +587,7 @@ export class RecordPage extends ReactiveLitElement {
   private async deleteRecording() {
     // TODO(pihsun): Make this function sync since it's called as event handler.
     await this.cancelRecording();
-    navigateTo('index');
+    navigateTo('main');
   }
 
   private onToggleMuted() {
@@ -714,7 +720,7 @@ export class RecordPage extends ReactiveLitElement {
 
   private async saveAndExitRecording() {
     await this.stopRecording();
-    navigateTo('index');
+    navigateTo('main');
   }
 
   private onSaveClick() {
@@ -833,34 +839,36 @@ export class RecordPage extends ReactiveLitElement {
     };
 
     return html`
-      <div id="main-area">
-        ${this.renderHeader()}
-        <div id="middle" class=${classMap(mainSectionClasses)}>
-          <div id="audio-waveform-container" class="sheet">
-            ${this.renderAudioWaveform()}
-          </div>
-          <div id="transcription-container" class="sheet">
-            ${this.renderTranscription()}
+      <div id="container" part="container">
+        <div id="main-area">
+          ${this.renderHeader()}
+          <div id="middle" class=${classMap(mainSectionClasses)}>
+            <div id="audio-waveform-container" class="sheet">
+              ${this.renderAudioWaveform()}
+            </div>
+            <div id="transcription-container" class="sheet">
+              ${this.renderTranscription()}
+            </div>
           </div>
         </div>
-      </div>
-      <div id="footer" class=${classMap(footerClasses)}>
-        <div id="timer">${this.renderTimer()}</div>
-        <div id="actions">
-          <secondary-button
-            @click=${this.onDeleteButtonClick}
-            aria-label=${i18n.recordDeleteButtonTooltip}
-          >
-            <cra-icon slot="icon" name="delete"></cra-icon>
-          </secondary-button>
-          ${this.renderStopRecordButton()}
-          <secondary-button
-            id="pause-button"
-            @click=${this.onPauseButtonClick}
-            aria-label=${i18n.recordPauseButtonTooltip}
-          >
-            <cra-icon slot="icon" name="pause"></cra-icon>
-          </secondary-button>
+        <div id="footer" class=${classMap(footerClasses)}>
+          <div id="timer">${this.renderTimer()}</div>
+          <div id="actions">
+            <secondary-button
+              @click=${this.onDeleteButtonClick}
+              aria-label=${i18n.recordDeleteButtonTooltip}
+            >
+              <cra-icon slot="icon" name="delete"></cra-icon>
+            </secondary-button>
+            ${this.renderStopRecordButton()}
+            <secondary-button
+              id="pause-button"
+              @click=${this.onPauseButtonClick}
+              aria-label=${i18n.recordPauseButtonTooltip}
+            >
+              <cra-icon slot="icon" name="pause"></cra-icon>
+            </secondary-button>
+          </div>
         </div>
       </div>
       <delete-recording-dialog

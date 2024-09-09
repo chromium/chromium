@@ -39,14 +39,14 @@ export class RecorderApp extends ReactiveLitElement {
     }
   `;
 
-  private readonly mainPage = createRef<MainPage>();
+  private readonly mainPageRef = createRef<MainPage>();
 
   private readonly playbackPage = createRef<PlaybackPage>();
 
   private readonly recordPage = createRef<RecordPage>();
 
-  get mainPageForTest(): MainPage {
-    return assertExists(this.mainPage.value);
+  get mainPage(): MainPage {
+    return assertExists(this.mainPageRef.value);
   }
 
   get playbackPageForTest(): PlaybackPage {
@@ -69,8 +69,12 @@ export class RecorderApp extends ReactiveLitElement {
     const route = currentRoute.value;
 
     switch (route.name) {
-      case 'index':
-        return html`<main-page ${ref(this.mainPage)}></main-page>`;
+      case 'main':
+        return html`<main-page
+          ${ref(this.mainPageRef)}
+          exportparts="actions:main-page-actions"
+        >
+        </main-page>`;
       case 'playback':
         return html`<playback-page
           .recordingId=${route.parameters.id}
@@ -82,6 +86,8 @@ export class RecorderApp extends ReactiveLitElement {
         return html`<record-page
           .includeSystemAudio=${toBoolean(includeSystemAudio)}
           .micId=${micId}
+          part="record-page"
+          exportparts="container:record-page-container"
           ${ref(this.recordPage)}
         >
         </record-page>`;

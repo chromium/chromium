@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {signal} from '../reactive/signal.js';
+import {assertExists} from '../utils/assert.js';
+import {startViewTransition} from '../utils/utils.js';
 
 interface RouteInfo<ParameterKey extends string> {
   path: string;
@@ -25,7 +27,7 @@ function createRoute<ParameterKey extends string>(
  * to actual render is defined in pages/recorder-app.ts.
  */
 const routes = {
-  index: createRoute('/', []),
+  main: createRoute('/', []),
   playback: createRoute('/playback', ['id']),
   record: createRoute('/record', ['includeSystemAudio', 'micId']),
   dev: createRoute('/dev', []),
@@ -83,9 +85,69 @@ function extractCurrentRouteInfo(url: URL): UnionCurrentRoute|null {
   return null;
 }
 
+/**
+ * Hook for transitions that needs JavaScript to be run.
+ *
+ * Some page transitions can't be done with CSS only, so we need JS to be run
+ * before the transition happens.
+ *
+ * @return Corresponding cleanup to be run after the transition is done.
+ */
+function handleTransition(
+  oldRouteName: string|null,
+  newRouteName: string|null,
+): (() => void)|null {
+  if (oldRouteName === 'main' && newRouteName === 'record') {
+    const app = assertExists(document.querySelector('recorder-app'));
+    const root = document.documentElement;
+    // Currently there's no way of getting the element via pseudo element
+    // selector ::part in JS, but it's required for CSS, so we need two
+    // different way to reach to the same element.
+    // TODO(pihsun): This is not needed when the pseudo() method on Element is
+    // available in Chrome. See
+    // https://drafts.csswg.org/css-pseudo-4/#window-interface
+    const part = app.mainPage.actionsContainer;
+    const rect = part.getBoundingClientRect();
+    const {left, top} = rect;
+    const right = window.innerWidth - rect.right;
+    const bottom = window.innerHeight - rect.bottom;
+    // We can't directly get the border-radius from the element, since the
+    // element CSS relies on setting a very large value to round with shorter
+    // side, and the getComputedStyle still returns the large value instead of
+    // the real border radius.
+    const round = Math.min(rect.width, rect.height) / 2;
+    const clipPath =
+      `inset(${top}px ${right}px ${bottom}px ${left}px round ${round}px)`;
+    root.style.setProperty('--start-clip-path', clipPath);
+    return () => {
+      root.style.removeProperty('--start-clip-path');
+    };
+  }
+  return null;
+}
+
 function updateRoute() {
   const url = new URL(window.location.href);
-  currentRoute.value = extractCurrentRouteInfo(url);
+  const oldRoute = currentRoute.value;
+  const newRoute = extractCurrentRouteInfo(url);
+  const html = document.documentElement;
+
+  const oldRouteName = oldRoute?.name ?? null;
+  const newRouteName = newRoute?.name ?? null;
+
+  const transitionClassName =
+    `transition-${oldRouteName ?? 'none'}-${newRouteName ?? 'none'}`;
+
+  const cleanup = handleTransition(oldRouteName, newRouteName);
+  html.classList.add(transitionClassName);
+  // There's no user that need to wait for the transition to finish for
+  // navigateTo now.
+  void startViewTransition(() => {
+    currentRoute.value = newRoute;
+  }).then(() => {
+    html.classList.remove(transitionClassName);
+    cleanup?.();
+  });
 }
 
 function navigateToImpl(path: string) {
