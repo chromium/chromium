@@ -478,7 +478,7 @@ void ProfileManagerIOSImpl::DoFinalInit(ProfileIOS* profile) {
 
 void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ios::AccountConsistencyServiceFactory::GetForBrowserState(profile);
+  ios::AccountConsistencyServiceFactory::GetForProfile(profile);
   IdentityManagerFactory::GetForProfile(profile)->OnNetworkInitialized();
 
   // Those services needs to be explicitly initialized and can't simply be

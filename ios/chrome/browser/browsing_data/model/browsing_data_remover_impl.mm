@@ -796,7 +796,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
       base::SequencedTaskRunner::GetCurrentDefault();
 
   if (AccountConsistencyService* account_consistency_service =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_state_)) {
     account_consistency_service->OnBrowsingDataRemoved();
   }

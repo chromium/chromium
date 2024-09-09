@@ -8,31 +8,23 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AccountConsistencyService;
 
 namespace ios {
 // Singleton that creates the AccountConsistencyService(s) and associates those
-// services  with browser states.
-class AccountConsistencyServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+// services  with profiles.
+class AccountConsistencyServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   // Returns the instance of AccountConsistencyService associated with this
-  // browser state (creating one if none exists). Returns null if this browser
-  // state cannot have an AccountConsistencyService (for example, if it is
-  // incognito or if WKWebView is not enabled).
-  static AccountConsistencyService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // profile (creating one if none exists). Returns null if this profile cannot
+  // have an AccountConsistencyService (for example, if it is incognito).
+  static AccountConsistencyService* GetForProfile(ProfileIOS* profile);
 
   // Returns an instance of the factory singleton.
   static AccountConsistencyServiceFactory* GetInstance();
-
-  AccountConsistencyServiceFactory(const AccountConsistencyServiceFactory&) =
-      delete;
-  AccountConsistencyServiceFactory& operator=(
-      const AccountConsistencyServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AccountConsistencyServiceFactory>;
