@@ -89,6 +89,8 @@ include_rules = [
 
   "+services/metrics/public/cpp/ukm_source_id.h",
 
+  "+services/data_decoder/public/cpp/data_decoder.h",
+
   "+services/network/public",
   # This is needed for the CookieManager to configure the CookieStore directly.
   "+services/network/cookie_access_delegate_impl.h",

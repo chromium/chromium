@@ -5638,6 +5638,79 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.FileSize"
+    units="bytes" expires_after="2025-07-26">
+  <owner>bewise@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs the size of loaded asset link include files (see
+    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
+    These files are loaded to determine the full set of domains an app declares
+    a relationship with, and are currently loaded into an unbounded memory
+    buffer. This histogram will help us determine if we can apply a bounded
+    memory buffer.
+
+    The histogram is logged when an asset include file is successfully fetched,
+    but before it is parsed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.DigitalAssetLinks.AssetIncludes.NetworkLoadResult"
+    enum="BooleanSuccess" expires_after="2025-07-26">
+  <owner>bewise@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs whether the network load of the asset link include file succeded or
+    not. (see
+    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
+    These files are loaded to determine the full set of domains an app declares
+    a relationship with, and are currently loaded into an unbounded memory
+    buffer.
+
+    The histogram is logged when an asset include file load attempt returns.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.ParseSuccess"
+    enum="BooleanSuccess" expires_after="2025-07-26">
+  <owner>bewise@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs whether an loaded asset link include files is successfully parsed and
+    contained at least one &quot;web&quot; relation with a valid site target.
+    (see
+    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
+    These files are loaded to determine the full set of domains an app declares
+    a relationship with, and are currently loaded into an unbounded memory
+    buffer.
+
+    The histogram is logged when an asset include file is successfully parsed
+    but only if it was already valid JSON.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.ValidJson"
+    enum="BooleanSuccess" expires_after="2025-07-26">
+  <owner>bewise@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs whether an loaded asset link include files is successfully parsed as
+    JSON (see
+    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
+    These files are loaded to determine the full set of domains an app declares
+    a relationship with, and are currently loaded into an unbounded memory
+    buffer.
+
+    The histogram is logged when an asset include file is successfully parsed as
+    JSON, but before the contents are inspected.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.FileChooserResultOutsideAppDataDir"
     enum="Boolean" expires_after="2024-12-15">
   <owner>alibu@chromium.org</owner>
