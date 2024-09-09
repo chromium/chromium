@@ -21,7 +21,6 @@
   .col {
     display: grid;
     grid-template-rows: subgrid;
-    scroll-snap-align: start;
     width: var(--column-width);
   }
 
@@ -117,7 +116,8 @@
   <template is="dom-repeat" id="columnRepeat" items="[[columns]]"
       as="column" index-as="columnIndex">
     <div class="col"
-        style$="grid-row: span [[getRowCount_(column.productDetails.length)]]"
+        style$="grid-row: span [[getRowCount_(column.productDetails.length)]];
+            scroll-snap-align: [[getScrollSnapAlign_(draggingColumn)]];"
         on-pointerenter="onShowOpenTabButton_"
         is-dragging$="[[isDragging_(columnIndex, draggingColumn)]]"
         is-first-column$="[[isFirstColumn_(columnIndex, draggingColumn)]]">

@@ -121,6 +121,10 @@ export class TableElement extends PolymerElement {
     return undefined;
   }
 
+  private getScrollSnapAlign_(): string {
+    return !this.draggingColumn ? 'start' : 'none';
+  }
+
   // Determines the number of rows needed in the grid layout.
   // This is the sum of:
   //   - 1 row for the product selector.
