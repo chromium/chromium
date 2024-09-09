@@ -8,11 +8,10 @@
 
 namespace autofill {
 
-class IbanFieldParserTest
-    : public FormFieldParserTestBase,
-      public testing::TestWithParam<PatternProviderFeatureState> {
+class IbanFieldParserTest : public FormFieldParserTestBase,
+                            public testing::Test {
  public:
-  IbanFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  IbanFieldParserTest() = default;
   IbanFieldParserTest(const IbanFieldParserTest&) = delete;
   IbanFieldParserTest& operator=(const IbanFieldParserTest&) = delete;
 
@@ -23,25 +22,20 @@ class IbanFieldParserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    IbanFieldParserTest,
-    IbanFieldParserTest,
-    ::testing::ValuesIn(PatternProviderFeatureState::All()));
-
 // Match IBAN
-TEST_P(IbanFieldParserTest, ParseIban) {
+TEST_F(IbanFieldParserTest, ParseIban) {
   AddTextFormFieldData("iban-field", "Enter account number", IBAN_VALUE);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
-TEST_P(IbanFieldParserTest, ParseIbanBanks) {
+TEST_F(IbanFieldParserTest, ParseIbanBanks) {
   AddTextFormFieldData("accountNumber", "IBAN*", IBAN_VALUE);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
-TEST_P(IbanFieldParserTest, ParseNonIban) {
+TEST_F(IbanFieldParserTest, ParseNonIban) {
   AddTextFormFieldData("other-field", "Field for Account Number", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed);

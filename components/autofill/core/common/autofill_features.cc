@@ -434,26 +434,6 @@ BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature flag only exists for its feature parameter
-// `kAutofillParsingPatternActiveSource`, controlling from which JSON file
-// regexes are loaded.
-// If the flag is disabled (which it should never be in practice), it behaves
-// as if enabled with `kAutofillParsingPatternActiveSource` set to "default".
-// TODO(crbug.com/40280853): Remove once there is a decision what to do about
-// the different JSON files.
-BASE_FEATURE(kAutofillParsingPatternProvider,
-             "AutofillParsingPatternProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The specific pattern set from which regexes are loaded for the active
-// predictions. One of "default", "experimental".
-// This parameter is only supported in Chrome-branded builds. Non-Chrome branded
-// builds default to the legacy patterns.
-// TODO(crbug.com/40280853): Remove once there is a decision what to do about
-// the different JSON files.
-const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
-    &kAutofillParsingPatternProvider, "prediction_source", "default"};
-
 // Enables detection of language from Translate.
 // TODO(crbug.com/40158074): Cleanup when launched.
 BASE_FEATURE(kAutofillPageLanguageDetection,

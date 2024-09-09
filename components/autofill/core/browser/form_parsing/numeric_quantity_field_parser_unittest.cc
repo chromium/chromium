@@ -8,12 +8,10 @@
 
 namespace autofill {
 
-class NumericQuantityFieldParserTest
-    : public FormFieldParserTestBase,
-      public testing::TestWithParam<PatternProviderFeatureState> {
+class NumericQuantityFieldParserTest : public FormFieldParserTestBase,
+                                       public testing::Test {
  public:
-  explicit NumericQuantityFieldParserTest()
-      : FormFieldParserTestBase(GetParam()) {}
+  explicit NumericQuantityFieldParserTest() = default;
   NumericQuantityFieldParserTest(const NumericQuantityFieldParserTest&) =
       delete;
   NumericQuantityFieldParserTest& operator=(
@@ -26,18 +24,13 @@ class NumericQuantityFieldParserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    NumericQuantityFieldParserTest,
-    NumericQuantityFieldParserTest,
-    ::testing::ValuesIn(PatternProviderFeatureState::All()));
-
-TEST_P(NumericQuantityFieldParserTest, ParseNumericQuantity) {
+TEST_F(NumericQuantityFieldParserTest, ParseNumericQuantity) {
   AddTextFormFieldData("quantity", "quantity", NUMERIC_QUANTITY);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
-TEST_P(NumericQuantityFieldParserTest, ParseNonNumericQuantity) {
+TEST_F(NumericQuantityFieldParserTest, ParseNonNumericQuantity) {
   AddTextFormFieldData("name", "Name", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed);

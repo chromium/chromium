@@ -18,29 +18,7 @@ void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
 }
 }  // namespace
 
-std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
-  return {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      {.active_source = "default"},
-#else
-      // Builds without Autofill internal patterns default to the legacy
-      // patterns. The `active_source` feature parameter is in fact not read
-      // in this case.
-      {.active_source = "legacy"},
-#endif
-  };
-}
-
-FormFieldParserTestBase::FormFieldParserTestBase(
-    PatternProviderFeatureState pattern_provider_feature_state) {
-  CHECK_NE(pattern_provider_feature_state.active_source, nullptr);
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kAutofillParsingPatternProvider,
-      base::FieldTrialParams{
-          {features::kAutofillParsingPatternActiveSource.name,
-           pattern_provider_feature_state.active_source}});
-}
-
+FormFieldParserTestBase::FormFieldParserTestBase() = default;
 FormFieldParserTestBase::~FormFieldParserTestBase() = default;
 
 void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,

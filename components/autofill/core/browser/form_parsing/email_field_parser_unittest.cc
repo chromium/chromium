@@ -12,11 +12,10 @@
 
 namespace autofill {
 
-class EmailFieldParserTest
-    : public FormFieldParserTestBase,
-      public ::testing::TestWithParam<PatternProviderFeatureState> {
+class EmailFieldParserTest : public FormFieldParserTestBase,
+                             public ::testing::Test {
  public:
-  EmailFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  EmailFieldParserTest() = default;
   EmailFieldParserTest(const EmailFieldParserTest&) = delete;
   EmailFieldParserTest& operator=(const EmailFieldParserTest&) = delete;
 
@@ -31,14 +30,9 @@ class EmailFieldParserTest
       features::kAutofillParseEmailLabelAndPlaceholder};
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    EmailFieldParserTest,
-    EmailFieldParserTest,
-    ::testing::ValuesIn(PatternProviderFeatureState::All()));
-
 // Tests that a field whose label has the format of an email address is parsed
 // as `EMAIL_ADDRESS`.
-TEST_P(EmailFieldParserTest, ParseEmailAddressLabel) {
+TEST_F(EmailFieldParserTest, ParseEmailAddressLabel) {
   AddTextFormFieldData(/*name=*/"username", /*label=*/"some@foo.com",
                        EMAIL_ADDRESS);
   ClassifyAndVerify(ParseResult::kParsed);
@@ -46,19 +40,19 @@ TEST_P(EmailFieldParserTest, ParseEmailAddressLabel) {
 
 // Tests that a field whose placeholder has the format of an email address is
 // parsed as `EMAIL_ADDRESS`.
-TEST_P(EmailFieldParserTest, ParseEmailAddressPlaceholder) {
+TEST_F(EmailFieldParserTest, ParseEmailAddressPlaceholder) {
   AddFormFieldData(
       FormControlType::kInputText, /*name=*/"username", /*label=*/"",
       /*placeholder=*/"some@foo.com", /*max_length=*/0, EMAIL_ADDRESS);
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
-TEST_P(EmailFieldParserTest, ParseDomainLabel) {
+TEST_F(EmailFieldParserTest, ParseDomainLabel) {
   AddTextFormFieldData(/*name=*/"username", /*label=*/"foo.com", EMAIL_ADDRESS);
   ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
-TEST_P(EmailFieldParserTest, ParseDomainPlaceholder) {
+TEST_F(EmailFieldParserTest, ParseDomainPlaceholder) {
   AddFormFieldData(FormControlType::kInputText, /*name=*/"username",
                    /*label=*/"some@",
                    /*placeholder=*/"foo.com", /*max_length=*/0, EMAIL_ADDRESS);
