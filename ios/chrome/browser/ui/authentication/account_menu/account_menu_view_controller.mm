@@ -45,7 +45,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 // Height and width of the buttons.
 constexpr CGFloat kButtonSize = 22;
 
-constexpr CGFloat kHalfSheetCornerRadius = 20.0;
+constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
 // Sections used in the account menu.
 typedef NS_ENUM(NSUInteger, SectionIdentifier) {
@@ -83,7 +83,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.layer.cornerRadius = 10.;
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
