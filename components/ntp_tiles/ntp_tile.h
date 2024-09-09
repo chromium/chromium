@@ -39,6 +39,9 @@ struct NTPTile {
   // The last visit time of a Most Visited item. Used for debugging.
   base::Time last_visit_time;
 
+  // The score of a Most Visited item. Used for tweaking algorithm.
+  double score = -1;
+
   NTPTile();
   NTPTile(const NTPTile&);
   ~NTPTile();
