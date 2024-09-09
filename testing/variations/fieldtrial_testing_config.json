@@ -2276,9 +2276,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_UnifySubmissionAndUseDomNodeIds",
+                    "name": "Enabled_UnifySubmission",
                     "enable_features": [
-                        "AutofillReplaceCachedWebElementsByRendererIds",
                         "AutofillUnifyAndFixFormTracking"
                     ]
                 }
