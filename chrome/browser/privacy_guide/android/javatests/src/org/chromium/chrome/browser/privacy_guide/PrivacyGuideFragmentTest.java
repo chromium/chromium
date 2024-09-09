@@ -463,7 +463,6 @@ public class PrivacyGuideFragmentTest {
         setHistorySyncState(false);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
-        setAdTopicsState(false);
 
         launchPrivacyGuide();
         testButtonVisibility(false, false, false);
@@ -484,16 +483,11 @@ public class PrivacyGuideFragmentTest {
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         navigateFromCardToNext(FragmentType.SAFE_BROWSING);
-        testButtonVisibility(true, true, false);
+        testButtonVisibility(false, true, true);
         onView(withId(R.id.block_third_party)).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         navigateFromCardToNext(FragmentType.COOKIES);
-        testButtonVisibility(false, true, true);
-        onView(withId(R.id.ad_topics_switch)).perform(click());
-        onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
-
-        navigateFromCardToNext(FragmentType.AD_TOPICS);
         testButtonVisibility(false, false, false);
     }
 
@@ -564,15 +558,9 @@ public class PrivacyGuideFragmentTest {
         setHistorySyncState(false);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
-        setAdTopicsState(false);
 
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
-
-        pressBack();
-        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()));
-        onView(withId(R.id.ad_topics_switch)).perform(click());
-        onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
 
         pressBack();
         onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
@@ -619,7 +607,6 @@ public class PrivacyGuideFragmentTest {
         setPreloadStatePG3(PreloadPagesState.STANDARD_PRELOADING);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
-        setAdTopicsState(false);
 
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
@@ -670,7 +657,9 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
+        ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS,
+        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
     public void testAdTopicsCard_adTopicsSwitchUpdatedOnResume() {
         // Verify that the Ad Topics Switch is updated when the pref is changed when page is
