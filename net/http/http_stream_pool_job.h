@@ -60,7 +60,8 @@ class HttpStreamPool::Job {
   // `delegate` must outlive `this`.
   Job(Delegate* delegate,
       AttemptManager* attempt_manager,
-      NextProto expected_protocol);
+      NextProto expected_protocol,
+      bool is_http1_allowed);
 
   Job& operator=(const Job&) = delete;
 
@@ -116,6 +117,7 @@ class HttpStreamPool::Job {
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
   const NextProto expected_protocol_;
+  const bool is_http1_allowed_;
 
   ConnectionAttempts connection_attempts_;
 

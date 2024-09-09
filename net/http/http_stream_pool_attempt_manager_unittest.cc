@@ -40,6 +40,7 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/http/http_stream_request.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -166,7 +167,9 @@ class Preconnector {
 
   int Preconnect(HttpStreamPool& pool) {
     int rv = pool.Preconnect(
-        GetStreamKey(), num_streams_, alternative_service_info_, quic_version_,
+        HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
+                                    quic_version_, is_http1_allowed_),
+        num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
       result_ = rv;
@@ -203,6 +206,8 @@ class Preconnector {
 
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
+
+  bool is_http1_allowed_ = true;
 
   std::optional<int> result_;
   base::OnceClosure wait_result_closure_;
@@ -249,6 +254,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_is_http1_allowed(bool is_http1_allowed) {
+    is_http1_allowed_ = is_http1_allowed;
+    return *this;
+  }
+
   StreamRequester& set_privacy_mode(PrivacyMode privacy_mode) {
     key_builder_.set_privacy_mode(privacy_mode);
     return *this;
@@ -270,9 +280,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
     request_ = pool.RequestStream(
-        this, stream_key, priority_, allowed_bad_certs_,
-        enable_ip_based_pooling_, enable_alternative_services_,
-        alternative_service_info_, quic_version_, NetLogWithSource());
+        this,
+        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
+                                    quic_version_, is_http1_allowed_),
+        priority_, allowed_bad_certs_, enable_ip_based_pooling_,
+        enable_alternative_services_, NetLogWithSource());
     return request_.get();
   }
 
@@ -337,9 +349,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamKey stream_key,
-      const AlternativeServiceInfo& alternative_service_info,
-      quic::ParsedQuicVersion quic_version) override {}
+      HttpStreamPoolSwitchingInfo request_info) override {}
 
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 
@@ -382,6 +392,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   bool enable_ip_based_pooling_ = true;
 
   bool enable_alternative_services_ = true;
+
+  bool is_http1_allowed_ = true;
 
   AlternativeServiceInfo alternative_service_info_;
 
@@ -4025,6 +4037,24 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectUnsafePort) {
   preconnector.Preconnect(pool());
   preconnector.WaitForResult();
   EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_UNSAFE_PORT)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, DisallowH1) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Nagotiate to use HTTP/1.1.
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_is_http1_allowed(false);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_H2_OR_QUIC_REQUIRED)));
 }
 
 }  // namespace net

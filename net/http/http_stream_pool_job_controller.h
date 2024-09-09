@@ -46,6 +46,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
+      bool is_http1_allowed,
       AlternativeServiceInfo alternative_service_info,
       quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);

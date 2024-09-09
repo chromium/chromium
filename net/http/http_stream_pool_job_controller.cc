@@ -41,6 +41,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
+    bool is_http1_allowed,
     AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
@@ -68,9 +69,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
 
     alternative_service_info_ = std::move(alternative_service_info);
 
-    alternative_job_ =
-        pool_->GetOrCreateGroup(alt_stream_key)
-            .CreateJob(this, alternative_service_info.protocol());
+    alternative_job_ = pool_->GetOrCreateGroup(alt_stream_key)
+                           .CreateJob(this, alternative_service_info.protocol(),
+                                      is_http1_allowed);
     alternative_job_->Start(priority, allowed_bad_certs,
                             enable_ip_based_pooling,
                             enable_alternative_services,
@@ -79,8 +80,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_job_result_ = OK;
   }
 
-  origin_job_ = pool_->GetOrCreateGroup(stream_key)
-                    .CreateJob(this, NextProto::kProtoUnknown);
+  origin_job_ =
+      pool_->GetOrCreateGroup(stream_key)
+          .CreateJob(this, NextProto::kProtoUnknown, is_http1_allowed);
   origin_job_->Start(priority, allowed_bad_certs, enable_ip_based_pooling,
                      enable_alternative_services, quic_version, net_log);
 

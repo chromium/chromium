@@ -101,10 +101,11 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
-    NextProto expected_protocol) {
+    NextProto expected_protocol,
+    bool is_http1_allowed) {
   EnsureAttemptManager();
   return std::make_unique<Job>(delegate, attempt_manager_.get(),
-                               expected_protocol);
+                               expected_protocol, is_http1_allowed);
 }
 
 void HttpStreamPool::Group::StartJob(

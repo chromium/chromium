@@ -28,10 +28,14 @@ namespace net {
 
 HttpStreamPool::Job::Job(Delegate* delegate,
                          AttemptManager* attempt_manager,
-                         NextProto expected_protocol)
+                         NextProto expected_protocol,
+                         bool is_http1_allowed)
     : delegate_(delegate),
       attempt_manager_(attempt_manager),
-      expected_protocol_(expected_protocol) {}
+      expected_protocol_(expected_protocol),
+      is_http1_allowed_(is_http1_allowed) {
+  CHECK(is_http1_allowed_ || expected_protocol_ != NextProto::kProtoHTTP11);
+}
 
 HttpStreamPool::Job::~Job() {
   CHECK(attempt_manager_);
@@ -80,10 +84,18 @@ void HttpStreamPool::Job::AddConnectionAttempts(
 
 void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
                                         NextProto negotiated_protocol) {
+  int result = OK;
   if (expected_protocol_ != NextProto::kProtoUnknown &&
       expected_protocol_ != negotiated_protocol) {
-    OnStreamFailed(ERR_ALPN_NEGOTIATION_FAILED, NetErrorDetails(),
-                   ResolveErrorInfo());
+    result = ERR_ALPN_NEGOTIATION_FAILED;
+  } else if (!is_http1_allowed_ &&
+             !(negotiated_protocol == NextProto::kProtoHTTP2 ||
+               negotiated_protocol == NextProto::kProtoQUIC)) {
+    result = ERR_H2_OR_QUIC_REQUIRED;
+  }
+
+  if (result != OK) {
+    OnStreamFailed(result, NetErrorDetails(), ResolveErrorInfo());
     return;
   }
   // Always use PostTask to align the behavior with HttpStreamFactory::Job, see

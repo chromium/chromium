@@ -650,6 +650,8 @@ component("net") {
     "http/http_stream_pool_job_controller.h",
     "http/http_stream_pool_quic_task.cc",
     "http/http_stream_pool_quic_task.h",
+    "http/http_stream_pool_switching_info.cc",
+    "http/http_stream_pool_switching_info.h",
     "http/http_stream_request.cc",
     "http/http_stream_request.h",
     "http/http_transaction.h",

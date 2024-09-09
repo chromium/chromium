@@ -143,14 +143,13 @@ HttpStreamPool::~HttpStreamPool() {
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     HttpStreamRequest::Delegate* delegate,
-    const HttpStreamKey& stream_key,
+    HttpStreamPoolSwitchingInfo switching_info,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
-    AlternativeServiceInfo alternative_service_info,
-    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  const HttpStreamKey& stream_key = switching_info.stream_key;
   if (delegate_for_testing_) {
     delegate_for_testing_->OnRequestStream(stream_key);
   }
@@ -191,16 +190,17 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
   return controller_raw_ptr->RequestStream(
       delegate, stream_key, priority, allowed_bad_certs,
       enable_ip_based_pooling, enable_alternative_services,
-      std::move(alternative_service_info), quic_version, net_log);
+      switching_info.is_http1_allowed,
+      std::move(switching_info.alternative_service_info),
+      switching_info.quic_version, net_log);
 }
 
-int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
+int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
                                size_t num_streams,
-                               AlternativeServiceInfo alternative_service_info,
-                               quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
   num_streams = std::min(kMaxStreamSocketsPerGroup, num_streams);
 
+  const HttpStreamKey& stream_key = switching_info.stream_key;
   if (!IsPortAllowedForScheme(stream_key.destination().port(),
                               stream_key.destination().scheme())) {
     return ERR_UNSAFE_PORT;
@@ -238,7 +238,8 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
   }
 
   return GetOrCreateGroup(stream_key)
-      .Preconnect(num_streams, quic_version, std::move(callback));
+      .Preconnect(num_streams, switching_info.quic_version,
+                  std::move(callback));
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {

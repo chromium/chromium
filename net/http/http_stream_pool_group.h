@@ -73,7 +73,8 @@ class HttpStreamPool::Group {
   // properly manage the lifetime of the Job, even when StartJob() synchronously
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
-                                 NextProto expected_protocol);
+                                 NextProto expected_protocol,
+                                 bool is_http1_allowed);
 
   // Starts a Job. Will call one of Job::Delegate methods to notify results.
   void StartJob(Job* job,
