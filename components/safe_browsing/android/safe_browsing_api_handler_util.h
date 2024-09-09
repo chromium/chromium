@@ -13,16 +13,6 @@
 
 namespace safe_browsing {
 
-// TODO(crbug.com/40935425): Remove this enum once internal reference is
-// removed. These match what SafetyNetApiHandler.java uses for |resultStatus|
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SafeBrowsingResult
-enum class SafetyNetRemoteCallResultStatus {
-  INTERNAL_ERROR = -1,
-  SUCCESS = 0,
-  TIMEOUT = 1,
-};
-
 // Threat types as per the Java code.
 // This must match those in SafeBrowsingThreat.java in GMS's SafetyNet API.
 enum class SafetyNetJavaThreatType {

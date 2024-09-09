@@ -8094,22 +8094,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SB2.RemoteCall.InternalErrorStatusCode2"
-    enum="GooglePlayServicesConnectionResult" expires_after="never">
-<!-- expires-never: This tracks the result of connecting to GmsCore for
-Safe Browsing lookups, which is critical for security. -->
-
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The status code provided by GmsCore if it is unable to respond to a URL
-    check request due to incorrect initialization, not being ready, etc. Logged
-    on each URL check that hits the internal error condition. The total number
-    of these should add up to the INTERNAL_ERROR reports under
-    SB2.RemoteCall.Result.
-  </summary>
-</histogram>
-
 <histogram name="SBIRS.DiscardedIncident" enum="IncidentType"
     expires_after="never">
 <!-- expires-never: This tracks health of the incident reporting feature and
