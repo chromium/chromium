@@ -481,8 +481,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   DisplayHitTestQueryMap display_hit_test_query_;
 
   // List of observers caring about updates to HitTest regions.
-  base::ObserverList<HitTestRegionObserver>::Unchecked
-      hit_test_region_observers_;
+  base::ObserverList<HitTestRegionObserver> hit_test_region_observers_;
 
   // Performance hint session factory of this viz instance.
   const raw_ptr<HintSessionFactory> hint_session_factory_;
