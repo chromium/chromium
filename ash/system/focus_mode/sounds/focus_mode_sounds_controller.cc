@@ -24,6 +24,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
@@ -41,8 +42,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kPlaylistNum = 4;
 
 // Arrays for histogram records.
 constexpr focus_mode_histogram_names::FocusModePlaylistChosen
@@ -148,14 +147,14 @@ void DispatchRequests(
     return;
   }
 
-  CHECK_EQ(static_cast<int>(data.size()), kPlaylistNum);
+  CHECK_EQ(data.size(), kFocusModePlaylistViewsNum);
 
   // TODO(b/340304748): Currently, when opening the focus panel, we will clean
   // up all saved data and then download all playlists. In the future, we can
   // keep this cached and update if there are new playlists.
   using BarrierReturn = std::unique_ptr<FocusModeSoundsController::Playlist>;
   auto barrier_callback = base::BarrierCallback<BarrierReturn>(
-      /*num_callbacks=*/kPlaylistNum,
+      /*num_callbacks=*/kFocusModePlaylistViewsNum,
       /*done_callback=*/base::BindOnce(&ReorderPlaylists, data,
                                        std::move(sorted_playlists_callback)));
 
@@ -288,8 +287,8 @@ FocusModeSoundsController::FocusModeSoundsController()
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
   // TODO(b/341176182): Plumb the locale here and replace the default
   // locale.
-  soundscape_playlists_.reserve(kPlaylistNum);
-  youtube_music_playlists_.reserve(kPlaylistNum);
+  soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
+  youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
   // Default sound sections to enabled.
   enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
@@ -652,11 +651,14 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
     bool is_soundscape_type,
     UpdateSoundsViewCallback update_sounds_view_callback,
     std::vector<std::unique_ptr<Playlist>> sorted_playlists) {
-  // For the case that the `selected_playlist_` is missing from the list of
-  // playlists fetched from backend, we will show the cached playlist info if
-  // the selected playlist is currently playing; otherwise, we will clear the
-  // selected playlist in the controller.
-  if (!MayContainsSelectedPlaylist(selected_playlist_, is_soundscape_type,
+  // Please note, `sorted_playlists` can be empty, so it's important to check if
+  // the number of playlists is expected before manipulating the list. For the
+  // case that the `selected_playlist_` is missing from the list of playlists
+  // fetched from backend, we will show the cached playlist info if the selected
+  // playlist is currently playing; otherwise, we will clear the selected
+  // playlist in the controller.
+  if (sorted_playlists.size() == kFocusModePlaylistViewsNum &&
+      !MayContainsSelectedPlaylist(selected_playlist_, is_soundscape_type,
                                    sorted_playlists)) {
     if (selected_playlist_.state == focus_mode_util::SoundState::kPlaying) {
       sorted_playlists.pop_back();
