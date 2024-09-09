@@ -4344,11 +4344,8 @@ TEST_P(PasswordManagerTest,
   password_field.set_renderer_id(password_field_id);
   test_api(form_data).Append(password_field);
 
-  // TODO: crbug/356817239 - Delete this check once we stop sending text
-  // password fields to renderer.
-  autofill::PasswordFormGenerationData form_generation_data;
-  EXPECT_CALL(driver_, FormEligibleForGenerationFound)
-      .WillOnce(SaveArg<0>(&form_generation_data));
+  // No automatic generation should be offered on the text field.
+  EXPECT_CALL(driver_, FormEligibleForGenerationFound).Times(0);
 
   PasswordGenerationFrameHelper password_generation_frame_helper =
       PasswordGenerationFrameHelper(&client_, &driver_);
@@ -4361,9 +4358,9 @@ TEST_P(PasswordManagerTest,
       CreateServerPredictions(form_data,
                               {{1, FieldType::ACCOUNT_CREATION_PASSWORD}}));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(password_field_id, form_generation_data.new_password_renderer_id);
+
   EXPECT_TRUE(password_generation_frame_helper.IsManualGenerationEnabledField(
-      form_generation_data.new_password_renderer_id));
+      password_field.renderer_id()));
 }
 
 // Checks that username is suggested in the save prompt and saved on username

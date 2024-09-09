@@ -1135,6 +1135,17 @@ void PasswordFormManager::FillNow() {
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
   parsed_observed_form_ = std::move(form_parsing_result.password_form);
 
+  // Server predicts new password field on a text field. Enable manual
+  // generation on such fields.
+  if (!form_parsing_result.manual_generation_enabled_field.is_null()) {
+    PasswordGenerationFrameHelper* password_generation_helper =
+        driver_->GetPasswordGenerationHelper();
+    if (password_generation_helper) {
+      password_generation_helper->AddManualGenerationEnabledField(
+          form_parsing_result.manual_generation_enabled_field);
+    }
+  }
+
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_observed_form_,
                          FormDataParser::Mode::kFilling);
   if (!parsed_observed_form_) {
@@ -1143,14 +1154,7 @@ void PasswordFormManager::FillNow() {
   metrics_recorder_->CacheParsingResultInFillingMode(
       *parsed_observed_form_.get());
 
-  // TODO: crbug/356817239 - Consider deleting the `IsBlocklisted()` check.
   if (form_parsing_result.is_new_password_reliable && !IsBlocklisted()) {
-    PasswordGenerationFrameHelper* password_generation_helper =
-        driver_->GetPasswordGenerationHelper();
-    if (password_generation_helper) {
-      password_generation_helper->AddManualGenerationEnabledField(
-          parsed_observed_form_->new_password_element_renderer_id);
-    }
     driver_->FormEligibleForGenerationFound({
 #if BUILDFLAG(IS_IOS)
         .form_renderer_id = parsed_observed_form_->form_data.renderer_id(),
