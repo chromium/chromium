@@ -8,10 +8,10 @@ import 'chrome://resources/cros_components/menu/menu_separator.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-dropdown.js';
 
-import {css, html, map} from 'chrome://resources/mwc/lit/index.js';
+import {css, html, map, nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {useMicrophoneManager} from '../core/lit/context.js';
+import {useMicrophoneManager, usePlatformHandler} from '../core/lit/context.js';
 import {MicrophoneInfo} from '../core/microphone_manager.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings} from '../core/state/settings.js';
@@ -31,6 +31,8 @@ export class MicSelectionButton extends ReactiveLitElement {
   `;
 
   private readonly microphoneManager = useMicrophoneManager();
+
+  private readonly platformHandler = usePlatformHandler();
 
   private toggleSystemAudio(): void {
     settings.mutate((d) => {
@@ -60,8 +62,28 @@ export class MicSelectionButton extends ReactiveLitElement {
     `;
   }
 
-  override render(): RenderResult {
+  private renderSystemAudioSwitch(): RenderResult {
+    if (!this.platformHandler.canCaptureSystemAudioWithLoopback.value) {
+      return nothing;
+    }
+
     const {includeSystemAudio} = settings.value;
+
+    return html`
+      <cros-menu-separator></cros-menu-separator>
+      <cros-icon-dropdown-option
+        headline=${i18n.micSelectionMenuChromebookAudioOption}
+        itemStart="icon"
+        itemEnd="switch"
+        .switchSelected=${includeSystemAudio}
+        @cros-menu-item-triggered=${this.toggleSystemAudio}
+      >
+        <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
+      </cros-icon-dropdown-option>
+    `;
+  }
+
+  override render(): RenderResult {
     const microphones = this.microphoneManager.getMicrophoneList().value;
     const selectedMic = this.microphoneManager.getSelectedMicId().value;
 
@@ -76,16 +98,7 @@ export class MicSelectionButton extends ReactiveLitElement {
       >
         <cra-icon slot="button-icon" name="mic"></cra-icon>
         ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
-        <cros-menu-separator></cros-menu-separator>
-        <cros-icon-dropdown-option
-          headline=${i18n.micSelectionMenuChromebookAudioOption}
-          itemStart="icon"
-          itemEnd="switch"
-          .switchSelected=${includeSystemAudio}
-          @cros-menu-item-triggered=${this.toggleSystemAudio}
-        >
-          <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
-        </cros-icon-dropdown-option>
+        ${this.renderSystemAudioSwitch()}
       </cra-icon-dropdown>
     `;
   }

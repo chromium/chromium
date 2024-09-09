@@ -18,6 +18,7 @@ export const devSettingsSchema = z.object({
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
   canUseSpeakerLabel: z.boolean(),
+  canCaptureSystemAudioWithLoopback: z.boolean(),
   // TODO(pihsun): Persist summary model installation progress.
 });
 
@@ -27,6 +28,7 @@ const defaultSettings: DevSettings = {
   forceTheme: ColorTheme.LIGHT,
   sodaInstalled: false,
   canUseSpeakerLabel: true,
+  canCaptureSystemAudioWithLoopback: true,
 };
 
 export const devSettings = signal(defaultSettings);

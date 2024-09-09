@@ -150,6 +150,9 @@ class RecorderAppUI
       const std::vector<std::string>& consent_description_names,
       const std::string& consent_confirmation_name) override;
 
+  void CanCaptureSystemAudioWithLoopback(
+      CanCaptureSystemAudioWithLoopbackCallback callback) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 

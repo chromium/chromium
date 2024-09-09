@@ -64,6 +64,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     return loadTimeData.getStringF(id, ...args);
   }
 
+  override readonly canCaptureSystemAudioWithLoopback = signal(false);
+
   constructor() {
     super();
     this.summaryModelLoader = new SummaryModelLoader(this.remote);
@@ -86,6 +88,9 @@ export class PlatformHandler extends PlatformHandlerBase {
 
     this.canUseSpeakerLabel.value =
       (await this.remote.canUseSpeakerLabelForCurrentProfile()).supported;
+
+    this.canCaptureSystemAudioWithLoopback.value =
+      (await this.remote.canCaptureSystemAudioWithLoopback()).supported;
 
     const update = (state: MojoModelState) => {
       this.sodaState.value = mojoModelStateToModelState(state);

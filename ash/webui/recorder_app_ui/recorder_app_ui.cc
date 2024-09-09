@@ -599,6 +599,15 @@ void RecorderAppUI::RecordSpeakerLabelConsent(
   delegate_->RecordSpeakerLabelConsent(consent);
 }
 
+void RecorderAppUI::CanCaptureSystemAudioWithLoopback(
+    CanCaptureSystemAudioWithLoopbackCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Disallow audio loopback when capture system audio from microphone.
+  std::move(callback).Run(
+      !base::FeatureList::IsEnabled(ash::features::kConchSystemAudioFromMic));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)
 
 }  // namespace ash

@@ -387,6 +387,8 @@ export class RecordPage extends ReactiveLitElement {
       includeSystemAudio: this.includeSystemAudio,
       platformHandler: this.platformHandler,
       speakerLabelEnabled,
+      canCaptureSystemAudioWithLoopback:
+        this.platformHandler.canCaptureSystemAudioWithLoopback.value,
     });
 
     try {

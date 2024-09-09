@@ -45,10 +45,12 @@ interface RecordingProgress {
   transcription: Transcription|null;
 }
 
-function getMicrophoneStream(micId: string): Promise<MediaStream> {
+function getMicrophoneStream(micId: string, echoCancellation: boolean):
+  Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
     audio: {
       deviceId: {exact: micId},
+      echoCancellation: {exact: echoCancellation},
     },
   });
 }
@@ -58,6 +60,7 @@ interface RecordingSessionConfig {
   micId: string;
   platformHandler: PlatformHandler;
   speakerLabelEnabled: boolean;
+  canCaptureSystemAudioWithLoopback: boolean;
 }
 
 let audioCtxGlobal: AudioContext|null = null;
@@ -183,7 +186,10 @@ export class RecordingSession {
       return;
     }
 
-    const micStream = await getMicrophoneStream(this.config.micId);
+    // Turn on AEC when capturing system audio via getDisplayMedia.
+    const micStream = await getMicrophoneStream(
+      this.config.micId, this.config.canCaptureSystemAudioWithLoopback
+    );
     this.micAudioSourceNode = this.audioCtx.createMediaStreamSource(micStream);
     this.connectSourceNode(this.micAudioSourceNode);
 
@@ -196,7 +202,8 @@ export class RecordingSession {
       return;
     }
 
-    if (!this.config.includeSystemAudio) {
+    if (!this.config.includeSystemAudio ||
+      !this.config.canCaptureSystemAudioWithLoopback) {
       return;
     }
 

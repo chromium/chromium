@@ -342,6 +342,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     return substituteI18nString(label, ...args);
   }
 
+  override readonly canCaptureSystemAudioWithLoopback = computed(
+    () => devSettings.value.canCaptureSystemAudioWithLoopback,
+  );
+
   override async init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -408,6 +412,12 @@ export class PlatformHandler extends PlatformHandlerBase {
         s.canUseSpeakerLabel = target.selected;
       });
     }
+    function handleCanCaptureSystemAudioWithLoopbackChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.canCaptureSystemAudioWithLoopback = target.selected;
+      });
+    }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
     // need to inline the styles.
     const labelStyle = {
@@ -447,6 +457,20 @@ export class PlatformHandler extends PlatformHandlerBase {
           >
           </cros-switch>
           Toggle can use speaker label
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleCanCaptureSystemAudioWithLoopbackChange}
+            .selected=${this.canCaptureSystemAudioWithLoopback.value}
+          >
+          </cros-switch>
+          Toggle can capture system audio via getDisplayMedia
         </label>
       </div>
     `;

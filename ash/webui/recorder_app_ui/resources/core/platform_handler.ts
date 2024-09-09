@@ -131,4 +131,12 @@ export abstract class PlatformHandler {
     consentDescriptionNames: NoArgStringName[],
     consentConfirmationName: NoArgStringName,
   ): void;
+
+  /**
+   * Whether getDisplayMedia can be used to include system audio.
+   *
+   * In typical SWA case, this value is set on startup and fixed at runtime, but
+   * to support easier development we still use a signal here.
+   */
+  abstract readonly canCaptureSystemAudioWithLoopback: ReadonlySignal<boolean>;
 }
