@@ -2451,10 +2451,6 @@ extern const char kAccountBookmarksAndReadingListBehindOptInDescription[];
 extern const char kAccountPasswordsOnSigninName[];
 extern const char kAccountPasswordsOnSigninDescription[];
 
-extern const char kAdaptiveButtonInTopToolbarTranslateName[];
-extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 extern const char kAdaptiveButtonInTopToolbarPageSummaryName[];

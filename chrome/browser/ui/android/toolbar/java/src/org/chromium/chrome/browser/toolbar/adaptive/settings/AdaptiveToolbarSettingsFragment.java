@@ -58,10 +58,6 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                 (RadioButtonGroupAdaptiveToolbarPreference)
                         findPreference(PREF_ADAPTIVE_RADIO_GROUP);
         mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
-        mRadioButtonGroup.setCanUseTranslate(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
-        mRadioButtonGroup.setCanUseAddToBookmarks(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setCanUseReadAloud(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
         mRadioButtonGroup.setCanUsePageSummary(

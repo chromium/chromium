@@ -155,10 +155,6 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
             "AccountReauthenticationRecentTimeWindow";
-    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE =
-            "AdaptiveButtonInTopToolbarTranslate";
-    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS =
-            "AdaptiveButtonInTopToolbarAddToBookmarks";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY =
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =

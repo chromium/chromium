@@ -4980,17 +4980,6 @@ const char kVerticalAutomotiveBackButtonToolbarDescription[] =
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 
-const char kAdaptiveButtonInTopToolbarTranslateName[] =
-    "Adaptive button in top toolbar - Translate button";
-const char kAdaptiveButtonInTopToolbarTranslateDescription[] =
-    "Enables a translate button in the top toolbar. Must be selected in "
-    "Settings > Toolbar Shortcut.";
-const char kAdaptiveButtonInTopToolbarAddToBookmarksName[] =
-    "Adaptive button in top toolbar - Add to bookmarks button";
-const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[] =
-    "Enables an add to bookmarks button in the top toolbar. Must be selected "
-    "in "
-    "Settings > Toolbar Shortcut.";
 const char kAdaptiveButtonInTopToolbarPageSummaryName[] =
     "Adaptive button in top toolbar - Page Summary";
 const char kAdaptiveButtonInTopToolbarPageSummaryDescription[] =

@@ -164,16 +164,6 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
     }
 
-    public static boolean isAdaptiveToolbarTranslateEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE);
-    }
-
-    public static boolean isAdaptiveToolbarAddToBookmarksEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS);
-    }
-
     public static boolean isAdaptiveToolbarPageSummaryEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY);

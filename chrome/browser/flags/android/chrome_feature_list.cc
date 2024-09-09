@@ -167,8 +167,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history::kOrganicRepeatableQueries,
     &history_clusters::internal::kJourneys,
     &history_clusters::internal::kOmniboxAction,
-    &kAdaptiveButtonInTopToolbarTranslate,
-    &kAdaptiveButtonInTopToolbarAddToBookmarks,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
     &kRedirectExplicitCTAIntentsToExistingActivity,
@@ -410,14 +408,6 @@ static jlong JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Alphabetical:
-
-BASE_FEATURE(kAdaptiveButtonInTopToolbarTranslate,
-             "AdaptiveButtonInTopToolbarTranslate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAdaptiveButtonInTopToolbarAddToBookmarks,
-             "AdaptiveButtonInTopToolbarAddToBookmarks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
              "AdaptiveButtonInTopToolbarCustomizationV2",

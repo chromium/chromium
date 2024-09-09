@@ -5006,17 +5006,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kOngoingProcesses)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
-    {"adaptive-button-in-top-toolbar-translate",
-     flag_descriptions::kAdaptiveButtonInTopToolbarTranslateName,
-     flag_descriptions::kAdaptiveButtonInTopToolbarTranslateDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAdaptiveButtonInTopToolbarTranslate)},
-    {"adaptive-button-in-top-toolbar-add-to-bookmarks",
-     flag_descriptions::kAdaptiveButtonInTopToolbarAddToBookmarksName,
-     flag_descriptions::kAdaptiveButtonInTopToolbarAddToBookmarksDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarAddToBookmarks)},
     {"adaptive-button-in-top-toolbar-page-summary",
      flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryName,
      flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryDescription,

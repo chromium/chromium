@@ -39,8 +39,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
     private boolean mCanUseVoiceSearch = true;
-    private boolean mCanUseTranslate;
-    private boolean mCanUseAddToBookmarks;
     private boolean mCanUseReadAloud;
     private boolean mCanUsePageSummary;
 
@@ -104,8 +102,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
                                                     .adaptive_toolbar_button_preference_based_on_your_usage_description,
                                             getButtonString(uiState.autoButtonCaption)));
                     updateVoiceButtonVisibility();
-                    updateTranslateButtonVisibility();
-                    updateAddToBookmarksButtonVisibility();
                     updateReadAloudButtonVisibility();
                     updatePageSummaryButtonVisibility();
                 });
@@ -210,16 +206,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
         updateVoiceButtonVisibility();
     }
 
-    void setCanUseTranslate(boolean canUseTranslate) {
-        mCanUseTranslate = canUseTranslate;
-        updateTranslateButtonVisibility();
-    }
-
-    void setCanUseAddToBookmarks(boolean canUseAddToBookmarks) {
-        mCanUseAddToBookmarks = canUseAddToBookmarks;
-        updateAddToBookmarksButtonVisibility();
-    }
-
     void setCanUseReadAloud(boolean canUseReadAloud) {
         mCanUseReadAloud = canUseReadAloud;
         updateReadAloudButtonVisibility();
@@ -232,14 +218,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
 
     private void updateVoiceButtonVisibility() {
         updateButtonVisibility(mVoiceSearchButton, mCanUseVoiceSearch);
-    }
-
-    private void updateTranslateButtonVisibility() {
-        updateButtonVisibility(mTranslateButton, mCanUseTranslate);
-    }
-
-    private void updateAddToBookmarksButtonVisibility() {
-        updateButtonVisibility(mAddToBookmarksButton, mCanUseAddToBookmarks);
     }
 
     private void updateReadAloudButtonVisibility() {
