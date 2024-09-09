@@ -1147,16 +1147,17 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(!in_apply_compositor_changes_);
   base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
 
-  using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;
 
   for (auto& swap_promise : commit_data->swap_promises) {
     TRACE_EVENT(
         "input,benchmark", "LatencyInfo.Flow",
         [&swap_promise](perfetto::EventContext ctx) {
-          ChromeLatencyInfo* info = ctx.event()->set_chrome_latency_info();
+          auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                           ->set_chrome_latency_info();
           info->set_trace_id(swap_promise->GetTraceId());
-          info->set_step(ChromeLatencyInfo::STEP_MAIN_THREAD_SCROLL_UPDATE);
+          info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                             STEP_MAIN_THREAD_SCROLL_UPDATE);
           tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                  swap_promise->GetTraceId());
         });
