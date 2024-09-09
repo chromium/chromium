@@ -802,6 +802,15 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
         delegate_->GetWebContents(), this);
   }
 
+  // Position the pop-up window such that the top of the pop-up window lines up
+  // with the top of the button mode loading modal. This helps cover the loading
+  // modal and direct user attention to the pop-up window. Note that this change
+  // does not apply to other pop-up windows such as use other account, instead
+  // they will be shown centred.
+  if (rp_mode == blink::mojom::RpMode::kButton && state_ == State::LOADING) {
+    popup_window_->SetCustomYPosition(web_contents()->GetViewBounds().y());
+  }
+
   // The modal should not be hidden when the pop-up window is displayed for
   // better UX.
   if (GetDialogType() != DialogType::MODAL) {
