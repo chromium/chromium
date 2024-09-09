@@ -25,11 +25,15 @@ class EXTENSIONS_WEBVIEW_EXPORT MediaIntegrityError : public DOMException {
   static MediaIntegrityError* Create(String message,
                                      const MediaIntegrityErrorOptions* options);
 
-  static MediaIntegrityError* CreateForName(
+  // Constructor for C++ code, which attaches stack trace.
+  static v8::Local<v8::Value> CreateForName(
+      v8::Isolate* isolate,
       V8MediaIntegrityErrorName::Enum name);
 
-  static MediaIntegrityError* CreateFromMojomEnum(
-      mojom::blink::WebViewMediaIntegrityErrorCode error);
+  // Constructor for C++ code, which attaches stack trace.
+  static v8::Local<v8::Value> CreateFromMojomEnum(
+      v8::Isolate* isolate,
+      mojom::blink::WebViewMediaIntegrityErrorCode error_code);
 
   // Use one of the Create() methods instead. This constructor has to be public
   // so that it can be used with MakeGarbageCollected<> inside the Create

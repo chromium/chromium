@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_error.h"
 
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -55,18 +56,22 @@ MediaIntegrityError* MediaIntegrityError::Create(
 }
 
 // static
-MediaIntegrityError* MediaIntegrityError::CreateForName(
+v8::Local<v8::Value> MediaIntegrityError::CreateForName(
+    v8::Isolate* isolate,
     V8MediaIntegrityErrorName::Enum name) {
-  return MakeGarbageCollected<MediaIntegrityError>(
+  MediaIntegrityError* error = MakeGarbageCollected<MediaIntegrityError>(
       GetErrorMessageForName(name), V8MediaIntegrityErrorName(name));
+  return blink::V8ThrowDOMException::AttachStackProperty(isolate, error);
 }
 
 // static
-MediaIntegrityError* MediaIntegrityError::CreateFromMojomEnum(
-    mojom::blink::WebViewMediaIntegrityErrorCode error) {
-  V8MediaIntegrityErrorName::Enum name = MojomToV8Enum(error);
-  return MakeGarbageCollected<MediaIntegrityError>(
+v8::Local<v8::Value> MediaIntegrityError::CreateFromMojomEnum(
+    v8::Isolate* isolate,
+    mojom::blink::WebViewMediaIntegrityErrorCode error_code) {
+  V8MediaIntegrityErrorName::Enum name = MojomToV8Enum(error_code);
+  MediaIntegrityError* error = MakeGarbageCollected<MediaIntegrityError>(
       GetErrorMessageForName(name), V8MediaIntegrityErrorName(name));
+  return blink::V8ThrowDOMException::AttachStackProperty(isolate, error);
 }
 
 MediaIntegrityError::MediaIntegrityError(String message,

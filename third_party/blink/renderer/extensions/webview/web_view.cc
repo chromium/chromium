@@ -60,7 +60,13 @@ void WebView::EnsureServiceConnection(ExecutionContext* execution_context) {
 void WebView::OnServiceConnectionError() {
   media_integrity_service_remote_.reset();
   for (auto& resolver : provider_resolvers_) {
+    ScriptState* script_state = resolver->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      continue;
+    }
+    ScriptState::Scope scope(script_state);
     resolver->Reject(MediaIntegrityError::CreateForName(
+        script_state->GetIsolate(),
         V8MediaIntegrityErrorName::Enum::kInternalError));
   }
   provider_resolvers_.clear();
@@ -76,6 +82,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
                                       kInvalidContext);
     return EmptyPromise();
   }
+  ScriptState::Scope scope(script_state);
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   const SecurityOrigin* origin = execution_context->GetSecurityOrigin();
@@ -96,6 +103,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
 
   if (!params->hasCloudProjectNumber()) {
     resolver->Reject(MediaIntegrityError::CreateForName(
+        script_state->GetIsolate(),
         V8MediaIntegrityErrorName::Enum::kInvalidArgument));
     return promise;
   }
@@ -108,6 +116,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
   if (cloud_project_number >
       mojom::blink::WebViewMediaIntegrityService::kMaxCloudProjectNumber) {
     resolver->Reject(MediaIntegrityError::CreateForName(
+        script_state->GetIsolate(),
         V8MediaIntegrityErrorName::Enum::kInvalidArgument));
     return promise;
   }
@@ -146,9 +155,11 @@ void WebView::OnGetIntegrityProviderResponse(
         DOMExceptionCode::kInvalidStateError, kInvalidContext));
     return;
   }
+  ScriptState::Scope scope(script_state);
 
   if (error.has_value()) {
-    resolver->Reject(MediaIntegrityError::CreateFromMojomEnum(*error));
+    resolver->Reject(MediaIntegrityError::CreateFromMojomEnum(
+        script_state->GetIsolate(), *error));
     return;
   }
 
