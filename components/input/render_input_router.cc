@@ -320,6 +320,18 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   TRACE_EVENT1("input", "RenderInputRouter::ForwardGestureEvent", "type",
                WebInputEvent::GetName(gesture_event.GetType()));
 
+  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
+                                                          latency_info);
+
+  // Assigns a `trace_id` to the latency object.
+  latency_tracker_->OnEventStart(&gesture_with_latency.latency);
+
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&gesture_with_latency](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(gesture_with_latency.latency,
+                                                ctx);
+              });
+
   // Early out if necessary, prior to performing latency logic.
   if (delegate_->IsIgnoringWebInputEvents(gesture_event)) {
     // IgnoreWebInputEvents is primarily concerned with suppressing event
@@ -360,8 +372,6 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
     return;
   }
 
-  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
-                                                          latency_info);
   DispatchInputEventWithLatencyInfo(
       gesture_with_latency.event, &gesture_with_latency.latency,
       &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -450,6 +460,16 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
   // ignored if appropriate in FilterInputEvent().
 
   input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
+
+  // Assigns a `trace_id` to the latency object.
+  latency_tracker_->OnEventStart(&touch_with_latency.latency);
+
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&touch_with_latency](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(touch_with_latency.latency,
+                                                ctx);
+              });
+
   DispatchInputEventWithLatencyInfo(
       touch_with_latency.event, &touch_with_latency.latency,
       &touch_with_latency.event.GetModifiableEventLatencyMetadata());

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -102,6 +103,11 @@ class LatencyInfo {
   static void TraceIntermediateFlowEvents(
       const std::vector<LatencyInfo>& latency_info,
       perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
+
+  // Populates fields for a `LatencyInfo.Flow` event with `ctx`
+  // from `latency`.
+  static void FillTraceEvent(const LatencyInfo& latency,
+                             const perfetto::EventContext& ctx);
 
   // Add timestamps for components that are in |other| but not in |this|.
   void AddNewLatencyFrom(const LatencyInfo& other);

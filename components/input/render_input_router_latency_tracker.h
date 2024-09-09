@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterLatencyTracker {
 
   virtual ~RenderInputRouterLatencyTracker();
 
+  // Sets `latency`'s `trace_id` field to the next global ID.
+  void OnEventStart(ui::LatencyInfo* latency);
+
   // Populates the LatencyInfo with relevant entries for latency tracking.
   // Called when an event is received by the RenderWidgetHost, prior to
   // that event being forwarded to the renderer (via the InputRouter).
@@ -49,11 +52,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterLatencyTracker {
   void reset_delegate() { render_input_router_delegate_ = nullptr; }
 
  private:
-  void OnEventStart(ui::LatencyInfo* latency);
-
-  bool has_seen_first_gesture_scroll_update_;
-  int64_t gesture_scroll_id_;
-  int64_t touch_trace_id_;
+  bool has_seen_first_gesture_scroll_update_ = false;
+  int64_t gesture_scroll_id_ = -1;
+  int64_t touch_trace_id_ = -1;
 
   // Whether the current stream of touch events includes more than one active
   // touch point. This is set in OnInputEvent, and cleared in OnInputEventAck.

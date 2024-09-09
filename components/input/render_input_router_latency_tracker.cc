@@ -214,8 +214,10 @@ void RenderInputRouterLatencyTracker::OnInputEventAck(
 }
 
 void RenderInputRouterLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
-  static uint64_t global_trace_id = 0;
-  latency->set_trace_id(++global_trace_id);
+  if (latency->trace_id() == -1) {
+    static uint64_t global_trace_id = 0;
+    latency->set_trace_id(++global_trace_id);
+  }
 }
 
 }  // namespace input

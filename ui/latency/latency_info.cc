@@ -122,6 +122,17 @@ void LatencyInfo::TraceIntermediateFlowEvents(
   }
 }
 
+void LatencyInfo::FillTraceEvent(const LatencyInfo& latency,
+                                 const perfetto::EventContext& ctx) {
+  perfetto::protos::pbzero::ChromeLatencyInfo* info =
+      ctx.event()->set_chrome_latency_info();
+  info->set_trace_id(latency.trace_id());
+
+  tracing::FillFlowEvent(
+      ctx, perfetto::protos::pbzero::TrackEvent::LegacyEvent::FLOW_OUT,
+      latency.trace_id());
+}
+
 void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {
   // Don't clobber an existing trace_id_.
   if (trace_id_ == -1) {
@@ -199,8 +210,8 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
                       ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                           ->set_chrome_latency_info();
                   info->set_trace_id(trace_id_);
-                  tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_OUT,
-                                         trace_id_);
+                  tracing::FillFlowEvent(
+                      ctx, TrackEvent::LegacyEvent::FLOW_INOUT, trace_id_);
                 });
   }
 
