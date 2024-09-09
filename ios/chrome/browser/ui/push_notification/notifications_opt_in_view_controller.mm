@@ -108,6 +108,17 @@ NSString* BannerImageName(bool landscape) {
   ]];
 
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  if (@available(iOS 17, *)) {
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
+    };
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -116,10 +127,16 @@ NSString* BannerImageName(bool landscape) {
   self.bannerName = BannerImageName(IsLandscape(self.view.window));
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 }
+#endif
 
 #pragma mark - PromoStyleViewController
 
