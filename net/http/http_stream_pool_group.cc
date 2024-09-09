@@ -149,6 +149,11 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
     dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
     return dict;
   });
+
+  if (ActiveStreamSocketCount() >= num_streams) {
+    return OK;
+  }
+
   EnsureAttemptManager();
   return attempt_manager_->Preconnect(num_streams, quic_version,
                                       std::move(callback));

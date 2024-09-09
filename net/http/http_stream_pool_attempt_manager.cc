@@ -186,13 +186,10 @@ int HttpStreamPool::AttemptManager::Preconnect(
   CHECK(!spdy_session_);
   CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
                                                   /*is_websocket=*/false));
+  CHECK(group_->ActiveStreamSocketCount() < num_streams);
 
   if (is_failing_) {
     return error_to_notify_;
-  }
-
-  if (group_->ActiveStreamSocketCount() >= num_streams) {
-    return OK;
   }
 
   auto entry =
