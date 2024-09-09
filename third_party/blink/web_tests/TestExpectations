@@ -2632,10 +2632,6 @@ crbug.com/364754341 external/wpt/css/css-text/parsing/tab-size-computed.html [ C
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/364970783 external/wpt/css/css-tables/table-intrinsic-size-003.html [ Failure ]
-crbug.com/364933061 [ Win11-arm64 ] external/wpt/webrtc/RTCPeerConnection-generateCertificate.html [ Timeout ]
-crbug.com/364933061 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-generateCertificate.html [ Timeout ]
-crbug.com/364933061 [ Mac12 ] external/wpt/webrtc/RTCPeerConnection-generateCertificate.html [ Timeout ]
-crbug.com/364933061 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-generateCertificate.html [ Timeout ]
 crbug.com/364935894 [ Mac14 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 crbug.com/364935894 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-only-picker-opt-in.tentative.html [ Failure ]
