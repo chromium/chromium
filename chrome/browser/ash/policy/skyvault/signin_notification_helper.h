@@ -17,6 +17,8 @@ inline constexpr char kDownloadSignInNotificationPrefix[] =
     "skyvault-download-signin-";
 
 inline constexpr char kMigrationSignInNotification[] = "skyvault-migration";
+inline constexpr char kScreenCaptureSignInNotificationIdPrefix[] =
+    "skyvault-screencapture-signin-";
 
 // The notification button index.
 enum NotificationButtonIndex {

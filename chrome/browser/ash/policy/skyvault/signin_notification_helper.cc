@@ -7,6 +7,8 @@
 #include <string>
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -140,11 +142,47 @@ void ShowSignInNotification(
 
       break;
     }
-    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture:
-      // TODO(b/348177318): Implement the sign-in UI for screencapture.
-      break;
+    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture: {
+      message_center::RichNotificationData rich_notification_data;
+      rich_notification_data.vector_small_image = &ash::kCaptureModeIcon;
+      auto notification_id = base::StrCat(
+          {kScreenCaptureSignInNotificationIdPrefix, base::NumberToString(id)});
+      message_center::Notification notification(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          /*title=*/
+          l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_TITLE),
+          /*message=*/std::u16string(),
+          /*icon=*/ui::ImageModel(),
+          /*display_source=*/
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
+          /*origin_url=*/GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+              ash::NotificationCatalogName::kScreenCapture),
+          rich_notification_data,
+          base::MakeRefCounted<SignInNotificationDelegate>(
+              profile, notification_id, std::move(signin_callback)));
 
-    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration:
+      notification.set_fullscreen_visibility(
+          message_center::FullscreenVisibility::OVER_USER);
+      notification.set_accent_color(
+          ash::kSystemNotificationColorCriticalWarning);
+      notification.set_accent_color_id(cros_tokens::kColorAlert);
+
+      message_center::ButtonInfo signin_button(l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_BUTTON));
+      message_center::ButtonInfo cancel_button(l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_CANCEL_BUTTON));
+      notification.set_buttons({signin_button, cancel_button});
+
+      NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+          NotificationHandler::Type::TRANSIENT, notification,
+          /*metadata=*/nullptr);
+
+      break;
+    }
+    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration: {
       message_center::RichNotificationData optional_fields;
       optional_fields.never_timeout = true;
       auto notification = ash::CreateSystemNotificationPtr(
@@ -176,6 +214,7 @@ void ShowSignInNotification(
           NotificationHandler::Type::TRANSIENT, *notification,
           /*metadata=*/nullptr);
       break;
+    }
   }
 }
 

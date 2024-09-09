@@ -102,7 +102,11 @@ INSTANTIATE_TEST_SUITE_P(
                           base::NumberToString(kId)})),
         std::make_tuple(
             ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
-            kMigrationSignInNotification)),
+            kMigrationSignInNotification),
+        std::make_tuple(
+            ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
+            base::StrCat({kScreenCaptureSignInNotificationIdPrefix,
+                          base::NumberToString(kId)}))),
 
     SignInNotificationHelperTest::ParamToName);
 

@@ -1301,6 +1301,15 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_CANCEL_BUTTON" desc="The for the cancel button on the notification that shows up informing the user that screenshot is being saved to OneDrive.">
     Cancel
   </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the screen capture flow.">
+    Sign in to Microsoft OneDrive to save screenshot
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_CANCEL_BUTTON" desc="Cancel button for the notification asking the user to sign-in to Microsoft OneDrive.">
+    Dismiss
+  </message>
   <message name="IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="The title for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
     Google Drive
   </message>
