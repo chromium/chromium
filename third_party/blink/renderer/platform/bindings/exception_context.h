@@ -90,6 +90,13 @@ class PLATFORM_EXPORT ExceptionContext final {
     return property_name_ ? String(property_name_)
                           : property_name_string_;
   }
+  std::variant<const char*, String> GetPropertyNameVariant() const {
+    DCHECK(!property_name_ || property_name_string_.IsNull());
+    if (property_name_) {
+      return property_name_;
+    }
+    return property_name_string_;
+  }
   int16_t GetArgumentIndex() const { return argument_index_; }
 
   // This is used for a performance hack to reduce the number of construction

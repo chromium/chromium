@@ -561,9 +561,15 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
         AtomicString(script_info->class_like_name));
   }
 
-  if (!script_info->property_like_name.IsNull()) {
-    script_timing_info->SetPropertyLikeName(
-        AtomicString(script_info->property_like_name));
+  if (const auto* property_name =
+          std::get_if<const char*>(&script_info->property_like_name)) {
+    script_timing_info->SetPropertyLikeName(AtomicString(*property_name));
+  } else if (auto* property_name_string =
+                 std::get_if<String>(&script_info->property_like_name)) {
+    if (!property_name_string->IsNull()) {
+      script_timing_info->SetPropertyLikeName(
+          AtomicString(*property_name_string));
+    }
   }
 
   script_timing_info->SetPauseDuration(script_info->pause_duration);
@@ -576,7 +582,7 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     ScriptState* script_state,
     bool resolving,
     const char* class_like_name,
-    const String& property_like_name,
+    std::variant<const char*, String> property_like_name,
     const String& script_url) {
   // Unlike other script entry points, promise resolvers don't have a "Did"
   // probe, so we keep its depth at 1 and reset only at task end.

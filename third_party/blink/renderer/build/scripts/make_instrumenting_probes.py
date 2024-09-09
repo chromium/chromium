@@ -129,7 +129,8 @@ class File(object):
             line = re.sub(r"\s{2,}", " ", line).strip()  # Collapse whitespace
             if len(line) == 0:
                 continue
-            elif line.startswith("class ") or line.startswith("struct "):
+            elif line.startswith("class ") or line.startswith(
+                    "struct ") or line.startswith("using "):
                 self.forward_declarations.append(line)
             else:
                 self.declarations.append(Method(line))

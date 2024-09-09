@@ -79,7 +79,7 @@ void StreamPromiseResolver::Resolve(ScriptState* script_state,
   probe::WillHandlePromise(
       ToExecutionContext(script_state), script_state,
       /*resolving=*/true, class_like_name_,
-      property_like_name_.IsNull() ? String("resolve") : property_like_name_,
+      property_like_name_.IsNull() ? "resolve" : property_like_name_,
       script_url_);
 
   is_settled_ = true;
@@ -112,7 +112,7 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
   probe::WillHandlePromise(
       ToExecutionContext(script_state), script_state,
       /*resolving=*/false, class_like_name_,
-      property_like_name_.IsNull() ? String("reject") : property_like_name_,
+      property_like_name_.IsNull() ? "reject" : property_like_name_,
       script_url_);
   is_settled_ = true;
   v8::Isolate* isolate = script_state->GetIsolate();
