@@ -42,7 +42,6 @@
 #include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
-#include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
@@ -204,9 +203,6 @@ void FakeArcBridgeHost::OnPrivacyItemsInstanceReady(
 
 void FakeArcBridgeHost::OnProcessInstanceReady(
     mojo::PendingRemote<mojom::ProcessInstance> process_remote) {}
-
-void FakeArcBridgeHost::OnPropertyInstanceReady(
-    mojo::PendingRemote<mojom::PropertyInstance> property_remote) {}
 
 void FakeArcBridgeHost::OnScreenCaptureInstanceReady(
     mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {}

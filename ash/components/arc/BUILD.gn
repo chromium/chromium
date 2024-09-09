@@ -98,8 +98,6 @@ static_library("arc") {
     "pay/arc_payment_app_bridge.h",
     "power/arc_power_bridge.cc",
     "power/arc_power_bridge.h",
-    "property/arc_property_bridge.cc",
-    "property/arc_property_bridge.h",
     "sensor/arc_iio_sensor_bridge.cc",
     "sensor/arc_iio_sensor_bridge.h",
     "storage_manager/arc_storage_manager.cc",

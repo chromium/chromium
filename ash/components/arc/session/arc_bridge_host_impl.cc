@@ -47,7 +47,6 @@
 #include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
-#include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
@@ -360,11 +359,6 @@ void ArcBridgeHostImpl::OnPrivacyItemsInstanceReady(
 void ArcBridgeHostImpl::OnProcessInstanceReady(
     mojo::PendingRemote<mojom::ProcessInstance> process_remote) {
   OnInstanceReady(arc_bridge_service_->process(), std::move(process_remote));
-}
-
-void ArcBridgeHostImpl::OnPropertyInstanceReady(
-    mojo::PendingRemote<mojom::PropertyInstance> property_remote) {
-  OnInstanceReady(arc_bridge_service_->property(), std::move(property_remote));
 }
 
 void ArcBridgeHostImpl::OnScreenCaptureInstanceReady(

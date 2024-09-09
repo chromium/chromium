@@ -53,7 +53,6 @@ mojom("mojom") {
     "print_spooler.mojom",
     "privacy_items.mojom",
     "process.mojom",
-    "property.mojom",
     "scale_factor.mojom",
     "screen_capture.mojom",
     "sharesheet.mojom",
