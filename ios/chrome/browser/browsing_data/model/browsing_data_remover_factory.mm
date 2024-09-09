@@ -14,16 +14,16 @@
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

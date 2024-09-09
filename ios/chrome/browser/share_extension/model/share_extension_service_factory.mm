@@ -14,16 +14,16 @@
 
 // static
 ShareExtensionService* ShareExtensionServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<ShareExtensionService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-ShareExtensionService* ShareExtensionServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+ShareExtensionService* ShareExtensionServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<ShareExtensionService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

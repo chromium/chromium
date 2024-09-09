@@ -22,8 +22,7 @@ SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForBrowserState(
 }
 
 // static
-SharingMessageBridge*
-IOSSharingMessageBridgeFactory::GetForBrowserStateIfExists(
+SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfileIfExists(
     ChromeBrowserState* browser_state) {
   return static_cast<SharingMessageBridge*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));

@@ -29,17 +29,16 @@
 
 // static
 consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-consent_auditor::ConsentAuditor*
-ConsentAuditorFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

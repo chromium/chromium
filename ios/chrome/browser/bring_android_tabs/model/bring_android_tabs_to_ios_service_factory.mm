@@ -18,19 +18,18 @@
 
 // static
 BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  DCHECK(!browser_state->IsOffTheRecord());
+BringAndroidTabsToIOSServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
 BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

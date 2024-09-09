@@ -14,13 +14,11 @@
 class BrowsingDataRemover;
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BrowsingDataRemover* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BrowsingDataRemover* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static BrowsingDataRemover* GetForBrowserState(ProfileIOS* profile);
+  static BrowsingDataRemover* GetForProfileIfExists(ProfileIOS* profile);
   static BrowsingDataRemoverFactory* GetInstance();
 
   BrowsingDataRemoverFactory(const BrowsingDataRemoverFactory&) = delete;

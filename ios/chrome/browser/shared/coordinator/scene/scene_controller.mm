@@ -3916,7 +3916,7 @@ using UserFeedbackDataCallback =
   // If there are pending removal operations, the activation will be deferred
   // until the callback is received.
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
+      BrowsingDataRemoverFactory::GetForProfileIfExists(
           self.currentInterface.browserState);
   if (browsingDataRemover && browsingDataRemover->IsRemoving()) {
     return;

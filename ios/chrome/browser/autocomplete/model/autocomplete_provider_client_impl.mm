@@ -170,8 +170,7 @@ AutocompleteProviderClientImpl::GetShortcutsBackend() {
 
 scoped_refptr<ShortcutsBackend>
 AutocompleteProviderClientImpl::GetShortcutsBackendIfExists() {
-  return ios::ShortcutsBackendFactory::GetForBrowserStateIfExists(
-      browser_state_);
+  return ios::ShortcutsBackendFactory::GetForProfileIfExists(browser_state_);
 }
 
 std::unique_ptr<KeywordExtensionsDelegate>

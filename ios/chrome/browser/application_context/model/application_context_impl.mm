@@ -614,7 +614,7 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
         case AppState::kBackground:
           if (history::HistoryService* history_service =
-                  ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+                  ios::HistoryServiceFactory::GetForProfileIfExists(
                       browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }

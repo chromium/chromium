@@ -17,7 +17,7 @@ class IOSSharingMessageBridgeFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SharingMessageBridge* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static SharingMessageBridge* GetForBrowserStateIfExists(
+  static SharingMessageBridge* GetForProfileIfExists(
       ChromeBrowserState* browser_state);
   static IOSSharingMessageBridgeFactory* GetInstance();
 

@@ -47,7 +47,7 @@ WebDataServiceWrapper* WebDataServiceFactory::GetForBrowserState(
 }
 
 // static
-WebDataServiceWrapper* WebDataServiceFactory::GetForBrowserStateIfExists(
+WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
   DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||

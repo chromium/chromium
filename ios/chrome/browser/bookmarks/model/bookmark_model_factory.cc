@@ -51,16 +51,16 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 
 // static
 bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<bookmarks::BookmarkModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+bookmarks::BookmarkModel* BookmarkModelFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<bookmarks::BookmarkModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

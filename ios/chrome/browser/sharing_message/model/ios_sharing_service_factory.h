@@ -16,7 +16,7 @@ class SharingService;
 class IOSSharingServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SharingService* GetForBrowserState(ChromeBrowserState* browser_state);
-  static SharingService* GetForBrowserStateIfExists(
+  static SharingService* GetForProfileIfExists(
       ChromeBrowserState* browser_state);
   static IOSSharingServiceFactory* GetInstance();
 

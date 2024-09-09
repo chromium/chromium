@@ -70,7 +70,7 @@ SharingService* IOSSharingServiceFactory::GetForBrowserState(
 }
 
 // static
-SharingService* IOSSharingServiceFactory::GetForBrowserStateIfExists(
+SharingService* IOSSharingServiceFactory::GetForProfileIfExists(
     ChromeBrowserState* browser_state) {
   return static_cast<SharingService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));

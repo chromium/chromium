@@ -14,13 +14,13 @@ class ConsentAuditor;
 }  // namespace consent_auditor
 
 // Singleton that owns all ConsentAuditors and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class ConsentAuditorFactory : public BrowserStateKeyedServiceFactory {
  public:
   static consent_auditor::ConsentAuditor* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static consent_auditor::ConsentAuditor* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+  static consent_auditor::ConsentAuditor* GetForProfileIfExists(
+      ProfileIOS* profile);
   static ConsentAuditorFactory* GetInstance();
 
   ConsentAuditorFactory(const ConsentAuditorFactory&) = delete;

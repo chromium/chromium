@@ -19,10 +19,8 @@ namespace ios {
 
 class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static bookmarks::BookmarkModel* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static bookmarks::BookmarkModel* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static bookmarks::BookmarkModel* GetForBrowserState(ProfileIOS* profile);
+  static bookmarks::BookmarkModel* GetForProfileIfExists(ProfileIOS* profile);
 
   static BookmarkModelFactory* GetInstance();
 

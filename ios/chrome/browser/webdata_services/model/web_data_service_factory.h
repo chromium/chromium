@@ -34,7 +34,7 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   static WebDataServiceWrapper* GetForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
-  static WebDataServiceWrapper* GetForBrowserStateIfExists(
+  static WebDataServiceWrapper* GetForProfileIfExists(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 

@@ -108,7 +108,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
   // dependencies.
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+      ios::HistoryServiceFactory::GetForProfileIfExists(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
   syncer::DeviceInfoSyncService* device_info_sync_service =
@@ -166,32 +166,31 @@ SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
 
 // static
 syncer::SyncService* SyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
 
   return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-syncer::SyncService* SyncServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+syncer::SyncService* SyncServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
 
   return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static
 syncer::SyncServiceImpl*
 SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
-    ChromeBrowserState* browser_state) {
-  return static_cast<syncer::SyncServiceImpl*>(
-      GetForBrowserState(browser_state));
+    ProfileIOS* profile) {
+  return static_cast<syncer::SyncServiceImpl*>(GetForBrowserState(profile));
 }
 
 SyncServiceFactory::SyncServiceFactory()

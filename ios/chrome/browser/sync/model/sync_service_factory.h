@@ -17,17 +17,15 @@ class SyncService;
 }  // namespace syncer
 
 // Singleton that owns all SyncServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::SyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static syncer::SyncService* GetForBrowserState(ProfileIOS* profile);
 
-  static syncer::SyncService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
 
   static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateForTesting(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
   static SyncServiceFactory* GetInstance();
 

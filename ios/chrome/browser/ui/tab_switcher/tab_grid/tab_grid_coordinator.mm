@@ -1604,7 +1604,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else {
     // The user journey to bring recent tabs on Android to iOS has finished.
     // Reload the service to update/clear the tabs.
-    BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
+    BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
         self.regularBrowser->GetBrowserState())
         ->LoadTabs();
   }

@@ -32,7 +32,7 @@ class WebViewWebDataServiceWrapperFactory
   static WebDataServiceWrapper* GetForBrowserState(
       WebViewBrowserState* browser_state,
       ServiceAccessType access_type);
-  static WebDataServiceWrapper* GetForBrowserStateIfExists(
+  static WebDataServiceWrapper* GetForProfileIfExists(
       WebViewBrowserState* browser_state,
       ServiceAccessType access_type);
 

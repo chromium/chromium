@@ -27,7 +27,7 @@
 
 - (void)start {
   BringAndroidTabsToIOSService* service =
-      BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
+      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
           self.browser->GetBrowserState());
   _mediator = [[TabListFromAndroidMediator alloc]
       initWithBringAndroidTabsService:service
