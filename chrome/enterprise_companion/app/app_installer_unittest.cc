@@ -42,61 +42,61 @@ std::unique_ptr<ScopedLock> CreateLockForTest(base::TimeDelta) {
 
 }  // namespace
 
-class AppInstallTest : public ::testing::Test {
+class AppInstallerTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment environment_;
 };
 
-TEST_F(AppInstallTest, ShutdownRemote) {
+TEST_F(AppInstallerTest, ShutdownRemote) {
   base::MockCallback<base::OnceCallback<EnterpriseCompanionStatus()>>
       mock_shutdown_callback;
   EXPECT_CALL(mock_shutdown_callback, Run())
       .WillOnce(Return(EnterpriseCompanionStatus::Success()));
 
   EnterpriseCompanionStatus status =
-      CreateAppInstall(mock_shutdown_callback.Get(),
-                       base::BindOnce(&CreateLockForTest),
-                       /*install_task=*/base::BindOnce([] { return true; }))
+      CreateAppInstaller(mock_shutdown_callback.Get(),
+                         base::BindOnce(&CreateLockForTest),
+                         /*task=*/base::BindOnce([] { return true; }))
           ->Run();
 
   EXPECT_TRUE(status.ok());
 }
 
-TEST_F(AppInstallTest, LockContested) {
+TEST_F(AppInstallerTest, LockContested) {
   EnterpriseCompanionStatus status =
-      CreateAppInstall(
+      CreateAppInstaller(
           /*shutdown_remote_task=*/base::BindOnce(
               &EnterpriseCompanionStatus::Success),
           /*lock_provider=*/base::BindOnce([](base::TimeDelta) {
             return base::WrapUnique<ScopedLock>(nullptr);
           }),
-          /*install_task=*/base::BindOnce([] { return true; }))
+          /*task=*/base::BindOnce([] { return true; }))
           ->Run();
 
   EXPECT_EQ(status,
             EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock));
 }
 
-TEST_F(AppInstallTest, InstallFails) {
+TEST_F(AppInstallerTest, InstallFails) {
   EnterpriseCompanionStatus status =
-      CreateAppInstall(
+      CreateAppInstaller(
           /*shutdown_remote_task=*/base::BindOnce(
               &EnterpriseCompanionStatus::Success),
           /*lock_provider=*/base::BindOnce(&CreateLockForTest),
-          /*install_task=*/base::BindOnce([] { return false; }))
+          /*task=*/base::BindOnce([] { return false; }))
           ->Run();
 
   EXPECT_EQ(status,
             EnterpriseCompanionStatus(ApplicationError::kInstallationFailed));
 }
 
-TEST_F(AppInstallTest, InstallSuccess) {
+TEST_F(AppInstallerTest, InstallSuccess) {
   EnterpriseCompanionStatus status =
-      CreateAppInstall(
+      CreateAppInstaller(
           /*shutdown_remote_task=*/base::BindOnce(
               &EnterpriseCompanionStatus::Success),
           /*lock_provider=*/base::BindOnce(&CreateLockForTest),
-          /*install_task=*/base::BindOnce([] { return true; }))
+          /*task=*/base::BindOnce([] { return true; }))
           ->Run();
 
   EXPECT_TRUE(status.ok());

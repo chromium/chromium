@@ -20,9 +20,9 @@ namespace {
 
 constexpr base::TimeDelta kAcquireLockTimeout = base::Seconds(5);
 
-class AppInstall : public App {
+class AppInstaller : public App {
  public:
-  AppInstall(
+  AppInstaller(
       base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task,
       base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
           lock_provider,
@@ -30,7 +30,9 @@ class AppInstall : public App {
       : shutdown_remote_task_(std::move(shutdown_remote_task)),
         lock_provider_(std::move(lock_provider)),
         install_task_(std::move(install_task)) {}
-  ~AppInstall() override { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
+  ~AppInstaller() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
 
  private:
   void FirstTaskRun() override {
@@ -67,18 +69,24 @@ class AppInstall : public App {
 
 }  // namespace
 
-std::unique_ptr<App> CreateAppInstall(
+std::unique_ptr<App> CreateAppInstaller(
     base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task,
     base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
         lock_provider,
-    base::OnceCallback<bool()> install_task) {
-  return std::make_unique<AppInstall>(std::move(shutdown_remote_task),
-                                      std::move(lock_provider),
-                                      std::move(install_task));
+    base::OnceCallback<bool()> task) {
+  return std::make_unique<AppInstaller>(std::move(shutdown_remote_task),
+                                        std::move(lock_provider),
+                                        std::move(task));
+}
+
+std::unique_ptr<App> CreateAppInstall() {
+  return std::make_unique<AppInstaller>(
+      base::BindOnce([] { return CreateAppShutdown()->Run(); }),
+      base::BindOnce(&CreateScopedLock), base::BindOnce(&Install));
 }
 
 std::unique_ptr<App> CreateAppUninstall() {
-  return CreateAppInstall(
+  return std::make_unique<AppInstaller>(
       base::BindOnce([] { return CreateAppShutdown()->Run(); }),
       base::BindOnce(&CreateScopedLock), base::BindOnce(&Uninstall));
 }
