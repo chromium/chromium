@@ -81,6 +81,7 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.HISTORY_SYNC,
                             FragmentType.SAFE_BROWSING,
                             FragmentType.COOKIES,
+                            FragmentType.AD_TOPICS,
                             FragmentType.DONE));
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
             Collections.unmodifiableList(
