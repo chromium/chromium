@@ -84,11 +84,7 @@ bool ChrootToSafeEmptyDir() {
   // PID namespace). With a process, we can just use /proc/self.
   pid_t pid = -1;
 
-  // We can't allocate on the heap here, but PTHREAD_STACK_MIN might be
-  // dynamically defined, so we need to use a variable-length array here
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wvla-extension"
-  alignas(16) char stack_buf[PTHREAD_STACK_MIN];
+  alignas(16) char stack_buf[PTHREAD_STACK_MIN_CONST];
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY) || \
     defined(ARCH_CPU_MIPS_FAMILY)
@@ -110,13 +106,9 @@ bool ChrootToSafeEmptyDir() {
   // TODO(crbug.com/40196869) Broken in MSan builds after LLVM f1bb30a4956f.
   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
 
-  // PTHREAD_STACK_MIN can be dynamic in glibc2.34+, so it is not possible to
-  // zeroify tls_buf assigning { 0 }
-  char tls_buf[PTHREAD_STACK_MIN];
-  memset(tls_buf, 0, PTHREAD_STACK_MIN);
+  char tls_buf[PTHREAD_STACK_MIN_CONST] = {0};
   tls = tls_buf;
 #endif
-#pragma clang diagnostic pop  // "-Wvla-extension"
 
   pid = clone(ChrootToSelfFdinfo, stack, clone_flags, nullptr, nullptr, tls,
               nullptr);

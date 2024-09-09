@@ -30,6 +30,7 @@
 #include <memory>
 #include <set>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugger.h"
@@ -69,6 +70,18 @@
 extern char** environ;
 
 namespace base {
+
+// Ensure PTHREAD_STACK_MIN_CONST is sufficiently large.
+// In some implementations of libc, PTHREAD_STACK_MIN is already
+// constant in which case we don't need to bother checking
+void CheckPThreadStackMinIsSafe() {
+  if constexpr (!__builtin_constant_p(PTHREAD_STACK_MIN)) {
+    [[maybe_unused]] static const bool dummy = []() {
+      CHECK_GE(PTHREAD_STACK_MIN_CONST, PTHREAD_STACK_MIN);
+      return false;
+    }();
+  }
+}
 
 namespace {
 
@@ -722,7 +735,7 @@ NOINLINE pid_t CloneAndLongjmpInChild(int flags,
   // internal pid cache. The libc interface unfortunately requires
   // specifying a new stack, so we use setjmp/longjmp to emulate
   // fork-like behavior.
-  alignas(16) char stack_buf[PTHREAD_STACK_MIN];
+  alignas(16) char stack_buf[PTHREAD_STACK_MIN_CONST];
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY) ||         \
     defined(ARCH_CPU_MIPS_FAMILY) || defined(ARCH_CPU_S390_FAMILY) ||       \
     defined(ARCH_CPU_PPC64_FAMILY) || defined(ARCH_CPU_LOONGARCH_FAMILY) || \
