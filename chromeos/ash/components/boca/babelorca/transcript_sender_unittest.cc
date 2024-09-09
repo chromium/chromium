@@ -15,9 +15,9 @@
 #include "chromeos/ash/components/boca/babelorca/proto/babel_orca_message.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
+#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -186,15 +186,15 @@ TEST(TranscriptSenderTest, RejectSendingAndReplyOnMaxErrorsReached) {
                                              /*is_final=*/true);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  authed_client.ExecuteResponseCallback(
+      base::unexpected(TachyonRequestError::kHttpError));
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  authed_client.ExecuteResponseCallback(
+      base::unexpected(TachyonRequestError::kHttpError));
 
   media::SpeechRecognitionResult transcript3(kTranscriptText,
                                              /*is_final=*/false);
@@ -221,8 +221,8 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
                                              /*is_final=*/true);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  authed_client.ExecuteResponseCallback(
+      base::unexpected(TachyonRequestError::kHttpError));
 
   // Successful request, should reset error count.
   media::SpeechRecognitionResult transcript2(kTranscriptText,
@@ -238,8 +238,8 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  authed_client.ExecuteResponseCallback(
+      base::unexpected(TachyonRequestError::kHttpError));
 
   EXPECT_FALSE(failure_future.IsReady());
 }
@@ -261,32 +261,32 @@ TEST(TranscriptSenderTest, InflightRequestsAreHandledOnFailure) {
                                              /*is_final=*/true);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
   authed_client.WaitForRequest();
-  std::unique_ptr<ResponseCallbackWrapper> response_cb1 =
+  RequestDataWrapper::ResponseCallback response_cb1 =
       authed_client.TakeResponseCallback();
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
   authed_client.WaitForRequest();
-  std::unique_ptr<ResponseCallbackWrapper> response_cb2 =
+  RequestDataWrapper::ResponseCallback response_cb2 =
       authed_client.TakeResponseCallback();
 
   media::SpeechRecognitionResult transcript3(kTranscriptText,
                                              /*is_final=*/false);
   EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
   authed_client.WaitForRequest();
-  std::unique_ptr<ResponseCallbackWrapper> response_cb3 =
+  RequestDataWrapper::ResponseCallback response_cb3 =
       authed_client.TakeResponseCallback();
 
-  response_cb1->Run(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
-  response_cb2->Run(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  std::move(response_cb1)
+      .Run(base::unexpected(TachyonRequestError::kHttpError));
+  std::move(response_cb2)
+      .Run(base::unexpected(TachyonRequestError::kHttpError));
 
   EXPECT_TRUE(failure_future.IsReady());
 
-  response_cb3->Run(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  std::move(response_cb3)
+      .Run(base::unexpected(TachyonRequestError::kHttpError));
 
   media::SpeechRecognitionResult transcript4(kTranscriptText,
                                              /*is_final=*/false);
