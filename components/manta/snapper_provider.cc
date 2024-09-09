@@ -25,6 +25,7 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_snapper";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 }  // namespace
 
@@ -47,7 +48,7 @@ void SnapperProvider::Call(manta::proto::Request& request,
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
       kOauthConsumerName, traffic_annotation, request,
-      MantaMetricType::kSnapper, std::move(done_callback));
+      MantaMetricType::kSnapper, std::move(done_callback), kTimeout);
 }
 
 }  // namespace manta

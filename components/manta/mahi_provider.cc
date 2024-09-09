@@ -29,6 +29,7 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_mahi";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("help_me_read_request",
@@ -151,7 +152,8 @@ void MahiProvider::Summarize(const std::string& input,
       kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiSummary,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
 }
 
 void MahiProvider::Outline(const std::string& input,
@@ -207,7 +209,8 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
       kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiQA,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
 }
 
 }  // namespace manta

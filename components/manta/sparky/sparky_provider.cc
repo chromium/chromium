@@ -36,6 +36,7 @@ namespace {
 
 // TODO (b/336703051) Update with new Oauth.
 constexpr char kOauthConsumerName[] = "manta_sparky";
+constexpr base::TimeDelta kTimeout = base::Seconds(75);
 
 // Handles the QA response from the server.
 void OnQAServerResponseOrErrorReceived(
@@ -171,7 +172,7 @@ void SparkyProvider::OnScreenshotObtained(
   // launch.
   RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
                   MISSING_TRAFFIC_ANNOTATION, request, MantaMetricType::kSparky,
-                  std::move(internal_callback));
+                  std::move(internal_callback), kTimeout);
 }
 
 void SparkyProvider::OnResponseReceived(

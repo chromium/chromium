@@ -40,7 +40,8 @@ class FakeBaseProvider : virtual public BaseProvider {
                        const net::NetworkTrafficAnnotationTag& annotation_tag,
                        manta::proto::Request& request,
                        const MantaMetricType metric_type,
-                       MantaProtoResponseCallback done_callback) override;
+                       MantaProtoResponseCallback done_callback,
+                       const base::TimeDelta timeout) override;
 };
 
 class BaseProviderTest : public testing::Test {

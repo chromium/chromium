@@ -55,7 +55,8 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       manta::proto::Request& request,
       const MantaMetricType metric_type,
-      MantaProtoResponseCallback done_callback);
+      MantaProtoResponseCallback done_callback,
+      const base::TimeDelta timeout);
 
   // TODO(b:333459167): they are protected because FakeBaseProvider needs to
   // access them. Try to make them private.
@@ -73,14 +74,16 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       const GURL& url,
       const std::string& oauth_consumer_name,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const std::string& post_data);
+      const std::string& post_data,
+      const base::TimeDelta timeout);
   // Creates an EndpointFetcher with default API key auth.
   // If an EndpointFetcher is obtained with this function, call its
   // `PerformRequest` directly instead of `Fetch`.
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForDemoMode(
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const std::string& post_data);
+      const std::string& post_data,
+      const base::TimeDelta timeout);
 
   // Useful client info for particular providers.
   const ProviderParams provider_params_;
