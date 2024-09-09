@@ -404,7 +404,6 @@ GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
       client.GetPersonalDataManager()->payments_data_manager().app_locale()));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 Suggestion::Text GetBenefitTextWithTermsAppended(
     const std::u16string& benefit_text) {
   return Suggestion::Text(l10n_util::GetStringFUTF16(
@@ -427,7 +426,6 @@ std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
              : std::optional<Suggestion::Text>(
                    GetBenefitTextWithTermsAppended(benefit_description));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Set the labels to be shown in the suggestion. Note that this does not
 // account for virtual cards or card-linked offers.
@@ -1136,6 +1134,15 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         credit_card.CardNameForAutofillDisplay(nickname);
     suggestion.minor_text.value =
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
+    std::optional<Suggestion::Text> benefit_label =
+        GetCreditCardBenefitSuggestionLabel(credit_card, client);
+    // TODO(b/364660068): Check if card benefits eligibility can be added while
+    // retrieving the benefits label.
+    if (benefit_label && client.GetPersonalDataManager()
+                             ->payments_data_manager()
+                             .IsCardEligibleForBenefits(credit_card)) {
+      suggestion.labels.push_back({*benefit_label});
+    }
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(
           credit_card, client, /*is_manual_fallback= */ false);

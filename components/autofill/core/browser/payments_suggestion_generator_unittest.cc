@@ -541,6 +541,105 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       GetCreditCardSuggestionsForTouchToFill_BenefitsAdded_RealCard) {
+  std::vector<CreditCard> cards = {card()};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  EXPECT_THAT(suggestions[0],
+              EqualLabels({{expected_benefit_text()},
+                           {card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                           app_locale())}}));
+}
+
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       GetCreditCardSuggestionsForTouchToFill_BenefitsAdded_VirtualCard) {
+  CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
+  std::vector<CreditCard> cards = {virtual_card};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  EXPECT_THAT(
+      suggestions[0],
+      EqualLabels({{expected_benefit_text()},
+                   {l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
+}
+
+// Checks that the merchant benefit description is not displayed for suggestions
+// where the webpage's URL is different from the benefit's applicable URL.
+TEST_P(
+    AutofillCreditCardBenefitsLabelTest,
+    GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_NonApplicableUrl) {
+  if (!absl::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-merchant benefits.";
+  }
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL("https://random-url.com"));
+  std::vector<CreditCard> cards = {card()};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  // Merchant benefit description is not returned.
+  EXPECT_THAT(suggestions[0],
+              EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                           app_locale())}}));
+}
+
+// Checks that the category benefit description is not displayed for suggestions
+// where the webpage's category in the optimization guide is different from the
+// benefit's applicable category.
+TEST_P(
+    AutofillCreditCardBenefitsLabelTest,
+    GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_DifferentCategory) {
+  if (!absl::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-category benefits.";
+  }
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          AttemptToGetEligibleCreditCardBenefitCategory)
+      .WillByDefault(testing::Return(
+          CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
+  std::vector<CreditCard> cards = {card()};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  // Category benefit description is not returned.
+  EXPECT_THAT(suggestions[0],
+              EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                           app_locale())}}));
+}
+
+// Checks that the benefit description is not displayed when benefit suggestions
+// are disabled for the given card and url.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_BlockedUrl) {
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(true));
+  std::vector<CreditCard> cards = {card()};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  // Benefit description is not returned.
+  EXPECT_THAT(suggestions[0],
+              EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                           app_locale())}}));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests the scenario when:

@@ -57,13 +57,24 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:visibility="gone" />
-        <!-- This line will hold either the information that the card is virtual or the expiration date -->
+        <!-- This line will display card benefits when available. Otherwise, it will show either
+             the virtual card status or the expiration date. -->
         <TextView
-            android:id="@+id/description_line_2"
+            android:id="@+id/first_line_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        <!-- If card benefits are displayed on the first line, this line will show either the
+             virtual card status or the expiration date. -->
+        <TextView
+            android:id="@+id/second_line_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

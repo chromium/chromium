@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -137,7 +138,15 @@ class TouchToFillPaymentMethodViewBinder {
         TextView mainText = view.findViewById(R.id.main_text);
         TextView minorText = view.findViewById(R.id.minor_text);
         ImageView icon = view.findViewById(R.id.favicon);
-        TextView descriptionLabel = view.findViewById(R.id.description_line_2);
+        TextView firstLineLabel = view.findViewById(R.id.first_line_label);
+        TextView secondLineLabel = view.findViewById(R.id.second_line_label);
+        // If card benefits are displayed on the first line, the second line will show
+        // primary label with the expiration date or the virtual card status.
+        TextView primaryLabel = firstLineLabel;
+        if (model.get(SECOND_LINE_LABEL) != null) {
+            secondLineLabel.setVisibility(View.VISIBLE);
+            primaryLabel = secondLineLabel;
+        }
         if (propertyKey == CARD_IMAGE) {
             icon.setImageDrawable(model.get(CARD_IMAGE));
         } else if (propertyKey == NETWORK_NAME) {
@@ -151,28 +160,30 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == MINOR_TEXT) {
             minorText.setText(model.get(MINOR_TEXT));
         } else if (propertyKey == FIRST_LINE_LABEL) {
-            descriptionLabel.setText(model.get(FIRST_LINE_LABEL));
+            firstLineLabel.setText(model.get(FIRST_LINE_LABEL));
+        } else if (propertyKey == SECOND_LINE_LABEL) {
+            secondLineLabel.setText(model.get(SECOND_LINE_LABEL));
         } else if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
         } else if (propertyKey == ITEM_COLLECTION_INFO) {
             FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
             if (collectionInfo != null) {
-                descriptionLabel.setAccessibilityDelegate(
+                primaryLabel.setAccessibilityDelegate(
                         new TextViewCollectionInfoAccessibilityDelegate(collectionInfo));
             }
         } else if (propertyKey == APPLY_DEACTIVATED_STYLE) {
             if (model.get(APPLY_DEACTIVATED_STYLE)) {
                 view.setEnabled(false);
                 // When merchants have opted out of virtual cards, we convey it
-                // via a message in description. Since this message is
+                // via a message in primary label. Since this message is
                 // important, we remove the max lines limit to avoid truncation.
-                descriptionLabel.setMaxLines(Integer.MAX_VALUE);
+                primaryLabel.setMaxLines(Integer.MAX_VALUE);
                 mainText.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
                 minorText.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
                 icon.setAlpha(GRAYED_OUT_OPACITY_ALPHA);
             } else {
                 view.setEnabled(true);
-                descriptionLabel.setMaxLines(1);
+                primaryLabel.setMaxLines(1);
                 mainText.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
                 minorText.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
                 icon.setAlpha(COMPLETE_OPACITY_ALPHA);
@@ -255,6 +266,7 @@ class TouchToFillPaymentMethodViewBinder {
                 || propertyKey == MAIN_TEXT
                 || propertyKey == MINOR_TEXT
                 || propertyKey == FIRST_LINE_LABEL
+                || propertyKey == SECOND_LINE_LABEL
                 || propertyKey == IBAN_VALUE
                 || propertyKey == IBAN_NICKNAME
                 || propertyKey == ITEM_COLLECTION_INFO

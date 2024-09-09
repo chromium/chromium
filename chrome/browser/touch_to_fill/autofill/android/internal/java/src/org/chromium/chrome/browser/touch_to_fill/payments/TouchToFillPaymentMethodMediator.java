@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
@@ -317,7 +318,10 @@ class TouchToFillPaymentMethodMediator {
                         // line, and for non-virtual cards, show the expiration date.
                         // If the merchant has opted-out for the virtual card, on the second
                         // line we convey that merchant does not accept this virtual card.
+                        // For cards with benefits, show the benefits on the second line and
+                        // the expiration date or virtual card status on the third line.
                         .with(FIRST_LINE_LABEL, suggestion.getSublabel())
+                        .with(SECOND_LINE_LABEL, suggestion.getSecondarySublabel())
                         .with(ON_CREDIT_CARD_CLICK_ACTION, () -> this.onSelectedCreditCard(card))
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                         .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());

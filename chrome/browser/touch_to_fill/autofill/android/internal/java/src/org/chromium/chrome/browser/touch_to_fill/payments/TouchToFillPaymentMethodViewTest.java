@@ -143,30 +143,49 @@ public class TouchToFillPaymentMethodViewTest {
                     VISA.getCardNameForAutofillDisplay(),
                     VISA.getObfuscatedLastFourDigits(),
                     VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion VISA_SUGGESTION_WITH_CARD_BENEFITS =
+            createCreditCardSuggestion(
+                    VISA.getCardNameForAutofillDisplay(),
+                    VISA.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "2% cashback on travel",
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
             createCreditCardSuggestion(
                     NICKNAMED_VISA.getCardNameForAutofillDisplay(),
                     NICKNAMED_VISA.getObfuscatedLastFourDigits(),
                     NICKNAMED_VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD.getName(),
                     MASTERCARD.getNumber(),
                     MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     VIRTUAL_CARD.getObfuscatedLastFourDigits(),
                     /* subLabel= */ "Virtual card",
+                    /* secondarySubLabel= */ "",
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS =
+            createCreditCardSuggestion(
+                    VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "2% cashback on travel",
+                    /* secondarySubLabel= */ "Virtual card",
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     VIRTUAL_CARD.getObfuscatedLastFourDigits(),
                     /* subLabel= */ "Merchant doesn't accept this virtual card",
+                    /* secondarySubLabel= */ "",
                     /* applyDeactivatedStyle= */ true);
     private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
             createCreditCardSuggestion(
@@ -174,6 +193,7 @@ public class TouchToFillPaymentMethodViewTest {
                     LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits(),
                     LONG_CARD_NAME_CARD.getFormattedExpirationDate(
                             ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
                     /* applyDeactivatedStyle= */ false);
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
@@ -294,7 +314,7 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(getSuggestionMainTextAt(0).getText(), is(VISA_SUGGESTION.getLabel()));
         assertThat(getSuggestionMinorTextAt(0).getText(), is(VISA_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getSuggestionLabelAt(0).getText(),
+                getSuggestionFirstLineLabelAt(0).getText(),
                 is(VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(getSuggestionMainTextAt(1).getText(), is(MASTERCARD_SUGGESTION.getLabel()));
@@ -302,14 +322,16 @@ public class TouchToFillPaymentMethodViewTest {
                 getSuggestionMinorTextAt(1).getText(),
                 is(MASTERCARD_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getSuggestionLabelAt(1).getText(),
+                getSuggestionFirstLineLabelAt(1).getText(),
                 is(MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(getSuggestionMainTextAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getLabel()));
         assertThat(
                 getSuggestionMinorTextAt(2).getText(),
                 is(VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
-        assertThat(getSuggestionLabelAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getSublabel()));
+        assertThat(
+                getSuggestionFirstLineLabelAt(2).getText(),
+                is(VIRTUAL_CARD_SUGGESTION.getSublabel()));
     }
 
     @Test
@@ -563,26 +585,14 @@ public class TouchToFillPaymentMethodViewTest {
                                             createCardSuggestionModel(
                                                     VISA,
                                                     VISA_SUGGESTION,
-                                                    new FillableItemCollectionInfo(1, 1))));
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 1, /* total= */ 1))));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView descriptionLine =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.description_line_2);
-        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-        descriptionLine.onInitializeAccessibilityNodeInfo(info);
-        assertEquals(
-                descriptionLine
-                        .getContext()
-                        .getString(
-                                R.string.autofill_payment_method_a11y_item_collection_info,
-                                descriptionLine.getText(),
-                                1,
-                                1),
-                info.getContentDescription());
+        assertContentDescriptionEquals(
+                getSuggestionFirstLineLabelAt(0), /* position= */ 1, /* total= */ 1);
     }
 
     @Test
@@ -598,26 +608,103 @@ public class TouchToFillPaymentMethodViewTest {
                                             createCardSuggestionModel(
                                                     VIRTUAL_CARD,
                                                     VIRTUAL_CARD_SUGGESTION,
-                                                    new FillableItemCollectionInfo(1, 1))));
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 1, /* total= */ 1))));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView descriptionLine =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.description_line_2);
-        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-        descriptionLine.onInitializeAccessibilityNodeInfo(info);
-        assertEquals(
-                descriptionLine
-                        .getContext()
-                        .getString(
-                                R.string.autofill_payment_method_a11y_item_collection_info,
-                                descriptionLine.getText(),
-                                1,
-                                1),
-                info.getContentDescription());
+        assertContentDescriptionEquals(
+                getSuggestionFirstLineLabelAt(0), /* position= */ 1, /* total= */ 1);
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstAndSecondLineLabelsOfCreditCardSuggestion_CardBenefitsPresent() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VISA,
+                                                    VISA_SUGGESTION_WITH_CARD_BENEFITS,
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 1, /* total= */ 1))));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(
+                getSuggestionMainTextAt(0).getText(),
+                is(VISA_SUGGESTION_WITH_CARD_BENEFITS.getLabel()));
+        assertThat(
+                getSuggestionMinorTextAt(0).getText(),
+                is(VISA_SUGGESTION_WITH_CARD_BENEFITS.getSecondaryLabel()));
+        assertThat(
+                getSuggestionFirstLineLabelAt(0).getText(),
+                is(VISA_SUGGESTION_WITH_CARD_BENEFITS.getSublabel()));
+        TextView secondLineLabel = getSuggestionSecondLineLabelAt(0);
+        assertThat(
+                secondLineLabel.getText(),
+                is(VISA_SUGGESTION_WITH_CARD_BENEFITS.getSecondarySublabel()));
+        assertContentDescriptionEquals(secondLineLabel, /* position= */ 1, /* total= */ 1);
+    }
+
+    @Test
+    @MediumTest
+    public void testSecondLineLabelOfCreditCardSuggestion_HiddenWithoutCardBenefits() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertEquals(getSuggestionSecondLineLabelAt(0).getVisibility(), View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstAndSecondLineLabelsOfVirtualCardSuggestion_CardBenefitsPresent() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VIRTUAL_CARD,
+                                                    VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS,
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 1, /* total= */ 1))));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(
+                getSuggestionMainTextAt(0).getText(),
+                is(VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS.getLabel()));
+        assertThat(
+                getSuggestionMinorTextAt(0).getText(),
+                is(VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS.getSecondaryLabel()));
+        assertThat(
+                getSuggestionFirstLineLabelAt(0).getText(),
+                is(VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS.getSublabel()));
+        TextView secondLineLabel = getSuggestionSecondLineLabelAt(0);
+        assertThat(
+                secondLineLabel.getText(),
+                is(VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS.getSecondarySublabel()));
+        assertContentDescriptionEquals(secondLineLabel, /* position= */ 1, /* total= */ 1);
     }
 
     @Test
@@ -649,7 +736,7 @@ public class TouchToFillPaymentMethodViewTest {
                 getSuggestionMinorTextAt(0).getText(),
                 is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getSuggestionLabelAt(0).getText(),
+                getSuggestionFirstLineLabelAt(0).getText(),
                 is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSublabel()));
     }
 
@@ -824,8 +911,12 @@ public class TouchToFillPaymentMethodViewTest {
         return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.minor_text);
     }
 
-    private TextView getSuggestionLabelAt(int index) {
-        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.description_line_2);
+    private TextView getSuggestionFirstLineLabelAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.first_line_label);
+    }
+
+    private TextView getSuggestionSecondLineLabelAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.second_line_label);
     }
 
     private @SheetState int getBottomSheetState() {
@@ -852,6 +943,12 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(ITEM_COLLECTION_INFO, collectionInfo)
                         .with(ON_CREDIT_CARD_CLICK_ACTION, actionCallback)
                         .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
+        if (suggestion.getSecondarySublabel() != null) {
+            creditCardSuggestionModelBuilder.with(
+                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
+                            .SECOND_LINE_LABEL,
+                    suggestion.getSecondarySublabel());
+        }
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
             creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());
@@ -876,5 +973,20 @@ public class TouchToFillPaymentMethodViewTest {
         return verify(
                 mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+    }
+
+    private static void assertContentDescriptionEquals(
+            TextView descriptionLine, int position, int total) {
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        descriptionLine.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(
+                descriptionLine
+                        .getContext()
+                        .getString(
+                                R.string.autofill_payment_method_a11y_item_collection_info,
+                                descriptionLine.getText(),
+                                position,
+                                total),
+                info.getContentDescription());
     }
 }

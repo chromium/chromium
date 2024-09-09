@@ -460,13 +460,21 @@ public class AutofillTestHelper {
     }
 
     public static AutofillSuggestion createCreditCardSuggestion(
-            String label, String secondaryLabel, String subLabel, boolean applyDeactivatedStyle) {
-        return new AutofillSuggestion.Builder()
-                .setLabel(label)
-                .setSecondaryLabel(secondaryLabel)
-                .setSubLabel(subLabel)
-                .setApplyDeactivatedStyle(applyDeactivatedStyle)
-                .build();
+            String label,
+            String secondaryLabel,
+            String subLabel,
+            String secondarySubLabel,
+            boolean applyDeactivatedStyle) {
+        AutofillSuggestion.Builder builder =
+                new AutofillSuggestion.Builder()
+                        .setLabel(label)
+                        .setSecondaryLabel(secondaryLabel)
+                        .setSubLabel(subLabel)
+                        .setApplyDeactivatedStyle(applyDeactivatedStyle);
+        if (!secondarySubLabel.isEmpty()) {
+            builder.setSecondarySubLabel(secondarySubLabel);
+        }
+        return builder.build();
     }
 
     public static void addMaskedBankAccount(BankAccount bankAccount) {
