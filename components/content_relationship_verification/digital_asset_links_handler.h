@@ -67,8 +67,7 @@ class DigitalAssetLinksHandler {
   // between) given. Any error in the string params here will result in a bad
   // request and a nullptr response to the callback.
   //
-  // Calling this multiple times on the same handler will cancel the previous
-  // checks. See
+  // See
   // https://developers.google.com/digital-asset-links/reference/rest/v1/assetlinks/check
   // for details.
   bool CheckDigitalAssetLinkRelationshipForAndroidApp(
@@ -103,9 +102,11 @@ class DigitalAssetLinksHandler {
       RelationshipCheckResultCallback callback);
 
   void OnURLLoadComplete(
+      std::unique_ptr<network::SimpleURLLoader> url_loader,
       std::string relationship,
       std::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
+      RelationshipCheckResultCallback callback,
       std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
@@ -113,15 +114,11 @@ class DigitalAssetLinksHandler {
       std::string relationship,
       std::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
+      RelationshipCheckResultCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  // The per request callback for receiving a URLFetcher result. This gets
-  // reset every time we get a new CheckDigitalAssetLinkRelationship call.
-  RelationshipCheckResultCallback callback_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 
