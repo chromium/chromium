@@ -183,6 +183,10 @@ class ChromeComposeClient
   void ShowProactiveNudge(autofill::FormGlobalId form,
                           autofill::FieldGlobalId field) override;
 
+  // Returns the Compose optimization guide hints for the current URL.
+  // compose::ProactiveNudgeTracker implementation.
+  compose::ComposeHintMetadata GetComposeHintMetadata() override;
+
   ComposeEnabling& GetComposeEnabling();
 
   // Returns true when the dialog is showing and false otherwise.

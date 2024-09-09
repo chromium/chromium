@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
@@ -22,11 +23,13 @@
 #include "url/origin.h"
 
 namespace compose {
+
 namespace {
 using segmentation_platform::processing::ProcessedValue;
 
 scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
-    const ProactiveNudgeTracker::Signals& signals) {
+    const ProactiveNudgeTracker::Signals& signals,
+    const compose::ComposeHintMetadata& compose_hint) {
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
 
@@ -90,6 +93,11 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
   input_context->metadata_args.emplace(
       "field_aria_description",
       ProcessedValue(base::UTF16ToUTF8(signals.field.aria_description())));
+
+  for (auto& pair : compose_hint.model_params()) {
+    input_context->metadata_args.emplace(pair.first,
+                                         ProcessedValue(pair.second));
+  }
   return input_context;
 }
 
@@ -463,9 +471,11 @@ void ProactiveNudgeTracker::BeginSegmentation() {
   }
   segmentation_platform::PredictionOptions options;
   options.on_demand_execution = true;
+
   segmentation_service_->GetClassificationResult(
       segmentation_platform::kComposePromotionKey, options,
-      PopulateInputContextForField(state_->signals),
+      PopulateInputContextForField(state_->signals,
+                                   delegate_->GetComposeHintMetadata()),
       base::BindOnce(&ProactiveNudgeTracker::GotClassificationResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

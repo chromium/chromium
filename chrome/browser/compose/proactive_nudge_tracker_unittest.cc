@@ -88,10 +88,19 @@ class MockProactiveNudgeTrackerDelegate
     return page_ukm_tracker_.get();
   }
 
+  compose::ComposeHintMetadata GetComposeHintMetadata() override {
+    return compose_metadata_;
+  }
+
+  void SetComposeHintMetadata(compose::ComposeHintMetadata metadata) {
+    compose_metadata_ = metadata;
+  }
+
  private:
   const ukm::SourceId valid_test_source_id_{1};
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_ =
       std::make_unique<compose::PageUkmTracker>(valid_test_source_id_);
+  compose::ComposeHintMetadata compose_metadata_;
 };
 
 class ProactiveNudgeTrackerTestBase : public testing::Test {
@@ -565,7 +574,7 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
-TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
+TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextNoModelParams) {
   compose::Config& config = compose::GetMutableConfigForTesting();
   // Need a longer delay for this test to measure time on page in seconds.
   config.proactive_nudge_focus_delay = base::Seconds(2);
@@ -628,6 +637,78 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
           Pair("field_aria_label", Val(std::string("aria label"))),
           Pair("field_aria_description",
                Val(std::string("aria description")))));
+}
+
+TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextWithModelParams) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // Need a longer delay for this test to measure time on page in seconds.
+  config.proactive_nudge_focus_delay = base::Seconds(2);
+
+  scoped_refptr<segmentation_platform::InputContext> input_context;
+  base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
+      future;
+  auto field = CreateTestFormFieldData();
+
+  compose::ComposeHintMetadata metadata;
+  (*metadata.mutable_model_params())["name1"] = 1.1;
+  (*metadata.mutable_model_params())["name2"] = 2.2;
+  (*metadata.mutable_model_params())["name3"] = 3.3;
+  delegate().SetComposeHintMetadata(metadata);
+
+  ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
+      .WillByDefault(testing::Invoke(
+          [&](auto, auto, scoped_refptr<segmentation_platform::InputContext> ic,
+              segmentation_platform::ClassificationResultCallback cb) {
+            input_context = ic;
+            future.SetValue(std::move(cb));
+          }));
+  auto page_load_time = base::TimeTicks::Now();
+  task_environment().FastForwardBy(base::Seconds(63));
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+
+  auto result = segmentation_platform::ClassificationResult(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.ordered_labels = {
+      segmentation_platform::kComposePrmotionLabelDontShow};
+  future.Take().Run(result);
+  ASSERT_TRUE(input_context);
+
+  using Val = segmentation_platform::processing::ProcessedValue;
+  EXPECT_THAT(
+      input_context->metadata_args,
+      testing::UnorderedElementsAre(
+          Pair("field_max_length", Val(524.0f)),
+          Pair("field_width_pixels", Val(300.0f)),
+          Pair("field_height_pixels", Val(100.0f)),
+          Pair("field_form_control_type",
+               Val(static_cast<float>(autofill::FormControlType::kTextArea))),
+          Pair("total_field_count", Val(2.0f)),
+          Pair("multiline_field_count", Val(1.0f)),
+          Pair("time_spent_on_page",
+               Val(63.0f +
+                   GetComposeConfig().proactive_nudge_focus_delay.InSeconds())),
+          Pair("field_signature",
+               Val(autofill::HashFieldSignature(
+                   autofill::CalculateFieldSignatureForField(field)))),
+          Pair("form_signature",
+               Val(autofill::HashFormSignature(
+                   autofill::CalculateFormSignature(CreateFormData())))),
+          Pair("page_url", Val(GURL("https://example.com/test"))),
+          Pair("origin", Val(GURL("https://example.com"))),
+          Pair("field_value", Val(std::string("FormFieldDataInitialValue"))),
+          Pair("field_selected_text", Val(std::string("selected text"))),
+          Pair("field_placeholder_text",
+               Val(std::string("Please enter your value"))),
+          Pair("field_label", Val(std::string("field label"))),
+          Pair("field_aria_label", Val(std::string("aria label"))),
+          Pair("field_aria_description", Val(std::string("aria description"))),
+          Pair("name1", Val(1.1f)), Pair("name2", Val(2.2f)),
+          Pair("name3", Val(3.3f))));
 }
 
 class ProactiveNudgeTrackerDerivedEngagementTest
