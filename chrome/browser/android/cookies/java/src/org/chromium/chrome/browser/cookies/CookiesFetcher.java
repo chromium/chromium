@@ -52,6 +52,7 @@ public class CookiesFetcher implements Destroyable {
     private static final String TAG = "CookiesFetcher";
 
     private final ProfileProvider mProfileProvider;
+    private final CipherFactory mCipherFactory;
     private final ProfileManager.Observer mProfileManagerObserver;
     private final String mCookieDirPath;
 
@@ -60,8 +61,9 @@ public class CookiesFetcher implements Destroyable {
      *
      * <p>Consumers must call {@link #destroy()} on this object.
      */
-    public CookiesFetcher(ProfileProvider profileProvider) {
+    public CookiesFetcher(ProfileProvider profileProvider, CipherFactory cipherFactory) {
         mProfileProvider = profileProvider;
+        mCipherFactory = cipherFactory;
 
         mProfileManagerObserver =
                 new ProfileManager.Observer() {
@@ -162,7 +164,7 @@ public class CookiesFetcher implements Destroyable {
                 List<CanonicalCookie> cookies = new ArrayList<CanonicalCookie>();
                 DataInputStream in = null;
                 try {
-                    Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+                    Cipher cipher = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
                     if (cipher == null) {
                         // Something is wrong. Can't encrypt, don't restore cookies.
                         return cookies;
@@ -301,17 +303,18 @@ public class CookiesFetcher implements Destroyable {
                     Log.e(TAG, "Unable to save OTR cookies because file is null");
                     return null;
                 }
-                saveFetchedCookiesToDisk(fileName, cookies);
+                saveFetchedCookiesToDisk(fileName, mCipherFactory, cookies);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     @VisibleForTesting
-    static void saveFetchedCookiesToDisk(String fileName, CanonicalCookie[] cookies) {
+    static void saveFetchedCookiesToDisk(
+            String fileName, CipherFactory cipherFactory, CanonicalCookie[] cookies) {
         DataOutputStream out = null;
         try {
-            Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+            Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
             if (cipher == null) {
                 // Something is wrong. Can't encrypt, don't save cookies.
                 return;

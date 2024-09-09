@@ -1185,7 +1185,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 .runSyncOrOnAvailable(
                         (profileProvider) -> {
                             if (mIncognitoCookiesFetcher == null) {
-                                mIncognitoCookiesFetcher = new CookiesFetcher(profileProvider);
+                                mIncognitoCookiesFetcher =
+                                        new CookiesFetcher(
+                                                profileProvider, CipherFactory.getInstance());
                             }
                             IncognitoStartup.onResumeWithNative(
                                     profileProvider,

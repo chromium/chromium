@@ -36,6 +36,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/android/crypto:java",
     "//chrome/browser/profiles/android:java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:gendeps_java",
