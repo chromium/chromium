@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//components/vector_icons:vector_icons",
     "//ui/base/metadata",
+    "//ui/compositor",
   ]
 }
 

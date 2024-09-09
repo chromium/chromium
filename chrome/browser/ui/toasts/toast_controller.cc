@@ -153,8 +153,9 @@ void ToastController::CreateToast(const ToastSpecification* spec) {
   views::Widget* const toast_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
   toast_observer_.Observe(toast_widget);
+  toast_widget->SetVisibilityChangedAnimationsEnabled(false);
   toast_widget->ShowInactive();
-  // TODO(crbug.com/358615317): Make the toast animate in.
+  toast_->AnimateIn();
 }
 
 std::u16string ToastController::FormatString(

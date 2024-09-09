@@ -14,13 +14,31 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace {
+constexpr int kAnimationEntryDuration = 300;
+constexpr int kAnimationExitDuration = 150;
+constexpr int kAnimationHeightOffset = 50;
+constexpr float kAnimationHeightScale = 0.5;
+
+gfx::Transform GetScaleTransformation(gfx::Rect bounds) {
+  gfx::Transform transform;
+  transform.Translate(0,
+                      bounds.CenterPoint().y() * (1 - kAnimationHeightScale));
+  transform.Scale(1, kAnimationHeightScale);
+  return transform;
+}
+}  // namespace
 
 namespace toasts {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastViewId);
@@ -30,6 +48,7 @@ ToastView::ToastView(views::View* anchor_view,
                      const gfx::VectorIcon& icon,
                      bool has_close_button)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
+      AnimationDelegateViews(this),
       toast_text_(toast_text),
       icon_(icon),
       has_close_button_(has_close_button) {
@@ -125,6 +144,49 @@ void ToastView::Init() {
       total_vertical_margins - top_margin, right_margin));
 }
 
+void ToastView::AnimationProgressed(const gfx::Animation* animation) {
+  const double value = gfx::Tween::CalculateValue(
+      height_animation_tween_, height_animation_.GetCurrentValue());
+  const gfx::Rect current_bounds = gfx::Tween::RectValueBetween(
+      value, starting_widget_bounds_, target_widget_bounds_);
+  GetWidget()->SetBounds(current_bounds);
+}
+
+void ToastView::AnimateIn() {
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    return;
+  }
+
+  target_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
+  starting_widget_bounds_ =
+      target_widget_bounds_ - gfx::Vector2d{0, kAnimationHeightOffset};
+  height_animation_tween_ = gfx::Tween::ACCEL_5_70_DECEL_90;
+  height_animation_.SetDuration(base::Milliseconds(kAnimationEntryDuration));
+  height_animation_.Start();
+
+  views::View* const bubble_frame_view = GetBubbleFrameView();
+  bubble_frame_view->SetPaintToLayer();
+  bubble_frame_view->layer()->SetFillsBoundsOpaquely(false);
+  bubble_frame_view->SetTransform(
+      GetScaleTransformation(bubble_frame_view->bounds()));
+  bubble_frame_view->layer()->SetOpacity(0);
+  GetDialogClientView()->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorToastBackground));
+  GetDialogClientView()->SetPaintToLayer();
+  GetDialogClientView()->layer()->SetOpacity(0);
+  views::AnimationBuilder()
+      .Once()
+      .SetDuration(base::Milliseconds(kAnimationEntryDuration))
+      .SetTransform(bubble_frame_view, gfx::Transform(),
+                    height_animation_tween_)
+      .At(base::TimeDelta())
+      .SetDuration(base::Milliseconds(50))
+      .SetOpacity(bubble_frame_view, 1)
+      .Then()
+      .SetDuration(base::Milliseconds(150))
+      .SetOpacity(GetDialogClientView(), 1);
+}
+
 void ToastView::Close(ToastCloseReason reason) {
   // TODO(crbug.com/358610872): Log toast close reason metric.
   views::Widget::ClosedReason widget_closed_reason =
@@ -139,8 +201,10 @@ void ToastView::Close(ToastCloseReason reason) {
     default:
       break;
   }
-  // TODO(crbug.com/358615317): Make the toast animate out.
-  GetWidget()->CloseWithReason(widget_closed_reason);
+  AnimateOut(
+      base::BindOnce(&views::Widget::CloseWithReason,
+                     base::Unretained(GetWidget()), widget_closed_reason),
+      reason != ToastCloseReason::kPreempted);
 }
 
 gfx::Rect ToastView::GetBubbleBounds() {
@@ -171,6 +235,41 @@ void ToastView::OnThemeChanged() {
 
 std::u16string ToastView::GetAccessibleWindowTitle() const {
   return toast_text_;
+}
+
+void ToastView::AnimateOut(base::OnceClosure callback,
+                           bool show_height_animation) {
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  views::View* const bubble_frame_view = GetBubbleFrameView();
+
+  if (show_height_animation) {
+    starting_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
+    target_widget_bounds_ =
+        starting_widget_bounds_ - gfx::Vector2d{0, kAnimationHeightOffset};
+    height_animation_tween_ = gfx::Tween::ACCEL_30_DECEL_20_85;
+    height_animation_.SetDuration(base::Milliseconds(kAnimationExitDuration));
+    height_animation_.Start();
+
+    views::AnimationBuilder()
+        .Once()
+        .SetDuration(base::Milliseconds(kAnimationExitDuration))
+        .SetTransform(bubble_frame_view,
+                      GetScaleTransformation(bubble_frame_view->bounds()),
+                      height_animation_tween_);
+  }
+
+  views::AnimationBuilder()
+      .OnEnded(std::move(callback))
+      .Once()
+      .SetDuration(base::Milliseconds(100))
+      .SetOpacity(GetDialogClientView(), 0)
+      .Then()
+      .SetDuration(base::Milliseconds(50))
+      .SetOpacity(bubble_frame_view, 0);
 }
 
 BEGIN_METADATA(ToastView)
