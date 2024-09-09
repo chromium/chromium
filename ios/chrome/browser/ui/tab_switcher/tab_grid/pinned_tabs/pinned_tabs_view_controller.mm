@@ -346,7 +346,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       completion:^(BOOL completed) {
         [weakSelf handleItemRemovalCompletion];
         [weakSelf.delegate pinnedTabsViewController:weakSelf
-                                didRemoveItemWIthID:removedItemID];
+                                didRemoveItemWithID:removedItemID];
       }];
 }
 

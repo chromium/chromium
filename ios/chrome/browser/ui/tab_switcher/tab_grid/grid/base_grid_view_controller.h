@@ -51,7 +51,7 @@ class WebStateID;
     (BaseGridViewController*)gridViewController;
 // Tells the delegate that the item with `itemID` was removed.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID;
+       didRemoveItemWithID:(web::WebStateID)itemID;
 
 // Tells the delegate that the `gridViewController` will begin dragging a tab.
 - (void)gridViewControllerDragSessionWillBeginForTab:

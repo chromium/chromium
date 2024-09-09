@@ -1585,7 +1585,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)pinnedTabsViewController:(BaseGridViewController*)gridViewController
-             didRemoveItemWIthID:(web::WebStateID)itemID {
+             didRemoveItemWithID:(web::WebStateID)itemID {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
@@ -1748,7 +1748,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID {
+       didRemoveItemWithID:(web::WebStateID)itemID {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 

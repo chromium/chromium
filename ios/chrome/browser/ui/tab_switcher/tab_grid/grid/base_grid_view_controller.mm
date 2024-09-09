@@ -1372,7 +1372,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (numberOfTabs > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
-  [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
+  [self.delegate gridViewController:self didRemoveItemWithID:removedItemID];
 }
 
 // Makes the required changes to the data source when an existing item is moved.
