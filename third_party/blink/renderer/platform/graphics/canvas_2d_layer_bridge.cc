@@ -340,7 +340,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 bool Canvas2DLayerBridge::Restore() {
   CHECK(resource_host_);
   CHECK(resource_host_->context_lost());
-  if (resource_host_ && resource_host_->GetRasterMode() == RasterMode::kCPU) {
+  if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
     return false;
   }
   DCHECK(!ResourceProvider());
