@@ -760,7 +760,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   auto* main_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       _webState, webFramesManager->GetMainWebFrame());
-  CHECK(main_driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !main_driver) << "No AutofillDriverIOS found for WebFrame";
   if (!main_driver || !main_driver->is_processed()) {
     return;
   }
@@ -783,10 +783,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Return early if the page is not processed yet.
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  CHECK(driver, base::NotFatalUntil::M132);
-  if (!driver ||
-      !autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame)
-           ->is_processed()) {
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
+  if (!driver || !driver->is_processed()) {
     return;
   }
 
@@ -1175,7 +1173,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, webFrame);
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   if (!driver) {
     return nullptr;
   }
@@ -1275,7 +1273,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
   auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       _webState, frame.get());
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   if (!driver) {
     return;
   }
@@ -1304,7 +1302,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   autofill::AutofillDriverIOS* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   // This process is only done once.
   if (!driver || driver->is_processed()) {
     return;
