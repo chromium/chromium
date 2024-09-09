@@ -2537,10 +2537,6 @@
       status: "test",
     },
     {
-      name: "MacFontsDeprecateFontTraitsWorkaround",
-      status: "stable",
-    },
-    {
       name: "MachineLearningNeuralNetwork",
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",

@@ -723,46 +723,6 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   if (!font)
     return nil;
 
-  if (RuntimeEnabledFeatures::MacFontsDeprecateFontTraitsWorkaroundEnabled()) {
-    return font;
-  }
-
-  NSFontTraitMask actual_traits = 0;
-  if (desired_traits & NSFontItalicTrait)
-    actual_traits = [font_manager traitsOfFont:font];
-  NSInteger actual_weight = [font_manager weightOfFont:font];
-
-  bool synthetic_bold = app_kit_font_weight >= 7 && actual_weight < 7;
-  bool synthetic_italic = (desired_traits & NSFontItalicTrait) &&
-                          !(actual_traits & NSFontItalicTrait);
-
-  // There are some malformed fonts that will be correctly returned by
-  // -fontWithFamily:traits:weight:size: as a match for a particular trait,
-  // though -[NSFontManager traitsOfFont:] incorrectly claims the font does not
-  // have the specified trait. This could result in applying
-  // synthetic bold on top of an already-bold font, as reported in
-  // <http://bugs.webkit.org/show_bug.cgi?id=6146>. To work around this
-  // problem, if we got an apparent exact match, but the requested traits
-  // aren't present in the matched font, we'll try to get a font from the same
-  // family without those traits (to apply the synthetic traits to later).
-  NSFontTraitMask non_synthetic_traits = desired_traits;
-
-  if (synthetic_bold)
-    non_synthetic_traits &= ~NSBoldFontMask;
-
-  if (synthetic_italic)
-    non_synthetic_traits &= ~NSItalicFontMask;
-
-  if (non_synthetic_traits != desired_traits) {
-    NSFont* font_without_synthetic_traits =
-        [font_manager fontWithFamily:available_family
-                              traits:non_synthetic_traits
-                              weight:chosen_weight
-                                size:size];
-    if (font_without_synthetic_traits)
-      font = font_without_synthetic_traits;
-  }
-
   return font;
 }
 
