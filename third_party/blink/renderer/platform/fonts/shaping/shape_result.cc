@@ -209,9 +209,9 @@ float ShapeResult::RunInfo::XPositionForOffset(
   unsigned glyph_sequence_start = 0;
   unsigned glyph_sequence_end = num_characters_;
   // the advance of the current glyph sequence.
-  float glyph_sequence_advance = 0.0;
+  InlineLayoutUnit glyph_sequence_advance;
   // the accumulated advance up to the current glyph sequence.
-  float accumulated_position = 0;
+  InlineLayoutUnit accumulated_position;
 
   if (IsLtr()) {
     for (unsigned i = 0; i < num_glyphs; ++i) {
@@ -220,7 +220,7 @@ float ShapeResult::RunInfo::XPositionForOffset(
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance.ToFloat();
+        glyph_sequence_advance += glyph_data_[i].advance;
         continue;
       }
 
@@ -248,7 +248,7 @@ float ShapeResult::RunInfo::XPositionForOffset(
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance.ToFloat();
+        glyph_sequence_advance += glyph_data_[i].advance;
         continue;
       }
 
@@ -289,12 +289,10 @@ float ShapeResult::RunInfo::XPositionForOffset(
           (NumGraphemes(offset - 1, next_offset) != 1);
     }
     glyph_sequence_advance = glyph_sequence_advance / graphemes;
-    if (IsRtl()) {
-      accumulated_position +=
-          glyph_sequence_advance * (graphemes - num_graphemes_to_offset - 1);
-    } else {
-      accumulated_position += glyph_sequence_advance * num_graphemes_to_offset;
-    }
+    const unsigned num_graphemes_from_left =
+        IsLtr() ? num_graphemes_to_offset
+                : graphemes - num_graphemes_to_offset - 1;
+    accumulated_position += glyph_sequence_advance * num_graphemes_from_left;
   }
 
   // Re-adapt based on adjust_mid_cluster. On LTR, if we want AdjustToEnd and
