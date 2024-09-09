@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
@@ -646,6 +647,87 @@ std::vector<blink::mojom::WebAuthnClientCapabilityPtr> InsertIsPPAACapability(
       MakeCapability(client_capabilities::kPasskeyPlatformAuthenticator,
                      isUVPAA || hybridTransport));
   return capabilities;
+}
+
+void DeleteUnacceptedVirtualAuthenticatorCreds(
+    RenderFrameHost* render_frame_host,
+    std::string_view relying_party_id,
+    base::span<uint8_t> user_id,
+    base::span<std::vector<uint8_t>> all_accepted_credentials_ids) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    std::vector<std::vector<uint8_t>> credential_ids_to_remove;
+    for (const auto& registration : authenticator->registrations()) {
+      if (registration.second.user && registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.second.user->id == user_id &&
+          !base::Contains(all_accepted_credentials_ids, registration.first)) {
+        credential_ids_to_remove.push_back(registration.first);
+      }
+    }
+    for (const std::vector<uint8_t>& credential_id : credential_ids_to_remove) {
+      authenticator->RemoveRegistration(credential_id);
+    }
+  }
+}
+
+void UpdateVirtualAuthenticatorUserCreds(RenderFrameHost* render_frame_host,
+                                         std::string_view relying_party_id,
+                                         base::span<uint8_t> user_id,
+                                         std::string_view name,
+                                         std::string_view display_name) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    for (auto& registration : authenticator->registrations()) {
+      if (registration.second.user && registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.second.user->id == user_id) {
+        registration.second.user->name = name;
+        registration.second.user->display_name = display_name;
+      }
+    }
+  }
+}
+
+void DeleteVirtualAuthenticatorCreds(
+    RenderFrameHost* render_frame_host,
+    const std::vector<uint8_t>& passkey_credential_id,
+    std::string_view relying_party_id) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_tree_node);
+  if (!virtual_authenticator_manager) {
+    return;
+  }
+  for (VirtualAuthenticator* authenticator :
+       virtual_authenticator_manager->GetAuthenticators()) {
+    for (const auto& registration : authenticator->registrations()) {
+      if (registration.second.rp &&
+          registration.second.rp->id == relying_party_id &&
+          registration.first == passkey_credential_id) {
+        authenticator->RemoveRegistration(passkey_credential_id);
+        return;
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -1808,21 +1890,34 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
     CompleteReportRequest(rp_id_validation_result);
     return;
   }
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (options->all_accepted_credentials) {
+    DeleteUnacceptedVirtualAuthenticatorCreds(
+        render_frame_host, req_state_->relying_party_id,
+        options->all_accepted_credentials->user_id,
+        options->all_accepted_credentials->all_accepted_credentials_ids);
     GetWebAuthenticationDelegate()->DeleteUnacceptedPasskeys(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        WebContents::FromRenderFrameHost(render_frame_host),
         req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
   } else if (options->current_user_details) {
+    UpdateVirtualAuthenticatorUserCreds(
+        render_frame_host, req_state_->relying_party_id,
+        options->current_user_details->user_id,
+        options->current_user_details->name,
+        options->current_user_details->display_name);
     GetWebAuthenticationDelegate()->UpdateUserPasskeys(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        WebContents::FromRenderFrameHost(render_frame_host),
         req_state_->relying_party_id, options->current_user_details->user_id,
         options->current_user_details->name,
         options->current_user_details->display_name);
   } else if (options->unknown_credential_id) {
+    DeleteVirtualAuthenticatorCreds(render_frame_host,
+                                    *options->unknown_credential_id,
+                                    req_state_->relying_party_id);
     GetWebAuthenticationDelegate()->DeletePasskey(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        WebContents::FromRenderFrameHost(render_frame_host),
         *options->unknown_credential_id, req_state_->relying_party_id);
   }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);

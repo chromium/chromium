@@ -62,9 +62,12 @@
 #include "components/cbor/values.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webauth/authenticator_common_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/virtual_authenticator.h"
+#include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -216,6 +219,7 @@ constexpr size_t kTestCredentialIdLength = 32u;
 constexpr char kTestOrigin1[] = "https://a.google.com";
 constexpr char kTestOrigin2[] = "https://acme.org";
 constexpr char kTestRelyingPartyId[] = "google.com";
+constexpr char kDifferentTestRelyingPartyId[] = "different-rp.com";
 constexpr char kExtensionScheme[] = "chrome-extension";
 static constexpr char kCorpCrdOrigin[] =
     "https://remotedesktop.corp.google.com";
@@ -472,8 +476,6 @@ GetTestPublicKeyCredentialRequestOptions() {
 PublicKeyCredentialReportOptionsPtr GetTestPublicKeyCredentialReportOptions() {
   auto options = PublicKeyCredentialReportOptions::New();
   options->relying_party_id = std::string(kTestRelyingPartyId);
-  std::vector<uint8_t> id(32, 0x0A);
-  options->unknown_credential_id = id;
   return options;
 }
 
@@ -832,10 +834,6 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     task_environment()->FastForwardBy(kTestTimeout);
     auto [status, response, dom_exception] = future.Take();
     return {status, std::move(response)};
-  }
-
-  AuthenticatorStatus AuthenticatorReport() {
-    return AuthenticatorReport(GetTestPublicKeyCredentialReportOptions());
   }
 
   AuthenticatorStatus AuthenticatorReport(
@@ -1223,6 +1221,7 @@ TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
     PublicKeyCredentialReportOptionsPtr options =
         GetTestPublicKeyCredentialReportOptions();
     options->relying_party_id = test_case.claimed_authority;
+    options->unknown_credential_id = std::vector<uint8_t>(32, 0x0A);
 
     EXPECT_EQ(AuthenticatorReport(std::move(options)),
               test_case.expected_status);
@@ -5110,6 +5109,197 @@ TEST_F(AuthenticatorImplTest, PRFWithoutSupport) {
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+// These test verify that the virtual authenticator supports the Signal API.
+class VirtualAuthenticatorSignalTest : public AuthenticatorImplTest {
+ public:
+  static constexpr char kUsername[] = "reimu";
+  static constexpr char kDisplayName[] = "Reimu Hakurei";
+  const std::vector<uint8_t> kUserId = {2};
+
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+    NavigateAndCommit(GURL(kTestOrigin1));
+
+    // These tests need an AuthenticatorEnvironment set up.
+    virtual_device_factory_ = nullptr;
+    content::AuthenticatorEnvironment* authenticator_environment =
+        content::AuthenticatorEnvironment::GetInstance();
+    authenticator_environment->Reset();
+    FrameTreeNode* frame_tree_node =
+        static_cast<content::RenderFrameHostImpl*>(main_rfh())
+            ->frame_tree_node();
+    authenticator_environment->EnableVirtualAuthenticatorFor(
+        frame_tree_node,
+        /*enable_ui=*/false);
+    VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+        authenticator_environment->MaybeGetVirtualAuthenticatorManager(
+            frame_tree_node);
+    auto virt_auth_options =
+        blink::test::mojom::VirtualAuthenticatorOptions::New();
+    virt_auth_options->protocol = device::ProtocolVersion::kCtap2;
+    virt_auth_options->transport = device::FidoTransportProtocol::kInternal;
+    virt_auth_options->has_resident_key = true;
+    authenticator_ =
+        virtual_authenticator_manager
+            ->AddAuthenticatorAndReturnNonOwningPointer(*virt_auth_options);
+
+    // Make a credential.
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->user.id = kUserId;
+    options->user.name = kUsername;
+    options->user.display_name = kDisplayName;
+    options->authenticator_selection->resident_key =
+        device::ResidentKeyRequirement::kRequired;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    credential_id_ = result.response->info->raw_id;
+  }
+
+  void TearDown() override {
+    authenticator_ = nullptr;
+    AuthenticatorImplTest::TearDown();
+  }
+
+ protected:
+  // The id of the credential created during test setup.
+  std::vector<uint8_t> credential_id_;
+
+  raw_ptr<VirtualAuthenticator> authenticator_;
+};
+
+TEST_F(VirtualAuthenticatorSignalTest, SignalUnknownCredentialId) {
+  {
+    // Verify that we do not remove passkeys that don't match the rp id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kDifferentTestRelyingPartyId;
+    options->unknown_credential_id = credential_id_;
+    AuthenticatorReport(std::move(options));
+    EXPECT_TRUE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+  {
+    // Verify that we do not remove passkeys that don't match the cred id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->unknown_credential_id = std::vector<uint8_t>{4, 3, 2, 1};
+    AuthenticatorReport(std::move(options));
+    EXPECT_TRUE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+  {
+    // Remove the passkey when the rp id and credential id match.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->unknown_credential_id = credential_id_;
+    AuthenticatorReport(std::move(options));
+    EXPECT_FALSE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+}
+
+TEST_F(VirtualAuthenticatorSignalTest, SignalAllAcceptableCredentials) {
+  {
+    // Verify that we do not remove passkeys that don't match the rp id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kDifferentTestRelyingPartyId;
+    options->all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            kUserId, std::vector<std::vector<uint8_t>>{});
+    AuthenticatorReport(std::move(options));
+    EXPECT_TRUE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+  {
+    // Verify that we do not remove passkeys that don't match the user id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            std::vector<uint8_t>{99}, std::vector<std::vector<uint8_t>>{});
+    AuthenticatorReport(std::move(options));
+    EXPECT_TRUE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+  {
+    // Verify that we do not remove passkeys that are present on the list.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            kUserId, std::vector<std::vector<uint8_t>>{credential_id_});
+    AuthenticatorReport(std::move(options));
+    EXPECT_TRUE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+  {
+    // Verify that we remove passkeys that are not present on the list.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            kUserId, std::vector<std::vector<uint8_t>>{});
+    AuthenticatorReport(std::move(options));
+    EXPECT_FALSE(
+        base::Contains(authenticator_->registrations(), credential_id_));
+  }
+}
+
+TEST_F(VirtualAuthenticatorSignalTest, SignalCurrentUserDetails) {
+  constexpr char kNewUsername[] = "marisa";
+  constexpr char kNewDisplayName[] = "Marisa Kirisame";
+  {
+    // Verify that we do not update passkeys that don't match the rp id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kDifferentTestRelyingPartyId;
+    options->current_user_details =
+        blink::mojom::CurrentUserDetailsOptions::New(kUserId, kNewUsername,
+                                                     kNewDisplayName);
+    AuthenticatorReport(std::move(options));
+    const auto& cred =
+        authenticator_->registrations().find(credential_id_)->second;
+    EXPECT_EQ(cred.user->name, kUsername);
+    EXPECT_EQ(cred.user->display_name, kDisplayName);
+  }
+  {
+    // Verify that we do not update passkeys that don't match the user id.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->current_user_details =
+        blink::mojom::CurrentUserDetailsOptions::New(
+            std::vector<uint8_t>{9}, kNewUsername, kNewDisplayName);
+    AuthenticatorReport(std::move(options));
+    const auto& cred =
+        authenticator_->registrations().find(credential_id_)->second;
+    EXPECT_EQ(cred.user->name, kUsername);
+    EXPECT_EQ(cred.user->display_name, kDisplayName);
+  }
+  {
+    // Verify that we do update passkeys that match.
+    PublicKeyCredentialReportOptionsPtr options =
+        GetTestPublicKeyCredentialReportOptions();
+    options->relying_party_id = kTestRelyingPartyId;
+    options->current_user_details =
+        blink::mojom::CurrentUserDetailsOptions::New(kUserId, kNewUsername,
+                                                     kNewDisplayName);
+    AuthenticatorReport(std::move(options));
+    const auto& cred =
+        authenticator_->registrations().find(credential_id_)->second;
+    EXPECT_EQ(cred.user->name, kNewUsername);
+    EXPECT_EQ(cred.user->display_name, kNewDisplayName);
+  }
 }
 
 static constexpr char kTestPIN[] = "1234";

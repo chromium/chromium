@@ -56,8 +56,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   void AddReceiver(
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticator> receiver);
 
-  const device::VirtualFidoDevice::State::RegistrationsMap& registrations()
-      const {
+  device::VirtualFidoDevice::State::RegistrationsMap& registrations() const {
     return state_->registrations;
   }
 
