@@ -113,6 +113,7 @@
 -gpu/ipc/service/
 -ios/
 -ios_internal/
+-media/
 -native_client/
 -net/third_party/
 -printing/
