@@ -2236,9 +2236,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIframeEmpty) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-empty.html"));
 }
 
-// Test is flaky: https://crbug.com/1181596
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityIframeAriaHidden) {
+                       AccessibilityIframeAriaHidden) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-aria-hidden.html"));
 }
 
@@ -2307,9 +2306,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe.html"));
 }
 
-// https://crbug.com/622387
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityIframeCrossProcess) {
+                       AccessibilityIframeCrossProcess) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-cross-process.html"));
 }
 
@@ -2357,28 +2355,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-transform-scrolled.html"));
 }
 
-// TODO(crbug.com/40801320): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityIframeWithInvalidChildren) {
+                       AccessibilityIframeWithInvalidChildren) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children.html"));
 }
 
-// TODO(crbug.com/40801320): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityIframeWithInvalidChildrenAdded) {
+                       AccessibilityIframeWithInvalidChildrenAdded) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children-added.html"));
 }
 
-// TODO(accessibility) Test fails on Android, even without expectations.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityIframeWithRegionRole \
-  DISABLED_AccessibilityIframeWithRegionRole
-#else
-#define MAYBE_AccessibilityIframeWithRegionRole \
-  AccessibilityIframeWithRegionRole
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityIframeWithRegionRole) {
+                       AccessibilityIframeWithRegionRole) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-region-role.html"));
 }
 
