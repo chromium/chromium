@@ -105,6 +105,21 @@ TEST(TextSearcherICUTest, FindControlCharacter) {
   EXPECT_FALSE(searcher.NextMatchResult());
 }
 
+// Find-ruby-in-page relies on this behavior.
+// crbug.com/40755728
+TEST(TextSearcherICUTest, IgnoreNull) {
+  TextSearcherICU searcher;
+  const String pattern = MakeUTF16("substr");
+  searcher.SetPattern(pattern, FindOptions());
+
+  searcher.SetText(u" sub\0\0string ", 13);
+
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(1u, result->start);
+  EXPECT_EQ(8u, result->length);  // Longer than "substr".
+}
+
 // For http://crbug.com/1138877
 TEST(TextSearcherICUTest, BrokenSurrogate) {
   TextSearcherICU searcher;
