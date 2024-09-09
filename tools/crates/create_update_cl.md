@@ -111,9 +111,8 @@ closest to `origin/main`):
 
 ## Potential additional steps
 
-* If updating `cxx`, you may need to also update its version in:
-    - `build/rust/BUILD.gn`
-    - `third_party/rust/cxx/v1/cxx.h`
+* If updating `cxx`, you will also need to update its version in
+    - `build/rust/cxx_version.gni`
 
 * The `create_update_cl.py` script may stop early if it detects that `gnrt
   vendor` or `gnrt gen` have reported any warnings or errors (e.g. a "License
