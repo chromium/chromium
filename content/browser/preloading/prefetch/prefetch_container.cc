@@ -513,6 +513,34 @@ PrefetchContainer::PrefetchContainer(
 }
 
 PrefetchContainer::PrefetchContainer(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const PrefetchType& prefetch_type,
+    const blink::mojom::Referrer& referrer,
+    bool javascript_enabled,
+    const std::optional<url::Origin>& referring_origin,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    base::WeakPtr<PreloadingAttempt> attempt)
+    : PrefetchContainer(GlobalRenderFrameHostId(),
+                        referring_origin.value_or(url::Origin()),
+                        /*referring_url_hash=*/std::nullopt,
+                        PrefetchContainer::Key(
+                            std::optional<blink::DocumentToken>(std::nullopt),
+                            url),
+                        prefetch_type,
+                        referrer,
+                        std::move(no_vary_search_hint),
+                        /*prefetch_document_manager=*/nullptr,
+                        browser_context->GetWeakPtr(),
+                        ukm::kInvalidSourceId,
+                        std::move(attempt),
+                        /*initiator_devtools_navigation_token=*/std::nullopt,
+                        javascript_enabled) {
+  CHECK(!prefetch_type_.IsRendererInitiated());
+  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+}
+
+PrefetchContainer::PrefetchContainer(
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
     const url::Origin& referring_origin,
     const std::optional<size_t>& referring_url_hash,

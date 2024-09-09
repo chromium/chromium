@@ -119,6 +119,20 @@ class CONTENT_EXPORT PrefetchContainer {
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
 
+  // Ctor used for browser-initiated prefetch that doesn't depend on web
+  // contents. We can pass the referring origin of prefetches via
+  // `referrer_origin` if necessary. When `std::nullopt` is passed, the
+  // referring origin will be opaque.
+  PrefetchContainer(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
+      bool javascript_enabled,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+
   ~PrefetchContainer();
 
   PrefetchContainer(const PrefetchContainer&) = delete;
