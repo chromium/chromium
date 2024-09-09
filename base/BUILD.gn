@@ -1135,6 +1135,8 @@ component("base") {
       "android/android_hardware_buffer_compat.h",
       "android/android_image_reader_compat.cc",
       "android/android_image_reader_compat.h",
+      "android/android_input_receiver_compat.cc",
+      "android/android_input_receiver_compat.h",
       "android/apk_assets.cc",
       "android/apk_assets.h",
       "android/application_status_listener.cc",
@@ -3798,6 +3800,7 @@ test("base_unittests") {
     }
 
     sources += [
+      "android/android_input_receiver_compat_unittest.cc",
       "android/application_status_listener_unittest.cc",
       "android/binder_unittest.cc",
       "android/child_process_unittest.cc",
