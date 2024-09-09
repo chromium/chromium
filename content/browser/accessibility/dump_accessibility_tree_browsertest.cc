@@ -1815,13 +1815,7 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
-// TODO(crbug.com/40758178): fails on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityCaption DISABLED_AccessibilityCaption
-#else
-#define MAYBE_AccessibilityCaption AccessibilityCaption
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityCaption) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCaption) {
   RunHtmlTest(FILE_PATH_LITERAL("caption.html"));
 }
 
@@ -2137,10 +2131,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("form-validation-message.html"));
 }
 
-// https://crbug.com/944519
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    DISABLED_AccessibilityFormValidationMessageRemovedAfterErrorCorrected) {
+    AccessibilityFormValidationMessageRemovedAfterErrorCorrected) {
   RunHtmlTest(FILE_PATH_LITERAL(
       "form-validation-message-removed-after-error-corrected.html"));
 }
