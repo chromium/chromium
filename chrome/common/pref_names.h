@@ -426,6 +426,10 @@ inline constexpr char kPromptForDownload[] = "download.prompt_for_download";
 // Controls if the QUIC protocol is allowed.
 inline constexpr char kQuicAllowed[] = "net.quic_allowed";
 
+// Prefs for keeping whitespace for data URLs.
+inline constexpr char kDataURLWhitespacePreservationEnabled[] =
+    "net.keep_whitespace_data_urls";
+
 // Prefs for persisting network qualities.
 inline constexpr char kNetworkQualities[] = "net.network_qualities";
 

@@ -596,4 +596,8 @@ BASE_FEATURE(kLegacyPKCS1ForTLS13,
              "LegacyPKCS1ForTLS13",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kKeepWhitespaceForDataUrls,
+             "KeepWhitespaceForDataUrls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

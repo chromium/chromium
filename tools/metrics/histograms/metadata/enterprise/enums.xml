@@ -2161,6 +2161,7 @@ chromium-metrics-reviews@google.com.
   <int value="1295" label="HelpMeReadSettings"/>
   <int value="1296" label="GenAiDefaultSettings"/>
   <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
+  <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
