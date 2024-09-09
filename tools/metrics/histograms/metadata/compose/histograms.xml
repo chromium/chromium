@@ -352,10 +352,11 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PageLanguageStatus">
     <variant name="PageLanguageSupported"
-        summary="page whose language is supported by Compose"/>
+        summary="page whose client-assessed language is expected to be
+                 supported by Compose"/>
     <variant name="PageLanguageUnsupported"
-        summary="page whose language is not supported by Compose (but usage
-                 was still allowed)."/>
+        summary="page whose client-assessed language is expected to be not
+                 supported by Compose (but usage was still allowed)."/>
   </token>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
