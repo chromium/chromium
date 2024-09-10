@@ -128,7 +128,7 @@ BASE_FEATURE(kRefreshFeedOnRestart,
 
 BASE_FEATURE(kFeedContainment,
              "FeedContainment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedKillSwitch,
              "WebFeedKillSwitch",
