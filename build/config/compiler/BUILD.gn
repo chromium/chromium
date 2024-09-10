@@ -1076,32 +1076,6 @@ config("compiler") {
     ]
   }
 
-  # Normally, this would be defined in the `runtime_library` config but NaCl
-  # saigo libc++ does not use the custom hermetic libc++. Unfortunately, there
-  # isn't really a better config to add this define for the define to
-  # consistently apply in both Chromium and non-Chromium code *and* non-NaCl
-  # and NaCl code.
-  #
-  # TODO(crbug.com/40511454): Move this back to the `runtime_library`
-  # config when NaCl is removed.
-  if (use_safe_libcxx) {
-    # TODO(crbug.com/40275904): Switch saigo to hardened mode once
-    # it's rolled in.
-    if (is_nacl_saigo) {
-      defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
-    } else {
-      defines += [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
-    }
-  } else {
-    defines += [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
-  }
-
-  # Enable libstdc++ hardening lightweight assertions. Those have a low
-  # performance penalty but are considered a bare minimum for security.
-  if (use_safe_libstdcxx) {
-    defines += [ "_GLIBCXX_ASSERTIONS=1" ]
-  }
-
   # 64-bit Android sometimes defines __ARM_NEON but not __ARM_NEON__.
   # 32-bit Android builds and macOS, however, define __ARM_NEON__,
   # and code typically checks for this.
@@ -1110,6 +1084,34 @@ config("compiler") {
   # as NEON is a mandatory part of ARMv8 anyway.
   if (current_cpu == "arm64") {
     defines += [ "__ARM_NEON__=1" ]
+  }
+}
+
+config("libcxx_hardening") {
+  # Normally, this would be defined in the `runtime_library` config but NaCl
+  # saigo libc++ does not use the custom hermetic libc++. Unfortunately, there
+  # isn't really a better config to add this define for the define to
+  # consistently apply in both Chromium and non-Chromium code *and* non-NaCl and
+  # NaCl code.
+  #
+  # TODO(crbug.com/40511454): Move this back to the `runtime_library` config
+  # when NaCl is removed.
+  if (use_safe_libcxx) {
+    # TODO(crbug.com/40275904): Switch saigo to hardened mode once it's rolled
+    # in.
+    if (is_nacl_saigo) {
+      defines = [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
+    } else {
+      defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" ]
+    }
+  } else {
+    defines = [ "_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_NONE" ]
+  }
+
+  # Enable libstdc++ hardening lightweight assertions. Those have a low
+  # performance penalty but are considered a bare minimum for security.
+  if (use_safe_libstdcxx) {
+    defines += [ "_GLIBCXX_ASSERTIONS=1" ]
   }
 }
 
@@ -1907,7 +1909,8 @@ config("default_warnings") {
 
     cflags_cc += [
       # Disables for C++ only
-      "-Wno-invalid-offsetof",  # offsetof on non-standard-layout type (crbug.com/40285259)
+      "-Wno-invalid-offsetof",  # offsetof on non-standard-layout type
+                                # (crbug.com/40285259)
     ]
 
     if (!is_nacl || is_nacl_saigo) {
