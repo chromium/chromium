@@ -83,6 +83,7 @@ using test::CreatePreallocatedPlusAddress;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
@@ -752,10 +753,9 @@ TEST_F(PlusAddressServiceRequestsTest,
     EXPECT_CALL(check, Call);
     EXPECT_CALL(hide_callback,
                 Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
-    EXPECT_CALL(
-        show_affiliation_error_callback,
-        Run(base::UTF8ToUTF16(affiliated_profile.facet.canonical_spec()),
-            base::UTF8ToUTF16(*affiliated_profile.plus_address)));
+    EXPECT_CALL(show_affiliation_error_callback,
+                Run(Eq(u"bar.com"),
+                    base::UTF8ToUTF16(*affiliated_profile.plus_address)));
   }
   service().OnAcceptedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,

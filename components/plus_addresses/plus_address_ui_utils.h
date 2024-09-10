@@ -14,7 +14,7 @@ namespace plus_addresses {
 // Returns a string for UI display computed from the `plus_address` facet URI.
 // For Android origins, the package name is returned. For web origins, the
 // formatted URL without the cryptographic scheme is returned.
-std::string GetOriginForDisplay(const PlusProfile& plus_address);
+std::u16string GetOriginForDisplay(const PlusProfile& plus_address);
 
 }  // namespace plus_addresses
 

@@ -35,6 +35,7 @@
 #include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
@@ -692,10 +693,9 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
                    /*on_accepted=*/base::DoNothing());
           return;
         }
-        // TODO(crbug.com/362445807): Improve formatting of domain.
         if (requested_address != profile_or_error->plus_address) {
           std::move(show_affiliation_error)
-              .Run(base::UTF8ToUTF16(profile_or_error->facet.canonical_spec()),
+              .Run(GetOriginForDisplay(*profile_or_error),
                    base::UTF8ToUTF16(profile_or_error->plus_address.value()));
           return;
         }
