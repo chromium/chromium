@@ -6,12 +6,7 @@
 
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 AITestUtils::MockModelStreamingResponder::MockModelStreamingResponder() =
     default;
