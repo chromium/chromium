@@ -664,6 +664,9 @@ extern const char kEnableRenderPassDrawnRectDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kEnablePixPaymentsName[];
 extern const char kEnablePixPaymentsDescription[];
+
+extern const char kEnablePixPaymentsInLandscapeModeName[];
+extern const char kEnablePixPaymentsInLandscapeModeDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableRemovingAllThirdPartyCookiesName[];

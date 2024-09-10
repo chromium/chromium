@@ -3806,6 +3806,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-pix-payments-in-landscape-mode",
+    "owners": [ "vishwasuppoor@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav@chromium.org", "oshima@chromium.org" ],
     "expiry_milestone": 116

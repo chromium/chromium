@@ -1152,6 +1152,13 @@ const char kEnablePixPaymentsName[] = "Enable Pix payments";
 const char kEnablePixPaymentsDescription[] =
     "When enabled, users will be offered to pay for Pix transactions using "
     "their bank accounts stored with Google payments.";
+
+const char kEnablePixPaymentsInLandscapeModeName[] =
+    "Enable Pix payments in landscape mode";
+const char kEnablePixPaymentsInLandscapeModeDescription[] =
+    "When enabled, users using their devices in landscape mode also will be "
+    "offered to pay using their Pix accounts. Users using their devices in "
+    "portrait mode are always offered to pay using their Pix accounts.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kEnableRemovingAllThirdPartyCookiesName[] =
