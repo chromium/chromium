@@ -39,33 +39,7 @@
 namespace growth {
 namespace {
 
-inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
-inline constexpr char kEventUsedKey[] = "event_used";
-inline constexpr char kEventTriggerKey[] = "event_trigger";
 inline constexpr char kEventKey[] = "event_to_be_checked";
-inline constexpr char kEventUsedParam[] =
-    "name:ChromeOSAshGrowthCampaigns_EventUsed;comparator:any;window:1;storage:"
-    "1";
-inline constexpr char kEventTriggerParam[] =
-    "name:ChromeOSAshGrowthCampaigns_EventTrigger;comparator:any;window:1;"
-    "storage:1";
-
-inline constexpr char kEventImpressionParam[] =
-    "name:ChromeOSAshGrowthCampaigns_Campaign%d_Impression;comparator:<%d;"
-    "window:3650;storage:3650";
-inline constexpr char kEventDismissalParam[] =
-    "name:ChromeOSAshGrowthCampaigns_Campaign%d_Dismissed;comparator:<%d;"
-    "window:3650;storage:3650";
-
-inline constexpr char kEventGroupImpressionParam[] =
-    "name:ChromeOSAshGrowthCampaigns_Group%d_Impression;comparator:<%d;"
-    "window:3650;storage:3650";
-inline constexpr char kEventGroupDismissalParam[] =
-    "name:ChromeOSAshGrowthCampaigns_Group%d_Dismissed;comparator:<%d;"
-    "window:3650;storage:3650";
-
-inline constexpr char kUserPrefName[] = "name";
-inline constexpr char kUserPrefValue[] = "value";
 
 base::Time GetDeviceCurrentTimeForScheduling() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -171,8 +145,8 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
     return true;
   }
 
-  const auto exp_tag = base::GetFieldTrialParamValueByFeature(
-      *targeted_feature, kCampaignsExperimentTag);
+  const auto exp_tag =
+      base::GetFieldTrialParamValueByFeature(*targeted_feature, "exp_tag");
 
   if (exp_tag.empty()) {
     // Campaign not match if no experiment tag exists.
@@ -257,9 +231,8 @@ bool MatchUserPrefCriteria(const PrefService& pref_service,
       continue;
     }
 
-    if (MatchUserPref(pref_service,
-                      criterion.GetDict().FindString(kUserPrefName),
-                      criterion.GetDict().FindList(kUserPrefValue))) {
+    if (MatchUserPref(pref_service, criterion.GetDict().FindString("name"),
+                      criterion.GetDict().FindList("value"))) {
       return true;
     }
   }
@@ -339,8 +312,11 @@ std::map<std::string, std::string> CreateBasicConditionParams() {
   std::map<std::string, std::string> conditions_params;
   // `event_used` and `event_trigger` are required for feature_engagement
   // config, although they are not used in campaign matching.
-  conditions_params[kEventUsedKey] = kEventUsedParam;
-  conditions_params[kEventTriggerKey] = kEventTriggerParam;
+  static constexpr char kTemplate[] =
+      "name:ChromeOSAshGrowthCampaigns_Event%s;comparator:any;window:1;storage:"
+      "1";
+  conditions_params["event_used"] = base::StringPrintf(kTemplate, "Used");
+  conditions_params["event_trigger"] = base::StringPrintf(kTemplate, "Trigger");
 
   return conditions_params;
 }
@@ -687,8 +663,9 @@ bool CampaignsMatcher::MatchOpenedApp(
   return false;
 }
 
-bool CampaignsMatcher::ReachCap(const std::string& cap_event_name,
+bool CampaignsMatcher::ReachCap(base::cstring_view campaign_type,
                                 int id,
+                                base::cstring_view event_type,
                                 std::optional<int> cap) const {
   if (!cap) {
     // There is no cap, return false.
@@ -699,8 +676,10 @@ bool CampaignsMatcher::ReachCap(const std::string& cap_event_name,
       CreateBasicConditionParams();
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] =
-      base::StringPrintf(cap_event_name.c_str(), id, cap.value());
+  conditions_params[kEventKey] = base::StringPrintf(
+      "name:ChromeOSAshGrowthCampaigns_%s%d_%s;comparator:<%d;window:3650;"
+      "storage:3650",
+      campaign_type.c_str(), id, event_type.c_str(), cap.value());
 
   return !client_->WouldTriggerHelpUI(conditions_params);
 }
@@ -740,18 +719,18 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
   }
 
   // Check group impression cap and dismissal cap.
-  if (group_id && (ReachCap(kEventGroupImpressionParam, /*id=*/group_id.value(),
+  if (group_id && (ReachCap("Group", group_id.value(), "Impression",
                             config->GetGroupImpressionCap()) ||
-                   ReachCap(kEventGroupDismissalParam, /*id=*/group_id.value(),
+                   ReachCap("Group", group_id.value(), "Dismissed",
                             config->GetGroupDismissalCap()))) {
     // Reached group impression cap or dismissal cap.
     return false;
   }
 
   // Check campaign impression cap and dismissal cap.
-  if (ReachCap(kEventImpressionParam, /*id=*/campaign_id,
+  if (ReachCap("Campaign", campaign_id, "Impression",
                config->GetImpressionCap()) ||
-      ReachCap(kEventDismissalParam, /*id=*/campaign_id,
+      ReachCap("Campaign", campaign_id, "Dismissed",
                config->GetDismissalCap())) {
     return false;
   }

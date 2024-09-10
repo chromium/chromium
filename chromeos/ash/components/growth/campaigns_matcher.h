@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -75,8 +76,9 @@ class CampaignsMatcher {
   bool MatchEvents(std::unique_ptr<EventsTargeting> config,
                    int campaign_id,
                    std::optional<int> group_id) const;
-  bool ReachCap(const std::string& cap_event_name,
+  bool ReachCap(base::cstring_view campaign_type,
                 int id,
+                base::cstring_view event_type,
                 std::optional<int> cap) const;
   bool MatchMinorUser(std::optional<bool> minor_user_targeting) const;
   bool MatchOwner(std::optional<bool> is_owner) const;

@@ -546,9 +546,11 @@ class CampaignsManagerTest : public testing::Test {
           )",
                                         runtime_targeting.c_str());
     LoadComponentAndVerifyLoadComplete(
-        base::StringPrintf(has_group_id ? kValidCampaignsFileWithGroupIdTemplate
-                                        : kValidCampaignsFileTemplate,
-                           targeting.c_str()));
+        has_group_id
+            ? base::StringPrintf(kValidCampaignsFileWithGroupIdTemplate,
+                                 targeting.c_str())
+            : base::StringPrintf(kValidCampaignsFileTemplate,
+                                 targeting.c_str()));
   }
 
   void LoadComponentWithMultiTargetings(const std::string& targetings) {
