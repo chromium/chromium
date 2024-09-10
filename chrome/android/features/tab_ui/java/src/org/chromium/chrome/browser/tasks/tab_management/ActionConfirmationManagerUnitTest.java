@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -236,7 +235,7 @@ public class ActionConfirmationManagerUnitTest {
                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
         verify(mOnResult).onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
-        verify(mPrefService, never()).setBoolean(any(), anyBoolean());
+        verify(mPrefService).setBoolean(any(), eq(true));
     }
 
     @Test
