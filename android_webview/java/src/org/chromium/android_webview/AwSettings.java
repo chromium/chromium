@@ -236,9 +236,6 @@ public class AwSettings {
                 AwSettingsJni.get().getDefaultUserAgentMetadata();
     }
 
-    // Protects access to settings global fields.
-    private static final Object sGlobalContentSettingsLock = new Object();
-
     // The native side of this object. It's lifetime is bounded by the WebContent it is attached to.
     private long mNativeAwSettings;
 
