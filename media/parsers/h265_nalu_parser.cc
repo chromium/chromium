@@ -153,6 +153,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   READ_BITS_OR_RETURN(6, &nalu->nal_unit_type);
   READ_BITS_OR_RETURN(6, &nalu->nuh_layer_id);
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
+  TRUE_OR_RETURN(nalu->nuh_temporal_id_plus1 != 0);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
            << " at: " << reinterpret_cast<const void*>(nalu->data.get())

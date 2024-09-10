@@ -89,7 +89,7 @@ TEST_F(H265NaluParserTest, GetCurrentSubsamplesNormal) {
       // First NALU.
       // Clear bytes = 5.
       0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
+      0x28, 0x01,        // Nalu type = 20, IDR slice.
       // Below is bogus data.
       // Encrypted bytes = 15.
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
@@ -104,7 +104,7 @@ TEST_F(H265NaluParserTest, GetCurrentSubsamplesNormal) {
       // Second NALU. Completely clear.
       // Clear bytes = 11.
       0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
+      0x42, 0x01,        // nalu type = 33, SPS.
       // Bogus data.
       0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
   };
@@ -145,7 +145,7 @@ TEST_F(H265NaluParserTest,
       // First NALU.
       // Clear bytes = 5.
       0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
+      0x28, 0x01,        // Nalu type = 20, IDR slice.
       // Below is bogus data.
       // Encrypted bytes = 24.
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
@@ -155,7 +155,7 @@ TEST_F(H265NaluParserTest,
       0xaa, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
       // Second NALU. Completely clear.
       0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
+      0x42, 0x01,        // nalu type = 33, SPS.
       // Bogus data.
       0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
   };

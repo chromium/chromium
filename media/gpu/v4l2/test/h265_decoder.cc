@@ -688,8 +688,9 @@ void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
                                         const H265SliceHeader* slice_hdr) {
   // 8.3.1 Decoding process for picture order count.
   curr_pic_->valid_for_prev_tid0_pic_ =
-      !pps->temporal_id && (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
-                            slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
+      !slice_hdr->temporal_id &&
+      (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
+       slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
   curr_pic_->slice_pic_order_cnt_lsb_ = slice_hdr->slice_pic_order_cnt_lsb;
 
   // Calculate POC for current picture.

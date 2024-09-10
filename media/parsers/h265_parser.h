@@ -273,8 +273,6 @@ struct MEDIA_EXPORT H265PPS {
     kMaxNumTileRowHeight = 21,    // From VAAPI.
   };
 
-  int temporal_id;  // calculated from NALU
-
   // Syntax elements.
   int pps_pic_parameter_set_id;
   int pps_seq_parameter_set_id;
@@ -375,6 +373,7 @@ struct MEDIA_EXPORT H265SliceHeader {
   int nal_unit_type;         // from NAL header
   raw_ptr<const uint8_t, AllowPtrArithmetic> nalu_data;  // from NAL header
   size_t nalu_size;          // from NAL header
+  int temporal_id;           // calculated from NAL header
   size_t header_size;  // calculated, not including emulation prevention bytes
   size_t header_emulation_prevention_bytes;
 
