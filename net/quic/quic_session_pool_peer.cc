@@ -82,8 +82,9 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
   QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
-  DCHECK(key == factory->all_sessions_.begin()->second);
-  return factory->all_sessions_.begin()->first.get();
+  QuicChromiumClientSession* session = factory->all_sessions_.begin()->get();
+  DCHECK(key == session->session_alias_key());
+  return session;
 }
 
 QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(

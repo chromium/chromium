@@ -195,6 +195,17 @@ void SetInitialRttEstimate(base::TimeDelta estimate,
   }
 }
 
+// Checks if `destination` matches the alias key of `session`. If
+// `match_received_origins` is true, also checks if `destination` matches any of
+// its received origins. Returns true on any match.
+bool DestinationInAliasOrReceivedOrigins(QuicChromiumClientSession* session,
+                                         const url::SchemeHostPort& destination,
+                                         bool match_received_origins) {
+  return destination == session->session_alias_key().destination() ||
+         (match_received_origins &&
+          session->received_origins().contains(destination));
+}
+
 // An implementation of quic::QuicCryptoClientConfig::ServerIdFilter that wraps
 // an |origin_filter|.
 class ServerIdOriginFilter
@@ -583,15 +594,9 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
     QuicChromiumClientSession* session = key_value.second;
     // Check received origins and "remote" (alternative service and origin have
     // different hostnames) alt-svc for this active session.
-    if (!skip_dns_with_origin_frame_ ||
-        !session->received_origins().contains(destination)) {
-      const auto& it = all_sessions_.find(session);
-      CHECK(it != all_sessions_.end());
-      if (destination != it->second.destination()) {
-        continue;
-      }
-    }
-    if (session->CanPool(session_key.host(), session_key)) {
+    if (DestinationInAliasOrReceivedOrigins(session, destination,
+                                            skip_dns_with_origin_frame_) &&
+        session->CanPool(session_key.host(), session_key)) {
       return session;
     }
   }
@@ -733,9 +738,8 @@ void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {
     active_sessions_.erase(session_key);
     ProcessGoingAwaySession(session, session_key.server_id(), true);
   }
-  const auto it = all_sessions_.find(session);
-  CHECK(it != all_sessions_.end());
-  ProcessGoingAwaySession(session, it->second.server_id(), false);
+  ProcessGoingAwaySession(session, session->session_alias_key().server_id(),
+                          false);
   if (!aliases.empty()) {
     DCHECK(base::Contains(session_peer_ip_, session));
     const IPEndPoint peer_address = session_peer_ip_[session];
@@ -793,9 +797,10 @@ void QuicSessionPool::CloseAllSessions(int error,
   }
   while (!all_sessions_.empty()) {
     size_t initial_size = all_sessions_.size();
-    all_sessions_.begin()->first->CloseSessionOnError(
-        error, quic_error,
-        quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
+    (*all_sessions_.begin())
+        ->CloseSessionOnError(
+            error, quic_error,
+            quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
     DCHECK_NE(initial_size, all_sessions_.size());
   }
   DCHECK(all_sessions_.empty());
@@ -1097,9 +1102,9 @@ void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
   // Broadcast network connected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
   auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the map.
+  // Sessions may be deleted while iterating through the set.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first.get();
+    QuicChromiumClientSession* session = it->get();
     ++it;
     session->OnNetworkConnected(network);
   }
@@ -1119,9 +1124,9 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
   // Broadcast network disconnected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
   auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the map.
+  // Sessions may be deleted while iterating through the set.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first.get();
+    QuicChromiumClientSession* session = it->get();
     ++it;
     session->OnNetworkDisconnectedV2(/*disconnected_network*/ network);
   }
@@ -1160,9 +1165,9 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   }
 
   auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the map.
+  // Sessions may be deleted while iterating through the set.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first.get();
+    QuicChromiumClientSession* session = it->get();
     ++it;
     session->OnNetworkMadeDefault(network);
   }
@@ -1257,12 +1262,11 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
 }
 
 void QuicSessionPool::ActivateSessionForTesting(
-    const url::SchemeHostPort& destination,
     std::unique_ptr<QuicChromiumClientSession> new_session) {
   QuicChromiumClientSession* session = new_session.get();
-  QuicSessionAliasKey alias_key(destination, session->quic_session_key());
-  all_sessions_.emplace(std::move(new_session), alias_key);
-  ActivateSession(alias_key, session, std::set<std::string>());
+  all_sessions_.insert(std::move(new_session));
+  ActivateSession(session->session_alias_key(), session,
+                  std::set<std::string>());
 }
 
 void QuicSessionPool::DeactivateSessionForTesting(
@@ -1697,7 +1701,7 @@ bool QuicSessionPool::CreateSessionHelper(
   auto new_session = std::make_unique<QuicChromiumClientSession>(
       connection, std::move(socket), this, quic_crypto_client_stream_factory_,
       clock_, transport_security_state_, ssl_config_service_,
-      std::move(server_info), key.session_key(), require_confirmation,
+      std::move(server_info), std::move(key), require_confirmation,
       params_.migrate_sessions_early_v2,
       params_.migrate_sessions_on_network_change_v2, default_network_,
       retransmittable_on_wire_timeout_, params_.migrate_idle_sessions,
@@ -1714,7 +1718,7 @@ bool QuicSessionPool::CreateSessionHelper(
       params_.enable_origin_frame, net_log);
   *session = new_session.get();
 
-  all_sessions_.emplace(std::move(new_session), std::move(key));
+  all_sessions_.insert(std::move(new_session));
   writer->set_delegate(*session);
   (*session)->AddConnectivityObserver(&connectivity_monitor_);
 

@@ -31,6 +31,8 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
+#include "net/quic/quic_session_alias_key.h"
+#include "net/quic/quic_session_key.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/socket_tag.h"
@@ -169,10 +171,12 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
       &transport_security_state_, &ssl_config_service_,
       base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
-      QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                     proxy_chain_, SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+      QuicSessionAliasKey(
+          url::SchemeHostPort(),
+          QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                         proxy_chain_, SessionUsage::kDestination, SocketTag(),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                         /*require_dns_https_alpn=*/false)),
       /*require_confirmation=*/false,
       /*migrate_session_early_v2=*/false,
       /*migrate_session_on_network_change_v2=*/false,

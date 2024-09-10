@@ -65,6 +65,7 @@
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -714,7 +715,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         connection, std::move(socket), session_->quic_session_pool(),
         &crypto_client_stream_factory_, &clock, &transport_security_state,
         &ssl_config_service,
-        base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)), session_key,
+        base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
+        QuicSessionAliasKey(server, session_key),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false, kDefaultNetworkForTests,
@@ -2112,9 +2114,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                /*using_quic=*/true);
     if (mock_error.phase == ErrorPhase::kProxySession) {
       session_->quic_session_pool()->ActivateSessionForTesting(
-          proxy_server, CreateMockQUICProxySession(proxy_server));
+          CreateMockQUICProxySession(proxy_server));
       session_->quic_session_pool()->ActivateSessionForTesting(
-          proxy_server2, CreateMockQUICProxySession(proxy_server2));
+          CreateMockQUICProxySession(proxy_server2));
       ASSERT_EQ(mock_proxy_sessions_.size(), 2u);
     }
 

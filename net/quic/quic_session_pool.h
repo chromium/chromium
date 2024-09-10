@@ -514,7 +514,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   // Inject a QUIC session for testing various edge cases.
   void ActivateSessionForTesting(
-      const url::SchemeHostPort& destination,
       std::unique_ptr<QuicChromiumClientSession> new_session);
 
   void DeactivateSessionForTesting(QuicChromiumClientSession* session);
@@ -541,8 +540,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   friend class test::QuicSessionPoolPeer;
 
   using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
-  using SessionIdMap = std::map<std::unique_ptr<QuicChromiumClientSession>,
-                                QuicSessionAliasKey,
+  using SessionIdSet = std::set<std::unique_ptr<QuicChromiumClientSession>,
                                 base::UniquePtrComparator>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
@@ -765,7 +763,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   std::unique_ptr<quic::QuicAlarmFactory> alarm_factory_;
 
   // Contains owning pointers to all sessions that currently exist.
-  SessionIdMap all_sessions_;
+  SessionIdSet all_sessions_;
   // Contains non-owning pointers to currently active session
   // (not going away session, once they're implemented).
   SessionMap active_sessions_;

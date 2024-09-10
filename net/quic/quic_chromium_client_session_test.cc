@@ -46,6 +46,7 @@
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
@@ -178,7 +179,8 @@ class QuicChromiumClientSessionTest
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         transport_security_state_.get(), &ssl_config_service_,
-        base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)), session_key_,
+        base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
+        QuicSessionAliasKey(url::SchemeHostPort(), session_key_),
         /*require_confirmation=*/false, migrate_session_early_v2_,
         /*migrate_session_on_network_change_v2=*/false, default_network_,
         quic::QuicTime::Delta::FromMilliseconds(
