@@ -19,6 +19,8 @@
 namespace autofill_prediction_improvements {
 namespace {
 
+using ::autofill::Suggestion;
+using ::autofill::SuggestionType;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -29,6 +31,11 @@ using ::testing::Pair;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
+
+MATCHER_P(HasType, expected_type, "") {
+  EXPECT_THAT(arg, Field(&Suggestion::type, Eq(expected_type)));
+  return true;
+}
 
 class MockAutofillPredictionImprovementsClient
     : public AutofillPredictionImprovementsClient {
@@ -139,8 +146,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
-  std::vector<autofill::Suggestion> loading_suggestion;
-  std::vector<autofill::Suggestion> filling_suggestion;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> filling_suggestion;
 
   {
     InSequence s;
@@ -159,29 +166,31 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   std::move(axtree_received_callback).Run({});
   std::move(predictions_received_callback).Run(filled_form);
 
-  EXPECT_THAT(
-      loading_suggestion,
-      ElementsAre(Field(
-          &autofill::Suggestion::type,
-          Eq(autofill::SuggestionType::kPredictionImprovementsLoadingState))));
-  ASSERT_THAT(filling_suggestion,
-              ElementsAre(Field(
-                  &autofill::Suggestion::type,
-                  Eq(autofill::SuggestionType::kFillPredictionImprovements))));
-  autofill::Suggestion::PredictionImprovementsPayload filling_payload =
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  ASSERT_THAT(
+      filling_suggestion,
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements)));
+  const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
-          .GetPayload<autofill::Suggestion::PredictionImprovementsPayload>();
+          .GetPayload<Suggestion::PredictionImprovementsPayload>();
   const autofill::FormFieldData& filled_field = filled_form.fields().front();
   EXPECT_THAT(
       filling_payload.values_to_fill,
       ElementsAre(Pair(filled_field.global_id(), filled_field.value())));
+  EXPECT_THAT(
+      filling_suggestion[0].children,
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kFillPredictionImprovements)));
 }
 
 // Tests that no suggestions are added to `address_suggestions` if
 // `should_add_trigger_suggestion` is `false`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsDoesNotUpdateIfItShouldNot) {
-  std::vector<autofill::Suggestion> address_suggestions;
+  std::vector<Suggestion> address_suggestions;
   autofill::FormFieldData field;
   EXPECT_FALSE(manager_->MaybeUpdateSuggestions(
       address_suggestions, field, /*should_add_trigger_suggestion=*/false));
@@ -192,15 +201,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // `MaybeUpdateSuggestions()`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsOnEmptyAddressSuggestionsAddsTriggerSuggestion) {
-  std::vector<autofill::Suggestion> address_suggestions;
+  std::vector<Suggestion> address_suggestions;
   autofill::FormFieldData field;
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       address_suggestions, field, /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(Field(
-          &autofill::Suggestion::type,
-          Eq(autofill::SuggestionType::kRetrievePredictionImprovements))));
+      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
 // Tests that `address_suggestions` contains the
@@ -211,29 +218,22 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 TEST_F(
     AutofillPredictionImprovementsManagerTest,
     MaybeUpdateSuggestionsOnAddressSuggestionsIncludingUndoOrClearAddsTriggerSuggestion) {
-  std::vector<autofill::Suggestion> address_suggestions = {
-      autofill::Suggestion(autofill::SuggestionType::kAddressEntry),
-      autofill::Suggestion(autofill::SuggestionType::kSeparator),
-      autofill::Suggestion(autofill::SuggestionType::kUndoOrClear),
-      autofill::Suggestion(autofill::SuggestionType::kManageAddress)};
+  std::vector<Suggestion> address_suggestions = {
+      Suggestion(SuggestionType::kAddressEntry),
+      Suggestion(SuggestionType::kSeparator),
+      Suggestion(SuggestionType::kUndoOrClear),
+      Suggestion(SuggestionType::kManageAddress)};
   autofill::FormFieldData field;
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       address_suggestions, field, /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kAddressEntry)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kSeparator)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kRetrievePredictionImprovements)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kSeparator)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kUndoOrClear)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kManageAddress))));
+      ElementsAre(HasType(SuggestionType::kAddressEntry),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kUndoOrClear),
+                  HasType(SuggestionType::kManageAddress)));
 }
 
 // Tests that `address_suggestions` contains the
@@ -244,26 +244,20 @@ TEST_F(
 // autofilled.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsOnAddressSuggestionsAddsTriggerSuggestion) {
-  std::vector<autofill::Suggestion> address_suggestions = {
-      autofill::Suggestion(autofill::SuggestionType::kAddressEntry),
-      autofill::Suggestion(autofill::SuggestionType::kSeparator),
-      autofill::Suggestion(autofill::SuggestionType::kManageAddress)};
+  std::vector<Suggestion> address_suggestions = {
+      Suggestion(SuggestionType::kAddressEntry),
+      Suggestion(SuggestionType::kSeparator),
+      Suggestion(SuggestionType::kManageAddress)};
   autofill::FormFieldData field;
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       address_suggestions, field, /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kAddressEntry)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kSeparator)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kRetrievePredictionImprovements)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kSeparator)),
-          Field(&autofill::Suggestion::type,
-                Eq(autofill::SuggestionType::kManageAddress))));
+      ElementsAre(HasType(SuggestionType::kAddressEntry),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kManageAddress)));
 }
 
 class ShouldProvideAutofillPredictionImprovementsTest
@@ -285,10 +279,28 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        DoesNotExtractImprovedPredictionsIfFlagDisabled) {
   feature_.InitAndDisableFeature(kAutofillPredictionImprovements);
   AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> error_suggestion;
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.OnClickedTriggerSuggestion(
-      form_, form_.fields().front(),
-      /*update_suggestions_callback=*/base::DoNothing());
+  {
+    InSequence s;
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&error_suggestion));
+  }
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_THAT(error_suggestion,
+              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -296,10 +308,28 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, nullptr};
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> error_suggestion;
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.OnClickedTriggerSuggestion(
-      form_, form_.fields().front(),
-      /*update_suggestions_callback=*/base::DoNothing());
+  {
+    InSequence s;
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&error_suggestion));
+  }
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_THAT(error_suggestion,
+              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -307,10 +337,20 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
   EXPECT_CALL(client_, GetAXTree);
-  manager.OnClickedTriggerSuggestion(
-      form_, form_.fields().front(),
-      /*update_suggestions_callback=*/base::DoNothing());
+  EXPECT_CALL(update_suggestions_callback, Run)
+      .WillOnce(SaveArg<0>(&loading_suggestion));
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -321,10 +361,28 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> error_suggestion;
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.OnClickedTriggerSuggestion(
-      form_, form_.fields().front(),
-      /*update_suggestions_callback=*/base::DoNothing());
+  {
+    InSequence s;
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&error_suggestion));
+  }
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_THAT(error_suggestion,
+              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -335,10 +393,20 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
   EXPECT_CALL(client_, GetAXTree);
-  manager.OnClickedTriggerSuggestion(
-      form_, form_.fields().front(),
-      /*update_suggestions_callback=*/base::DoNothing());
+  EXPECT_CALL(update_suggestions_callback, Run)
+      .WillOnce(SaveArg<0>(&loading_suggestion));
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
 }
 
 }  // namespace

@@ -75,6 +75,16 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestion() {
   return {loading_suggestion};
 }
 
+// Creates a suggestion shown when retrieving prediction improvements wasn't
+// successful.
+std::vector<autofill::Suggestion> CreateErrorSuggestion() {
+  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
+  autofill::Suggestion error_suggestion(
+      u"Error", autofill::SuggestionType::kAutocompleteEntry);
+  error_suggestion.is_acceptable = false;
+  return {error_suggestion};
+}
+
 }  // namespace
 
 AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
@@ -106,6 +116,19 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
 
   autofill::Suggestion suggestion(
       predicted_value, autofill::SuggestionType::kFillPredictionImprovements);
+  auto payload = autofill::Suggestion::PredictionImprovementsPayload(
+      GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
+  // Add a `kFillPredictionImprovements` suggestion with a separator to
+  // `suggestion.children` before the field-by-field filling entries.
+  {
+    // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
+    // file.
+    autofill::Suggestion fill_all_child(
+        u"Fill all", autofill::SuggestionType::kFillPredictionImprovements);
+    fill_all_child.payload = payload;
+    suggestion.children.emplace_back(fill_all_child);
+    suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
+  }
   // Add the child suggestion for the triggering field on top.
   suggestion.children.emplace_back(
       CreateChildSuggestionForFilling(*filled_field));
@@ -126,8 +149,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
-  suggestion.payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
+  suggestion.payload = payload;
   return {suggestion};
 }
 
@@ -200,9 +222,7 @@ void AutofillPredictionImprovementsManager::
         const autofill::FormData& form,
         const autofill::FormFieldData& trigger_field) {
   if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
-    // TODO(crbug.com/359440030): Add error handling (could not extract improved
-    // predictions).
-    UpdateSuggestions(/*suggestions=*/{});
+    UpdateSuggestions(CreateErrorSuggestion());
     return;
   }
   client_->GetAXTree(
@@ -226,8 +246,7 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormFieldData& trigger_field,
     base::expected<autofill::FormData, bool> improved_predictions) {
   if (!improved_predictions.has_value()) {
-    // TODO(crbug.com/359440030): Add error handling.
-    UpdateSuggestions(/*suggestions=*/{});
+    UpdateSuggestions(CreateErrorSuggestion());
     return;
   }
 
