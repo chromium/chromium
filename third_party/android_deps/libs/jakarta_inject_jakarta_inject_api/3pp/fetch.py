@@ -22,6 +22,5 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          version_override=None,
                          version_filter=r'\d+\.\d+\.\d+$')
 
-
 if __name__ == '__main__':
     fetch_common.main(SPEC)

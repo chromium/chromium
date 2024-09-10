@@ -19,6 +19,5 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          version_override=<%= dependency.overrideLatest ? "'${dependency.version}'" : "None" %>,
                          version_filter=<%= dependency.versionFilter ? "r'${dependency.versionFilter}'" : "None" %>)
 
-
 if __name__ == '__main__':
     fetch_common.main(SPEC)
