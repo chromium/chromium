@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.MainFrameZoomFactor"
-    units="zoom factor %" expires_after="2025-01-05">
+    units="zoom factor %" expires_after="2025-03-09">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

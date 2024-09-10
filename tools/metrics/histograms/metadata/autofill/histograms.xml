@@ -1970,7 +1970,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Deduplication.ExistingProfiles.LowQualityQuasiDuplicatesRemoved"
-    units="Profiles" expires_after="2025-01-05">
+    units="Profiles" expires_after="2025-03-09">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -4165,7 +4165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

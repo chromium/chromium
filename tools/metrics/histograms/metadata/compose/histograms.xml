@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Compose.ContextMenu.CTR" enum="ComposeContextMenuCtrEvent"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

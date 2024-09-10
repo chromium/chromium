@@ -1893,7 +1893,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
@@ -1968,7 +1968,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.TabResumption" units="index"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -1985,7 +1985,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.TopImpression"
-    enum="IOSMagicStackModuleType" expires_after="2025-01-05">
+    enum="IOSMagicStackModuleType" expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
@@ -2123,7 +2123,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationResumeTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2145,7 +2145,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory" units="MB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2349,7 +2349,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}OptimizedTimeToFirstDraw" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -2375,7 +2375,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}PeakMemoryUsage" units="MB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2403,7 +2403,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}TimeToFirstDraw" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2926,7 +2926,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.TimeOpen" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>The amount of time the overflow/tools menu is open.</summary>
@@ -3268,7 +3268,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo" enum="IOSPromosManagerPromo"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>

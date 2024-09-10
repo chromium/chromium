@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.AsyncAutocompletionTime2.{Change}{Completed}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -469,7 +469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -901,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusToOpenTimeAnyPopupState3" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1166,7 +1166,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.MatchStability2.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
-    enum="BooleanChanged" expires_after="2025-01-05">
+    enum="BooleanChanged" expires_after="2025-03-09">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -1213,7 +1213,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.MatchStability2.MatchChangeIndex{OmniboxAutocompleteUpdateSlice}"
-    units="position" expires_after="2025-01-05">
+    units="position" expires_after="2025-03-09">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -1360,7 +1360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1371,7 +1371,7 @@ chromium-metrics-reviews@google.com.
   <token key="OmniboxProvider" variants="OmniboxProviders"/>
 </histogram>
 
-<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2025-01-05">
+<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.Search.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2031,7 +2031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestRequest.Success.GoogleResponseTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>cch@chromium.org</owner>

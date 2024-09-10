@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBSize" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>

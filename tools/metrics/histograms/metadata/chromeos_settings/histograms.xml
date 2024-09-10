@@ -740,7 +740,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited"
-    enum="WebUIOSSettingsPathHashes" expires_after="2025-01-05">
+    enum="WebUIOSSettingsPathHashes" expires_after="2025-03-09">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>

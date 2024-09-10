@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MagicStack.Clank.TabResumption.ModuleNotShownReason"
     enum="MagicStack.Clank.TabResumption.ModuleNotShownReason"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MagicStack.Clank.TabResumption.ModuleShowConfig"
     enum="MagicStack.Clank.TabResumption.ModuleShowConfig"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>

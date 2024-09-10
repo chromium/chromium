@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>vovoy@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discarding.DailyReloads{TabDiscardReason}" units="tabs"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>vovoy@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.SavedTabGroupAge" units="minutes"
-    expires_after="2024-11-15">
+    expires_after="2025-03-09">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UnsavedTabGroupCount" units="groups"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UnsavedTabGroupTabCount" units="tabs"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

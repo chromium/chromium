@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstNavigationCommit"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>pasko@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartAction"
-    enum="MobileSessionStartAction" expires_after="2025-01-05">
+    enum="MobileSessionStartAction" expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Renderer.LoadTime.ApplicationStartToRendererStartRunLoop"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1184,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Renderer.LoadTime.ChromeMainToRendererStartRunLoop"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Renderer.LoadTime.ProcessCreationToRendererStartRunLoop"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>

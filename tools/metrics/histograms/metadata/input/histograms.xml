@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.PkUserPreference.{Language}"
-    enum="IMEAutocorrectPreference" expires_after="2025-01-05">
+    enum="IMEAutocorrectPreference" expires_after="2025-03-09">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency.KeyboardShownLongTail"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2171,7 +2171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency{IMEVKLatency}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

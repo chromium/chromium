@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Signin.AccountCapabilities.FetchLatency" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.ImmediatelyAvailable"
-    enum="BooleanAvailable" expires_after="2025-01-05">
+    enum="BooleanAvailable" expires_after="2025-03-09">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.UserVisibleLatency" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction.{PromoEvent}"
-    enum="SigninAccessPoint" expires_after="2025-01-05">
+    enum="SigninAccessPoint" expires_after="2025-03-09">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2065,7 +2065,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninCompletedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>msarda@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -2149,7 +2149,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninStartedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>msarda@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -2281,7 +2281,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncButtons.Clicked" enum="SyncButtonClicked"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tju@chromium.org</owner>
   <owner>chrome-kids-team@google.com</owner>
   <summary>

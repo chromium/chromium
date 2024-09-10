@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2025-01-05">
+    enum="BooleanCompleted" expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -653,7 +653,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.CookieAgeHours2" units="hours"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -750,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.EsbDisabled.LastEnabledInterval" units="days"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1565,7 +1565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.GetCache.Time" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1591,7 +1591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.HasOhttpKey" enum="BooleanHasKey"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.LocalMatch.Result"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2025-01-05">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2025-03-09">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1677,7 +1677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Network.Time" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Network.{ResponseSource}Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-09">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1761,7 +1761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.HasCachedKey"
-    enum="BooleanHasKey" expires_after="2025-01-05">
+    enum="BooleanHasKey" expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1793,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1803,7 +1803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1813,7 +1813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OperationOutcome"
-    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2025-01-05">
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2025-03-09">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2129,7 +2129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Enhanced" enum="BooleanEnabled"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2365,7 +2365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetCacheResult{UserCategory}"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2025-01-05">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2380,7 +2380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetToken.Time" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2952,7 +2952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3052,7 +3052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-09">
   <owner>vakh@google.com</owner>
   <owner>kcarattini@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -3331,7 +3331,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4StoreRead.Result"
-    enum="SafeBrowsingV4StoreReadResult" expires_after="2025-01-05">
+    enum="SafeBrowsingV4StoreReadResult" expires_after="2025-03-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3356,7 +3356,7 @@ security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3381,7 +3381,7 @@ risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

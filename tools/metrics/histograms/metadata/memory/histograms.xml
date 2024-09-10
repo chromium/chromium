@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
-    units="MB" expires_after="2025-01-05">
+    units="MB" expires_after="2025-03-09">
   <owner>joenotcharles@google.com</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
@@ -1579,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>yukishiino@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1981,7 +1981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.GpuMappedMemory" units="MB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-memory@chromium.org</owner>
   <summary>
@@ -2044,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers"
-    units="MB" expires_after="2025-01-05">
+    units="MB" expires_after="2025-03-09">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Total.TileMemory" units="MB" expires_after="2025-01-05">
+<histogram name="Memory.Total.TileMemory" units="MB" expires_after="2025-03-09">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>

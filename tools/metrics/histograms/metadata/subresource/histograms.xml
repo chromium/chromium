@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2025-01-05">
+    enum="ActivationList" expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2025-01-05">
+    enum="SubresourceFilterActivationState" expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

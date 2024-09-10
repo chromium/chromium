@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.AllAccounts.Names" enum="ProfileAllAccountsNames"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfUnusedProfiles" units="profiles"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

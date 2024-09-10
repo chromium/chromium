@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
   <summary>
@@ -1495,14 +1495,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Creation.Result"
-    enum="ShortcutsCreationResult" expires_after="2025-01-05">
+    enum="ShortcutsCreationResult" expires_after="2025-03-09">
   <owner>phillis@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <summary>Records the result of shortcut creation for PWA.</summary>
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Delete.Result" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>dmurph@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1516,7 +1516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>camdenking@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

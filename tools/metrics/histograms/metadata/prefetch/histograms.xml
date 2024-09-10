@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-01-05">
+    enum="Boolean" expires_after="2025-03-09">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

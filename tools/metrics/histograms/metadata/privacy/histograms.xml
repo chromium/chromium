@@ -344,7 +344,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -369,7 +369,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Database.Operation.{DIPSDatabaseOperation}Time"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>etienneb@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
@@ -518,7 +518,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>fsenra@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1059,7 +1059,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap"
-    units="KB" expires_after="2025-01-05">
+    units="KB" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1117,7 +1117,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1142,7 +1142,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested.FileSource"
-    enum="PrivacySandboxAttestationsFileSource" expires_after="2025-01-05">
+    enum="PrivacySandboxAttestationsFileSource" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1154,7 +1154,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1186,7 +1186,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.Parsing.Status"
-    enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-01-05">
+    enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-03-09">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>

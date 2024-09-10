@@ -6427,7 +6427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.AnimationSmoothness.Enter{OverviewAnimationMode}"
-    units="%" expires_after="2025-01-05">
+    units="%" expires_after="2025-03-09">
   <owner>achuith@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>

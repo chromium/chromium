@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.GetCookieSettingInternal.Duration"
-    units="microseconds" expires_after="2025-01-05">
+    units="microseconds" expires_after="2025-03-09">
   <owner>dullweber@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.IsAllowedByTpcdMetadataGrant.Duration"
-    units="microseconds" expires_after="2025-01-05">
+    units="microseconds" expires_after="2025-03-09">
   <owner>trishalfonso@google.com</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -1239,7 +1239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1388,7 +1388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsStatus"
-    enum="FeedUploadActionsStatus" expires_after="2025-01-05">
+    enum="FeedUploadActionsStatus" expires_after="2025-03-09">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1422,7 +1422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>

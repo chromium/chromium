@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchPerAppTypeV2" enum="AppTypeV2"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2060,7 +2060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPageSwitcherSource"
-    enum="AppListPageSwitcherSource" expires_after="2025-01-05">
+    enum="AppListPageSwitcherSource" expires_after="2025-03-09">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2135,7 +2135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>tbarzic@chromium.org</owner>
@@ -2161,7 +2161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -2297,7 +2297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2025-01-05">
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2025-03-09">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

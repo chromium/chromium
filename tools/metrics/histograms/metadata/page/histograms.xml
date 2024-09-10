@@ -1717,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PreloadingTriggerType}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -1744,7 +1744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PreloadingTriggerType}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -1771,7 +1771,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.NavigationToActivation{PreloadingTriggerType}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -1814,7 +1814,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{PreloadingTriggerType}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2491,7 +2491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -3889,7 +3889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -3993,7 +3993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.SetSpeculationRulesPrerender"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>yoichio@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>

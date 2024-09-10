@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrame.ThirdPartyCookieBlockingEnabled"
-    enum="ThirdPartyCookieBlockState" expires_after="2025-01-05">
+    enum="ThirdPartyCookieBlockState" expires_after="2025-03-09">
   <owner>dullweber@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
@@ -1416,7 +1416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadTotalTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2107,7 +2107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PreloadingTriggerType}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderHostFinalStatus{PreloadingTriggerType}"
-    enum="PrerenderHostFinalStatus" expires_after="2025-01-05">
+    enum="PrerenderHostFinalStatus" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>

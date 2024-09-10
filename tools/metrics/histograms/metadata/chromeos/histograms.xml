@@ -1057,7 +1057,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.{PPath}.{PType}" units="failures"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
