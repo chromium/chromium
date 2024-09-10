@@ -416,7 +416,7 @@ def make_factory_methods(cg_context):
         scope_node.extend([
             T("ScriptIterator script_iterator = ScriptIterator::FromIterable("
               "${isolate}, ${v8_value}.As<v8::Object>(), "
-              "${exception_state});"),
+              "${exception_state}, ScriptIterator::Kind::kSync);"),
             CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                               attribute="[[unlikely]]",
                               body=T("return nullptr;")),

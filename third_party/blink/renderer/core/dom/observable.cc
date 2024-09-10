@@ -1628,7 +1628,8 @@ class OperatorFromIterableSubscribeDelegate final
     // all of the exception-throwing cases in this method, we always catch the
     // exception, clear it, and report it properly through `subscriber`.
     ScriptIterator iterator = ScriptIterator::FromIterable(
-        script_state->GetIsolate(), v8_iterable, exception_state);
+        script_state->GetIsolate(), v8_iterable, exception_state,
+        ScriptIterator::Kind::kSync);
     if (exception_state.HadException()) {
       v8::Local<v8::Value> v8_exception = exception_state.GetException();
       exception_state.ClearException();
