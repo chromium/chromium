@@ -39,7 +39,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               (override));
   MOCK_METHOD(void,
               GetRecentLocalFileResults,
-              (size_t, RecentFilesCallback),
+              (size_t, base::TimeDelta, RecentFilesCallback),
               (override));
   MOCK_METHOD(void,
               GetRecentDriveFileResults,

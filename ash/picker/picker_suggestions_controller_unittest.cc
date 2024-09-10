@@ -206,9 +206,9 @@ TEST_F(PickerSuggestionsControllerTest,
               PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
                                     /*file_path=*/{}),
           })));
-  EXPECT_CALL(client, GetRecentLocalFileResults(1, _))
+  EXPECT_CALL(client, GetRecentLocalFileResults(1, _, _))
       .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<2>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerLocalFileResult(u"a", /*file_path=*/{}),
               PickerLocalFileResult(u"b", /*file_path=*/{}),
           })));
@@ -273,7 +273,7 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLocalFileCategory) {
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)
-      .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_files)));
+      .WillRepeatedly(WithArg<2>(RunCallbackArgWith(suggested_files)));
   PickerSuggestionsController controller(&client);
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;

@@ -345,7 +345,8 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
 
-  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
+  client.GetRecentLocalFileResults(
+      /*max_files=*/100, /*now_delta=*/base::Days(30), future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -376,7 +377,8 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
           },
       });
 
-  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
+  client.GetRecentLocalFileResults(
+      /*max_files=*/100, /*now_delta=*/base::Days(30), future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -403,7 +405,8 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
           },
       });
 
-  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
+  client.GetRecentLocalFileResults(
+      /*max_files=*/100, /*now_delta=*/base::Days(30), future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -473,7 +476,8 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
           },
       });
 
-  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
+  client.GetRecentLocalFileResults(
+      /*max_files=*/100, /*now_delta=*/base::Days(30), future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -498,7 +502,8 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesTruncates) {
           },
       });
 
-  client.GetRecentLocalFileResults(/*max_files=*/1, future.GetCallback());
+  client.GetRecentLocalFileResults(
+      /*max_files=*/1, /*now_delta=*/base::Days(30), future.GetCallback());
 
   EXPECT_THAT(future.Get(), SizeIs(1));
 }

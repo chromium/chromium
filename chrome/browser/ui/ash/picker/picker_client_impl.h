@@ -73,6 +73,7 @@ class PickerClientImpl
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,
+                                 base::TimeDelta now_delta,
                                  RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(size_t max_files,
                                  RecentFilesCallback callback) override;

@@ -370,10 +370,12 @@ void PickerClientImpl::GetSuggestedEditorResults(
 }
 
 void PickerClientImpl::GetRecentLocalFileResults(size_t max_files,
+                                                 base::TimeDelta now_delta,
                                                  RecentFilesCallback callback) {
   file_suggester_->GetRecentLocalImages(
-      max_files, base::BindOnce(CreateSearchResultsForRecentLocalImages)
-                     .Then(std::move(callback)));
+      max_files, now_delta,
+      base::BindOnce(CreateSearchResultsForRecentLocalImages)
+          .Then(std::move(callback)));
 }
 
 void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,

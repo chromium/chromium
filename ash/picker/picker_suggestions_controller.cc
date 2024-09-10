@@ -21,6 +21,8 @@ namespace {
 
 constexpr int kMaxRecentFiles = 10;
 constexpr int kMaxRecentLinks = 10;
+constexpr base::TimeDelta kMaxLocalFileSuggestionRecencyDelta = base::Days(30);
+constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
 }
 
 PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
@@ -91,8 +93,9 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
         const size_t max_results =
             base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
         client_->GetRecentLocalFileResults(
-            max_results, base::BindRepeating(&GetMostRecentResults, max_results)
-                             .Then(callback));
+            max_results, kMaxLocalFileSuggestionRecencyDelta,
+            base::BindRepeating(&GetMostRecentResults, max_results)
+                .Then(callback));
         break;
       }
       case PickerCategory::kDriveFiles:
@@ -126,7 +129,12 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
       client_->GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;
     case PickerCategory::kLocalFiles:
-      client_->GetRecentLocalFileResults(kMaxRecentFiles, std::move(callback));
+      client_->GetRecentLocalFileResults(
+          kMaxRecentFiles,
+          base::FeatureList::IsEnabled(ash::features::kPickerGrid)
+              ? kMaxLocalFileCategoryRecencyDelta
+              : kMaxLocalFileSuggestionRecencyDelta,
+          std::move(callback));
       return;
     case PickerCategory::kDatesTimes:
       std::move(callback).Run(PickerSuggestedDateResults());

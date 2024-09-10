@@ -67,6 +67,7 @@ class ASH_PUBLIC_EXPORT PickerClient {
       SuggestedEditorResultsCallback callback) = 0;
 
   virtual void GetRecentLocalFileResults(size_t max_files,
+                                         base::TimeDelta now_delta,
                                          RecentFilesCallback callback) = 0;
 
   virtual void GetRecentDriveFileResults(size_t max_files,
