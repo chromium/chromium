@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -45,7 +46,7 @@ static const char kSetFrameEventName[] =
 static const char kGetFrameEventName[] =
     "WebMediaPlayerMSCompositor::GetCurrentFrame";
 static const char kVideoResourceEventName[] =
-    "VideoResourceUpdater::ObtainFrameResources";
+    "VideoResourceUpdater::ObtainFrameResource";
 static const char kVsyncEventName[] = "Display::DrawAndSwap";
 
 // VideoFrameSubmitter dumps the delay from the handover of a decoded remote
@@ -232,8 +233,10 @@ class WebRtcVideoDisplayPerfBrowserTest
     TraceEventVector start_render_events;
     FindEvents(analyzer, kStartRenderEventName, match_process_id,
                &start_render_events);
-    if (start_render_events.empty())
+    if (start_render_events.empty()) {
+      DLOG(WARNING) << "No " << kStartRenderEventName << " events";
       return false;
+    }
 
     // We are only interested in vsync events coming after the first render
     // event. Earlier ones are already missed.
@@ -243,8 +246,10 @@ class WebRtcVideoDisplayPerfBrowserTest
     TraceEventVector vsync_events;
     FindEvents(analyzer, kVsyncEventName, after_first_render_event,
                &vsync_events);
-    if (vsync_events.empty())
+    if (vsync_events.empty()) {
+      DLOG(WARNING) << "No " << kVsyncEventName << " events";
       return false;
+    }
 
     size_t found_vsync_index = 0;
     size_t skipped_frame_count = 0;
@@ -308,8 +313,10 @@ class WebRtcVideoDisplayPerfBrowserTest
       total_durations_.push_back(total_duration);
     }
 
-    if (start_render_events.size() == skipped_frame_count)
+    if (start_render_events.size() == skipped_frame_count) {
+      DLOG(WARNING) << "All frames skipped";
       return false;
+    }
 
     // Calculate the percentage by dividing by the number of frames received.
     skipped_frame_percentage_ =
