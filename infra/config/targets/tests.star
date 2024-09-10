@@ -2206,6 +2206,9 @@ targets.tests.gtest_test(
 targets.tests.script_test(
     name = "test_traffic_annotation_auditor",
     script = "test_traffic_annotation_auditor.py",
+    precommit_args = [
+        "--no-update-sheet",
+    ],
 )
 
 targets.tests.isolated_script_test(

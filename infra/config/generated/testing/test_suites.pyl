@@ -5226,6 +5226,9 @@
     'test_traffic_annotation_auditor_script': {
       'test_traffic_annotation_auditor': {
         'script': 'test_traffic_annotation_auditor.py',
+        'precommit_args': [
+          '--no-update-sheet',
+        ],
       },
     },
 

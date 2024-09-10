@@ -4,7 +4,16 @@
   "Fake Tester": {
     "scripts": [
       {
+        "args": [
+          "common-arg"
+        ],
         "name": "foo_test",
+        "non_precommit_args": [
+          "non-precommit-arg"
+        ],
+        "precommit_args": [
+          "precommit-arg"
+        ],
         "script": "foo.py"
       }
     ]

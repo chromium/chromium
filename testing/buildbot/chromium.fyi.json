@@ -38281,6 +38281,9 @@
     "scripts": [
       {
         "name": "test_traffic_annotation_auditor",
+        "precommit_args": [
+          "--no-update-sheet"
+        ],
         "script": "test_traffic_annotation_auditor.py"
       }
     ]
@@ -39168,6 +39171,9 @@
     "scripts": [
       {
         "name": "test_traffic_annotation_auditor",
+        "precommit_args": [
+          "--no-update-sheet"
+        ],
         "script": "test_traffic_annotation_auditor.py"
       }
     ]
@@ -45030,6 +45036,9 @@
     "scripts": [
       {
         "name": "test_traffic_annotation_auditor",
+        "precommit_args": [
+          "--no-update-sheet"
+        ],
         "script": "test_traffic_annotation_auditor.py"
       }
     ]

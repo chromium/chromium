@@ -184,7 +184,9 @@ def _basic_suite_test_config(
         script = None,
         binary = None,
         telemetry_test_name = None,
-        args = None):
+        args = None,
+        precommit_args = None,
+        non_precommit_args = None):
     """The details for the test included when included in a basic suite.
 
     When generating test_suites.pyl, these values will be written out
@@ -204,6 +206,8 @@ def _basic_suite_test_config(
         binary = binary,
         telemetry_test_name = telemetry_test_name,
         args = args,
+        precommit_args = precommit_args,
+        non_precommit_args = non_precommit_args,
     )
 
 def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
