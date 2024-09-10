@@ -561,6 +561,21 @@
             ]
         }
     ],
+    "AndroidPdfInline": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidOpenPdfInline"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSandboxRendererProcessPolicy": [
         {
             "platforms": [
