@@ -171,14 +171,16 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-mac.zip',
             'archive_extract_dir': 'chrome-mac'
         },
-        'win-clang': {  # Release builds switched to -clang in M64.
+        'win': {
             'binary_name': 'chrome.exe',
+            # Release builds switched to -clang in M64.
             'listing_platform_dir': 'win-clang/',
             'archive_name': 'chrome-win-clang.zip',
             'archive_extract_dir': 'chrome-win-clang'
         },
-        'win64-clang': {  # Release builds switched to -clang in M64.
+        'win64': {
             'binary_name': 'chrome.exe',
+            # Release builds switched to -clang in M64.
             'listing_platform_dir': 'win64-clang/',
             'archive_name': 'chrome-win64-clang.zip',
             'archive_extract_dir': 'chrome-win64-clang'
