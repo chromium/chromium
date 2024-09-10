@@ -536,6 +536,8 @@ crbug.com/356565289 [ win nvidia-0x2783 angle-vulkan ] conformance/extensions/we
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
 
+## win-swangle-chromium-x86
+crbug.com/365680832 [ win angle-swiftshader passthrough ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
 
 ####################
 # Mac failures     #
