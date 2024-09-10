@@ -3314,7 +3314,7 @@
     "owners": [
       "simonha@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-global-vaapi-lock",
