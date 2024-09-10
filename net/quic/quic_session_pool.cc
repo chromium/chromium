@@ -195,17 +195,6 @@ void SetInitialRttEstimate(base::TimeDelta estimate,
   }
 }
 
-// Checks if `destination` matches the alias key of `session`. If
-// `match_received_origins` is true, also checks if `destination` matches any of
-// its received origins. Returns true on any match.
-bool DestinationInAliasOrReceivedOrigins(QuicChromiumClientSession* session,
-                                         const url::SchemeHostPort& destination,
-                                         bool match_received_origins) {
-  return destination == session->session_alias_key().destination() ||
-         (match_received_origins &&
-          session->received_origins().contains(destination));
-}
-
 // An implementation of quic::QuicCryptoClientConfig::ServerIdFilter that wraps
 // an |origin_filter|.
 class ServerIdOriginFilter
@@ -541,7 +530,10 @@ QuicSessionPool::QuicSessionPool(
           NetworkAnonymizationKey::IsPartitioningEnabled()),
       report_ecn_(quic_context->params()->report_ecn),
       skip_dns_with_origin_frame_(
-          quic_context->params()->skip_dns_with_origin_frame) {
+          quic_context->params()->skip_dns_with_origin_frame),
+      ignore_ip_matching_when_finding_existing_sessions_(
+          quic_context->params()
+              ->ignore_ip_matching_when_finding_existing_sessions) {
   DCHECK(transport_security_state_);
   DCHECK(http_server_properties_);
   if (params_.disable_tls_zero_rtt) {
@@ -592,10 +584,7 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
 
   for (const auto& key_value : active_sessions_) {
     QuicChromiumClientSession* session = key_value.second;
-    // Check received origins and "remote" (alternative service and origin have
-    // different hostnames) alt-svc for this active session.
-    if (DestinationInAliasOrReceivedOrigins(session, destination,
-                                            skip_dns_with_origin_frame_) &&
+    if (CanWaiveIpMatching(destination, session) &&
         session->CanPool(session_key.host(), session_key)) {
       return session;
     }
@@ -954,6 +943,29 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
       FROM_HERE,
       base::BindOnce(&QuicSessionPool::DoCallback, weak_factory_.GetWeakPtr(),
                      std::move(callback), rv));
+}
+
+bool QuicSessionPool::CanWaiveIpMatching(
+    const url::SchemeHostPort& destination,
+    QuicChromiumClientSession* session) const {
+  // Checks if `destination` matches the alias key of `session`.
+  if (destination == session->session_alias_key().destination()) {
+    return true;
+  }
+
+  if (ignore_ip_matching_when_finding_existing_sessions_ &&
+      session->config()->HasReceivedConnectionOptions() &&
+      quic::ContainsQuicTag(session->config()->ReceivedConnectionOptions(),
+                            quic::kNOIP)) {
+    return true;
+  }
+
+  // Check received origins.
+  if (skip_dns_with_origin_frame_ &&
+      session->received_origins().contains(destination)) {
+    return true;
+  }
+  return false;
 }
 
 void QuicSessionPool::OnFinishConnectAndConfigureSocketError(
@@ -1365,7 +1377,12 @@ bool QuicSessionPool::HasMatchingIpSession(
       continue;
     }
     can_pool = true;
-    if (session->received_origins().contains(key.destination())) {
+    // TODO(fayang): consider to use CanWaiveIpMatching().
+    if (session->received_origins().contains(key.destination()) ||
+        (ignore_ip_matching_when_finding_existing_sessions_ &&
+         session->config()->HasReceivedConnectionOptions() &&
+         quic::ContainsQuicTag(session->config()->ReceivedConnectionOptions(),
+                               quic::kNOIP))) {
       std::set<std::string> dns_aliases;
       if (use_dns_aliases) {
         dns_aliases = aliases;

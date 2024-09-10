@@ -563,6 +563,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                             const std::vector<IPEndPoint>& ip_endpoints,
                             const std::set<std::string>& aliases,
                             bool use_dns_aliases);
+  // Returns true if IP matching can be waived when trying to send requests to
+  // |destination| on |session|.
+  bool CanWaiveIpMatching(const url::SchemeHostPort& destination,
+                          QuicChromiumClientSession* session) const;
   void OnJobComplete(Job* job, int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
@@ -851,6 +855,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // If true, skip DNS resolution for a hostname if the ORIGIN frame received on
   // an active session encompasses that hostname.
   const bool skip_dns_with_origin_frame_;
+
+  // If true, a request will be sent on the existing session iff the hostname
+  // matches the certificate presented during the handshake.
+  const bool ignore_ip_matching_when_finding_existing_sessions_;
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};

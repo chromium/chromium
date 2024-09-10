@@ -238,6 +238,10 @@ struct NET_EXPORT QuicParams {
   // If true, skip DNS resolution for a hostname if the ORIGIN frame received
   // during an ongoing session encompasses that hostname.
   bool skip_dns_with_origin_frame = false;
+
+  // If true, a request will be sent on the existing session iff the hostname
+  // matches the certificate presented during the handshake.
+  bool ignore_ip_matching_when_finding_existing_sessions = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

@@ -108,6 +108,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.report_ecn);
   EXPECT_FALSE(quic_params_.enable_origin_frame);
   EXPECT_FALSE(quic_params_.skip_dns_with_origin_frame);
+  EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2FieldTrialGroupNameDoesNotMatter) {
@@ -354,6 +355,32 @@ TEST_F(NetworkSessionConfiguratorTest, DonotSkipDnsWithOriginFrame) {
   ParseFieldTrials();
 
   EXPECT_FALSE(quic_params_.skip_dns_with_origin_frame);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       IgnoreIpMatchingWhenFindingExistingSessions) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["ignore_ip_matching_when_finding_existing_sessions"] =
+      "true";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       DonotIgnoreIpMatchingWhenFindingExistingSessions) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["ignore_ip_matching_when_finding_existing_sessions"] =
+      "false";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
