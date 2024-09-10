@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -61,7 +62,9 @@ class AllPasswordsBottomSheetController
       password_manager::PasswordManagerClient* client,
       safe_browsing::PasswordReuseDetectionManagerClient*
           password_reuse_detection_manager_client,
-      ShowMigrationWarningCallback show_migration_warning_callback);
+      ShowMigrationWarningCallback show_migration_warning_callback,
+      std::unique_ptr<PasswordAccessLossWarningBridge>
+          access_loss_warning_bridge);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
@@ -117,6 +120,10 @@ class AllPasswordsBottomSheetController
       std::vector<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
           results);
 
+  // Shows the access loss warning sheet if needed. It's used after filling a
+  // credential.
+  void TryToShowAccessLossWarningSheet();
+
   // The controller takes |view_| ownership.
   std::unique_ptr<AllPasswordsBottomSheetView> view_;
 
@@ -160,6 +167,10 @@ class AllPasswordsBottomSheetController
   // Callback invoked to try to show the password migration warning. Used
   // to facilitate testing.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  // Bridge that is used to show the password access loss warning if it's needed
+  // after filling a credential.
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   // `PlusAddressService` is used to check which credentials have a plus address
   // as a username.
