@@ -3689,9 +3689,14 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   // created.  This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(2, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(2, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  // When HappyEyeballsV3 is enabled, we create separate groups based on the
+  // destination, even when the underlying connections share the same session.
+  int expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 2;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(2, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3710,9 +3715,12 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   // Verify the session pool reused the second session.  This will fail unless
   // the session pool supports multiple sessions aliasing a single IP.
   EXPECT_EQ(2, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(2, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 4 : 2;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(2, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3798,9 +3806,14 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  // When HappyEyeballsV3 is enabled, we create separate groups based on the
+  // destination, even when the underlying connections share the same session.
+  int expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 2 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3821,9 +3834,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3848,9 +3864,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // Verify the session pool reused the first session and no new session is
   // created.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3871,10 +3890,13 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // Verify the session pool reused the first session and no new session is
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
@@ -3896,9 +3918,12 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetSpdySessionCount(session.get()));
-  EXPECT_EQ(1, GetPoolGroupCount(session.get(),
-                                 HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                 ProxyChain::Direct()));
+  expected_group_count =
+      base::FeatureList::IsEnabled(features::kHappyEyeballsV3) ? 3 : 1;
+  EXPECT_EQ(
+      expected_group_count,
+      GetPoolGroupCount(session.get(), HttpNetworkSession::NORMAL_SOCKET_POOL,
+                        ProxyChain::Direct()));
   EXPECT_EQ(1, GetHandedOutCount(session.get(),
                                  HttpNetworkSession::NORMAL_SOCKET_POOL,
                                  ProxyChain::Direct()));
