@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -19,7 +20,7 @@ namespace blink {
 // for details.
 struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::MailboxHolder mailbox_holder;
-  uint32_t usage;
+  gpu::SharedImageUsageSet usage;
   SkImageInfo image_info;
   bool is_origin_top_left;
   bool supports_display_compositing;

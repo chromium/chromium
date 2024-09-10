@@ -109,7 +109,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
 scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
     const gpu::MailboxHolder& mailbox_holder,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     const SkImageInfo& sk_image_info,
     bool is_origin_top_left,
     bool supports_display_compositing,
@@ -563,7 +563,7 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
   return provider->Snapshot(FlushReason::kNon2DCanvas, orientation_);
 }
 
-uint32_t AcceleratedStaticBitmapImage::GetUsage() const {
+gpu::SharedImageUsageSet AcceleratedStaticBitmapImage::GetUsage() const {
   return ContextProviderWrapper()
       ->ContextProvider()
       ->SharedImageInterface()

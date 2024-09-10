@@ -574,7 +574,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   // The SharedImages here are used to back VideoFrames. They may be read by the
   // raster interface for format conversion (e.g., for 2-copy import into WebGL)
   // as well as by the GLES2 interface for one-copy import into WebGL.
-  uint32_t usage =
+  gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_APPLE)

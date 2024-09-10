@@ -52,7 +52,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
   // if possible. This is safe because the prerequisite capabilities are checked
   // downstream in CanvasResourceProvider::CreateSharedImageProvider.
-  constexpr uint32_t kSharedImageUsageFlags =
+  constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
@@ -198,8 +198,8 @@ bool ImageLayerBridge::PrepareTransferableResource(
                          image_for_compositor->height());
 
     auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
-    bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &
-                                gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox)
+                                    .Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
     SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
     *out_resource = viz::TransferableResource::MakeGpu(

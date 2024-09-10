@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -106,9 +107,9 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // For gpu based images the Usage is a bitmap indicating set of API(s) and
   // underlying gpu::SharedImage may be used with.
   // The gpu::SharedImageInterface is using uint32_t directly.
-  virtual uint32_t GetUsage() const {
+  virtual gpu::SharedImageUsageSet GetUsage() const {
     NOTREACHED_IN_MIGRATION();
-    return 0;
+    return gpu::SharedImageUsageSet();
   }
   bool IsPremultiplied() const {
     return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;

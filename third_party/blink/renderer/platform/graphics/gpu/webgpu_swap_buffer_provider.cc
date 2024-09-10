@@ -295,8 +295,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       current_swap_buffer_->GetSharedImage(), texture_target,
       current_swap_buffer_->GetSyncToken(),
       current_swap_buffer_->GetSharedImage()->size(), Format(),
-      current_swap_buffer_->GetSharedImage()->usage() &
-          gpu::SHARED_IMAGE_USAGE_SCANOUT,
+      current_swap_buffer_->GetSharedImage()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
   out_resource->hdr_metadata = hdr_metadata_;
