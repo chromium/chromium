@@ -918,6 +918,9 @@ class MetaBuildWrapper:
     """Format a dict of GN args into a single string."""
 
     def convert_value(v):
+      if isinstance(v, dict):
+        return '{' + ' '.join(f'{k1}={convert_value(v1)}'
+                              for k1, v1 in v.items()) + '}'
       if isinstance(v, list):
         return f'[{",".join(convert_value(e) for e in v)}]'
       if isinstance(v, str):
