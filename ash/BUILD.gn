@@ -3727,6 +3727,7 @@ test("ash_unittests") {
     "auth/views/fingerprint_view_unittest.cc",
     "auth/views/pin_container_view_unittest.cc",
     "auth/views/pin_keyboard_view_unittest.cc",
+    "auth/views/pin_status_view_unittest.cc",
     "birch/birch_icon_cache_unittest.cc",
     "birch/birch_item_remover_unittest.cc",
     "birch/birch_item_unittest.cc",
