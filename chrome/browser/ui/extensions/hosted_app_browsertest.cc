@@ -88,12 +88,18 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "pdf/pdf_features.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -1901,6 +1907,101 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   EXPECT_TRUE(process_map->Contains(bar_process->GetID()));
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+class HostedAppSitePerProcessPDFTest : public HostedAppSitePerProcessTest {
+ public:
+  HostedAppSitePerProcessPDFTest() {
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+  HostedAppSitePerProcessPDFTest(const HostedAppSitePerProcessPDFTest&) =
+      delete;
+  HostedAppSitePerProcessPDFTest& operator=(
+      const HostedAppSitePerProcessPDFTest&) = delete;
+
+  ~HostedAppSitePerProcessPDFTest() override = default;
+
+  // Return value is always non-nullptr. This should only be called after a PDF
+  // navigation occurs in a `content::WebContents`.
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+      content::WebContents* web_contents) {
+    return factory_.GetTestPdfViewerStreamManager(web_contents);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  pdf::TestPdfViewerStreamManagerFactory factory_;
+};
+
+// Check that a same-site PDF embedded in a hosted app does not crash and does
+// not stay in the app process. Instead, it should use its own PDF SiteInstance
+// and process. See https://crbug.com/359345045.
+IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessPDFTest,
+                       SameSitePDFEmbeddedInApp) {
+  // Set up a hosted app covering http://foo.com, and launch the app with a
+  // foo.com URL in a new window.
+  GURL foo_app_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  constexpr char kHostedAppManifest[] =
+      R"( { "name": "Hosted App With SitePerProcess Test",
+            "version": "1",
+            "manifest_version": 2,
+            "app": {
+              "launch": {
+                "web_url": "%s"
+              },
+              "urls": ["http://%s/"]
+            }
+          } )";
+  {
+    extensions::TestExtensionDir test_app_dir;
+    test_app_dir.WriteManifest(base::StringPrintf(
+        kHostedAppManifest, foo_app_url.spec().c_str(), "foo.com"));
+    SetupApp(test_app_dir.UnpackedPath());
+  }
+  content::WebContents* foo_contents =
+      app_browser_->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
+  EXPECT_EQ(foo_app_url, foo_contents->GetLastCommittedURL());
+
+  // Ensure the app URL loaded in a hosted app process.
+  auto* process_map = extensions::ProcessMap::Get(browser()->profile());
+  content::RenderFrameHost* app_frame = foo_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(process_map->Contains(app_frame->GetProcess()->GetID()));
+
+  // Add a same-site PDF subframe and wait for it to load.
+  GURL pdf_url = embedded_test_server()->GetURL("foo.com", "/pdf/test.pdf");
+  EXPECT_TRUE(ExecJs(foo_contents,
+                     "var frame = document.createElement('iframe');\n"
+                     "frame.src = '" +
+                         pdf_url.spec() +
+                         "';\n"
+                         "document.body.appendChild(frame);"));
+  EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
+  content::RenderFrameHost* subframe = ChildFrameAt(app_frame, 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(foo_contents)
+                  ->WaitUntilPdfLoaded(subframe));
+
+  // Look up the PDF document frame, which should be embedded in the PDF
+  // extension frame, which is in turn embedded in the PDF container subframe
+  // that was just added. The PDF document should *not* stay in the main frame's
+  // SiteInstance and process, but rather it should go into its own PDF process.
+  content::RenderFrameHost* pdf_extension_frame = ChildFrameAt(subframe, 0);
+  ASSERT_TRUE(pdf_extension_frame);
+  content::RenderFrameHost* pdf_document_frame =
+      ChildFrameAt(pdf_extension_frame, 0);
+  ASSERT_TRUE(pdf_document_frame);
+  EXPECT_NE(pdf_document_frame->GetSiteInstance(),
+            app_frame->GetSiteInstance());
+  EXPECT_NE(pdf_document_frame->GetProcess(), app_frame->GetProcess());
+
+  // The current behavior is that the PDF process is also considered to be an
+  // app process, since its URL matched the app's extent. This is probably not
+  // necessary and is something to consider changing in future.
+  EXPECT_TRUE(process_map->Contains(pdf_document_frame->GetProcess()->GetID()));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 template <bool jit_disabled_by_default>
 class HostedAppJitTestBase : public HostedAppProcessModelTest {
  public:
@@ -2453,6 +2554,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HostedAppSitePerProcessTest,
     ::testing::Values(AppType::HOSTED_APP));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppSitePerProcessPDFTest,
+                         ::testing::Values(AppType::HOSTED_APP));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppJitTestBaseDefaultEnabled,
