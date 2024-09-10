@@ -181,9 +181,10 @@ void ConvertAppPreloadListResponseProto(
 
 }  // namespace
 
-void GetAppsForFirstLogin(const DeviceInfo& device_info,
-                          network::mojom::URLLoaderFactory& url_loader_factory,
-                          GetInitialAppsCallback callback) {
+void GetAppsForFirstLogin(
+    const DeviceInfo& device_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetInitialAppsCallback callback) {
   QueryAlmanacApi<proto::AppPreloadListResponse>(
       url_loader_factory, kTrafficAnnotation,
       BuildGetAppsForFirstLoginRequestBody(device_info),

@@ -74,7 +74,7 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
       }));
 
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      device_info, *test_shared_loader_factory_, base::DoNothing());
+      device_info, test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -163,7 +163,7 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
                          LauncherOrdering, ShelfPinOrdering>
       test_callback;
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, test_callback.GetCallback());
+      DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
 
   auto apps = std::get<0>(test_callback.Get());
   EXPECT_TRUE(apps.has_value());
@@ -204,7 +204,7 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginServerError) {
                          LauncherOrdering, ShelfPinOrdering>
       result;
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
+      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 }
 
@@ -218,7 +218,7 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginNetworkError) {
                          LauncherOrdering, ShelfPinOrdering>
       result;
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
+      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 }
 

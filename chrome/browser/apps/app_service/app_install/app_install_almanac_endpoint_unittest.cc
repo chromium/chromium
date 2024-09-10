@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +71,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoRequest) {
 
   app_install_almanac_endpoint::GetAppInstallInfo(
       PackageId(PackageType::kWeb, "https://example.com/"), device_info,
-      test_url_loader_factory_, base::DoNothing());
+      test_url_loader_factory_.GetSafeWeakWrapper(), base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -130,7 +131,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_TRUE(response_future.Get().has_value());
 
@@ -182,7 +184,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMinimalResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
 
   AppInstallData expected_data(PackageId(PackageType::kArc, "com.foo.app"));
@@ -204,7 +207,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoIncompleteResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
@@ -216,7 +220,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMalformedResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
@@ -237,7 +242,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoWrongExtras) {
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
       PackageId(PackageType::kWeb, "https://example.com/"), DeviceInfo(),
-      test_url_loader_factory_, response_future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -248,7 +254,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoServerError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
@@ -261,7 +268,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNetworkError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
@@ -275,7 +283,8 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNotFound) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      kTestPackageId, DeviceInfo(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadRequest);
 }

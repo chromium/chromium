@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -19,9 +20,7 @@
 class GURL;
 
 namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace apps {
@@ -54,7 +53,7 @@ std::ostream& operator<<(std::ostream& out, const QueryError& error);
 namespace internal {
 
 void QueryAlmanacApiRaw(
-    network::mojom::URLLoaderFactory& url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& request_body,
     std::string_view endpoint_suffix,
@@ -72,7 +71,7 @@ void QueryAlmanacApiRaw(
 // CombinedHttpResponseAndNetErrorCode.
 template <typename T>
 void QueryAlmanacApi(
-    network::mojom::URLLoaderFactory& url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& request_body,
     std::string_view endpoint_suffix,

@@ -111,7 +111,7 @@ void PromiseAppAlmanacConnector::GetPromiseAppInfoImpl(
     const PackageId& package_id,
     GetPromiseAppCallback callback) {
   QueryAlmanacApi<proto::PromiseAppResponse>(
-      *url_loader_factory_, kTrafficAnnotation,
+      url_loader_factory_, kTrafficAnnotation,
       BuildGetPromiseAppRequestBody(package_id), kPromiseAppAlmanacEndpoint,
       kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,

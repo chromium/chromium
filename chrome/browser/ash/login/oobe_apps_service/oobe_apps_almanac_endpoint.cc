@@ -79,9 +79,10 @@ std::optional<oobe::proto::OOBEListResponse> MakeResponseOptional(
 
 }  // namespace
 
-void GetAppsAndUseCases(const apps::DeviceInfo& device_info,
-                        network::mojom::URLLoaderFactory& url_loader_factory,
-                        GetAppsCallback callback) {
+void GetAppsAndUseCases(
+    const apps::DeviceInfo& device_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetAppsCallback callback) {
   QueryAlmanacApi<oobe::proto::OOBEListResponse>(
       url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
       kAlmanacOobeAppsEndpoint, kMaxResponseSizeInBytes,

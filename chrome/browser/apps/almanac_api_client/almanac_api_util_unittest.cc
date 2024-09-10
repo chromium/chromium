@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +34,8 @@ class AlmanacApiUtilTest : public testing::Test {
   base::expected<TestProto, QueryError> QueryEndpoint() {
     base::test::TestFuture<base::expected<TestProto, QueryError>> future;
     QueryAlmanacApi<TestProto>(
-        test_url_loader_factory_, TRAFFIC_ANNOTATION_FOR_TESTS, "request body",
-        "endpoint",
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        TRAFFIC_ANNOTATION_FOR_TESTS, "request body", "endpoint",
         /*max_response_size=*/1024 * 1024,
         /*error_histogram_name=*/std::nullopt, future.GetCallback());
     return future.Get();

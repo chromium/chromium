@@ -150,7 +150,7 @@ void AlmanacFetcher::DownloadApps() {
 
 void AlmanacFetcher::OnGetDeviceInfo(DeviceInfo device_info) {
   launcher_app_almanac_endpoint::GetApps(
-      device_info, *profile_->GetURLLoaderFactory(),
+      device_info, profile_->GetURLLoaderFactory(),
       base::BindOnce(&AlmanacFetcher::OnServerResponse,
                      weak_factory_.GetWeakPtr()));
 }

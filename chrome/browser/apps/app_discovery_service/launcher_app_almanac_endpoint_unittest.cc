@@ -55,7 +55,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsRequest) {
       }));
 
   launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, base::DoNothing());
+      device_info_, test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -73,8 +73,8 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsSuccess) {
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>>
       observed_response;
   launcher_app_almanac_endpoint::GetApps(device_info_,
-                                       *test_shared_loader_factory_,
-                                       observed_response.GetCallback());
+                                         test_shared_loader_factory_,
+                                         observed_response.GetCallback());
   ASSERT_TRUE(observed_response.Get().has_value());
   EXPECT_EQ(observed_response.Get()->app_groups_size(), 1);
 }
@@ -84,7 +84,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsEmptyResponse) {
       launcher_app_almanac_endpoint::GetServerUrl().spec(), "");
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+      device_info_, test_shared_loader_factory_, response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
   EXPECT_EQ(response.Get()->app_groups_size(), 0);
 }
@@ -96,7 +96,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsError) {
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+      device_info_, test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 
@@ -109,7 +109,7 @@ TEST_F(LauncherAppAlmanacEndpointTest, GetAppsNetworkError) {
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
   launcher_app_almanac_endpoint::GetApps(
-      device_info_, *test_shared_loader_factory_, response.GetCallback());
+      device_info_, test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 

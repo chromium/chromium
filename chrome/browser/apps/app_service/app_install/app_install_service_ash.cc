@@ -242,7 +242,7 @@ void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
     app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback,
     DeviceInfo device_info) {
   app_install_almanac_endpoint::GetAppInstallInfo(
-      package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
+      package_id, std::move(device_info), profile_->GetURLLoaderFactory(),
       std::move(data_callback));
 }
 
@@ -422,7 +422,7 @@ void AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo(
     DeviceInfo device_info) {
   app_install_almanac_endpoint::GetAppInstallUrl(
       serialized_package_id, std::move(device_info),
-      *profile_->GetURLLoaderFactory(), std::move(callback));
+      profile_->GetURLLoaderFactory(), std::move(callback));
 }
 
 void AppInstallServiceAsh::MaybeLaunchAppInstallUrl(

@@ -72,10 +72,9 @@ std::optional<proto::LauncherAppResponse> MakeResponseOptional(
 
 }  // namespace
 
-void GetApps(
-    const DeviceInfo& device_info,
-    network::mojom::URLLoaderFactory& url_loader_factory,
-    GetAppsCallback callback) {
+void GetApps(const DeviceInfo& device_info,
+             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+             GetAppsCallback callback) {
   QueryAlmanacApi<proto::LauncherAppResponse>(
       url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
       kAlmanacLauncherAppEndpoint, kMaxResponseSizeInBytes,

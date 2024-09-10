@@ -8,14 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 
 class GURL;
 
 namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace apps {
@@ -29,7 +28,7 @@ using GetAppsCallback =
 
 // Fetches a list of apps from the Launcher App endpoint in the Almanac server.
 void GetApps(const DeviceInfo& device_info,
-             network::mojom::URLLoaderFactory& url_loader_factory,
+             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              GetAppsCallback callback);
 
 // Returns the GURL for the endpoint. Exposed for tests.

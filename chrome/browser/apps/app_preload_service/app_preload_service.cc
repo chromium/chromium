@@ -186,7 +186,7 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
     return;
   }
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      device_info, *url_loader_factory,
+      device_info, url_loader_factory,
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
                      weak_ptr_factory_.GetWeakPtr(), start_time));
 }

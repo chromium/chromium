@@ -8,12 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/ash/login/oobe_apps_service/proto/oobe.pb.h"
 
-namespace network::mojom {
-class URLLoaderFactory;
-}  // namespace network::mojom
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash::oobe_apps_almanac_endpoint {
 
@@ -22,9 +23,10 @@ using GetAppsCallback =
 
 // Fetches a list of apps and use-cases from the endpoint in the Almanac
 // server.
-void GetAppsAndUseCases(const apps::DeviceInfo& device_info,
-                        network::mojom::URLLoaderFactory& url_loader_factory,
-                        GetAppsCallback callback);
+void GetAppsAndUseCases(
+    const apps::DeviceInfo& device_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetAppsCallback callback);
 
 }  // namespace ash::oobe_apps_almanac_endpoint
 

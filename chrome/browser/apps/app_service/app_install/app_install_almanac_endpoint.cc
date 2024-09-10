@@ -188,10 +188,11 @@ GURL GetEndpointUrlForTesting() {
   return GetAlmanacEndpointUrl(kAlmanacAppInstallEndpoint);
 }
 
-void GetAppInstallInfo(PackageId package_id,
-                       DeviceInfo device_info,
-                       network::mojom::URLLoaderFactory& url_loader_factory,
-                       GetAppInstallInfoCallback callback) {
+void GetAppInstallInfo(
+    PackageId package_id,
+    DeviceInfo device_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetAppInstallInfoCallback callback) {
   QueryAlmanacApi<proto::AppInstallResponse>(
       url_loader_factory, kTrafficAnnotation,
       BuildRequestBody(device_info, package_id.ToString()),
@@ -203,10 +204,11 @@ void GetAppInstallInfo(PackageId package_id,
 
 using GetAppInstallUrlCallback =
     base::OnceCallback<void(base::expected<GURL, QueryError>)>;
-void GetAppInstallUrl(std::string serialized_package_id,
-                      DeviceInfo device_info,
-                      network::mojom::URLLoaderFactory& url_loader_factory,
-                      GetAppInstallUrlCallback callback) {
+void GetAppInstallUrl(
+    std::string serialized_package_id,
+    DeviceInfo device_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetAppInstallUrlCallback callback) {
   QueryAlmanacApi<proto::AppInstallResponse>(
       url_loader_factory, kTrafficAnnotation,
       BuildRequestBody(device_info, std::move(serialized_package_id)),

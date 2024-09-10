@@ -46,7 +46,7 @@ void OobeAppsDiscoveryService::DownloadAppsAndUseCases() {
 
 void OobeAppsDiscoveryService::OnGetDeviceInfo(apps::DeviceInfo device_info) {
   oobe_apps_almanac_endpoint::GetAppsAndUseCases(
-      device_info, *profile_->GetURLLoaderFactory(),
+      device_info, profile_->GetURLLoaderFactory(),
       base::BindOnce(&OobeAppsDiscoveryService::OnServerResponse,
                      weak_factory_.GetWeakPtr()));
 }

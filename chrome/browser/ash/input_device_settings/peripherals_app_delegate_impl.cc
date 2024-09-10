@@ -92,7 +92,7 @@ void PeripheralsAppDelegateImpl::OnDeviceInfoFetched(
     return;
   }
   QueryAlmanacApi<apps::proto::PeripheralsGetResponse>(
-      *profile->GetURLLoaderFactory().get(), kTrafficAnnotation,
+      profile->GetURLLoaderFactory(), kTrafficAnnotation,
       BuildRequestBody(device_key, device_info), kPeripheralsAlmanacEndpoint,
       kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
