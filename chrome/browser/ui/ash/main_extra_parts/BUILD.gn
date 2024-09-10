@@ -56,6 +56,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/graduation",
     "//chrome/browser/ui/ash/in_session_auth",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/login",

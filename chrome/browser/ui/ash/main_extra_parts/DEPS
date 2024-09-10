@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/geolocation",
   "+chrome/browser/ash/growth",
+  "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ash/input_device_settings",
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login/signin",

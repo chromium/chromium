@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chrome/browser/ui/ash/graduation/graduation_manager.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
@@ -417,6 +418,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
             window, game_mode == GameMode::BOREALIS);
       }));
 
+  if (ash::features::IsGraduationEnabled()) {
+    graduation_manager_ =
+        std::make_unique<ash::graduation::GraduationManager>();
+  }
+
   if (ash::features::IsWelcomeExperienceEnabled()) {
     peripherals_app_delegate_ =
         std::make_unique<ash::PeripheralsAppDelegateImpl>();
@@ -488,6 +494,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();
+  graduation_manager_.reset();
 
   ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
   app_access_notifier_.reset();

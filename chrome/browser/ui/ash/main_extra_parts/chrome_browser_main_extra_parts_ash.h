@@ -27,6 +27,11 @@ class VideoConferenceTrayController;
 namespace boca {
 class BocaAppClientImpl;
 }
+
+namespace graduation {
+class GraduationManager;
+}
+
 }  // namespace ash
 
 namespace chromeos {
@@ -183,6 +188,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<PickerClientImpl> picker_client_;
   std::unique_ptr<ash::OobeDialogUtil> oobe_dialog_util_;
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
+  std::unique_ptr<ash::graduation::GraduationManager> graduation_manager_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
