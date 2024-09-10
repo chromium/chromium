@@ -422,10 +422,16 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chromeos_arm_gtests",
     tests = {
-        "video_decode_accelerator_tests_v4l2": targets.legacy_test_config(
+        "video_decode_accelerator_tests_v4l2_vp8": targets.legacy_test_config(
             ci_only = True,
-            # TODO(b/303119905): Remove experimental status once this
-            # suite is added to CQ.
+            # TODO(b/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
+            experiment_percentage = 100,
+        ),
+        "video_decode_accelerator_tests_v4l2_vp9": targets.legacy_test_config(
+            ci_only = True,
+            # TODO(b/303119905): Remove experimental status first.
+            # Then promote out of ci-only optionally.
             experiment_percentage = 100,
         ),
     },

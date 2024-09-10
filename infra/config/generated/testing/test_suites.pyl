@@ -525,7 +525,18 @@
     },
 
     'chromeos_arm_gtests': {
-      'video_decode_accelerator_tests_v4l2': {
+      'video_decode_accelerator_tests_v4l2_vp8': {
+        'test': 'video_decode_accelerator_tests',
+        'args': [
+          '--as-root',
+          '--validator_type=none',
+          '../../media/test/data/test-25fps.vp8',
+          '../../media/test/data/test-25fps.vp8.json',
+        ],
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+      'video_decode_accelerator_tests_v4l2_vp9': {
         'test': 'video_decode_accelerator_tests',
         'args': [
           '--as-root',

@@ -959,7 +959,18 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "video_decode_accelerator_tests_v4l2",
+    name = "video_decode_accelerator_tests_v4l2_vp8",
+    args = [
+        "--as-root",
+        "--validator_type=none",
+        "../../media/test/data/test-25fps.vp8",
+        "../../media/test/data/test-25fps.vp8.json",
+    ],
+    binary = "video_decode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests_v4l2_vp9",
     args = [
         "--as-root",
         "--validator_type=none",
