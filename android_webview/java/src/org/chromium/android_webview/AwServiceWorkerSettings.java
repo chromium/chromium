@@ -33,7 +33,6 @@ public class AwServiceWorkerSettings {
     private boolean mAllowContentUrlAccess = true;
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads; // Default depends on permission of the embedding APK
-    private boolean mAcceptThirdPartyCookies;
     private boolean mBlockSpecialFileUrls;
 
     private Set<String> mRequestedWithHeaderAllowedOriginRules;

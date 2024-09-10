@@ -11,8 +11,6 @@ import org.chromium.android_webview.common.SafeModeActionIds;
 
 /** A {@link SafeModeAction} to disable all origin trials */
 public class DisableOriginTrialsSafeModeAction implements SafeModeAction {
-    private static final String TAG = "WebViewSafeMode";
-
     private static boolean sDisableOriginTrials;
 
     // This ID should not be changed or reused.

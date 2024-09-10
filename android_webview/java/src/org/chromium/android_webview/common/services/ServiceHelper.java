@@ -11,8 +11,6 @@ import android.content.ServiceConnection;
 
 /** Helper methods for working with Services in WebView. */
 public class ServiceHelper {
-    private static final String TAG = "ServiceHelper";
-
     /**
      * Connects to a Service specified by {@code intent} with {@code flags}. This handles edge cases
      * such as attempting to bind from restricted BroadcastReceiver Contexts.

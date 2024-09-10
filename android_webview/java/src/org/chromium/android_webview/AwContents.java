@@ -531,8 +531,6 @@ public class AwContents implements SmartClipProvider {
 
     private static String sCurrentLocales = "";
 
-    private Paint mPaintForNWorkaround;
-
     // A holder of objects passed from WebContents and should be owned by AwContents that may
     // have direct or indirect reference back to WebView. They are used internally by
     // WebContents but all the references can create a new gc root that can keep WebView

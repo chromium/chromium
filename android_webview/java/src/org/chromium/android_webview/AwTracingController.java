@@ -27,8 +27,6 @@ import java.util.List;
 @Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AwTracingController {
-    private static final String TAG = "AwTracingController";
-
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ALREADY_TRACING = 1;
     public static final int RESULT_INVALID_CATEGORIES = 2;

@@ -51,9 +51,6 @@ public class TrackExitReasonsOfInterest {
     public static final String UMA_COUNTS = "Android.WebView.HistoricalApplicationExitInfo.Counts";
     private static long sTestTime;
     private static int sPid;
-    private static int sMockedSystemExitReason;
-    private static int sTestCount;
-    private static boolean sUseMockedSystemExitReason;
 
     @VisibleForTesting public static final Map<Integer, String> sUmaSuffixMap = createMap();
 

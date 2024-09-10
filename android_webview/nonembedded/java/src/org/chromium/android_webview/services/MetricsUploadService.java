@@ -18,8 +18,6 @@ import java.net.HttpURLConnection;
  * as is.
  */
 public class MetricsUploadService extends Service {
-    private static final String TAG = "MetricsUploadService";
-
     private final IMetricsUploadService.Stub mBinder =
             new IMetricsUploadService.Stub() {
                 @Override

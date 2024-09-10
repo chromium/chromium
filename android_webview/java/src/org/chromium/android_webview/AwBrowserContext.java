@@ -43,7 +43,6 @@ import java.util.Set;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
-    private static final String TAG = "AwBrowserContext";
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
 
     /**

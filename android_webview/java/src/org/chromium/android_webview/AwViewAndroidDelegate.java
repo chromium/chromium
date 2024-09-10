@@ -20,12 +20,9 @@ import java.util.Map.Entry;
 /** Implementation of the abstract class {@link ViewAndroidDelegate} for WebView. */
 @Lifetime.WebView
 public class AwViewAndroidDelegate extends ViewAndroidDelegate {
-    /** Used for logging. */
-    private static final String TAG = "AwVAD";
-
     /**
-     * List of anchor views stored in the order in which they were acquired mapped
-     * to their position.
+     * List of anchor views stored in the order in which they were acquired mapped to their
+     * position.
      */
     private final Map<View, Position> mAnchorViews = new LinkedHashMap<>();
 
