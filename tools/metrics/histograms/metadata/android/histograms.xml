@@ -5820,21 +5820,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds"
-    units="microseconds" expires_after="2024-09-01">
-  <owner>blundell@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <summary>
-    Tracks the amount of time that it took for WebView to save HWUI's GL state
-    when not using ANGLE (when using ANGLE, the corresponding interval is
-    recorded within ANGLE as GPU.ANGLE.SyncFromNativeContextMicroseconds; the
-    method of recording is not quite identical, but the two metrics should be
-    comparable at a high level). Recorded once per saving of HWUI state when
-    drawing with GL. This is recorded only on devices that support high
-    resolution timers. Note: Expired on June 1 2024 and revived on June 10 2024.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts"
     enum="AndroidProcessExitReason" expires_after="2024-11-01">
   <owner>avvall@chromium.org</owner>

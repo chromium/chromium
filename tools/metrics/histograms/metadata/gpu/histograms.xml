@@ -424,12 +424,9 @@ chromium-metrics-reviews@google.com.
   <owner>angle-team@google.com</owner>
   <summary>
     Tracks the amount of time that it took for WebView to save HWUI's GL state
-    when using ANGLE (when not using ANGLE, the corresponding interval is
-    recorded as Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds; the
-    method of recording is not quite identical, but the two metrics should be
-    comparable at a high level). Recorded once per saving of HWUI state when
-    drawing with GL. Recorded for all clients as ANGLE does not support checking
-    for high-resolution clocks (in practice, all Android devices have
+    when using ANGLE. Recorded once per saving of HWUI state when drawing with
+    GL. Recorded for all clients as ANGLE does not support checking for
+    high-resolution clocks (in practice, all Android devices have
     high-resolution clocks). Note: Expired on June 1 2024 and revived on June 10
     2024.
   </summary>
