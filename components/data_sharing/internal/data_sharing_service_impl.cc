@@ -107,6 +107,18 @@ DataSharingServiceImpl::DataSharingServiceImpl(
   if (sdk_delegate_) {
     sdk_delegate_->Initialize(data_sharing_network_loader_.get());
   }
+
+  // Initialize ServiceStatus.
+  current_status_.collaboration_status = CollaborationStatus::kDisabled;
+  if (base::FeatureList::IsEnabled(features::kDataSharingFeature)) {
+    current_status_.collaboration_status =
+        CollaborationStatus::kEnabledCreateAndJoin;
+  }
+
+  // TODO(b/360184707): Add identity manager and sync service to observe state
+  // changes.
+  current_status_.signin_status = SigninStatus::kNotSignedIn;
+  current_status_.sync_status = SyncStatus::kNotSyncing;
 }
 
 DataSharingServiceImpl::~DataSharingServiceImpl() {
@@ -591,9 +603,8 @@ DataSharingUIDelegate* DataSharingServiceImpl::GetUIDelegate() {
   return ui_delegate_.get();
 }
 
-DataSharingService::ServiceStatus DataSharingServiceImpl::GetServiceStatus() {
-  NOTIMPLEMENTED();
-  return DataSharingService::ServiceStatus();
+ServiceStatus DataSharingServiceImpl::GetServiceStatus() {
+  return current_status_;
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

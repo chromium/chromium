@@ -316,6 +316,12 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetUIDelegate(
   return data_sharing_service_->GetUIDelegate()->GetJavaObject();
 }
 
+ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetServiceStatus(
+    JNIEnv* env) {
+  return DataSharingConversionBridge::CreateJavaServiceStatus(
+      env, data_sharing_service_->GetServiceStatus());
+}
+
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }

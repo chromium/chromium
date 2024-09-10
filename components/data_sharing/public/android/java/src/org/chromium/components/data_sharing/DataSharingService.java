@@ -245,4 +245,9 @@ public interface DataSharingService {
      * @return The current instance of {@link DataSharingUIDelegate}.
      */
     DataSharingUIDelegate getUIDelegate();
+
+    /**
+     * @return The current {@link ServiceStatus} of the service.
+     */
+    ServiceStatus getServiceStatus();
 }

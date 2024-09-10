@@ -65,7 +65,7 @@ class EmptyDataSharingService : public DataSharingService {
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
   DataSharingUIDelegate* GetUIDelegate() override;
-  DataSharingService::ServiceStatus GetServiceStatus() override;
+  ServiceStatus GetServiceStatus() override;
 };
 
 }  // namespace data_sharing

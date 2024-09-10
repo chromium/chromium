@@ -154,6 +154,7 @@ class DataSharingServiceImpl : public DataSharingService,
       const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
           result);
 
+  ServiceStatus current_status_;
   // It must be destroyed after the `sdk_delegate_` member because
   // `sdk_delegate` needs the `data_sharing_network_loader_`.
   std::unique_ptr<DataSharingNetworkLoader> data_sharing_network_loader_;
