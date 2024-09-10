@@ -10,6 +10,7 @@ import {
   createRef,
   css,
   html,
+  keyed,
   PropertyDeclarations,
   PropertyValues,
   ref,
@@ -84,7 +85,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
     #header {
       font: var(--cros-display-7-font);
-      margin-bottom: 16px;
+      margin: 0 0 16px;
     }
 
     #description {
@@ -134,7 +135,7 @@ export class OnboardingDialog extends ReactiveLitElement {
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has('open')) {
+    if (changedProperties.has('open') || changedProperties.has('step')) {
       if (this.open) {
         this.dialog.showPopover();
       } else {
@@ -157,6 +158,7 @@ export class OnboardingDialog extends ReactiveLitElement {
   }
 
   private renderDialog(
+    step: number,
     imageName: string,
     header: string,
     description: RenderResult,
@@ -168,16 +170,28 @@ export class OnboardingDialog extends ReactiveLitElement {
     // is always cancelable by pressing ESC, and the onboarding flow should not
     // be cancelable.
     // See https://issues.chromium.org/issues/346597066.
-    return html`<div id="dialog" popover="manual" ?inert=${!this.open}>
-      <div id="illust">
-        <cra-image .name=${imageName}></cra-image>
-      </div>
-      <div id="content">
-        <div id="header">${header}</div>
-        <div id="description">${description}</div>
-        <div id="buttons">${buttons}</div>
-      </div>
-    </div>`;
+    //
+    // Force render a different element when step change, so ChromeVox would
+    // convey the header of the new dialog.
+    return keyed(
+      step,
+      html`<div
+        id="dialog"
+        popover="manual"
+        ?inert=${!this.open}
+        aria-labelledby="header"
+        role="dialog"
+      >
+        <div id="illust">
+          <cra-image .name=${imageName}></cra-image>
+        </div>
+        <div id="content">
+          <h2 id="header">${header}</h2>
+          <div id="description">${description}</div>
+          <div id="buttons">${buttons}</div>
+        </div>
+      </div>`,
+    );
   }
 
   override render(): RenderResult {
@@ -196,6 +210,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           this.step = 1;
         };
         return this.renderDialog(
+          this.step,
           'onboarding_welcome',
           i18n.onboardingDialogWelcomeHeader,
           i18n.onboardingDialogWelcomeDescription,
@@ -226,6 +241,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           this.close();
         };
         return this.renderDialog(
+          this.step,
           'onboarding_transcription',
           i18n.onboardingDialogTranscriptionHeader,
           i18n.onboardingDialogTranscriptionDescription,
@@ -277,6 +293,7 @@ export class OnboardingDialog extends ReactiveLitElement {
         };
 
         return this.renderDialog(
+          this.step,
           'onboarding_speaker_label',
           i18n.onboardingDialogSpeakerLabelHeader,
           html`<speaker-label-consent-dialog-content>
