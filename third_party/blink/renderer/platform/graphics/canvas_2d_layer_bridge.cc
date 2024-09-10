@@ -174,10 +174,6 @@ void Canvas2DLayerBridge::Hibernate() {
   }
 }
 
-CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
-  return resource_host_ ? resource_host_->ResourceProvider() : nullptr;
-}
-
 CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   CHECK(resource_host_);
   CanvasResourceProvider* resource_provider =
@@ -375,7 +371,7 @@ bool Canvas2DLayerBridge::Restore() {
 
   resource_host_->UpdateMemoryUsage();
 
-  return ResourceProvider();
+  return resource_host_->ResourceProvider();
 }
 
 void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
