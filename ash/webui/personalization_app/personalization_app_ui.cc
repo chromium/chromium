@@ -562,7 +562,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());
   source->AddBoolean("isManagedSeaPenEnabled",
-                     sea_pen_provider_->IsManagedSeaPenEnabled());
+                     common_sea_pen_requirements &&
+                         sea_pen_provider_->IsManagedSeaPenEnabled());
   source->AddBoolean("isManagedSeaPenFeedbackEnabled",
                      sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
   source->AddBoolean("isLacrosEnabled",
