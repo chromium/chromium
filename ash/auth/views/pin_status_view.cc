@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,7 +41,7 @@ std::u16string BuildPinStatusMessage(cryptohome::PinStatus* pin_status) {
     return u"";
   }
 
-  if (pin_status->AvailableAt() == base::Time::Max()) {
+  if (pin_status->AvailableAt().is_max()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
   }
@@ -124,8 +125,35 @@ const std::u16string& PinStatusView::GetCurrentText() const {
 
 void PinStatusView::SetPinStatus(
     std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  lockout_timer_.Stop();
+
   pin_status_ = std::move(pin_status);
+
   SetText(BuildPinStatusMessage(pin_status_.get()));
+  if (pin_status_ == nullptr) {
+    return;
+  }
+  if (!pin_status_->IsLockedFactor()) {
+    return;
+  }
+  if (pin_status_->AvailableAt().is_max()) {
+    return;
+  }
+
+  // We need to update the label every second. The timer is scheduled to be run
+  // more often to avoid possibly missing some updates due to timer imprecision.
+  lockout_timer_.Start(FROM_HERE, base::Milliseconds(500),
+                       base::BindRepeating(&PinStatusView::UpdateLockoutStatus,
+                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PinStatusView::UpdateLockoutStatus() {
+  CHECK(pin_status_);
+  SetText(BuildPinStatusMessage(pin_status_.get()));
+
+  if (!pin_status_->IsLockedFactor()) {
+    lockout_timer_.Stop();
+  }
 }
 
 BEGIN_METADATA(PinStatusView)
