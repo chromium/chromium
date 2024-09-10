@@ -106,12 +106,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
         if (refreshSupported) {
             mRefreshIcon.setVisibility(View.VISIBLE);
-            mRefreshIcon.setOnClickListener(
-                    v -> {
-                        if (mPlusAddressConfirmButton.isEnabled()) {
-                            mDelegate.onRefreshClicked();
-                        }
-                    });
         }
 
         if (mShowingNotice) {
@@ -141,6 +135,15 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mProposedPlusAddress.setText(proposedPlusAddress);
     }
 
+    void setRefreshIconEnabled(boolean enabled) {
+        mRefreshIcon.setEnabled(enabled);
+        if (enabled) {
+            mRefreshIcon.setOnClickListener(unused -> mDelegate.onRefreshClicked());
+        } else {
+            mRefreshIcon.setOnClickListener(null);
+        }
+    }
+
     void setConfirmButtonEnabled(boolean enabled) {
         mPlusAddressConfirmButton.setEnabled(enabled);
     }
@@ -156,9 +159,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
     /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
     public void showConfirmationLoadingState() {
-        // This also changes the color of the refresh icon to disabled.
-        mRefreshIcon.setEnabled(false);
-
         mPlusAddressCancelButton.setVisibility(View.GONE);
 
         showLoadingIndicator();
@@ -182,7 +182,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
             hideLoadingIndicator();
 
-            // Disable Confirm button if attempts to Confirm() fail.
             if (mShowingNotice) {
                 mPlusAddressCancelButton.setVisibility(View.VISIBLE);
             }

@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.app.Activity;
@@ -93,6 +94,7 @@ public class PlusAddressCreationCoordinator {
                 .with(VISIBLE, false)
                 .with(PROPOSED_PLUS_ADDRESS, "")
                 .with(DELEGATE, delegate)
+                .with(REFRESH_ICON_ENABLED, false)
                 .with(CONFIRM_BUTTON_ENABLED, false)
                 .with(CONFIRM_BUTTON_VISIBLE, true)
                 .build();

@@ -52,8 +52,8 @@ import java.util.concurrent.TimeoutException;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowView.class})
-@Batch(Batch.UNIT_TESTS)
 @LooperMode(LooperMode.Mode.LEGACY)
+@Batch(Batch.UNIT_TESTS)
 public class PlusAddressCreationModuleTest {
     private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
             new PlusAddressCreationNormalStateInfo(
@@ -121,8 +121,8 @@ public class PlusAddressCreationModuleTest {
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
+        assertFalse(refreshIcon.isEnabled());
         assertFalse(confirmButton.isEnabled());
-        assertTrue(refreshIcon.isEnabled());
         refreshIcon.performClick();
         verify(mBridge, times(0)).onRefreshClicked();
 
@@ -134,14 +134,14 @@ public class PlusAddressCreationModuleTest {
         // Refresh the plus address first time.
         refreshIcon.performClick();
         assertFalse(confirmButton.isEnabled());
-        assertTrue(refreshIcon.isEnabled());
+        assertFalse(refreshIcon.isEnabled());
         verify(mBridge).onRefreshClicked();
 
         // Simulate that the plus address was reserved and refresh the plus address again.
         mCoordinator.updateProposedPlusAddress("example@gmail.com");
         refreshIcon.performClick();
         assertFalse(confirmButton.isEnabled());
-        assertTrue(refreshIcon.isEnabled());
+        assertFalse(refreshIcon.isEnabled());
         verify(mBridge, times(2)).onRefreshClicked();
     }
 

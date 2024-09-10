@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -26,6 +27,8 @@ class PlusAddressCreationViewBinder {
             view.setProposedPlusAddress(model.get(PROPOSED_PLUS_ADDRESS));
         } else if (propertyKey == DELEGATE) {
             view.setDelegate(model.get(DELEGATE));
+        } else if (propertyKey == REFRESH_ICON_ENABLED) {
+            view.setRefreshIconEnabled(model.get(REFRESH_ICON_ENABLED));
         } else if (propertyKey == CONFIRM_BUTTON_ENABLED) {
             view.setConfirmButtonEnabled(model.get(CONFIRM_BUTTON_ENABLED));
         } else if (propertyKey == CONFIRM_BUTTON_VISIBLE) {
