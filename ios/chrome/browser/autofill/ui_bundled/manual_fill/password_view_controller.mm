@@ -206,6 +206,9 @@ enum ManualFallbackItemType : NSInteger {
 - (void)presentPlusAddresses:
     (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
   _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
+  for (ManualFillPlusAddressItem* plusAddressItem in _plusAddresses) {
+    plusAddressItem.type = manual_fill::ManualFallbackItemType::kPlusAddress;
+  }
   [self presentItems];
 }
 
@@ -221,7 +224,6 @@ enum ManualFallbackItemType : NSInteger {
   NSArray* items = nil;
   if (_credentials && _plusAddresses) {
     items = [_plusAddresses arrayByAddingObjectsFromArray:_credentials];
-
   } else if (_credentials) {
     items = _credentials;
   } else if (_plusAddresses) {

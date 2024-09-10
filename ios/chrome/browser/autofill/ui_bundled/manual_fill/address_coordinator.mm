@@ -79,6 +79,7 @@
       manualFillPlusAddressMediator.contentInjector = super.injectionHandler;
       manualFillPlusAddressMediator.consumer = _addressViewController;
       manualFillPlusAddressMediator.navigator = self;
+      _addressViewController.imageDataSource = manualFillPlusAddressMediator;
     }
   }
   return self;
