@@ -25,20 +25,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 
 #include <unicode/usearch.h>
+
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -104,13 +101,11 @@ class SearcherFactory {
 
 }  // namespace
 
-static bool IsWholeWordMatch(const UChar* text,
-                             unsigned text_length,
+static bool IsWholeWordMatch(base::span<const UChar> text,
                              const MatchResultICU& result) {
   const wtf_size_t result_end = result.start + result.length;
-  DCHECK_LE(result_end, text_length);
-  UChar32 first_character;
-  U16_GET(text, 0, result.start, result_end, first_character);
+  DCHECK_LE(result_end, text.size());
+  UChar32 first_character = CodePointAt(text, result.start);
 
   // Chinese and Japanese lack word boundary marks, and there is no clear
   // agreement on what constitutes a word, so treat the position before any CJK
@@ -121,12 +116,12 @@ static bool IsWholeWordMatch(const UChar* text,
   wtf_size_t word_break_search_start = result_end;
   while (word_break_search_start > result.start) {
     word_break_search_start =
-        FindNextWordBackward({text, text_length}, word_break_search_start);
+        FindNextWordBackward(text, word_break_search_start);
   }
   if (word_break_search_start != result.start)
     return false;
-  return result_end == static_cast<wtf_size_t>(FindWordEndBoundary(
-                           {text, text_length}, word_break_search_start));
+  return result_end == static_cast<wtf_size_t>(
+                           FindWordEndBoundary(text, word_break_search_start));
 }
 
 // Grab the single global searcher.
@@ -139,8 +134,8 @@ TextSearcherICU::~TextSearcherICU() {
   // Leave the static object pointing to valid strings (pattern=target,
   // text=buffer). Otheriwse, usearch_reset() will results in 'use-after-free'
   // error.
-  SetPattern(&kNewlineCharacter, 1);
-  SetText(&kNewlineCharacter, 1);
+  SetPattern(base::span<const UChar>({kNewlineCharacter}));
+  SetText(base::span<const UChar>({kNewlineCharacter}));
   SearcherFactory::ReleaseSearcher();
 }
 
@@ -149,17 +144,17 @@ void TextSearcherICU::SetPattern(const StringView& pattern,
   DCHECK_GT(pattern.length(), 0u);
   options_ = options;
   SetCaseSensitivity(!options.IsCaseInsensitive());
-  SetPattern(pattern.Characters16(), pattern.length());
+  SetPattern(pattern.Span16());
   if (ContainsKanaLetters(pattern.ToString())) {
     normalized_search_text_ = NormalizeCharactersIntoNfc(pattern.Span16());
   }
 }
 
-void TextSearcherICU::SetText(const UChar* text, wtf_size_t length) {
+void TextSearcherICU::SetText(base::span<const UChar> text) {
   UErrorCode status = U_ZERO_ERROR;
-  usearch_setText(searcher_, text, length, &status);
+  usearch_setText(searcher_, text.data(), text.size(), &status);
   DCHECK_EQ(status, U_ZERO_ERROR);
-  text_length_ = length;
+  text_length_ = text.size();
 }
 
 void TextSearcherICU::SetOffset(wtf_size_t offset) {
@@ -208,24 +203,28 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(
   unsigned text_length = text_length_i32;
   DCHECK_LE(result.start + result.length, text_length);
   DCHECK_GT(result.length, 0u);
+  // SAFETY: Making a span same as the SetText() argument.
+  auto text_span = UNSAFE_BUFFERS(base::span<const UChar>(text, text_length));
 
-  if (!normalized_search_text_.empty() && !IsCorrectKanaMatch(text, result))
+  if (!normalized_search_text_.empty() &&
+      !IsCorrectKanaMatch(text_span, result)) {
     return true;
+  }
 
-  return options_.IsWholeWord() && !IsWholeWordMatch(text, text_length, result);
+  return options_.IsWholeWord() && !IsWholeWordMatch(text_span, result);
 }
 
-bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
+bool TextSearcherICU::IsCorrectKanaMatch(base::span<const UChar> text,
                                          const MatchResultICU& result) const {
-  Vector<UChar> normalized_match = NormalizeCharactersIntoNfc(
-      base::span<const UChar>(text + result.start, result.length));
+  Vector<UChar> normalized_match =
+      NormalizeCharactersIntoNfc(text.subspan(result.start, result.length));
   return CheckOnlyKanaLettersInStrings(base::span(normalized_search_text_),
                                        base::span(normalized_match));
 }
 
-void TextSearcherICU::SetPattern(const UChar* pattern, wtf_size_t length) {
+void TextSearcherICU::SetPattern(base::span<const UChar> pattern) {
   UErrorCode status = U_ZERO_ERROR;
-  usearch_setPattern(searcher_, pattern, length, &status);
+  usearch_setPattern(searcher_, pattern.data(), pattern.size(), &status);
   DCHECK(U_SUCCESS(status));
 }
 

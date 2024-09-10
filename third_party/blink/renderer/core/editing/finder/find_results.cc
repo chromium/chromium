@@ -21,7 +21,7 @@ FindResults::FindResults(const FindBuffer& find_buffer,
   find_buffer_ = &find_buffer;
   text_searcher_ = text_searcher;
   text_searcher_->SetPattern(search_text_, options);
-  text_searcher_->SetText(buffer.data(), buffer.size());
+  text_searcher_->SetText(base::span(buffer));
   text_searcher_->SetOffset(0);
 }
 
