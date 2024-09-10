@@ -553,8 +553,8 @@ void InitializeNowFunctionPointer() {
   // counter will cause Windows to provide an alternate QPC implementation that
   // works, but is expensive to use.
   //
-  // Otherwise, Now uses the high-resolution QPC clock. As of 21 August 2015,
-  // ~72% of users fall within this category.
+  // Otherwise, Now uses the high-resolution QPC clock. As of 9 September 2024,
+  // ~97% of users fall within this category.
   CPU cpu;
   const TimeTicksNowFunction now_function =
       (ticks_per_sec.QuadPart <= 0 || !cpu.has_non_stop_time_stamp_counter())
