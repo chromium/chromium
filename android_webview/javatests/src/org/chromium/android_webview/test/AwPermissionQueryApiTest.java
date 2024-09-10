@@ -17,13 +17,14 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwGeolocationPermissions;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({"enable-features=" + ContentFeatures.WEB_PERMISSIONS_API})
+@Features.EnableFeatures({ContentFeatures.WEB_PERMISSIONS_API, AwFeatures.WEBVIEW_AUTO_SAA})
 @Batch(Batch.PER_CLASS)
 public class AwPermissionQueryApiTest extends AwParameterizedTest {
 
@@ -185,6 +186,12 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("geolocation", "prompt");
         runTestCase("microphone", "prompt");
         runTestCase("midi-sysex", "prompt", "{\"name\": \"midi\", \"sysex\": true}");
+        runTestCase("storage-access", "prompt");
+        runTestCase(
+                "top-level-storage-access",
+                "prompt",
+                "{\"name\": \"top-level-storage-access\", \"requestedOrigin\":"
+                        + " \"https://example.com\"}");
     }
 
     @Test
@@ -198,7 +205,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("payment-handler", "denied");
         runTestCase("persistent-storage", "denied");
         runTestCase("screen-wake-lock", "denied");
-        runTestCase("storage-access", "denied");
         runTestCase("window-management", "denied");
         runTestCase("background-fetch", "denied");
         runTestCase("screen-wake-lock", "denied");
@@ -208,11 +214,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("periodic-background-sync", "denied");
         runTestCase("keyboard-lock", "denied");
         runTestCase("push", "denied", "{\"name\": \"push\", \"userVisibleOnly\": true}");
-        runTestCase(
-                "top-level-storage-access",
-                "denied",
-                "{\"name\": \"top-level-storage-access\", \"requestedOrigin\":"
-                        + " \"https://example.com\"}");
         runTestCase("pointer-lock", "denied");
         runTestCase(
                 "fullscreen",
