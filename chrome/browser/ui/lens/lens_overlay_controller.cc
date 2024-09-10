@@ -1932,16 +1932,16 @@ void LensOverlayController::AddBackgroundBlur() {
     ui::Layer* background_layer = overlay_view_->layer();
     background_layer->SetFillsBoundsOpaquely(true);
 
-    content::RenderWidgetHostView* live_page_view = tab_->GetContents()
-                                                        ->GetPrimaryMainFrame()
-                                                        ->GetRenderViewHost()
-                                                        ->GetWidget()
-                                                        ->GetView();
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
 
     // Create the blur delegate which will start blurring the background;
     lens_overlay_blur_layer_delegate_ =
-        std::make_unique<lens::LensOverlayBlurLayerDelegate>(background_layer,
-                                                             live_page_view);
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+            background_layer, live_page_widget_host);
     return;
   }
 

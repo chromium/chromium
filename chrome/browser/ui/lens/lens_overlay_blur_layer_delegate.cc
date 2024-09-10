@@ -30,10 +30,12 @@ namespace lens {
 
 LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
     ui::Layer* layer,
-    content::RenderWidgetHostView* background_view)
-    : layer_(layer), background_view_(background_view) {
+    content::RenderWidgetHost* background_view_host)
+    : layer_(layer), background_view_host_(background_view_host) {
   CHECK(layer);
   layer->set_delegate(this);
+
+  render_widget_host_observer_.Observe(background_view_host);
 
   // Start taking screenshots to render on the layer.
   screenshot_timer_.Start(
@@ -81,16 +83,26 @@ void LensOverlayBlurLayerDelegate::OnPaintLayer(
 void LensOverlayBlurLayerDelegate::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  // Do nothing. We will automatically repaint with a new image.
+  // Do nothing. OnPaintLayer will automatically repaint with a new image.
+}
+
+void LensOverlayBlurLayerDelegate::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* widget_host) {
+  CHECK(widget_host == background_view_host_);
+  background_view_host_ = nullptr;
+  // If the host view was destroyed, stop updating the background blur.
+  screenshot_timer_.Stop();
 }
 
 void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
-  if (!background_view_) {
+  if (!background_view_host_ || !background_view_host_->GetView()) {
     return;
   }
-  auto size = background_view_->GetViewBounds().size();
+
+  auto* view = background_view_host_->GetView();
+  auto size = view->GetViewBounds().size();
   auto quality = lens::features::GetLensOverlayCustomBlurQuality();
-  background_view_->CopyFromSurface(
+  view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(),
       /*output_size=*/
       gfx::Size(size.width() * quality, size.height() * quality),
