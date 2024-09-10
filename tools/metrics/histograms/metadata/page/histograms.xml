@@ -336,6 +336,7 @@ chromium-metrics-reviews@google.com.
     <variant name="BookmarksStar"/>
     <variant name="ClickToCall"/>
     <variant name="CookieControls"/>
+    <variant name="Discounts"/>
     <variant name="FileSystemAccess"/>
     <variant name="Find"/>
     <variant name="IntentPicker"/>
