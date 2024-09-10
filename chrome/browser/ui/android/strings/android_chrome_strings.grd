@@ -5308,6 +5308,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Using Google for search
       </message>
 
+      <!-- AuthTab -->
+      <message name="IDS_AUTH_TAB_SECURED_BY_CHROME_TEMPLATE" desc="Message template that used to indicating that the Auth Tab is securely running on Chrome. [CHAR_LIMIT=32]">
+        Secured by <ph name="APP_NAME">%1$s<ex>Chromium</ex></ph>
+      </message>
+
       <!-- WebAPK/TWA related strings -->
       <message name="IDS_TWA_RUNNING_IN_CHROME" desc="Message on a snackbar indicating that the current Activity may use Chrome data (the rest of the app may not be).">
         Running in Chrome
