@@ -158,7 +158,7 @@ class DemoMetricsService {
    * @param timestampInMilliseconds
    */
   recordAttractLoopBreakTimestamp(timestampInMilliseconds) {
-    if (!timestampInMilliseconds) {
+    if (isNaN(timestampInMilliseconds)) {
       this.recordError_(
           DemoModeHighlightsError.ATTRACTION_LOOP_TIMESTAMP_INVALID);
       return;
