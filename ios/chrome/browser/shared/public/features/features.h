@@ -430,6 +430,12 @@ BASE_DECLARE_FEATURE(kTabGroupIndicator);
 // Whether the Tab Group Indicator feature is enabled.
 bool IsTabGroupIndicatorEnabled();
 
+// Feature flag to enable a new illustration in the sync opt-in promotion view.
+BASE_DECLARE_FEATURE(kNewSyncOptInIllustration);
+
+// Whether the kNewSyncOptInIllustration feature is enabled.
+bool IsNewSyncOptInIllustration();
+
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 

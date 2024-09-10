@@ -453,6 +453,14 @@ bool IsTabGroupIndicatorEnabled() {
          base::FeatureList::IsEnabled(kTabGroupIndicator);
 }
 
+BASE_FEATURE(kNewSyncOptInIllustration,
+             "NewSyncOptInIllustration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNewSyncOptInIllustration() {
+  return base::FeatureList::IsEnabled(kNewSyncOptInIllustration);
+}
+
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
