@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       const blink::WebNNTensorToken& handle);
 
   // Retrieves a `WebNNTensorImpl` instance created from this context.
-  // Emits a bad message if a buffer with the given handle does not exist.
+  // Emits a bad message if a tensor with the given handle does not exist.
   base::optional_ref<WebNNTensorImpl> GetWebNNTensorImpl(
       const blink::WebNNTensorToken& handle);
 
@@ -127,9 +127,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
                     CreateTensorCallback callback) override;
 
-  // This method will be called by `CreateTensor()` after the buffer info is
+  // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and
-  // initialize a platform specific buffer asynchronously.
+  // initialize a platform specific tensor asynchronously.
   virtual void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
@@ -154,14 +154,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // context.
   mojom::CreateContextOptionsPtr options_;
 
-  // BufferImpls must be stored on the context to allow the WebNN service to
+  // TensorImpls must be stored on the context to allow the WebNN service to
   // identify and use them from the renderer process in MLContext operations.
-  // This cache only contains valid BufferImpls whose size is managed by the
-  // lifetime of the buffers it contains.
+  // This cache only contains valid TensorImpls whose size is managed by the
+  // lifetime of the tensors it contains.
   base::flat_set<
       std::unique_ptr<WebNNTensorImpl>,
       WebNNObjectImpl<blink::WebNNTensorToken>::Comparator<WebNNTensorImpl>>
-      buffer_impls_;
+      tensor_impls_;
 
  private:
   // Graph builders owned by this context.

@@ -84,7 +84,7 @@ HRESULT CommandRecorder::Open() {
     RETURN_IF_FAILED(command_list_->Reset(command_allocator_.Get(), nullptr));
   }
   command_resources_.clear();
-  command_buffer_impls_.clear();
+  command_tensor_impls_.clear();
   is_open_ = true;
   return S_OK;
 }
@@ -124,7 +124,7 @@ HRESULT CommandRecorder::Execute() {
 
   // After command submission succeeds, update the last submission fence on the
   // recorded buffers so the CPU knows when the GPU has completed execution.
-  for (auto& [command_buffer, webnn_tensor_impl] : command_buffer_impls_) {
+  for (auto& [command_buffer, webnn_tensor_impl] : command_tensor_impls_) {
     // WebNNTensor was destroyed prior to Execute() and does not require further
     // CPU/GPU synchronization but its resource will be kept alive anyway until
     // Open() or the command queue completes execution by `command_resources_`.
@@ -165,22 +165,22 @@ void CommandRecorder::RecordDispatch(IDMLDispatchable* dispatchable,
                                     binding_table);
 }
 
-void CommandRecorder::UploadBufferWithBarrier(
-    TensorImplDml* dst_buffer,
+void CommandRecorder::UploadTensorWithBarrier(
+    TensorImplDml* dst_tensor,
     Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
     size_t buffer_size) {
-  dml::UploadBufferWithBarrier(this, dst_buffer->buffer(),
+  dml::UploadBufferWithBarrier(this, dst_tensor->buffer(),
                                std::move(src_buffer), buffer_size);
-  OnBufferAccessed(dst_buffer);
+  OnTensorAccessed(dst_tensor);
 }
 
-void CommandRecorder::ReadbackBufferWithBarrier(
+void CommandRecorder::ReadbackTensorWithBarrier(
     Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-    TensorImplDml* src_buffer,
+    TensorImplDml* src_tensor,
     size_t buffer_size) {
   dml::ReadbackBufferWithBarrier(this, std::move(dst_buffer),
-                                 src_buffer->buffer(), buffer_size);
-  OnBufferAccessed(src_buffer);
+                                 src_tensor->buffer(), buffer_size);
+  OnTensorAccessed(src_tensor);
 }
 
 HRESULT CommandRecorder::InitializeOperator(
@@ -430,8 +430,8 @@ HRESULT CommandRecorder::ExecuteOperator(
   return S_OK;
 }
 
-void CommandRecorder::OnBufferAccessed(TensorImplDml* buffer) {
-  command_buffer_impls_.emplace(buffer->buffer(), buffer->AsWeakPtr());
+void CommandRecorder::OnTensorAccessed(TensorImplDml* tensor) {
+  command_tensor_impls_.emplace(tensor->buffer(), tensor->AsWeakPtr());
 }
 
 void CommandRecorder::ReferenceCommandResources(

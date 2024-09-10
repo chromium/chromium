@@ -28,7 +28,7 @@ WebNNTensorImpl::~WebNNTensorImpl() = default;
 
 void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   if (!usage().Has(MLTensorUsageFlags::kReadFrom)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -38,13 +38,13 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   if (!usage().Has(MLTensorUsageFlags::kWriteTo)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   // TODO(https://crbug.com/40278771): Generate error using MLContext.
   if (PackedByteLength() < src_buffer.size()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 

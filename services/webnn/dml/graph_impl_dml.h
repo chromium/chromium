@@ -413,9 +413,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   std::unique_ptr<GraphResources> graph_resources_;
 
   base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
-      previous_input_buffers_;
+      previous_input_tensors_;
   base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
-      previous_output_buffers_;
+      previous_output_tensors_;
 
   base::WeakPtrFactory<GraphImplDml> weak_factory_{this};
 };

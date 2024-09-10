@@ -85,8 +85,8 @@ void WebNNContextImpl::CreateTensor(
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ValidateBuffer(properties_, tensor_info->descriptor).has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+  if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -115,16 +115,16 @@ void WebNNContextImpl::DidCreateWebNNTensorImpl(
 
   // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
-  buffer_impls_.emplace(*std::move(result));
+  tensor_impls_.emplace(*std::move(result));
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {
-  const auto it = buffer_impls_.find(handle);
-  CHECK(it != buffer_impls_.end());
+  const auto it = tensor_impls_.find(handle);
+  CHECK(it != tensor_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNTensorImpl`.
-  buffer_impls_.erase(it);
+  tensor_impls_.erase(it);
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {
@@ -134,9 +134,9 @@ void WebNNContextImpl::OnLost(std::string_view message) {
 
 base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     const blink::WebNNTensorToken& tensor_handle) {
-  const auto it = buffer_impls_.find(tensor_handle);
-  if (it == buffer_impls_.end()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+  const auto it = tensor_impls_.find(tensor_handle);
+  if (it == tensor_impls_.end()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return std::nullopt;
   }
   return it->get();

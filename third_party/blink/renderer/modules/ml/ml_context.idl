@@ -251,7 +251,7 @@ dictionary MLOpSupportLimits {
   MLWhereSupportLimits where;
 };
 
-typedef record<DOMString, MLTensor> MLNamedBuffers;
+typedef record<DOMString, MLTensor> MLNamedTensors;
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
@@ -337,7 +337,7 @@ typedef record<DOMString, MLTensor> MLNamedBuffers;
     RaisesException,
     Measure
   ] void dispatch(
-      MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
+      MLGraph graph, MLNamedTensors inputs, MLNamedTensors outputs);
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState

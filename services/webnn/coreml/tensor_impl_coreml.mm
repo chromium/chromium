@@ -55,9 +55,9 @@ TensorImplCoreml::Create(
   // TODO(crbug.com/329482489): Move this check to the renderer and throw a
   // TypeError.
   if (tensor_info->descriptor.Rank() > 5) {
-    LOG(ERROR) << "[WebNN] Buffer rank is too large.";
+    LOG(ERROR) << "[WebNN] Tensor rank is too large.";
     return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Buffer rank is too large."));
+        mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
   }
 
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
@@ -69,9 +69,9 @@ TensorImplCoreml::Create(
   // throwing a TypeError.
   if (!base::IsValueInRangeForNumericType<int>(
           tensor_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
     return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Buffer is too large to create."));
+        mojom::Error::Code::kUnknownError, "Tensor is too large to create."));
   }
 
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
@@ -142,7 +142,7 @@ void TensorImplCoreml::ReadTensorImpl(
       base::BindOnce(
           [](size_t bytes_to_read,
              scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             ReadTensorCallback read_buffer_result_callback,
+             ReadTensorCallback read_tensor_result_callback,
              base::OnceClosure completion_closure) {
             mojo_base::BigBuffer output_buffer(bytes_to_read);
 
@@ -150,17 +150,17 @@ void TensorImplCoreml::ReadTensorImpl(
             // until `completion_closure` is run.
             buffer_state->GetSharedLockedResource().Read(base::BindOnce(
                 [](base::OnceClosure completion_closure,
-                   ReadTensorCallback read_buffer_result_callback,
+                   ReadTensorCallback read_tensor_result_callback,
                    mojo_base::BigBuffer output_buffer) {
                   // Unlock the buffer contents.
                   std::move(completion_closure).Run();
 
-                  std::move(read_buffer_result_callback)
+                  std::move(read_tensor_result_callback)
                       .Run(mojom::ReadTensorResult::NewBuffer(
                           std::move(output_buffer)));
                 },
                 std::move(completion_closure),
-                std::move(read_buffer_result_callback)));
+                std::move(read_tensor_result_callback)));
           },
           /*bytes_to_read=*/PackedByteLength(), buffer_state_,
           std::move(callback)));

@@ -53,7 +53,7 @@ struct ArrayBufferViewInfo {
 typedef HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>>
     MLNamedArrayBufferViews;
 
-typedef HeapVector<std::pair<String, Member<MLTensor>>> MLNamedBuffers;
+typedef HeapVector<std::pair<String, Member<MLTensor>>> MLNamedTensors;
 
 // Represents a handle to a compiled, platform-specific computational graph.
 class MODULES_EXPORT MLGraph : public ScriptWrappable {
@@ -105,12 +105,12 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // Execute the compiled platform graph asynchronously.
   //
-  // This method validates the input and output MLNamedBuffers against the
+  // This method validates the input and output MLNamedTensors against the
   // graph's input and output resources info and then executes the compiled
   // platform graph.
   void Dispatch(ScopedMLTrace scoped_trace,
-                const MLNamedBuffers& inputs,
-                const MLNamedBuffers& outputs,
+                const MLNamedTensors& inputs,
+                const MLNamedTensors& outputs,
                 ExceptionState& exception_state);
 
   const MLContext* Context() const;

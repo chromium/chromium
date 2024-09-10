@@ -912,7 +912,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
                      return ScriptPromise<MLTensor>();
                    });
 
-  RETURN_IF_ERROR(webnn::ValidateBuffer(properties_, validated_descriptor),
+  RETURN_IF_ERROR(webnn::ValidateTensor(properties_, validated_descriptor),
                   [&exception_state](std::string error) {
                     exception_state.ThrowTypeError(String(error));
                     return ScriptPromise<MLTensor>();
@@ -943,11 +943,11 @@ ScriptPromise<MLTensor> MLContext::createTensor(
 
 void MLContext::writeTensor(
     ScriptState* script_state,
-    MLTensor* dst_buffer,
+    MLTensor* dst_tensor,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_tensor,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(),
                    /*src_element_count=*/std::nullopt, exception_state);
@@ -955,35 +955,35 @@ void MLContext::writeTensor(
 
 void MLContext::writeTensor(
     ScriptState* script_state,
-    MLTensor* dst_buffer,
+    MLTensor* dst_tensor,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     uint64_t src_element_count,
     ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_tensor,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(), src_element_count,
                    exception_state);
 }
 
 void MLContext::writeTensor(ScriptState* script_state,
-                            MLTensor* dst_buffer,
+                            MLTensor* dst_tensor,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_tensor,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/std::nullopt, exception_state);
 }
 
 void MLContext::writeTensor(ScriptState* script_state,
-                            MLTensor* dst_buffer,
+                            MLTensor* dst_tensor,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             uint64_t src_byte_size,
                             ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_tensor,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/src_byte_size, exception_state);
@@ -991,7 +991,7 @@ void MLContext::writeTensor(ScriptState* script_state,
 
 ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     ScriptState* script_state,
-    MLTensor* src_buffer,
+    MLTensor* src_tensor,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -999,24 +999,24 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  if (src_buffer->context() != this) {
+  if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
         "The source buffer wasn't created with this context.");
     return EmptyPromise();
   }
 
-  if (!src_buffer->Usage().Has(webnn::MLTensorUsageFlags::kReadFrom)) {
+  if (!src_tensor->Usage().Has(webnn::MLTensorUsageFlags::kReadFrom)) {
     exception_state.ThrowTypeError(
         "The source buffer doesn't have read access.");
     return EmptyPromise();
   }
 
-  return src_buffer->ReadTensorImpl(script_state, exception_state);
+  return src_tensor->ReadTensorImpl(script_state, exception_state);
 }
 
 ScriptPromise<IDLUndefined> MLContext::readTensor(
     ScriptState* script_state,
-    MLTensor* src_buffer,
+    MLTensor* src_tensor,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -1025,18 +1025,18 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  if (src_buffer->context() != this) {
+  if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
         "The source buffer wasn't created with this context.");
     return EmptyPromise();
   }
 
-  return src_buffer->ReadTensorImpl(script_state, dst_data, exception_state);
+  return src_tensor->ReadTensorImpl(script_state, dst_data, exception_state);
 }
 
 ScriptPromise<IDLUndefined> MLContext::readTensor(
     ScriptState* script_state,
-    MLTensor* src_buffer,
+    MLTensor* src_tensor,
     MaybeShared<DOMArrayBufferView> dst_data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -1045,18 +1045,18 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  if (src_buffer->context() != this) {
+  if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
         "The source buffer wasn't created with this context.");
     return EmptyPromise();
   }
 
-  return src_buffer->ReadTensorImpl(script_state, dst_data.Get(),
+  return src_tensor->ReadTensorImpl(script_state, dst_data.Get(),
                                     exception_state);
 }
 
 void MLContext::WriteWebNNTensor(ScriptState* script_state,
-                                 MLTensor* dst_buffer,
+                                 MLTensor* dst_tensor,
                                  base::span<const uint8_t> src_data,
                                  uint64_t src_element_offset,
                                  unsigned src_data_type_size_bytes,
@@ -1068,13 +1068,13 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
     return;
   }
 
-  if (dst_buffer->context() != this) {
+  if (dst_tensor->context() != this) {
     exception_state.ThrowTypeError(
         "The destination buffer wasn't created with this context.");
     return;
   }
 
-  if (!dst_buffer->Usage().Has(webnn::MLTensorUsageFlags::kWriteTo)) {
+  if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWriteTo)) {
     exception_state.ThrowTypeError(
         "The destination buffer doesn't have write access.");
     return;
@@ -1116,7 +1116,7 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
     write_byte_size = src_element_count.value() * src_data_type_size_bytes;
   }
 
-  if (write_byte_size > dst_buffer->PackedByteLength()) {
+  if (write_byte_size > dst_tensor->PackedByteLength()) {
     exception_state.ThrowTypeError(
         "Number of bytes to write is too large: write size exceeded buffer "
         "size.");
@@ -1136,7 +1136,7 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
     return;
   }
 
-  dst_buffer->WriteTensorImpl(
+  dst_tensor->WriteTensorImpl(
       src_data.subspan(checked_src_byte_offset.ValueOrDie(),
                        checked_write_byte_size.ValueOrDie()),
       exception_state);
@@ -1144,8 +1144,8 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
 
 void MLContext::dispatch(ScriptState* script_state,
                          MLGraph* graph,
-                         const MLNamedBuffers& inputs,
-                         const MLNamedBuffers& outputs,
+                         const MLNamedTensors& inputs,
+                         const MLNamedTensors& outputs,
                          ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::dispatch");
   if (!script_state->ContextIsValid()) {

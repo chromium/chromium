@@ -84,16 +84,16 @@ promise_test(async t => {
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createTensor(operandType);
-  const rhsBuffer = await context.createTensor(operandType);
+  const lhsTensor = await context.createTensor(operandType);
+  const rhsTensor = await context.createTensor(operandType);
   const dispatchOutputs = {'output': await context.createTensor(operandType)};
 
   graph.destroy();
   assert_throws_dom('InvalidStateError', () => {
     context.dispatch(
         graph, {
-          'lhs': lhsBuffer,
-          'rhs': rhsBuffer,
+          'lhs': lhsTensor,
+          'rhs': rhsTensor,
         },
         dispatchOutputs);
   });
@@ -107,35 +107,35 @@ promise_test(async t => {
   const graph =
       await builder.build({'output': builder.mul(lhsOperand, rhsOperand)});
 
-  const lhsBuffer = await context.createTensor({
+  const lhsTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.WRITE_TO,
   });
-  const rhsBuffer = await context.createTensor({
+  const rhsTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.WRITE_TO,
   });
-  const outputBuffer = await context.createTensor({
+  const outputTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
     usage: MLTensorUsage.READ_FROM,
   });
   // Initialize inputs
   const inputData = new Float32Array(1).fill(2.0);
-  context.writeTensor(lhsBuffer, inputData);
-  context.writeTensor(rhsBuffer, inputData);
+  context.writeTensor(lhsTensor, inputData);
+  context.writeTensor(rhsTensor, inputData);
   context.dispatch(
       graph, {
-        'lhs': lhsBuffer,
-        'rhs': rhsBuffer,
+        'lhs': lhsTensor,
+        'rhs': rhsTensor,
       },
-      {'output': outputBuffer});
+      {'output': outputTensor});
 
   graph.destroy();
-  const outputData = await context.readTensor(outputBuffer);
+  const outputData = await context.readTensor(outputTensor);
   assert_array_equals(
       new Float32Array(outputData), [4],
-      'Read buffer data equals expected data.');
+      'Read tensor data equals expected data.');
 }, 'Destroying graph after dispatch() and before readTensor() is OK.');

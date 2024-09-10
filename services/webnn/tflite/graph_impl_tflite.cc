@@ -398,16 +398,16 @@ void GraphImplTflite::DispatchImpl(
   named_input_buffer_states.reserve(named_inputs.size());
   named_output_buffer_states.reserve(named_outputs.size());
 
-  for (const auto& [name, buffer] : named_inputs) {
+  for (const auto& [name, tensor] : named_inputs) {
     named_input_buffer_states.emplace_back(
-        name, static_cast<TensorImplTflite*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplTflite*>(tensor)->GetBufferState());
   }
-  for (const auto& [name, buffer] : named_outputs) {
+  for (const auto& [name, tensor] : named_outputs) {
     named_output_buffer_states.emplace_back(
-        name, static_cast<TensorImplTflite*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplTflite*>(tensor)->GetBufferState());
   }
 
-  // Input buffers will be read from while the graph is executing, so lock them
+  // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_inputs.size());
@@ -415,7 +415,7 @@ void GraphImplTflite::DispatchImpl(
     shared_resources.push_back(buffer_state);
   }
 
-  // Exclusively reserve all output buffers - which will be written to - and
+  // Exclusively reserve all output tensors - which will be written to - and
   // this graph's compute resources while the graph is executing.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
   // Extra +1 is for the compute resources.

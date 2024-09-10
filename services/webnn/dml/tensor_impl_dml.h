@@ -43,10 +43,10 @@ class TensorImplDml final : public WebNNTensorImpl {
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
-  // The D3D12 resource that holds the buffer data.
+  // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive
   // the scope of this `TensorImplDml` instance because it may be used
-  // as the key to cache and synchronize buffers used in recordering.
+  // as the key to cache and synchronize buffers used in recording.
   const Microsoft::WRL::ComPtr<ID3D12Resource> buffer_;
 
   // The fence value used to track progress of GPU execution of commands using

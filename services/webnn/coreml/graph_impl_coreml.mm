@@ -153,15 +153,15 @@ API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
 ToNamedBufferStateMap(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers) {
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors) {
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       buffer_states;
-  buffer_states.reserve(named_buffers.size());
+  buffer_states.reserve(named_tensors.size());
 
-  for (const auto& [name, buffer] : named_buffers) {
+  for (const auto& [name, tensor] : named_tensors) {
     buffer_states.emplace(
-        name, static_cast<TensorImplCoreml*>(buffer)->GetBufferState());
+        name, static_cast<TensorImplCoreml*>(tensor)->GetBufferState());
   }
 
   return buffer_states;
@@ -522,7 +522,7 @@ void GraphImplCoreml::DispatchImpl(
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       named_output_buffer_states = ToNamedBufferStateMap(named_outputs);
 
-  // Input buffers will be read from while the graph is executing, so lock them
+  // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_inputs.size());
@@ -530,7 +530,7 @@ void GraphImplCoreml::DispatchImpl(
       named_input_buffer_states, std::back_inserter(shared_resources),
       [](const auto& name_and_state) { return name_and_state.second; });
 
-  // Exclusively reserve all output buffers, which will be written to.
+  // Exclusively reserve all output tensors, which will be written to.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
   exclusive_resources.reserve(named_outputs.size());
   base::ranges::transform(

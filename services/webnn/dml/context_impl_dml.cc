@@ -36,7 +36,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace {
 
-void HandleBufferCreationFailure(
+void HandleTensorCreationFailure(
     const std::string& error_message,
     WebNNContextImpl::CreateTensorImplCallback callback) {
   std::move(callback).Run(base::unexpected(
@@ -440,8 +440,8 @@ void ContextImplDml::CreateTensorImpl(
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
       static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
-    HandleBufferCreationFailure("Failed to create buffer.",
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
+    HandleTensorCreationFailure("Failed to create tensor.",
                                 std::move(callback));
     return;
   }
@@ -485,7 +485,7 @@ void ContextImplDml::CreateTensorImpl(
   }
 
   if (FAILED(hr)) {
-    HandleBufferCreationFailure("Failed to create buffer.",
+    HandleTensorCreationFailure("Failed to create tensor.",
                                 std::move(callback));
     HandleContextLostOrCrash("Failed to create the external buffer.", hr);
     return;
@@ -521,7 +521,7 @@ void ContextImplDml::ReadTensor(
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleContextLostOrCrash("Failed to create the download buffer.", hr);
     return;
   }
@@ -529,25 +529,25 @@ void ContextImplDml::ReadTensor(
   hr = StartRecordingIfNecessary();
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to start recording.", hr);
     return;
   }
 
-  command_recorder_->ReadbackBufferWithBarrier(download_buffer, src_tensor,
+  command_recorder_->ReadbackTensorWithBarrier(download_buffer, src_tensor,
                                                src_tensor_size);
 
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to close and execute the command list.", hr);
     return;
   }
 
   // The source and readback buffer is held alive during execution by the
-  // recorder by calling `ReadbackBufferWithBarrier()` then
+  // recorder by calling `ReadbackTensorWithBarrier()` then
   // CommandRecorder::CloseAndExecute().
   adapter_->command_queue()->WaitAsync(base::BindOnce(
       &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
@@ -561,7 +561,7 @@ void ContextImplDml::OnReadbackComplete(
     HRESULT hr) {
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleRecordingError("Failed to download the buffer.", hr);
     return;
   }
@@ -573,7 +573,7 @@ void ContextImplDml::OnReadbackComplete(
   hr = download_buffer->Map(0, nullptr, &mapped_download_data);
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+        mojom::Error::Code::kUnknownError, "Failed to read tensor."));
     HandleContextLostOrCrash("Failed to map the download buffer.", hr);
     return;
   }
@@ -631,11 +631,11 @@ void ContextImplDml::WriteTensor(TensorImplDml* dst_tensor,
       return;
     }
 
-    command_recorder_->UploadBufferWithBarrier(
+    command_recorder_->UploadTensorWithBarrier(
         dst_tensor, std::move(buffer_to_map), src_buffer.size());
 
     // TODO(crbug.com/40278771): consider not submitting after every write.
-    // CloseAndExecute() only needs to be called once, when the buffer is read
+    // CloseAndExecute() only needs to be called once, when the tensor is read
     // by another context operation (ex. input into dispatch). Submitting
     // immediately prevents memory usage from increasing; however, it also
     // incurs more overhead due to a near empty command-list getting executed

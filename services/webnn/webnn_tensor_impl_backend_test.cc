@@ -206,20 +206,20 @@ WebNNTensorImplBackendTest::CreateWebNNContext() {
 base::expected<CreateTensorSuccess, webnn::mojom::Error::Code>
 CreateWebNNTensor(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
                   mojom::TensorInfoPtr tensor_info) {
-  base::test::TestFuture<mojom::CreateTensorResultPtr> create_buffer_future;
+  base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context_remote->CreateTensor(std::move(tensor_info),
-                                     create_buffer_future.GetCallback());
-  mojom::CreateTensorResultPtr create_buffer_result =
-      create_buffer_future.Take();
-  if (create_buffer_result->is_success()) {
+                                     create_tensor_future.GetCallback());
+  mojom::CreateTensorResultPtr create_tensor_result =
+      create_tensor_future.Take();
+  if (create_tensor_result->is_success()) {
     mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
     webnn_tensor_remote.Bind(
-        std::move(create_buffer_result->get_success()->tensor_remote));
+        std::move(create_tensor_result->get_success()->tensor_remote));
     return CreateTensorSuccess{
         std::move(webnn_tensor_remote),
-        std::move(create_buffer_result->get_success()->tensor_handle)};
+        std::move(create_tensor_result->get_success()->tensor_handle)};
   } else {
-    return base::unexpected(create_buffer_result->get_error()->code);
+    return base::unexpected(create_tensor_result->get_error()->code);
   }
 }
 
@@ -287,7 +287,7 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplManyTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
-// TODO(https://crbug.com/40278771): Test the buffer gets destroyed.
+// TODO(https://crbug.com/40278771): Test the tensor gets destroyed.
 
 TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTest) {
   BadMessageTestHelper bad_message_helper;
@@ -304,7 +304,7 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTest) {
   }
 
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
-  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> buffer_result =
+  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> tensor_result =
       CreateWebNNTensor(
           webnn_context_remote,
           mojom::TensorInfo::New(
@@ -312,8 +312,8 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTest) {
                                          std::array<uint32_t, 2>{2, 2}),
               MLTensorUsage{MLTensorUsageFlags::kWriteTo,
                             MLTensorUsageFlags::kReadFrom}));
-  if (buffer_result.has_value()) {
-    webnn_tensor_remote = std::move(buffer_result.value().webnn_tensor_remote);
+  if (tensor_result.has_value()) {
+    webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);
   }
 
   EXPECT_TRUE(webnn_tensor_remote.is_bound());
@@ -348,15 +348,15 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTooLargeTest) {
   }
 
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
-  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> buffer_result =
+  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> tensor_result =
       CreateWebNNTensor(
           webnn_context_remote,
           mojom::TensorInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
               MLTensorUsage{MLTensorUsageFlags::kWriteTo}));
-  if (buffer_result.has_value()) {
-    webnn_tensor_remote = std::move(buffer_result.value().webnn_tensor_remote);
+  if (tensor_result.has_value()) {
+    webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);
   }
 
   EXPECT_TRUE(webnn_tensor_remote.is_bound());
@@ -365,7 +365,7 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTooLargeTest) {
       std::array<const uint8_t, 5>({0xBB, 0xBB, 0xBB, 0xBB, 0xBB})));
 
   webnn_context_remote.FlushForTesting();
-  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
+  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidTensor);
 }
 
 // Creating two or more WebNNContexts(s) with separate tokens should always

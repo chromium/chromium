@@ -35,10 +35,10 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // Instances should only be constructed via `MLContext.createTensor()`.
   // This method is public as required by the `MakeGarbageCollected` helper.
   //
-  // `descriptor` describes the buffer data type and shape.
+  // `descriptor` describes the tensor data type and shape.
   // `create_tensor_success` contains the resulting handles to the created
-  // buffer. which may be used to execute a context operation with respective
-  // buffer.
+  // tensor. which may be used to execute a context operation with respective
+  // tensor.
   MLTensor(ExecutionContext* execution_context,
            MLContext* context,
            webnn::OperandDescriptor descriptor,
@@ -75,7 +75,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   bool IsValid() const { return remote_tensor_.is_bound(); }
 
   // Read data from the MLTensor. The resolver should be resolved with a copy of
-  // the buffer data. Otherwise, the resolver should be rejected accordingly.
+  // the tensor data. Otherwise, the resolver should be rejected accordingly.
   ScriptPromise<DOMArrayBuffer> ReadTensorImpl(ScriptState* script_state,
                                                ExceptionState& exception_state);
 

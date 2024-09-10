@@ -64,10 +64,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   void WriteTensor(mojo_base::BigBuffer src_buffer) override;
 
   // `OnDisconnect` is called from two places.
-  //  - When the buffer is explicitly destroyed by the WebNN
+  //  - When the tensor is explicitly destroyed by the WebNN
   //  developer via the WebNN API.
-  //  - When the buffer is dropped by the WebNN developer where
-  //  the buffer gets implicitly destroyed upon garbage collection.
+  //  - When the tensor is dropped by the WebNN developer where
+  //  the tensor gets implicitly destroyed upon garbage collection.
   void OnDisconnect();
 
   const OperandDescriptor descriptor_;

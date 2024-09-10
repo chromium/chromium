@@ -81,7 +81,7 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 };
 
 // A fake WebNNTensor Mojo interface implementation that binds a pipe for
-// buffer creation message.
+// tensor creation message.
 class FakeWebNNTensorImpl final : public WebNNTensorImpl {
  public:
   FakeWebNNTensorImpl(
@@ -210,7 +210,7 @@ bool ValidateInputsForComputing(
 }
 
 struct CreateTensorSuccess {
-  std::optional<mojo::AssociatedRemote<mojom::WebNNTensor>> webnn_buffer;
+  std::optional<mojo::AssociatedRemote<mojom::WebNNTensor>> webnn_tensor;
   blink::WebNNTensorToken webnn_handle;
 };
 
@@ -218,19 +218,19 @@ CreateTensorSuccess CreateWebNNTensor(
     mojo::Remote<mojom::WebNNContext>& webnn_context,
     OperandDataType data_type,
     std::vector<uint32_t> shape) {
-  base::test::TestFuture<mojom::CreateTensorResultPtr> create_buffer_future;
+  base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context->CreateTensor(
       mojom::TensorInfo::New(*OperandDescriptor::Create(data_type, shape),
                              MLTensorUsage()),
-      create_buffer_future.GetCallback());
-  mojom::CreateTensorResultPtr create_buffer_result =
-      create_buffer_future.Take();
-  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_buffer;
-  webnn_buffer.Bind(
-      std::move(create_buffer_result->get_success()->tensor_remote));
+      create_tensor_future.GetCallback());
+  mojom::CreateTensorResultPtr create_tensor_result =
+      create_tensor_future.Take();
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor;
+  webnn_tensor.Bind(
+      std::move(create_tensor_result->get_success()->tensor_remote));
   return CreateTensorSuccess{
-      std::move(webnn_buffer),
-      std::move(create_buffer_result->get_success()->tensor_handle)};
+      std::move(webnn_tensor),
+      std::move(create_tensor_result->get_success()->tensor_handle)};
 }
 
 mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
@@ -270,17 +270,17 @@ bool ValidateDispatch(
   // Set up the error handler for bad mojo messages.
   mojo::SetDefaultProcessErrorHandler(
       base::BindLambdaForTesting([&](const std::string& error_message) {
-        EXPECT_EQ(error_message, kBadMessageInvalidBuffer);
+        EXPECT_EQ(error_message, kBadMessageInvalidTensor);
         valid = false;
       }));
 
-  // Assign buffers for the inputs.
+  // Assign tensors for the inputs.
   base::flat_map<std::string, blink::WebNNTensorToken> dispatch_inputs;
   for (const auto& [name, tensor_info] : inputs) {
     dispatch_inputs.emplace(name, tensor_info.webnn_handle);
   }
 
-  // Assign buffers for the outputs.
+  // Assign tensors for the outputs.
   base::flat_map<std::string, blink::WebNNTensorToken> dispatch_outputs;
   for (const auto& [name, tensor_info] : outputs) {
     dispatch_outputs.emplace(name, tensor_info.webnn_handle);
@@ -7118,12 +7118,12 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs using the same buffer more than once.
+    // Test the inputs using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    inputs["rhs"] = {/*webnn_buffer=*/std::nullopt, inputs["lhs"].webnn_handle};
+    inputs["rhs"] = {/*webnn_tensor=*/std::nullopt, inputs["lhs"].webnn_handle};
     base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7131,7 +7131,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
                                  std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the invalid outputs when using the same buffer more than once.
+    // Test the invalid outputs when using the same tensor more than once.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
@@ -7139,31 +7139,31 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    outputs["output2"] = {/*webnn_buffer=*/std::nullopt,
+    outputs["output2"] = {/*webnn_tensor=*/std::nullopt,
                           outputs["output1"].webnn_handle};
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs and outputs are invalid when using the same buffer.
+    // Test the inputs and outputs are invalid when using the same tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
     inputs["lhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateTensorSuccess> outputs;
-    outputs["output1"] = {/*webnn_buffer=*/std::nullopt,
+    outputs["output1"] = {/*webnn_tensor=*/std::nullopt,
                           inputs["lhs"].webnn_handle};
     outputs["output2"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the inputs are invalid when using a invalid buffer.
+    // Test the inputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
-    inputs["lhs"] = {/*webnn_buffer=*/std::nullopt};
+    inputs["lhs"] = {/*webnn_tensor=*/std::nullopt};
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
@@ -7172,7 +7172,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
                                   std::move(inputs), std::move(outputs)));
   }
   {
-    // Test the outputs are invalid when using a invalid buffer.
+    // Test the outputs are invalid when using a invalid tensor.
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateTensorSuccess> inputs;
@@ -7180,7 +7180,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     inputs["rhs"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateTensorSuccess> outputs;
     outputs["output1"] = CreateWebNNTensor(webnn_context, kDataType, kShape);
-    outputs["output2"] = {/*webnn_buffer=*/std::nullopt};
+    outputs["output2"] = {/*webnn_tensor=*/std::nullopt};
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }

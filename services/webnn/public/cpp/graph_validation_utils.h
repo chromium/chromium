@@ -687,7 +687,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 
 // Validate the creation of an MLTensor given `descriptor`.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    ValidateBuffer(const ContextProperties& context_properties,
+    ValidateTensor(const ContextProperties& context_properties,
                    OperandDescriptor descriptor);
 
 // Validate that the axes are within the range of [0, rank - 1] without

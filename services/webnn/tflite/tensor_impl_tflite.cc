@@ -32,9 +32,9 @@ TensorImplTflite::Create(
   // TODO(crbug.com/356670455): Consider moving this check to the renderer and
   // throwing a TypeError.
   if (!base::IsValueInRangeForNumericType<int>(size)) {
-    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
+    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create buffer."));
+                                              "Failed to create tensor."));
   }
 
   auto buffer_content = std::make_unique<BufferContent>(size);

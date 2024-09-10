@@ -2515,7 +2515,7 @@ base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
   return base::ok();
 }
 
-base::expected<void, std::string> ValidateBuffer(
+base::expected<void, std::string> ValidateTensor(
     const ContextProperties& context_properties,
     OperandDescriptor descriptor) {
   // TODO(crbug.com/343638938): Consider adding more constraints to MLTensor
