@@ -235,6 +235,7 @@ void CloudPolicyRefreshScheduler::OnStoreError(CloudPolicyStore* store) {
       !has_retried_with_key_reset_) {
     has_retried_with_key_reset_ = true;
     static_cast<DesktopCloudPolicyStore*>(store)->ResetPolicyKey();
+    client_->clear_public_key_version();
     RefreshSoon(PolicyFetchReason::kRetry);
   }
 #endif
