@@ -17,6 +17,7 @@
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {
@@ -49,7 +50,8 @@ class SharingIOSPushSender : public SharingMessageSender::SendMessageDelegate {
   SharingIOSPushSender(
       SharingMessageBridge* sharing_message_bridge,
       const syncer::DeviceInfoTracker* device_info_tracker,
-      const syncer::LocalDeviceInfoProvider* local_device_info_provider);
+      const syncer::LocalDeviceInfoProvider* local_device_info_provider,
+      const syncer::SyncService* sync_service);
   SharingIOSPushSender(const SharingIOSPushSender&) = delete;
   SharingIOSPushSender& operator=(const SharingIOSPushSender&) = delete;
   ~SharingIOSPushSender() override;
@@ -77,6 +79,7 @@ class SharingIOSPushSender : public SharingMessageSender::SendMessageDelegate {
   const raw_ptr<const syncer::DeviceInfoTracker> device_info_tracker_;
   const raw_ptr<const syncer::LocalDeviceInfoProvider>
       local_device_info_provider_;
+  const raw_ptr<const syncer::SyncService> sync_service_;
 
   base::WeakPtrFactory<SharingIOSPushSender> weak_ptr_factory_{this};
 };
