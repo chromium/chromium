@@ -58,12 +58,28 @@ enum class DanglingPtrType {
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
     kDanglingPtrTypeParam;
 
+enum class PartitionAllocWithAdvancedChecksEnabledProcesses {
+  // Enabled only in the browser process.
+  kBrowserOnly,
+  // Enabled only in the browser and renderer processes.
+  kBrowserAndRenderer,
+  // Enabled in all processes, except renderer.
+  kNonRenderer,
+  // Enabled in all processes.
+  kAllProcesses,
+};
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
 BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValue();
 BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocWithAdvancedChecks);
+extern const BASE_EXPORT
+    base::FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
+        kPartitionAllocWithAdvancedChecksEnabledProcessesParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
 // Scheduler Loop Quarantine's per-thread capacity in bytes.
 extern const BASE_EXPORT base::FeatureParam<int>

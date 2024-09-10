@@ -98,6 +98,11 @@ class BASE_EXPORT PartitionAllocSupport {
   // For calling from within third_party/blink/.
   static bool ShouldEnableMemoryTaggingInRendererProcess();
 
+  // Returns true if PA advanced checks should be enabled if available for the
+  // given process type. May be called multiple times per process.
+  static bool ShouldEnablePartitionAllocWithAdvancedChecks(
+      const std::string& process_type);
+
  private:
   PartitionAllocSupport();
 

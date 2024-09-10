@@ -96,6 +96,25 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kPartitionAllocWithAdvancedChecks,
+             "PartitionAllocWithAdvancedChecks",
+             FEATURE_DISABLED_BY_DEFAULT);
+constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
+    kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
+         "browser-only"},
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserAndRenderer,
+         "browser-and-renderer"},
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kNonRenderer,
+         "non-renderer"},
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kAllProcesses,
+         "all-processes"}};
+const base::FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
+    kPartitionAllocWithAdvancedChecksEnabledProcessesParam{
+        &kPartitionAllocWithAdvancedChecks, "enabled-processes",
+        PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
+        &kPartitionAllocWithAdvancedChecksEnabledProcessesOptions};
+
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
              "PartitionAllocSchedulerLoopQuarantine",
              FEATURE_DISABLED_BY_DEFAULT);

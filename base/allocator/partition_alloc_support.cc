@@ -69,6 +69,11 @@
 #include "partition_alloc/memory_reclaimer.h"
 #endif
 
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <sys/system_properties.h>
 #endif
@@ -790,6 +795,46 @@ bool PartitionAllocSupport::ShouldEnableMemoryTaggingInRendererProcess() {
 }
 
 // static
+bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
+    const std::string& process_type) {
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocWithAdvancedChecks)) {
+    return false;
+  }
+
+  switch (base::features::kPartitionAllocWithAdvancedChecksEnabledProcessesParam
+              .Get()) {
+    case base::features::PartitionAllocWithAdvancedChecksEnabledProcesses::
+        kBrowserOnly:
+      return process_type.empty();
+    case base::features::PartitionAllocWithAdvancedChecksEnabledProcesses::
+        kBrowserAndRenderer:
+      return process_type.empty() || process_type == switches::kRendererProcess;
+    case base::features::PartitionAllocWithAdvancedChecksEnabledProcesses::
+        kNonRenderer:
+      return process_type != switches::kRendererProcess;
+    case base::features::PartitionAllocWithAdvancedChecksEnabledProcesses::
+        kAllProcesses:
+      return true;
+  }
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+allocator_shim::AllocatorDispatch g_dispatch_for_advanced_checks = {
+    .realloc_function =
+        &allocator_shim::internal::PartitionReallocWithAdvancedChecks,
+    .free_function = &allocator_shim::internal::PartitionFreeWithAdvancedChecks,
+    .next = nullptr,
+};
+#endif  // PA_BUILDFLAG(
+        // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+
+// static
 PartitionAllocSupport::BrpConfiguration
 PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
@@ -1083,6 +1128,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableLargeEmptySlotSpanRing();
   }
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+  bool enable_pa_with_advanced_checks =
+      ShouldEnablePartitionAllocWithAdvancedChecks(process_type);
+  if (enable_pa_with_advanced_checks) {
+    allocator_shim::InstallDispatchToPartitionAllocWithAdvancedChecks(
+        &g_dispatch_for_advanced_checks);
+  }
+#endif  // PA_BUILDFLAG(
+        // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_WIN)
