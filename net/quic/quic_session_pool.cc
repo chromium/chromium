@@ -545,10 +545,7 @@ QuicSessionPool::~QuicSessionPool() {
   UMA_HISTOGRAM_COUNTS_1000("Net.NumQuicSessionsAtShutdown",
                             all_sessions_.size());
   CloseAllSessions(ERR_ABORTED, quic::QUIC_CONNECTION_CANCELLED);
-  while (!all_sessions_.empty()) {
-    delete all_sessions_.begin()->first;
-    all_sessions_.erase(all_sessions_.begin());
-  }
+  all_sessions_.clear();
   active_jobs_.clear();
 
   DCHECK(dns_aliases_by_session_key_.empty());
@@ -736,7 +733,9 @@ void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {
     active_sessions_.erase(session_key);
     ProcessGoingAwaySession(session, session_key.server_id(), true);
   }
-  ProcessGoingAwaySession(session, all_sessions_[session].server_id(), false);
+  const auto it = all_sessions_.find(session);
+  CHECK(it != all_sessions_.end());
+  ProcessGoingAwaySession(session, it->second.server_id(), false);
   if (!aliases.empty()) {
     DCHECK(base::Contains(session_peer_ip_, session));
     const IPEndPoint peer_address = session_peer_ip_[session];
@@ -752,8 +751,9 @@ void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {
 void QuicSessionPool::OnSessionClosed(QuicChromiumClientSession* session) {
   DCHECK_EQ(0u, session->GetNumActiveStreams());
   OnSessionGoingAway(session);
-  delete session;
-  all_sessions_.erase(session);
+  auto it = all_sessions_.find(session);
+  CHECK(it != all_sessions_.end());
+  all_sessions_.erase(it);
 }
 
 void QuicSessionPool::OnBlackholeAfterHandshakeConfirmed(
@@ -1099,7 +1099,7 @@ void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
   auto it = all_sessions_.begin();
   // Sessions may be deleted while iterating through the map.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first;
+    QuicChromiumClientSession* session = it->first.get();
     ++it;
     session->OnNetworkConnected(network);
   }
@@ -1121,7 +1121,7 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
   auto it = all_sessions_.begin();
   // Sessions may be deleted while iterating through the map.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first;
+    QuicChromiumClientSession* session = it->first.get();
     ++it;
     session->OnNetworkDisconnectedV2(/*disconnected_network*/ network);
   }
@@ -1162,7 +1162,7 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   auto it = all_sessions_.begin();
   // Sessions may be deleted while iterating through the map.
   while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->first;
+    QuicChromiumClientSession* session = it->first.get();
     ++it;
     session->OnNetworkMadeDefault(network);
   }
@@ -1258,16 +1258,19 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
 
 void QuicSessionPool::ActivateSessionForTesting(
     const url::SchemeHostPort& destination,
-    QuicChromiumClientSession* session) {
-  all_sessions_.emplace(
-      session, QuicSessionAliasKey(destination, session->quic_session_key()));
-  ActivateSession(all_sessions_[session], session, std::set<std::string>());
+    std::unique_ptr<QuicChromiumClientSession> new_session) {
+  QuicChromiumClientSession* session = new_session.get();
+  QuicSessionAliasKey alias_key(destination, session->quic_session_key());
+  all_sessions_.emplace(std::move(new_session), alias_key);
+  ActivateSession(alias_key, session, std::set<std::string>());
 }
 
 void QuicSessionPool::DeactivateSessionForTesting(
     QuicChromiumClientSession* session) {
   OnSessionGoingAway(session);
-  all_sessions_.erase(session);
+  auto it = all_sessions_.find(session);
+  CHECK(it != all_sessions_.end());
+  all_sessions_.erase(it);
 }
 
 void QuicSessionPool::SetTimeDelayForWaitingJobForTesting(
@@ -1691,7 +1694,7 @@ bool QuicSessionPool::CreateSessionHelper(
     require_confirmation = true;
   }
 
-  *session = new QuicChromiumClientSession(
+  auto new_session = std::make_unique<QuicChromiumClientSession>(
       connection, std::move(socket), this, quic_crypto_client_stream_factory_,
       clock_, transport_security_state_, ssl_config_service_,
       std::move(server_info), key.session_key(), require_confirmation,
@@ -1709,8 +1712,9 @@ bool QuicSessionPool::CreateSessionHelper(
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), metadata, params_.report_ecn,
       params_.enable_origin_frame, net_log);
+  *session = new_session.get();
 
-  all_sessions_[*session] = std::move(key);  // owning pointer
+  all_sessions_.emplace(std::move(new_session), std::move(key));
   writer->set_delegate(*session);
   (*session)->AddConnectivityObserver(&connectivity_monitor_);
 

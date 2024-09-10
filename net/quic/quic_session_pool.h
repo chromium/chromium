@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
@@ -512,8 +513,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   int CountActiveSessions() { return active_sessions_.size(); }
 
   // Inject a QUIC session for testing various edge cases.
-  void ActivateSessionForTesting(const url::SchemeHostPort& destination,
-                                 QuicChromiumClientSession* session);
+  void ActivateSessionForTesting(
+      const url::SchemeHostPort& destination,
+      std::unique_ptr<QuicChromiumClientSession> new_session);
 
   void DeactivateSessionForTesting(QuicChromiumClientSession* session);
 
@@ -539,8 +541,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   friend class test::QuicSessionPoolPeer;
 
   using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
-  using SessionIdMap =
-      std::map<QuicChromiumClientSession*, QuicSessionAliasKey>;
+  using SessionIdMap = std::map<std::unique_ptr<QuicChromiumClientSession>,
+                                QuicSessionAliasKey,
+                                base::UniquePtrComparator>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
   using SessionSet =

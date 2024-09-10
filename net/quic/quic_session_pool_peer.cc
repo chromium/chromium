@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -82,7 +83,7 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
   DCHECK(key == factory->all_sessions_.begin()->second);
-  return factory->all_sessions_.begin()->first;
+  return factory->all_sessions_.begin()->first.get();
 }
 
 QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
@@ -103,12 +104,7 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
 
 bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* factory,
                                         QuicChromiumClientSession* session) {
-  for (const auto& it : factory->all_sessions_) {
-    if (it.first == session) {
-      return true;
-    }
-  }
-  return false;
+  return base::Contains(factory->all_sessions_, session);
 }
 
 void QuicSessionPoolPeer::SetTaskRunner(
