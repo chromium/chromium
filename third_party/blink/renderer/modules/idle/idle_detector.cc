@@ -109,8 +109,11 @@ String IdleDetector::screenState() const {
 ScriptPromise<V8PermissionState> IdleDetector::requestPermission(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Execution context is detached.");
     return EmptyPromise();
+  }
 
   auto* context = ExecutionContext::From(script_state);
   return IdleManager::From(context)->RequestPermission(script_state,
