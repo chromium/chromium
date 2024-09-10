@@ -1279,6 +1279,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.GenerateCertificate.Algorithm"
+    enum="GenerateCertificateAlgorithms" expires_after="2025-06-01">
+  <owner>hta@chromium.org</owner>
+  <owner>philipp.hancke@googlemail.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Counts the different algorithms used in
+    RTCPeerConnection.generateCertificate. Measured when generateCertificate is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.IPMetrics" enum="PeerConnectionCounters"
     expires_after="2024-06-15">
   <owner>hta@chromium.org</owner>

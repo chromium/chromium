@@ -490,6 +490,50 @@ bool ContainsOpusStereo(String sdp) {
   return sdp.Find("stereo=1") != kNotFound;
 }
 
+// Keep in sync with tools/metrics/histograms/metadata/web_rtc/enums.xml
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GenerateCertificateAlgorithms {
+  kEcDsaP256 = 0,
+  kRsa1024,
+  kRsa2048,
+  kRsa4096,
+  kRsa8192,
+  kRsaOther,
+  kMaxValue = kRsaOther,
+};
+
+void MeasureGenerateCertificateKeyType(
+    const std::optional<rtc::KeyParams>& key_params) {
+  if (!key_params.has_value()) {
+    return;
+  }
+  GenerateCertificateAlgorithms bucket =
+      GenerateCertificateAlgorithms::kEcDsaP256;
+  if (key_params->type() == rtc::KT_RSA) {
+    switch (key_params->rsa_params().mod_size) {
+      case 1024:
+        bucket = GenerateCertificateAlgorithms::kRsa1024;
+        break;
+      case 2048:
+        bucket = GenerateCertificateAlgorithms::kRsa2048;
+        break;
+      case 4096:
+        bucket = GenerateCertificateAlgorithms::kRsa4096;
+        break;
+      case 8192:
+        bucket = GenerateCertificateAlgorithms::kRsa8192;
+        break;
+      default:
+        bucket = GenerateCertificateAlgorithms::kRsaOther;
+        break;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION(
+      "WebRTC.PeerConnection.GenerateCertificate.Algorithms", bucket,
+      GenerateCertificateAlgorithms::kMaxValue);
+}
+
 }  // namespace
 
 RTCPeerConnection::EventWrapper::EventWrapper(Event* event,
@@ -1360,6 +1404,7 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
           crypto_algorithm.RsaHashedKeyGenParams()->ModulusLengthBits();
       // Parameters must fit in int to be passed to rtc::KeyParams::RSA. The
       // only recognized "hash" is "SHA-256".
+      // TODO(bugs.webrtc.org/364338811): deprecate 1024 bit keys.
       if (public_exponent &&
           base::IsValueInRangeForNumericType<int>(*public_exponent) &&
           base::IsValueInRangeForNumericType<int>(modulus_length) &&
@@ -1395,6 +1440,7 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
       return EmptyPromise();
   }
   DCHECK(key_params.has_value());
+  MeasureGenerateCertificateKeyType(key_params);
 
   auto certificate_generator = std::make_unique<RTCCertificateGenerator>();
 
