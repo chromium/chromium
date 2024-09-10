@@ -290,12 +290,8 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
 
           case H264NALU::kFiller:
           case H264NALU::kUnspecified:
-            if (!(order_state >= kAfterFirstVCL &&
-                  order_state < kEOStreamAllowed)) {
-              DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
-                       << " in order_state " << order_state;
-              return result;
-            }
+            // These syntax elements are to simply be ignored according to H264
+            // Annex B 7.4.2.7
             break;
 
           default:
