@@ -65,6 +65,11 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void UpdateGroupLabel();
 
   Member<HTMLSlotElement> opt_group_slot_;
+
+  // stylable_select_rendering_ is set to true when the StylableSelect flag is
+  // enabled and this element is in the DOM subtree of a <select> which
+  // UsesMenuList.
+  bool stylable_select_rendering_;
 };
 
 }  // namespace blink

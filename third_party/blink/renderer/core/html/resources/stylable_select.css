@@ -163,3 +163,11 @@ select:open::select-fallback-button::after {
 select:not(:open)::select-fallback-button::after {
   content: counter(fake-counter-name, disclosure-closed);
 }
+
+select:not(:-internal-list-box) optgroup {
+  padding-inline: 2px;
+}
+/* This can be merged with the :-internal-list-box rule in html.css */
+select:not(:-internal-list-box) optgroup option {
+  padding-inline-start: 20px;
+}

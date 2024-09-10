@@ -518,6 +518,8 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     // remove the code in HTMLSelectElement::ChildrenChanged and
     // HTMLOptGroupElement::ChildrenChanged which handles this case as well as
     // the code here which avoids handling it.
+    // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
+    // the case when the select's rendering is changed after insertion.
     SetTextOnlyRendering(!parent_select->UsesMenuList());
     return return_value;
   }
@@ -533,6 +535,8 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       if (passed_insertion_point) {
+        // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
+        // the case when the select's rendering is changed after insertion.
         SetTextOnlyRendering(!select->UsesMenuList());
         select->OptionInserted(*this, Selected());
       }
