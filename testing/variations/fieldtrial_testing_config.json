@@ -23385,6 +23385,25 @@
             ]
         }
     ],
+    "TranslateBubbleOpenSettings": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TranslateBubbleOpenSettings",
+                    "enable_features": [
+                        "TranslateOpenSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "TransportSecurityFileWriterSchedule": [
         {
             "platforms": [
