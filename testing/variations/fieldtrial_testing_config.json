@@ -1117,24 +1117,6 @@
             ]
         }
     ],
-    "ArcVmMemorySize": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledVmMemSize-500_20231031",
-                    "params": {
-                        "shift_mib": "-500"
-                    },
-                    "enable_features": [
-                        "ArcVmMemorySize"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmS2Idle": [
         {
             "platforms": [
@@ -1161,12 +1143,14 @@
                     "name": "VirtualSwapEnabled_25PercentVmSize_10SecondSwapInterval",
                     "params": {
                         "guest_reclaim_enabled": "true",
+                        "ram_percentage": "75",
                         "size_percentage": "25",
                         "virtual_swap_enabled": "true",
                         "virtual_swap_interval_ms": "10000"
                     },
                     "enable_features": [
-                        "ArcGuestZram"
+                        "ArcGuestZram",
+                        "ArcVmMemorySize"
                     ]
                 }
             ]
