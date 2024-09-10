@@ -72,7 +72,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
       SupervisedUserWebContentHandlerImpl(web_contents.get(),
-                                          /*frame_id=*/0,
+                                          content::FrameTreeNodeId(),
                                           /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -109,7 +109,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
       SupervisedUserWebContentHandlerImpl(web_contents.get(),
-                                          /*frame_id=*/0,
+                                          content::FrameTreeNodeId(),
                                           /*interstitial_navigation_id=*/0);
 
   // Receive a request canceled by the parent.
@@ -144,7 +144,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
       SupervisedUserWebContentHandlerImpl(web_contents.get(),
-                                          /*frame_id=*/0,
+                                          content::FrameTreeNodeId(),
                                           /*interstitial_navigation_id=*/0);
 
   // Receive a request accepted by the parent with a total duration of 5
