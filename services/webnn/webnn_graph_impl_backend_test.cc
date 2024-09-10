@@ -523,7 +523,7 @@ struct BatchNormalizationTester {
     }
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -712,7 +712,7 @@ struct Conv2dTester {
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -977,7 +977,7 @@ struct ElementWiseBinaryTester {
     named_inputs.insert({"rhs", VectorToBigBuffer(rhs.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
 #if BUILDFLAG(IS_MAC)
@@ -1016,7 +1016,7 @@ struct ElementWiseBinaryTester {
     named_inputs.insert({"rhs", VectorToBigBuffer(rhs.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -1091,7 +1091,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithSplitAndReshape) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   // [[1  2]
@@ -1179,7 +1179,7 @@ struct UnaryOperatorTester {
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
@@ -1277,7 +1277,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoRelu) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(
@@ -1312,7 +1312,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithReshapeAsLastNode) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -1346,7 +1346,7 @@ TEST_F(WebNNGraphImplBackendTest,
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -1378,7 +1378,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoReshape) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -1410,7 +1410,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoOutputs) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(
@@ -1471,7 +1471,7 @@ struct GemmTester {
     }
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -1605,7 +1605,7 @@ struct GruTester {
     }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
@@ -1945,7 +1945,7 @@ struct GruCellTester {
     }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
@@ -2061,7 +2061,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeMultipleOperatorGemm) {
   named_inputs.insert({"input_b", VectorToBigBuffer(input_b_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -2088,7 +2088,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
   named_inputs.insert({"input_a", VectorToBigBuffer(input_a_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -2141,7 +2141,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
 
   // The GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  webnn_graph_builder_remote->CreateGraph(builder.CloneGraphInfo(),
+  webnn_graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
                                           create_graph_future.GetCallback());
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   EXPECT_FALSE(create_graph_result->is_error());
@@ -2254,7 +2254,7 @@ struct InstanceNormalizationTester {
     }
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -2325,7 +2325,7 @@ struct LayerNormalizationTester {
     }
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
@@ -2368,7 +2368,7 @@ struct LayerNormalizationTester {
     }
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
@@ -2548,7 +2548,7 @@ struct LstmTester {
     }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
@@ -2707,7 +2707,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
                       std::move(attributes));
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-    BuildAndCompute(builder.CloneGraphInfo(), /*named_inputs=*/{},
+    BuildAndCompute(builder.TakeGraphInfo(), /*named_inputs=*/{},
                     named_outputs);
 
     ASSERT_EQ(named_outputs.size(), 2u);
@@ -2788,7 +2788,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
       {"cellState", VectorToBigBuffer(initial_cell_state_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   ASSERT_EQ(named_outputs.size(), 2u);
@@ -2858,7 +2858,7 @@ struct MatmulTester {
     named_inputs.insert({"input_b", VectorToBigBuffer(input_b.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyFloatDataIsEqual(
@@ -3021,7 +3021,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -3070,7 +3070,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -3115,7 +3115,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
@@ -3152,7 +3152,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
   std::vector<float> input_data = {1, 1, 1, 1};
   named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({2, 2, 2, 2}));
@@ -3176,7 +3176,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReluWithOnlyConstantInput) {
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({0, 0, 1}));
@@ -3206,7 +3206,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeAddWithOnlyConstantInputs) {
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({3, 3, 3, 3}));
@@ -3248,7 +3248,7 @@ TEST_F(WebNNGraphImplBackendTest,
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({9, 9, 9, 9}));
@@ -3305,7 +3305,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
   named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({2, 2, 2, 2}));
@@ -3354,7 +3354,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
   named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({2, 2, 2, 2}));
@@ -3404,7 +3404,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
   named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({2, 2, 2, 2}));
@@ -3456,7 +3456,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
   named_inputs.insert({"input_b", VectorToBigBuffer(input_data2)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   // [[[[1.25 2.   3.  ]
@@ -3520,7 +3520,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   // [[[[ 0  0  0]
@@ -3556,7 +3556,7 @@ struct Resample2dTester {
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyFloatDataIsEqual(
@@ -3622,7 +3622,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoTranspose) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   // [[[[ -1  13]]
@@ -3676,7 +3676,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   // [[[[ 0  13]]
   //   [[ 0  17]]
@@ -3741,7 +3741,7 @@ TEST_F(WebNNGraphImplBackendTest,
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
 
   // [[ -1  -5  -9  -2  -6 -10  -3  -7 -11  -4  -8 -12]
@@ -3788,7 +3788,7 @@ TEST_F(WebNNGraphImplBackendTest,
   named_inputs.insert({"input", VectorToBigBuffer(input_data)});
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+  BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                   named_outputs);
   // [[ 0  0  0  0]
   //  [ 0  0  1  2]
@@ -3860,7 +3860,7 @@ TEST_F(WebNNGraphImplBackendTest,
                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     std::vector<float> expected_output_data{0,  0,  0, 0,  0,  0,  0, 0,  0,
@@ -3928,7 +3928,7 @@ TEST_F(WebNNGraphImplBackendTest,
                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyFloatDataIsEqual(
@@ -3993,7 +3993,7 @@ TEST_F(WebNNGraphImplBackendTest,
                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
-    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+    BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
     VerifyFloatDataIsEqual(

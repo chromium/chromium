@@ -526,16 +526,10 @@ class GraphInfoBuilder final {
 
   const mojom::GraphInfo& GetGraphInfo() const { return *graph_info_; }
 
-  // Get a clone of internal graph info. This is used by
-  // `WebNNContextDMLImplTest` because mojom::WebNNContext::CreateGraph()` needs
-  // to take the ownership of graph info.
-  //
-  // Notice cloning of graph info could be expensive and should only be used in
-  // tests.
+  // Prefer `TakeGraphInfo()` when possible. Cloning can be expensive and should
+  // only be used in tests.
   mojom::GraphInfoPtr CloneGraphInfo() const;
 
-  // TODO(crbug.com/354724062): Consider deprecating `CloneGraphInfo()` in favor
-  // of this method.
   mojom::GraphInfoPtr TakeGraphInfo();
 
  private:
