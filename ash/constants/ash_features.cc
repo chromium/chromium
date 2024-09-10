@@ -886,9 +886,7 @@ BASE_FEATURE(kEnableNssDbClientCertsRollback,
 
 // Enables WiFi QoS to detect and prioritize selected egress network traffic
 // using WiFi QoS/WMM in congested WiFi environments.
-BASE_FEATURE(kEnableWifiQos,
-             "EnableWifiQos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableWifiQos, "EnableWifiQos", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables WiFi QoS to detect and prioritize selected egress network traffic
 // using WiFi QoS/WMM in congested WiFi environments. For an Enterprise enrolled
