@@ -1420,6 +1420,50 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
   KioskSessionInitializedWaiter().Wait();
 }
 
+// Making sure the Kiosk flow still works when configured together with the
+// feature that allows to skip the gaia screen by reusing the credentials used
+// during the enrollment.
+class KioskEnrollmentTestWithAddUserFlowEnabled : public KioskEnrollmentTest {
+ public:
+  KioskEnrollmentTestWithAddUserFlowEnabled() {
+    feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    KioskEnrollmentTestWithAddUserFlowEnabled,
+    ManualEnrollmentAutolaunchKioskAppWithAddUserAfterEnrollment) {
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+
+  ScopedDeviceSettings settings;
+
+  SetupAutoLaunchApp(settings.owner_settings_service());
+  enrollment_screen()->OnConfirmationClosed();
+
+  // TODO(b/362725459) Once the cleanup is implemented, we should expect
+  // here the user_context to not be saved.
+  UserContext* user_context =
+      LoginDisplayHost::default_host()->GetWizardContext()->user_context.get();
+  EXPECT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAccountId().GetUserEmail(),
+            FakeGaiaMixin::kFakeUserEmail);
+  EXPECT_EQ(user_context->GetGaiaID(), FakeGaiaMixin::kFakeUserGaiaId);
+  EXPECT_TRUE(user_context->GetPassword());
+  EXPECT_EQ(user_context->GetPassword().value(),
+            PasswordInput(FakeGaiaMixin::kFakeUserPassword));
+  EXPECT_EQ(user_context->GetRefreshToken(), FakeGaiaMixin::kFakeRefreshToken);
+
+  // Wait for app to be launched.
+  KioskSessionInitializedWaiter().Wait();
+}
+
 // Test suite for a feature that allows to skip the Gaia screen by reusing the
 // credentials saved during enrollment. It depends on the
 // EnrollmentEmbeddedPolicyServerBase for a successful enrollment and the fake
