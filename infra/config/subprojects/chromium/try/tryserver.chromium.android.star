@@ -1350,34 +1350,6 @@ try_.builder(
     ),
 )
 
-# TODO(crbug.com/363275110): Remove after "try/android-cronet-arm-rel" is up.
-try_.builder(
-    name = "android_cronet",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/android-cronet-arm-rel",
-    ],
-    builder_config_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder_without_codecs",
-            "cronet_android",
-            "release_try_builder",
-            "remoteexec",
-            "arm_no_neon",
-        ],
-    ),
-    builderless = not settings.is_main,
-    contact_team_email = "cronet-team@google.com",
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 50,
-    },
-    main_list_view = "try",
-)
-
 try_.gpu.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,

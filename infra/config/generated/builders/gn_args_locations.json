@@ -633,7 +633,6 @@
     "android_compile_dbg": "try/android_compile_dbg/gn-args.json",
     "android_compile_x64_dbg": "try/android_compile_x64_dbg/gn-args.json",
     "android_compile_x86_dbg": "try/android_compile_x86_dbg/gn-args.json",
-    "android_cronet": "try/android_cronet/gn-args.json",
     "android_optional_gpu_tests_rel": "try/android_optional_gpu_tests_rel/gn-args.json",
     "gpu-fyi-cq-android-arm64": "try/gpu-fyi-cq-android-arm64/gn-args.json",
     "gpu-fyi-try-android-m-nexus-5x-64": "try/gpu-fyi-try-android-m-nexus-5x-64/gn-args.json",

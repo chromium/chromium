@@ -53,4 +53,3 @@ try/android-cronet-x86-dbg-nougat-tests
 try/android-cronet-x86-dbg-oreo-tests
 try/android-cronet-x86-dbg-pie-tests
 try/android-cronet-x86-rel
-try/android_cronet
