@@ -33,7 +33,8 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
 
   void ResolveCallback(Status status,
                        const std::string& user_email,
-                       const std::string& access_token);
+                       const std::string& access_token,
+                       const std::string& scopes);
 
   void ExpectInvalidateCache();
 
@@ -63,10 +64,11 @@ FakeOAuthTokenGetter::~FakeOAuthTokenGetter() {
 
 void FakeOAuthTokenGetter::ResolveCallback(Status status,
                                            const std::string& user_email,
-                                           const std::string& access_token) {
+                                           const std::string& access_token,
+                                           const std::string& scopes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!on_access_token_.is_null());
-  std::move(on_access_token_).Run(status, user_email, access_token);
+  std::move(on_access_token_).Run(status, user_email, access_token, scopes);
 }
 
 void FakeOAuthTokenGetter::ExpectInvalidateCache() {
@@ -109,11 +111,13 @@ class OAuthTokenGetterProxyTest : public testing::Test {
  protected:
   void TestCallWithTokenOnRunnerThread(OAuthTokenGetter::Status status,
                                        const std::string& user_email,
-                                       const std::string& access_token);
+                                       const std::string& access_token,
+                                       const std::string& scopes);
 
   void TestCallWithTokenOnMainThread(OAuthTokenGetter::Status status,
                                      const std::string& user_email,
-                                     const std::string& access_token);
+                                     const std::string& access_token,
+                                     const std::string& scopes);
 
   void ExpectInvalidateCache();
 
@@ -128,15 +132,18 @@ class OAuthTokenGetterProxyTest : public testing::Test {
     OAuthTokenGetter::Status status;
     std::string user_email;
     std::string access_token;
+    std::string scopes;
   };
 
   void TestCallWithTokenImpl(OAuthTokenGetter::Status status,
                              const std::string& user_email,
-                             const std::string& access_token);
+                             const std::string& access_token,
+                             const std::string& scopes);
 
   void OnTokenReceived(OAuthTokenGetter::Status status,
                        const std::string& user_email,
-                       const std::string& access_token);
+                       const std::string& access_token,
+                       const std::string& scopes);
 
   std::unique_ptr<TokenCallbackResult> expected_callback_result_;
 
@@ -160,20 +167,23 @@ void OAuthTokenGetterProxyTest::TearDown() {
 void OAuthTokenGetterProxyTest::TestCallWithTokenOnRunnerThread(
     OAuthTokenGetter::Status status,
     const std::string& user_email,
-    const std::string& access_token) {
+    const std::string& access_token,
+    const std::string& scopes) {
   runner_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuthTokenGetterProxyTest::TestCallWithTokenImpl,
                      base::Unretained(this),
-                     OAuthTokenGetter::Status::AUTH_ERROR, "email3", "token3"));
+                     OAuthTokenGetter::Status::AUTH_ERROR, user_email,
+                     access_token, scopes));
   runner_thread_.FlushForTesting();
 }
 
 void OAuthTokenGetterProxyTest::TestCallWithTokenOnMainThread(
     OAuthTokenGetter::Status status,
     const std::string& user_email,
-    const std::string& access_token) {
-  TestCallWithTokenImpl(status, user_email, access_token);
+    const std::string& access_token,
+    const std::string& scopes) {
+  TestCallWithTokenImpl(status, user_email, access_token, scopes);
   runner_thread_.FlushForTesting();
   base::RunLoop().RunUntilIdle();
 }
@@ -195,43 +205,46 @@ void OAuthTokenGetterProxyTest::InvalidateTokenGetter() {
 void OAuthTokenGetterProxyTest::TestCallWithTokenImpl(
     OAuthTokenGetter::Status status,
     const std::string& user_email,
-    const std::string& access_token) {
+    const std::string& access_token,
+    const std::string& scopes) {
   ASSERT_FALSE(expected_callback_result_);
   expected_callback_result_ = std::make_unique<TokenCallbackResult>();
   expected_callback_result_->status = status;
   expected_callback_result_->user_email = user_email;
   expected_callback_result_->access_token = access_token;
+  expected_callback_result_->scopes = scopes;
   proxy_->CallWithToken(base::BindOnce(
       &OAuthTokenGetterProxyTest::OnTokenReceived, base::Unretained(this)));
   runner_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&FakeOAuthTokenGetter::ResolveCallback,
                                 token_getter_->GetWeakPtr(), status, user_email,
-                                access_token));
+                                access_token, scopes));
 }
 
-void OAuthTokenGetterProxyTest::OnTokenReceived(
-    OAuthTokenGetter::Status status,
-    const std::string& user_email,
-    const std::string& access_token) {
+void OAuthTokenGetterProxyTest::OnTokenReceived(OAuthTokenGetter::Status status,
+                                                const std::string& user_email,
+                                                const std::string& access_token,
+                                                const std::string& scopes) {
   ASSERT_TRUE(expected_callback_result_);
   EXPECT_EQ(expected_callback_result_->status, status);
   EXPECT_EQ(expected_callback_result_->user_email, user_email);
   EXPECT_EQ(expected_callback_result_->access_token, access_token);
+  EXPECT_EQ(expected_callback_result_->scopes, scopes);
   expected_callback_result_.reset();
 }
 
 TEST_F(OAuthTokenGetterProxyTest, CallWithTokenOnMainThread) {
   TestCallWithTokenOnMainThread(OAuthTokenGetter::Status::SUCCESS, "email1",
-                                "token1");
+                                "token1", "scope1");
   TestCallWithTokenOnMainThread(OAuthTokenGetter::Status::NETWORK_ERROR,
-                                "email2", "token2");
+                                "email2", "token2", "scope2");
 }
 
 TEST_F(OAuthTokenGetterProxyTest, CallWithTokenOnRunnerThread) {
   TestCallWithTokenOnRunnerThread(OAuthTokenGetter::Status::AUTH_ERROR,
-                                  "email3", "token3");
+                                  "email3", "token3", "scope3");
   TestCallWithTokenOnRunnerThread(OAuthTokenGetter::Status::SUCCESS, "email4",
-                                  "token4");
+                                  "token4", "scope4");
 }
 
 TEST_F(OAuthTokenGetterProxyTest, InvalidateCacheOnMainThread) {

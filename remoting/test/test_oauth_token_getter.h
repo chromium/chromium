@@ -69,7 +69,8 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
 
   void OnAccessToken(OAuthTokenGetter::Status status,
                      const std::string& user_email,
-                     const std::string& access_token);
+                     const std::string& access_token,
+                     const std::string& scopes);
 
   void RunAuthenticationDoneCallbacks();
 

@@ -96,7 +96,7 @@ class RemotingRegisterSupportHostTest : public testing::Test {
         std::make_unique<RemotingRegisterSupportHostRequest>(
             std::make_unique<FakeOAuthTokenGetter>(
                 OAuthTokenGetter::Status::SUCCESS, "fake_email",
-                "fake_access_token"),
+                "fake_access_token", "fake_scopes"),
             nullptr);
 
     auto register_host_client =

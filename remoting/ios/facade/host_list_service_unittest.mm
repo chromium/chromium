@@ -67,7 +67,7 @@ class HostListServiceTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
   FakeOAuthTokenGetter oauth_token_getter_{OAuthTokenGetter::Status::SUCCESS,
-                                           "", ""};
+                                           "", "", ""};
   HostListService host_list_service_;
 
   int on_fetch_failed_call_count_ = 0;

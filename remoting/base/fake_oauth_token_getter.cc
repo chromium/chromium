@@ -12,15 +12,19 @@ namespace remoting {
 
 FakeOAuthTokenGetter::FakeOAuthTokenGetter(Status status,
                                            const std::string& user_email,
-                                           const std::string& access_token)
-    : status_(status), user_email_(user_email), access_token_(access_token) {}
+                                           const std::string& access_token,
+                                           const std::string& scopes)
+    : status_(status),
+      user_email_(user_email),
+      access_token_(access_token),
+      scopes_(scopes) {}
 
 FakeOAuthTokenGetter::~FakeOAuthTokenGetter() = default;
 
 void FakeOAuthTokenGetter::CallWithToken(TokenCallback on_access_token) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_access_token), status_,
-                                user_email_, access_token_));
+                                user_email_, access_token_, scopes_));
 }
 
 void FakeOAuthTokenGetter::InvalidateCache() {

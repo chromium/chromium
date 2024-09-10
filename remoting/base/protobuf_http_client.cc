@@ -45,7 +45,7 @@ void ProtobufHttpClient::ExecuteRequest(
 
   if (!request->config().authenticated) {
     DoExecuteRequest(std::move(request), OAuthTokenGetter::Status::SUCCESS, {},
-                     {});
+                     {}, {});
     return;
   }
 
@@ -72,7 +72,8 @@ void ProtobufHttpClient::DoExecuteRequest(
     std::unique_ptr<ProtobufHttpRequestBase> request,
     OAuthTokenGetter::Status status,
     const std::string& user_email,
-    const std::string& access_token) {
+    const std::string& access_token,
+    const std::string& scopes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != OAuthTokenGetter::Status::SUCCESS) {

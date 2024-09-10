@@ -145,20 +145,21 @@ CreateNativeSignalingDeferredConnectContext(
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
-      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token, ""),
       host_context->url_loader_factory(),
       std::make_unique<FtlSupportHostDeviceIdProvider>(device_id));
   connection_context->ftl_device_id = std::move(device_id);
   connection_context->register_request =
       std::make_unique<RemotingRegisterSupportHostRequest>(
-          std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+          std::make_unique<PassthroughOAuthTokenGetter>(username, access_token,
+                                                        ""),
           host_context->url_loader_factory());
   connection_context->log_to_server = std::make_unique<RemotingLogToServer>(
       ServerLogEntry::IT2ME,
-      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token, ""),
       host_context->url_loader_factory());
   connection_context->oauth_token_getter =
-      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token);
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token, "");
   return connection_context;
 }
 

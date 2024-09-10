@@ -13,8 +13,9 @@ PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter() = default;
 
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter(
     const std::string& username,
-    const std::string& access_token)
-    : username_(username), access_token_(access_token) {}
+    const std::string& access_token,
+    const std::string& scopes)
+    : username_(username), access_token_(access_token), scopes_(scopes) {}
 
 PassthroughOAuthTokenGetter::~PassthroughOAuthTokenGetter() = default;
 
@@ -23,7 +24,7 @@ void PassthroughOAuthTokenGetter::CallWithToken(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_access_token),
                                 OAuthTokenGetter::Status::SUCCESS, username_,
-                                access_token_));
+                                access_token_, scopes_));
 }
 
 void PassthroughOAuthTokenGetter::InvalidateCache() {

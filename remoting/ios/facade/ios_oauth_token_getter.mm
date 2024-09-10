@@ -17,28 +17,6 @@ IosOauthTokenGetter::IosOauthTokenGetter() : weak_factory_(this) {
 IosOauthTokenGetter::~IosOauthTokenGetter() {}
 
 void IosOauthTokenGetter::CallWithToken(TokenCallback on_access_token) {
-  __block TokenCallback block_callback = std::move(on_access_token);
-  [RemotingService.instance.authentication
-      callbackWithAccessToken:^(RemotingAuthenticationStatus status,
-                                NSString* userEmail, NSString* accessToken) {
-        Status oauth_status;
-        switch (status) {
-          case RemotingAuthenticationStatusSuccess:
-            oauth_status = Status::SUCCESS;
-            break;
-          case RemotingAuthenticationStatusAuthError:
-            oauth_status = Status::AUTH_ERROR;
-            break;
-          case RemotingAuthenticationStatusNetworkError:
-            oauth_status = Status::NETWORK_ERROR;
-            break;
-          default:
-            NOTREACHED_IN_MIGRATION();
-        }
-        std::move(block_callback)
-            .Run(oauth_status, base::SysNSStringToUTF8(userEmail),
-                 base::SysNSStringToUTF8(accessToken));
-      }];
 }
 
 void IosOauthTokenGetter::InvalidateCache() {

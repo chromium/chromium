@@ -45,6 +45,7 @@ using SendHeartbeatResponseCallback =
 constexpr char kOAuthAccessToken[] = "fake_access_token";
 constexpr char kHostId[] = "fake_host_id";
 constexpr char kUserEmail[] = "fake_user@domain.com";
+constexpr char kScopes[] = "fake_scope";
 
 constexpr char kFtlId[] = "fake_user@domain.com/chromoting_ftl_abc123";
 
@@ -200,7 +201,8 @@ class HeartbeatSenderTest : public testing::Test {
   std::unique_ptr<HeartbeatSender> heartbeat_sender_;
 
   FakeOAuthTokenGetter oauth_token_getter_{OAuthTokenGetter::Status::SUCCESS,
-                                           kUserEmail, kOAuthAccessToken};
+                                           kUserEmail, kOAuthAccessToken,
+                                           kScopes};
 };
 
 TEST_F(HeartbeatSenderTest, SendHeartbeat) {

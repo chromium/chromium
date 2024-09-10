@@ -171,7 +171,8 @@ void It2MeCliHost::OnProtocolBroken(const std::string& message) {
 
 void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
                                           const std::string& user_email,
-                                          const std::string& access_token) {
+                                          const std::string& access_token,
+                                          const std::string& scopes) {
   DCHECK(!host_);
 
   // Store all parameters for future connect call.

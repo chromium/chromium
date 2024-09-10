@@ -94,7 +94,7 @@ void TestOAuthTokenGetter::Initialize(base::OnceClosure on_done) {
   } else {
     VLOG(0) << "Reusing access token: " << access_token;
     token_getter_ = std::make_unique<FakeOAuthTokenGetter>(
-        OAuthTokenGetter::Status::SUCCESS, user_email, access_token);
+        OAuthTokenGetter::Status::SUCCESS, user_email, access_token, "");
   }
   std::move(on_done).Run();
 }
@@ -192,7 +192,8 @@ void TestOAuthTokenGetter::OnCredentialsUpdate(
 
 void TestOAuthTokenGetter::OnAccessToken(OAuthTokenGetter::Status status,
                                          const std::string& user_email,
-                                         const std::string& access_token) {
+                                         const std::string& access_token,
+                                         const std::string& scopes) {
   is_authenticating_ = false;
   if (status != OAuthTokenGetter::Status::SUCCESS) {
     fprintf(stderr,

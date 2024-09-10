@@ -57,14 +57,15 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
                            int expires_seconds) override;
   void OnRefreshTokenResponse(const std::string& access_token,
                               int expires_in_seconds) override;
-  void OnGetUserEmailResponse(const std::string& user_email) override;
+  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 
   void UpdateAccessToken(const std::string& access_token, int expires_seconds);
   void NotifyTokenCallbacks(Status status,
                             const std::string& user_email,
-                            const std::string& access_token);
+                            const std::string& access_token,
+                            const std::string& scopes);
   void NotifyUpdatedCallbacks(const std::string& user_email,
                               const std::string& refresh_token);
   void GetOauthTokensFromAuthCode();
@@ -83,6 +84,7 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   bool email_verified_ = false;
   bool email_discovery_ = false;
   std::string oauth_access_token_;
+  std::string scopes_;
   base::Time access_token_expiry_time_;
   base::queue<OAuthTokenGetter::TokenCallback> pending_callbacks_;
   std::unique_ptr<base::OneShotTimer> refresh_timer_;
