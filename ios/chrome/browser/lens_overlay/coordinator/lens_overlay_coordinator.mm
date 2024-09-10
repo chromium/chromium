@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
@@ -92,6 +93,8 @@ const CGFloat kMenuSymbolSize = 18;
   LensResultPageViewController* _resultViewController;
   /// The mediator for lens results.
   LensResultPageMediator* _resultMediator;
+  /// The context menu configuration provider for the result page.
+  ContextMenuConfigurationProvider* _resultContextMenuProvider;
 
   /// The tab helper associated with the current UI.
   LensOverlayTabHelper* _associatedTabHelper;
@@ -519,8 +522,15 @@ const CGFloat kMenuSymbolSize = 18;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
 
+  _resultContextMenuProvider = [[ContextMenuConfigurationProvider alloc]
+         initWithBrowser:browser
+      baseViewController:_resultViewController
+            baseWebState:_resultMediator.webState
+           isLensOverlay:YES];
+
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
+  _resultMediator.contextMenuProvider = _resultContextMenuProvider;
 
   [self showResultsBottomSheet];
 
@@ -576,6 +586,8 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)stopResultPage {
   [_selectionViewController removeSelectionWithClearText:YES];
+  [_resultContextMenuProvider stop];
+  _resultContextMenuProvider = nil;
   [_resultViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];

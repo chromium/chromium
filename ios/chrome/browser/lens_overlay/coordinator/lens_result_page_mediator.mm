@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
@@ -225,13 +227,26 @@ const CGFloat kProgressBarFull = 1.0f;
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
                     completionHandler:(void (^)(UIContextMenuConfiguration*))
                                           completionHandler {
-  completionHandler(nil);
-  // TODO(crbug.com/349100642): Add context menu configuration.
+  UIContextMenuConfiguration* configuration =
+      [self.contextMenuProvider contextMenuConfigurationForWebState:webState
+                                                             params:params];
+  completionHandler(configuration);
 }
 
 - (void)webState:(web::WebState*)webState
     contextMenuWillCommitWithAnimator:
         (id<UIContextMenuInteractionCommitAnimating>)animator {
+  GURL URLToLoad = [self.contextMenuProvider URLToLoad];
+  if (!URLToLoad.is_valid()) {
+    return;
+  }
+  if (_webState) {
+    web::Referrer referrer(_webState->GetLastCommittedURL(),
+                           web::ReferrerPolicyDefault);
+    _webState->OpenURL(web::WebState::OpenURLParams(
+        URLToLoad, referrer, WindowOpenDisposition::CURRENT_TAB,
+        ui::PAGE_TRANSITION_LINK, false));
+  }
 }
 
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState {

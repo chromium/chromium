@@ -13,6 +13,7 @@
 #import "ios/web/public/web_state.h"
 
 @protocol ApplicationCommands;
+@class ContextMenuConfigurationProvider;
 @protocol LensResultPageConsumer;
 @protocol LensResultPageWebStateDelegate;
 
@@ -34,6 +35,10 @@
 /// Presentation delegate for requesting bottom sheet resizing.
 @property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
     presentationDelegate;
+
+/// WebState context menu configuration provider.
+@property(nonatomic, weak)
+    ContextMenuConfigurationProvider* contextMenuProvider;
 
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
