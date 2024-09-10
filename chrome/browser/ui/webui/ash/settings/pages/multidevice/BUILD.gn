@@ -37,6 +37,7 @@ static_library("multidevice") {
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/settings/search",

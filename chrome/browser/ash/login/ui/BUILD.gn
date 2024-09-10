@@ -56,8 +56,6 @@ static_library("ui") {
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ui/ash/keyboard",
-    "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/auth",
@@ -117,7 +115,6 @@ static_library("ui") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/internet",
-    "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/attestation",
@@ -164,14 +161,11 @@ static_library("ui") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/login/testapi",
   ]
 }
 

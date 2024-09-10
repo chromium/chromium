@@ -48,7 +48,6 @@ static_library("phonehub") {
     "//chrome/browser/favicon",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
-    "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",

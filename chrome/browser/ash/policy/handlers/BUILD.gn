@@ -72,7 +72,6 @@ static_library("handlers") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

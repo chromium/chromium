@@ -20,6 +20,7 @@ static_library("edu_coexistence") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
@@ -36,6 +37,8 @@ static_library("edu_coexistence") {
     "//net",
     "//ui/base",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/account_manager" ]
 }
 
 source_set("browser_tests") {

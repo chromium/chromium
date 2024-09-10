@@ -67,6 +67,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/login/auth",

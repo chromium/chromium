@@ -53,12 +53,10 @@ static_library("signin_profile_handler") {
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ui/webui/ash/login",
   ]
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }

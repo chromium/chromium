@@ -23,11 +23,20 @@ static_library("login") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/child_accounts/parent_access_code",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/ui",
     "//chrome/common",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",
     "//components/session_manager/core",
     "//ui/base/ime/ash",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/ui",
   ]
 }
 

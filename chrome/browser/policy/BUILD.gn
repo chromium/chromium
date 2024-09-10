@@ -97,7 +97,6 @@ source_set("onc") {
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
-      "//chrome/browser/ui/webui/ash/login",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
@@ -109,7 +108,6 @@ source_set("onc") {
     allow_circular_includes_from = [
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/policy/core",
-      "//chrome/browser/ui/webui/ash/login",
     ]
   }
 }

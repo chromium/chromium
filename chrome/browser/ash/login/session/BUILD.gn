@@ -69,7 +69,6 @@ static_library("session") {
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/ui/ash/media_client",
-    "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/shimless_rma_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -138,7 +137,6 @@ static_library("session") {
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 

@@ -20,7 +20,6 @@ static_library("app_mode") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 
   deps = [

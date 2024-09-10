@@ -33,7 +33,6 @@ static_library("session") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus/session_manager",
@@ -54,7 +53,6 @@ static_library("session") {
   allow_circular_includes_from = [
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
   ]
 }
 

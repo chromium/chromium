@@ -27,14 +27,11 @@ static_library("customization") {
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles",
-    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
     "//chromeos/ash/components/system",
     "//components/pref_registry",
     "//content/public/browser",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash/login" ]
 }
 
 source_set("browser_tests") {

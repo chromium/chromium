@@ -30,6 +30,8 @@ static_library("auth") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
     "//components/prefs",
