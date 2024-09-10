@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -404,6 +405,10 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
             WebAudioSinkDescriptor::AudioSinkType::kAudible) {
       if (platform_destination_->MaybeCreateSinkAndGetStatus() ==
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+        WebRtcLogMessage(
+            String::Format("[WA]RADH::%s => (sink_descriptor_=%s)", __func__,
+                           sink_descriptor_.SinkId().Utf8().c_str())
+                .Utf8());
         if (auto* execution_context = Context()->GetExecutionContext()) {
           PeerConnectionDependencyFactory::From(*execution_context)
               .GetWebRtcAudioDevice()

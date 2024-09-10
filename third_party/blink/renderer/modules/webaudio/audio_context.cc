@@ -1152,6 +1152,7 @@ void AudioContext::DevicesEnumerated(
 void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
   DCHECK(IsMainThread());
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
     output_device_ids_.clear();
@@ -1259,6 +1260,7 @@ void AudioContext::TransferAudioFrameStatsTo(
 
 void AudioContext::HandleRenderError() {
   DCHECK(IsMainThread());
+  SendLogMessage(String::Format("%s", __func__));
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   if (window && window->GetFrame()) {
