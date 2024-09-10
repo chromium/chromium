@@ -166,7 +166,7 @@ std::unique_ptr<syncer::DataBatch> AutofillProfileSyncBridge::GetDataForCommit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<AutofillProfile> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          AutofillProfile::RecordType::kLocalOrSyncable, entries)) {
+          {AutofillProfile::RecordType::kLocalOrSyncable}, entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return nullptr;
@@ -190,7 +190,7 @@ AutofillProfileSyncBridge::GetAllDataForDebugging() {
 
   std::vector<AutofillProfile> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          AutofillProfile::RecordType::kLocalOrSyncable, entries)) {
+          {AutofillProfile::RecordType::kLocalOrSyncable}, entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return nullptr;

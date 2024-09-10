@@ -14,6 +14,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -674,7 +675,7 @@ bool AddressAutofillTable::RemoveAllAutofillProfiles(
   // a `kRecordType` column, it's non-trivial to remove the correct entries from
   // that table. For simplicity, the current implementation fetches all profiles
   // to remove and removes them manually. Rewrite to a DELETE SQL query.
-  if (!GetAutofillProfiles(record_type, profiles)) {
+  if (!GetAutofillProfiles({record_type}, profiles)) {
     return false;
   }
   return transaction.Begin() &&
@@ -722,18 +723,21 @@ std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
 }
 
 bool AddressAutofillTable::GetAutofillProfiles(
-    std::optional<AutofillProfile::RecordType> record_type,
+    DenseSet<AutofillProfile::RecordType> record_types,
     std::vector<AutofillProfile>& profiles) const {
   profiles.clear();
 
   sql::Statement s;
-  if (record_type) {
-    SelectBuilder(db(), s, kAddressesTable, {kGuid},
-                  base::StrCat({"WHERE ", kRecordType, " = ?"}));
-    s.BindInt(0, static_cast<int>(*record_type));
-  } else {
-    SelectBuilder(db(), s, kAddressesTable, {kGuid});
+  const std::string placeholders =
+      base::JoinString(std::vector<std::string>(record_types.size(), "?"), ",");
+  SelectBuilder(
+      db(), s, kAddressesTable, {kGuid},
+      base::StrCat({"WHERE ", kRecordType, " IN (", placeholders, ")"}));
+  size_t index = 0;
+  for (AutofillProfile::RecordType record_type : record_types) {
+    s.BindInt(index++, static_cast<int>(record_type));
   }
+
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
     std::optional<AutofillProfile> profile = GetAutofillProfile(guid);

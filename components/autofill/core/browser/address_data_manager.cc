@@ -358,8 +358,7 @@ void AddressDataManager::LoadProfiles() {
     return;
   }
   CancelPendingQuery(pending_profile_query_);
-  pending_profile_query_ =
-      webdata_service_->GetAutofillProfiles(/*record_type=*/std::nullopt, this);
+  pending_profile_query_ = webdata_service_->GetAutofillProfiles(this);
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {

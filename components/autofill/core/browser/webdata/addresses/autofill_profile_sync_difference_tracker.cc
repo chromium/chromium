@@ -217,7 +217,7 @@ bool AutofillProfileSyncDifferenceTracker::
 
   std::vector<AutofillProfile> entries;
   if (!table_->GetAutofillProfiles(
-          AutofillProfile::RecordType::kLocalOrSyncable, entries)) {
+          {AutofillProfile::RecordType::kLocalOrSyncable}, entries)) {
     return false;
   }
 

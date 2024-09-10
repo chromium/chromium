@@ -267,8 +267,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
 
   // Check that it was added.
   AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &consumer);
+  wds_->GetAutofillProfiles(&consumer);
   EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile));
 }
 
@@ -283,8 +282,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
   // Check that it was added.
   AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &consumer);
+  wds_->GetAutofillProfiles(&consumer);
   EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile));
 
   // Check that GUID-based notification was sent.
@@ -299,8 +297,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
   // Check that it was removed.
   AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &consumer2);
+  wds_->GetAutofillProfiles(&consumer2);
   ASSERT_TRUE(consumer2.result().empty());
 }
 
@@ -323,8 +320,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
 
   // Check that they were added.
   AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &consumer);
+  wds_->GetAutofillProfiles(&consumer);
   EXPECT_THAT(consumer.result(), UnorderedElementsAre(profile1, profile2));
 
   AutofillProfile profile2_changed(profile2);
@@ -340,8 +336,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
 
   // Check that the updates were made.
   AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &consumer2);
+  wds_->GetAutofillProfiles(&consumer2);
   EXPECT_THAT(consumer2.result(),
               UnorderedElementsAre(profile1, profile2_changed));
 }
