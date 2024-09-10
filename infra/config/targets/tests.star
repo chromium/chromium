@@ -453,10 +453,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "cq_medium_tast_tests",
-)
-
-targets.tests.gtest_test(
     name = "chrome_elf_unittests",
 )
 

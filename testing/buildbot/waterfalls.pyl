@@ -382,7 +382,7 @@
           'skylab-cft',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_preuprev_tests',
+          'skylab_tests': 'chromeos_ctp_preuprev_tests_slow_boards',
         },
         'os_type': 'chromeos',
         'cros_board': 'jacuzzi',

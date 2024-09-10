@@ -340,14 +340,6 @@ targets.binaries.generated_script(
     ],
 )
 
-targets.binaries.generated_script(
-    name = "cq_medium_tast_tests",
-    label = "//chromeos:cq_medium_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.binaries.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",

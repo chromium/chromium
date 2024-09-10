@@ -351,11 +351,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "shards-10",
-    shards = 10,
-)
-
-targets.mixin(
     name = "shards-20",
     shards = 20,
 )
@@ -363,6 +358,11 @@ targets.mixin(
 targets.mixin(
     name = "shards-30",
     shards = 30,
+)
+
+targets.mixin(
+    name = "shards-50",
+    shards = 50,
 )
 
 targets.mixin(

@@ -610,15 +610,6 @@
       },
     },
 
-    'chromeos_chrome_cq_medium_tast_tests': {
-      'cq_medium_tast_tests': {
-        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 2,
-        'timeout_sec': 3600,
-        'shards': 5,
-      },
-    },
-
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
         'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
@@ -6791,10 +6782,10 @@
       },
     },
 
-    'chromeos_jacuzzi_preuprev_tests': {
-      'chromeos_chrome_cq_medium_tast_tests': {
+    'chromeos_ctp_preuprev_tests_slow_boards': {
+      'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'shards-10',
+          'shards-50',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',

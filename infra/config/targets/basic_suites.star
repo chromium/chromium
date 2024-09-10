@@ -564,23 +564,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "chromeos_chrome_cq_medium_tast_tests",
-    tests = {
-        "cq_medium_tast_tests": targets.legacy_test_config(
-            # `tast_expr` must be a non-empty string to run the tast tests. But the value of
-            # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
-            # put the stub string here.
-            tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            test_level_retries = 2,
-            # Timeout including DUT privisioning.
-            timeout_sec = 3600,
-            # Number of shards. Might be overriden for slower boards.
-            shards = 5,
-        ),
-    },
-)
-
 # GTests to run on Chrome OS devices, but not Chrome OS VMs. Any differences
 # between this and chromeos_system_friendly_gtests below should only be due
 # to resource constraints (ie: not enough devices).

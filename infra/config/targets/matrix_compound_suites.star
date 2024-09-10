@@ -614,12 +614,12 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_jacuzzi_preuprev_tests",
+    name = "chromeos_ctp_preuprev_tests_slow_boards",
     basic_suites = {
-        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-10",
+                "shards-50",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
