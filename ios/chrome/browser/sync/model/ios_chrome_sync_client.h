@@ -10,7 +10,6 @@
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_client.h"
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
@@ -25,10 +24,6 @@ namespace password_manager {
 class PasswordStoreInterface;
 }  // namespace password_manager
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 class IOSChromeSyncClient : public syncer::SyncClient {
  public:
   explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
@@ -37,10 +32,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   IOSChromeSyncClient& operator=(const IOSChromeSyncClient&) = delete;
 
   ~IOSChromeSyncClient() override;
-
-  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.mm.
-  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
-      syncer::SyncService* sync_service);
 
   // SyncClient implementation.
   PrefService* GetPrefService() override;
