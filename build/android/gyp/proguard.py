@@ -61,7 +61,9 @@ _IGNORE_WARNINGS = (
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
     # Happens on internal builds. It's a real failure, but happens in dead code.
     r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',   # pylint: disable=line-too-long
-
+    # This class is referenced by kotlinx-coroutines-core-jvm but it does not
+    # depend on it. Not actually needed though.
+    r'Missing class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement',
     # Ignore MethodParameter attribute count isn't matching in espresso.
     # This is a banner warning and each individual file affected will have
     # its own warning.
@@ -70,8 +72,10 @@ _IGNORE_WARNINGS = (
     # corresponding EnclosingMethod attribute. Such InnerClasses attribute
     # entries are ignored."
     r'Warning: InnerClasses attribute has entries missing a corresponding EnclosingMethod attribute',  # pylint: disable=line-too-long
-    r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_core_java',  # pylint: disable=line-too-long
-    r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_web_java',  # pylint: disable=line-too-long
+    # Full error example: "Warning in <path to target prebuilt>:
+    # androidx/test/espresso/web/internal/deps/guava/collect/Maps$1.class:"
+    # Also happens in espresso core.
+    r'Warning in .*:androidx/test/espresso/.*/guava/collect/.*',
 
     # We are following up in b/290389974
     r'AppSearchDocumentClassMap\.class:.*Could not inline ServiceLoader\.load',

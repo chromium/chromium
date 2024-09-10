@@ -2294,6 +2294,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/prepare_resources.pydeps',
     'build/android/gyp/process_native_prebuilt.pydeps',
     'build/android/gyp/proguard.pydeps',
+    'build/android/gyp/rename_java_classes.pydeps',
     'build/android/gyp/system_image_apks.pydeps',
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
     'build/android/gyp/turbine.pydeps',

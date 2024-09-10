@@ -20,6 +20,7 @@ import("//url/features.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//components/cronet/android/cronet_test_templates.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 } else if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
@@ -2555,7 +2556,13 @@ if (!is_cronet_build) {
   }
 }
 
-test("net_unittests") {
+if (is_cronet_build) {
+  _test_target_type = "cronet_test"
+} else {
+  _test_target_type = "test"
+}
+
+target(_test_target_type, "net_unittests") {
   sources = [
     "base/address_family_unittest.cc",
     "base/address_list_unittest.cc",
