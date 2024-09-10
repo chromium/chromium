@@ -184,13 +184,11 @@ class FFmpegDemuxerTest : public testing::Test {
 
   void SeekOnVideoTrackChangePassthrough(
       base::TimeDelta time,
-      base::OnceCallback<void(DemuxerStream::Type,
-                              const std::vector<DemuxerStream*>&)> cb,
-      DemuxerStream::Type type,
+      base::OnceCallback<void(const std::vector<DemuxerStream*>&)> cb,
       const std::vector<DemuxerStream*>& streams) {
     // The tests can't access private methods directly because gtest uses
     // some magic macros that break the 'friend' declaration.
-    demuxer_->SeekOnVideoTrackChange(time, std::move(cb), type, streams);
+    demuxer_->SeekOnVideoTrackChange(time, std::move(cb), streams);
   }
 
   MOCK_METHOD2(OnReadDoneCalled, void(int, int64_t));
@@ -1664,7 +1662,6 @@ TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledAudioStream) {
 
 namespace {
 void QuitLoop(base::OnceClosure quit_closure,
-              DemuxerStream::Type type,
               const std::vector<DemuxerStream*>& streams) {
   std::move(quit_closure).Run();
 }
@@ -1775,8 +1772,7 @@ TEST_F(FFmpegDemuxerTest, SeekOnVideoTrackChangeWontSeekIfEmpty) {
   base::RunLoop loop;
 
   SeekOnVideoTrackChangePassthrough(
-      base::TimeDelta(), base::BindOnce(QuitLoop, loop.QuitClosure()),
-      DemuxerStream::VIDEO, streams);
+      base::TimeDelta(), base::BindOnce(QuitLoop, loop.QuitClosure()), streams);
 
   loop.Run();
 }

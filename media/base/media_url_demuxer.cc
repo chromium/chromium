@@ -111,9 +111,8 @@ void MediaUrlDemuxer::OnEnabledAudioTracksChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  // TODO(tmathmeyer): potentially support track changes for this renderer.
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::AUDIO, streams);
+  std::move(change_completed_cb).Run(streams);
   DLOG(WARNING) << "Track changes are not supported.";
 }
 
@@ -121,9 +120,8 @@ void MediaUrlDemuxer::OnSelectedVideoTrackChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  // TODO(tmathmeyer): potentially support track changes for this renderer.
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::VIDEO, streams);
+  std::move(change_completed_cb).Run(streams);
   DLOG(WARNING) << "Track changes are not supported.";
 }
 

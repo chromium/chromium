@@ -509,16 +509,16 @@ void StreamProvider::OnEnabledAudioTracksChanged(
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::AUDIO, streams);
+  std::move(change_completed_cb).Run(streams);
   DVLOG(1) << "Track changes are not supported.";
 }
 
 void StreamProvider::OnSelectedVideoTrackChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
+    const std::vector<media::MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::VIDEO, streams);
+  std::move(change_completed_cb).Run(streams);
   DVLOG(1) << "Track changes are not supported.";
 }
 

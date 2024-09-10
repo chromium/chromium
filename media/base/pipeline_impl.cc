@@ -166,8 +166,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   base::TimeDelta GetCurrentTimestamp();
 
   void OnDemuxerCompletedTrackChange(
-      base::OnceClosure change_completed_cb,
       DemuxerStream::Type stream_type,
+      base::OnceClosure change_completed_cb,
       const std::vector<DemuxerStream*>& streams);
 
   // DemuxerHost implementation.
@@ -784,7 +784,7 @@ void PipelineImpl::RendererWrapper::OnEnabledAudioTracksChanged(
   demuxer_->OnEnabledAudioTracksChanged(
       enabled_track_ids, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), DemuxerStream::AUDIO,
                      std::move(change_completed_cb)));
 }
 
@@ -824,7 +824,7 @@ void PipelineImpl::RendererWrapper::OnSelectedVideoTrackChanged(
   demuxer_->OnSelectedVideoTrackChanged(
       tracks, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), DemuxerStream::VIDEO,
                      std::move(change_completed_cb)));
 }
 
@@ -850,8 +850,8 @@ void PipelineImpl::RendererWrapper::OnExternalVideoFrameRequest() {
 }
 
 void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
-    base::OnceClosure change_completed_cb,
     DemuxerStream::Type stream_type,
+    base::OnceClosure change_completed_cb,
     const std::vector<DemuxerStream*>& streams) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (!shared_state_.renderer) {

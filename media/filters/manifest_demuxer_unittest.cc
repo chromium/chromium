@@ -378,9 +378,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   manifest_demuxer_->OnSelectedVideoTrackChanged(
       {}, base::Seconds(0),
       base::BindOnce(
-          [](bool* was_called, DemuxerStream::Type type,
-             const std::vector<DemuxerStream*>& streams) {
-            ASSERT_EQ(type, DemuxerStream::VIDEO);
+          [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_TRUE(streams.empty());
             *was_called = true;
           },
@@ -393,9 +391,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   manifest_demuxer_->OnSelectedVideoTrackChanged(
       {MediaTrack::Id("video")}, base::Seconds(0),
       base::BindOnce(
-          [](bool* was_called, DemuxerStream::Type type,
-             const std::vector<DemuxerStream*>& streams) {
-            ASSERT_EQ(type, DemuxerStream::VIDEO);
+          [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_EQ(streams.size(), 1u);
             *was_called = true;
           },
@@ -408,9 +404,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   manifest_demuxer_->OnEnabledAudioTracksChanged(
       {}, base::Seconds(0),
       base::BindOnce(
-          [](bool* was_called, DemuxerStream::Type type,
-             const std::vector<DemuxerStream*>& streams) {
-            ASSERT_EQ(type, DemuxerStream::AUDIO);
+          [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_TRUE(streams.empty());
             *was_called = true;
           },
@@ -423,9 +417,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   manifest_demuxer_->OnEnabledAudioTracksChanged(
       {MediaTrack::Id("audio")}, base::Seconds(0),
       base::BindOnce(
-          [](bool* was_called, DemuxerStream::Type type,
-             const std::vector<DemuxerStream*>& streams) {
-            ASSERT_EQ(type, DemuxerStream::AUDIO);
+          [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_EQ(streams.size(), 1u);
             *was_called = true;
           },

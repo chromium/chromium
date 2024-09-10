@@ -509,7 +509,7 @@ void FrameInjectingDemuxer::OnEnabledAudioTracksChanged(
     TrackChangeCB change_completed_cb) {
   DLOG(WARNING) << "Track changes are not supported.";
   std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::AUDIO, streams);
+  std::move(change_completed_cb).Run(streams);
 }
 
 // Not supported.
@@ -519,7 +519,7 @@ void FrameInjectingDemuxer::OnSelectedVideoTrackChanged(
     TrackChangeCB change_completed_cb) {
   DLOG(WARNING) << "Track changes are not supported.";
   std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::VIDEO, streams);
+  std::move(change_completed_cb).Run(streams);
 }
 
 }  // namespace cast_streaming
