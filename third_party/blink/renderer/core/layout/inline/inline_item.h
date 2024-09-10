@@ -75,6 +75,7 @@ class CORE_EXPORT InlineItem {
              unsigned adjusted_start,
              unsigned adjusted_end,
              const ShapeResult*);
+  InlineItem(const InlineItem&);
 
   InlineItemType Type() const { return type_; }
   const char* InlineItemTypeToString(InlineItemType val) const;
@@ -284,17 +285,17 @@ class CORE_EXPORT InlineItem {
   Member<LayoutObject> layout_object_;
 
   InlineItemType type_;
-  unsigned text_type_ : 3;          // TextItemType
-  unsigned style_variant_ : 2;      // StyleVariant
-  unsigned end_collapse_type_ : 2;  // CollapseType
-  unsigned bidi_level_ : 8;         // UBiDiLevel is defined as uint8_t.
+  unsigned text_type_ : 3 = static_cast<unsigned>(TextItemType::kNormal);
+  unsigned style_variant_ : 2 = static_cast<unsigned>(StyleVariant::kStandard);
+  unsigned end_collapse_type_ : 2 = CollapseType::kNotCollapsible;
+  unsigned bidi_level_ : 8 = UBIDI_LTR;  // UBiDiLevel is defined as uint8_t.
   // |segment_data_| is valid only for |type_ == InlineItem::kText|.
-  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits;
-  unsigned is_empty_item_ : 1;
-  unsigned is_block_level_ : 1;
-  unsigned is_end_collapsible_newline_ : 1;
-  unsigned is_generated_for_line_break_ : 1;
-  unsigned is_unsafe_to_reuse_shape_result_ : 1;
+  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits = 0;
+  unsigned is_empty_item_ : 1 = false;
+  unsigned is_block_level_ : 1 = false;
+  unsigned is_end_collapsible_newline_ : 1 = false;
+  unsigned is_generated_for_line_break_ : 1 = false;
+  unsigned is_unsafe_to_reuse_shape_result_ : 1 = false;
   friend class InlineNode;
   friend class InlineNodeDataEditor;
 };
