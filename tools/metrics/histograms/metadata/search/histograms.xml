@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2025-01-05">
+    enum="BooleanBottomSearchKind" expires_after="2025-03-09">
 <!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Event"
-    enum="ContextualSearchCountedEvent" expires_after="2025-01-05">
+    enum="ContextualSearchCountedEvent" expires_after="2025-03-09">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Searches" enum="Boolean"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
 <!-- TODO(donnd): change expires_after to "never" once established and
          approved. -->
 
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="2025-01-05">
+    enum="ContextualSearchGestureIsTap" expires_after="2025-03-09">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoCardChoice" enum="BooleanOptedIn"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -774,7 +774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RegionSearch.Lens.Result"
-    enum="LensRegionSearchCaptureResult" expires_after="2025-01-05">
+    enum="LensRegionSearchCaptureResult" expires_after="2025-03-09">
   <owner>juanmojica@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -1018,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.AllUserPermissions"
-    enum="ContextualSearchPermissions" expires_after="2025-01-05">
+    enum="ContextualSearchPermissions" expires_after="2025-03-09">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1110,7 +1110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1121,7 +1121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedSuggestionIndex"
-    units="position" expires_after="2025-01-05">
+    units="position" expires_after="2025-03-09">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>

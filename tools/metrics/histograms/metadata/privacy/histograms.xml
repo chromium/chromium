@@ -129,7 +129,7 @@ reviewer.
 </variants>
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
-    enum="AdsHeuristicCookieOverride" expires_after="2025-01-05">
+    enum="AdsHeuristicCookieOverride" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -157,7 +157,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.3pcd.ProfileEligibilityMismatch"
-    enum="ProfileEligibilityMismatch" expires_after="2025-01-05">
+    enum="ProfileEligibilityMismatch" expires_after="2025-03-09">
   <owner>trishalfonso@google.com</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -175,7 +175,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.3PCD.SecCookieDeprecationHeaderStatus"
-    enum="SecCookieDeprecationHeaderStatus" expires_after="2025-01-05">
+    enum="SecCookieDeprecationHeaderStatus" expires_after="2025-03-09">
   <owner>linnan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -397,7 +397,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -421,7 +421,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -460,7 +460,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
-    enum="DIPSDeletionAction" expires_after="2025-01-05">
+    enum="DIPSDeletionAction" expires_after="2025-03-09">
   <owner>njeunje@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -943,7 +943,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1375,7 +1375,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult3"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult3"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1509,7 +1509,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Host.PipeResult"
     enum="PrivacySandboxPrivateAggregationHostPipeResult"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

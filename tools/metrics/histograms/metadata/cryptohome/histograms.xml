@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Cryptohome.AuthFactorBackingStoreConfig"
-    enum="CryptohomeAuthFactorBackingStoreConfig" expires_after="2025-01-05">
+    enum="CryptohomeAuthFactorBackingStoreConfig" expires_after="2025-03-09">
   <owner>jadmanski@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-03-09">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-03-09">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountEx" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>betuls@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformMount" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>betuls@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToRelabelSELinuxContexts" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>betuls@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToSetupVault" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -617,7 +617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.VaultKeysetMetric.{VaultKeysetMetric}"
-    units="count" expires_after="2025-01-05">
+    units="count" expires_after="2025-03-09">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -643,7 +643,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.VkToUssMigrationStatus"
-    enum="VkToUssMigrationStatus" expires_after="2025-01-05">
+    enum="VkToUssMigrationStatus" expires_after="2025-03-09">
   <owner>jadmanski@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -686,7 +686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{Action}AuthBlockType"
-    enum="CryptohomeAuthBlockType" expires_after="2025-01-05">
+    enum="CryptohomeAuthBlockType" expires_after="2025-03-09">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -723,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{AuthSessionFunction}.{AuthBlockType}" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>

@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>

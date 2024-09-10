@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength"
-    units="characters" expires_after="2024-12-15">
+    units="characters" expires_after="2025-03-09">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

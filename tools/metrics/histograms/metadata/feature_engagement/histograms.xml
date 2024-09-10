@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
-    enum="BooleanSuccess" expires_after="2025-01-05">
+    enum="BooleanSuccess" expires_after="2025-03-09">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if the model is ready when in-product help event happens for
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.TextBubble.ShownTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -731,7 +731,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 -->
 
 <histogram name="UserEducation.MessageAction.{IPHFeature}" enum="MessageAction"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>Records what action was taken to close the In-Product Help.</summary>

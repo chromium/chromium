@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

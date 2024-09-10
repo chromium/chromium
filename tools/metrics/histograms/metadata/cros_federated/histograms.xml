@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.TrainingConditionToContinue"
-    enum="FederatedTrainingConditionResult" expires_after="2025-01-05">
+    enum="FederatedTrainingConditionResult" expires_after="2025-03-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>

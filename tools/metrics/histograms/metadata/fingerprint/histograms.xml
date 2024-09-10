@@ -375,7 +375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2025-01-05">
+    enum="FingerprintRecordFormatVersion" expires_after="2025-03-09">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
