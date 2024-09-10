@@ -6985,7 +6985,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.TargetSdkVersion" enum="AndroidApiLevel"
-    expires_after="2024-06-21">
+    expires_after="never">
+<!-- expires-never: we have an ongoing need to monitor targetSdkVersion because it helps with planning support for new features. -->
+
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
