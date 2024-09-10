@@ -823,6 +823,20 @@ TEST_F(ArcNotificationContentViewTest, AccessibleProperties) {
   content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
 
+  auto notification_message = std::make_unique<Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      notification_item->GetNotificationId(), u"item_title", u"item_message",
+      ui::ImageModel(), u"arc", GURL(),
+      message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
+                                 "ARC_NOTIFICATION"),
+      message_center::RichNotificationData(), nullptr);
+
+  content_view->Update(*notification_message);
+  data = ui::AXNodeData();
+  content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(u"item_title\nitem_message",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   CloseNotificationView();
 }
 

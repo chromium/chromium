@@ -310,6 +310,7 @@ ArcNotificationContentView::ArcNotificationContentView(
       OnNotificationSurfaceAdded(surface);
   }
 
+  UpdateAccessibleRole();
   // Creates the control_buttons_view_, which collects all control buttons into
   // a horizontal box.
   control_buttons_view_.set_owned_by_client();
@@ -321,8 +322,6 @@ ArcNotificationContentView::ArcNotificationContentView(
   // See the comment in this method and --show-overdraw-feedback for detail.
   layer()->SetFillsBoundsOpaquely(false);
   UpdatePreferredSize();
-
-  UpdateAccessibleRole();
 }
 
 ArcNotificationContentView::~ArcNotificationContentView() {
@@ -347,7 +346,8 @@ void ArcNotificationContentView::Update(
       notification.should_show_snooze_button());
   UpdateControlButtonsVisibility();
 
-  accessible_name_ = message_view_->CreateAccessibleName(notification);
+  GetViewAccessibility().SetName(
+      message_view_->CreateAccessibleName(notification));
   UpdateSnapshot();
 }
 
@@ -836,7 +836,6 @@ void ArcNotificationContentView::GetAccessibleNodeData(
         l10n_util::GetStringUTF8(
             IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
   }
-  node_data->SetNameChecked(accessible_name_);
 }
 
 void ArcNotificationContentView::OnAccessibilityEvent(ax::mojom::Event event) {
