@@ -5937,6 +5937,31 @@
             ]
         }
     ],
+    "Compare": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ProductSpecifications"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProductSpecifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeModelQualityLogging": [
         {
             "platforms": [
