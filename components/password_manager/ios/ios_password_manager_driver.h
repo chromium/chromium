@@ -119,6 +119,16 @@ class IOSPasswordManagerDriver final
   // The security origin associated with |web_frame_|.
   GURL security_origin_;
 
+  // True when the conditions are met to display the proactive password
+  // generation bottom sheet, the sheet that is automatically triggered when you
+  // tap on a new password field.
+  bool can_use_proactive_generation_ = false;
+
+  // Forms eligible for proactive generation that need listeners attached to if
+  // the conditions are met.
+  std::vector<autofill::PasswordFormGenerationData>
+      pending_forms_for_proactive_generation_;
+
   base::WeakPtrFactory<IOSPasswordManagerDriver> weak_factory_{this};
 };
 

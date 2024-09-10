@@ -17,6 +17,11 @@
 using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
 
+namespace {
+// Maximal number of pending forms for proactive generation that can be queued.
+constexpr int kMaxPendingFormsForProactiveGeneration = 10;
+}  // namespace
+
 IOSPasswordManagerDriver::IOSPasswordManagerDriver(
     web::WebState* web_state,
     id<PasswordManagerDriverBridge> bridge,
@@ -48,6 +53,13 @@ int IOSPasswordManagerDriver::GetId() const {
 
 void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
+  // Disable proactive generation and clear the pending forms if it is known
+  // that there are passwords available for the site. This signal won't work for
+  // passwords added after the frame is loaded, TODO(crbug.com/316132527): fix
+  // that.
+  can_use_proactive_generation_ = false;
+  pending_forms_for_proactive_generation_.clear();
+
   [bridge_ processPasswordFormFillData:form_data
                             forFrameId:frame_id_
                            isMainFrame:is_in_main_frame_
@@ -56,6 +68,19 @@ void IOSPasswordManagerDriver::SetPasswordFillData(
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
+  // Allow using the proactive password generation bottom sheet from now on
+  // since it is now known that there are no credentials saved for this page.
+  // This signal won't work if the passwords are removed after the frame is
+  // loaded, TODO(crbug.com/316132527): fix that.
+  can_use_proactive_generation_ = true;
+
+  // Attach the listeners on forms that couldn't be processed yet.
+  for (const auto& form : pending_forms_for_proactive_generation_) {
+    [bridge_ attachListenersForPasswordGenerationFields:form
+                                             forFrameId:frame_id_];
+  }
+  pending_forms_for_proactive_generation_.clear();
+
   [bridge_ onNoSavedCredentialsWithFrameId:frame_id_];
 }
 
@@ -65,8 +90,17 @@ void IOSPasswordManagerDriver::FormEligibleForGenerationFound(
       GetPasswordGenerationHelper()->IsGenerationEnabled(
           /*log_debug_data*/ true)) {
     [bridge_ formEligibleForGenerationFound:form];
-    [bridge_ attachListenersForPasswordGenerationFields:form
-                                             forFrameId:frame_id_];
+    if (can_use_proactive_generation_) {
+      [bridge_ attachListenersForPasswordGenerationFields:form
+                                               forFrameId:frame_id_];
+    } else if (pending_forms_for_proactive_generation_.size() <
+               kMaxPendingFormsForProactiveGeneration) {
+      // Push processing the forms eligible for generation for later since it
+      // isn't yet known whether the proactive generation can be used. Don't
+      // push more than `kMaxPendingFormsForProactiveGeneration` to avoid
+      // bloating memory in the case the queue is never cleaned up.
+      pending_forms_for_proactive_generation_.push_back(form);
+    }
   }
 }
 
