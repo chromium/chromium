@@ -65140,6 +65140,32 @@
         {}
        ]
       ],
+      "table-footer-group-001.xht": [
+       "e32e2dac22df85b038237fbd59a9fb8d85708ff6",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/tables/table-row-group-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-header-group-001.xht": [
+       "0d8f4798052d5ff68fc2fd05e7d5ec29d107b3ec",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/tables/table-row-group-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-height-algorithm-008a.xht": [
        "eaaf04f759be858bbe0d8b103930748bfd4bf1e7",
        [
@@ -65199,6 +65225,19 @@
         [
          [
           "/css/CSS2/tables/reference/table-margin-004-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-row-group-001.xht": [
+       "a0f7966e35e68b0fea10309dcdc83b51e2e15372",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/tables/table-row-group-001-ref.xht",
           "=="
          ]
         ],
@@ -125592,6 +125631,19 @@
        ]
       ]
      },
+     "font-face-sign-function.html": [
+      "28c958c7ee704c1fa35ce838b29d9b766270862c",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-weight-auto-static-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-face-stretch-auto-static.html": [
       "ce3c94fa2feb25483d44883cb5a883d74fea641b",
       [
@@ -147323,12 +147375,12 @@
        ]
       ],
       "text-box-trim-float-clear-br-003.html": [
-       "e04d18ec1095449337837461f315868835542da4",
+       "cfb0c14fb65031a631e718282d8c12c230f39a1c",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-float-clear-br-002-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-float-clear-br-003-ref.html",
           "=="
          ]
         ],
@@ -312087,6 +312139,10 @@
        "8ea849424688a0f3a3b9a345b32e53b6ad1d76c5",
        []
       ],
+      "table-row-group-001-ref.xht": [
+       "c58134ae3594a80e3512b1aeac8957ec0d3a1ef9",
+       []
+      ],
       "table-vertical-align-baseline-001-ref.xht": [
        "9d4b753a6dd0c1cba08d83d80180459e4f2ad593",
        []
@@ -330424,19 +330480,15 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "e8f7512b9b234fbcbbe0cd4363cdfb2ca94cc90f",
+       "05f9a11a70d24e34ab797ec7182d11c1040f44c9",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
        "fc2b7aca29fe7d3be3b9cd4282129ba3565a396b",
        []
       ],
-      "font-parse-numeric-stretch-style-weight-expected.txt": [
-       "ab981255e057a5cc1a32bb7a2492580bed119a34",
-       []
-      ],
       "font-shorthand-expected.txt": [
-       "6c0211a70f203f0c0d0119e95ab186dd6d85dc51",
+       "70323d3c7213611a7f89cfcbfd2c191dc7ace385",
        []
       ],
       "font-slant-1-ref.html": [
@@ -330464,7 +330516,7 @@
        []
       ],
       "font-weight-parsing-expected.txt": [
-       "c81239cd24edb1480e0028faa9b55f31a51aba39",
+       "8039860a284671e080089d4bf0d4106e85913e94",
        []
       ],
       "resources": {
@@ -334018,7 +334070,7 @@
        []
       ],
       "text-box-trim-float-clear-br-003-ref.html": [
-       "8c14770034a782f0f557a4b282d6155fbc47a7ce",
+       "c192242a81d8769c3caba716e89cace3df5ce94c",
        []
       ],
       "text-box-trim-float-start-001-ref.html": [
@@ -337447,10 +337499,6 @@
       ],
       "max-lines-valid-expected.txt": [
        "616418e1723574341bc33a131faf44d371c5cf44",
-       []
-      ],
-      "webkit-line-clamp-valid-expected.txt": [
-       "81ff66eecc6dfcbae93ed80b9d51c90262c9dd06",
        []
       ]
      },
@@ -366245,19 +366293,19 @@
       []
      ],
      "processing.any-expected.txt": [
-      "d48c619b0b6bded9718cf900d0ff27b9b6167741",
+      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
       []
      ],
      "processing.any.serviceworker-expected.txt": [
-      "d48c619b0b6bded9718cf900d0ff27b9b6167741",
+      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
       []
      ],
      "processing.any.sharedworker-expected.txt": [
-      "d48c619b0b6bded9718cf900d0ff27b9b6167741",
+      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
       []
      ],
      "processing.any.worker-expected.txt": [
-      "d48c619b0b6bded9718cf900d0ff27b9b6167741",
+      "e8d67b23125e0ba72c732985c953a3da3291c8e8",
       []
      ],
      "resources": {
@@ -370756,6 +370804,10 @@
        ],
        "location_assign_about_blank-1.html": [
         "b43598f2cd8f47bcd23373075773ef245c95c21a",
+        []
+       ],
+       "location_hash_set_empty_string-expected.txt": [
+        "4150dc964681a70da58fdc354359c652e3c66f6e",
         []
        ],
        "location_reload-iframe.html": [
@@ -375805,7 +375857,7 @@
         []
        ],
        "getter-tests.js": [
-        "6e15b6524a059fbda544cfd8d50f31b083631a59",
+        "d3eca406fd867ca47df10ec9852be7203ffc0138",
         []
        ],
        "innertext-setter-tests.js": [
@@ -409421,7 +409473,7 @@
       },
       "network": {
        "__init__.py": [
-        "c06cdaa79fb2a0c4b0b164def892e278191208a2",
+        "41ddbbbff09913e07b9bb75b3fcddde26d55a3f3",
         []
        ],
        "add_intercept": {
@@ -415817,10 +415869,6 @@
     ],
     "blob-range.any.worker-expected.txt": [
      "2921202c704a2f9895c9ae828c3edaacea823bc1",
-     []
-    ],
-    "data-uri-expected.txt": [
-     "2f20ef3d8e8548734871f049417a85074982c207",
      []
     ],
     "folder.txt": [
@@ -453263,6 +453311,62 @@
     },
     "css-align": {
      "abspos": {
+      "align-self-default-overflow-htb-ltr-htb.html": [
+       "3e5bc482a5d5384419fb32f9c26b0e103915ffff",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-htb-ltr-vrl.html": [
+       "7144bb1513c337f9776ab888af65041bc1e4c692",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-htb-rtl-htb.html": [
+       "c041d8efa9af44fdefc8f4accb39a3fa1ac821c8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-htb-rtl-vrl.html": [
+       "0174fd0a51b5f6fe0a15b6a5bd604194543c8708",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-vrl-ltr-htb.html": [
+       "a9a641397ff2bf61cb273b6c80b79ae16c09bed4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-vrl-ltr-vrl.html": [
+       "e3be64a87ab34ec0410398124897008858505125",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-vrl-rtl-htb.html": [
+       "9c1b779265d6aca3b1e174fe0c250810f6a2b54c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-self-default-overflow-vrl-rtl-vrl.html": [
+       "eaebcf03acb38157abefd5bf232e5989935e5063",
+       [
+        null,
+        {}
+       ]
+      ],
       "align-self-htb-ltr-htb.html": [
        "786cec7acf76607a92b44a76880c1a2543da25e4",
        [
@@ -453384,6 +453488,62 @@
       ],
       "align-self-vrl-rtl-vrl.html": [
        "602b7afb7b8b32bb8ccd0a3729629643a258be7b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-htb-ltr-htb.html": [
+       "753001068ea1a3ee7a6a4ab7640af2296a8e7f94",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-htb-ltr-vrl.html": [
+       "26bba3ea30786b6bd941f02046a4ea306bae78cb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-htb-rtl-htb.html": [
+       "f3b46447e6f9102d7f751b720e4be88155fa0042",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-htb-rtl-vrl.html": [
+       "adf9b305cd2f747ed1882fc1b6a4b72fd7f011c4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-vrl-ltr-htb.html": [
+       "cc53c9759e09828097594a9d4a34d9998dd24a75",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-vrl-ltr-vrl.html": [
+       "92fa8002dd29e1f02f644b3322c0e75b994ee8c3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-vrl-rtl-htb.html": [
+       "6c117f3240dd5b69420e9e5f634c80bfd43bc9fa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "justify-self-default-overflow-vrl-rtl-vrl.html": [
+       "ea1f8cc9ebe7d4e0ec69aad7850d65cffaad29f2",
        [
         null,
         {}
@@ -454825,14 +454985,14 @@
       ]
      ],
      "anchor-center-htb-htb.html": [
-      "20abb2ed096c934bb47447d64d5b717012f8ef47",
+      "50fc09061073a7bcd16d9669b3fd6ad85234e783",
       [
        null,
        {}
       ]
      ],
      "anchor-center-htb-vrl.html": [
-      "099d9cd15b43ae33024fc1fb659563bb5141baa2",
+      "eba72d649133da882a9fa095f0433f426b54bf8e",
       [
        null,
        {}
@@ -454846,14 +455006,14 @@
       ]
      ],
      "anchor-center-vrl-htb.html": [
-      "3e4f485cec3d730ecbadb695fc214269f2e101ea",
+      "8f7af0414edd4eb606e7be3437f81468696522b9",
       [
        null,
        {}
       ]
      ],
      "anchor-center-vrl-vrl.html": [
-      "fe40c731419c42ff286e24d653082220358cf137",
+      "d8e90057dc3372c5ccca659132e708c678678a56",
       [
        null,
        {}
@@ -455533,6 +455693,13 @@
      ],
      "at-position-try-parse.html": [
       "27f5c8687b29fc8ee4e174b439c8b0ea8f71c020",
+      [
+       null,
+       {}
+      ]
+     ],
+     "auto-margins-position-area.html": [
+      "83014100b9b000bd418f8179bcdca260e96942e3",
       [
        null,
        {}
@@ -459519,7 +459686,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "4997d6585d831f12341269e87f6a673e6376748b",
+       "83806e23a6afb9e3f24a5aae1b000ea431e61d08",
        [
         null,
         {}
@@ -464539,6 +464706,13 @@
        {}
       ]
      ],
+     "font-size-sign-function.html": [
+      "a4c58a45c56452dd196fd2c621f7290d275def9e",
+      [
+       null,
+       {}
+      ]
+     ],
      "font-stretch-interpolation-math-functions.html": [
       "74c42587f5ef9586a443ebbcce72ac5ec97a3523",
       [
@@ -465259,7 +465433,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "1935422d7c29df467a1c44bb4327e8fd79772508",
+       "bb41c24ad07a4404bb570817a37091ff46eb5295",
        [
         null,
         {}
@@ -469655,6 +469829,13 @@
       ],
       "initial-letter-invalid.html": [
        "645372c0a95faa8616291013c1b5ed5e18f2555c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "initial-letter-sign-function.html": [
+       "118ee2d0e1a4216aa436d75b8ad2dc51cc97eb13",
        [
         null,
         {}
@@ -486923,6 +487104,13 @@
      ],
      "attr-pseudo-elem-invalidation.html": [
       "1ef912bf75d2ed811e4676754a794dc6f2564f31",
+      [
+       null,
+       {}
+      ]
+     ],
+     "attr-security.html": [
+      "fef9d80be449816ab2be0624cdd818a2945da5a2",
       [
        null,
        {}
@@ -524406,7 +524594,7 @@
        ]
       ],
       "cors-filtering.sub.any.js": [
-       "a26eaccf2a5c79a52eb5fde233756f3f1888c538",
+       "5f9492487f136f8d83893b599fc6c493ce9387f7",
        [
         "fetch/api/cors/cors-filtering.sub.any.html",
         {
@@ -556695,6 +556883,20 @@
        ],
        "location_hash.html": [
         "c063e285ea64cb9e5017976f8dcc3a6a5a31af9b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "location_hash_set_empty_string.html": [
+        "bfde4e638290c0ef1b4068b399e7428d090544b2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "location_hashchange_infinite_loop.html": [
+        "694c619ecabdb8b8e2f69fc6144e59f5a8279818",
         [
          null,
          {}
@@ -599548,6 +599750,13 @@
       ],
       "hide-other-popover-side-effects.html": [
        "7cc95a95e907df3fc9eee30f45a4a46f38fc90dd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "imperative-invokers.tentative.html": [
+       "f810d11b01a0da298c377e2ad55ec25948139523",
        [
         null,
         {}
@@ -654889,7 +655098,7 @@
        ]
       ],
       "property-reflection.html": [
-       "b182087aaedbb8fe5aaca4a107ebf06ed11df30e",
+       "7ebbc0c4c585c5870a6434f535505f868c4de948",
        [
         null,
         {
@@ -695262,15 +695471,15 @@
        }
       ]
      ],
-     "buffer.https.any.js": [
-      "279a82194d1d03d6c10488f2cde7ef76a639c314",
+     "byob_readtensor.https.any.js": [
+      "2f51753f66ae64c3cb1acef9c331773c602e4185",
       [
-       "webnn/conformance_tests/buffer.https.any.html?cpu",
+       "webnn/conformance_tests/byob_readtensor.https.any.html?cpu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -695305,12 +695514,12 @@
        }
       ],
       [
-       "webnn/conformance_tests/buffer.https.any.html?gpu",
+       "webnn/conformance_tests/byob_readtensor.https.any.html?gpu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -695345,12 +695554,12 @@
        }
       ],
       [
-       "webnn/conformance_tests/buffer.https.any.html?npu",
+       "webnn/conformance_tests/byob_readtensor.https.any.html?npu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -695385,12 +695594,12 @@
        }
       ],
       [
-       "webnn/conformance_tests/buffer.https.any.worker.html?cpu",
+       "webnn/conformance_tests/byob_readtensor.https.any.worker.html?cpu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -695425,12 +695634,12 @@
        }
       ],
       [
-       "webnn/conformance_tests/buffer.https.any.worker.html?gpu",
+       "webnn/conformance_tests/byob_readtensor.https.any.worker.html?gpu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -695465,255 +695674,12 @@
        }
       ],
       [
-       "webnn/conformance_tests/buffer.https.any.worker.html?npu",
+       "webnn/conformance_tests/byob_readtensor.https.any.worker.html?npu",
        {
         "script_metadata": [
          [
           "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "byob_readbuffer.https.any.js": [
-      "d0d721a8c0ee684ee5d754dc3bf162368233e34e",
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API buffer operations"
+          "test WebNN API tensor operations"
          ],
          [
           "global",
@@ -705136,7 +705102,7 @@
       ]
      ],
      "parallel-dispatch.https.any.js": [
-      "11ff41a5dc12d855369bad78721f70bfb33e9b71",
+      "1264fa82eabd0afc84db4babe4c42c8580fd71a2",
       [
        "webnn/conformance_tests/parallel-dispatch.https.any.html?cpu",
        {
@@ -711705,6 +711671,249 @@
        }
       ]
      ],
+     "tensor.https.any.js": [
+      "468506746619800277a752c5498b632ef91c1bb2",
+      [
+       "webnn/conformance_tests/tensor.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tensor.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tensor.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tensor.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tensor.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tensor.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tensor operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "tile.https.any.js": [
       "427fd2160159cfc2df2c9e60027c2d7b516a1bc8",
       [
@@ -715100,7 +715309,7 @@
       ]
      ],
      "destroyContext.https.any.js": [
-      "d50725ac4b7e2d48ed892b3063bce13f2eba3e1a",
+      "5cba921c30681dc796134ff41a5719736e131081",
       [
        "webnn/validation_tests/destroyContext.https.any.html?cpu",
        {
@@ -715295,7 +715504,7 @@
       ]
      ],
      "destroyGraph.https.any.js": [
-      "7dfadfe3f8e0af7061ad2ffdf1b64564e41427b0",
+      "3724d6f0d34a678788a47558413a3191d580f776",
       [
        "webnn/validation_tests/destroyGraph.https.any.html?cpu",
        {
@@ -723845,10 +724054,12 @@
      ]
     ],
     "RTCPeerConnection-generateCertificate.html": [
-     "4cda97e9b7ee5d5c8ec9534edf57f316172af373",
+     "534df68083924ab630c3c5560f877be0a40a960a",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCPeerConnection-getStats.https.html": [
@@ -758158,13 +758369,6 @@
         {}
        ]
       ],
-      "table-footer-group-001.xht": [
-       "fb2338caf47a312e9580e04333ada107762c4a9b",
-       [
-        null,
-        {}
-       ]
-      ],
       "table-footer-group-002.xht": [
        "a041b45789125f283f5f033417ec5d397b73f29c",
        [
@@ -758181,13 +758385,6 @@
       ],
       "table-footer-group-005.xht": [
        "b20320b3aecceebf03f63ae682b2c640a75b8a2a",
-       [
-        null,
-        {}
-       ]
-      ],
-      "table-header-group-001.xht": [
-       "0b3a595cb77ba8f90ab87c2ec34cbdf29ddf0a06",
        [
         null,
         {}
@@ -758727,13 +758924,6 @@
       ],
       "table-row-001.xht": [
        "898e5e61a95d5c46bfc1f23d3ef65ea656806209",
-       [
-        null,
-        {}
-       ]
-      ],
-      "table-row-group-001.xht": [
-       "d5a85400ae64a21080c424aeae2b7f919b818426",
        [
         null,
         {}
@@ -763537,7 +763727,14 @@
        },
        "navigation_started": {
         "navigation_started.py": [
-         "bc711814d3aa11b52db1d2f98774650802a17024",
+         "24fcb48d29a1865b69f7cf668e3d4a81ac7efc79",
+         [
+          null,
+          {}
+         ]
+        ],
+        "navigation_started_initial_navigation_tentative.py": [
+         "87b18a8b9090cce6ad79a2cc813ffe2e958096e8",
          [
           null,
           {}
@@ -763814,7 +764011,7 @@
          ]
         ],
         "pointer_mouse.py": [
-         "7077d7bba4678b8825cbe83556f18b4b6db1e0ea",
+         "511bda663d99f2f83f74505c39a51024efd92afc",
          [
           null,
           {}
@@ -763851,21 +764048,21 @@
          ]
         ],
         "pointer_pen.py": [
-         "7b68d3de057db102ccaec01282a202721b16af24",
+         "44ac435a21ec2c26d9a02bb22c08c2702820ec8f",
          [
           null,
           {}
          ]
         ],
         "pointer_touch.py": [
-         "f036de7c744c1d5bb3376640bdffa9ef5ca79daa",
+         "6edc7f832026703512869f9015294e0a2425504d",
          [
           null,
           {}
          ]
         ],
         "wheel.py": [
-         "3129e9b0e63ca15092f6264ce8eecfef471d0abd",
+         "0a1af029b1e92fa1ba94bdb60679edc8b93dd0ba",
          [
           null,
           {}
@@ -764143,7 +764340,7 @@
        },
        "continue_response": {
         "cookies.py": [
-         "e77bf83cde14d4cd304350b2fc72820f5112645e",
+         "d9280067a0f7fb7871ddafc71bc9bb66c26abe83",
          [
           null,
           {}
@@ -766207,7 +766404,7 @@
         ]
        ],
        "pointer_mouse.py": [
-        "f8683ce45156c7d79c49753eca04c55ffc2b4f16",
+        "53ec6d2c13530654ec752f9da913e348a2996d92",
         [
          null,
          {}
@@ -766228,14 +766425,14 @@
         ]
        ],
        "pointer_pen.py": [
-        "bf71a20c4d2ce89ffc40c4338deaefb5a4f41ddd",
+        "7c384ca97d8f66bc22b4f77f7fbfc7b1db10cbe3",
         [
          null,
          {}
         ]
        ],
        "pointer_touch.py": [
-        "b85b2e6ef38195d26e0e580edf34a141efc19eba",
+        "70ffd68e9ea8f3206886ddeb1dcd06d22ba359d8",
         [
          null,
          {}
@@ -766265,7 +766462,7 @@
         ]
        ],
        "wheel.py": [
-        "1c9bf082270429406080baab3373d5ff3f506aed",
+        "0840327ff902ad146ca26637e9c9ac8d481da3a1",
         [
          null,
          {}

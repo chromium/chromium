@@ -2625,6 +2625,10 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
+[ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Pass Failure Timeout ]
+[ Mac15 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout ]
+[ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout Crash ]
 crbug.com/364935894 [ Mac14 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 crbug.com/364935894 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-only-picker-opt-in.tentative.html [ Failure ]
@@ -5525,7 +5529,16 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 # crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
 # wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
 # so, please file a bug for that case with details.
-crbug.com/364924715 external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac12-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac13-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac15-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
