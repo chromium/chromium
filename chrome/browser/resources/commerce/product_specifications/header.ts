@@ -18,6 +18,7 @@ import type {HeaderMenuElement} from './header_menu.js';
 
 export interface HeaderElement {
   $: {
+    divider: HTMLElement,
     menuButton: CrIconButtonElement,
     menu: HeaderMenuElement,
   };
@@ -105,6 +106,13 @@ export class HeaderElement extends PolymerElement {
         name: inputValue,
       },
     }));
+  }
+
+  private onSubtitleKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.stopPropagation();
+      this.onRenaming_();
+    }
   }
 }
 

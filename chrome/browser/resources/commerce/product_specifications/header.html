@@ -79,7 +79,8 @@
 </template>
 <template is="dom-if" if="[[!showingInput_]]">
   <div class="title-text" id="subtitle" hidden="[[!subtitle]]"
-      on-click="onRenaming_">
+      on-click="onRenaming_" on-keydown="onSubtitleKeyDown_" role="textbox"
+      tabindex="0">
     [[subtitle]]
   </div>
 </template>
