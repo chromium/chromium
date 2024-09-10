@@ -704,6 +704,23 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 2);
 }
 
+TEST_F(PickerSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->ClearSearchResults();
+
+  EXPECT_EQ(view->GetAccessibleName(), u"");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 0);
+}
+
 struct PickerSearchResultTestCase {
   std::string test_name;
   PickerSearchResult result;

@@ -336,7 +336,9 @@ void PickerSearchResultsView::StopLoadingAnimation() {
 }
 
 void PickerSearchResultsView::UpdateAccessibleName() {
-  if (!section_views_.empty()) {
+  // If the sections are empty but the no results view is not visible, it means
+  // we are in a pending state, which should not have an announcement.
+  if (!section_views_.empty() || !no_results_view_->GetVisible()) {
     GetViewAccessibility().SetName(u"");
     return;
   }
