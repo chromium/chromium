@@ -118,6 +118,9 @@ extern const char kCdmStorageDatabaseDescription[];
 extern const char kCdmStorageDatabaseMigrationName[];
 extern const char kCdmStorageDatabaseMigrationDescription[];
 
+extern const char kCertVerificationNetworkTimeName[];
+extern const char kCertVerificationNetworkTimeDescription[];
+
 extern const char kClassifyUrlOnProcessResponseEventName[];
 extern const char kClassifyUrlOnProcessResponseEventDescription[];
 

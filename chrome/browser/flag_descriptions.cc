@@ -135,6 +135,13 @@ const char kCdmStorageDatabaseMigrationDescription[] =
     "Use the Cdm Storage Database over the MediaLicenseDatabase for Cdm "
     "storage operations.";
 
+const char kCertVerificationNetworkTimeName[] =
+    "Network Time for Certificate Verification";
+const char kCertVerificationNetworkTimeDescription[] =
+    "Use time fetched from the network for certificate verification decisions. "
+    "If certificate verification fails with the network time, it will fall back"
+    " to system time.";
+
 const char kClassifyUrlOnProcessResponseEventName[] =
     "Classify Url on process response event";
 const char kClassifyUrlOnProcessResponseEventDescription[] =

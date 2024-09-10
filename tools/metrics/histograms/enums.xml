@@ -15549,6 +15549,7 @@ from previous Chrome versions.
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
+  <int value="-2107751597" label="CertVerificationNetworkTime:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
   <int value="-2106575511"
@@ -17091,6 +17092,7 @@ from previous Chrome versions.
   <int value="-1478562612"
       label="TrustedVaultFrequentDegradedRecoverabilityPolling:enabled"/>
   <int value="-1478137998" label="lite-video-default-downlink-bandwidth-kbps"/>
+  <int value="-1477936741" label="CertVerificationNetworkTime:enabled"/>
   <int value="-1477686864" label="OmniboxRichAutocompletion:enabled"/>
   <int value="-1477560322" label="kiosk"/>
   <int value="-1477491889" label="cast-streaming-force-enable-hardware-vp9"/>

@@ -11921,6 +11921,12 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnablePaymentSettingsServerCardSave)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"cert-verification-network-time",
+     flag_descriptions::kCertVerificationNetworkTimeName,
+     flag_descriptions::kCertVerificationNetworkTimeDescription,
+     kOsMac | kOsWin | kOsLinux | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kCertVerificationNetworkTime)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
