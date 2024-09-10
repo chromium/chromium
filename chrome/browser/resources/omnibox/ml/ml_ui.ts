@@ -10,7 +10,7 @@ import './ml_chart.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox_internals.mojom-webui.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy.js';
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */

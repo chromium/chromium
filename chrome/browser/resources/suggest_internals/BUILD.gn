@@ -12,9 +12,13 @@ build_webui("build") {
     "request.ts",
   ]
   icons_html_files = [ "icons.html" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom-webui.ts",
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
+  ]
   mojo_files_deps = [
     "//chrome/browser/ui/webui/suggest_internals:mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
   ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",

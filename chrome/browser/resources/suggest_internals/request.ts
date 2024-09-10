@@ -10,10 +10,12 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/cr_chip/cr_chip.js';
 
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PageClassification} from './omnibox.mojom-webui.js';
 import {getTemplate} from './request.html.js';
 import type {Request} from './suggest_internals.mojom-webui.js';
 import {RequestStatus} from './suggest_internals.mojom-webui.js';
@@ -98,6 +100,15 @@ export class SuggestRequestElement extends PolymerElement {
                   .type}": <a target='_blank' href=https://protoshop.corp.google.com/embed?tabs=textproto&type=${
               urlType}&protobytes=${groups.proto}>${groups.proto}</a>`;
         });
+  }
+
+  private getPageClassification_(): string {
+    // Find pgcl value in request url.
+    const url = new URL(this.request.url.url);
+    const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
+    const pgcl = queryMatches?.groups!['pgcl']!;
+    // Return page associated with pgcl value.
+    return PageClassification[parseInt(pgcl)];
   }
 
   private getRequestDataHtml_(): TrustedHTML {

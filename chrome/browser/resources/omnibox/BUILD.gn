@@ -46,10 +46,15 @@ build_webui("build") {
     "omnibox_util.ts",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator" ]
-  mojo_files =
-      [ "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-webui.ts",
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [

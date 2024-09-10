@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/webui/location_internals/location_internals.mojom.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
-#include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"

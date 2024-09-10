@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/webui/omnibox/omnibox.mojom-forward.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-forward.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
