@@ -55,7 +55,6 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
-using ::testing::Not;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -1819,7 +1818,6 @@ class ReadOnlyTestClient : public TestClient {
               FormFieldFocusChange,
               (PDFiumEngineClient::FocusFieldType),
               (override));
-  MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
 };
 
 using PDFiumEngineReadOnlyTest = PDFiumTestBase;
@@ -1845,10 +1843,11 @@ TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
 }
 
 TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
-  NiceMock<ReadOnlyTestClient> client;
+  TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   // Update the plugin size so that all the text is visible by
   // `SelectionChangeInvalidator`.
@@ -1856,12 +1855,12 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 
   // Select text before going into read-only mode.
   EXPECT_FALSE(engine->IsReadOnly());
-  EXPECT_CALL(client, SetSelectedText(Not(IsEmpty())));
   engine->SelectAll();
+  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
 
   // Setting read-only mode should unselect the text.
-  EXPECT_CALL(client, SetSelectedText(IsEmpty()));
   engine->SetReadOnly(true);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
