@@ -124,6 +124,18 @@ export class WebCamFaceLandmarker {
     // Use a callback to send the result to the main FaceGaze object.
     this.onFaceLandmarkerResult_({result, latency});
   }
+
+  stop(): void {
+    if (this.imageCapture_) {
+      this.imageCapture_.track.stop();
+      this.imageCapture_ = undefined;
+    }
+    this.faceLandmarker_ = null;
+    if (this.intervalID_ !== null) {
+      clearInterval(this.intervalID_);
+      this.intervalID_ = null;
+    }
+  }
 }
 
 export namespace WebCamFaceLandmarker {

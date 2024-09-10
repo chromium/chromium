@@ -190,6 +190,7 @@ export class FaceGaze {
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
+    this.webCamFaceLandmarker_.stop();
     if (this.weightsWindowId_ !== -1) {
       chrome.windows.remove(this.weightsWindowId_);
     }
