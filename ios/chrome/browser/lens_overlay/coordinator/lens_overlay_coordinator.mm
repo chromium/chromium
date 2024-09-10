@@ -364,7 +364,7 @@ const CGFloat kMenuSymbolSize = 18;
   return YES;
 }
 
-- (void)presentationControllerWillDismiss:
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   UIViewController* presentedViewController =
       presentationController.presentedViewController;
