@@ -2290,9 +2290,7 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   if (window_->IsFullscreen())
     return blink::mojom::DisplayMode::kFullscreen;
 
-  if (is_type_picture_in_picture() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kCSSDisplayModePictureInPicture)) {
+  if (is_type_picture_in_picture()) {
     return blink::mojom::DisplayMode::kPictureInPicture;
   }
 
