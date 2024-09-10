@@ -62,16 +62,15 @@ class AuthenticationFlowTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     identity1_ = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentity(identity1_);
@@ -137,7 +136,7 @@ class AuthenticationFlowTest : public PlatformTest {
     [[performer_ expect] signInIdentity:identity
                           atAccessPoint:accessPoint
                        withHostedDomain:hosted_domain
-                         toBrowserState:browser_state_.get()];
+                              toProfile:profile_.get()];
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -148,7 +147,7 @@ class AuthenticationFlowTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AuthenticationFlow* authentication_flow_ = nullptr;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   id<SystemIdentity> identity1_ = nil;
   id<SystemIdentity> identity2_ = nil;
@@ -178,7 +177,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:identity1_];
+  }] fetchManagedStatus:profile_.get() forIdentity:identity1_];
 
   SetSigninSuccessExpectations(
       identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
@@ -201,8 +200,7 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFailFetchManagedStatus:error];
-  }] fetchManagedStatus:browser_state_.get()
-             forIdentity:identity1_];
+  }] fetchManagedStatus:profile_.get() forIdentity:identity1_];
 
   [[[performer_ expect] andDo:^(NSInvocation* invocation) {
     __unsafe_unretained ProceduralBlock completionBlock;
@@ -234,7 +232,7 @@ TEST_F(AuthenticationFlowTest,
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+  }] fetchManagedStatus:profile_.get() forIdentity:managed_identity_];
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
@@ -246,11 +244,11 @@ TEST_F(AuthenticationFlowTest,
         didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                    clientID:kFakeClientID
                          userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+  }] registerUserPolicy:profile_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
-  }] fetchUserPolicy:browser_state_.get()
+  }] fetchUserPolicy:profile_.get()
              withDmToken:kFakeDMToken
                 clientID:kFakeClientID
       userAffiliationIDs:@[ kFakeUserAffiliationID ]
@@ -293,7 +291,7 @@ TEST_F(AuthenticationFlowTest,
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+  }] fetchManagedStatus:profile_.get() forIdentity:managed_identity_];
 
   // Make sure that the is no attempt to show the dialg.
   [[performer_ reject] showManagedConfirmationForHostedDomain:@"foo.com"
@@ -304,15 +302,15 @@ TEST_F(AuthenticationFlowTest,
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                                      clientID:kFakeClientID
                                            userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+  }] registerUserPolicy:profile_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
-  }] fetchUserPolicy:browser_state_.get()
-         withDmToken:kFakeDMToken
-            clientID:kFakeClientID
-  userAffiliationIDs:@[ kFakeUserAffiliationID ]
-            identity:managed_identity_];
+  }] fetchUserPolicy:profile_.get()
+             withDmToken:kFakeDMToken
+                clientID:kFakeClientID
+      userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                identity:managed_identity_];
 
   SetSigninSuccessExpectations(
       managed_identity_,

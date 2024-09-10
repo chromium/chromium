@@ -138,7 +138,7 @@ NSString* const kAuthenticationSnackbarCategory =
   [self stopWatchdogTimer];
 }
 
-- (void)fetchManagedStatus:(ChromeBrowserState*)browserState
+- (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();
@@ -159,24 +159,24 @@ NSString* const kAuthenticationSnackbarCategory =
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState {
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignIn(identity, accessPoint);
+             toProfile:(ProfileIOS*)profile {
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignIn(
+      identity, accessPoint);
 }
 
-- (void)signOutBrowserState:(ChromeBrowserState*)browserState {
+- (void)signOutProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-                /*force_clear_browsing_data=*/false, ^{
-                  [weakDelegate didSignOut];
-                });
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      /*force_clear_browsing_data=*/false, ^{
+        [weakDelegate didSignOut];
+      });
 }
 
-- (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState {
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                /*force_clear_browsing_data=*/false, nil);
+- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
 }
 
 // Retuns the ManagedConfirmationDialogContent that corresponds to the
@@ -282,10 +282,9 @@ NSString* const kAuthenticationSnackbarCategory =
                           browser:(Browser*)browser {
   DCHECK(browser);
   base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
-  ChromeBrowserState* browserState =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalChromeBrowserState();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(profile);
 
   // Signing in from bookmarks and reading list enables the corresponding
   // type.
@@ -319,7 +318,7 @@ NSString* const kAuthenticationSnackbarCategory =
     base::RecordAction(
         base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForBrowserState(profile);
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       // Signing in from bookmarks and reading list enables the corresponding
       // type. The undo button should handle that before signing out.
@@ -382,19 +381,18 @@ NSString* const kAuthenticationSnackbarCategory =
   [_errorAlertCoordinator start];
 }
 
-- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+- (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
   DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
 
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
-      IdentityManagerFactory::GetForProfile(browserState)
-          ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
-                                    userEmail);
+      IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
+          base::SysNSStringToUTF8(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
 
   __weak __typeof(self) weakSelf = self;
 
@@ -421,7 +419,7 @@ NSString* const kAuthenticationSnackbarCategory =
       }));
 }
 
-- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+- (void)fetchUserPolicy:(ProfileIOS*)profile
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
@@ -434,7 +432,7 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK([clientID length] > 0);
 
   policy::UserPolicySigninService* policyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
   AccountId accountID =
@@ -453,8 +451,7 @@ NSString* const kAuthenticationSnackbarCategory =
   policyService->FetchPolicyForSignedInUser(
       accountID, base::SysNSStringToUTF8(dmToken),
       base::SysNSStringToUTF8(clientID), userAffiliationIDsVector,
-      browserState->GetSharedURLLoaderFactory(),
-      base::BindOnce(^(bool success) {
+      profile->GetSharedURLLoaderFactory(), base::BindOnce(^(bool success) {
         if (![self stopWatchdogTimer]) {
           // Watchdog timer has already fired, don't notify the delegate.
           return;

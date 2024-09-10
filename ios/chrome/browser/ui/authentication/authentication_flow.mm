@@ -312,7 +312,7 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)continueSignin {
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
     // the user is being informed of an issue.
@@ -330,8 +330,7 @@ bool HasMachineLevelPolicies() {
       return;
 
     case FETCH_MANAGED_STATUS:
-      [_performer fetchManagedStatus:browserState
-                         forIdentity:_identityToSignIn];
+      [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
 
     case SHOW_MANAGED_CONFIRMATION: {
@@ -343,7 +342,7 @@ bool HasMachineLevelPolicies() {
     }
 
     case SIGN_OUT_IF_NEEDED:
-      [_performer signOutBrowserState:browserState];
+      [_performer signOutProfile:profile];
       return;
 
     case SIGN_IN:
@@ -351,12 +350,11 @@ bool HasMachineLevelPolicies() {
       return;
 
     case REGISTER_FOR_USER_POLICY:
-      [_performer registerUserPolicy:browserState
-                         forIdentity:_identityToSignIn];
+      [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
       return;
 
     case FETCH_USER_POLICY:
-      [_performer fetchUserPolicy:browserState
+      [_performer fetchUserPolicy:profile
                       withDmToken:_dmToken
                          clientID:_clientID
                userAffiliationIDs:_userAffiliationIDs
@@ -370,7 +368,7 @@ bool HasMachineLevelPolicies() {
       return;
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
-        [_performer signOutImmediatelyFromBrowserState:browserState];
+        [_performer signOutImmediatelyFromProfile:profile];
       }
       [self completeSignInWithSuccess:NO];
       return;
@@ -392,8 +390,7 @@ bool HasMachineLevelPolicies() {
 
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
-      AuthenticationServiceFactory::GetForBrowserState(
-          [self originalBrowserState])
+      AuthenticationServiceFactory::GetForBrowserState([self originalProfile])
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     // If the identity to sign-in is different than the current identity,
@@ -405,15 +402,15 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForBrowserState(profile);
 
   if (accountManagerService->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
                  atAccessPoint:self.accessPoint
               withHostedDomain:_identityToSignInHostedDomain
-                toBrowserState:browserState];
+                     toProfile:profile];
     _didSignIn = YES;
     [self continueSignin];
   } else {
@@ -427,13 +424,12 @@ bool HasMachineLevelPolicies() {
 // Sync Opt-In screen.
 - (void)fetchCapabilities {
   CHECK([self shouldFetchCapabilities]);
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
 
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                  browserState)];
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)];
 
   [_capabilitiesFetcher
       startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
@@ -557,10 +553,9 @@ bool HasMachineLevelPolicies() {
 
 #pragma mark - Private methods
 
-// The original chrome browser state used for services that don't exist in
-// incognito mode.
-- (ChromeBrowserState*)originalBrowserState {
-  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
+// The original profile used for services that don't exist in incognito mode.
+- (ProfileIOS*)originalProfile {
+  return _browser->GetProfile()->GetOriginalChromeBrowserState();
 }
 
 // Returns YES if the managed confirmation dialog should be shown for the
@@ -595,7 +590,7 @@ bool HasMachineLevelPolicies() {
   }
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
+      SyncServiceFactory::GetForBrowserState([self originalProfile]);
   syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
 
   if (userSettings->GetSelectedTypes().HasAll(
