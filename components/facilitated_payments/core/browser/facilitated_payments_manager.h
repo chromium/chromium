@@ -122,24 +122,19 @@ class FacilitatedPaymentsManager {
                            ShowsPixPaymentPrompt_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
-      ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData);
+      PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataNotEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataEmpty_HistogramsLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PixPaymentPromptAccepted_TriggersLoadRiskData);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PaymentNotOfferedReason_RiskDataEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      DoesNotRetrieveClientTokenIfPixPaymentPromptRejected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           RetrievesClientTokenIfPixPaymentPromptAccepted);
+                           RiskDataEmpty_GetClientTokenNotCalled);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           RiskDataNotEmpty_GetClientTokenCalled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            GetClientTokenHistogram_ClientTokenNotEmpty);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
@@ -292,14 +287,14 @@ class FacilitatedPaymentsManager {
   // payment.
   void OnApiAvailabilityReceived(bool is_api_available);
 
+  // Called after showing the PIX the payment prompt.
+  void OnPixPaymentPromptResult(bool is_prompt_accepted,
+                                int64_t selected_instrument_id);
+
   // Invoked when risk data is fetched. The call to fetch the risk data was made
   // at `start_time`.
   void OnRiskDataLoaded(base::TimeTicks start_time,
                         const std::string& risk_data);
-
-  // Called after showing the PIX the payment prompt.
-  void OnPixPaymentPromptResult(bool is_prompt_accepted,
-                                int64_t selected_instrument_id);
 
   // Called after retrieving the client token from the facilitated payment API.
   // If not empty, the client token can be used for initiating payment.

@@ -274,14 +274,6 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   initiate_payment_request_details_->billing_customer_number_ =
       autofill::payments::GetBillingCustomerId(
           client_->GetPaymentsDataManager());
-  // Before showing the payment prompt, load the risk data required for
-  // initiating payment request. The risk data is collected once per page load
-  // if a PIX code was detected.
-  if (initiate_payment_request_details_->risk_data_.empty()) {
-    client_->LoadRiskData(
-        base::BindOnce(&FacilitatedPaymentsManager::OnRiskDataLoaded,
-                       weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-  }
 
   bool promptShown = client_->ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
@@ -290,27 +282,6 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   LogFopSelectorShown(promptShown);
   if (promptShown) {
     fop_selector_shown_time_ = base::TimeTicks::Now();
-  }
-}
-
-void FacilitatedPaymentsManager::OnRiskDataLoaded(
-    base::TimeTicks start_time,
-    const std::string& risk_data) {
-  LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
-                                  base::TimeTicks::Now() - start_time);
-  if (risk_data.empty()) {
-    // TODO: b/348143700 - Show error screen if the loading screen is being
-    // shown.
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
-    return;
-  }
-  initiate_payment_request_details_->risk_data_ = risk_data;
-
-  // Populating the risk data and showing the payment prompt may occur
-  // asynchronously. If the user has already selected the payment account, send
-  // the request to initiate payment.
-  if (initiate_payment_request_details_->IsReadyForPixPayment()) {
-    SendInitiatePaymentRequest();
   }
 }
 
@@ -328,6 +299,26 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
   client_->ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
+
+  client_->LoadRiskData(
+      base::BindOnce(&FacilitatedPaymentsManager::OnRiskDataLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+}
+
+void FacilitatedPaymentsManager::OnRiskDataLoaded(
+    base::TimeTicks start_time,
+    const std::string& risk_data) {
+  LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
+                                  base::TimeTicks::Now() - start_time);
+  if (risk_data.empty()) {
+    // TODO: b/348143700 - Show error screen if the loading screen is being
+    // shown.
+    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
+    Reset();
+    return;
+  }
+  initiate_payment_request_details_->risk_data_ = risk_data;
+
   get_client_token_loading_start_time_ = base::TimeTicks::Now();
   GetApiClient()->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,

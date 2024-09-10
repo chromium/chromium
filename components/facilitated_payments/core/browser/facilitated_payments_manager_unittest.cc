@@ -899,31 +899,24 @@ TEST_F(FacilitatedPaymentsManagerTest, ShowsPixPaymentPrompt_HistogramLogged) {
       /*expected_bucket_count=*/1);
 }
 
-// If the API is not available, request for risk data is not made.
+// If the user does not select a payment account in the payment prompt, request
+// for risk data is not made.
 TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData) {
+       PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered) {
   EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
 
-  manager_->OnApiAvailabilityReceived(false);
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
+                                     /*selected_instrument_id=*/0);
 }
 
-// If the API is available, and the risk data has already loaded from a previous
-// call, request for risk data is not made.
+// If the user selects a payment account in the payment prompt, request for risk
+// data is made.
 TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData) {
-  EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
-
-  manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "seems pretty risky");
-  manager_->OnApiAvailabilityReceived(true);
-}
-
-// If the API is available, and the risk data is empty, request for risk data is
-// made.
-TEST_F(FacilitatedPaymentsManagerTest,
-       ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData) {
+       PixPaymentPromptAccepted_TriggersLoadRiskData) {
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
-  manager_->OnApiAvailabilityReceived(true);
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/0);
 }
 
 // Verify risk data metrics are logged when risk data is fetched successfully.
@@ -964,35 +957,33 @@ TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
       /*expected_bucket_count=*/1);
 }
 
-// If a user has rejected the PIX payment prompt, then the manager does not
-// retrieve a client token from the facilitated payments API client.
-TEST_F(FacilitatedPaymentsManagerTest,
-       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected) {
+// If the risk data is empty, then the manager does not retrieve a client token
+// from the facilitated payments API client.
+TEST_F(FacilitatedPaymentsManagerTest, RiskDataEmpty_GetClientTokenNotCalled) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
 
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"");
 }
 
-// If a user has accepted the PIX payment prompt, then the manager retrieves a
-// client token from the facilitated payments API client.
-TEST_F(FacilitatedPaymentsManagerTest,
-       RetrievesClientTokenIfPixPaymentPromptAccepted) {
+// If the risk data is not empty, then the manager retrieves a client token from
+// the facilitated payments API client.
+TEST_F(FacilitatedPaymentsManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
 }
 
-// The GetClientToken async call is made after the user has accepted the payment
-// prompt. This test verifies that the result and latency of the GetClientToken
-// call is logged correctly.
+// The GetClientToken async call is made after fetching the risk data. This test
+// verifies that the result and latency of the GetClientToken call is logged
+// correctly.
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenNotEmpty) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
   FastForwardBy(base::Seconds(2));
 
   manager_->OnGetClientToken(std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'});
@@ -1007,15 +998,15 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// The GetClientToken async call is made after the user has accepted the payment
-// prompt. This test verifies that the result and latency of the GetClientToken
-// call is logged correctly.
+// The GetClientToken async call is made after fetching the risk data. This test
+// verifies that the result and latency of the GetClientToken call is logged
+// correctly.
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenEmpty) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
+  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                             /*risk_data=*/"seems pretty risky");
   FastForwardBy(base::Seconds(2));
 
   manager_->OnGetClientToken(std::vector<uint8_t>{});
