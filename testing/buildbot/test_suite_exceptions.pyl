@@ -1768,6 +1768,7 @@
         'swarming': {
           'shards': 40,
         },
+        'experiment_percentage': 100, # https://crbug.com/365788368
       },
       'android-asan': {
         'args': [
