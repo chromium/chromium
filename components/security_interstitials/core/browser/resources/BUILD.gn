@@ -20,8 +20,8 @@ shared_interstitials_path =
                 root_build_dir)
 
 bundle_js("bundle_js_interstitial_large") {
-  # Using a dummy value for`host` which is ignored anyway since the code being
-  # bundled below is not served from any host.
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
   host = "_ignored_"
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_large"
@@ -35,8 +35,8 @@ bundle_js("bundle_js_interstitial_large") {
 }
 
 bundle_js("bundle_js_interstitial_webview_quiet") {
-  # Using a dummy value for`host` which is ignored anyway since the code being
-  # bundled below is not served from any host.
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
   host = "_ignored_"
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_webview_quiet"
@@ -50,8 +50,8 @@ bundle_js("bundle_js_interstitial_webview_quiet") {
 }
 
 bundle_js("bundle_js_interstitial_webview_supervised_user") {
-  # Using a dummy value for`host` which is ignored anyway since the code being
-  # bundled below is not served from any host.
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
   host = "_ignored_"
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_webview_supervised_user"
