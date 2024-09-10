@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -41,13 +43,14 @@ const CGFloat kSeparatorHeight = 0.5;
 @implementation PriceTrackingPromoModuleView {
   UILabel* _titleLabel;
   UILabel* _descriptionLabel;
-  UILabel* _allowLabel;
+  UIButton* _allowButton;
   UIImageView* _fallbackProductImageView;
   // To create a background circle around the fallback product image.
   UIView* _fallbackProductImageBackgroundCircle;
   UIStackView* _contentStack;
   UIStackView* _textStack;
   UIView* _separator;
+  UITapGestureRecognizer* _tapRecognizer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -71,6 +74,7 @@ const CGFloat kSeparatorHeight = 0.5;
     return;
   }
   self.translatesAutoresizingMaskIntoConstraints = NO;
+  self.accessibilityIdentifier = kPriceTrackingPromoViewID;
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -120,19 +124,27 @@ const CGFloat kSeparatorHeight = 0.5;
                               _fallbackProductImageBackgroundCircle,
                               kProductImageFallbackInset);
 
-  _allowLabel = [[UILabel alloc] init];
-  _allowLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _allowLabel.textColor = [UIColor colorNamed:kBlueColor];
-  _allowLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  _allowLabel.adjustsFontForContentSizeCategory = YES;
-  _allowLabel.text = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW);
+  _allowButton = [[UIButton alloc] init];
+  _allowButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_allowButton
+      setTitle:l10n_util::GetNSString(
+                   IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW)
+      forState:UIControlStateNormal];
+  [_allowButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                     forState:UIControlStateNormal];
+  _allowButton.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  _tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(allowPriceTrackingTapped:)];
+
+  [_allowButton addGestureRecognizer:_tapRecognizer];
 
   _separator = [[UIView alloc] init];
   _separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
 
   _textStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _titleLabel, _descriptionLabel, _separator, _allowLabel
+    _titleLabel, _descriptionLabel, _separator, _allowButton
   ]];
   _textStack.axis = UILayoutConstraintAxisVertical;
   _textStack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -157,6 +169,10 @@ const CGFloat kSeparatorHeight = 0.5;
   AddSameConstraints(_contentStack, self);
 }
 
+- (void)allowPriceTrackingTapped:(UIGestureRecognizer*)sender {
+  [self.commandHandler allowPriceTrackingNotifications];
+}
+
 #pragma mark - Testing category methods
 
 - (NSString*)titleLabelTextForTesting {
@@ -168,7 +184,7 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (NSString*)allowLabelTextForTesting {
-  return self->_allowLabel.text;
+  return self->_allowButton.currentTitle;
 }
 
 @end

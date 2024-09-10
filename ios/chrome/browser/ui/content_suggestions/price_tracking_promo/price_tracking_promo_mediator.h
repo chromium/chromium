@@ -22,6 +22,9 @@ class ShoppingService;
 // New subscription for user observed (originating from a different platform).
 - (void)newSubscriptionAvailable;
 
+// Price Tracking Promo is removed from the magic stack.
+- (void)removePriceTrackingPromo;
+
 @end
 
 @interface PriceTrackingPromoMediator : NSObject <PriceTrackingPromoCommands>

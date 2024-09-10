@@ -220,6 +220,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/start_surface/ui_bundled:eg2_tests",
     "//ios/chrome/browser/tabs/ui_bundled:eg2_tests",
     "//ios/chrome/browser/text_fragments/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:eg2_tests",
     "//ios/chrome/browser/ui/fullscreen:eg2_tests",
