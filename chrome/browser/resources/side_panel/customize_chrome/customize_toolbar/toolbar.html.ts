@@ -38,7 +38,8 @@ export function getHtml(this: ToolbarElement) {
                   (action) => action.category === category.id ?
                       html`
       <div class="toggle-container choose-icons-row">
-        <img class="toggle-icon" src="${action.iconUrl.url}"></img>
+        <img class="toggle-icon" src="${action.iconUrl.url}"
+            aria-hidden="true"></img>
         <div class="toggle-title">${action.displayName}</div>
         <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
             ?checked="${action.pinned}" aria-label="${
