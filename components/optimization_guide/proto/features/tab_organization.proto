@@ -43,30 +43,6 @@ message TabOrganizationRequest {
   bool allow_reorganizing_existing_groups = 4;
 }
 
-// Next ID: 4
-message Tab {
-  // A unique identifier for the tab.
-  int64 tab_id = 1;
-
-  // The title of the tab.
-  string title = 2;
-
-  // The URL of the tab.
-  string url = 3;
-}
-
-// Next ID: 4
-message TabGroup {
-  // The label that describes this tab group.
-  string label = 1;
-
-  // The tabs that belong in this group.
-  repeated Tab tabs = 2;
-
-  // The id of the pre-existing tab group this corresponds to, if any.
-  optional string group_id = 3;
-}
-
 // Next ID: 2
 message TabOrganizationResponse {
   // The groups that were deemed suitable for the requested tabs.

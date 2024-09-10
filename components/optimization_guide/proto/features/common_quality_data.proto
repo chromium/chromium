@@ -168,6 +168,13 @@ message PageContext {
 
   // The AX tree representation of the page.
   AXTreeUpdate ax_tree_data = 3;
+
+  // The inner text of the page the model is acting on (excluding x-origin
+  // frames).
+  string inner_text = 4;
+
+  // The offset of the focused element into the |inner_text|.
+  uint64 inner_text_offset = 5;
 }
 
 message FormData {
@@ -235,6 +242,28 @@ message UserAnnotationsEntry {
 
   // The value for this entry.
   string value = 3;
+}
+
+message TabGroup {
+  // The label that describes this tab group.
+  string label = 1;
+
+  // The tabs that belong in this group.
+  repeated Tab tabs = 2;
+
+  // The id of the pre-existing tab group this corresponds to, if any.
+  optional string group_id = 3;
+}
+
+message Tab {
+  // A unique identifier for the tab.
+  int64 tab_id = 1;
+
+  // The title of the tab.
+  string title = 2;
+
+  // The URL of the tab.
+  string url = 3;
 }
 
 // Selection text affinity, part of the a11y snapshot.
