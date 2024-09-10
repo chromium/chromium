@@ -310,12 +310,6 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
   if (!frame_owner)
     return;
 
-  const StyleEngine& style_engine = GetDocument().GetStyleEngine();
-  mojom::blink::PreferredColorScheme preferred =
-      style_engine.ResolveColorSchemeForEmbedding(&new_style);
-  if (style_engine.ResolveColorSchemeForEmbedding(old_style) != preferred) {
-    frame_owner->SetPreferredColorScheme(preferred);
-  }
   if (old_style &&
       new_style.UsedColorScheme() != old_style->UsedColorScheme()) {
     frame_owner->SetColorScheme(new_style.UsedColorScheme());

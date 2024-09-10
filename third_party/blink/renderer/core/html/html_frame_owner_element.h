@@ -106,6 +106,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   Node::InsertionNotificationRequest InsertedInto(
       ContainerNode& insertion_point) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
+  // Element overrides:
+  void DidRecalcStyle(const StyleRecalcChange) override;
 
   // FrameOwner overrides:
   Frame* ContentFrame() const final { return content_frame_.Get(); }
@@ -238,6 +240,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   mojom::blink::ResourceTimingInfoPtr fallback_timing_info_;
   bool should_lazy_load_children_;
   bool is_swapping_frames_{false};
+  mojom::blink::PreferredColorScheme preferred_color_scheme_;
 };
 
 class SubframeLoadingDisabler {
