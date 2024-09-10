@@ -269,11 +269,11 @@ const GURL& GaiaUrls::account_capabilities_url() const {
 }
 
 const std::string& GaiaUrls::oauth2_chrome_client_id() const {
-  return oauth2_chrome_client_id_;
+  return google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
 }
 
 const std::string& GaiaUrls::oauth2_chrome_client_secret() const {
-  return oauth2_chrome_client_secret_;
+  return google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
 }
 
 const GURL& GaiaUrls::oauth2_token_url() const {
@@ -372,11 +372,6 @@ void GaiaUrls::InitializeDefault() {
   if (!tasks_api_origin_url_.is_valid()) {
     tasks_api_origin_url_ = GURL(kDefaultTasksApiBaseUrl);
   }
-
-  oauth2_chrome_client_id_ =
-      google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
-  oauth2_chrome_client_secret_ =
-      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
 
   CHECK(!gaia_origin_.opaque());
   const GURL gaia_url = gaia_origin_.GetURL();

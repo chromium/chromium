@@ -231,7 +231,7 @@ class MetricsKeyCache {
   }
   ~MetricsKeyCache() = default;
 
-  std::string metrics_key() const { return metrics_key_; }
+  const std::string& metrics_key() const { return metrics_key_; }
 
  private:
   std::string metrics_key_;
@@ -266,11 +266,11 @@ class MainApiKeyCache {
 
   ~MainApiKeyCache() = default;
 
-  std::string api_key() const { return api_key_; }
+  const std::string& api_key() const { return api_key_; }
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
 #endif
-  std::string api_key_non_stable() const { return api_key_non_stable_; }
+  const std::string& api_key_non_stable() const { return api_key_non_stable_; }
 
  private:
   std::string api_key_;
@@ -319,15 +319,15 @@ class PerFeatureApiKeysCache {
   }
   ~PerFeatureApiKeysCache() = default;
 
-  std::string api_key_remoting() const { return api_key_remoting_; }
-  std::string api_key_soda() const { return api_key_soda_; }
+  const std::string& api_key_remoting() const { return api_key_remoting_; }
+  const std::string& api_key_soda() const { return api_key_soda_; }
 #if !BUILDFLAG(IS_ANDROID)
-  std::string api_key_hats() const { return api_key_hats_; }
+  const std::string& api_key_hats() const { return api_key_hats_; }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string api_key_sharing() const { return api_key_sharing_; }
-  std::string api_key_read_aloud() const { return api_key_read_aloud_; }
-  std::string api_key_fresnel() const { return api_key_fresnel_; }
+  const std::string& api_key_sharing() const { return api_key_sharing_; }
+  const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
+  const std::string& api_key_fresnel() const { return api_key_fresnel_; }
 #endif
 
  private:
@@ -400,7 +400,7 @@ class OAuthClientInfoCache {
   }
   ~OAuthClientInfoCache() = default;
 
-  std::string GetClientID(OAuth2Client client) const {
+  const std::string& GetClientID(OAuth2Client client) const {
     DCHECK_LT(client, CLIENT_NUM_ITEMS);
     return client_ids_[client];
   }
@@ -411,7 +411,7 @@ class OAuthClientInfoCache {
   }
 #endif
 
-  std::string GetClientSecret(OAuth2Client client) const {
+  const std::string& GetClientSecret(OAuth2Client client) const {
     DCHECK_LT(client, CLIENT_NUM_ITEMS);
     return client_secrets_[client];
   }
@@ -440,40 +440,40 @@ bool HasAPIKeyConfigured() {
   return GetAPIKey() != DUMMY_API_TOKEN;
 }
 
-std::string GetAPIKey(::version_info::Channel channel) {
+const std::string& GetAPIKey(::version_info::Channel channel) {
   return channel == ::version_info::Channel::STABLE
              ? GetAPIKey()
              : g_main_api_key_cache.Get().api_key_non_stable();
 }
 
-std::string GetAPIKey() {
+const std::string& GetAPIKey() {
   return g_main_api_key_cache.Get().api_key();
 }
 
-std::string GetRemotingAPIKey() {
+const std::string& GetRemotingAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_remoting();
 }
 
-std::string GetSodaAPIKey() {
+const std::string& GetSodaAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_soda();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::string GetHatsAPIKey() {
+const std::string& GetHatsAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_hats();
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::string GetSharingAPIKey() {
+const std::string& GetSharingAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_sharing();
 }
 
-std::string GetReadAloudAPIKey() {
+const std::string& GetReadAloudAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_read_aloud();
 }
 
-std::string GetFresnelAPIKey() {
+const std::string& GetFresnelAPIKey() {
   return g_per_feature_api_key_cache.Get().api_key_fresnel();
 }
 #endif
@@ -488,7 +488,7 @@ void SetAPIKey(const std::string& api_key) {
 }
 #endif
 
-std::string GetMetricsKey() {
+const std::string& GetMetricsKey() {
   return g_metrics_key_cache.Get().metrics_key();
 }
 
@@ -504,11 +504,11 @@ bool HasOAuthClientConfigured() {
   return true;
 }
 
-std::string GetOAuth2ClientID(OAuth2Client client) {
+const std::string& GetOAuth2ClientID(OAuth2Client client) {
   return g_oauth_client_info_cache.Get().GetClientID(client);
 }
 
-std::string GetOAuth2ClientSecret(OAuth2Client client) {
+const std::string& GetOAuth2ClientSecret(OAuth2Client client) {
   return g_oauth_client_info_cache.Get().GetClientSecret(client);
 }
 

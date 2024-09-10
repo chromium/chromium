@@ -116,9 +116,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL account_capabilities_url_;
   GURL get_check_connection_info_url_;
 
-  std::string oauth2_chrome_client_id_;
-  std::string oauth2_chrome_client_secret_;
-
   GURL oauth2_token_url_;
   GURL oauth2_issue_token_url_;
   GURL oauth2_token_info_url_;
