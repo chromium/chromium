@@ -4,11 +4,17 @@
 
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -26,6 +32,11 @@ void OnAuthComplete(base::OnceCallback<void(bool)> callback,
   // Here we simply ignore `token` and `timeout`, as password manager manages
   // its own auth timeout
   std::move(callback).Run(success);
+}
+
+bool HasFingerprintRecord(const PrefService& pref_service) {
+  return pref_service.GetInteger(ash::prefs::kQuickUnlockFingerprintRecord) !=
+         0;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -82,4 +93,30 @@ void AuthenticatorChromeOS::AuthenticateUser(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+BiometricsStatusChromeOS AuthenticatorChromeOS::CheckIfBiometricsAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::features::IsBiometricsInPasswordManagerEnabled()) {
+    return BiometricsStatusChromeOS::kUnavailable;
+  }
+  const PrefService& prefs =
+      *ProfileManager::GetActiveUserProfile()->GetPrefs();
+
+  // No need for an AuthPerformer since we don't intent to perform
+  // authentication here.
+  ash::LegacyFingerprintEngine fp_engine(nullptr);
+  bool is_fingerprint_enabled = fp_engine.IsFingerprintEnabled(
+      prefs, ash::LegacyFingerprintEngine::Purpose::kAny);
+
+  if (!is_fingerprint_enabled) {
+    return BiometricsStatusChromeOS::kUnavailable;
+  }
+
+  return HasFingerprintRecord(prefs)
+             ? BiometricsStatusChromeOS::kAvailable
+             : BiometricsStatusChromeOS::kNotConfiguredForUser;
+#else
+  return BiometricsStatusChromeOS::kUnavailable;
+#endif
 }
