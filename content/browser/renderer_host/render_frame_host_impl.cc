@@ -1286,6 +1286,16 @@ bool ShouldBoostRenderProcessForLoading(
   }
 }
 
+bool BoostRendererInitiatedNavigation() {
+  // If this is set to true, then the renderer initiated navigation is boosted
+  // in addition to the browser initiated navigation.
+  static const bool boost_renderer_initiated_navigation =
+      base::GetFieldTrialParamByFeatureAsBool(
+          blink::features::kBoostRenderProcessForLoading,
+          "prioritize_renderer_initiated", false);
+  return boost_renderer_initiated_navigation;
+}
+
 std::optional<std::string_view> GetHostnameMinusRegistry(const GURL& url) {
   const size_t registry_length =
       net::registry_controlled_domains::GetRegistryLength(
@@ -11605,7 +11615,12 @@ void RenderFrameHostImpl::CommitNavigation(
 
     if (ShouldBoostRenderProcessForLoading(lifecycle_state_,
                                            frame_tree_->is_prerendering()) &&
-        common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
+        common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame() &&
+        // By default, bump the process priority only for browser (embedder)
+        // initiated prerendering, as a user is more likely to visit the page
+        // than the renderer initiated prerendering (i.e., speculation rules).
+        (!navigation_request->IsRendererInitiated() ||
+         BoostRendererInitiatedNavigation())) {
       if (IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
         BoostRenderProcessForLoading();
       }
