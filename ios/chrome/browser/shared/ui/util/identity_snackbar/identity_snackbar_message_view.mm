@@ -13,24 +13,28 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Point size for the icons.
+constexpr CGFloat kSymbolsPointSize = 24.;
+
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, 24.));
+      CustomSymbolWithPointSize(kGoogleIconSymbol, kSymbolsPointSize));
 #else
-  return MakeSymbolMulticolor(DefaultSymbolWithPointSize(@"gearshape.2", 24.));
+  return MakeSymbolMulticolor(
+      DefaultSymbolWithPointSize(@"gearshape.2", kSymbolsPointSize));
 #endif
 }
 
-NSString* const kEnterpriseIconName = @"enterprise_icon";
-
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
-  // TODO(crbug.com/349071774): This icon has a lot of built-in padding, so it
-  // looks a bit smaller than intended.
   UIColor* color = [UIColor colorNamed:kInvertedTextSecondaryColor];
-  return [[UIImage imageNamed:kEnterpriseIconName] imageWithTintColor:color];
+  // Actual size does not matter, the image is resized.
+  return SymbolWithPalette(
+      CustomSymbolWithPointSize(kEnterpriseSymbol, kSymbolsPointSize),
+      @[ color ]);
 }
 
 // Returns the text for `_emailView`.
