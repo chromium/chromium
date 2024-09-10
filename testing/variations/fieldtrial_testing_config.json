@@ -19270,6 +19270,31 @@
             ]
         }
     ],
+    "ReadAnythingReadAloudPhraseHighlighting": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadAnythingReadAloudPhraseHighlighting"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ReadAnythingReadAloudPhraseHighlighting"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingReadAloudWordHighlighting": [
         {
             "platforms": [
