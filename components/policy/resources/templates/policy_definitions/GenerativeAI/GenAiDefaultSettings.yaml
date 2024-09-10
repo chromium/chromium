@@ -24,6 +24,8 @@ future_on:
 - android
 - chrome.*
 - chrome_os
+- fuchsia
+- ios
 items:
 - caption: Allow GenAI features and improve AI models
   name: Allowed

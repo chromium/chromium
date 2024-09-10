@@ -6234,7 +6234,6 @@ test("unit_tests") {
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_util_unittest.cc",
-    "../browser/policy/gen_ai_default_settings_policy_handler_unittest.cc",
     "../browser/policy/homepage_location_policy_handler_unittest.cc",
     "../browser/policy/javascript_policy_handler_unittest.cc",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",

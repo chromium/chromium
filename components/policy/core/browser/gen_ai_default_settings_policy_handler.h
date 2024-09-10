@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_
-#define CHROME_BROWSER_POLICY_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/policy/policy_export.h"
 
 class PrefValueMap;
 
@@ -19,7 +20,7 @@ class PolicyMap;
 
 // Handles the pref for the `GenAiDefaultSettings` policy, as well as the prefs
 // of other included GenAI policies which are not already set by another source.
-class GenAiDefaultSettingsPolicyHandler
+class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   // Struct containing the necessary info to set the default value of each
@@ -51,4 +52,4 @@ class GenAiDefaultSettingsPolicyHandler
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_GEN_AI_DEFAULT_SETTINGS_POLICY_HANDLER_H_

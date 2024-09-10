@@ -1084,8 +1084,6 @@ static_library("browser") {
     "policy/device_management_service_configuration.h",
     "policy/dm_token_utils.cc",
     "policy/dm_token_utils.h",
-    "policy/gen_ai_default_settings_policy_handler.cc",
-    "policy/gen_ai_default_settings_policy_handler.h",
     "policy/homepage_location_policy_handler.cc",
     "policy/homepage_location_policy_handler.h",
     "policy/javascript_policy_handler.cc",

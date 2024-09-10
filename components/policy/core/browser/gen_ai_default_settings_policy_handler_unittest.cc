@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/gen_ai_default_settings_policy_handler.h"
+#include "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 
 #include <string>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/policy/homepage_location_policy_handler.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"

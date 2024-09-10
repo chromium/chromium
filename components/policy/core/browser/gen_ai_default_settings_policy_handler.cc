@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/gen_ai_default_settings_policy_handler.h"
+#include "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 
 #include <string>
 #include <vector>
