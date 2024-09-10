@@ -628,8 +628,8 @@
     Something went wrong. Try again later
   </message>
   <!-- For Compare Disclosure -->
-  <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
-    Chrome can help you compare similar products side-by-side
+  <message name="IDS_COMPARE_DISCLOSURE_TITLE" translateable="false" desc="The text for the title of the Compare first-run experience disclosure bubble.">
+    Compare similar products side-by-side
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ITEMS_HEADER" desc="The text for the Compare disclosure items header.">
     Things to consider
@@ -637,17 +637,14 @@
   <message name="IDS_COMPARE_DISCLOSURE_ABOUT_AI_ITEM" desc="The text for the Compare disclosure item that states that the feature uses AI.">
     This feature uses AI and won't always get it right
   </message>
-  <message name="IDS_COMPARE_DISCLOSURE_TAB_ITEM" desc="The text for the Compare disclosure item that states what tab data is shared with Google.">
-    Selected tab titles and URLs using are sent to Google
+  <message name="IDS_COMPARE_DISCLOSURE_TAB_ITEM" translateable="false" desc="The text for the Compare disclosure item that states what tab data is shared with Google.">
+    The tab titles and URLs of pages you add to the table are sent to Google
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ACCOUNT_ITEM" desc="The text for the Compare disclosure item that states where the data is stored.">
     Comparison tables are saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_DATA_ITEM" translateable="false" desc="The text for the Compare disclosure item that states who might see the data.">
     Data may be seen by trained reviewers to improve this feature
-  </message>
-  <message name="IDS_COMPARE_DISCLOSURE_LEARN_MORE" desc="The text for the Compare disclosure statement if user wants to learn more about the feature.">
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> about comparison tables
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
     Let's go

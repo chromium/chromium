@@ -30,11 +30,11 @@ export function getHtml(this: DisclosureAppElement) {
         </div>`)}
     </div>
   </div>
-  <localized-link id="learnMoreLink"
-    .localizedString="${this.i18nAdvanced('disclosureLearnMore')}"
-    @link-clicked="${this.onLearnMoreClicked_}"
-    link-url="${this.i18n('compareLearnMoreUrl')}">
-  </localized-link>
+  <a id="learnMoreLink" href="${this.i18n('compareLearnMoreUrl')}"
+    @click="${this.onLearnMoreClicked_}" target="_blank"
+    aria-label="${this.i18n('learnMoreA11yLabel')}">
+      ${this.i18n('learnMore')}
+  </a>
   <div id="actionsContainer">
     <cr-button class="tonal-button" @click=${this.declineDisclosure_}>
       ${this.i18n('declineDisclosure')}
