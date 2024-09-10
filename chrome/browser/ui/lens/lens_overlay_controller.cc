@@ -970,6 +970,7 @@ void LensOverlayController::SaveAsImage(
   std::unique_ptr<download::DownloadUrlParameters> params =
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
           overlay_web_view_->GetWebContents(), data_url, traffic_annotation);
+  params->set_prompt(true);
   params->set_suggested_name(
       GetFilenameForURL(tab_->GetContents()->GetLastCommittedURL()));
   download_manager->DownloadUrl(std::move(params));
