@@ -4,19 +4,14 @@
 
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +19,6 @@ namespace {
 
 using device_reauth::DeviceAuthenticator;
 using device_reauth::ReauthResult;
-using ::testing::Return;
 
 class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
  public:
@@ -33,15 +27,13 @@ class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
               (const std::u16string& message,
                base::OnceCallback<void(bool)> callback),
               (override));
-  MOCK_METHOD(BiometricsStatusChromeOS,
-              CheckIfBiometricsAvailable,
-              (),
-              (override));
 };
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 constexpr char kHistogramName[] =
     "PasswordManager.ReauthToAccessPasswordInSettings";
+
+}  // namespace
 
 class DeviceAuthenticatorChromeOSTest : public testing::Test {
  public:
@@ -49,8 +41,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
       : device_authenticator_params_(
             kAuthValidityPeriod,
             device_reauth::DeviceAuthSource::kPasswordManager,
-            kHistogramName),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+            kHistogramName) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
@@ -64,8 +55,6 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   MockSystemAuthenticator& system_authenticator() {
     return *system_authenticator_;
   }
-
-  ScopedTestingLocalState& local_state() { return testing_local_state_; }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
@@ -86,7 +75,6 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DeviceAuthenticatorChromeOS> authenticator_;
-  ScopedTestingLocalState testing_local_state_;
   base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
@@ -192,72 +180,3 @@ TEST_F(DeviceAuthenticatorChromeOSTest, RecordFailAuthHistogram) {
   histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
                                         1);
 }
-
-// Verifies that the caching mechanism for BiometricsAvailable works.
-struct TestCase {
-  const char* description;
-  BiometricsStatusChromeOS availability;
-  bool expected_result;
-  bool enable_feature;
-};
-
-class DeviceAuthenticatorChromeOSTestAvailability
-    : public DeviceAuthenticatorChromeOSTest,
-      public testing::WithParamInterface<TestCase> {
- public:
-  void SetBiometricFeatureValue(bool value) {
-    if (value) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kBiometricsInPasswordManager);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kBiometricsInPasswordManager);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
-  TestCase test_case = GetParam();
-  SCOPED_TRACE(test_case.description);
-  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
-      .WillOnce(Return(test_case.availability));
-  SetBiometricFeatureValue(test_case.enable_feature);
-  EXPECT_EQ(test_case.expected_result,
-            authenticator()->CanAuthenticateWithBiometrics());
-  EXPECT_EQ(test_case.expected_result,
-            local_state().Get()->GetBoolean(
-                password_manager::prefs::kHadBiometricsAvailable));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DeviceAuthenticatorChromeOSTestAvailability,
-    ::testing::Values(
-        TestCase{
-            .description = "kAvailable",
-            .availability = BiometricsStatusChromeOS::kAvailable,
-            .expected_result = true,
-            .enable_feature = true,
-        },
-        TestCase{
-            .description = "kUnavailable",
-            .availability = BiometricsStatusChromeOS::kUnavailable,
-            .expected_result = false,
-            .enable_feature = true,
-        },
-        TestCase{
-            .description = "kNotConfiguredForUser",
-            .availability = BiometricsStatusChromeOS::kNotConfiguredForUser,
-            .expected_result = false,
-            .enable_feature = true,
-        },
-        TestCase{
-            .description = "Feature not enabled",
-            .availability = BiometricsStatusChromeOS::kUnavailable,
-            .expected_result = false,
-            .enable_feature = true,
-        }));
-}  // namespace

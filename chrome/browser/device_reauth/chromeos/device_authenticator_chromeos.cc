@@ -7,10 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 
 DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
     std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
@@ -24,30 +20,17 @@ DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
 
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {
-  BiometricsStatusChromeOS status =
-      authenticator_->CheckIfBiometricsAvailable();
-  bool is_available = status == BiometricsStatusChromeOS::kAvailable;
-
-  CHECK(g_browser_process);
-  CHECK(g_browser_process->local_state());
-
-  if (is_available) {
-    // If biometrics is available, we should record that at one point in time
-    // biometrics was available on this device. This will never be set to false
-    // after setting to true here as we only record this when biometrics is
-    // available.
-    g_browser_process->local_state()->SetBoolean(
-        password_manager::prefs::kHadBiometricsAvailable, /*value=*/true);
-  }
-  return is_available;
+  // TODO(crbug.com/40265846): Add implementation of the biometric
+  // authentication.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
-  // We check if we can authenticate strictly with biometrics first as this
-  // function has important side effects such as logging metrics related to how
-  // often users have biometrics available, and setting a pref that denotes that
-  // at one point biometrics was available on this device.
-  return CanAuthenticateWithBiometrics();
+  // TODO(crbug.com/40265846): Add implementation of the biometric or screen
+  // lock authentication.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
