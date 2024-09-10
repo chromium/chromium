@@ -25,8 +25,9 @@ INFRA_FAILURE_TASK_REGEX = re.compile(
 TIMED_OUT_TASK_REGEX = re.compile(
     r'\[shard #\d+ timed out after[^\]]*\]\(([^)]+)\)')
 # pylint: enable=line-too-long
-# Extracts the Swarming task ID from a Swarming URL.
-TASK_ID_REGEX = re.compile(r'id=([a-fA-F0-9]*)')
+# Extracts the Swarming task ID from a Swarming URL, ensuring that it is
+# exactly 16 hex characters.
+TASK_ID_REGEX = re.compile(r'id=([a-fA-F0-9]{16}$)')
 
 ALL_TASK_REGEXES = [
     FAILED_TASK_REGEX,
