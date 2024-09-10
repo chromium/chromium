@@ -2555,9 +2555,11 @@ INSTANTIATE_TEST_SUITE_P(
     HostedAppSitePerProcessTest,
     ::testing::Values(AppType::HOSTED_APP));
 
+#if BUILDFLAG(ENABLE_PDF)
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppSitePerProcessPDFTest,
                          ::testing::Values(AppType::HOSTED_APP));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppJitTestBaseDefaultEnabled,
