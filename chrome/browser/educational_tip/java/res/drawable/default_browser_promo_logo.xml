@@ -64,7 +64,7 @@ found in the LICENSE file.
   <path
       android:pathData="M10.5,30.5C10.5,30.5 1.975,45 7.5,53.5C13.025,62 23,55.5 23,55.5"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/material_primary_60"
       android:strokeLineCap="round"/>
   <path
@@ -73,7 +73,7 @@ found in the LICENSE file.
   <path
       android:pathData="M55.5,47.5C55.5,47.5 71.941,27.028 66.416,18.528C60.891,10.028 50.917,16.528 50.917,16.528"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/material_primary_60"
       android:strokeLineCap="round"/>
   <path

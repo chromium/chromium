@@ -12,7 +12,6 @@ found in the LICENSE file.
         android:fillAlpha="0.05"
         android:pathData="M11.31,0L60.69,0A11.31,11.31 0,0 1,72 11.31L72,60.69A11.31,11.31 0,0 1,60.69 72L11.31,72A11.31,11.31 0,0 1,0 60.69L0,11.31A11.31,11.31 0,0 1,11.31 0z"/>
 
-    <path android:fillAlpha="0.05" android:fillColor="@color/gm3_baseline_surface_tint_light" android:pathData="M11.31,0L60.69,0A11.31,11.31 0,0 1,72 11.31L72,60.69A11.31,11.31 0,0 1,60.69 72L11.31,72A11.31,11.31 0,0 1,0 60.69L0,11.31A11.31,11.31 0,0 1,11.31 0z"/>
     <path android:fillColor="@color/material_primary_90" android:pathData="M19,10L53,10A4,4 0,0 1,57 14L57,58A4,4 0,0 1,53 62L19,62A4,4 0,0 1,15 58L15,14A4,4 0,0 1,19 10z"/>
 
     <path android:fillColor="@android:color/transparent"
