@@ -7,6 +7,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -146,10 +147,22 @@ void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
     return;
   }
 
-  // Don't use immersive mode as long as we are in the locked fullscreen mode
-  // since immersive shows browser controls which allow exiting the mode.
-  if (platform_util::IsBrowserLockedFullscreen(browser_view_->browser()))
+  // Avoid using immersive mode in locked fullscreen as it allows the user to
+  // exit the locked mode. Keep immersive mode enabled if the webapp is locked
+  // for OnTask (only relevant for non-web browser scenarios).
+  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
+  // OnTask.
+  Browser* const browser = browser_view_->browser();
+  bool avoid_using_immersive_mode =
+      platform_util::IsBrowserLockedFullscreen(browser);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (browser->IsLockedForOnTask()) {
+    avoid_using_immersive_mode = false;
+  }
+#endif
+  if (avoid_using_immersive_mode) {
     return;
+  }
 
   // TODO(sammiequon): Investigate if we can move immersive mode logic to the
   // browser non client frame view.

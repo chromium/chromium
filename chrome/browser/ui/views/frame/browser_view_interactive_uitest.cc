@@ -530,14 +530,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
-                       EnableImmersiveModeWhenNotLocked) {
+                       EnableImmersiveModeWhenNotTrustedPinned) {
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
   EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
-                       DisableImmersiveModeWhenLocked) {
+                       DisableImmersiveModeWhenNotLockedForOnTask) {
+  browser()->SetLockedForOnTask(false);
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_FALSE(browser_view()->immersive_mode_controller()->IsEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+                       EnableImmersiveModeWhenLockedForOnTask) {
+  browser()->SetLockedForOnTask(true);
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

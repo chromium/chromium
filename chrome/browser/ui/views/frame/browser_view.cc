@@ -2140,9 +2140,19 @@ void BrowserView::FullscreenStateChanging() {
 
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
-    // Never use immersive in locked fullscreen as it allows the user to exit
-    // the locked mode.
+  // Avoid using immersive mode in locked fullscreen as it allows the user to
+  // exit the locked mode. Keep immersive mode enabled if the webapp is locked
+  // for OnTask (only relevant for non-web browser scenarios).
+  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
+  // OnTask.
+  bool avoid_using_immersive_mode =
+      platform_util::IsBrowserLockedFullscreen(browser_.get());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (browser_->IsLockedForOnTask()) {
+    avoid_using_immersive_mode = false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (avoid_using_immersive_mode) {
     immersive_mode_controller_->SetEnabled(false);
   } else {
     // Enable immersive before the browser refreshes its list of enabled
