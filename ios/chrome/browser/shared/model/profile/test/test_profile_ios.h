@@ -33,6 +33,10 @@ class UserCloudPolicyManager;
 class EnterprisePolicyTestHelper;
 class TestProfileManagerIOS;
 
+// TODO(crbug.com/358053899): Remove once the renaming is finished.
+class TestChromeBrowserState;
+using TestProfileIOS = TestChromeBrowserState;
+
 // This class is the implementation of ChromeBrowserState used for testing.
 class TestChromeBrowserState final : public ChromeBrowserState {
  public:
@@ -99,10 +103,18 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   bool IsOffTheRecord() const override;
 
   // ChromeBrowserState:
-  scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
+  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
   ChromeBrowserState* GetOriginalChromeBrowserState() override;
   bool HasOffTheRecordChromeBrowserState() const override;
   ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
+  void DestroyOffTheRecordChromeBrowserState() override;
+
+  // ProfileIOS:
+  ProfileIOS* GetOriginalProfile() override;
+  bool HasOffTheRecordProfile() const override;
+  ProfileIOS* GetOffTheRecordProfile() override;
+  void DestroyOffTheRecordProfile() override;
+  scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
@@ -115,7 +127,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
 
   // Creates an off-the-record TestChromeBrowserState for
   // the current object, installing `testing_factories`
@@ -128,7 +139,22 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // This method will be called without factories if the
   // method `GetOffTheRecordBrowserState()` is called on
   // this object.
+  // TODO(crbug.com/358299863): Remove this function once fully migrated.
   TestChromeBrowserState* CreateOffTheRecordBrowserStateWithTestingFactories(
+      TestingFactories testing_factories = {});
+
+  // Creates an off-the-record TestProfileIOS for
+  // the current object, installing `testing_factories`
+  // first.
+  //
+  // This is an error to call this method if the current
+  // TestProfileIOS already has a off-the-record
+  // object, or is itself off-the-record.
+  //
+  // This method will be called without factories if the
+  // method `GetOffTheRecordProfile()` is called on
+  // this object.
+  TestProfileIOS* CreateOffTheRecordProfileWithTestingFactories(
       TestingFactories testing_factories = {});
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
@@ -260,7 +286,5 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
   base::WeakPtrFactory<TestChromeBrowserState> weak_ptr_factory_{this};
 };
-
-using TestProfileIOS = TestChromeBrowserState;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_IOS_H_

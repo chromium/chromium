@@ -216,18 +216,41 @@ TestChromeBrowserState::GetIOTaskRunner() {
 }
 
 ChromeBrowserState* TestChromeBrowserState::GetOriginalChromeBrowserState() {
+  return GetOriginalProfile();
+}
+
+bool TestChromeBrowserState::HasOffTheRecordChromeBrowserState() const {
+  return HasOffTheRecordProfile();
+}
+
+ChromeBrowserState*
+TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
+  return GetOffTheRecordProfile();
+}
+
+void TestChromeBrowserState::DestroyOffTheRecordChromeBrowserState() {
+  return DestroyOffTheRecordProfile();
+}
+
+TestChromeBrowserState*
+TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
+    TestingFactories testing_factories) {
+  return CreateOffTheRecordProfileWithTestingFactories(
+      std::move(testing_factories));
+}
+
+ProfileIOS* TestProfileIOS::GetOriginalProfile() {
   if (IsOffTheRecord()) {
     return original_browser_state_;
   }
   return this;
 }
 
-bool TestChromeBrowserState::HasOffTheRecordChromeBrowserState() const {
+bool TestProfileIOS::HasOffTheRecordProfile() const {
   return otr_browser_state_ != nullptr;
 }
 
-ChromeBrowserState*
-TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
+ProfileIOS* TestProfileIOS::GetOffTheRecordProfile() {
   if (IsOffTheRecord()) {
     return this;
   }
@@ -239,8 +262,12 @@ TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
   return CreateOffTheRecordBrowserStateWithTestingFactories();
 }
 
-TestChromeBrowserState*
-TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
+void TestProfileIOS::DestroyOffTheRecordProfile() {
+  DCHECK(!IsOffTheRecord());
+  otr_browser_state_.reset();
+}
+
+TestProfileIOS* TestProfileIOS::CreateOffTheRecordProfileWithTestingFactories(
     TestingFactories testing_factories) {
   DCHECK(!IsOffTheRecord());
   DCHECK(!otr_browser_state_);
@@ -294,11 +321,6 @@ TestChromeBrowserState::GetTestingPrefService() {
 policy::UserCloudPolicyManager*
 TestChromeBrowserState::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
-}
-
-void TestChromeBrowserState::DestroyOffTheRecordChromeBrowserState() {
-  DCHECK(!IsOffTheRecord());
-  otr_browser_state_.reset();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

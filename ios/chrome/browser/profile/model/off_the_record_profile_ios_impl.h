@@ -32,10 +32,17 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   ~OffTheRecordChromeBrowserStateImpl() override;
 
   // ChromeBrowserState:
+  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
   ChromeBrowserState* GetOriginalChromeBrowserState() override;
   bool HasOffTheRecordChromeBrowserState() const override;
   ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
   void DestroyOffTheRecordChromeBrowserState() override;
+
+  // ProfileIOS:
+  ProfileIOS* GetOriginalProfile() override;
+  bool HasOffTheRecordProfile() const override;
+  ProfileIOS* GetOffTheRecordProfile() override;
+  void DestroyOffTheRecordProfile() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;

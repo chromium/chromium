@@ -279,13 +279,21 @@ ChromeBrowserStateImpl::~ChromeBrowserStateImpl() {
 }
 
 ChromeBrowserState* ChromeBrowserStateImpl::GetOriginalChromeBrowserState() {
+  return GetOriginalProfile();
+}
+
+ProfileIOS* ProfileIOSImpl::GetOriginalProfile() {
   return this;
 }
 
 ChromeBrowserState*
 ChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
+  return GetOffTheRecordProfile();
+}
+
+ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
   if (!otr_state_) {
-    otr_state_.reset(new OffTheRecordChromeBrowserStateImpl(
+    otr_state_.reset(new OffTheRecordProfileIOSImpl(
         GetIOTaskRunner(), this, GetOffTheRecordStatePath()));
   }
 
@@ -293,10 +301,18 @@ ChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
 }
 
 bool ChromeBrowserStateImpl::HasOffTheRecordChromeBrowserState() const {
+  return HasOffTheRecordProfile();
+}
+
+bool ProfileIOSImpl::HasOffTheRecordProfile() const {
   return !!otr_state_;
 }
 
 void ChromeBrowserStateImpl::DestroyOffTheRecordChromeBrowserState() {
+  return DestroyOffTheRecordProfile();
+}
+
+void ProfileIOSImpl::DestroyOffTheRecordProfile() {
   // Tear down both the OTR ChromeBrowserState and the OTR Profile with which
   // it is associated.
   otr_state_.reset();
@@ -325,8 +341,8 @@ const std::string& ChromeBrowserStateImpl::GetWebKitStorageID() const {
   return storage_uuid_;
 }
 
-void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(
-    std::unique_ptr<ChromeBrowserState> otr_state) {
+void ChromeBrowserStateImpl::SetOffTheRecordProfileIOS(
+    std::unique_ptr<ProfileIOS> otr_state) {
   DCHECK(!otr_state_);
   otr_state_ = std::move(otr_state);
 }
