@@ -15,7 +15,6 @@
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
