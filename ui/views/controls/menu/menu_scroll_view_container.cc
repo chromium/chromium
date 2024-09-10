@@ -366,8 +366,8 @@ void MenuScrollViewContainer::OnBoundsChanged(
   // offset is always reset to 0, so always hide the scroll-up control, and only
   // show the scroll-down control if it's going to be useful.
   scroll_up_button_->SetVisible(false);
-  scroll_down_button_->SetVisible(
-      scroll_view_->GetContents()->GetPreferredSize({}).height() > height());
+  scroll_down_button_->SetVisible(content_view_->GetPreferredSize({}).height() >
+                                  GetContentsBounds().height());
 
   const bool any_scroll_button_visible =
       scroll_up_button_->GetVisible() || scroll_down_button_->GetVisible();

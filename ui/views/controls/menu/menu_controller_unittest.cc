@@ -1099,6 +1099,25 @@ TEST_F(MenuControllerTest, InitialSelectedItem) {
   check_has_command(FindInitialSelectableMenuItemUp(menu_item()), 2);
 }
 
+// Verifies that the scroll arrow is shown when the menu content
+// does not fit within the available bounds.
+// (https://crbug.com/338585369)
+TEST_F(MenuControllerTest, VerifyScrollArrowShown) {
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  auto* const scroll_container = submenu->GetScrollViewContainer();
+
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(GetPreferredSizeForSubmenu(*submenu));
+  // Show the menu at its preferred size without restriction
+  submenu->ShowAt(params);
+  EXPECT_FALSE(scroll_container->scroll_down_button()->GetVisible());
+  // decrease the available space by 1 so the contents no longer fit
+  params.bounds.set_height(params.bounds.height() - 1);
+  submenu->ShowAt(params);
+  EXPECT_TRUE(scroll_container->scroll_down_button()->GetVisible());
+}
+
 // Verifies that the context menu bubble should prioritize its cached menu
 // position (above or below the anchor) after its size updates
 // (https://crbug.com/1126244).
