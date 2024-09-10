@@ -213,7 +213,7 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
 // Controls if Autofill executes the parser for the prediction improvements.
 // TODO(crbug.com/345170058) Remove once launched.
 BASE_FEATURE(kAutofillEnableImprovedPredictionParser,
-             "AutofilEnableImprovedPredictionParser",
+             "AutofillEnableImprovedPredictionParser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the precedence is given to the field label over the name when
