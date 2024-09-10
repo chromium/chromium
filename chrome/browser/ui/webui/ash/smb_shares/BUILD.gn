@@ -27,6 +27,7 @@ static_library("smb_shares") {
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources",
+    "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/profiles:profile",
