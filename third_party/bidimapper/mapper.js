@@ -2358,6 +2358,12 @@ var mapperTab = (function () {
 	                        break;
 	                    case "pen" /* Input.PointerType.Pen */:
 	                        if (source.pressed.size !== 0) {
+	                            // Empty `source.pressed.size` means the pen is not detected by digitizer.
+	                            // Dispatch a mouse event for the pen only if either:
+	                            // 1. the pen is hovering over the digitizer (0);
+	                            // 2. the pen is in contact with the digitizer (1);
+	                            // 3. the pen has at least one button pressed (2, 4, etc).
+	                            // https://www.w3.org/TR/pointerevents/#the-buttons-property
 	                            // TODO: Implement width and height when available.
 	                            await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
 	                                type: 'mouseMoved',
@@ -2372,7 +2378,7 @@ var mapperTab = (function () {
 	                                tiltX,
 	                                tiltY,
 	                                twist,
-	                                force: pressure,
+	                                force: pressure ?? 0.5,
 	                            });
 	                        }
 	                        break;
@@ -2708,6 +2714,7 @@ var mapperTab = (function () {
 	    return;
 	};
 	function getCdpButton(button) {
+	    // https://www.w3.org/TR/pointerevents/#the-button-property
 	    switch (button) {
 	        case 0:
 	            return 'left';
@@ -2725,7 +2732,7 @@ var mapperTab = (function () {
 	}
 	function getTilt(action) {
 	    // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
-	    const altitudeAngle = action.altitudeAngle ?? 0;
+	    const altitudeAngle = action.altitudeAngle ?? Math.PI / 2;
 	    const azimuthAngle = action.azimuthAngle ?? 0;
 	    let tiltXRadians = 0;
 	    let tiltYRadians = 0;
@@ -3004,11 +3011,9 @@ var mapperTab = (function () {
 	const InputStateManager_js_1 = InputStateManager$1;
 	class InputProcessor {
 	    #browsingContextStorage;
-	    #realmStorage;
 	    #inputStateManager = new InputStateManager_js_1.InputStateManager();
-	    constructor(browsingContextStorage, realmStorage) {
+	    constructor(browsingContextStorage) {
 	        this.#browsingContextStorage = browsingContextStorage;
-	        this.#realmStorage = realmStorage;
 	    }
 	    async performActions(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
@@ -3175,6 +3180,33 @@ var mapperTab = (function () {
 
 	var NetworkProcessor$1 = {};
 
+	var UrlPatternBrowser = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(UrlPatternBrowser, "__esModule", { value: true });
+	UrlPatternBrowser.URLPattern = void 0;
+	const URLPattern = globalThis
+	    .URLPattern;
+	UrlPatternBrowser.URLPattern = URLPattern;
+	if (!URLPattern) {
+	    throw new Error('Unable to find URLPattern');
+	}
+
 	/**
 	 * Copyright 2023 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -3194,6 +3226,7 @@ var mapperTab = (function () {
 	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
 	NetworkProcessor$1.NetworkProcessor = void 0;
 	const protocol_js_1$i = protocol;
+	const UrlPattern_js_1$1 = UrlPatternBrowser;
 	/** Dispatches Network domain commands. */
 	class NetworkProcessor {
 	    #browsingContextStorage;
@@ -3420,7 +3453,7 @@ var mapperTab = (function () {
 	                        throw new protocol_js_1$i.InvalidArgumentException(`URL pattern must specify a port`);
 	                    }
 	                    try {
-	                        new URLPattern(urlPattern);
+	                        new UrlPattern_js_1$1.URLPattern(urlPattern);
 	                    }
 	                    catch (error) {
 	                        throw new protocol_js_1$i.InvalidArgumentException(`${error}`);
@@ -3967,15 +4000,42 @@ var mapperTab = (function () {
 	const protocol_js_1$f = protocol;
 	const PreloadScript_js_1 = PreloadScript$1;
 	class ScriptProcessor {
+	    #eventManager;
 	    #browsingContextStorage;
 	    #realmStorage;
 	    #preloadScriptStorage;
 	    #logger;
-	    constructor(browsingContextStorage, realmStorage, preloadScriptStorage, logger) {
+	    constructor(eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, logger) {
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#realmStorage = realmStorage;
 	        this.#preloadScriptStorage = preloadScriptStorage;
 	        this.#logger = logger;
+	        this.#eventManager = eventManager;
+	        this.#eventManager.addSubscribeHook(protocol_js_1$f.ChromiumBidi.Script.EventNames.RealmCreated, this.#onRealmCreatedSubscribeHook.bind(this));
+	    }
+	    #onRealmCreatedSubscribeHook(contextId) {
+	        const context = this.#browsingContextStorage.getContext(contextId);
+	        const contextsToReport = [
+	            context,
+	            ...this.#browsingContextStorage.getContext(contextId).allChildren,
+	        ];
+	        const realms = new Set();
+	        for (const reportContext of contextsToReport) {
+	            const realmsForContext = this.#realmStorage.findRealms({
+	                browsingContextId: reportContext.id,
+	            });
+	            for (const realm of realmsForContext) {
+	                realms.add(realm);
+	            }
+	        }
+	        for (const realm of realms) {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$f.ChromiumBidi.Script.EventNames.RealmCreated,
+	                params: realm.realmInfo,
+	            }, context.id);
+	        }
+	        return Promise.resolve();
 	    }
 	    async addPreloadScript(params) {
 	        const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
@@ -4192,45 +4252,6 @@ var mapperTab = (function () {
 	    return Buffer.from(base64Str, 'base64').toString('ascii');
 	}
 
-	var UrlPattern = {};
-
-	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i])){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
-
-	const { URLPattern: URLPattern$2 } = urlpattern;
-
-	var urlpatternPolyfill = { URLPattern: URLPattern$2 };
-
-	if (!globalThis.URLPattern) {
-	  globalThis.URLPattern = URLPattern$2;
-	}
-
-	Object.defineProperty(UrlPattern, "__esModule", { value: true });
-	UrlPattern.URLPattern = void 0;
-	/**
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	const urlpattern_polyfill_1 = urlpatternPolyfill;
-	// XXX: Switch to native URLPattern when available.
-	// https://github.com/nodejs/node/issues/40844
-	let URLPattern$1 = urlpattern_polyfill_1.URLPattern;
-	UrlPattern.URLPattern = URLPattern$1;
-	if ('URLPattern' in globalThis) {
-	    UrlPattern.URLPattern = URLPattern$1 = globalThis.URLPattern;
-	}
-
 	/*
 	 * Copyright 2023 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -4267,7 +4288,7 @@ var mapperTab = (function () {
 	NetworkUtils.getTiming = getTiming;
 	const ErrorResponse_js_1 = ErrorResponse;
 	const Base64_js_1 = Base64;
-	const UrlPattern_js_1 = UrlPattern;
+	const UrlPattern_js_1 = UrlPatternBrowser;
 	function computeHeadersSize(headers) {
 	    const requestHeaders = headers.reduce((acc, header) => {
 	        return `${acc}${header.name}: ${header.value.value}\r\n`;
@@ -4828,10 +4849,10 @@ var mapperTab = (function () {
 	        this.#browserProcessor = new BrowserProcessor_js_1.BrowserProcessor(browserCdpClient);
 	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
 	        this.#cdpProcessor = new CdpProcessor_js_1.CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
-	        this.#inputProcessor = new InputProcessor_js_1.InputProcessor(browsingContextStorage, realmStorage);
+	        this.#inputProcessor = new InputProcessor_js_1.InputProcessor(browsingContextStorage);
 	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
 	        this.#permissionsProcessor = new PermissionsProcessor_js_1.PermissionsProcessor(browserCdpClient);
-	        this.#scriptProcessor = new ScriptProcessor_js_1.ScriptProcessor(browsingContextStorage, realmStorage, preloadScriptStorage, logger);
+	        this.#scriptProcessor = new ScriptProcessor_js_1.ScriptProcessor(eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, logger);
 	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager, browserCdpClient, initConnection);
 	        this.#storageProcessor = new StorageProcessor_js_1.StorageProcessor(browserCdpClient, browsingContextStorage, logger);
 	        // keep-sorted end
@@ -5263,6 +5284,7 @@ var mapperTab = (function () {
 	     * target's `globalThis`.
 	     */
 	    async serializeCdpObject(cdpRemoteObject, resultOwnership) {
+	        // TODO: if the object is a primitive, return it directly without CDP roundtrip.
 	        const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
 	        const cdpValue = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
 	            functionDeclaration: String((remoteObject) => remoteObject),
@@ -5854,10 +5876,21 @@ var mapperTab = (function () {
 	    #previousViewport = { width: 0, height: 0 };
 	    // The URL of the navigation that is currently in progress. A workaround of the CDP
 	    // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-	    // Set on `Page.navigate`, `Page.reload` commands and on deprecated CDP event
-	    // `Page.frameScheduledNavigation`.
+	    // Set on `Page.navigate`, `Page.reload` commands, on `Page.frameRequestedNavigation` or
+	    // on a deprecated `Page.frameScheduledNavigation` event. The latest is required as the
+	    // `Page.frameRequestedNavigation` event is not emitted for same-document navigations.
 	    #pendingNavigationUrl;
-	    #virtualNavigationId = (0, uuid_1.uuidv4)();
+	    // Navigation ID is required, as CDP `loaderId` cannot be mapped 1:1 to all the
+	    // navigations (e.g. same document navigations). Updated after each navigation,
+	    // including same-document ones.
+	    #navigationId = (0, uuid_1.uuidv4)();
+	    // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
+	    // `None`, the command result should have `navigation` value, but mapper does not have
+	    // it yet. This value will be set to `navigationId` after next .
+	    #pendingNavigationId;
+	    // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
+	    // The promise is resolved when the navigation is finished or rejected when canceled.
+	    #pendingCommandNavigation;
 	    #originalOpener;
 	    // Set when the user prompt is opened. Required to provide the type in closing event.
 	    #lastUserPromptType;
@@ -5915,30 +5948,28 @@ var mapperTab = (function () {
 	    get navigableId() {
 	        return this.#loaderId;
 	    }
-	    /**
-	     * Virtual navigation ID. Required, as CDP `loaderId` cannot be mapped 1:1 to all the
-	     * navigations (e.g. same document navigations). Updated after each navigation,
-	     * including same-document ones.
-	     */
-	    get virtualNavigationId() {
-	        return this.#virtualNavigationId;
+	    get navigationId() {
+	        return this.#navigationId;
 	    }
-	    dispose() {
+	    dispose(emitContextDestroyed) {
+	        this.#pendingCommandNavigation?.reject(new protocol_js_1$9.UnknownErrorException('navigation canceled by context disposal'));
 	        this.#deleteAllChildren();
 	        this.#realmStorage.deleteRealms({
 	            browsingContextId: this.id,
 	        });
-	        // Remove context from the parent.
+	        // Delete context from the parent.
 	        if (!this.isTopLevelContext()) {
 	            this.parent.#children.delete(this.id);
 	        }
 	        // Fail all ongoing navigations.
 	        this.#failLifecycleIfNotFinished();
-	        this.#eventManager.registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-	            params: this.serializeToBidiValue(),
-	        }, this.id);
+	        if (emitContextDestroyed) {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+	                params: this.serializeToBidiValue(),
+	            }, this.id);
+	        }
 	        this.#browsingContextStorage.deleteContextById(this.id);
 	    }
 	    /** Returns the ID of this context. */
@@ -5998,8 +6029,8 @@ var mapperTab = (function () {
 	    addChild(childId) {
 	        this.#children.add(childId);
 	    }
-	    #deleteAllChildren() {
-	        this.directChildren.map((child) => child.dispose());
+	    #deleteAllChildren(emitContextDestroyed = false) {
+	        this.directChildren.map((child) => child.dispose(emitContextDestroyed));
 	    }
 	    get cdpTarget() {
 	        return this.#cdpTarget;
@@ -6072,7 +6103,7 @@ var mapperTab = (function () {
 	            this.#pendingNavigationUrl = undefined;
 	            // At the point the page is initialized, all the nested iframes from the
 	            // previous page are detached and realms are destroyed.
-	            // Remove children from context.
+	            // Delete children from context.
 	            this.#deleteAllChildren();
 	        });
 	        this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
@@ -6088,7 +6119,7 @@ var mapperTab = (function () {
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
 	                params: {
 	                    context: this.id,
-	                    navigation: this.#virtualNavigationId,
+	                    navigation: this.#navigationId,
 	                    timestamp,
 	                    url: this.#url,
 	                },
@@ -6098,14 +6129,16 @@ var mapperTab = (function () {
 	            if (this.id !== params.frameId) {
 	                return;
 	            }
-	            // Generate a new virtual navigation id.
-	            this.#virtualNavigationId = (0, uuid_1.uuidv4)();
+	            // Use `pendingNavigationId` if navigation initiated by BiDi
+	            // `BrowsingContext.navigate` or generate a new navigation id.
+	            this.#navigationId = this.#pendingNavigationId ?? (0, uuid_1.uuidv4)();
+	            this.#pendingNavigationId = undefined;
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
 	                params: {
 	                    context: this.id,
-	                    navigation: this.#virtualNavigationId,
+	                    navigation: this.#navigationId,
 	                    timestamp: BrowsingContextImpl.getTimestamp(),
 	                    // The URL of the navigation that is currently in progress. Although the URL
 	                    // is not yet known in case of user-initiated navigations, it is possible to
@@ -6120,6 +6153,14 @@ var mapperTab = (function () {
 	            if (this.id !== params.frameId) {
 	                return;
 	            }
+	            this.#pendingNavigationUrl = params.url;
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            // If there is a pending navigation, reject it.
+	            this.#pendingCommandNavigation?.reject(new protocol_js_1$9.UnknownErrorException(`navigation canceled, as new navigation is requested by ${params.reason}`));
 	            this.#pendingNavigationUrl = params.url;
 	        });
 	        this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
@@ -6152,7 +6193,7 @@ var mapperTab = (function () {
 	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
 	                        params: {
 	                            context: this.id,
-	                            navigation: this.#virtualNavigationId,
+	                            navigation: this.#navigationId,
 	                            timestamp,
 	                            url: this.#url,
 	                        },
@@ -6165,7 +6206,7 @@ var mapperTab = (function () {
 	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.Load,
 	                        params: {
 	                            context: this.id,
-	                            navigation: this.#virtualNavigationId,
+	                            navigation: this.#navigationId,
 	                            timestamp,
 	                            url: this.#url,
 	                        },
@@ -6318,8 +6359,8 @@ var mapperTab = (function () {
 	        }
 	    }
 	    #documentChanged(loaderId) {
-	        // Same document navigation.
 	        if (loaderId === undefined || this.#loaderId === loaderId) {
+	            // Same document navigation. Document didn't change.
 	            if (this.#navigation.withinDocument.isFinished) {
 	                this.#navigation.withinDocument = new Deferred_js_1$2.Deferred();
 	            }
@@ -6328,8 +6369,11 @@ var mapperTab = (function () {
 	            }
 	            return;
 	        }
+	        // Document changed.
 	        this.#resetLifecycleIfFinished();
 	        this.#loaderId = loaderId;
+	        // Delete all child iframes and notify about top level destruction.
+	        this.#deleteAllChildren(true);
 	    }
 	    #resetLifecycleIfFinished() {
 	        if (this.#lifecycle.DOMContentLoaded.isFinished) {
@@ -6360,61 +6404,83 @@ var mapperTab = (function () {
 	        catch {
 	            throw new protocol_js_1$9.InvalidArgumentException(`Invalid URL: ${url}`);
 	        }
+	        this.#pendingCommandNavigation?.reject(new protocol_js_1$9.UnknownErrorException('navigation canceled by concurrent navigation'));
 	        await this.targetUnblockedOrThrow();
 	        // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
 	        // event.
 	        // TODO: detect navigation start not from CDP. Check if
 	        //  `Page.frameRequestedNavigation` can be used for this purpose.
 	        this.#pendingNavigationUrl = url;
-	        // TODO: handle loading errors.
-	        const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
-	            url,
-	            frameId: this.id,
-	        });
-	        if (cdpNavigateResult.errorText) {
-	            // If navigation failed, no pending navigation is left.
-	            this.#pendingNavigationUrl = undefined;
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-	                params: {
-	                    context: this.id,
-	                    navigation: this.#virtualNavigationId,
-	                    timestamp: BrowsingContextImpl.getTimestamp(),
-	                    url,
-	                },
-	            }, this.id);
-	            throw new protocol_js_1$9.UnknownErrorException(cdpNavigateResult.errorText);
+	        const navigationId = (0, uuid_1.uuidv4)();
+	        this.#pendingNavigationId = navigationId;
+	        this.#pendingCommandNavigation = new Deferred_js_1$2.Deferred();
+	        // Navigate and wait for the result. If the navigation fails, the error event is
+	        // emitted and the promise is rejected.
+	        const cdpNavigatePromise = (async () => {
+	            const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
+	                url,
+	                frameId: this.id,
+	            });
+	            if (cdpNavigateResult.errorText) {
+	                // If navigation failed, no pending navigation is left.
+	                this.#pendingNavigationUrl = undefined;
+	                this.#eventManager.registerEvent({
+	                    type: 'event',
+	                    method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+	                    params: {
+	                        context: this.id,
+	                        navigation: navigationId,
+	                        timestamp: BrowsingContextImpl.getTimestamp(),
+	                        url,
+	                    },
+	                }, this.id);
+	                throw new protocol_js_1$9.UnknownErrorException(cdpNavigateResult.errorText);
+	            }
+	            this.#documentChanged(cdpNavigateResult.loaderId);
+	            return cdpNavigateResult;
+	        })();
+	        if (wait === "none" /* BrowsingContext.ReadinessState.None */) {
+	            // Do not wait for the result of the navigation promise.
+	            this.#pendingCommandNavigation.resolve();
+	            this.#pendingCommandNavigation = undefined;
+	            return {
+	                navigation: navigationId,
+	                url,
+	            };
 	        }
-	        this.#documentChanged(cdpNavigateResult.loaderId);
-	        switch (wait) {
-	            case "none" /* BrowsingContext.ReadinessState.None */:
-	                break;
-	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
-	                // No `loaderId` means same-document navigation.
-	                if (cdpNavigateResult.loaderId === undefined) {
-	                    await this.#navigation.withinDocument;
-	                }
-	                else {
-	                    await this.#lifecycle.DOMContentLoaded;
-	                }
-	                break;
-	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
-	                // No `loaderId` means same-document navigation.
-	                if (cdpNavigateResult.loaderId === undefined) {
-	                    await this.#navigation.withinDocument;
-	                }
-	                else {
-	                    await this.#lifecycle.load;
-	                }
-	                break;
-	        }
+	        const cdpNavigateResult = await cdpNavigatePromise;
+	        // Wait for either the navigation is finished or canceled by another navigation.
+	        await Promise.race([
+	            // No `loaderId` means same-document navigation.
+	            this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
+	            // Throw an error if the navigation is canceled.
+	            this.#pendingCommandNavigation,
+	        ]);
+	        this.#pendingCommandNavigation.resolve();
+	        this.#pendingCommandNavigation = undefined;
 	        return {
-	            navigation: this.#virtualNavigationId,
+	            navigation: navigationId,
 	            // Url can change due to redirect get the latest one.
-	            url: wait === "none" /* BrowsingContext.ReadinessState.None */ ? url : this.#url,
+	            url: this.#url,
 	        };
 	    }
+	    async #waitNavigation(wait, withinDocument) {
+	        if (withinDocument) {
+	            await this.#navigation.withinDocument;
+	            return;
+	        }
+	        switch (wait) {
+	            case "none" /* BrowsingContext.ReadinessState.None */:
+	                return;
+	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
+	                await this.#lifecycle.DOMContentLoaded;
+	                return;
+	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
+	                await this.#lifecycle.load;
+	                return;
+	        }
+	    }
+	    // TODO: support concurrent navigations analogous to `navigate`.
 	    async reload(ignoreCache, wait) {
 	        await this.targetUnblockedOrThrow();
 	        this.#resetLifecycleIfFinished();
@@ -6432,7 +6498,7 @@ var mapperTab = (function () {
 	                break;
 	        }
 	        return {
-	            navigation: this.#virtualNavigationId,
+	            navigation: this.#navigationId,
 	            url: this.url,
 	        };
 	    }
@@ -6705,7 +6771,7 @@ var mapperTab = (function () {
 	                            }
 	                            return [...element.querySelectorAll(cssSelector)];
 	                        };
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        startNodes = startNodes.length > 0 ? startNodes : [document];
 	                        const returnedNodes = startNodes
 	                            .map((startNode) => 
 	                        // TODO: stop search early if `maxNodeCount` is reached.
@@ -6738,7 +6804,7 @@ var mapperTab = (function () {
 	                            }
 	                            return returnedNodes;
 	                        };
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        startNodes = startNodes.length > 0 ? startNodes : [document];
 	                        const returnedNodes = startNodes
 	                            .map((startNode) => 
 	                        // TODO: stop search early if `maxNodeCount` is reached.
@@ -6916,7 +6982,10 @@ var mapperTab = (function () {
 	                                collect(childNodes, selector);
 	                            }
 	                        }
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        startNodes =
+	                            startNodes.length > 0
+	                                ? startNodes
+	                                : Array.from(document.documentElement.children).filter((c) => c instanceof HTMLElement);
 	                        collect(startNodes, {
 	                            role,
 	                            name,
@@ -7375,6 +7444,43 @@ var mapperTab = (function () {
 	        logManager.#initializeEntryAddedEventListener();
 	        return logManager;
 	    }
+	    /**
+	     * Heuristic serialization of CDP remote object. If possible, return the BiDi value
+	     * without deep serialization.
+	     */
+	    async #heuristicSerializeArg(arg, realm) {
+	        switch (arg.type) {
+	            // TODO: Implement regexp, array, object, map and set heuristics base on
+	            //  preview.
+	            case 'undefined':
+	                return { type: 'undefined' };
+	            case 'boolean':
+	                return { type: 'boolean', value: arg.value };
+	            case 'string':
+	                return { type: 'string', value: arg.value };
+	            case 'number':
+	                // The value can be either a number or a string like `Infinity` or `-0`.
+	                return { type: 'number', value: arg.unserializableValue ?? arg.value };
+	            case 'bigint':
+	                if (arg.unserializableValue !== undefined &&
+	                    arg.unserializableValue[arg.unserializableValue.length - 1] === 'n') {
+	                    return {
+	                        type: arg.type,
+	                        value: arg.unserializableValue.slice(0, -1),
+	                    };
+	                }
+	                // Unexpected bigint value, fall back to CDP deep serialization.
+	                break;
+	            case 'object':
+	                if (arg.subtype === 'null') {
+	                    return { type: 'null' };
+	                }
+	                // Fall back to CDP deep serialization.
+	                break;
+	        }
+	        // Fall back to CDP deep serialization.
+	        return await realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
+	    }
 	    #initializeEntryAddedEventListener() {
 	        this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
 	            // Try to find realm by `cdpSessionId` and `executionContextId`,
@@ -7388,12 +7494,7 @@ var mapperTab = (function () {
 	                this.#logger?.(log_js_1$8.LogType.cdp, params);
 	                return;
 	            }
-	            const argsPromise = realm === undefined
-	                ? Promise.resolve(params.args)
-	                : // Properly serialize arguments if possible.
-	                    Promise.all(params.args.map((arg) => {
-	                        return realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
-	                    }));
+	            const argsPromise = Promise.all(params.args.map((arg) => this.#heuristicSerializeArg(arg, realm)));
 	            for (const browsingContext of realm.associatedBrowsingContexts) {
 	                this.#eventManager.registerPromiseEvent(argsPromise.then((args) => ({
 	                    kind: 'success',
@@ -7756,6 +7857,7 @@ var mapperTab = (function () {
 	        });
 	        cdpClient.on('Page.frameAttached', this.#handleFrameAttachedEvent.bind(this));
 	        cdpClient.on('Page.frameDetached', this.#handleFrameDetachedEvent.bind(this));
+	        cdpClient.on('Page.frameSubtreeWillBeDetached', this.#handleFrameSubtreeWillBeDetached.bind(this));
 	    }
 	    #handleFrameAttachedEvent(params) {
 	        const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
@@ -7771,7 +7873,10 @@ var mapperTab = (function () {
 	        if (params.reason === 'swap') {
 	            return;
 	        }
-	        this.#browsingContextStorage.findContext(params.frameId)?.dispose();
+	        this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
+	    }
+	    #handleFrameSubtreeWillBeDetached(params) {
+	        this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
 	    }
 	    #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
 	        const { sessionId, targetInfo } = params;
@@ -7883,7 +7988,7 @@ var mapperTab = (function () {
 	        }
 	        const context = this.#browsingContextStorage.findContextBySession(sessionId);
 	        if (context) {
-	            context.dispose();
+	            context.dispose(true);
 	            return;
 	        }
 	        const worker = this.#workers.get(sessionId);
@@ -8142,7 +8247,7 @@ var mapperTab = (function () {
 	            return null;
 	        }
 	        // Get virtual navigation ID from the browsing context.
-	        return this.#networkStorage.getVirtualNavigationId(this.#context ?? undefined);
+	        return this.#networkStorage.getNavigationId(this.#context ?? undefined);
 	    }
 	    get #cookies() {
 	        let cookies = [];
@@ -8923,12 +9028,11 @@ var mapperTab = (function () {
 	    /**
 	     * Gets the virtual navigation ID for the given navigable ID.
 	     */
-	    getVirtualNavigationId(contextId) {
+	    getNavigationId(contextId) {
 	        if (contextId === undefined) {
 	            return null;
 	        }
-	        return (this.#browsingContextStorage.findContext(contextId)
-	            ?.virtualNavigationId ?? null);
+	        return (this.#browsingContextStorage.findContext(contextId)?.navigationId ?? null);
 	    }
 	}
 	NetworkStorage$1.NetworkStorage = NetworkStorage;

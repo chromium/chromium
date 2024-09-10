@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_with_new_navigation_inside_page
-  Failed: DID NOT RAISE <class 'webdriver.bidi.error.UnknownErrorException'>
-Harness: the test ran to completion.
