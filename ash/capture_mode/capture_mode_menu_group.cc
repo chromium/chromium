@@ -74,11 +74,11 @@ class CaptureModeMenuHeader
 
  public:
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
-                        std::u16string header_laber,
+                        std::u16string header_label,
                         bool managed_by_policy)
       : icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         label_view_(AddChildView(
-            std::make_unique<views::Label>(std::move(header_laber)))),
+            std::make_unique<views::Label>(std::move(header_label)))),
         managed_icon_view_(
             managed_by_policy
                 ? AddChildView(std::make_unique<views::ImageView>())
@@ -103,6 +103,7 @@ class CaptureModeMenuHeader
     box_layout->SetFlexForView(label_view_, 1);
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
+    GetViewAccessibility().SetName(GetHeaderLabel());
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -113,12 +114,6 @@ class CaptureModeMenuHeader
 
   const std::u16string& GetHeaderLabel() const {
     return label_view_->GetText();
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    View::GetAccessibleNodeData(node_data);
-    node_data->SetName(GetHeaderLabel());
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:

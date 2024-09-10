@@ -129,6 +129,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
 
  private:
   friend class CaptureModeSettingsTestApi;
+  FRIEND_TEST_ALL_PREFIXES(CaptureModeSettingsTest, AccessibleName);
 
   // Acts as a common constructor that's called by the above public
   // constructors.
