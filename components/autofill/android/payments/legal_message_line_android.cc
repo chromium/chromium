@@ -21,8 +21,8 @@ using base::android::ScopedJavaLocalRef;
 ScopedJavaLocalRef<jobject> LegalMessageLineAndroid::ConvertToJavaObject(
     const LegalMessageLine& legal_message_line) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_object = Java_LegalMessageLine_Constructor(
-      env, ConvertUTF16ToJavaString(env, legal_message_line.text()));
+  ScopedJavaLocalRef<jobject> java_object =
+      Java_LegalMessageLine_Constructor(env, legal_message_line.text());
   for (const auto& link : legal_message_line.links()) {
     Java_LegalMessageLine_addLink(
         env, java_object,
@@ -33,25 +33,20 @@ ScopedJavaLocalRef<jobject> LegalMessageLineAndroid::ConvertToJavaObject(
 }
 
 // static
-ScopedJavaLocalRef<jobject> LegalMessageLineAndroid::ConvertToJavaLinkedList(
+std::vector<ScopedJavaLocalRef<jobject>>
+LegalMessageLineAndroid::ConvertToJavaLinkedList(
     const std::vector<LegalMessageLine>& legal_message_lines) {
-  // Initially null, will be initialized in
-  // `Java_LegalMessageLine_addToList_createListIfNull()` below.
-  ScopedJavaLocalRef<jobject> linked_list;
+  std::vector<ScopedJavaLocalRef<jobject>> list;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   for (const auto& line : legal_message_lines) {
-    // Creates a new LinkedList in Java when the passed in `linked_list`
-    // parameter is null.
-    linked_list = Java_LegalMessageLine_addToList_createListIfNull(
-        env, linked_list, ConvertUTF16ToJavaString(env, line.text()));
+    list.emplace_back(Java_LegalMessageLine_Constructor(env, line.text()));
     for (const auto& link : line.links()) {
-      Java_LegalMessageLine_addLinkToLastInList(
-          env, linked_list, link.range.start(), link.range.end(),
-          ConvertUTF8ToJavaString(env, link.url.spec()));
+      Java_LegalMessageLine_addLink(env, list.back(), link.range.start(),
+                                    link.range.end(), link.url.spec());
     }
   }
-  return linked_list;
+  return list;
 }
 
 }  // namespace autofill

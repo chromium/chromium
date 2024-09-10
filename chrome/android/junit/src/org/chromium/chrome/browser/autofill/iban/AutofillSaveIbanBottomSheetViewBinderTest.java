@@ -17,8 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
 
-import com.google.common.collect.ImmutableList;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +32,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Tests for {@link AutofillSaveIbanBottomSheetViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -118,13 +118,17 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     @SmallTest
     public void testLegalMessage() {
         // Test empty legal message.
-        bind(mModelBuilder.with(AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE, null));
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
+                        new AutofillSaveIbanBottomSheetProperties.LegalMessage(
+                                Collections.EMPTY_LIST, (unused) -> {})));
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
         // Test non-empty legal message.
         final String messageText = "Legal message line";
-        LinkedList<LegalMessageLine> legalMessageLines = new LinkedList<>();
+        List<LegalMessageLine> legalMessageLines = new ArrayList<>();
         LegalMessageLine legalMessageLine = new LegalMessageLine(messageText);
         legalMessageLine.links.add(new Link(0, 5, "https://example.test"));
         legalMessageLines.add(legalMessageLine);
@@ -132,7 +136,7 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
                 mModelBuilder.with(
                         AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveIbanBottomSheetProperties.LegalMessage(
-                                ImmutableList.copyOf(legalMessageLines), (unused) -> {})));
+                                legalMessageLines, (unused) -> {})));
         assertEquals(messageText, String.valueOf(mView.mLegalMessage.getText()));
         assertEquals(View.VISIBLE, mView.mLegalMessage.getVisibility());
     }

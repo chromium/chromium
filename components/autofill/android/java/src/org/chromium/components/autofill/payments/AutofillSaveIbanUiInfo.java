@@ -7,7 +7,6 @@ package org.chromium.components.autofill.payments;
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -16,6 +15,7 @@ import org.jni_zero.JniType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @JNINamespace("autofill")
 /**
@@ -72,19 +72,20 @@ public class AutofillSaveIbanUiInfo {
             @JniType("std::u16string") String cancelText,
             @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String ibanLabel,
-            @Nullable List<LegalMessageLine> legalMessageLines,
+            @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
             @DrawableRes int logoIcon,
             @JniType("std::u16string") String titleText) {
-        mAcceptText = acceptText;
-        mCancelText = cancelText;
-        mDescriptionText = descriptionText;
-        mIbanLabel = ibanLabel;
-        if (legalMessageLines == null) {
-            legalMessageLines = Collections.emptyList();
-        }
-        mLegalMessageLines = Collections.unmodifiableList(legalMessageLines);
+        mAcceptText = Objects.requireNonNull(acceptText, "Accept text can't be null");
+        mCancelText = Objects.requireNonNull(cancelText, "Cancel text can't be null");
+        mDescriptionText =
+                Objects.requireNonNull(descriptionText, "Description text can't be null");
+        mIbanLabel = Objects.requireNonNull(ibanLabel, "Iban label can't be null");
+        mLegalMessageLines =
+                Collections.unmodifiableList(
+                        Objects.requireNonNull(
+                                legalMessageLines, "List of legal message lines can't be null"));
         mLogoIcon = logoIcon;
-        mTitleText = titleText;
+        mTitleText = Objects.requireNonNull(titleText, "Title text can't be null");
     }
 
     /** Builder for {@link AutofillSaveIbanUiInfo} */
@@ -94,7 +95,7 @@ public class AutofillSaveIbanUiInfo {
         private String mCancelText;
         private String mDescriptionText;
         private String mIbanLabel;
-        private List<LegalMessageLine> mLegalMessageLines;
+        private List<LegalMessageLine> mLegalMessageLines = Collections.EMPTY_LIST;
         @DrawableRes private int mLogoIcon;
         private String mTitleText;
 

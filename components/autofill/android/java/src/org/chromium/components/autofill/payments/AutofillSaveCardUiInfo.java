@@ -7,24 +7,25 @@ package org.chromium.components.autofill.payments;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.collect.ImmutableList;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-@JNINamespace("autofill")
 /**
  * The android version of the C++ AutofillSaveCardUiInfo providing text and icons.
  *
- * Fields not needed by the save card bottom sheet UI on Android are not present.
+ * <p>Fields not needed by the save card bottom sheet UI on Android are not present.
  */
+@JNINamespace("autofill")
 public class AutofillSaveCardUiInfo {
     private final boolean mIsForUpload;
     private final @DrawableRes int mLogoIcon;
     private final @DrawableRes int mIssuerIcon;
-    private final ImmutableList<LegalMessageLine> mLegalMessageLines;
+    private final List<LegalMessageLine> mLegalMessageLines;
     private final String mCardLabel;
     private final String mCardSubLabel;
     private final String mCardDescription;
@@ -44,12 +45,16 @@ public class AutofillSaveCardUiInfo {
         return mLogoIcon;
     }
 
-    /** @return an immutable list of legal message lines. */
-    public ImmutableList<LegalMessageLine> getLegalMessageLines() {
-        return ImmutableList.copyOf(mLegalMessageLines);
+    /**
+     * @return an immutable list of legal message lines.
+     */
+    public List<LegalMessageLine> getLegalMessageLines() {
+        return mLegalMessageLines;
     }
 
-    /** @return a CardDetail of the issuer icon, label, and sub label. */
+    /**
+     * @return a CardDetail of the issuer icon, label, and sub label.
+     */
     public CardDetail getCardDetail() {
         return new CardDetail(mIssuerIcon, mCardLabel, mCardSubLabel);
     }
@@ -84,14 +89,14 @@ public class AutofillSaveCardUiInfo {
     }
 
     // LINT.IfChange
+    /** Construct the delegate given all the members. */
     @CalledByNative
     @VisibleForTesting
-    /** Construct the delegate given all the members. */
     /*package*/ AutofillSaveCardUiInfo(
             boolean isForUpload,
             @DrawableRes int logoIcon,
             @DrawableRes int issuerIcon,
-            List<LegalMessageLine> legalMessageLines,
+            @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
             String cardLabel,
             String cardSubLabel,
             String cardDescription,
@@ -104,18 +109,21 @@ public class AutofillSaveCardUiInfo {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
-        if (legalMessageLines == null) {
-            legalMessageLines = ImmutableList.of();
-        }
-        mLegalMessageLines = ImmutableList.copyOf(legalMessageLines);
-        mCardLabel = cardLabel;
-        mCardSubLabel = cardSubLabel;
-        mCardDescription = cardDescription;
-        mTitleText = titleText;
-        mConfirmText = confirmText;
-        mCancelText = cancelText;
-        mDescriptionText = descriptionText;
-        mLoadingDescription = loadingDescription;
+        mLegalMessageLines =
+                Collections.unmodifiableList(
+                        Objects.requireNonNull(
+                                legalMessageLines, "List of legal message lines can't be null"));
+        mCardLabel = Objects.requireNonNull(cardLabel, "Card label can't be null");
+        mCardSubLabel = Objects.requireNonNull(cardSubLabel, "Card sublabel can't be null");
+        mCardDescription =
+                Objects.requireNonNull(cardDescription, "Card description can't be null");
+        mTitleText = Objects.requireNonNull(titleText, "Title text can't be null");
+        mConfirmText = Objects.requireNonNull(confirmText, "Confirm text can't be null");
+        mCancelText = Objects.requireNonNull(cancelText, "Cancel text can't be null");
+        mDescriptionText =
+                Objects.requireNonNull(descriptionText, "Description text can't be null");
+        mLoadingDescription =
+                Objects.requireNonNull(loadingDescription, "Loading description can't be null");
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
     }
 
@@ -128,7 +136,7 @@ public class AutofillSaveCardUiInfo {
         @DrawableRes private int mLogoIcon;
         private CardDetail mCardDetail;
         private String mCardDescription;
-        private ImmutableList<LegalMessageLine> mLegalMessageLines = ImmutableList.of();
+        private List<LegalMessageLine> mLegalMessageLines;
         private String mTitleText;
         private String mConfirmText;
         private String mCancelText;
@@ -157,7 +165,7 @@ public class AutofillSaveCardUiInfo {
         }
 
         public Builder withLegalMessageLines(List<LegalMessageLine> legalMessageLines) {
-            mLegalMessageLines = ImmutableList.copyOf(legalMessageLines);
+            mLegalMessageLines = legalMessageLines;
             return this;
         }
 

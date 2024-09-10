@@ -44,6 +44,7 @@ import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link AutofillSaveCardBottomSheetCoordinator} */
@@ -190,10 +191,18 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 new AutofillSaveCardBottomSheetCoordinator(
                         mActivity,
                         new AutofillSaveCardUiInfo.Builder()
+                                .withTitleText("Title text")
+                                .withDescriptionText("Description text.")
                                 .withIsForUpload(false)
+                                .withLogoIcon(TEST_DRAWABLE_RES)
                                 .withCardDetail(
                                         new CardDetail(
                                                 TEST_DRAWABLE_RES, "Card label", "Card sub label"))
+                                .withLegalMessageLines(Collections.EMPTY_LIST)
+                                .withConfirmText("Confirm text")
+                                .withCancelText("Cancel text")
+                                .withLoadingDescription("Loading description")
+                                .withCardDescription("")
                                 .build(),
                         /* skipLoadingForFixFlow= */ false,
                         mBottomSheetController,
@@ -290,6 +299,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 .withConfirmText("Confirm text")
                 .withCancelText("Cancel text")
                 .withLoadingDescription("Loading description")
+                .withCardDescription("")
                 .build();
     }
 }

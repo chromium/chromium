@@ -12,7 +12,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
@@ -72,7 +72,7 @@ import java.util.LinkedList;
     /** Legal messages. */
     static class LegalMessages {
         /** Legal message lines. */
-        final LinkedList<LegalMessageLine> mLines;
+        final List<LegalMessageLine> mLines;
 
         /** The type of link to record in metrics when a link is tapped. */
         @VirtualCardEnrollmentLinkType final int mLinkType;
@@ -87,7 +87,7 @@ import java.util.LinkedList;
          * @param linkType the type of link to record in metrics when link is tapped.
          */
         LegalMessages(
-                LinkedList<LegalMessageLine> lines,
+                List<LegalMessageLine> lines,
                 @VirtualCardEnrollmentLinkType int linkType,
                 LinkOpener linkOpener) {
             mLines = lines;

@@ -137,6 +137,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCancelText("Cancel text")
                         .withDescriptionText("Description text.")
                         .withIsGooglePayBrandingEnabled(true)
+                        .withCardDescription("")
+                        .withLoadingDescription("")
                         .build());
         runOnUiThreadBlocking(
                 () -> {
@@ -167,6 +169,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCancelText("Cancel text")
                         .withIsGooglePayBrandingEnabled(false)
                         .withDescriptionText("") // Description text is empty on local save.
+                        .withCardDescription("")
+                        .withLoadingDescription("")
                         .build());
         runOnUiThreadBlocking(
                 () -> {
@@ -217,6 +221,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
                                 uiInfo.getLoadingDescription())
+                        .with(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false)
                         .build();
         PropertyModelChangeProcessor.create(
                 model, view, AutofillSaveCardBottomSheetViewBinder::bind);

@@ -32,7 +32,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /** Bridge for the virtual card enrollment bottom sheet. */
 @JNINamespace("autofill")
@@ -86,8 +86,8 @@ import java.util.LinkedList;
             Bitmap issuerIconBitmap,
             @JniType("std::u16string") String cardLabel,
             @JniType("std::u16string") String cardDescription,
-            LinkedList<LegalMessageLine> googleLegalMessages,
-            LinkedList<LegalMessageLine> issuerLegalMessages,
+            @JniType("std::vector") List<LegalMessageLine> googleLegalMessages,
+            @JniType("std::vector") List<LegalMessageLine> issuerLegalMessages,
             @JniType("std::u16string") String acceptButtonLabel,
             @JniType("std::u16string") String cancelButtonLabel,
             @JniType("std::u16string") String loadingDescription) {
