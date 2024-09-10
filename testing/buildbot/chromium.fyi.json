@@ -22044,7 +22044,6 @@
           "--xcode-build-version",
           "16a5230g"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
