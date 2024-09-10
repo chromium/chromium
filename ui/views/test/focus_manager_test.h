@@ -5,14 +5,15 @@
 #ifndef UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 #define UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 
-#include "ui/views/focus/focus_manager.h"
-
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -58,6 +59,7 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
       const std::vector<raw_ptr<View, VectorExperimental>>& panes);
 
  private:
+  std::unique_ptr<Widget> widget_;
   raw_ptr<View> contents_view_ = nullptr;
   raw_ptr<FocusChangeListener> focus_change_listener_ = nullptr;
   raw_ptr<WidgetFocusChangeListener> widget_focus_change_listener_ = nullptr;
