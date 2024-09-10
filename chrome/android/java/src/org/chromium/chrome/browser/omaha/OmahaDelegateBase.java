@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.PowerManager;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.base.ServiceLoaderUtil;
 
 import java.util.UUID;
 
@@ -55,7 +57,7 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
     }
 
     @Override
-    protected RequestGenerator createRequestGenerator() {
-        return AppHooks.get().createOmahaRequestGenerator();
+    protected @Nullable RequestGenerator createRequestGenerator() {
+        return ServiceLoaderUtil.maybeCreate(RequestGenerator.class);
     }
 }

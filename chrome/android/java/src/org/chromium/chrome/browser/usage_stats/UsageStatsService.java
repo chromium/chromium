@@ -12,11 +12,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -89,7 +89,13 @@ public class UsageStatsService implements Destroyable {
         mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
-        mClient = AppHooks.get().createDigitalWellbeingClient();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mClient = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
+        }
+        if (mClient == null) {
+            mClient = new DigitalWellbeingClient();
+        }
 
         mSuspensionTracker
                 .getAllSuspendedWebsites()

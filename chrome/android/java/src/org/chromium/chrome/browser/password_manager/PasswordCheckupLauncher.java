@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
@@ -79,7 +79,7 @@ public class PasswordCheckupLauncher {
 
     private static boolean tryLaunchingNativePasswordCheckup(Activity activity) {
         GooglePasswordManagerUIProvider googlePasswordManagerUIProvider =
-                AppHooks.get().createGooglePasswordManagerUIProvider();
+                ServiceLoaderUtil.maybeCreate(GooglePasswordManagerUIProvider.class);
         if (googlePasswordManagerUIProvider == null) return false;
         return googlePasswordManagerUIProvider.launchPasswordCheckup(activity);
     }

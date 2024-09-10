@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,14 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
@@ -72,18 +70,8 @@ public class PersonalizeGoogleServicesSettingsTest {
 
     @Before
     public void setUp() {
-        AppHooks.setInstanceForTesting(
-                new AppHooksImpl() {
-                    @Override
-                    public GoogleActivityController createGoogleActivityController() {
-                        return mGoogleActivityController;
-                    }
-                });
-    }
-
-    @After
-    public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
+        ServiceLoaderUtil.setInstanceForTesting(
+                GoogleActivityController.class, mGoogleActivityController);
     }
 
     @Test

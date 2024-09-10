@@ -13,10 +13,10 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -95,15 +95,13 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
     }
 
     private void onWebAndAppActivityClicked(String signedInAccountName) {
-        AppHooks.get()
-                .createGoogleActivityController()
+        GoogleActivityController.create()
                 .openWebAndAppActivitySettings(getActivity(), signedInAccountName);
         RecordUserAction.record("Signin_AccountSettings_GoogleActivityControlsClicked");
     }
 
     private void onLinkedGoogleServicesClicked(String signedInAccountName) {
-        AppHooks.get()
-                .createGoogleActivityController()
+        GoogleActivityController.create()
                 .openLinkedGoogleServicesSettings(getActivity(), signedInAccountName);
         RecordUserAction.record("Signin_AccountSettings_LinkedGoogleServicesClicked");
     }

@@ -13,8 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -164,8 +164,12 @@ public class TrustedVaultClient {
      */
     public static TrustedVaultClient get() {
         if (sInstance == null) {
-            sInstance =
-                    new TrustedVaultClient(AppHooks.get().createSyncTrustedVaultClientBackend());
+            TrustedVaultClient.Backend backend =
+                    ServiceLoaderUtil.maybeCreate(TrustedVaultClient.Backend.class);
+            if (backend == null) {
+                backend = new TrustedVaultClient.EmptyBackend();
+            }
+            sInstance = new TrustedVaultClient(backend);
         }
         return sInstance;
     }

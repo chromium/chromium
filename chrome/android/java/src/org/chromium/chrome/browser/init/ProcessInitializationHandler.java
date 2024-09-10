@@ -23,6 +23,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -118,6 +119,7 @@ import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.webapps.AppBannerManager;
+import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
@@ -179,7 +181,12 @@ public class ProcessInitializationHandler {
     public static ProcessInitializationHandler getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
-            sInstance = AppHooks.get().createProcessInitializationHandler();
+            ProcessInitializationHandler instance =
+                    ServiceLoaderUtil.maybeCreate(ProcessInitializationHandler.class);
+            if (instance == null) {
+                instance = new ProcessInitializationHandler();
+            }
+            sInstance = instance;
         }
         return sInstance;
     }
@@ -349,7 +356,8 @@ public class ProcessInitializationHandler {
     protected void handlePostNativeInitialization() {
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
-        AppBannerManager.setAppDetailsDelegate(AppHooks.get().createAppDetailsDelegate());
+        AppBannerManager.setAppDetailsDelegate(
+                ServiceLoaderUtil.maybeCreate(AppDetailsDelegate.class));
         ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
