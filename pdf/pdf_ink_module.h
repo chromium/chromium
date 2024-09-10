@@ -88,6 +88,9 @@ class PdfInkModule {
     // Returns whether the page at `page_index` is visible or not.
     virtual bool IsPageVisible(int page_index) = 0;
 
+    // Notifies the client whether annotation mode is enabled or not.
+    virtual void OnAnnotationModeToggled(bool enable) {}
+
     // Notifies the client that a stroke has finished drawing or erasing.
     virtual void StrokeFinished() {}
 

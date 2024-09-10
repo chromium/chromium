@@ -1082,8 +1082,12 @@ void PDFiumEngine::KillFormFocus() {
 }
 
 void PDFiumEngine::UpdateFocus(bool has_focus) {
+  bool can_focus = !IsReadOnly();
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  can_focus = can_focus && !client_->IsInAnnotationMode();
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   base::AutoReset<bool> updating_focus_guard(&updating_focus_, true);
-  if (has_focus && !IsReadOnly()) {
+  if (has_focus && can_focus) {
     UpdateFocusElementType(last_focused_element_type_);
     if (focus_element_type_ == FocusElementType::kPage &&
         PageIndexInBounds(last_focused_page_) &&
@@ -2352,6 +2356,12 @@ bool PDFiumEngine::HasPermission(DocumentPermission permission) const {
 void PDFiumEngine::SelectAll() {
   if (IsReadOnly())
     return;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (client_->IsInAnnotationMode()) {
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   if (focus_field_type_ == FocusFieldType::kText) {
     if (PageIndexInBounds(last_focused_page_))

@@ -2669,6 +2669,20 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
   EXPECT_EQ(12, plugin_->VisiblePageIndexFromPoint(kPage12Bottom));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPageBelowLast));
 }
+
+TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
+  EXPECT_CALL(*engine_ptr_, SetFormHighlight(false));
+  EXPECT_CALL(*engine_ptr_, ClearTextSelection());
+
+  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  EXPECT_TRUE(plugin_->IsInAnnotationMode());
+
+  EXPECT_CALL(*engine_ptr_, SetFormHighlight(true));
+
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
+  EXPECT_FALSE(plugin_->IsInAnnotationMode());
+}
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -116,6 +117,9 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
+#if BUILDFLAG(ENABLE_PDF)
+  MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 }  // namespace
@@ -1850,5 +1854,63 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class AnnotationModeTestClient : public MockTestClient {
+ public:
+  AnnotationModeTestClient() = default;
+  AnnotationModeTestClient(const AnnotationModeTestClient&) = delete;
+  AnnotationModeTestClient& operator=(const AnnotationModeTestClient&) = delete;
+  ~AnnotationModeTestClient() override = default;
+
+  // PDFiumEngineClient overrides:
+  bool IsInAnnotationMode() const override { return annotation_mode_; }
+
+  void set_annotation_mode(bool annotation_mode) {
+    annotation_mode_ = annotation_mode;
+  }
+
+ private:
+  bool annotation_mode_ = false;
+};
+
+using PDFiumEngineAnnotationModeTest = PDFiumTestBase;
+
+TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
+  NiceMock<AnnotationModeTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  client.set_annotation_mode(true);
+
+  // Attempting to focus in annotation mode should once more trigger a killing
+  // of form focus.
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->UpdateFocus(true);
+}
+
+TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
+  NiceMock<AnnotationModeTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  client.set_annotation_mode(true);
+
+  // Attempting to select text should do nothing in annotation mode.
+  engine->SelectAll();
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineAnnotationModeTest, testing::Bool());
+
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

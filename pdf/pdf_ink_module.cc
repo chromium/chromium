@@ -657,6 +657,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   enabled_ = message.FindBool("enable").value();
+  client_->OnAnnotationModeToggled(enabled_);
   MaybeSetCursor();
 }
 

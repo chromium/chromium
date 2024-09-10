@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/loader/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -170,5 +171,11 @@ void PreviewModeClient::SetLinkUnderCursor(
 bool PreviewModeClient::IsValidLink(const std::string& url) {
   NOTREACHED();
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool PreviewModeClient::IsInAnnotationMode() const {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

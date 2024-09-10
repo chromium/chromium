@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 
 namespace chrome_pdf {
@@ -43,6 +44,9 @@ class TestClient : public PDFiumEngineClient {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+#if BUILDFLAG(ENABLE_PDF)
+  bool IsInAnnotationMode() const override;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed

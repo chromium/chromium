@@ -363,6 +363,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  bool IsInAnnotationMode() const override;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
@@ -410,6 +413,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   gfx::Vector2dF GetViewportOriginOffset() override;
   float GetZoom() const override;
   bool IsPageVisible(int page_index) override;
+  void OnAnnotationModeToggled(bool enable) override;
   void StrokeFinished() override;
   void UpdateInkCursorImage(SkBitmap bitmap) override;
   void UpdateThumbnail(int page_index) override;

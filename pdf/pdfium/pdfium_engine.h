@@ -243,7 +243,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   virtual void SelectAll();
 
-  void ClearTextSelection();
+  virtual void ClearTextSelection();
 
   // Gets the list of DocumentAttachmentInfo from the document.
   virtual const std::vector<DocumentAttachmentInfo>&
@@ -431,7 +431,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool IsValidLink(const std::string& url);
 
   // Sets whether form highlight should be enabled or cleared.
-  void SetFormHighlight(bool enable_form);
+  virtual void SetFormHighlight(bool enable_form);
 
  private:
   // This helper class is used to detect the difference in selection between

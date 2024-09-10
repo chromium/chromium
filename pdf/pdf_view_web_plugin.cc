@@ -1349,6 +1349,12 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
   return base::Value(url).is_string();
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool PdfViewWebPlugin::IsInAnnotationMode() const {
+  return ink_module_ && ink_module_->enabled();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   engine_->SetCaretPosition(FrameToPdfCoordinates(position));
 }
@@ -2072,6 +2078,15 @@ bool PdfViewWebPlugin::IsPageVisible(int page_index) {
   return engine_->IsPageVisible(page_index);
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+void PdfViewWebPlugin::OnAnnotationModeToggled(bool enable) {
+  engine_->SetFormHighlight(/*enable_form=*/!enable);
+  if (enable) {
+    engine_->ClearTextSelection();
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 void PdfViewWebPlugin::StrokeFinished() {
   base::Value::Dict message;
   message.Set("type", "finishInkStroke");
@@ -2218,6 +2233,11 @@ bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   if (ink_module_ && ink_module_->HandleInputEvent(event_to_handle)) {
     return true;
+  }
+
+  if (IsInAnnotationMode()) {
+    // When in annotation mode, only handle ink input events.
+    return false;
   }
 #endif
 
