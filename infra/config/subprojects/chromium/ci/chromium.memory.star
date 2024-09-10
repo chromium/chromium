@@ -797,6 +797,9 @@ ci.builder(
     contact_team_email = "chrome-memory-safety-team@google.com",
     execution_timeout = 18 * time.hour,
     notifies = ["codeql-infra"],
+    properties = {
+        "codeql_version": "latest",
+    },
 )
 
 ci.builder(
@@ -817,4 +820,7 @@ ci.builder(
     contact_team_email = "chrome-memory-safety-team@google.com",
     execution_timeout = 18 * time.hour,
     notifies = ["codeql-infra"],
+    properties = {
+        "codeql_version": "latest",
+    },
 )
