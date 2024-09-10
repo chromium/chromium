@@ -6509,6 +6509,12 @@ test("unit_tests") {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
+  if (chrome_root_store_cert_management_ui) {
+    sources += [
+      "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
+    ]
+  }
+
   if (toolkit_views) {
     sources += [
       "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc",

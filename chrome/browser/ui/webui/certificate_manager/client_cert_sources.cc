@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 
+#include <map>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -66,23 +68,38 @@
 
 namespace {
 
-// A certificate loader that wraps a ClientCertStore. Read-only.
-// Lifetimes note: The callback will not be called if the ClientCertStoreLoader
-// (and thus, the ClientCertStore) is destroyed first.
+class ClientCertStoreFactory {
+ public:
+  virtual ~ClientCertStoreFactory() = default;
+  virtual std::unique_ptr<net::ClientCertStore> CreateClientCertStore() = 0;
+};
+
+// A certificate loader that wraps a ClientCertStoreFactory. Read-only.
 class ClientCertStoreLoader {
  public:
-  explicit ClientCertStoreLoader(std::unique_ptr<net::ClientCertStore> store)
-      : store_(std::move(store)) {}
+  explicit ClientCertStoreLoader(
+      std::unique_ptr<ClientCertStoreFactory> factory)
+      : factory_(std::move(factory)) {}
 
+  // Lifetimes note: The callback will not be called if the
+  // ClientCertStoreLoader (and thus, the ClientCertStore handle held by
+  // `active_requests_`) is destroyed first.
   void GetCerts(base::OnceCallback<void(net::CertificateList)> callback) {
-    store_->GetClientCerts(
+    std::unique_ptr<net::ClientCertStore> store =
+        factory_->CreateClientCertStore();
+    net::ClientCertStore* store_ptr = store.get();
+    active_requests_[store_ptr] = std::move(store);
+    // Unretained is safe as the callback is not run if `active_requests_` is
+    // destroyed.
+    store_ptr->GetClientCerts(
         base::MakeRefCounted<net::SSLCertRequestInfo>(),
         base::BindOnce(&ClientCertStoreLoader::HandleClientCertsResult,
-                       std::move(callback)));
+                       base::Unretained(this), store_ptr, std::move(callback)));
   }
 
  private:
-  static void HandleClientCertsResult(
+  void HandleClientCertsResult(
+      net::ClientCertStore* store,
       base::OnceCallback<void(net::CertificateList)> callback,
       net::ClientCertIdentityList identities) {
     net::CertificateList certs;
@@ -90,25 +107,51 @@ class ClientCertStoreLoader {
     for (const auto& identity : identities) {
       certs.push_back(identity->certificate());
     }
+    active_requests_.erase(store);
     std::move(callback).Run(std::move(certs));
   }
 
-  std::unique_ptr<net::ClientCertStore> store_;
+  std::unique_ptr<ClientCertStoreFactory> factory_;
+  std::map<net::ClientCertStore*, std::unique_ptr<net::ClientCertStore>>
+      active_requests_;
 };
+
+#if BUILDFLAG(USE_NSS_CERTS)
+class ClientCertStoreFactoryNSS : public ClientCertStoreFactory {
+ public:
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+    return std::make_unique<net::ClientCertStoreNSS>(
+        base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
+                            kCryptoModulePasswordClientAuth));
+  }
+};
+#elif BUILDFLAG(IS_WIN)
+class ClientCertStoreFactoryWin : public ClientCertStoreFactory {
+ public:
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+    return std::make_unique<net::ClientCertStoreWin>();
+  }
+};
+#elif BUILDFLAG(IS_MAC)
+class ClientCertStoreFactoryMac : public ClientCertStoreFactory {
+ public:
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+    return std::make_unique<net::ClientCertStoreMac>();
+  }
+};
+#endif
 
 std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader() {
   // TODO(crbug.com/40928765): use ClientCertStoreKcer on IS_CHROMEOS_ASH build
 #if BUILDFLAG(USE_NSS_CERTS)
   return std::make_unique<ClientCertStoreLoader>(
-      std::make_unique<net::ClientCertStoreNSS>(
-          base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
-                              kCryptoModulePasswordClientAuth)));
+      std::make_unique<ClientCertStoreFactoryNSS>());
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<ClientCertStoreLoader>(
-      std::make_unique<net::ClientCertStoreWin>());
+      std::make_unique<ClientCertStoreFactoryWin>());
 #elif BUILDFLAG(IS_MAC)
   return std::make_unique<ClientCertStoreLoader>(
-      std::make_unique<net::ClientCertStoreMac>());
+      std::make_unique<ClientCertStoreFactoryMac>());
 #else
   return nullptr;
 #endif
@@ -130,6 +173,22 @@ class NullClientCertStore : public net::ClientCertStore {
   }
 };
 
+class ClientCertStoreFactoryProvisioned : public ClientCertStoreFactory {
+ public:
+  explicit ClientCertStoreFactoryProvisioned(
+      client_certificates::CertificateProvisioningService* provisioning_service)
+      : provisioning_service_(provisioning_service) {}
+
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+    return client_certificates::ClientCertificatesService::Create(
+        provisioning_service_, std::make_unique<NullClientCertStore>());
+  }
+
+ private:
+  raw_ptr<client_certificates::CertificateProvisioningService>
+      provisioning_service_;
+};
+
 std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
     Profile* profile) {
   if (!profile || !client_certificates::features::
@@ -144,8 +203,8 @@ std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
   }
 
   return std::make_unique<ClientCertStoreLoader>(
-      client_certificates::ClientCertificatesService::Create(
-          provisioning_service, std::make_unique<NullClientCertStore>()));
+      std::make_unique<ClientCertStoreFactoryProvisioned>(
+          provisioning_service));
 }
 #endif
 
