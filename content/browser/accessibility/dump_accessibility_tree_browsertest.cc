@@ -3074,17 +3074,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("optgroup-menulist.html"));
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/364913803): / Failing on Mac. Even though it's a custom
-// <select>, it's somehow hitting Mac native context menu code.
-#define MAYBE_AccessibilityOptgroupCustomMenulist \
-  DISABLED_AccessibilityOptgroupCustomMenulist
-#else
-#define MAYBE_AccessibilityOptgroupCustomMenulist \
-  AccessibilityOptgroupCustomMenulist
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityOptgroupCustomMenulist) {
+                       AccessibilityOptgroupCustomMenulist) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunHtmlTest(FILE_PATH_LITERAL("optgroup-custom-menulist.html"));

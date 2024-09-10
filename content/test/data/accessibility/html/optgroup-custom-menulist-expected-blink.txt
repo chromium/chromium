@@ -14,4 +14,3 @@ rootWebArea
 ++++++++++++++menuListOption name='Megatron' setSize=7 posInSet=5 selected=false
 ++++++++++++++menuListOption name='Starscream' setSize=7 posInSet=6 selected=false
 ++++++++++++++menuListOption name='Brawl' setSize=7 posInSet=7 selected=false
-++++++++menuListPopup activedescendantId=menuListOption setSize=7 ispopup=auto

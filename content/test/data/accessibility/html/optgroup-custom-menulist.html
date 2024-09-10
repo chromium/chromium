@@ -17,7 +17,9 @@
 <!DOCTYPE html>
 <html>
 <style>
-  select { appearance: base-select; }
+select, select::picker(select) {
+  appearance: base-select;
+}
 </style>
 <body>
 <select id="menulist" aria-label="Transformer">

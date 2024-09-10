@@ -11,4 +11,3 @@ android.webkit.WebView focusable
 ++++++++++android.view.View clickable focusable name='Megatron' item_index=4 row_index=4
 ++++++++++android.view.View clickable focusable name='Starscream' item_index=5 row_index=5
 ++++++++++android.view.View clickable focusable name='Brawl' item_index=6 row_index=6
-++++++android.view.View

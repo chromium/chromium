@@ -11,4 +11,3 @@
 ++++++++++[menu item] name='Megatron' enabled selectable posinset:5 setsize:7
 ++++++++++[menu item] name='Starscream' enabled selectable posinset:6 setsize:7
 ++++++++++[menu item] name='Brawl' enabled selectable posinset:7 setsize:7
-++++++[menu] enabled setsize:7
