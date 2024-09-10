@@ -33,11 +33,13 @@
 }
 
 - (void)start {
-  _mediator = [[SwitchProfileSettingsMediator alloc] init];
+  NSString* activeProfileName =
+      base::SysUTF8ToNSString(_browserState->GetProfileName());
+  _mediator = [[SwitchProfileSettingsMediator alloc]
+      initWithActiveProfileName:activeProfileName];
   _viewController = [[SwitchProfileSettingsTableViewController alloc] init];
   _viewController.delegate = _mediator;
-  _viewController.activeProfileName =
-      base::SysUTF8ToNSString(_browserState->GetProfileName());
+  _mediator.consumer = _viewController;
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }
