@@ -18,7 +18,7 @@ static_library("auto_sleep") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//components/prefs",
@@ -43,8 +43,8 @@ static_library("test_support") {
     "fake_repeating_time_interval_task_executor.h",
   ]
   public_deps = [
-    "//chrome/browser/ash/app_mode/auto_sleep",
-    "//chromeos/ash/components/policy",
+    ":auto_sleep",
+    "//chromeos/ash/components/policy/weekly_time",
     "//extensions:test_support",
     "//extensions/common",
     "//net:test_support",
@@ -65,13 +65,13 @@ source_set("unit_tests") {
     "repeating_time_interval_task_executor_unittest.cc",
   ]
   deps = [
+    ":auto_sleep",
+    ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/app_mode/auto_sleep",
-    "//chrome/browser/ash/app_mode/auto_sleep:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//content/test:test_support",

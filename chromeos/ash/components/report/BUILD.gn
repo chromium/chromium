@@ -41,7 +41,7 @@ source_set("utils") {
     ":fresnel_service_proto",
     "//base",
     "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/system",
     "//components/prefs:prefs",
     "//components/version_info",

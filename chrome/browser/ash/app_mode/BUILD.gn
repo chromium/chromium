@@ -78,7 +78,6 @@ static_library("app_mode") {
     "//chromeos/ash/components/kiosk/vision",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/network",
-    "//chromeos/ash/components/policy",
     "//chromeos/ash/components/settings",
     "//chromeos/crosapi/mojom",
     "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
@@ -174,7 +173,6 @@ static_library("test_support") {
   public_deps = [
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/login/app_mode",
-    "//chromeos/ash/components/policy",
     "//extensions:test_support",
     "//extensions/common",
     "//net:test_support",

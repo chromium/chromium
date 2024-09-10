@@ -14,10 +14,7 @@ component("policy") {
 
   sources = []
 
-  public_deps = [
-    "restriction_schedule",
-    "weekly_time",
-  ]
+  public_deps = [ "restriction_schedule" ]
 
   deps = []
 }
