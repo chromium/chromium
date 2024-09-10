@@ -74,10 +74,14 @@ export class SettingsMenu extends ReactiveLitElement {
     }
 
     #header {
-      color: var(--cros-sys-primary);
-      font: var(--cros-title-1-font);
       padding: 24px;
       position: relative;
+
+      & > h2 {
+        color: var(--cros-sys-primary);
+        font: var(--cros-title-1-font);
+        margin: unset;
+      }
 
       & > cra-icon-button {
         position: absolute;
@@ -105,6 +109,7 @@ export class SettingsMenu extends ReactiveLitElement {
       & > .title {
         color: var(--cros-sys-primary);
         font: var(--cros-button-2-font);
+        margin: unset;
         padding: 8px;
       }
 
@@ -203,6 +208,7 @@ export class SettingsMenu extends ReactiveLitElement {
         slot="action"
         .selected=${this.summaryEnabled}
         @change=${this.onSummaryToggle}
+        aria-label=${i18n.settingsOptionsSummaryLabel}
       >
       </cros-switch>
     `;
@@ -297,6 +303,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(speakerLabelEnabled)}
           @change=${this.onSpeakerLabelToggle}
+          aria-label=${i18n.settingsOptionsSpeakerLabelLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -392,6 +399,7 @@ export class SettingsMenu extends ReactiveLitElement {
         slot="action"
         .selected=${live(this.transcriptionEnabled)}
         @change=${this.onTranscriptionToggle}
+        aria-label=${i18n.settingsOptionsTranscriptionLabel}
       >
       </cros-switch>
     `;
@@ -438,9 +446,9 @@ export class SettingsMenu extends ReactiveLitElement {
     }
     return html`
       <div class="section">
-        <div class="title">
+        <h3 class="title">
           ${i18n.settingsSectionTranscriptionSummaryHeader}
-        </div>
+        </h3>
         <div class="body">
           <settings-row>
             <span slot="label">
@@ -469,6 +477,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(this.platformHandler.quietMode.value)}
           @change=${this.onDoNotDisturbToggle}
+          aria-label=${i18n.settingsOptionsDoNotDisturbLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -488,6 +497,7 @@ export class SettingsMenu extends ReactiveLitElement {
           slot="action"
           .selected=${live(settings.value.keepScreenOn)}
           @change=${this.onKeepScreenOnToggle}
+          aria-label=${i18n.settingsOptionsKeepScreenOnLabel}
         ></cros-switch>
       </settings-row>
     `;
@@ -495,22 +505,28 @@ export class SettingsMenu extends ReactiveLitElement {
 
   override render(): RenderResult {
     // TODO: b/354109582 - Implement actual functionality of keep screen on.
-    return html`<cra-dialog ${ref(this.dialog)}>
+    return html`<cra-dialog
+        ${ref(this.dialog)}
+        aria-label=${i18n.settingsHeader}
+      >
         <div slot="content">
           <div id="header">
-            ${i18n.settingsHeader}
+            <h2 id="dialog-label">
+              ${i18n.settingsHeader}
+            </h2>
             <cra-icon-button
               buttonstyle="floating"
               size="small"
               shape="circle"
               @click=${this.onCloseClick}
+              aria-label=${i18n.closeDialogButtonTooltip}
             >
               <cra-icon slot="icon" name="close"></cra-icon>
             </cra-icon-button>
           </div>
           <div id="body">
             <div class="section">
-              <div class="title">${i18n.settingsSectionGeneralHeader}</div>
+              <h3 class="title">${i18n.settingsSectionGeneralHeader}</h3>
               <div class="body">
                 ${this.renderDoNotDisturbSettingsRow()}
                 ${this.renderKeepScreenOnSettingsRow()}
