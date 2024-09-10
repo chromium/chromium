@@ -245,31 +245,27 @@ scoped_refptr<Extension> ConvertToExtension(
 
 using IncognitoManifestKeys = api::incognito::ManifestKeys;
 
-base::debug::CrashKeyString* GetExtensionIdCrashKey() {
+base::debug::CrashKeyString* GetCrashKey(const char* key) {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_token_id", base::debug::CrashKeySize::Size32);
+      key, base::debug::CrashKeySize::Size32);
   return crash_key;
 }
 
-base::debug::CrashKeyString* GetIncognitoModeCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_token_incog_mode", base::debug::CrashKeySize::Size32);
-  return crash_key;
+const ExtensionId& GetExtensionIdValue(const Extension& extension) {
+  return extension.id();
 }
 
-base::debug::CrashKeyString* GetIncognitoProcessCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_token_incog_process", base::debug::CrashKeySize::Size32);
-  return crash_key;
+std::string GetManifestVersionValue(const Extension& extension) {
+  return base::NumberToString(extension.manifest_version());
 }
 
-const ExtensionId& GetExtensionIdValue(const Extension* extension) {
-  return extension->id();
+const char* GetServiceWorkerBasedValue(const Extension& extension) {
+  return BackgroundInfo::IsServiceWorkerBased(&extension) ? "yes" : "no";
 }
 
-const char* GetIncognitoModeValue(const Extension* extension) {
+const char* GetIncognitoModeValue(const Extension& extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
-      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+      extension.GetManifestData(IncognitoManifestKeys::kIncognito));
   if (!info) {
     return "no_incognito_info";
   }
@@ -298,20 +294,31 @@ namespace debug {
 class ScopedActivationTokenMissingCrashKeys {
  public:
   explicit ScopedActivationTokenMissingCrashKeys(
-      const Extension* extension,
+      const Extension& extension,
       const ExtensionsRendererClient* renderer_client)
-      : extension_id_crash_key_(GetExtensionIdCrashKey(),
+      : extension_id_crash_key_(GetCrashKey("ext_token_id"),
                                 GetExtensionIdValue(extension)),
-        incognito_mode_crash_key_(GetIncognitoModeCrashKey(),
+        manifest_version_crash_key_(GetCrashKey("ext_token_manifest_version"),
+                                    GetManifestVersionValue(extension)),
+        sw_based_crash_key_(GetCrashKey("ext_token_sw_based"),
+                            GetServiceWorkerBasedValue(extension)),
+        incognito_mode_crash_key_(GetCrashKey("ext_token_incog_mode"),
                                   GetIncognitoModeValue(extension)),
         incognito_process_crash_key_(
-            GetIncognitoProcessCrashKey(),
+            GetCrashKey("ext_token_incog_process"),
             GetIncognitoProcessValue(renderer_client)) {}
   ~ScopedActivationTokenMissingCrashKeys() = default;
 
  private:
   // ExtensionId of the extension.
   base::debug::ScopedCrashKeyString extension_id_crash_key_;
+
+  // The manifest version of the extension.
+  base::debug::ScopedCrashKeyString manifest_version_crash_key_;
+
+  // Whether the extension has a service worker background script registered in
+  // the manifest.
+  base::debug::ScopedCrashKeyString sw_based_crash_key_;
 
   // What the api::incognito::IncognitoMode is for the extension.
   base::debug::ScopedCrashKeyString incognito_mode_crash_key_;
@@ -658,9 +665,10 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       IPCMessageSender::CreateWorkerThreadIPCMessageSender(
           worker_dispatcher, context_proxy, service_worker_version_id);
   {
+    CHECK(extension);
     // TODO(crbug.com/357889496): Remove these crash keys once bug is resolved.
     debug::ScopedActivationTokenMissingCrashKeys activation_token_missing_keys(
-        extension, ExtensionsRendererClient::Get());
+        *extension, ExtensionsRendererClient::Get());
     CHECK(worker_activation_token.has_value());
   }
   worker_dispatcher->AddWorkerData(
