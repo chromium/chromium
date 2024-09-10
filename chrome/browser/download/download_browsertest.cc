@@ -138,7 +138,6 @@
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/public/test/url_loader_monitor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -193,7 +192,6 @@ using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
 using content::URLLoaderInterceptor;
-using content::URLLoaderMonitor;
 using content::WebContents;
 using download::DownloadItem;
 using download::DownloadUrlParameters;
@@ -1265,9 +1263,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
 }
 
 // This test verifies when fenced frame untrusted network is disabled
-// immediately after user right clicks and before "Save Image As..." is
-// selected, the download request is blocked.
-IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest, NetworkCutoffBlockSaveImageAs) {
+// immediately after user right clicks and selects "Save Image As...", the
+// download request is interrupted.
+IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
+                       NetworkCutoffInterruptSaveImageAs) {
   // Disable SafeBrowsing for testing.
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                false);
@@ -1311,13 +1310,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest, NetworkCutoffBlockSaveImageAs) {
           )"));
       }));
 
-  // Get the src URL of the image element.
-  GURL image_src =
-      GURL(EvalJs(fenced_frame_rfh, "document.getElementById('image').src")
-               .ExtractString());
-
-  // Monitor requests to this URL.
-  URLLoaderMonitor monitor({image_src});
+  // Create observer for the download.
+  auto download_observer =
+      std::make_unique<content::DownloadTestObserverInterrupted>(
+          DownloadManagerForBrowser(browser()), 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
 
   // Click inside the fenced frame.
   const gfx::PointF image_element(15, 15);
@@ -1329,10 +1326,15 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest, NetworkCutoffBlockSaveImageAs) {
   // Wait for the context menu to be shown.
   context_menu_waiter.WaitForMenuOpenAndClose();
 
-  // The download request should be blocked.
-  EXPECT_EQ(monitor.WaitForRequestCompletion(image_src).error_code,
-            net::ERR_NETWORK_ACCESS_REVOKED);
-  EXPECT_TRUE(VerifyNoDownloads());
+  // The download request should be interrupted.
+  download_observer->WaitForFinished();
+
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  GetDownloads(browser(), &download_items);
+  ASSERT_EQ(download_items.size(), 1UL);
+  ASSERT_EQ(download_items[0]->GetState(), DownloadItem::INTERRUPTED);
+  EXPECT_EQ(download_items[0]->GetLastReason(),
+            download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
 
   // Navigate away to avoid flakiness.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
