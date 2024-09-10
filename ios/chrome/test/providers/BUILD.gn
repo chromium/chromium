@@ -6,6 +6,7 @@ group("providers") {
   testonly = true
   deps = [
     # The individual API implementations.
+    "//ios/chrome/test/providers/additional_features",
     "//ios/chrome/test/providers/app_distribution",
     "//ios/chrome/test/providers/app_utils",
     "//ios/chrome/test/providers/branded_images",
