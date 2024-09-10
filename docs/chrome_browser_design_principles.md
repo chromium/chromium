@@ -334,8 +334,8 @@ class Sparkles {
       features) should be able to unconditionally reference "class BrowserView".
       The existence of this test suite forces features tested by these tests to
       have "if (!browser_view)" test-only checks in production code. Either
-      write a browser test (where both classes are provided by the test fixture) or a unit test
-      that requires neither.
+      write a browser test (where both classes are provided by the test fixture)
+      or a unit test that requires neither.
         * This also comes from a corollary of don't use "class Browser".
           Historically, features were written that take a "class Browser" as an
           input parameter. "class Browser" cannot be stubbed/faked/mocked, and
@@ -343,6 +343,42 @@ class Sparkles {
           provide a "class Browser" without a "class BrowserView". New features
           should not be taking "class Browser" as input, and should instead
           perform dependency injection.
+* Every UI feature should have at least 1 CUJ test.
+    * New UI features should write these tests using InteractiveBrowserTest.
+* Do not write change detector unit tests. The purpose of a unit test is to
+  validate behavior of common and edge cases for a block of code that has many
+  possible valid inputs.
+```cpp
+// Good. Depending on context, this can be broken into separate tests.
+bool IsPrime(int input);
+TEST(Math, CheckIsPrime) {
+  EXPECT_TRUE(IsPrime(2));
+  EXPECT_TRUE(IsPrime(3));
+  EXPECT_FALSE(IsPrime(99));
+  EXPECT_FALSE(IsPrime(-2));
+  EXPECT_FALSE(IsPrime(0));
+  EXPECT_FALSE(IsPrime(1));
+}
+
+// Bad. This is a change detector test. Change detector tests are easy to spot
+// because the test logic looks the same as the production logic.
+class ShowButtonOnBrowserActivation : public BrowserActivationListener {
+  void ShowButton();
+  bool DidShowButton();
+
+  // BrowserActivationListener overrides:
+  void BrowserDidActivate() override {
+    ShowButton();
+  }
+};
+
+Test(ShowButtonOnBrowserActivationTest, ShowButtonOnActivate) {
+  ShowButtonOnBrowserActivation listener;
+  listener.BrowserDidActivate();
+  EXPECT_TRUE(listener.DidShowButton());
+}
+
+```
 * Avoid unreachable branches.
     * We should have a semantic understanding of each path of control flow. How
       is this reached? If we don't know, then we should not have a conditional.
