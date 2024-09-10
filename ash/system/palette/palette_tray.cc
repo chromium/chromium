@@ -153,8 +153,6 @@ class TitleView : public views::View {
  private:
   void ButtonPressed(PaletteTrayOptions option,
                      base::RepeatingClosure callback) {
-    palette_tray_->RecordPaletteOptionsUsage(option,
-                                             PaletteInvocationMethod::MENU);
     std::move(callback).Run();
     palette_tray_->HidePalette();
   }
@@ -389,10 +387,6 @@ void PaletteTray::OnDidApplyDisplayChanges() {
 }
 
 void PaletteTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
-  if (num_actions_in_bubble_ == 0) {
-    RecordPaletteOptionsUsage(PaletteTrayOptions::PALETTE_CLOSED_NO_ACTION,
-                              PaletteInvocationMethod::MENU);
-  }
   HidePalette();
 }
 
@@ -498,32 +492,6 @@ void PaletteTray::HidePaletteImmediately() {
   if (bubble_)
     bubble_->bubble_widget()->SetVisibilityChangedAnimationsEnabled(false);
   HidePalette();
-}
-
-void PaletteTray::RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                            PaletteInvocationMethod method) {
-  DCHECK_NE(option, PaletteTrayOptions::PALETTE_OPTIONS_COUNT);
-
-  if (method == PaletteInvocationMethod::SHORTCUT) {
-    UMA_HISTOGRAM_ENUMERATION("Ash.Shelf.Palette.Usage.Shortcut", option,
-                              PaletteTrayOptions::PALETTE_OPTIONS_COUNT);
-  } else if (is_bubble_auto_opened_) {
-    UMA_HISTOGRAM_ENUMERATION("Ash.Shelf.Palette.Usage.AutoOpened", option,
-                              PaletteTrayOptions::PALETTE_OPTIONS_COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Ash.Shelf.Palette.Usage", option,
-                              PaletteTrayOptions::PALETTE_OPTIONS_COUNT);
-  }
-}
-
-void PaletteTray::RecordPaletteModeCancellation(PaletteModeCancelType type) {
-  if (type == PaletteModeCancelType::PALETTE_MODE_CANCEL_TYPE_COUNT) {
-    return;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Ash.Shelf.Palette.ModeCancellation", type,
-      PaletteModeCancelType::PALETTE_MODE_CANCEL_TYPE_COUNT);
 }
 
 void PaletteTray::OnProjectorSessionActiveStateChanged(bool active) {
@@ -674,10 +642,6 @@ void PaletteTray::OnPaletteEnabledPrefChanged() {
 
 void PaletteTray::OnPaletteTrayPressed(const ui::Event& event) {
   if (bubble_) {
-    if (num_actions_in_bubble_ == 0) {
-      RecordPaletteOptionsUsage(PaletteTrayOptions::PALETTE_CLOSED_NO_ACTION,
-                                PaletteInvocationMethod::MENU);
-    }
     HidePalette();
     return;
   }
@@ -703,8 +667,6 @@ bool PaletteTray::DeactivateActiveTool() {
       palette_tool_manager_->GetActiveTool(PaletteGroup::MODE);
   if (active_tool_id != PaletteToolId::NONE) {
     palette_tool_manager_->DeactivateTool(active_tool_id);
-    RecordPaletteModeCancellation(PaletteToolIdToPaletteModeCancelType(
-        active_tool_id, false /*is_switched*/));
     return true;
   }
 
