@@ -682,11 +682,14 @@ public class TabsTest {
                 2,
                 focusListener.getTimesUnfocused());
         Assert.assertFalse("oldTab should not have focus.", focusListener.hasFocus());
-        Assert.assertTrue(
-                "Keyboard should show",
-                sActivityTestRule
-                        .getKeyboardDelegate()
-                        .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean keyboardVisible =
+                            sActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar);
+                    Criteria.checkThat(keyboardVisible, Matchers.is(true));
+                });
 
         // Check refocus doesn't happen again on the closure being finalized.
         ThreadUtils.runOnUiThreadBlocking(() -> model.commitAllTabClosures());
@@ -701,11 +704,14 @@ public class TabsTest {
                 focusListener.getTimesUnfocused());
         Assert.assertFalse("oldTab should remain unfocused.", focusListener.hasFocus());
 
-        Assert.assertTrue(
-                "Keyboard should show",
-                sActivityTestRule
-                        .getKeyboardDelegate()
-                        .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean keyboardVisible =
+                            sActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar);
+                    Criteria.checkThat(keyboardVisible, Matchers.is(true));
+                });
 
         // Ensure the keyboard is hidden so we are in a clean-slate for next test.
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.clearFocus());
@@ -714,11 +720,14 @@ public class TabsTest {
                 .runOnMainSync(() -> oldTab.getView().requestFocus());
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
-        Assert.assertFalse(
-                "Keyboard should no longer show",
-                sActivityTestRule
-                        .getKeyboardDelegate()
-                        .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean keyboardVisible =
+                            sActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar);
+                    Criteria.checkThat(keyboardVisible, Matchers.is(false));
+                });
     }
 
     @Test
