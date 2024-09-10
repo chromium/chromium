@@ -1,1 +1,11 @@
-<embed src="$i18n{privacyPolicyURL}" height="100%" width="100%"></embed>
+<embed onload="loading()" src="$i18n{privacyPolicyURL}"
+  height="100%" width="100%"></embed>
+<script>
+  function loading(){
+    window.parent.postMessage(
+      {
+        id: 'privacy-policy-loaded',
+      },
+      'chrome://privacy-sandbox-dialog');
+  }
+</script>

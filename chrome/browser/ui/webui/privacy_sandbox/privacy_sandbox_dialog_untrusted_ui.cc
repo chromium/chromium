@@ -38,6 +38,9 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
       "object-src https://policies.google.com;");
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources 'self' 'unsafe-inline';");
 
   untrusted_source->AddResourcePath(
       chrome::kChromeUIUntrustedPrivacySandboxDialogPrivacyPolicyPath,

@@ -38,6 +38,29 @@ export class PrivacySandboxDialogConsentStepElement extends
     };
   }
 
+  private privacyPolicyPageClickStartTime_: number;
+  private privacyPolicyPageLoadEndTime_: number;
+
+  override ready() {
+    super.ready();
+
+    window.addEventListener('message', event => {
+      if (event.data.id === 'privacy-policy-loaded') {
+        this.privacyPolicyPageLoadEndTime_ = performance.now();
+        // TODO(crbug.com/358087159): Replace the console logs below with
+        // histograms for how long it takes to open the privacy policy page.
+        // Tracks when the privacy policy page is loaded after the link is
+        // clicked.
+        if (this.privacyPolicyPageClickStartTime_) {
+          // const duration = this.privacyPolicyPageLoadEndTime_ -
+          // this.privacyPolicyPageClickStartTime_; console.log(`Load time:
+          // ${duration} milliseconds`);
+        }
+        return;
+      }
+    });
+  }
+
   private onConsentAccepted_() {
     this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
     this.dispatchEvent(
@@ -50,9 +73,60 @@ export class PrivacySandboxDialogConsentStepElement extends
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
   }
 
+  // TODO(crbug.com/358087159): Add metrics to check if privacy policy link ever
+  // fails to load.
   private onPrivacyPolicyLinkClicked_() {
-    this.dispatchEvent(new CustomEvent(
-        'privacy-policy-page', {bubbles: true, composed: true}));
+    this.privacyPolicyPageClickStartTime_ = performance.now();
+    // TODO(crbug.com/358087159): Replace the console logs below with histograms
+    // for how long it takes to open the privacy policy page. Tracks when the
+    // privacy policy page is loaded before the link is clicked.
+    if (this.privacyPolicyPageLoadEndTime_ &&
+        this.privacyPolicyPageLoadEndTime_ >
+            this.privacyPolicyPageClickStartTime_) {
+      // const duration = this.privacyPolicyPageLoadEndTime_ -
+      // this.privacyPolicyPageClickStartTime_; console.log(`Load time:
+      // ${duration} milliseconds`);
+      //  This is not really 0, but it just means it already pre-loaded.
+    } else if (
+        this.privacyPolicyPageLoadEndTime_ &&
+        this.privacyPolicyPageLoadEndTime_ <=
+            this.privacyPolicyPageClickStartTime_) {
+      // const duration = 0;
+      // console.log(`Load time: ${duration} milliseconds`);
+    }
+    // Move the consent notice to the back.
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#consentNotice')!.style.display = 'none';
+
+    // Move the privacy policy iframe to the front.
+    const iframeContent =
+        this.shadowRoot!.querySelector<HTMLElement>('#privacyPolicy');
+    iframeContent!.classList.add('visible');
+    iframeContent!.classList.remove('hidden');
+
+    // Move the back button to the front.
+    const backButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#backButton');
+    backButton!.classList.add('visible');
+    backButton!.classList.remove('hidden');
+  }
+
+  private onBackToNotice_() {
+    // Move the privacy policy iframe to the back.
+    const iframeContent =
+        this.shadowRoot!.querySelector<HTMLElement>('#privacyPolicy');
+    iframeContent!.classList.add('hidden');
+    iframeContent!.classList.remove('visible');
+
+    // Move the back button to the back.
+    const backButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#backButton');
+    backButton!.classList.add('hidden');
+    backButton!.classList.remove('visible');
+
+    // Move the consent notice to the front.
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#consentNotice')!.style.display = 'inline-block';
   }
 }
 

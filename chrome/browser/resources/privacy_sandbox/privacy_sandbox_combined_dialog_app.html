@@ -25,8 +25,7 @@
 
   <privacy-sandbox-dialog-consent-step id="[[stepEnum_.CONSENT]]" slot="view"
       fill-content
-      on-consent-resolved="onConsentStepResolved_"
-      on-privacy-policy-page="openPrivacyPolicyPage_">
+      on-consent-resolved="onConsentStepResolved_">
   </privacy-sandbox-dialog-consent-step>
 
   <div id="[[stepEnum_.SAVING]]" class="saving-step" slot="view">
@@ -37,9 +36,5 @@
   <privacy-sandbox-dialog-notice-step id="[[stepEnum_.NOTICE]]" slot="view"
       fill-content>
   </privacy-sandbox-dialog-notice-step>
-
-  <privacy-sandbox-privacy-policy-step id="[[stepEnum_.PRIVACYPOLICY]]" slot="view"
-      fill-content>
-  </privacy-sandbox-privacy-policy-step>
 
 </cr-view-manager>

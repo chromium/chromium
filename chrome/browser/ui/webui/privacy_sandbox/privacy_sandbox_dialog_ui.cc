@@ -57,6 +57,10 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
           .c_str());
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, frame_src);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self' "
+      "'unsafe-inline';");
 
   // Set up Content Security Policy (CSP) for
   // chrome-untrusted://privacy-sandbox-dialog/ iframe.
