@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module batch_upload.mojom;
+
+// Factory ensures that the BatchUploadPage and BatchUploadHandler interfaces
+// are always created together without requiring an initialization call from the
+// WebUI to the handler.
+interface PageHandlerFactory {
+  // Creates both the `page `and `handler` to be used for communication between
+  // the Browser and the Renderer.
+  CreateBatchUploadHandler(pending_remote<Page> page,
+                           pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://batch-upload (Renderer -> Browser)
+interface PageHandler {
+  // Updates the native view of the dialog based on the current `height` of the
+  // web content view. Height of the content view is dynamic and may increase or
+  // decrease with user actions on the web view.
+  UpdateViewHeight(uint32 height);
+
+  // Reaction to clicking on the `Close` button on the web content view.
+  Close();
+};
+
+// Called from C++ side of chrome://batch-upload. (Browser -> Renderer)
+interface Page {
+  // Sending `data` to be displayed in the web content view.
+  SendData(string data);
+};

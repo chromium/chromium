@@ -72,6 +72,10 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
   // them in chrome_web_ui_configs_chromeos.cc.
@@ -146,4 +150,8 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   map.AddWebUIConfig(std::make_unique<WhatsNewUIConfig>());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  map.AddWebUIConfig(std::make_unique<BatchUploadUIConfig>());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }

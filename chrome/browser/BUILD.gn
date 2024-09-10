@@ -4278,6 +4278,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/web_applications",

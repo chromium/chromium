@@ -445,6 +445,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [4060],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/batch_upload/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4070],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/profile_picker/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [4080],

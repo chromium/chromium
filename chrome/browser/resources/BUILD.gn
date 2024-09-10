@@ -138,6 +138,10 @@ group("resources") {
     ]
   }
 
+  if (enable_dice_support) {
+    public_deps += [ "signin/batch_upload:resources" ]
+  }
+
   if (enable_webui_tab_strip) {
     public_deps += [ "tab_strip:resources" ]
   }

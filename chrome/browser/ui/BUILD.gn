@@ -3527,6 +3527,10 @@ static_library("ui") {
         "views/profiles/profile_picker_dice_sign_in_toolbar.h",
         "views/promos/autofill_bubble_signin_promo_view.cc",
         "views/promos/autofill_bubble_signin_promo_view.h",
+        "webui/signin/batch_upload_handler.cc",
+        "webui/signin/batch_upload_handler.h",
+        "webui/signin/batch_upload_ui.cc",
+        "webui/signin/batch_upload_ui.h",
         "webui/signin/dice_web_signin_intercept_handler.cc",
         "webui/signin/dice_web_signin_intercept_handler.h",
         "webui/signin/dice_web_signin_intercept_ui.cc",
@@ -3552,6 +3556,8 @@ static_library("ui") {
         "webui/welcome/welcome_ui.cc",
         "webui/welcome/welcome_ui.h",
       ]
+
+      deps += [ "webui/signin/batch_upload:mojo_bindings" ]
     }
   }
 

@@ -494,6 +494,12 @@
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
+#include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -1845,6 +1851,13 @@ void PopulateChromeWebUIFrameBinders(
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(switches::kBatchUploadDesktop)) {
+    RegisterWebUIControllerInterfaceBinder<
+        batch_upload::mojom::PageHandlerFactory, BatchUploadUI>(map);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsFocusModeEnabled()) {

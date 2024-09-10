@@ -34653,6 +34653,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-207369615" label="chrome://location-internals/"/>
   <int value="-206925255" label="chrome://popular-sites-internals/"/>
   <int value="-176639700" label="chrome://omnibox/"/>
+  <int value="-108234722" label="chrome://batch-upload/"/>
   <int value="-106823253" label="chrome://conflicts/"/>
   <int value="-103805443" label="chrome://nearby-internals/"/>
   <int value="-90956977" label="chrome://dns/"/>
