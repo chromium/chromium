@@ -209,11 +209,7 @@ const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 #endif
 
