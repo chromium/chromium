@@ -3095,15 +3095,16 @@ CSSVariableData* StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
 }
 
 namespace {
-gfx::SizeF GetRatioFromList(const CSSValueList& list) {
+gfx::SizeF GetRatioFromList(const CSSLengthResolver& length_resolver,
+                            const CSSValueList& list) {
   auto* ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(0));
   if (!ratio) {
     DCHECK_EQ(list.length(), 2u);
     ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(1));
   }
   DCHECK(ratio);
-  return gfx::SizeF(ratio->First().GetFloatValue(),
-                    ratio->Second().GetFloatValue());
+  return gfx::SizeF(ratio->First().ComputeNumber(length_resolver),
+                    ratio->Second().ComputeNumber(length_resolver));
 }
 
 bool ListHasAuto(const CSSValueList& list) {
@@ -3138,7 +3139,7 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
   bool has_auto = ListHasAuto(list);
   EAspectRatioType type =
       has_auto ? EAspectRatioType::kAutoAndRatio : EAspectRatioType::kRatio;
-  gfx::SizeF ratio = GetRatioFromList(list);
+  gfx::SizeF ratio = GetRatioFromList(state.CssToLengthConversionData(), list);
   return StyleAspectRatio(type, ratio);
 }
 
