@@ -1981,6 +1981,7 @@ if (!is_android) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:browser_tests",
+      "//chrome/browser/ui/customize_chrome",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/find_bar:browser_tests",
       "//chrome/browser/ui/omnibox",
