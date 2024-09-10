@@ -291,25 +291,6 @@ class AutotestPrivateGetArcStateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutotestPrivateStartArcFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.startArc",
-                             AUTOTESTPRIVATE_STARTARC)
-
- private:
-  ~AutotestPrivateStartArcFunction() override;
-  ResponseAction Run() override;
-};
-
-class AutotestPrivateStopArcFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.stopArc", AUTOTESTPRIVATE_STOPARC)
-
- private:
-  ~AutotestPrivateStopArcFunction() override;
-  ResponseAction Run() override;
-};
-
 class AutotestPrivateSetPlayStoreEnabledFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.setPlayStoreEnabled",
