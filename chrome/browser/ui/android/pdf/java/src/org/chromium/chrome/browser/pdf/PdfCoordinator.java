@@ -41,6 +41,8 @@ public class PdfCoordinator {
 
     private ChromePdfViewerFragment mChromePdfViewerFragment;
 
+    private int mFindInPageCount;
+
     /**
      * Creates a PdfCoordinator for the PdfPage.
      *
@@ -105,6 +107,7 @@ public class PdfCoordinator {
     boolean findInPage() {
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.mIsLoadDocumentSuccess) {
             mChromePdfViewerFragment.setTextSearchActive(true);
+            PdfUtils.recordFindInPage(mFindInPageCount++);
             return true;
         }
         return false;

@@ -3666,6 +3666,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.FindInPageCounts" units="count"
+    expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records find-in-page invocation counts for each pdf page. The count number
+    represents the previous find-in-page invocations on the same pdf page. This
+    can be recorded more than once for each pdf page. Recorded when find-in-page
+    is invoked.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
     expires_after="2025-03-02">
   <owner>shuyng@google.com</owner>

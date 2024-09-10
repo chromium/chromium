@@ -298,6 +298,11 @@ public class PdfUtils {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime", duration);
     }
 
+    static void recordFindInPage(int findInPageCounts) {
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.Pdf.FindInPageCounts", findInPageCounts, /* max= */ 9);
+    }
+
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }
