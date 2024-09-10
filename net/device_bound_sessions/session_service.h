@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_challenge_param.h"
 
 namespace net {
 class IsolationInfo;
@@ -67,6 +68,12 @@ class NET_EXPORT SessionService {
       Session::Id session_id,
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) = 0;
+
+  // Set the challenge for a bound session after getting a
+  // Sec-Session-Challenge header.
+  virtual void SetChallengeForBoundSession(
+      const GURL& request_url,
+      const SessionChallengeParam& param) = 0;
 
  protected:
   SessionService() = default;

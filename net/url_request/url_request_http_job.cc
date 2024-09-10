@@ -111,6 +111,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -1163,14 +1164,26 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+  device_bound_sessions::SessionService* service =
+      request_->context()->device_bound_session_service();
+  if (!service) {
+    return;
+  }
+
+  const auto& request_url = request_->url();
+  auto* headers = GetResponseHeaders();
   std::vector<device_bound_sessions::RegistrationFetcherParam> params =
       device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-          request_->url(), GetResponseHeaders());
-  if (auto* service = request_->context()->device_bound_session_service()) {
-    for (auto& param : params) {
-      service->RegisterBoundSession(std::move(param),
-                                    request_->isolation_info());
-    }
+          request_url, headers);
+  for (auto& param : params) {
+    service->RegisterBoundSession(std::move(param), request_->isolation_info());
+  }
+
+  std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
+      device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
+                                                                  headers);
+  for (auto& param : challenge_params) {
+    service->SetChallengeForBoundSession(request_url, std::move(param));
   }
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
