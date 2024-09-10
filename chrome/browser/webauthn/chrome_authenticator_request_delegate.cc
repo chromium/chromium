@@ -118,7 +118,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_widget_types.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -1301,28 +1300,19 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
 #if BUILDFLAG(IS_MAC)
   {
-    NSWindow* window = nullptr;
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-    BrowserWindow* browser_window =
-        BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-    if (browser_window) {
-      window = browser_window->GetNativeWindow().GetNativeNSWindow();
-    }
-    if (!window) {
-      // Not all contexts in which this code runs have a BrowserWindow.
-      // Notably the dialog containing a WebContents that is used for signing
-      // into a new profile does not. Thus the NSWindow is fetched more
-      // directly.
-      const views::Widget* widget =
-          views::Widget::GetTopLevelWidgetForNativeView(
-              web_contents->GetNativeView());
-      if (widget) {
-        window = widget->GetNativeWindow().GetNativeNSWindow();
+    // Not all contexts in which this code runs have a BrowserWindow.
+    // Notably the dialog containing a WebContents that is used for signing
+    // into a new profile does not. Thus the NSWindow is fetched more directly.
+    const views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+        web_contents->GetNativeView());
+    if (widget) {
+      const gfx::NativeWindow window = widget->GetNativeWindow();
+      if (window) {
+        discovery_factory->set_nswindow(
+            reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
       }
-    }
-    if (window) {
-      discovery_factory->set_nswindow(reinterpret_cast<uintptr_t>(window));
     }
   }
 #endif
