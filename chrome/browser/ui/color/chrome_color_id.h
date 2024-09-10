@@ -135,7 +135,7 @@
   E_CPONLY(kColorExtensionMenuIconDisabled) \
   E_CPONLY(kColorExtensionMenuPinButtonIcon) \
   E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
-  E_CPONLY(kColorExtensionsMenuHighlightedBackground) \
+  E_CPONLY(kColorExtensionsMenuContainerBackground) \
   E_CPONLY(kColorExtensionsToolbarControlsBackground) \
   E_CPONLY(kColorExtensionsMenuText) \
   E_CPONLY(kColorExtensionsMenuSecondaryText) \

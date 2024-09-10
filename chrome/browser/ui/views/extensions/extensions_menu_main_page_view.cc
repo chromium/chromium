@@ -219,7 +219,7 @@ MessageSection::MessageSection(
       // TODO(crbug.com/40879945): After adding margins, compute radius from a
       // variable or create a const variable.
       .SetBackground(views::CreateThemedRoundedRectBackground(
-          kColorExtensionsMenuHighlightedBackground, 4))
+          kColorExtensionsMenuContainerBackground, 4))
       .SetInsideBorderInsets(
           gfx::Insets::VH(section_vertical_margin, section_horizontal_margin))
       .AddChildren(
@@ -274,7 +274,7 @@ MessageSection::MessageSection(
                   views::Builder<views::MdTextButton>()
                       .SetCallback(base::BindRepeating(reload_callback_))
                       .SetBgColorIdOverride(
-                          kColorExtensionsMenuHighlightedBackground)
+                          kColorExtensionsMenuContainerBackground)
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
@@ -428,7 +428,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                     .SetCallback(base::BindRepeating(dismiss_callback_, id))
                     .SetStyle(ui::ButtonStyle::kText)
                     .SetBgColorIdOverride(
-                        kColorExtensionsMenuHighlightedBackground)
+                        kColorExtensionsMenuContainerBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
@@ -437,7 +437,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                     .SetCallback(base::BindRepeating(allow_callback_, id))
                     .SetStyle(ui::ButtonStyle::kText)
                     .SetBgColorIdOverride(
-                        kColorExtensionsMenuHighlightedBackground)
+                        kColorExtensionsMenuContainerBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
