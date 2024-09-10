@@ -1438,10 +1438,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "lacros_all_tast_tests",
-)
-
-targets.tests.gtest_test(
     name = "lacros_chrome_browsertests",
 )
 

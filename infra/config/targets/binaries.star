@@ -1054,14 +1054,6 @@ targets.binaries.windowed_test_launcher(
     label = "//ash/keyboard/ui:keyboard_unittests",
 )
 
-targets.binaries.generated_script(
-    name = "lacros_all_tast_tests",
-    label = "//chromeos/lacros:lacros_all_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.binaries.windowed_test_launcher(
     name = "lacros_chrome_browsertests",
     label = "//chrome/test:lacros_chrome_browsertests",
