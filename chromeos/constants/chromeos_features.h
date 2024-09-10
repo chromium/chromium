@@ -21,10 +21,6 @@ namespace features {
 // alongside the definition of their values in the .cc file. If a feature is
 // being rolled out via Finch, add a comment in the .cc file.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kAppInstallServiceUri);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kApnPolicies);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kBatteryBadgeIcon);
