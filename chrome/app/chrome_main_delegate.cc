@@ -118,7 +118,6 @@
 #include "chrome/browser/win/browser_util.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
-#include "chrome/common/child_process_logging.h"
 #include "chrome/common/chrome_version.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -1519,9 +1518,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
   SetUpInstallerPreferences(command_line);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-  child_process_logging::Init();
-#endif
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // Create an instance of the CPU class to parse /proc/cpuinfo and cache
