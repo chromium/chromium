@@ -716,6 +716,99 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TabSwitchClosesDisclosure) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Mock that disclosure dialog has not been accepted.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+  controller_->OnEntryPointExecuted();
+
+  // Disclosure dialog has shown and product spec UI is not open.
+  ASSERT_TRUE(commerce::ProductSpecificationsDisclosureDialog::
+                  current_instance_for_testing());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Set up observer to verify that the entry point will not be re-triggered by
+  // this selection.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(testing::_)).Times(0);
+
+  // Switch tab will dismiss the disclosure.
+  browser()->tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(commerce::ProductSpecificationsDisclosureDialog::
+                   current_instance_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       NavigationClosesDisclosure) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Mock that disclosure dialog has not been accepted.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+  controller_->OnEntryPointExecuted();
+
+  // Disclosure dialog has shown and product spec UI is not open.
+  ASSERT_TRUE(commerce::ProductSpecificationsDisclosureDialog::
+                  current_instance_for_testing());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Navigation on the current tab will dismiss the disclosure.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->tab_strip_model()->GetActiveWebContents(), GURL(kTestUrl2)));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(commerce::ProductSpecificationsDisclosureDialog::
+                   current_instance_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        TestUseDefaultTitle) {
   // Mock EntryPointInfo returned by ClusterManager with long title.
   const std::string& long_title = "very very very very very long title";

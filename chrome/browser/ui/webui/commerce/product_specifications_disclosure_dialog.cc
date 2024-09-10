@@ -140,6 +140,16 @@ void ProductSpecificationsDisclosureDialog::ShowDialog(
   UpdateDialogPosition(current_instance_->dialog_widget_, web_contents);
 }
 
+// static
+bool ProductSpecificationsDisclosureDialog::CloseDialog() {
+  if (current_instance_) {
+    current_instance_->dialog_widget_->Close();
+    current_instance_ = nullptr;
+    return true;
+  }
+  return false;
+}
+
 ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
     content::WebContents* contents,
     DialogArgs dialog_args) {

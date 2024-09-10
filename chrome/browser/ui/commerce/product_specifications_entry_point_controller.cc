@@ -77,6 +77,7 @@ bool IsNavigationEligibleForEntryPoint(
 }  // namespace
 
 namespace commerce {
+
 // TODO(b/340252809): No need to have browser as a dependency.
 ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(Browser* browser)
@@ -102,6 +103,13 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed() &&
+      ProductSpecificationsDisclosureDialog::CloseDialog()) {
+    // Don't try to re-trigger the entry point when the dialog is closed due
+    // to this tab model change.
+    return;
+  }
+
   if (change.type() == TabStripModelChange::Type::kRemoved) {
     MaybeHideEntryPoint();
   }
@@ -129,6 +137,7 @@ void ProductSpecificationsEntryPointController::TabChangedAt(
     // TODO(b/343109556): Instead of hiding, sometimes we'll need to update the
     // showing entry point.
     MaybeHideEntryPoint();
+    ProductSpecificationsDisclosureDialog::CloseDialog();
   }
 }
 
