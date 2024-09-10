@@ -573,18 +573,22 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
 
   if (type == ContentSettingsType::COOKIES) {
-    // Don't show the cookie page action if:
-    // 1. Cookies are allowed due to the default cookies content setting
-    // 2. Cookies are blocked due to a non-cookies content setting source
-    // 3. Third-party cookies are blocked
-    if ((is_allowed &&
-         map->GetDefaultContentSetting(type) != CONTENT_SETTING_BLOCK) ||
-        (is_blocked &&
-         map->GetContentSetting(web_contents->GetLastCommittedURL(),
-                                web_contents->GetLastCommittedURL(),
-                                type) != CONTENT_SETTING_BLOCK) ||
-        CookieSettingsFactory::GetForProfile(profile)
-            ->ShouldBlockThirdPartyCookies()) {
+    auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
+    const auto& url = web_contents->GetLastCommittedURL();
+    bool blocked_via_setting = cookie_settings->GetCookieSetting(
+                                   url, net::SiteForCookies::FromUrl(url), url,
+                                   {}) == CONTENT_SETTING_BLOCK;
+    // We check the cookie setting here as well because 3PC access influences
+    // the allowed/blocked status even though the icon is meant for 1PC control.
+    is_blocked = is_blocked && blocked_via_setting;
+    // True if the user blocked 1PCs by default but allowed them for this site.
+    bool allowed_for_site =
+        is_allowed && !blocked_via_setting &&
+        map->GetDefaultContentSetting(type) == CONTENT_SETTING_BLOCK;
+    // Only show the cookie page action if 1PCs are allowed via site-level
+    // exception on the current site OR blocked AND 3PCs are allowed.
+    if ((!allowed_for_site && !is_blocked) ||
+        cookie_settings->ShouldBlockThirdPartyCookies()) {
       return false;
     }
   }
@@ -594,7 +598,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
     explanation_id = 0;
   }
 
-  SetIcon(type, content_settings->IsContentBlocked(type));
+  SetIcon(type, is_blocked);
   set_explanatory_string_id(explanation_id);
   DCHECK(tooltip_id);
   set_tooltip(l10n_util::GetStringUTF16(tooltip_id));
