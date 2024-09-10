@@ -2785,6 +2785,11 @@ BASE_FEATURE(kScalableShelfPods,
              "ScalableShelfPods",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the scanner update.
+BASE_FEATURE(kScannerUpdate,
+             "ScannerUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,
@@ -4755,6 +4760,10 @@ bool IsScalableIphClientConfigEnabled() {
 
 bool IsScalableShelfPodsEnabled() {
   return base::FeatureList::IsEnabled(kScalableShelfPods);
+}
+
+bool IsScannerEnabled() {
+  return base::FeatureList::IsEnabled(kScannerUpdate);
 }
 
 bool IsSeaPenDemoModeEnabled() {
