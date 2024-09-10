@@ -53,8 +53,6 @@ static_library("osauth") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/login/osauth",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/session_manager",
@@ -70,7 +68,6 @@ static_library("osauth") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 

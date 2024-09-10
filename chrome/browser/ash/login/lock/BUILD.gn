@@ -51,9 +51,6 @@ static_library("lock") {
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/ash/session",
-    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
@@ -78,10 +75,8 @@ static_library("lock") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
-    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/ash/session",
     "//chrome/browser/extensions",
   ]
 }

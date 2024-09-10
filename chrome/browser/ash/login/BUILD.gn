@@ -169,7 +169,6 @@ static_library("login") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/aura/accessibility",
-    "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
@@ -271,7 +270,6 @@ static_library("login") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/system",
     "//chrome/browser/sync",
-    "//chrome/browser/ui/webui/ash/login/osauth",
   ]
 }
 

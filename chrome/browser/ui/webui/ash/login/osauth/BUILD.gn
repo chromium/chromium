@@ -22,7 +22,14 @@ static_library("osauth") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
     "//components/login",
     "//ui/chromeos",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
   ]
 }
