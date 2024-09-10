@@ -857,17 +857,28 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             _, api_call = api_calls[0]
             if is_return_type_void:
                 nodes.append(F("{};", api_call))
-            elif "ReflectOnly" in cg_context.member_like.extended_attributes:
-                # [ReflectOnly]
-                nodes.append(F("auto ${return_value} = {};", api_call))
             elif is_return_type_promise:
                 return_type = "ScriptPromise<{}>".format(
                     native_value_tag(
                         cg_context.return_type.unwrap().result_type))
                 nodes.append(
                     F("{} ${return_value} = {};", return_type, api_call))
+            elif "ReflectOnly" in cg_context.member_like.extended_attributes:
+                # [ReflectOnly]
+                nodes.append(F("auto ${return_value} = {};", api_call))
             else:
                 nodes.append(F("auto&& ${return_value} = {};", api_call))
+                if (not cg_context.does_override_idl_return_type
+                        and not "PromiseIDLTypeMismatch"
+                        in cg_context.member_like.extended_attributes):
+                    return_type = native_value_tag(cg_context.return_type)
+                    idl_return_type = cg_context.return_type
+                    nodes.append(
+                        F(
+                            "static_assert(bindings::IsReturnTypeCompatible<{}, std::remove_cvref_t<decltype(${return_value})>>, \"{}\");",
+                            return_type,
+                            "Return type from native call is incompatible to the type specified in IDL"
+                        ))
         else:
             branches = SequenceNode()
             for index, api_call in api_calls:
@@ -7143,6 +7154,7 @@ def generate_class_like(class_like,
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
         "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
     ])
     if interface and interface.inherited:
         api_source_node.accumulator.add_include_headers(
@@ -7157,6 +7169,7 @@ def generate_class_like(class_like,
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+        "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
         "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h",
