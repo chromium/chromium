@@ -16,6 +16,11 @@
     position: absolute;
   }
 
+  .button-container.button-container {
+    transition: opacity 150ms, visibility 150ms;
+  }
+
+  :host([should-fade-out-buttons]) .button-container,
   :host(:not([initial-flash-animation-has-ended])) .button-container {
     opacity: 0;
     visibility: hidden;

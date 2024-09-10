@@ -357,6 +357,7 @@ export class TextLayerElement extends PolymerElement {
     this.selectionStartIndex = wordIndex;
     this.selectionEndIndex = wordIndex;
     this.isSelectingText = true;
+    this.dispatchTextHighlightState();
     return true;
   }
 
@@ -535,11 +536,13 @@ export class TextLayerElement extends PolymerElement {
         'hide-selected-text-context-menu', {bubbles: true, composed: true}));
     this.dispatchEvent(new CustomEvent(
         'hide-detected-text-context-menu', {bubbles: true, composed: true}));
+    this.dispatchTextHighlightState();
   }
 
   private selectWords(selectionStartIndex: number, selectionEndIndex: number) {
     this.selectionStartIndex = selectionStartIndex;
     this.selectionEndIndex = selectionEndIndex;
+    this.dispatchTextHighlightState();
   }
 
   private onTextReceived(text: Text) {
@@ -1190,6 +1193,17 @@ export class TextLayerElement extends PolymerElement {
     }
 
     return parseInt(wordIndexString) ?? null;
+  }
+
+  private dispatchTextHighlightState() {
+    this.dispatchEvent(new CustomEvent('text-selection-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        highlightingText:
+            this.selectionStartIndex !== -1 && this.selectionEndIndex !== -1,
+      },
+    }));
   }
 
   // Testing method to get the words on the page.

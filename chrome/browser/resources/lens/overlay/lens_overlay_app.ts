@@ -81,6 +81,12 @@ export class LensOverlayAppElement extends PolymerElement {
         value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
       },
+      shouldFadeOutButtons: {
+        type: Boolean,
+        computed: 'computeShouldFadeOutButtons(isTranslateModeActive, ' +
+            'isTextLayerHighlightingText, isPointerDown)',
+        reflectToAttribute: true,
+      },
       theme: {
         type: Object,
         value: getFallbackTheme,
@@ -98,6 +104,17 @@ export class LensOverlayAppElement extends PolymerElement {
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
   private moreOptionsMenuVisible: boolean = false;
+  // Whether the translate mode on the lens overlay has been activated. Updated
+  // in response to events dispatched from the translate button.
+  private isTranslateModeActive: boolean = false;
+  // Whether the text layer is highlighting text. Updated in response to events
+  // dispatched from the text layer.
+  private isTextLayerHighlightingText: boolean = false;
+  // Whether the user is pressing down on the selection overlay. Updated in
+  // response to events dispatched from the selection overlay.
+  private isPointerDown: boolean = false;
+  // Whether the button containers should be faded out.
+  private shouldFadeOutButtons: boolean = false;
   // The overlay theme.
   private theme: OverlayTheme;
 
@@ -135,6 +152,14 @@ export class LensOverlayAppElement extends PolymerElement {
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
           this.$.cursorTooltip.setTooltip(e.detail.tooltipType);
+        });
+    this.eventTracker_.add(
+        document, 'translate-mode-state-changed', (e: CustomEvent) => {
+          this.isTranslateModeActive = e.detail.translateModeEnabled;
+        });
+    this.eventTracker_.add(
+        document, 'text-selection-state-changed', (e: CustomEvent) => {
+          this.isTextLayerHighlightingText = e.detail.highlightingText;
         });
   }
 
@@ -241,11 +266,13 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private handleSelectionOverlayClicked() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
+    this.isPointerDown = true;
   }
 
   private handlePointerReleased() {
     this.$.initialGradient.triggerHideScrimAnimation();
     this.$.cursorTooltip.setPauseTooltipChanges(false);
+    this.isPointerDown = false;
   }
 
   private onScreenshotRendered() {
@@ -255,6 +282,11 @@ export class LensOverlayAppElement extends PolymerElement {
   private onInitialFlashAnimationEnd() {
     this.initialFlashAnimationHasEnded = true;
     this.$.initialGradient.setScrimVisible();
+  }
+
+  private computeShouldFadeOutButtons(): boolean {
+    return !this.isTranslateModeActive &&
+        (this.isTextLayerHighlightingText || this.isPointerDown);
   }
 
   private async showTextCopiedToast() {
