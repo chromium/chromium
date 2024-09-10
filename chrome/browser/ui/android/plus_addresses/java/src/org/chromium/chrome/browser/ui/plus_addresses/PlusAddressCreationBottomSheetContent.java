@@ -100,7 +100,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressConfirmButton.setText(info.getConfirmText());
         mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
-                    showConfirmationLoadingState();
                     mDelegate.onConfirmRequested();
                 });
 
@@ -146,6 +145,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressConfirmButton.setEnabled(enabled);
     }
 
+    void setConfirmButtonVisible(boolean visible) {
+        mPlusAddressConfirmButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     /** Sets the delegate listening for actions the user performs on this bottom sheet. */
     void setDelegate(PlusAddressCreationDelegate delegate) {
         mDelegate = delegate;
@@ -156,8 +159,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         // This also changes the color of the refresh icon to disabled.
         mRefreshIcon.setEnabled(false);
 
-        // Hide the buttons.
-        mPlusAddressConfirmButton.setVisibility(View.GONE);
         mPlusAddressCancelButton.setVisibility(View.GONE);
 
         showLoadingIndicator();
@@ -182,7 +183,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             hideLoadingIndicator();
 
             // Disable Confirm button if attempts to Confirm() fail.
-            mPlusAddressConfirmButton.setVisibility(View.VISIBLE);
             if (mShowingNotice) {
                 mPlusAddressCancelButton.setVisibility(View.VISIBLE);
             }

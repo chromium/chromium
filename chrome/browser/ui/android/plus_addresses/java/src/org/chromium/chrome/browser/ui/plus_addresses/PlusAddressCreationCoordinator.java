@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
@@ -93,6 +94,7 @@ public class PlusAddressCreationCoordinator {
                 .with(PROPOSED_PLUS_ADDRESS, "")
                 .with(DELEGATE, delegate)
                 .with(CONFIRM_BUTTON_ENABLED, false)
+                .with(CONFIRM_BUTTON_VISIBLE, true)
                 .build();
     }
 }

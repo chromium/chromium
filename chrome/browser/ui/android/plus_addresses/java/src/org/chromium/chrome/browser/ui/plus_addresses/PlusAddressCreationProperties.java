@@ -18,9 +18,11 @@ class PlusAddressCreationProperties {
             new ReadableObjectPropertyKey<>("delegate");
     static final WritableBooleanPropertyKey CONFIRM_BUTTON_ENABLED =
             new WritableBooleanPropertyKey("confirm_button_enabled");
+    static final WritableBooleanPropertyKey CONFIRM_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey("confirm_button_visible");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, PROPOSED_PLUS_ADDRESS, DELEGATE, CONFIRM_BUTTON_ENABLED,
+        VISIBLE, PROPOSED_PLUS_ADDRESS, DELEGATE, CONFIRM_BUTTON_ENABLED, CONFIRM_BUTTON_VISIBLE,
     };
 
     private PlusAddressCreationProperties() {}

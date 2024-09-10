@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -29,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,11 +35,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.Content
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.TimeoutException;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -87,9 +82,6 @@ public class PlusAddressCreationBottomSheetContentTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(TestActivity.class);
-        // Disabling animations is necessary to avoid running into issues with
-        // delayed hiding of loading views.
-        LoadingView.setDisableAnimationForTest(true);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         mActivity,
@@ -276,58 +268,6 @@ public class PlusAddressCreationBottomSheetContentTest {
         spans[0].onClick(learnMoreInstruction);
 
         verify(mDelegate).openUrl(INFO.getLearnMoreUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testOnConfirmButtonClicked_setsRefreshIconToDisabledColor() {
-        Button modalConfirmButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        modalConfirmButton.callOnClick();
-
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertFalse(refreshIcon.isEnabled());
-
-        verify(mDelegate).onConfirmRequested();
-
-        // Clicking the refresh icon while the confirmation is ongoing does not
-        // call the delegate.
-        refreshIcon.callOnClick();
-        verify(mDelegate, never()).onRefreshClicked();
-    }
-
-    @Test
-    @SmallTest
-    public void testOnConfirmButtonClicked_showsLoadingIndicator() throws TimeoutException {
-        LoadingView loadingView =
-                mBottomSheetContent
-                        .getContentView()
-                        .findViewById(R.id.plus_address_creation_loading_view);
-
-        // Before clicking confirm, there is no loading indicator, but both
-        // a confirmation and a cancel button.
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        Button modalConfirmButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        Button modalCancelButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
-
-        // Show the loading indicator and hide the buttons once we click the confirm button.
-        modalConfirmButton.callOnClick();
-        verify(mDelegate).onConfirmRequested();
-        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
-        assertEquals(loadingView.getVisibility(), View.VISIBLE);
-
-        // Hide the loading indicator and resurface the buttons if we show an error.
-        mBottomSheetContent.showError(/* errorStateInfo= */ null);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
     }
 
     @Test
