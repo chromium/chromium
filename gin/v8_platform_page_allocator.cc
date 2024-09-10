@@ -162,6 +162,10 @@ bool PageAllocator::DecommitPages(void* address, size_t size) {
   return partition_alloc::DecommitAndZeroSystemPages(address, size);
 }
 
+bool PageAllocator::SealPages(void* address, size_t size) {
+  return partition_alloc::SealSystemPages(address, size);
+}
+
 partition_alloc::PageAccessibilityConfiguration::Permissions
 PageAllocator::GetPageConfigPermissionsForTesting(
     v8::PageAllocator::Permission permission) {

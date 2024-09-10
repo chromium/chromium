@@ -363,6 +363,14 @@ void DiscardSystemPages(void* address, size_t length) {
   DiscardSystemPages(reinterpret_cast<uintptr_t>(address), length);
 }
 
+bool SealSystemPages(uintptr_t address, size_t length) {
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  return internal::SealSystemPagesInternal(address, length);
+}
+bool SealSystemPages(void* address, size_t length) {
+  return SealSystemPages(reinterpret_cast<uintptr_t>(address), length);
+}
+
 bool ReserveAddressSpace(size_t size) {
   // To avoid deadlock, call only SystemAllocPages.
   internal::ScopedGuard guard(GetReserveLock());

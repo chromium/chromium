@@ -343,6 +343,24 @@ void DiscardSystemPages(uintptr_t address, size_t length);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void DiscardSystemPages(void* address, size_t length);
 
+// Seal a number of system pages starting at |address|. Returns |true| on
+// success.
+//
+// This blocks various modifications to the pages such as unmapping, remapping
+// or changing page permissions. Note that it doesn't change the accessibility
+// of the memory, sealed writable pages will still be writable.
+//
+// This is mainly useful for non-writable memory (either via page permissions or
+// other hardware features like pkeys) that is bound to the process lifetime.
+//
+// While unmapping the pages gets blocked, it can still be possible to release
+// the memory using |DiscardSystemPages()|, though note that at least on Linux,
+// it requires write access to the page to succeed.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool SealSystemPages(uintptr_t address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool SealSystemPages(void* address, size_t length);
+
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t

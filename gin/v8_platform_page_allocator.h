@@ -51,6 +51,8 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 
   bool DecommitPages(void* address, size_t size) override;
 
+  bool SealPages(void* address, size_t length) override;
+
   // For testing purposes only: Map the v8 page permissions into a page
   // configuration from base.
   ::partition_alloc::PageAccessibilityConfiguration::Permissions
