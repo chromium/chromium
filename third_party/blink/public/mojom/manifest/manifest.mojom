@@ -23,9 +23,20 @@ import "url/mojom/url.mojom";
 // if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
+  enum TextDirection {
+    // Text direction is unknown.
+    kAuto,
+    // Left-to-right text.
+    kLTR,
+    // Right-to-left text.
+    kRTL,
+  };
+
   // The URL this manifest was loaded from. This can be an empty URL if this is
   // an automatically generated "default" manifest.
   url.mojom.Url manifest_url;
+
+  TextDirection dir;
 
   mojo_base.mojom.String16? name;
 
