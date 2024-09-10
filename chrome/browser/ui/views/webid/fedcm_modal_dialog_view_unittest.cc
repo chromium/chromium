@@ -52,22 +52,15 @@ class TestDelegate : public content::WebContentsDelegate {
     return source;
   }
 
-  void SetContentsBounds(content::WebContents* source,
-                         const gfx::Rect& bounds) override {
-    bounds_ = bounds;
-  }
-
   void SetShouldReturnNullPopupWindow(bool should_return_null_popup_window) {
     should_return_null_popup_window_ = should_return_null_popup_window;
   }
 
   int opened() const { return opened_; }
-  gfx::Rect bounds() const { return bounds_; }
 
  private:
   int opened_ = 0;
   bool should_return_null_popup_window_{false};
-  gfx::Rect bounds_;
 };
 
 }  // namespace
@@ -84,6 +77,7 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
   content::WebContents* web_contents =
       popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
   histogram_tester_.ExpectUniqueSample(
@@ -104,6 +98,7 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {
   content::WebContents* web_contents =
       popup_window_view->ShowPopupWindow(GURL(u"invalid"));
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
   histogram_tester_.ExpectUniqueSample(
@@ -130,6 +125,7 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedForOtherReasons) {
   content::WebContents* web_contents =
       popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
   histogram_tester_.ExpectUniqueSample(
@@ -149,6 +145,7 @@ TEST_F(FedCmModalDialogViewTest, IdpInitiatedCloseMetric) {
   content::WebContents* web_contents =
       popup_window->ShowPopupWindow(GURL(u"https://example.com"));
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
 
@@ -175,6 +172,7 @@ TEST_F(FedCmModalDialogViewTest, PopupWindowDestroyedMetric) {
   content::WebContents* web_contents =
       popup_window->ShowPopupWindow(GURL(u"https://example.com"));
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
 
@@ -189,23 +187,4 @@ TEST_F(FedCmModalDialogViewTest, PopupWindowDestroyedMetric) {
       static_cast<int>(
           FedCmModalDialogView::ClosePopupWindowReason::kPopupWindowDestroyed),
       1);
-}
-
-TEST_F(FedCmModalDialogViewTest, ShowPopupWindowWithCustomYPosition) {
-  // Override the delegate to test that OpenURLFromTab gets called.
-  TestDelegate delegate(web_contents());
-
-  std::unique_ptr<FedCmModalDialogView> popup_window_view =
-      std::make_unique<FedCmModalDialogView>(web_contents(),
-                                             /*observer=*/nullptr);
-
-  int custom_y_position = 1;
-  popup_window_view->SetCustomYPosition(custom_y_position);
-
-  content::WebContents* web_contents =
-      popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
-
-  EXPECT_EQ(1, delegate.opened());
-  ASSERT_TRUE(web_contents);
-  EXPECT_EQ(custom_y_position, delegate.bounds().y());
 }

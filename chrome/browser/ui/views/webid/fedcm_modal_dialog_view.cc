@@ -99,13 +99,9 @@ void FedCmModalDialogView::ClosePopupWindow() {
 void FedCmModalDialogView::ResizeAndFocusPopupWindow() {
   CHECK(popup_window_);
 
-  gfx::Rect popup_window_bounds =
-      ComputePopupWindowBounds(source_window_->GetContainerBounds());
-  if (custom_y_position_) {
-    popup_window_bounds.set_y(*custom_y_position_);
-  }
-  popup_window_->GetDelegate()->SetContentsBounds(popup_window_,
-                                                  popup_window_bounds);
+  popup_window_->GetDelegate()->SetContentsBounds(
+      popup_window_,
+      ComputePopupWindowBounds(source_window_->GetContainerBounds()));
   popup_window_->GetDelegate()->ActivateContents(popup_window_);
 }
 
@@ -123,10 +119,6 @@ void FedCmModalDialogView::WebContentsDestroyed() {
   UMA_HISTOGRAM_ENUMERATION(
       "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
       FedCmModalDialogView::ClosePopupWindowReason::kPopupWindowDestroyed);
-}
-
-void FedCmModalDialogView::SetCustomYPosition(int y) {
-  custom_y_position_ = y;
 }
 
 FedCmModalDialogView::Observer* FedCmModalDialogView::GetObserverForTesting() {

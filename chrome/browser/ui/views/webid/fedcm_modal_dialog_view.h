@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -58,7 +56,6 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   virtual content::WebContents* ShowPopupWindow(const GURL& url);
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
-  virtual void SetCustomYPosition(int y);
 
   // content::WebContentsObserver
   void WebContentsDestroyed() override;
@@ -70,11 +67,6 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   raw_ptr<content::WebContents> source_window_{nullptr};
   raw_ptr<content::WebContents> popup_window_{nullptr};
   raw_ptr<Observer> observer_{nullptr};
-
-  // If set, this will be the y-coordinate position of the pop-up window.
-  // Otherwise, the pop-up window is centred vertically and horizontally. Used
-  // to position the pop-up window directly over the button mode modal dialog.
-  std::optional<int> custom_y_position_;
 
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
 };
