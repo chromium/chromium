@@ -1878,12 +1878,19 @@ def make_v8_set_return_value(cg_context):
         return CxxBlockNode([
             T("ExecutionContext* node_execution_context = "
               "${blink_receiver}->root()->GetExecutionContext();"),
-            T("ScriptState* node_script_state = node_execution_context ? "
-              "ToScriptState(node_execution_context, ${script_state}->World()) "
-              ": ${script_state};"),
-            CxxUnlikelyIfNode(cond=T("!node_script_state"),
-                              attribute="[[unlikely]]",
-                              body=null_context_body),
+            T("ScriptState* node_script_state = ${script_state};"),
+            CxxUnlikelyIfNode(
+                cond=T("node_execution_context && "
+                       "${execution_context} != node_execution_context"),
+                attribute="[[unlikely]]",
+                body=[
+                    T("node_script_state = "
+                      "ToScriptState(node_execution_context, "
+                      "${script_state}->World());"),
+                    CxxUnlikelyIfNode(cond=T("!node_script_state"),
+                                      attribute="[[unlikely]]",
+                                      body=null_context_body)
+                ]),
             T("// [NodeWrapInOwnContext]"),
             F(
                 "v8::Local<v8::Value> v8_value = "
