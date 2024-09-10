@@ -3016,6 +3016,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wm",
+      "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/views/bruschetta",
       "//chrome/browser/ui/views/borealis",
       "//chrome/browser/ui/views/crostini",

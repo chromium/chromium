@@ -158,6 +158,9 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
       quick_answers::prefs::ConsentStatus consent_status) = 0;
   virtual void AsyncWriteEnabled(bool enabled) = 0;
 
+  // `FakeQuickAnswersState` overrides this method to fake feature type.
+  virtual base::expected<FeatureType, Error> GetFeatureTypeExpected() const;
+
   // Set consent status of Quick Answers capability as a Quick Answers feature.
   void SetQuickAnswersFeatureConsentStatus(
       quick_answers::prefs::ConsentStatus consent_status);

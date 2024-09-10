@@ -8790,6 +8790,7 @@ test("unit_tests") {
       "//chromeos/components/magic_boost/test:fake_magic_boost_state",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",
+      "//chromeos/components/quick_answers:test_support",
       "//chromeos/components/quick_answers/public/cpp:constants",
       "//chromeos/components/quick_answers/public/cpp:cpp",
       "//chromeos/components/quick_answers/public/cpp:prefs",
@@ -10442,6 +10443,7 @@ static_library("test_support_unit") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",
+      "//chromeos/components/quick_answers:test_support",
     ]
   }
 

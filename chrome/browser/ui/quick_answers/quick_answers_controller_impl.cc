@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 
+#include <memory>
+
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -187,19 +189,28 @@ class PerformOnConsentAccepted : public QuickAnswersStateObserver {
   base::OnceCallback<void()> action_;
 };
 
+std::unique_ptr<QuickAnswersState> CreateQuickAnswersState() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<QuickAnswersStateAsh>();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return std::make_unique<QuickAnswersStateLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // namespace
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : read_write_cards_ui_controller_(read_write_cards_ui_controller),
+    : QuickAnswersControllerImpl(read_write_cards_ui_controller,
+                                 CreateQuickAnswersState()) {}
+
+QuickAnswersControllerImpl::QuickAnswersControllerImpl(
+    chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller,
+    std::unique_ptr<QuickAnswersState> quick_answers_state)
+    : quick_answers_state_(std::move(quick_answers_state)),
+      read_write_cards_ui_controller_(read_write_cards_ui_controller),
       quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  quick_answers_state_ = std::make_unique<QuickAnswersStateAsh>();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  quick_answers_state_ = std::make_unique<QuickAnswersStateLacros>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
+          std::make_unique<QuickAnswersUiController>(this)) {}
 
 QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
   // `PerformOnConsentAccepted` depends on `QuickAnswersState`. It has to be

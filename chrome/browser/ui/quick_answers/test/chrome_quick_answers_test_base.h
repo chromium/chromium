@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -42,6 +43,12 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   // `SetUpInitialPrefValues` is called before `QuickAnswersState` is
   // instantiated.
   virtual void SetUpInitialPrefValues() {}
+
+  // A test can override this method to inject `FakeQuickAnswersState` into
+  // `QuickAnswersControllerImpl`.
+  virtual std::unique_ptr<QuickAnswersControllerImpl>
+  CreateQuickAnswersControllerImpl(
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
 
   void CreateAndShowBasicMenu();
   void ResetMenuParent();

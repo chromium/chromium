@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/quick_answers/test/mock_quick_answers_client.h"
 #include "chrome/browser/ui/quick_answers/ui/result_view.h"
 #include "chrome/browser/ui/quick_answers/ui/retry_view.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
@@ -59,6 +60,17 @@ constexpr char kSourceText[] = "SourceText";
 constexpr char16_t kSourceTextU16[] = u"SourceText";
 constexpr char kResultText[] = "ResultText";
 constexpr char16_t kResultTextU16[] = u"ResultText";
+
+class MockSettingsWindowManager : public chrome::SettingsWindowManager {
+ public:
+  MOCK_METHOD(void,
+              ShowChromePageForProfile,
+              (Profile * profile,
+               const GURL& gurl,
+               int64_t display_id,
+               apps::LaunchCallback callback),
+              (override));
+};
 
 }  // namespace
 
@@ -180,14 +192,6 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
                             base::Unretained(this)));
   }
 
-  void MockOpenSettingsCallback() {
-    GetUiController()->SetFakeOpenSettingsCallbackForTesting(
-        base::BindRepeating(&QuickAnswersViewsTest::MockOpenSettings,
-                            base::Unretained(this)));
-  }
-
-  bool is_open_settigns_called() const { return is_open_settings_called_; }
-
   void MockOpenFeedbackPageCallback() {
     GetUiController()->SetFakeOpenFeedbackPageCallbackForTesting(
         base::BindRepeating(&QuickAnswersViewsTest::MockOpenFeedbackPage,
@@ -233,8 +237,6 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     mock_phonetics_info_ = phonetics_info;
   }
 
-  void MockOpenSettings() { is_open_settings_called_ = true; }
-
   void MockOpenFeedbackPage(const std::string& feedback_template_) {
     mock_feedback_template_ = feedback_template_;
   }
@@ -244,7 +246,6 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   raw_ptr<MockQuickAnswersClient> mock_quick_answers_client_ = nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;
   PhoneticsInfo mock_phonetics_info_;
-  bool is_open_settings_called_ = false;
   std::string mock_feedback_template_;
   GURL mock_open_web_url_;
   chromeos::ReadWriteCardsUiController controller_;
@@ -367,9 +368,16 @@ TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
 }
 
 TEST_F(QuickAnswersViewsTest, OpenSettings) {
+  MockSettingsWindowManager mock_settings_window_manager;
+  chrome::SettingsWindowManager::SetInstanceForTesting(
+      &mock_settings_window_manager);
+
+  EXPECT_CALL(
+      mock_settings_window_manager,
+      ShowChromePageForProfile(testing::_, testing::_, testing::_, testing::_));
+
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
                          /*is_internal=*/false);
-  MockOpenSettingsCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
   EXPECT_CALL(*mock_quick_answers_client(),
@@ -387,7 +395,6 @@ TEST_F(QuickAnswersViewsTest, OpenSettings) {
                                        .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
 
-  EXPECT_TRUE(is_open_settigns_called());
   EXPECT_FALSE(GetQuickAnswersView());
 }
 
