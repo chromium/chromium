@@ -1752,7 +1752,10 @@ void HTMLElement::HideAllPopoversUntil(
 
   // Now check the auto stack.
   auto& auto_stack = document.PopoverAutoStack();
-  CHECK(auto_stack.Contains(endpoint));
+  if (!auto_stack.Contains(endpoint)) {
+    // Event handlers from hint popovers could have closed our endpoint.
+    return;
+  }
   hide_stack_until(endpoint, auto_stack);
 }
 
