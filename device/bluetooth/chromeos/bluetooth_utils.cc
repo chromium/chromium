@@ -710,4 +710,19 @@ void MaybeRecordConnectionToastShownCount(PrefService* local_state_pref,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+void RecordFlossManagerClientInit(bool success, base::TimeDelta duration) {
+  static constexpr char kSuccessHistogramSuffix[] = "Success";
+  static constexpr char kFailureHistogramSuffix[] = "Failure";
+  std::string success_histogram_name =
+      success ? kSuccessHistogramSuffix : kFailureHistogramSuffix;
+
+  base::UmaHistogramTimes(
+      base::StrCat({"Bluetooth.ChromeOS.FlossManagerClientInit.Duration.",
+                    success_histogram_name}),
+      duration);
+
+  base::UmaHistogramBoolean("Bluetooth.ChromeOS.FlossManagerClientInit.Result",
+                            success);
+}
+
 }  // namespace device

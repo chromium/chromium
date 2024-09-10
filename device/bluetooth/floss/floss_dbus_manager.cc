@@ -16,6 +16,7 @@
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_admin_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
@@ -88,6 +89,7 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
   object_manager_support_known_ = true;
   mgmt_client_present_ = true;
   client_bundle_ = std::make_unique<FlossClientBundle>(/*use_stubs=*/false);
+  instance_created_time_ = base::Time::Now();
 #endif
 
   // Wait for the Floss Manager to be available
@@ -382,6 +384,10 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
 void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
   BLUETOOTH_LOG(EVENT) << "Floss Manager is available: " << is_available;
   if (!is_available) {
+#if BUILDFLAG(IS_CHROMEOS)
+    device::RecordFlossManagerClientInit(
+        false, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (!object_manager_support_known_) {
       object_manager_support_known_ = true;
       if (object_manager_support_known_callback_) {
@@ -409,6 +415,10 @@ void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
 void FlossDBusManager::OnObjectManagerNotSupported(
     dbus::ErrorResponse* response) {
   BLUETOOTH_LOG(ERROR) << "Floss Bluetooth not supported.";
+#if BUILDFLAG(IS_CHROMEOS)
+  device::RecordFlossManagerClientInit(
+      false, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
@@ -422,7 +432,10 @@ void FlossDBusManager::OnObjectManagerNotSupported(
 void FlossDBusManager::OnManagerClientInitComplete() {
   mgmt_client_present_ = client_bundle_->manager_client()->IsInitialized();
   DVLOG(1) << "Floss manager client initialized: " << mgmt_client_present_;
-
+#if BUILDFLAG(IS_CHROMEOS)
+  device::RecordFlossManagerClientInit(
+      mgmt_client_present_, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
     std::move(object_manager_support_known_callback_).Run();

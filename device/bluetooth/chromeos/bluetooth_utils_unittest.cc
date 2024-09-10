@@ -615,4 +615,27 @@ TEST_F(BluetoothUtilsTest, TestConnectionToastShownCount24HoursMetric) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(BluetoothUtilsTest, TestFlossManagerClientInitMetric) {
+  static int expected_num_successes = 0, expected_num_failures = 0;
+  auto assert_histograms = [&]() {
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.FlossManagerClientInit.Result", 1,
+        expected_num_successes);
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.FlossManagerClientInit.Result", 0,
+        expected_num_failures);
+  };
+  RecordFlossManagerClientInit(/*success=*/true, base::Seconds(1));
+  expected_num_successes++;
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.FlossManagerClientInit.Duration.Success", 1000, 1);
+  assert_histograms();
+
+  RecordFlossManagerClientInit(/*success=*/false, base::Seconds(2));
+  expected_num_failures++;
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.FlossManagerClientInit.Duration.Failure", 2000, 1);
+  assert_histograms();
+}
+
 }  // namespace device

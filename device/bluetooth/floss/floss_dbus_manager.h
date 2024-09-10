@@ -293,6 +293,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   bool telephony_interface_present_ = false;
   bool gatt_interface_present_ = false;
   bool socket_manager_interface_present_ = false;
+  base::Time instance_created_time_;
 
   // Currently active Bluetooth adapter
   int active_adapter_ = kInvalidAdapter;
