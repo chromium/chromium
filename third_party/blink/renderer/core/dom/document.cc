@@ -3645,8 +3645,7 @@ DocumentParser* Document::OpenForNavigation(
     parser->SetDecoder(
         BuildTextResourceDecoder(GetFrame(), Url(), mime_type, encoding));
   }
-  if (AnchorElementInteractionTracker::IsFeatureEnabled() &&
-      !GetFrame()->IsProvisional()) {
+  if (!GetFrame()->IsProvisional()) {
     anchor_element_interaction_tracker_ =
         MakeGarbageCollected<AnchorElementInteractionTracker>(*this);
   }

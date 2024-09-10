@@ -79,8 +79,6 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   explicit AnchorElementInteractionTracker(Document& document);
   ~AnchorElementInteractionTracker();
 
-  static bool IsFeatureEnabled();
-  static bool IsMouseMotionEstimatorEnabled();
   static base::TimeDelta GetHoverDwellTime();
 
   void OnMouseMoveEvent(const WebMouseEvent& mouse_event);

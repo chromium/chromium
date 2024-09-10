@@ -138,11 +138,6 @@ BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable anchor element mouse motion estimator.
-BASE_FEATURE(kAnchorElementMouseMotionEstimator,
-             "AnchorElementMouseMotionEstimator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidExtendedKeyboardShortcuts,
              "AndroidExtendedKeyboardShortcuts",
              base::FEATURE_ENABLED_BY_DEFAULT);

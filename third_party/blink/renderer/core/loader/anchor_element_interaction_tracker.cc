@@ -177,9 +177,6 @@ void AnchorElementInteractionTracker::MouseMotionEstimator::OnTimer(
 
 void AnchorElementInteractionTracker::MouseMotionEstimator::OnMouseMoveEvent(
     gfx::PointF position) {
-  if (!IsMouseMotionEstimatorEnabled()) {
-    return;
-  }
   AddDataPoint(clock_->NowTicks(), position);
   if (update_timer_.IsActive()) {
     update_timer_.Stop();
@@ -218,17 +215,6 @@ void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
   visitor->Trace(hover_timer_);
   visitor->Trace(mouse_motion_estimator_);
   visitor->Trace(document_);
-}
-
-// static
-bool AnchorElementInteractionTracker::IsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kAnchorElementInteraction);
-}
-
-// static
-bool AnchorElementInteractionTracker::IsMouseMotionEstimatorEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAnchorElementMouseMotionEstimator);
 }
 
 // static

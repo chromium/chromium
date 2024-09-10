@@ -796,11 +796,9 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
 
 TEST_F(AnchorElementMetricsSenderTest,
        AnchorElementInteractionTrackerSendsPointerEvents) {
-  base::test::ScopedFeatureList anchor_element_interaction;
-  anchor_element_interaction.InitWithFeatures(
-      {features::kAnchorElementInteraction,
-       features::kSpeculationRulesPointerHoverHeuristics},
-      {});
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kSpeculationRulesPointerHoverHeuristics}, {});
 
   String source("https://example.com/p1");
 

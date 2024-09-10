@@ -84,9 +84,7 @@ class AnchorElementInteractionTest : public SimTest {
 
   virtual void SetFeatureList() {
     feature_list_.InitWithFeatures(
-        {features::kAnchorElementInteraction,
-         features::kSpeculationRulesPointerHoverHeuristics},
-        {});
+        {features::kSpeculationRulesPointerHoverHeuristics}, {});
   }
 
   void TearDown() override {
@@ -518,33 +516,7 @@ TEST_F(AnchorElementInteractionTest,
   }
 }
 
-class AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest
-    : public AnchorElementInteractionTest,
-      public ::testing::WithParamInterface<std::string_view> {
- public:
-  bool IsMouseMotionEstimatorFeatureEnabled() {
-    return GetParam() == "enabled";
-  }
-
- protected:
-  void SetFeatureList() override {
-    std::vector<base::test::FeatureRef> enabled_features{
-        features::kAnchorElementInteraction,
-        features::kSpeculationRulesPointerHoverHeuristics};
-    std::vector<base::test::FeatureRef> disabled_features{};
-
-    if (IsMouseMotionEstimatorFeatureEnabled()) {
-      enabled_features.push_back(features::kAnchorElementMouseMotionEstimator);
-    } else {
-      disabled_features.push_back(features::kAnchorElementMouseMotionEstimator);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-};
-
-TEST_P(AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest,
-       FeatureFlagIsEffective) {
+TEST_F(AnchorElementInteractionTest, MouseVelocitySent) {
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
@@ -584,17 +556,8 @@ TEST_P(AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest,
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerHover, hosts_[0]->event_type_);
   EXPECT_TRUE(hosts_[0]->is_mouse_pointer_);
-  if (IsMouseMotionEstimatorFeatureEnabled()) {
-    EXPECT_NEAR(50.0, hosts_[0]->mouse_velocity_, 0.5);
-  } else {
-    EXPECT_EQ(0.0, hosts_[0]->mouse_velocity_);
-  }
+  EXPECT_NEAR(50.0, hosts_[0]->mouse_velocity_, 0.5);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    MouseMotionEstimatorFeatureFlagTest,
-    AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest,
-    ::testing::Values("enabled", "disabled"));
 
 }  // namespace
 }  // namespace blink
