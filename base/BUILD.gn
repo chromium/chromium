@@ -901,6 +901,7 @@ component("base") {
     "types/expected_macros.h",
     "types/fixed_array.h",
     "types/id_type.h",
+    "types/is_arc_pointer.h",
     "types/is_complete.h",
     "types/is_instantiation.h",
     "types/optional_ref.h",
@@ -3858,6 +3859,7 @@ test("base_unittests") {
       "apple/dispatch_source_mach_unittest.cc",
       "apple/foundation_util_unittest.mm",
       "strings/sys_string_conversions_apple_unittest.mm",
+      "types/is_arc_pointer_unittest.mm",
     ]
   }
 

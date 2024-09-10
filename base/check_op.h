@@ -15,6 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/to_string.h"
+#include "base/types/is_arc_pointer.h"
 #include "base/types/supports_ostream_operator.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
@@ -79,7 +80,7 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 
 template <typename T>
   requires(base::internal::SupportsOstreamOperator<const T&> &&
-           !std::is_function_v<std::remove_pointer_t<T>>)
+           !std::is_function_v<T> && !std::is_pointer_v<T>)
 inline char* CheckOpValueStr(const T& v) {
   auto f = [](std::ostream& s, const void* p) {
     s << *reinterpret_cast<const T*>(p);
@@ -99,6 +100,27 @@ inline char* CheckOpValueStr(const T& v) {
 }
 
 #undef SUPPORTS_BUILTIN_ADDRESSOF
+
+// Even if the pointer type supports operator<<, print the pointer by
+// value. This is especially useful for `char*` and `unsigned char*`,
+// which would otherwise print the pointed-to data.
+template <typename T>
+  requires(std::is_pointer_v<T> &&
+           !std::is_function_v<std::remove_pointer_t<T>>)
+inline char* CheckOpValueStr(const T& v) {
+#if defined(__OBJC__)
+  const void* vp;
+  if constexpr (base::IsArcPointer<T>) {
+    vp = const_cast<const void*>((__bridge const volatile void*)(v));
+  } else {
+    vp = const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+  }
+#else
+  const void* vp =
+      const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+#endif
+  return CheckOpValueStr(vp);
+}
 
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>

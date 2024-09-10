@@ -256,6 +256,23 @@ TEST(CheckDeathTest, CheckOpStrings) {
   EXPECT_DCHECK("Check failed: sv == s (1 vs. 3)", DCHECK_EQ(sv, s));
 }
 
+TEST(CheckDeathTest, CheckOpPointers) {
+  uint8_t arr[] = {3, 2, 1, 0};
+  uint8_t* arr_start = &arr[0];
+  // Print pointers and not the binary data in `arr`.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_CHECK(
+      "=~Check failed: arr_start != arr_start \\([0-9A-F]+ vs. "
+      "[0-9A-F]+\\)",
+      CHECK_NE(arr_start, arr_start));
+#else
+  EXPECT_CHECK(
+      "=~Check failed: arr_start != arr_start \\(0x[0-9a-f]+ vs. "
+      "0x[0-9a-f]+\\)",
+      CHECK_NE(arr_start, arr_start));
+#endif
+}
+
 TEST(CheckTest, CheckStreamsAreLazy) {
   int called_count = 0;
   int not_called_count = 0;
