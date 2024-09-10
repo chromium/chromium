@@ -235,6 +235,11 @@ class FakeDrmDevice : public DrmDevice {
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
+  gfx::Point get_crtc_cursor_location(uint32_t crtc) const {
+    const auto it = crtc_cursor_location_map_.find(crtc);
+    return it != crtc_cursor_location_map_.end() ? it->second : gfx::Point();
+  }
+
   // Resets `drm_state_` to be empty, with no properties configured and no
   // property names set. Resets `plane_manager_` to nullptr (it will not be
   // re-created until InitializeState is called).
@@ -468,6 +473,7 @@ class FakeDrmDevice : public DrmDevice {
   base::flat_map<uint32_t /*handle*/, sk_sp<SkSurface>> buffers_;
 
   std::map<uint32_t, uint32_t> crtc_cursor_map_;
+  std::unordered_map<uint32_t, gfx::Point> crtc_cursor_location_map_;
 
   std::set<uint32_t> framebuffer_ids_;
   std::map<uint32_t, uint32_t> crtc_fb_;

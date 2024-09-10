@@ -1795,4 +1795,41 @@ TEST_F(HardwareDisplayControllerTest, TileDisplayPageflipWithCrtcOffset) {
   }
 }
 
+TEST_F(HardwareDisplayControllerTest, TileDisplayMoveCursor) {
+  InitializeDrmDevice(/*use_atomic=*/true);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList planes;
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  drmModeModeInfo tile_mode = {.hdisplay = 300, .vdisplay = 200};
+  EXPECT_TRUE(ModesetWithPlanes(planes, tile_mode));
+
+  const gfx::Point kCursorLocation = gfx::Point(100, 200);
+  controller_->MoveCursor(kCursorLocation);
+
+  EXPECT_EQ(drm_->get_crtc_cursor_location(primary_crtc_), kCursorLocation);
+  EXPECT_EQ(drm_->get_crtc_cursor_location(secondary_crtc_),
+            gfx::Point(kCursorLocation.x() - 300, kCursorLocation.y() - 0));
+}
+
 }  // namespace ui
