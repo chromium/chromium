@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
@@ -131,7 +132,8 @@
       _personalDataManager->payments_data_manager()
           .IsPaymentMethodsMandatoryReauthEnabled() &&
       [_reauthenticationModule canAttemptReauth]) {
-    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+    NSString* reason = l10n_util::GetNSString(
+        IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH);
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
         [self didTriggerOpenCardDetails:card inEditMode:editMode];
