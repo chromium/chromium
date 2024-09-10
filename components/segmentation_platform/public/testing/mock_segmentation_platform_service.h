@@ -46,6 +46,13 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
                TrainingRequestId,
                const TrainingLabels&,
                SuccessCallback));
+  MOCK_METHOD(void,
+              CollectTrainingData,
+              (proto::SegmentId,
+               TrainingRequestId,
+               ukm::SourceId,
+               const TrainingLabels&,
+               SuccessCallback));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
   MOCK_METHOD(bool, IsPlatformInitialized, ());
