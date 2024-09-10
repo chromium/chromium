@@ -94,8 +94,3 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=33f59871f4e9fa3d155be3c13a068d35e6e621bcc98d9b7b103e0c8485e21097)
  * Uncompressed size of classes.dex, locale .pak files, etc
  * Reported only for things that are compressed within the .apk
-
-## Metrics for LaCrOS
-
- * Sizes are collected by
-   [//build/lacros/lacros_resource_sizes.py](https://cs.chromium.org/chromium/src/build/lacros/lacros_resource_sizes.py).
