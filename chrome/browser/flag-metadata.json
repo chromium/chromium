@@ -3196,8 +3196,8 @@
   },
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
-    "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-fake-keyboard-heuristic",
@@ -3423,7 +3423,7 @@
   {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 160
   },
   {
     "name": "enable-instant-start",
@@ -4141,8 +4141,8 @@
   },
   {
     "name": "enable-touchpads-in-diagnostics-app",
-    "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-touchscreen-calibration",
@@ -4158,8 +4158,8 @@
   },
   {
     "name": "enable-touchscreens-in-diagnostics-app",
-    "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-trait-collection-registration",
