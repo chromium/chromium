@@ -6,13 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_AUTHED_CLIENT_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 
 namespace ash::babelorca {
 
@@ -27,23 +26,30 @@ class FakeTachyonAuthedClient : public TachyonAuthedClient {
 
   // TachyonAuthedClient:
   void StartAuthedRequest(
-      std::unique_ptr<RequestDataWrapper> request_data,
-      std::unique_ptr<google::protobuf::MessageLite> request_proto) override;
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::unique_ptr<google::protobuf::MessageLite> request_proto,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
   void StartAuthedRequestString(
-      std::unique_ptr<RequestDataWrapper> request_data,
-      std::string request_string) override;
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::string request_string,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
 
   void ExecuteResponseCallback(
-      base::expected<std::string, TachyonRequestError> response);
+      base::expected<std::string, ResponseCallbackWrapper::TachyonRequestError>
+          response);
 
-  RequestDataWrapper::ResponseCallback TakeResponseCallback();
+  std::unique_ptr<ResponseCallbackWrapper> TakeResponseCallback();
 
   std::string GetRequestString();
 
   void WaitForRequest();
 
  private:
-  RequestDataWrapper::ResponseCallback response_cb_;
+  std::unique_ptr<ResponseCallbackWrapper> response_cb_;
   std::string request_string_;
   std::unique_ptr<base::RunLoop> run_loop_;
   bool has_new_request_ = false;

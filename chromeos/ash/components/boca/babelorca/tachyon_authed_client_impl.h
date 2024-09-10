@@ -7,17 +7,18 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 
 namespace ash::babelorca {
 
 class TachyonClient;
 class TokenManager;
-struct RequestDataWrapper;
 
 class TachyonAuthedClientImpl : public TachyonAuthedClient {
  public:
@@ -31,15 +32,24 @@ class TachyonAuthedClientImpl : public TachyonAuthedClient {
 
   // TachyonAuthedClient:
   void StartAuthedRequest(
-      std::unique_ptr<RequestDataWrapper> request_data,
-      std::unique_ptr<google::protobuf::MessageLite> request_proto) override;
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::unique_ptr<google::protobuf::MessageLite> request_proto,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
   void StartAuthedRequestString(
-      std::unique_ptr<RequestDataWrapper> request_data,
-      std::string request_string) override;
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::string request_string,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
 
  private:
   void OnRequestProtoSerialized(
-      std::unique_ptr<RequestDataWrapper> request_data,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb,
       std::optional<std::string> request_string);
 
   void StartAuthedRequestInternal(

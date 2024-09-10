@@ -18,7 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace media {
@@ -32,6 +32,7 @@ struct NetworkTrafficAnnotationTag;
 namespace ash::babelorca {
 
 class BabelOrcaMessage;
+class InboxSendResponse;
 class TachyonAuthedClient;
 class TachyonRequestDataProvider;
 
@@ -73,7 +74,8 @@ class TranscriptSender {
   void Send(int max_retries, std::string message);
 
   void OnSendResponse(
-      base::expected<std::string, TachyonRequestError> response);
+      base::expected<InboxSendResponse,
+                     ResponseCallbackWrapper::TachyonRequestError> response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

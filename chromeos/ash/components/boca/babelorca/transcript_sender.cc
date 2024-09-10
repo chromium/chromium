@@ -23,11 +23,11 @@
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_common.pb.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
-#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_utils.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -191,17 +191,18 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
     return;
   }
 
-  auto response_callback_wrapper = base::BindOnce(
-      &TranscriptSender::OnSendResponse, weak_ptr_factory.GetWeakPtr());
+  auto response_callback_wrapper =
+      std::make_unique<ResponseCallbackWrapperImpl<InboxSendResponse>>(
+          base::BindOnce(&TranscriptSender::OnSendResponse,
+                         weak_ptr_factory.GetWeakPtr()));
   authed_client_->StartAuthedRequestString(
-      std::make_unique<RequestDataWrapper>(
-          network_traffic_annotation_, kSendMessageUrl, max_retries,
-          std::move(response_callback_wrapper)),
-      std::move(request_string));
+      network_traffic_annotation_, std::move(request_string), kSendMessageUrl,
+      max_retries, std::move(response_callback_wrapper));
 }
 
 void TranscriptSender::OnSendResponse(
-    base::expected<std::string, TachyonRequestError> response) {
+    base::expected<InboxSendResponse,
+                   ResponseCallbackWrapper::TachyonRequestError> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (response.has_value()) {
     errors_num_ = 0;

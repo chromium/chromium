@@ -13,7 +13,8 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/proto/testing_message.pb.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -27,7 +28,9 @@
 namespace ash::babelorca {
 namespace {
 
-using ExpectedTestingMessage = base::expected<std::string, TachyonRequestError>;
+using ExpectedTestingMessage =
+    base::expected<TestingMessage,
+                   ResponseCallbackWrapper::TachyonRequestError>;
 using RequestDataPtr = std::unique_ptr<RequestDataWrapper>;
 
 constexpr char kOAuthToken[] = "oauth-token";
@@ -39,9 +42,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
 class TachyonClientImplTest : public testing::Test {
  protected:
   RequestDataPtr request_data() {
+    auto response_cb =
+        std::make_unique<ResponseCallbackWrapperImpl<TestingMessage>>(
+            result_future_.GetCallback());
     auto request_data = std::make_unique<RequestDataWrapper>(
         kTrafficAnnotationTag, kUrl, /*max_retries_param=*/1,
-        result_future_.GetCallback());
+        std::move(response_cb));
     request_data->content_data = "request-body";
     return request_data;
   }
@@ -72,9 +78,7 @@ TEST_F(TachyonClientImplTest, SuccessfulRequest) {
 
   auto result = result_future()->Get();
   ASSERT_TRUE(result.has_value());
-  TestingMessage result_proto;
-  ASSERT_TRUE(result_proto.ParseFromString(result.value()));
-  EXPECT_EQ(result_proto.int_field(), 9999);
+  EXPECT_EQ(result.value().int_field(), 9999);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
 
@@ -90,7 +94,8 @@ TEST_F(TachyonClientImplTest, NetworkFailure) {
 
   auto result = result_future()->Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), TachyonRequestError::kNetworkError);
+  EXPECT_EQ(result.error(),
+            ResponseCallbackWrapper::TachyonRequestError::kNetworkError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
 
@@ -105,7 +110,8 @@ TEST_F(TachyonClientImplTest, HttpError) {
 
   auto result = result_future()->Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), TachyonRequestError::kHttpError);
+  EXPECT_EQ(result.error(),
+            ResponseCallbackWrapper::TachyonRequestError::kHttpError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
 
@@ -125,6 +131,7 @@ TEST_F(TachyonClientImplTest, AuthError) {
             request_data_ptr->annotation_tag);
   EXPECT_EQ(auth_request_data->url, request_data_ptr->url);
   EXPECT_EQ(auth_request_data->max_retries, request_data_ptr->max_retries);
+  EXPECT_EQ(auth_request_data->response_cb, request_data_ptr->response_cb);
   EXPECT_FALSE(result_future()->IsReady());
 }
 
