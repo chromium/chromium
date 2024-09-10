@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -400,12 +400,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ClearDataTime" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it takes to clear conversion data. Logged any time site
     data is cleared in Chrome.
+
+    Warning: this histogram was expired from 2024-05-11 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -457,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
-    expires_after="2024-09-15">
+    expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -713,12 +716,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
-    enum="Boolean" expires_after="2024-05-12">
+    enum="Boolean" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Measures how often impressions are ignored because the initiator frame is
     dead by the time the navigation reaches the browser.
+
+    Warning: this histogram was expired from 2024-05-13 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1015,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportsDeletedInDataClearOperation.Aggregatable"
-    units="conversions" expires_after="2024-09-15">
+    units="conversions" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1181,7 +1187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -1189,6 +1195,9 @@ chromium-metrics-reviews@google.com.
     when supplied an origin filter. Recorded when the conversion database
     finishes performing a clear operation. Note that filters may vary in size
     and computation complexity, skewing this metric aribtrarily.
+
+    Warning: this histogram was expired from 2024-05-11 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1214,13 +1223,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
-    expires_after="2024-07-14">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it took to migrate a preexisting conversions database to
     the latest schema. Recorded when the conversion database finishes
     initialization. Only recorded on platforms with base::ThreadTicks support.
+
+    Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1284,12 +1296,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
-    expires_after="2024-07-14">
+    expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time between a conversion and its reporting. This is emitted
     whenever a conversion report is sent.
+
+    Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1317,7 +1332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TriggerTimeLessThanSourceTime" enum="Boolean"
-    expires_after="2024-09-29">
+    expires_after="2025-03-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1395,7 +1410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.{ContextType}ReportStatusAggregatable"
-    enum="ConversionReportStatus" expires_after="2024-09-15">
+    enum="ConversionReportStatus" expires_after="2025-03-09">
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
