@@ -226,7 +226,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
         contents()->AddChildView(std::make_unique<CaptureModeMenuGroup>(
             this, kCaptureModeFolderIcon,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO),
-            /*enabled=*/custom_folder_managed_by_policy));
+            /*managed=*/custom_folder_managed_by_policy));
     save_to_menu_group_->AddOption(
         /*option_icon=*/nullptr,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
@@ -380,6 +380,10 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
   auto* camera_controller = controller->camera_controller();
   const auto effective_audio_mode =
       controller->GetEffectiveAudioRecordingMode();
+  const bool is_custom_folder =
+      !GetCurrentCaptureFolder().is_default_downloads_folder &&
+      (controller->IsCustomFolderManagedByPolicy() ||
+       is_custom_folder_available_.value_or(false));
   switch (option_id) {
     case kAudioOff:
       return effective_audio_mode == AudioRecordingMode::kOff;
@@ -390,11 +394,9 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
     case kAudioSystemAndMicrophone:
       return effective_audio_mode == AudioRecordingMode::kSystemAndMicrophone;
     case kDownloadsFolder:
-      return GetCurrentCaptureFolder().is_default_downloads_folder ||
-             !is_custom_folder_available_.value_or(false);
+      return !is_custom_folder;
     case kCustomFolder:
-      return !GetCurrentCaptureFolder().is_default_downloads_folder &&
-             is_custom_folder_available_.value_or(false);
+      return is_custom_folder;
     case kCameraOff:
       return !camera_controller->selected_camera().is_valid();
     default:
@@ -420,7 +422,8 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
     case kAudioSystemAndMicrophone:
       return !audio_capture_managed_by_policy;
     case kCustomFolder:
-      return is_custom_folder_available_.value_or(false);
+      return is_custom_folder_available_.value_or(false) ||
+             controller->IsCustomFolderManagedByPolicy();
     case kCameraOff: {
       auto* camera_controller = controller->camera_controller();
       DCHECK(camera_controller);
