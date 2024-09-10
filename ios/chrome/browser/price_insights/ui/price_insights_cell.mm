@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -340,10 +341,16 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
     }
   }
 
+  NSString* currency = base::SysUTF8ToNSString(self.item.currency);
+
   UIViewController* priceHistoryViewController = [PriceHistoryProvider
       makeViewControllerWithHistory:self.item.priceHistory
-                           currency:base::SysUTF8ToNSString(
-                                        self.item.currency)];
+                           currency:currency
+            graphAccessibilityLabel:
+                l10n_util::GetNSStringF(
+                    IDS_PRICE_INSIGHTS_GRAPH_ACCESSIBILITY_LABEL,
+                    base::SysNSStringToUTF16(currency),
+                    base::SysNSStringToUTF16(self.item.title))];
   priceHistoryViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;
   [self.viewController addChildViewController:priceHistoryViewController];

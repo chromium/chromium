@@ -451,6 +451,9 @@
   <message name="IDS_PRICE_INSIGHTS_ACCESSIBILITY" desc="Accessibility string for the price insights entry point when the confidence is low.">
     Price Insights
   </message>
+  <message name="IDS_PRICE_INSIGHTS_GRAPH_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility string for the price insights graph readout.">
+      These are <ph name="CURRENCY">$1<ex>USD</ex></ph> prices for product <ph name="PRODUCT">$2<ex>iPhone 15.</ex></ph>
+    </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
     View
   </message>

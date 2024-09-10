@@ -95,6 +95,7 @@ struct HistoryGraph: View {
   /// The price history data consisting of dates and corresponding prices.
   let history: [Date: NSNumber]
   let currency: String
+  let graphAccessibilityLabel: String
 
   /// Graph gradient color.
   static let graphGradientColor = "graph_gradient_color"
@@ -157,6 +158,7 @@ struct HistoryGraph: View {
           yEnd: .value("Price", price.doubleValue)
         )
         .foregroundStyle(linearGradient)
+        .accessibilityHidden(true)
 
         // Displaying the line mark on the graph.
         LineMark(
@@ -172,6 +174,8 @@ struct HistoryGraph: View {
           x: .value("Date", selectedDate)
         )
         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
+        .accessibilityHidden(true)
+
         PointMark(
           x: .value("Date", selectedDate),
           y: .value("Price", selectedPrice.doubleValue)
@@ -186,6 +190,7 @@ struct HistoryGraph: View {
             )
         }
         .foregroundStyle(Color(uiColor: Self.blue600))
+        .accessibilityHidden(true)
       }
     }
     .chartBackground { chartProxy in
@@ -267,8 +272,10 @@ struct HistoryGraph: View {
           )
         }
       }
+      .accessibilityHidden(true)
     )
     .edgesIgnoringSafeArea(.all)
+    .accessibilityLabel(graphAccessibilityLabel)
   }
 
   /// Updates the selected data when the given `location` is selected inside the given
