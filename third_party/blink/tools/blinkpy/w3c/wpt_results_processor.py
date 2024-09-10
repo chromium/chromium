@@ -288,7 +288,7 @@ class WPTResult(Result):
             TestharnessLine(LineType.FOOTER),
         ])
 
-    def summarize(self) -> Optional[str]:
+    def summarize(self, product: str) -> Optional[str]:
         """Generate a summary of this test result as sanitized HTML.
 
         See [1] for ResultDB-specific markup features.
@@ -300,14 +300,14 @@ class WPTResult(Result):
         # TODO(crbug.com/1521922): Unify result sink reporting with
         # `blinkpy.web_tests.*`.
         summary = textwrap.dedent(f"""\
-            <p><strong>This WPT was run against <code>chrome</code> using
+            <p><strong>This WPT was run against <code>{product}</code> using
             <code>chromedriver</code>. See <a href="{_WPT_DOC_URL}">these
             instructions</a> about running these tests locally and triaging
             failures.</strong></p>""").replace('\n', ' ')
         url = wpt_fyi_url(self.name)
         if url:
             summary += f'<p><a href="{url}">Latest wpt.fyi results</a></p>'
-        for name in ['command', 'stderr', 'crash_log']:
+        for name in ['stderr', 'crash_log']:
             if name in self.artifacts:
                 summary += f'<h3>{name}</h3>'
                 summary += f'<p><text-artifact artifact-id="{name}"/></p>'
@@ -690,13 +690,14 @@ class WPTResultsProcessor:
         result.image_diff_stats = image_diff_stats
         if result.unexpected:
             self._handle_unexpected_result(result)
+        product = self.port.get_option('product', '(unknown)')
         self.sink.report_individual_test_result(
             test_name_prefix=self.test_name_prefix,
             result=result,
             artifact_output_dir=self.fs.dirname(self.artifacts_dir),
             expectations=None,
             test_file_location=result.file_path,
-            html_summary=result.summarize())
+            html_summary=result.summarize(product))
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
