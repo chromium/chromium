@@ -365,7 +365,15 @@ namespace {
 
 Vector<CSSParserToken, 32> TokenizeAll(String string) {
   CSSTokenizer tokenizer(string);
-  return tokenizer.TokenizeToEOF();
+  Vector<CSSParserToken, 32> tokens;
+  while (true) {
+    const CSSParserToken token = tokenizer.TokenizeSingle();
+    if (token.GetType() == kEOFToken) {
+      return tokens;
+    } else {
+      tokens.push_back(token);
+    }
+  }
 }
 
 // See struct RestartData.
@@ -676,8 +684,11 @@ class TestStream {
 
   bool ConsumeTokens(String expected) {
     CSSTokenizer tokenizer(expected);
-    Vector<CSSParserToken, 32> expected_tokens = tokenizer.TokenizeToEOF();
-    for (CSSParserToken expected_token : expected_tokens) {
+    while (true) {
+      CSSParserToken expected_token = tokenizer.TokenizeSingle();
+      if (expected_token.GetType() == kEOFToken) {
+        break;
+      }
       if (stream_.Consume() != expected_token) {
         return false;
       }

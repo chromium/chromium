@@ -8,8 +8,10 @@
 #endif
 
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 #ifdef __SSE2__
@@ -19,13 +21,6 @@
 #endif
 
 namespace blink {
-namespace {
-
-// To avoid resizing we err on the side of reserving too much space.
-// Most strings we tokenize have about 3.5 to 5 characters per token.
-constexpr wtf_size_t kEstimatedCharactersPerToken = 3;
-
-}  // namespace
 
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
@@ -45,22 +40,6 @@ CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
   input_.Advance(offset);
 }
 
-Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
-  Vector<CSSParserToken, 32> tokens;
-  tokens.ReserveInitialCapacity((input_.length() - Offset()) /
-                                kEstimatedCharactersPerToken);
-
-  while (true) {
-    const CSSParserToken token =
-        NextToken</*SkipComments=*/true, /*StoreOffset=*/false>();
-    if (token.GetType() == kEOFToken) {
-      return tokens;
-    } else {
-      tokens.push_back(token);
-    }
-  }
-}
-
 StringView CSSTokenizer::StringRangeFrom(wtf_size_t start) const {
   return input_.RangeFrom(start);
 }
@@ -71,11 +50,11 @@ StringView CSSTokenizer::StringRangeAt(wtf_size_t start,
 }
 
 CSSParserToken CSSTokenizer::TokenizeSingle() {
-  return NextToken</*SkipComments=*/true, /*StoreOffset=*/true>();
+  return NextToken</*SkipComments=*/true>();
 }
 
 CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
-  return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
+  return NextToken</*SkipComments=*/false>();
 }
 
 wtf_size_t CSSTokenizer::TokenCount() const {
@@ -153,12 +132,10 @@ CSSParserToken CSSTokenizer::LetterU(UChar cc) {
   return ConsumeIdentLikeToken();
 }
 
-template <bool SkipComments, bool StoreOffset>
+template <bool SkipComments>
 CSSParserToken CSSTokenizer::NextToken() {
   do {
-    if (StoreOffset) {
-      prev_offset_ = input_.Offset();
-    }
+    prev_offset_ = input_.Offset();
     // Unlike the HTMLTokenizer, the CSS Syntax spec is written
     // as a stateless, (fixed-size) look-ahead tokenizer.
     // We could move to the stateful model and instead create

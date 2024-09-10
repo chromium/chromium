@@ -8,19 +8,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h"
-#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#include <climits>
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class CSSTokenizerInputStream;
 
 class CORE_EXPORT CSSTokenizer {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   // The overload with const String& holds on to a reference to the string.
@@ -31,10 +28,6 @@ class CORE_EXPORT CSSTokenizer {
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
-  // The CSSParserTokens in the result may hold references to the CSSTokenizer
-  // object, or the string data referenced by the CSSTokenizer. Do not use the
-  // tokens after the CSSTokenizer or its underlying String goes out of scope.
-  Vector<CSSParserToken, 32> TokenizeToEOF();
   wtf_size_t TokenCount() const;
 
   wtf_size_t Offset() const { return input_.Offset(); }
@@ -94,7 +87,7 @@ class CORE_EXPORT CSSTokenizer {
   }
 
  private:
-  template <bool SkipComments, bool StoreOffset>
+  template <bool SkipComments>
   ALWAYS_INLINE CSSParserToken NextToken();
 
   UChar Consume();

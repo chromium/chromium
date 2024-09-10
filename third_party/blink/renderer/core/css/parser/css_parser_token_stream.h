@@ -60,7 +60,7 @@ bool IsTokenTypeOneOf(CSSParserTokenType t) {
 // EnsureLookAhead(), or AtEnd() with no subsequent modifications to the stream
 // such as a consume.
 class CORE_EXPORT CSSParserTokenStream {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   // Instantiate this to start reading from a block. When the guard is out of
@@ -147,14 +147,6 @@ class CORE_EXPORT CSSParserTokenStream {
     CSSParserTokenStream& stream_;
     const bool old_unicode_ranges_allowed_;
   };
-
-  // We found that this value works well empirically by printing out the
-  // maximum buffer size for a few top alexa websites. It should be slightly
-  // above the expected number of tokens in the prelude of an at rule and
-  // the number of tokens in a declaration.
-  // TODO(crbug.com/661854): Can we streamify at rule parsing so that this is
-  // only needed for declarations which are easier to think about?
-  static constexpr int kInitialBufferSize = 128;
 
   explicit CSSParserTokenStream(const String& text, wtf_size_t offset = 0)
       : tokenizer_(text, offset), next_(kEOFToken) {}
