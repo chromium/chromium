@@ -58,9 +58,10 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
         const char* frame_description = error_details.is_main_frame
                                             ? kMainFrameDescription
                                             : kIframeDescription;
-        DLOG(ERROR) << "\n_________ JavaScript error: _________"
-                    << "\n  " << base::SysNSStringToUTF8(error_details.message)
-                    << "\n  " << error_details.url.spec() << " | "
+        DLOG(ERROR) << "\n_________ JavaScript error: _________" << "\n  "
+                    << base::SysNSStringToUTF8(error_details.message) << "\n"
+                    << base::SysNSStringToUTF8(error_details.stack) << "\n  "
+                    << error_details.url.spec() << " | "
                     << base::SysNSStringToUTF8(error_details.filename) << ":"
                     << error_details.line_number << "\n  " << frame_description;
       }));

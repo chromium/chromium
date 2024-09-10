@@ -24,13 +24,16 @@ class WindowErrorJavaScriptFeature : public JavaScriptFeature {
     ~ErrorDetails();
 
     // The filename in which the error occurred.
-    NSString* filename;
+    NSString* filename = nil;
 
     // The line number at which the error occurred.
-    int line_number;
+    int line_number = 0;
 
     // The error message.
-    NSString* message;
+    NSString* message = nil;
+
+    // The error stack.
+    NSString* stack = nil;
 
     // The url where the error occurred.
     GURL url;

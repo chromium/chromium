@@ -22,6 +22,7 @@ const char kWindowErrorResultHandlerName[] = "WindowErrorResultHandler";
 static const char kScriptMessageResponseFilenameKey[] = "filename";
 static const char kScriptMessageResponseLineNumberKey[] = "line_number";
 static const char kScriptMessageResponseMessageKey[] = "message";
+static const char kScriptMessageResponseStackKey[] = "stack";
 }  // namespace
 
 namespace web {
@@ -80,6 +81,12 @@ void WindowErrorJavaScriptFeature::ScriptMessageReceived(
     details.message = base::SysUTF8ToNSString(*log_message);
   }
 
+  const std::string* stack =
+      script_dict->FindString(kScriptMessageResponseStackKey);
+  if (stack) {
+    details.stack = base::SysUTF8ToNSString(*stack);
+  }
+
   details.is_main_frame = script_message.is_main_frame();
 
   if (script_message.request_url()) {
@@ -93,8 +100,10 @@ void WindowErrorJavaScriptFeature::ScriptMessageReceived(
       !has_scriptname) {
     if (log_message) {
       SCOPED_CRASH_KEY_STRING256("Javascript", "error", *log_message);
+      const std::string stack_error_key = stack ? *stack : "";
+      SCOPED_CRASH_KEY_STRING256("Javascript", "stack", stack_error_key);
+      base::debug::DumpWithoutCrashing();
     }
-    base::debug::DumpWithoutCrashing();
   }
 
   callback_.Run(details);
