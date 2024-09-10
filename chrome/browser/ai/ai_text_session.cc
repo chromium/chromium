@@ -267,3 +267,13 @@ blink::mojom::AITextSessionInfoPtr AITextSession::GetTextSessionInfo() {
       blink::mojom::AITextSessionSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
+
+// static
+std::string AITextSession::GetPromptFormatForTesting() {
+  return kPromptFormat;
+}
+
+// static
+std::string AITextSession::GetSystemPromptFormatForTesting() {
+  return kSystemPromptFormat;
+}

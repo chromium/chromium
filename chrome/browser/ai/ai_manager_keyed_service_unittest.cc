@@ -29,19 +29,6 @@ using testing::_;
 using testing::AtMost;
 using testing::Invoke;
 using testing::NiceMock;
-namespace {
-
-const optimization_guide::TokenLimits& GetFakeTokenLimits() {
-  static const optimization_guide::TokenLimits limits{
-      .max_tokens = 4096,
-      .max_context_tokens = 2048,
-      .max_execute_tokens = 1024,
-      .max_output_tokens = 1024,
-  };
-  return limits;
-}
-
-}  // namespace
 
 class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
  protected:
@@ -51,7 +38,8 @@ class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
             [&] { return std::make_unique<MockSessionWrapper>(&session_); });
-    ON_CALL(session_, GetTokenLimits()).WillByDefault(GetFakeTokenLimits);
+    ON_CALL(session_, GetTokenLimits())
+        .WillByDefault(AITestUtils::GetFakeTokenLimits);
   }
 
  private:

@@ -71,3 +71,19 @@ AITestUtils::AITestBase::GetAIManagerRemote() {
 void AITestUtils::AITestBase::ResetMockHost() {
   mock_host_.reset();
 }
+
+// static
+std::string AITestUtils::GetTypeURLForProto(std::string type_name) {
+  return "type.googleapis.com/" + type_name;
+}
+
+// static
+const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
+  static const optimization_guide::TokenLimits limits{
+      .max_tokens = 4096,
+      .max_context_tokens = 2048,
+      .max_execute_tokens = 1024,
+      .max_output_tokens = 1024,
+  };
+  return limits;
+}

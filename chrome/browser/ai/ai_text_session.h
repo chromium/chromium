@@ -108,6 +108,10 @@ class AITextSession : public AIContextBoundObject,
                        CreateTextSessionCallback callback);
   blink::mojom::AITextSessionInfoPtr GetTextSessionInfo();
 
+  // The following methods expose the format for testing.
+  static std::string GetPromptFormatForTesting();
+  static std::string GetSystemPromptFormatForTesting();
+
  private:
   void ModelExecutionCallback(
       const std::string& input,
