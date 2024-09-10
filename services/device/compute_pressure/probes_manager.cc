@@ -63,7 +63,7 @@ void ProbesManager::RegisterClientRemote(
   }
 }
 
-base::TimeDelta ProbesManager::sampling_interval() const {
+base::TimeDelta ProbesManager::sampling_interval_for_testing() const {
   return sampling_interval_;
 }
 

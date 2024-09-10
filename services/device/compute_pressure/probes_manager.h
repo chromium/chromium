@@ -35,7 +35,7 @@ class ProbesManager {
   void RegisterClientRemote(mojo::Remote<mojom::PressureClient> client,
                             mojom::PressureSource source);
 
-  base::TimeDelta sampling_interval() const;
+  base::TimeDelta sampling_interval_for_testing() const;
 
  protected:
   CpuProbeManager* cpu_probe_manager() const;
