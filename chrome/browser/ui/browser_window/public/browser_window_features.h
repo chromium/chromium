@@ -12,7 +12,6 @@
 class Browser;
 class BrowserView;
 class ChromeLabsCoordinator;
-class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
 class TabStripModel;
@@ -102,10 +101,6 @@ class BrowserWindowFeatures {
     return lens_overlay_entry_point_controller_.get();
   }
 
-  ReadAnythingCoordinator* read_anything_coordinator() {
-    return read_anything_coordinator_.get();
-  }
-
   tabs::TabDeclutterController* tab_declutter_controller() {
     return tab_declutter_controller_.get();
   }
@@ -147,8 +142,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
-
-  std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
 
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;

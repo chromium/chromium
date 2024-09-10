@@ -45,8 +45,6 @@ source_set("side_panel") {
     "history_clusters/history_clusters_tab_helper.h",
     "lens/lens_core_tab_side_panel_helper.cc",
     "lens/lens_core_tab_side_panel_helper.h",
-    "read_anything/read_anything_coordinator.cc",
-    "read_anything/read_anything_coordinator.h",
     "read_anything/read_anything_service.cc",
     "read_anything/read_anything_service.h",
     "read_anything/read_anything_service_factory.cc",

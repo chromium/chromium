@@ -15,7 +15,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
-#include "read_anything_side_panel_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -103,10 +102,6 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   lens_overlay_entry_point_controller_ =
       std::make_unique<lens::LensOverlayEntryPointController>();
 
-  // TODO(https://crbug.com/355485153): Move this into the normal window block.
-  read_anything_coordinator_ =
-      std::make_unique<ReadAnythingCoordinator>(browser);
-
   tab_strip_model_ = browser->tab_strip_model();
 }
 
@@ -143,8 +138,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       toast_service_ = std::make_unique<ToastService>(browser);
     }
   }
-
-  read_anything_coordinator_->Initialize();
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
