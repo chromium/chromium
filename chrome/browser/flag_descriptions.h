@@ -2998,6 +2998,9 @@ extern const char kReadAloudAutoVoiceSwitchingDescription[];
 extern const char kReadAnythingReadAloudAutomaticWordHighlightingName[];
 extern const char kReadAnythingReadAloudAutomaticWordHighlightingDescription[];
 
+extern const char kReadAnythingReadAloudPhraseHighlightingName[];
+extern const char kReadAnythingReadAloudPhraseHighlightingDescription[];
+
 extern const char kReadAloudLanguagePackDownloadingName[];
 extern const char kReadAloudLanguagePackDownloadingDescription[];
 

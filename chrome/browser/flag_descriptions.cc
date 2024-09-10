@@ -5181,6 +5181,13 @@ const char kReadAnythingReadAloudAutomaticWordHighlightingDescription[] =
     "Enables the experimental Reading Mode feature that switches between word "
     "and sentence highlighting when reading aloud, depending on speech rate.";
 
+const char kReadAnythingReadAloudPhraseHighlightingName[] =
+    "Reading Mode Read Aloud Phrase Highlighting";
+const char kReadAnythingReadAloudPhraseHighlightingDescription[] =
+    "Enables the experimental Reading Mode feature that highlights by phrases "
+    "when reading aloud, when the phrase option is selected from the highlight "
+    "menu.";
+
 const char kReadAloudLanguagePackDownloadingName[] =
     "Reading Mode Language Downloading";
 const char kReadAloudLanguagePackDownloadingDescription[] =

@@ -19680,6 +19680,8 @@ from previous Chrome versions.
   <int value="-399333540" label="FiltersInRecents:disabled"/>
   <int value="-399166855"
       label="enable-bound-session-credentials-software-keys-for-manual-testing:enabled"/>
+  <int value="-398929265"
+      label="ReadAnythingReadAloudPhraseHighlighting:enabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
   <int value="-398706729" label="PermissionPredictionsV3:disabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
@@ -23470,6 +23472,8 @@ from previous Chrome versions.
   <int value="1191531211" label="RawClipboard:disabled"/>
   <int value="1192302892" label="gesture-typing"/>
   <int value="1192447565" label="SurfaceSyncFullscreenKillswitch:disabled"/>
+  <int value="1192557311"
+      label="ReadAnythingReadAloudPhraseHighlighting:disabled"/>
   <int value="1192894768" label="NetworkServiceInProcess2:disabled"/>
   <int value="1192913630" label="OfflinePagesBackgroundLoading:disabled"/>
   <int value="1193385506" label="OmniboxLooseMaxLimitOnDedicatedRows:enabled"/>

@@ -7656,8 +7656,22 @@
   },
   {
     "name": "read-anything-read-aloud-language-pack-downloading",
-    "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": [
+      "kristislee@google.com",
+      "lwinston@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
     "expiry_milestone": 133
+  },
+  {
+    "name": "read-anything-read-aloud-phrase-highlighting",
+    "owners": [
+      "xiangxiao@google.com",
+      "lwinston@google.com",
+      "ajitnarayanan@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "read-anything-webui-toolbar",
