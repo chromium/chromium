@@ -187,7 +187,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   report.debug_id = "ABC:123";
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
-  report.window_type = WindowType::kSystemWebApp;
+  report.window_type = JavaScriptErrorReport::WindowType::kSystemWebApp;
   report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
 
   SendErrorReport(std::move(report));

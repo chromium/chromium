@@ -21,15 +21,16 @@ namespace api {
 
 namespace {
 
-WindowType GetWindowType(content::WebContents* web_contents) {
+JavaScriptErrorReport::WindowType GetWindowType(
+    content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
-    return WindowType::kNoBrowser;
+    return JavaScriptErrorReport::WindowType::kNoBrowser;
   if (!browser->app_controller())
-    return WindowType::kRegularTabbed;
+    return JavaScriptErrorReport::WindowType::kRegularTabbed;
   if (browser->app_controller()->system_app())
-    return WindowType::kSystemWebApp;
-  return WindowType::kWebApp;
+    return JavaScriptErrorReport::WindowType::kSystemWebApp;
+  return JavaScriptErrorReport::WindowType::kWebApp;
 }
 
 }  // namespace
