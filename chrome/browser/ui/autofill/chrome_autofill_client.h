@@ -167,6 +167,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const FormFieldData& field) override;
   void HideAutofillFieldIphForManualFallbackFeature() override;
   void NotifyAutofillManualFallbackUsed() override;
+  void ShowSaveAutofillPredictionImprovementsBubble() override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
   PasswordFormClassification ClassifyAsPasswordForm(

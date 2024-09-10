@@ -487,6 +487,10 @@ class AutofillClient {
   // Notifies the IPH code that the manual fallback feature was used.
   virtual void NotifyAutofillManualFallbackUsed();
 
+  // Shows a bubble asking whether the user wants to save prediction
+  // improvements data.
+  virtual void ShowSaveAutofillPredictionImprovementsBubble();
+
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from
   // other `AutofillProfile`s/addresses, this list is stored in the client,

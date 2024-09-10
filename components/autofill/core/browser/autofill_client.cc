@@ -155,6 +155,8 @@ void AutofillClient::HideAutofillFieldIphForManualFallbackFeature() {}
 
 void AutofillClient::NotifyAutofillManualFallbackUsed() {}
 
+void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble() {}
+
 std::optional<AutofillClient::PopupScreenLocation>
 AutofillClient::GetPopupScreenLocation() const {
   NOTIMPLEMENTED();

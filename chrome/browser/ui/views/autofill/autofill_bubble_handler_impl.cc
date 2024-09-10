@@ -10,10 +10,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
@@ -232,6 +234,28 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
   return ShowAddressProfileBubble<SaveAddressProfileView>(
       toolbar_button_provider_, web_contents, std::move(controller),
       is_user_gesture);
+}
+
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowSaveAutofillPredictionImprovementsBubble(
+    content::WebContents* web_contents,
+    SaveAutofillPredictionImprovementsController* controller) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kAutofillAddress);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kAutofillAddress);
+  auto bubble = std::make_unique<SaveAutofillPredictionImprovementsBubbleView>(
+      anchor_view, web_contents, controller);
+  SaveAutofillPredictionImprovementsBubbleView* bubble_ptr = bubble.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+
+  if (!views::Button::AsButton(anchor_view)) {
+    bubble_ptr->SetHighlightedButton(icon_view);
+  }
+  bubble_ptr->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
+
+  return bubble_ptr;
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(

@@ -139,6 +139,7 @@
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
+#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -786,6 +787,15 @@ void ChromeAutofillClient::NotifyAutofillManualFallbackUsed() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (SaveAutofillPredictionImprovementsController* controller =
+          SaveAutofillPredictionImprovementsController::GetOrCreate(
+              web_contents())) {
+    controller->OfferSave();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
