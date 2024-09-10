@@ -248,10 +248,19 @@ class AutofillClient {
   // the window of this tab.
   virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
 
-  // Orchestrates UI for enterprise plus address creation; no-op except on
-  // supported platforms.
+  // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
+  // client class.
+
+  // Orchestrates UI for enterprise plus address creation; no-op
+  // except on supported platforms.
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                         PlusAddressCallback callback);
+
+  // Shows UI to inform the user about a plus address affiliation error.
+  virtual void ShowPlusAddressAffiliationError(
+      std::u16string affiliated_domain,
+      std::u16string affiliated_plus_address,
+      base::OnceClosure on_accepted);
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

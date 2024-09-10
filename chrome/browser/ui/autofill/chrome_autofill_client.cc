@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -143,6 +144,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -298,6 +300,17 @@ void ChromeAutofillClient::OfferPlusAddressCreation(
       plus_addresses::PlusAddressCreationController::GetOrCreate(
           web_contents());
   controller->OfferCreation(main_frame_origin, std::move(callback));
+}
+
+void ChromeAutofillClient::ShowPlusAddressAffiliationError(
+    std::u16string affiliated_domain,
+    std::u16string affiliated_plus_address,
+    base::OnceClosure on_accepted) {
+#if !BUILDFLAG(IS_ANDROID)
+  plus_addresses::ShowInlineCreationAffiliationErrorDialog(
+      web_contents(), std::move(affiliated_domain),
+      std::move(affiliated_plus_address), std::move(on_accepted));
+#endif
 }
 
 PrefService* ChromeAutofillClient::GetPrefs() {

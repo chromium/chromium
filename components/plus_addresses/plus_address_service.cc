@@ -640,12 +640,14 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
     size_t current_suggestion_index,
     UpdateSuggestionsCallback update_suggestions_callback,
     HideSuggestionsCallback hide_suggestions_callback,
-    PlusAddressCallback fill_field_callback) {
+    PlusAddressCallback fill_field_callback,
+    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog) {
   // TODO(crbug.com/362445807): Record metrics.
   const std::u16string suggested_address =
       current_suggestions[current_suggestion_index]
           .GetPayload<Suggestion::PlusAddressPayload>()
           .address.value();
+  PlusAddress requested_plus_address(base::UTF16ToUTF8(suggested_address));
 
   // First, update the suggestions to show a loading state.
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
@@ -661,6 +663,8 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
   PlusAddressRequestCallback callback = base::BindOnce(
       [](HideSuggestionsCallback hide_callback,
          PlusAddressCallback fill_callback,
+         ShowAffiliationErrorDialogCallback show_affiliation_error,
+         const PlusAddress& requested_address,
          const PlusProfileOrError& profile_or_error) {
         // Always hide the popup.
         std::move(hide_callback)
@@ -668,15 +672,20 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
         if (!profile_or_error.has_value()) {
           // TODO(crbug.com/362445807): Handle errors during creation.
         }
-        // TODO(crbug.com/362445807): Handle the case in which the returned
-        // plus address is not the requested one.
+        // TODO(crbug.com/362445807): Improve formatting of domain.
+        if (requested_address != profile_or_error->plus_address) {
+          std::move(show_affiliation_error)
+              .Run(base::UTF8ToUTF16(profile_or_error->facet.canonical_spec()),
+                   base::UTF8ToUTF16(profile_or_error->plus_address.value()));
+          return;
+        }
 
         std::move(fill_callback).Run(profile_or_error->plus_address.value());
       },
-      std::move(hide_suggestions_callback), std::move(fill_field_callback));
+      std::move(hide_suggestions_callback), std::move(fill_field_callback),
+      std::move(show_affiliation_error_dialog), requested_plus_address);
   ConfirmPlusAddress(primary_main_frame_origin,
-                     PlusAddress(base::UTF16ToUTF8(suggested_address)),
-                     std::move(callback));
+                     std::move(requested_plus_address), std::move(callback));
 }
 
 }  // namespace plus_addresses

@@ -2502,13 +2502,15 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
     EXPECT_CALL(
         plus_address_delegate(),
         OnAcceptedInlineSuggestion(_, base::span<const Suggestion>(suggestions),
-                                   /*current_suggestion_index=*/0, _, _, _))
+                                   /*current_suggestion_index=*/0, _, _, _, _))
         .WillOnce([&](const url::Origin& primary_main_frame_origin,
                       base::span<const Suggestion> current_suggestions,
                       size_t current_suggestion_index,
                       UpdateSuggestionsCallback update_suggestions_callback,
                       HideSuggestionsCallback hide_suggestions_callback,
-                      PlusAddressCallback fill_field_callback) {
+                      PlusAddressCallback fill_field_callback,
+                      AutofillPlusAddressDelegate::
+                          ShowAffiliationErrorDialogCallback) {
           update_callback = std::move(update_suggestions_callback);
           hide_callback = std::move(hide_suggestions_callback);
           filling_callback = std::move(fill_field_callback);

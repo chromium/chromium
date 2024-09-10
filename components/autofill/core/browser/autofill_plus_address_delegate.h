@@ -134,6 +134,10 @@ class AutofillPlusAddressDelegate {
 
   using HideSuggestionsCallback =
       base::OnceCallback<void(SuggestionHidingReason)>;
+  // A callback to inform the user that there is an affiliated domain (first
+  // parameter) with an existing plus address (second parameter).
+  using ShowAffiliationErrorDialogCallback =
+      base::OnceCallback<void(std::u16string, std::u16string)>;
   // Attempts to create the plus address in
   // `current_suggestions[current_suggestion_index]` for
   // `primary_main_frame_origin`.
@@ -143,7 +147,8 @@ class AutofillPlusAddressDelegate {
       size_t current_suggestion_index,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
-      PlusAddressCallback fill_field_callback) = 0;
+      PlusAddressCallback fill_field_callback,
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog) = 0;
 };
 
 }  // namespace autofill

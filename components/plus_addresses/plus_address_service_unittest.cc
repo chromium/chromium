@@ -711,11 +711,61 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   service().OnAcceptedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       /*current_suggestion_index=*/0, update_callback.Get(),
-      hide_callback.Get(), fill_callback.Get());
+      hide_callback.Get(), fill_callback.Get(),
+      /*show_affiliation_error_dialog=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
+}
+
+// Tests that when the server call to create a plus address from an inline
+// suggestion returns with an affiliation error, a call is made to show an error
+// dialog.
+TEST_F(PlusAddressServiceRequestsTest,
+       OnAcceptedInlineSuggestionAffiliationError) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
+      update_callback;
+  base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
+  base::MockCallback<PlusAddressService::ShowAffiliationErrorDialogCallback>
+      show_affiliation_error_callback;
+
+  PlusProfile profile = test::CreatePlusProfile();
+  PlusProfile affiliated_profile = test::CreatePlusProfile2();
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload =
+      Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*profile.plus_address));
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    EXPECT_CALL(update_callback, Run(ElementsAre(IsCreateInlineSuggestion(
+                                         /*has_proposed_address=*/true)),
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(hide_callback,
+                Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(
+        show_affiliation_error_callback,
+        Run(base::UTF8ToUTF16(affiliated_profile.facet.canonical_spec()),
+            base::UTF8ToUTF16(*affiliated_profile.plus_address)));
+  }
+  service().OnAcceptedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      /*current_suggestion_index=*/0, update_callback.Get(),
+      hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
+      show_affiliation_error_callback.Get());
+  check.Call();
+
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint,
+      test::MakeCreationResponse(affiliated_profile));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

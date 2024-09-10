@@ -181,6 +181,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   base::OnceCallback<void(SuggestionHidingReason)>
   CreateHideSuggestionsCallback();
 
+  // Creates a callback that, when run, fills the field that was last queried
+  // when the callback was created.
+  base::RepeatingCallback<void(const std::u16string&)>
+  CreateSingleFieldFillCallback(SuggestionType suggestion_type,
+                                std::optional<FieldType> field_type_used);
+
   // Private handler for DidAcceptSuggestions for address related suggestions.
   void DidAcceptAddressSuggestion(const Suggestion& suggestion,
                                   const SuggestionMetadata& metadata);
@@ -188,6 +194,15 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Private handler for DidAcceptSuggestions for payments related suggestions.
   void DidAcceptPaymentsSuggestion(const Suggestion& suggestion,
                                    const SuggestionMetadata& metadata);
+
+  // Creates a specialized version of a single field fill callback that converts
+  // the argument from UTF8 to UTF16 and set `EMAIL_ADDRESS` as the filled type.
+  PlusAddressCallback CreatePlusAddressCallback(SuggestionType suggestion_type);
+
+  // Informs the `AutofillPlusAddress` delegate and passes callbacks for
+  // hiding/updating suggestions UI and filling.
+  void DidAcceptCreateNewPlusAddressInlineSuggestion(
+      const Suggestion& suggestion);
 
   // Shows the address editor to the user. The Autofill profile to edit is
   // determined by passed `guid`.
