@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -86,6 +87,21 @@ class DiceResponseHandler : public KeyedService {
   using RegistrationTokenHelperFactory =
       base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>(
           RegistrationTokenHelper::KeyInitParam key_init_param)>;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Public for testing.
+  // LINT.IfChange(TokenBindingOutcome)
+  enum class TokenBindingOutcome{
+      kBound = 0,
+      kNotBoundUnknown = 1,
+      kNotBoundNotSupported = 2,
+      kNotBoundNotEligible = 3,
+      kNotBoundRegistrationTokenGenerationFailed = 4,
+      kNotBoundServerRejectedKey = 5,
+      kMaxValue = kNotBoundServerRejectedKey,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceTokenBindingOutcome)
 #else
   // A fake factory type that is always used to pass a null callback.
   using RegistrationTokenHelperFactory = base::RepeatingClosure;
@@ -131,16 +147,18 @@ class DiceResponseHandler : public KeyedService {
   // Helper class to fetch a refresh token from an authorization code.
   class DiceTokenFetcher : public GaiaAuthConsumer {
    public:
-    DiceTokenFetcher(const std::string& gaia_id,
-                     const std::string& email,
-                     const std::string& authorization_code,
-                     SigninClient* signin_client,
-                     AccountReconcilor* account_reconcilor,
-                     std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
+    DiceTokenFetcher(
+        const std::string& gaia_id,
+        const std::string& email,
+        const std::string& authorization_code,
+        SigninClient* signin_client,
+        AccountReconcilor* account_reconcilor,
+        std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     RegistrationTokenHelper* registration_token_helper,
+        base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>
+            registration_token_helper_or_error,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     DiceResponseHandler* dice_response_handler);
+        DiceResponseHandler* dice_response_handler);
 
     DiceTokenFetcher(const DiceTokenFetcher&) = delete;
     DiceTokenFetcher& operator=(const DiceTokenFetcher&) = delete;
@@ -189,6 +207,8 @@ class DiceResponseHandler : public KeyedService {
     bool should_enable_sync_;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    TokenBindingOutcome token_binding_outcome_ =
+        TokenBindingOutcome::kNotBoundUnknown;
     // The following fields are empty if the binding key wasn't generated.
     std::string binding_registration_token_;
     std::vector<uint8_t> wrapped_binding_key_;
@@ -232,6 +252,17 @@ class DiceResponseHandler : public KeyedService {
                               const GoogleServiceAuthError& error);
   // Called to unlock the reconcilor after a SLO outage.
   void OnTimeoutUnlockReconcilor();
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns a `RegistrationTokenHelper` if `this` should attempt to bind a
+  // refresh token given the configuration parameters and a list of
+  // `supported_algorithms` provided by the server. Otherwise, returns the
+  // reason for why the refresh token wasn't bound.
+  // Returned `RegistrationTokenHelper` is owned by `this`. See
+  // `registration_token_helper_` for the description of its lifetime.
+  base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>
+  MaybeGetBindingRegistrationTokenHelper(std::string_view supported_algorithms);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   const raw_ptr<SigninClient> signin_client_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

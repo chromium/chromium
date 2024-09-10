@@ -44,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
@@ -69,6 +70,9 @@ constexpr char kEligibleForTokenBinding[] = "ES256 RS256";
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
                                crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+
+constexpr char kTokenBindingOutcomeHistogram[] =
+    "Signin.DiceTokenBindingOutcome";
 
 DiceResponseParams::AccountInfo GetDiceResponseParamsAccountInfo(
     const std::string& email) {
@@ -319,6 +323,7 @@ class DiceResponseHandlerTest : public testing::Test,
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;
+  base::HistogramTester histogram_tester_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 
@@ -462,6 +467,12 @@ TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
   EXPECT_EQ(
       identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
       PreconnectEnabled() ? 1 : 0);
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kNotBoundNotSupported,
+      /*expected_bucket_count=*/1);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
 INSTANTIATE_TEST_SUITE_P(PreconnectEnabled,
@@ -507,6 +518,10 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
             kWrappedKey);
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kBound,
+      /*expected_bucket_count=*/1);
 }
 
 // Checks that no token binding attempt is made when an account is ineligible
@@ -537,6 +552,55 @@ TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
                   .empty());
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kNotBoundNotEligible,
+      /*expected_bucket_count=*/1);
+}
+
+// Checks that Chrome will discard the binding key if the server didn't accept
+// the binding key.
+TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
+  EnableRegistrationTokenHelperFactory();
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  const auto& account_info = dice_params.signin_info->account_info;
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  const std::string authorization_code =
+      dice_params.signin_info->authorization_code;
+  ExpectRegistrationTokenHelperCreated({authorization_code},
+                                       base::ToVector(kAcceptableAlgorithms));
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Token fetch should be blocked on the binding registration token generation.
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+  // Simulate successful token generation.
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  SimulateRegistrationTokenHelperResult(
+      authorization_code,
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "test_registration_token"));
+
+  // Check that a GaiaAuthFetcher has been created.
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  // Simulate GaiaAuthFetcher success with an unbound token.
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+  // Check that the token has been inserted in the token service.
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_TRUE(identity_manager()
+                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
+                  .empty());
+  EXPECT_TRUE(auth_error_email_.empty());
+  EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kNotBoundServerRejectedKey,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
@@ -667,6 +731,10 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
                 account_id(dice_params_2)),
             kWrappedKey);
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kBound,
+      /*expected_bucket_count=*/2);
 }
 
 TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
@@ -794,6 +862,11 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
                   .empty());
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::
+          kNotBoundRegistrationTokenGenerationFailed,
+      /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

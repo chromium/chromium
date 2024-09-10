@@ -1008,6 +1008,17 @@ prefs when the profile is loaded.  -->
   <summary>Records Dice responses (signin and signout).</summary>
 </histogram>
 
+<histogram name="Signin.DiceTokenBindingOutcome" enum="DiceTokenBindingOutcome"
+    expires_after="2025-02-09">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Outcome of the token binding in Dice signin. Recorded upon a successful
+    token fetch during Dice signin. Not recorded if the token fetch failed.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceTokenFetchResult" enum="SigninDiceTokenFetchResult"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the Dice feature and for troubleshooting.  -->

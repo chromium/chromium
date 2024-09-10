@@ -11,12 +11,14 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
@@ -62,6 +64,8 @@ namespace {
 // The UMA histograms that logs events related to Dice responses.
 const char kDiceResponseHeaderHistogram[] = "Signin.DiceResponseHeader";
 const char kDiceTokenFetchResultHistogram[] = "Signin.DiceTokenFetchResult";
+const char kDiceTokenBindingOutcomeHistogram[] =
+    "Signin.DiceTokenBindingOutcome";
 
 // Used for UMA. Do not reorder, append new values at the end.
 enum DiceResponseHeader {
@@ -187,17 +191,14 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
   }
 };
 
-// Histogram macros expand to a lot of code, so it is better to wrap them in
-// functions.
-
 void RecordDiceResponseHeader(DiceResponseHeader header) {
-  UMA_HISTOGRAM_ENUMERATION(kDiceResponseHeaderHistogram, header,
-                            kDiceResponseHeaderCount);
+  base::UmaHistogramEnumeration(kDiceResponseHeaderHistogram, header,
+                                kDiceResponseHeaderCount);
 }
 
 void RecordDiceFetchTokenResult(DiceTokenFetchResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kDiceTokenFetchResultHistogram, result,
-                            kDiceTokenFetchResultCount);
+  base::UmaHistogramEnumeration(kDiceTokenFetchResultHistogram, result,
+                                kDiceTokenFetchResultCount);
 }
 
 }  // namespace
@@ -214,7 +215,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
     AccountReconcilor* account_reconcilor,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    RegistrationTokenHelper* registration_token_helper,
+    base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>
+        registration_token_helper_or_error,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     DiceResponseHandler* dice_response_handler)
     : gaia_id_(gaia_id),
@@ -231,10 +233,12 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   account_reconcilor_lock_ =
       std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (registration_token_helper) {
-    StartBindingKeyGeneration(*registration_token_helper);
+  if (registration_token_helper_or_error.has_value()) {
+    StartBindingKeyGeneration(registration_token_helper_or_error->get());
     // Wait until the binding key is generated before fetching a token.
     return;
+  } else {
+    token_binding_outcome_ = registration_token_helper_or_error.error();
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   StartTokenFetch();
@@ -257,13 +261,18 @@ void DiceResponseHandler::DiceTokenFetcher::OnClientOAuthSuccess(
   gaia_auth_fetcher_.reset();
   timeout_closure_.Cancel();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (!switches::IsChromeRefreshTokenBindingEnabled(
-          signin_client_->GetPrefs()) ||
-      !result.is_bound_to_key) {
-    // Pass an empty binding key if conditions don't apply. This key won't be
-    // needed for anything else, so we can just clear it in place.
-    wrapped_binding_key_.clear();
+  if (!wrapped_binding_key_.empty()) {
+    CHECK(switches::IsChromeRefreshTokenBindingEnabled(
+        signin_client_->GetPrefs()));
+    if (!result.is_bound_to_key) {
+      wrapped_binding_key_.clear();
+      token_binding_outcome_ = TokenBindingOutcome::kNotBoundServerRejectedKey;
+    } else {
+      token_binding_outcome_ = TokenBindingOutcome::kBound;
+    }
   }
+  base::UmaHistogramEnumeration(kDiceTokenBindingOutcomeHistogram,
+                                token_binding_outcome_);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   dice_response_handler_->OnTokenExchangeSuccess(
       this, result.refresh_token, result.is_under_advanced_protection
@@ -325,6 +334,9 @@ void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
   if (result.has_value()) {
     binding_registration_token_ = std::move(result->registration_token);
     wrapped_binding_key_ = std::move(result->wrapped_binding_key);
+  } else {
+    token_binding_outcome_ =
+        TokenBindingOutcome::kNotBoundRegistrationTokenGenerationFailed;
   }
   StartTokenFetch();
 }
@@ -467,40 +479,17 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
   }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (!registration_token_helper_factory_.is_null() &&
-      !registration_token_helper_ &&
-      !supported_algorithms_for_token_binding.empty()) {
-    CHECK(switches::IsChromeRefreshTokenBindingEnabled(
-        signin_client_->GetPrefs()));
-    std::vector<uint8_t> wrapped_binding_key_to_reuse =
-        GetWrappedBindingKeyToReuse(*identity_manager_);
-    if (!wrapped_binding_key_to_reuse.empty()) {
-      // Ignore the value of `supported_algorithms_for_token_binding` in favor
-      // of an existing binding key.
-      registration_token_helper_ = registration_token_helper_factory_.Run(
-          std::move(wrapped_binding_key_to_reuse));
-    } else {
-      registration_token_helper_ = registration_token_helper_factory_.Run(
-          signin::ParseSignatureAlgorithmList(
-              supported_algorithms_for_token_binding));
-    }
-  }
-  // If `registration_token_helper_` was reused, its supported algorithm list
-  // may mismatch `supported_algorithms_for_token_binding`. We ignore this
-  // because it's more important to reuse the same key.
+  base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>
+      registration_token_helper_or_error =
+          MaybeGetBindingRegistrationTokenHelper(
+              supported_algorithms_for_token_binding);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
       std::move(delegate),
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      // It's important to check `supported_algorithms_for_token_binding` here
-      // in addition to the factory call above because
-      // `registration_token_helper_` might be shared between several
-      // `DiceTokenFetcher`s.
-      supported_algorithms_for_token_binding.empty()
-          ? nullptr
-          : registration_token_helper_.get(),
+      registration_token_helper_or_error,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       this));
 }
@@ -655,6 +644,45 @@ void DiceResponseHandler::OnTokenExchangeFailure(
 
   DeleteTokenFetcher(token_fetcher);
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+base::expected<raw_ref<RegistrationTokenHelper>,
+               DiceResponseHandler::TokenBindingOutcome>
+DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
+    std::string_view supported_algorithms) {
+  if (registration_token_helper_factory_.is_null()) {
+    return base::unexpected(TokenBindingOutcome::kNotBoundNotSupported);
+  }
+
+  if (supported_algorithms.empty()) {
+    return base::unexpected(TokenBindingOutcome::kNotBoundNotEligible);
+  }
+
+  CHECK(
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
+
+  // If `registration_token_helper_` doesn't exist, create it.
+  if (!registration_token_helper_) {
+    std::vector<uint8_t> wrapped_binding_key_to_reuse =
+        GetWrappedBindingKeyToReuse(*identity_manager_);
+    if (!wrapped_binding_key_to_reuse.empty()) {
+      // Ignore the value of `supported_algorithms` in favor of an existing
+      // binding key.
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          std::move(wrapped_binding_key_to_reuse));
+    } else {
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          signin::ParseSignatureAlgorithmList(supported_algorithms));
+    }
+  }
+
+  // If `registration_token_helper_` was reused, its supported algorithm
+  // list may mismatch `supported_algorithms`. We ignore this because it's more
+  // important to reuse the same key.
+  CHECK(registration_token_helper_);
+  return raw_ref<RegistrationTokenHelper>(*registration_token_helper_);
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 // static
 void DiceResponseHandler::EnsureFactoryBuilt() {
