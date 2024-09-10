@@ -83,8 +83,8 @@ class MEDIA_EXPORT Renderer {
 
   // Sets a flag indicating whether the audio stream was played with user
   // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation);
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement);
 
   // The following functions must be called after Initialize().
 

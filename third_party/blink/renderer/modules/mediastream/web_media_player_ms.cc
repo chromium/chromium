@@ -917,8 +917,8 @@ void WebMediaPlayerMS::SetPreservesPitch(bool preserves_pitch) {
   // and thus there should be no pitch-shifting.
 }
 
-void WebMediaPlayerMS::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {}
+void WebMediaPlayerMS::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {}
 
 void WebMediaPlayerMS::SetShouldPauseWhenFrameIsHidden(
     bool should_pause_when_frame_is_hidden) {

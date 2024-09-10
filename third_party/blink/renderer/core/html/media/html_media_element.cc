@@ -2858,8 +2858,9 @@ void HTMLMediaElement::PlayInternal() {
   DVLOG(3) << "playInternal(" << *this << ")";
 
   if (web_media_player_) {
-    web_media_player_->SetWasPlayedWithUserActivation(
-        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+    web_media_player_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()) &&
+        AutoplayPolicy::DocumentHasHighMediaEngagement(GetDocument()));
   }
 
   // Playback aborts any lazy loading.

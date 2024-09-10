@@ -108,8 +108,8 @@ class MEDIA_EXPORT AudioRendererImpl
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
 
   // base::PowerSuspendObserver implementation.
   void OnSuspend() override;
@@ -338,7 +338,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // make pitch adjustments at playbacks other than 1.0.
   bool preserves_pitch_ = true;
 
-  bool was_played_with_user_activation_ = false;
+  bool was_played_with_user_activation_and_high_media_engagement_ = false;
 
   // Simple state tracking variable.
   State state_;

@@ -1187,11 +1187,11 @@ void WebMediaPlayerImpl::SetPreservesPitch(bool preserves_pitch) {
   pipeline_controller_->SetPreservesPitch(preserves_pitch);
 }
 
-void WebMediaPlayerImpl::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void WebMediaPlayerImpl::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  pipeline_controller_->SetWasPlayedWithUserActivation(
-      was_played_with_user_activation);
+  pipeline_controller_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement);
 }
 
 void WebMediaPlayerImpl::SetShouldPauseWhenFrameIsHidden(

@@ -341,8 +341,9 @@ void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void WebEngineAudioRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void WebEngineAudioRenderer::
+    SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        bool was_played_with_user_activation_and_high_media_engagement) {
   // WebEngine does not use this signal. This is currently only used by the Live
   // Caption feature.
   NOTIMPLEMENTED_LOG_ONCE();

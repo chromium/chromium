@@ -73,9 +73,9 @@ class MEDIA_EXPORT AudioRenderer {
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
   // Sets a flag indicating whether the audio stream was played with user
-  // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  // activation and high media engagement.
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
 };
 
 }  // namespace media

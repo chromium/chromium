@@ -399,9 +399,10 @@ void PipelineController::SetPreservesPitch(bool preserves_pitch) {
   pipeline_->SetPreservesPitch(preserves_pitch);
 }
 
-void PipelineController::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
-  pipeline_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
+void PipelineController::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
+  pipeline_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement);
 }
 
 base::TimeDelta PipelineController::GetMediaTime() const {

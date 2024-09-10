@@ -865,10 +865,11 @@ void AudioRendererImpl::SetPreservesPitch(bool preserves_pitch) {
     algorithm_->SetPreservesPitch(preserves_pitch);
 }
 
-void AudioRendererImpl::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void AudioRendererImpl::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
   base::AutoLock auto_lock(lock_);
-  was_played_with_user_activation_ = was_played_with_user_activation;
+  was_played_with_user_activation_and_high_media_engagement_ =
+      was_played_with_user_activation_and_high_media_engagement;
 }
 
 void AudioRendererImpl::OnSuspend() {
@@ -1067,7 +1068,8 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
     // Do not transcribe muted streams initiated by autoplay if the stream was
     // never unmuted.
     if (transcribe_audio_callback_ &&
-        (was_played_with_user_activation_ || was_unmuted_)) {
+        (was_played_with_user_activation_and_high_media_engagement_ ||
+         was_unmuted_)) {
       transcribe_audio_callback_.Run(buffer);
     }
 #endif

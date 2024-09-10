@@ -1915,7 +1915,7 @@ TEST_F(AudioRendererImplTest,
 TEST_F(AudioRendererImplTest,
        TranscribeAudioCallback_Muted_WithUserActivation) {
   EnableSpeechRecognition();
-  renderer_->SetWasPlayedWithUserActivation(true);
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(true);
 
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
