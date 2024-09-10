@@ -354,6 +354,9 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
 
+        mSavedTabGroup.collaborationId = null;
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+
         mDataSharingTabManager.createGroupFlow(
                 mActivity, TEST_GROUP_DISPLAY_NAME, LOCAL_ID, mCreateGroupFinishedCallback);
 

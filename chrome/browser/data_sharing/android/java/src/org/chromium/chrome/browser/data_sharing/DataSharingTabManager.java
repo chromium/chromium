@@ -497,7 +497,8 @@ public class DataSharingTabManager {
         DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
 
         SavedTabGroup existingGroup = tabGroupService.getGroup(localTabGroupId);
-        if (existingGroup != null && existingGroup.collaborationId != null) {
+        assert existingGroup != null : "Group not found in TabGroupSyncService.";
+        if (existingGroup.collaborationId != null) {
             dataSharingService.ensureGroupVisibility(
                     existingGroup.collaborationId,
                     (result) -> {
