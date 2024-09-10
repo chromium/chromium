@@ -541,7 +541,6 @@ void Textfield::SetSelectedRange(const gfx::Range& range) {
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
       kPropertyEffectsPaint);
-  UpdateAccessibleTextSelection();
 }
 
 void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
@@ -549,7 +548,6 @@ void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
       kPropertyEffectsPaint);
-  UpdateAccessibleTextSelection();
 }
 
 const gfx::SelectionModel& Textfield::GetSelectionModel() const {
@@ -1041,20 +1039,18 @@ void Textfield::OnDragDone() {
   drop_cursor_visible_ = false;
 }
 
-void Textfield::UpdateAccessibleTextSelection() {
-  const gfx::Range range = GetSelectedRange();
-  GetViewAccessibility().SetTextSelStart(
-      base::checked_cast<int32_t>(range.start()));
-  GetViewAccessibility().SetTextSelEnd(
-      base::checked_cast<int32_t>(range.end()));
-}
-
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
 
   // Editable state indicates support of editable interface, and is always set
   // for a textfield, even if disabled or readonly.
   node_data->AddState(ax::mojom::State::kEditable);
+
+  const gfx::Range range = GetSelectedRange();
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
+                             base::checked_cast<int32_t>(range.start()));
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
+                             base::checked_cast<int32_t>(range.end()));
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // TODO(https://crbug.com/325137417): Recompute the text offsets whenever
@@ -1695,7 +1691,6 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
       RevealPasswordChar(change_offset - 1, duration);
     }
   }
-  UpdateAccessibleTextSelection();
 }
 
 ui::TextInputType Textfield::GetTextInputType() const {
@@ -1870,7 +1865,6 @@ void Textfield::ExtendSelectionAndDelete(size_t before, size_t after) {
   gfx::Range text_range;
   if (GetTextRange(&text_range) && text_range.Contains(range))
     DeleteRange(range);
-  UpdateAccessibleTextSelection();
 }
 
 void Textfield::EnsureCaretNotInRect(const gfx::Rect& rect_in_screen) {
@@ -2712,8 +2706,6 @@ void Textfield::UpdateAfterChange(
     OnCaretBoundsChanged();
   if (anything_changed)
     SchedulePaint();
-
-  UpdateAccessibleTextSelection();
 }
 
 void Textfield::UpdateAccessibilityTextDirection() {
@@ -2861,7 +2853,6 @@ bool Textfield::Cut() {
     if (controller_)
       controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
 
-    UpdateAccessibleTextSelection();
     return true;
   }
   return false;
@@ -2881,7 +2872,6 @@ bool Textfield::Paste() {
     if (controller_)
       controller_->OnAfterPaste();
 
-    UpdateAccessibleTextSelection();
     return true;
   }
   return false;

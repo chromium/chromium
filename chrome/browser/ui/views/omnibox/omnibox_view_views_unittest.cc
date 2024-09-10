@@ -555,36 +555,6 @@ TEST_F(OmniboxViewViewsTest, SelectWithShift_863543) {
   omnibox_view()->CheckUpdatePopupNotCalled();
 }
 
-TEST_F(OmniboxViewViewsTest, AccessibleTextSelectBoundTest) {
-  ui::AXNodeData data;
-  gfx::Range range(4, 10);
-
-  omnibox_view()->SetTextAndSelectedRanges(u"AccessibleTextSelectBoundTest",
-                                           {range});
-  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 10);
-
-  omnibox_view()->SetUserText(u"Hello there", false);
-  data = ui::AXNodeData();
-  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
-
-  omnibox_view()->RevertAll();
-  data = ui::AXNodeData();
-  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
-
-  omnibox_view()->SetUserText(u"Testing selectAll", false);
-  omnibox_view()->SelectAll(false);
-  data = ui::AXNodeData();
-  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
-  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 17);
-}
-
 TEST_F(OmniboxViewViewsTest, OnBlur) {
   // Make the Omnibox very narrow (so it couldn't fit the whole string).
   int kOmniboxWidth = 60;

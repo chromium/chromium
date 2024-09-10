@@ -152,7 +152,6 @@ class OmniboxViewViews
   void RemovedFromWidget() override;
   std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-  void UpdateAccessibleTextSelection() override;
 
   // For testing only.
   OmniboxPopupView* GetPopupViewForTesting() const;
