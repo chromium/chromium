@@ -358,6 +358,9 @@ using signin_metrics::PromoAction;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
              ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  [base::apple::ObjCCastStrict<SettingsNavigationController>(
+      _viewController.navigationController)
+      popViewControllerOrCloseSettingsAnimated:YES];
   [self closeSettings];
 }
 
