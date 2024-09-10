@@ -62,7 +62,13 @@ void WaitForPriceTrackingPromoToDisappear() {
 
 // Tests the first opt in flow of the price tracking promo card in the magic
 // stack whereby the user has not opted into notifications in the app at all.
-- (void)testFirstOptInFlow {
+// TODO(crbug.com/365725410): Test is flaky on iPhone device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testFirstOptInFlow testFirstOptInFlow
+#else
+#define MAYBE_testFirstOptInFlow DISABLED_testFirstOptInFlow
+#endif
+- (void)MAYBE_testFirstOptInFlow {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ButtonWithAccessibilityLabelId(
                      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW)]
