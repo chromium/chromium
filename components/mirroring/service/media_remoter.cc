@@ -9,7 +9,7 @@
 #include "components/mirroring/service/remoting_sender.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "media/base/media_switches.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 using media::cast::FrameSenderConfig;
 

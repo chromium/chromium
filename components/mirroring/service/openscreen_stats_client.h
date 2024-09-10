@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
-#include "third_party/openscreen/src/cast/streaming/sender_session.h"
-#include "third_party/openscreen/src/cast/streaming/statistics.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/statistics.h"
 
 namespace mirroring {
 

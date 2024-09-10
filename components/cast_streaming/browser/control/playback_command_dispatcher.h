@@ -23,8 +23,8 @@
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 namespace openscreen {
 namespace cast {

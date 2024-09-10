@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/remoting/stream_provider.h"
+
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -21,7 +22,7 @@
 #include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/remoting/receiver_controller.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 using openscreen::cast::RpcMessenger;
 

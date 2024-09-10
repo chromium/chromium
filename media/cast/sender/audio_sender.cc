@@ -15,7 +15,7 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/audio_encoder.h"
 #include "media/cast/sender/frame_sender.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 namespace media::cast {
 namespace {

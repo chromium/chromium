@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 namespace gfx {
 class Size;

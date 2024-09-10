@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_CONFIG_CONVERSIONS_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_CONFIG_CONVERSIONS_H_
 
-#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_constraints.h"
 
 namespace cast_streaming {
 

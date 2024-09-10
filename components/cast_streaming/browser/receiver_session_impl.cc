@@ -11,7 +11,7 @@
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
+#include "third_party/openscreen/src/cast/streaming/public/receiver_constraints.h"
 
 namespace cast_streaming {
 

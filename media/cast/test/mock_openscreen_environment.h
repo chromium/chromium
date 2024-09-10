@@ -6,7 +6,7 @@
 #define MEDIA_CAST_TEST_MOCK_OPENSCREEN_ENVIRONMENT_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/openscreen/src/cast/streaming/environment.h"
+#include "third_party/openscreen/src/cast/streaming/public/environment.h"
 
 namespace media::cast {
 

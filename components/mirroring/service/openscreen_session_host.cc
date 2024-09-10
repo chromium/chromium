@@ -59,10 +59,10 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
-#include "third_party/openscreen/src/cast/streaming/answer_messages.h"
-#include "third_party/openscreen/src/cast/streaming/capture_recommendations.h"
-#include "third_party/openscreen/src/cast/streaming/environment.h"
-#include "third_party/openscreen/src/cast/streaming/offer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/public/answer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/public/capture_recommendations.h"
+#include "third_party/openscreen/src/cast/streaming/public/environment.h"
+#include "third_party/openscreen/src/cast/streaming/public/offer_messages.h"
 
 using media::cast::FrameEvent;
 using media::cast::FrameSenderConfig;
