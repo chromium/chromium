@@ -314,7 +314,7 @@ const base::flat_map<blink::mojom::WebFeature, blink::mojom::WebDXFeature>&
 UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<WebFeature, WebDXFeature>>
-      kMap({
+      kMap{{
           {WebFeature::kViewTransition, WebDXFeature::kViewTransitions},
           {WebFeature::kValidPopoverAttribute, WebDXFeature::kPopover},
           {WebFeature::kCSSSubgridLayout, WebDXFeature::kSubgrid},
@@ -437,7 +437,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kModuleDedicatedWorker, WebDXFeature::kJsModulesWorkers},
           {WebFeature::kModuleSharedWorker,
            WebDXFeature::kJsModulesSharedWorkers},
-      });
+      }};
 
   return *kMap;
 }
@@ -446,7 +446,7 @@ const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
 UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
-      kMap({
+      kMap{{
           {CSSSampleId::kAccentColor, WebDXFeature::kAccentColor},
           {CSSSampleId::kAnchorName, WebDXFeature::kAnchorPositioning},
           {CSSSampleId::kAnimationComposition,
@@ -489,7 +489,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kMaskPosition, WebDXFeature::kMasks},
           {CSSSampleId::kMaskMode, WebDXFeature::kMasks},
           {CSSSampleId::kMask, WebDXFeature::kMasks},
-      });
+      }};
 
   return *kMap;
 }
@@ -498,12 +498,12 @@ const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
 UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
-      kMap({
+      kMap{{
           // TODO(jstenback): This animated kFontPalette is being investigated.
           // Uncomment this once that's resolved, or replace this with something
           // else that matches the resolution of the investigation
           // {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation}
-      });
+      }};
 
   return *kMap;
 }
