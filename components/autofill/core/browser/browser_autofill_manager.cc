@@ -1314,18 +1314,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     autofill_field->set_was_focused(true);
   }
 
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kPredictionImprovements) {
-    if (AutofillPredictionImprovementsDelegate* delegate =
-            client().GetAutofillPredictionImprovementsDelegate()) {
-      delegate->ExtractImprovedPredictionsForFormFields(
-          form, field,
-          base::BindOnce(&BrowserAutofillManager::FillOrPreviewFormExperimental,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
   // Once the user triggers autofill from the context menu, this event is
   // recorded, because the IPH configuration limits how many times the IPH can
   // be shown.
@@ -1407,6 +1395,22 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // of `external_delegate_`.
     std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions),
                             std::nullopt);
+    return;
+  }
+
+  // Try to show prediction improvements.
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate &&
+      delegate->ShouldProvidePredictionImprovements(
+          client().GetLastCommittedPrimaryMainFrameURL()) &&
+      delegate->MaybeUpdateSuggestions(
+          suggestions, field,
+          /*should_add_trigger_suggestion=*/trigger_source ==
+                  AutofillSuggestionTriggerSource::kPredictionImprovements ||
+              form_element_was_clicked)) {
+    std::move(callback).Run(/*show_suggestions=*/true, suggestions,
+                            /*ranking_context=*/std::nullopt);
     return;
   }
 

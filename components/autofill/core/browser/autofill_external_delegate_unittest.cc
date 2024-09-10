@@ -100,6 +100,15 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
 
+// Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
+// `k`th (0-based) argument of the mock function by moving it to `*pointer`.
+ACTION_TEMPLATE(SaveArgElementsTo,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  auto span = testing::get<k>(args);
+  pointer->assign(span.begin(), span.end());
+}
+
 using SuggestionPosition =
     autofill::AutofillSuggestionDelegate::SuggestionMetadata;
 
@@ -182,6 +191,21 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(void,
               RendererShouldSetSuggestionAvailability,
               (const FieldGlobalId&, mojom::AutofillSuggestionAvailability),
+              (override));
+  MOCK_METHOD((base::flat_set<FieldGlobalId>),
+              ApplyFormAction,
+              (mojom::FormActionType action_type,
+               mojom::ActionPersistence action_persistence,
+               base::span<const FormFieldData> data,
+               const url::Origin& triggered_origin,
+               (const base::flat_map<FieldGlobalId, FieldType>&)),
+              (override));
+  MOCK_METHOD(void,
+              ApplyFieldAction,
+              (mojom::FieldActionType action_type,
+               mojom::ActionPersistence action_persistence,
+               const FieldGlobalId& field_id,
+               const std::u16string& value),
               (override));
 };
 
@@ -1946,6 +1970,74 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
+}
+
+// Tests that on acceptance of a `kRetrievePredictionImprovements` suggestion,
+// the `AutofillPredictionImprovementsDelegate::OnClickedTriggerSuggestion()`
+// event handler is called.
+TEST_F(AutofillExternalDelegateUnitTest,
+       DidAcceptRetrievePredictionImprovementsSuggestionCallsEventHandler) {
+  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
+              OnClickedTriggerSuggestion);
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(u"Autocomplete",
+                 SuggestionType::kRetrievePredictionImprovements),
+      {});
+}
+
+// Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
+// `Suggestion::PredictionImprovementsPayload` payload, the full form is filled
+// accordingly.
+TEST_F(AutofillExternalDelegateUnitTest,
+       DidAcceptFillPredictionImprovementsFillsFullForm) {
+  FormData form = CreateTestAddressFormData();
+  ASSERT_GT(form.fields().size(), 0UL);
+  const std::u16string value_to_fill = u"John";
+  FormFieldData* field_to_fill = form.FindFieldByNameForTest(u"firstname");
+  ASSERT_TRUE(field_to_fill);
+
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(
+      form, *field_to_fill,
+      /*caret_bounds=*/gfx::Rect(),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
+  Suggestion fill_suggestion =
+      Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
+  fill_suggestion.payload = Suggestion::PredictionImprovementsPayload(
+      {{field_to_fill->global_id(), value_to_fill}}, {NAME_FIRST}, {});
+
+  std::vector<FormFieldData> filled_fields;
+  EXPECT_CALL(driver(), ApplyFormAction)
+      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
+                      Return(std::vector<FieldGlobalId>{})));
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+
+  EXPECT_THAT(filled_fields,
+              ElementsAre(AllOf(
+                  Property("global_id", &FormFieldData::global_id,
+                           field_to_fill->global_id()),
+                  Property("value", &FormFieldData::value, value_to_fill))));
+}
+
+// Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
+// `Suggestion::ValueToFill` payload, the queried field is filled.
+TEST_F(AutofillExternalDelegateUnitTest,
+       DidAcceptFillPredictionImprovementsFillsSingleField) {
+  IssueOnQuery();
+  ASSERT_GT(queried_form().fields().size(), 0UL);
+  const std::u16string value_to_fill = u"John";
+
+  Suggestion fill_suggestion =
+      Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
+  fill_suggestion.payload = Suggestion::ValueToFill(value_to_fill);
+
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), value_to_fill,
+                         SuggestionType::kFillPredictionImprovements, _));
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
 // Test parameter data for asserting that the expected set of field types

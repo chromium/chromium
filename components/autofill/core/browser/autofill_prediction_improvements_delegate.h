@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
 
+#include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -22,44 +22,19 @@ class AutofillPredictionImprovementsDelegate {
   // Specifies the types of feedback users can give.
   enum class UserFeedback { kThumbsUp, kThumbsDown };
 
-  using FillPredictionsCallback = base::OnceCallback<void(
-      mojom::ActionPersistence action_persistence,
-      FillingProduct filling_product,
-      const FieldTypeSet& field_types_to_fill,
-      const DenseSet<autofill::FieldFillingSkipReason>& ignorable_skip_reasons,
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill)>;
+  using UpdateSuggestionsCallback =
+      base::RepeatingCallback<void(std::vector<autofill::Suggestion>,
+                                   autofill::AutofillSuggestionTriggerSource)>;
 
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
-  // Returns the prediction improvements suggestions if available for the
-  // `field`.
-  virtual std::vector<Suggestion> CreateFillingSuggestion(
-      const FormFieldData& field) = 0;
-
-  // Returns whether improved predictions exist for the `field`. Used to decide
-  // whether a context menu entry is displayed or not.
-  virtual bool HasImprovedPredictionsForField(const FormFieldData& field) = 0;
-
-  // Whether improved predictions was used for the `field`. Mostly for metrics
-  // logging.
-  virtual bool UsedImprovedPredictionsForField(const FormFieldData& field) = 0;
-
-  // Receives the predictions for all fields in `form`, then calls
-  // `fill_callback` on each field.
-  virtual void ExtractImprovedPredictionsForFormFields(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      FillPredictionsCallback fill_callback) = 0;
-
-  // Creates a suggestion shown while improved predictions are loaded.
-  virtual std::vector<autofill::Suggestion> CreateLoadingSuggestion() = 0;
-
-  // Creates a suggestion that calls `ExtractImprovedPredictionsForFormFields()`
-  // when invoked.
-  virtual std::vector<autofill::Suggestion> CreateTriggerSuggestion(
-      bool add_separator) = 0;
+  // Returns `true` if it set or updated `address_suggestions`. That will happen
+  // if there are cached prediction improvements for `field` or
+  // `should_add_trigger_suggestion` is `true`.
+  virtual bool MaybeUpdateSuggestions(
+      std::vector<Suggestion>& address_suggestions,
+      const FormFieldData& field,
+      bool should_add_trigger_suggestion) = 0;
 
   // Returns `true` if the corresponding feature is enabled and optimization can
   // be applied.
@@ -70,6 +45,13 @@ class AutofillPredictionImprovementsDelegate {
 
   // Called when users click the "learn more" link.
   virtual void UserClickedLearnMore() = 0;
+
+  // Called when the `SuggestionType::kRetrievePredictionImprovements`
+  // suggestion was accepted.
+  virtual void OnClickedTriggerSuggestion(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback) = 0;
 };
 
 }  // namespace autofill

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -254,6 +255,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void FillCreditCardFieldByFieldFillingSuggestion(
       const CreditCard& credit_card,
       const Suggestion& suggestion);
+
+  // Fills `values_to_fill` into the fields of `query_form_`.
+  void FillPredictionImprovements(const Suggestion& suggestion);
 
   // Triggered when the user closes the authentication flow needed to access
   // the number and cvc of the `credit_card`.

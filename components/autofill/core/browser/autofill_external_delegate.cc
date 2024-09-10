@@ -854,12 +854,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kRetrievePredictionImprovements:
-      // TODO(crbug.com/361414075): Implement retrieving prediction
-      // improvements.
-      break;
+      if (AutofillPredictionImprovementsDelegate* delegate =
+              manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+        delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
+                                             CreateUpdateSuggestionsCallback());
+      }
+      return;
     case SuggestionType::kFillPredictionImprovements:
-      // TODO(crbug.com/361414075): Implement filling prediction
-      // improvements.
+      FillPredictionImprovements(suggestion);
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -1350,6 +1352,29 @@ void AutofillExternalDelegate::FillAutofillFormData(
                   ? CreditCard::CreateVirtualCard(*credit_card)
                   : *credit_card,
               trigger_details);
+  }
+}
+
+void AutofillExternalDelegate::FillPredictionImprovements(
+    const Suggestion& suggestion) {
+  // Single field filling.
+  if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
+    const std::u16string value_to_fill =
+        suggestion.GetPayload<Suggestion::ValueToFill>().value();
+    manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 query_form_, query_field_, value_to_fill,
+                                 SuggestionType::kFillPredictionImprovements,
+                                 /*field_type_used=*/std::nullopt);
+  } else {
+    // Full form filling.
+    Suggestion::PredictionImprovementsPayload payload =
+        suggestion.GetPayload<Suggestion::PredictionImprovementsPayload>();
+    manager_->FillOrPreviewFormExperimental(
+        mojom::ActionPersistence::kFill,
+        FillingProduct::kPredictionImprovements, payload.field_types_to_fill,
+        payload.ignorable_skip_reasons, query_form_, query_field_,
+        payload.values_to_fill);
   }
 }
 

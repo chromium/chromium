@@ -7211,43 +7211,32 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   external_delegate()->CheckSuggestionCount(form.fields()[0].global_id(), 1);
 }
 
-// Tests that suggestions requested with
-// `AutofillSuggestionTriggerSource::kPredictionImprovements` will be filled
-// automatically (via `FormFiller::FillOrPreviewFields()`).
-TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
+// Tests that prediction improvements suggestions are shown.
+TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  MockAutofillPredictionImprovementsDelegate delegate;
+  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
-  AutofillPredictionImprovementsDelegate::FillPredictionsCallback fill_callback;
-  EXPECT_CALL(delegate, ExtractImprovedPredictionsForFormFields)
-      .WillOnce(
-          [&](const FormData& form, const FormFieldData& trigger_field,
-              AutofillPredictionImprovementsDelegate::FillPredictionsCallback
-                  callback) { fill_callback = std::move(callback); });
+  ON_CALL(delegate, ShouldProvidePredictionImprovements)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(delegate, MaybeUpdateSuggestions)
+      .WillOnce([](std::vector<Suggestion>& address_suggestions,
+                   const FormFieldData& field,
+                   bool should_add_trigger_suggestion) {
+        address_suggestions = {Suggestion(
+            u"Autocomplete", SuggestionType::kRetrievePredictionImprovements)};
+        return true;
+      });
 
   GetAutofillSuggestions(
       form, form.fields().front(),
       AutofillSuggestionTriggerSource::kPredictionImprovements);
-
-  FormFieldData* field = form.FindFieldByNameForTest(u"firstname");
-  ASSERT_TRUE(field);
-
-  std::vector<FormFieldData> filled_fields;
-  std::vector<FieldGlobalId> filled_global_ids = {field->global_id()};
-
-  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
-                      Return(filled_global_ids)));
-  std::move(fill_callback)
-      .Run(autofill::mojom::ActionPersistence::kFill,
-           autofill::FillingProduct::kPredictionImprovements, kAllFieldTypes,
-           {}, form, *field, {{field->global_id(), u"John"}});
-
-  EXPECT_THAT(filled_fields,
-              ElementsAre(Property(&FormFieldData::value, Eq(u"John"))));
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(Field(&Suggestion::type,
+                        Eq(SuggestionType::kRetrievePredictionImprovements))));
 }
 
 // Test param indicates if there is an active screen reader.

@@ -19,31 +19,11 @@ class MockAutofillPredictionImprovementsDelegate
   MockAutofillPredictionImprovementsDelegate();
   ~MockAutofillPredictionImprovementsDelegate() override;
 
-  MOCK_METHOD(std::vector<Suggestion>,
-              CreateFillingSuggestion,
-              (const FormFieldData& field),
-              (override));
   MOCK_METHOD(bool,
-              HasImprovedPredictionsForField,
-              (const FormFieldData& field),
-              (override));
-  MOCK_METHOD(bool,
-              UsedImprovedPredictionsForField,
-              (const FormFieldData& field),
-              (override));
-  MOCK_METHOD(void,
-              ExtractImprovedPredictionsForFormFields,
-              (const FormData& form,
-               const FormFieldData& trigger_field,
-               FillPredictionsCallback fill_callback),
-              (override));
-  MOCK_METHOD(std::vector<autofill::Suggestion>,
-              CreateLoadingSuggestion,
-              (),
-              (override));
-  MOCK_METHOD(std::vector<autofill::Suggestion>,
-              CreateTriggerSuggestion,
-              (bool add_separator),
+              MaybeUpdateSuggestions,
+              (std::vector<Suggestion> & address_suggestions,
+               const FormFieldData& field,
+               bool should_add_trigger_suggestion),
               (override));
   MOCK_METHOD(bool,
               ShouldProvidePredictionImprovements,
@@ -54,6 +34,12 @@ class MockAutofillPredictionImprovementsDelegate
               (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
               (override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
+  MOCK_METHOD(void,
+              OnClickedTriggerSuggestion,
+              (const autofill::FormData& form,
+               const autofill::FormFieldData& trigger_field,
+               UpdateSuggestionsCallback update_suggestions_callback),
+              (override));
 };
 
 }  // namespace autofill

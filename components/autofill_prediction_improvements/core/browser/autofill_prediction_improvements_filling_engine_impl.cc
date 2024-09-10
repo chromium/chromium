@@ -50,10 +50,12 @@ void AutofillPredictionImprovementsFillingEngineImpl::
         optimization_guide::proto::AXTreeUpdate ax_tree_update,
         PredictionsReceivedCallback callback,
         user_annotations::UserAnnotationsEntries user_annotations) {
-  // If there are no user annotations, just return the callback with the
-  // original form.
+  // At this point there should be user annotations. Return an error if there
+  // aren't.
+  // TODO(crbug.com/361414075): Check that `user_annotations` aren't empty in
+  // `AutofillPredictionImprovementsDelegate::ShouldProvidePredictionImprovements()`.
   if (user_annotations.empty()) {
-    std::move(callback).Run(std::move(form_data));
+    std::move(callback).Run(base::unexpected(false));
     return;
   }
 

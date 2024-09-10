@@ -63,6 +63,18 @@ autofill::Suggestion CreateChildSuggestionForFilling(
   return child_suggestion;
 }
 
+// Creates a spinner-like suggestion shown while improved predictions are
+// loaded.
+std::vector<autofill::Suggestion> CreateLoadingSuggestion() {
+  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
+  autofill::Suggestion loading_suggestion(
+      u"Loading",
+      autofill::SuggestionType::kPredictionImprovementsLoadingState);
+  loading_suggestion.is_acceptable = false;
+  loading_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
+  return {loading_suggestion};
+}
+
 }  // namespace
 
 AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
@@ -91,9 +103,6 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     return {};
   }
   const std::u16string predicted_value = filled_field->value();
-  if (predicted_value.empty()) {
-    return {};
-  }
 
   autofill::Suggestion suggestion(
       predicted_value, autofill::SuggestionType::kFillPredictionImprovements);
@@ -117,18 +126,9 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
+  suggestion.payload = autofill::Suggestion::PredictionImprovementsPayload(
+      GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
   return {suggestion};
-}
-
-std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::CreateLoadingSuggestion() {
-  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
-  autofill::Suggestion loading_suggestion(
-      u"Loading",
-      autofill::SuggestionType::kPredictionImprovementsLoadingState);
-  loading_suggestion.is_acceptable = false;
-  loading_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
-  return {loading_suggestion};
 }
 
 std::vector<autofill::Suggestion>
@@ -149,59 +149,91 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion(
 
 bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
     const autofill::FormFieldData& field) {
-  return true;
+  if (!cache_) {
+    return false;
+  }
+  return (*cache_).FindFieldByGlobalId(field.global_id());
 }
 
-bool AutofillPredictionImprovementsManager::UsedImprovedPredictionsForField(
-    const autofill::FormFieldData& field) {
-  return true;
+bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
+    std::vector<autofill::Suggestion>& address_suggestions,
+    const autofill::FormFieldData& field,
+    bool should_add_trigger_suggestion) {
+  // Show a cached prediction improvements filling suggestion for `field` if
+  // it exists.
+  if (HasImprovedPredictionsForField(field)) {
+    address_suggestions = CreateFillingSuggestion(field);
+    return true;
+  }
+  // Add prediction improvements trigger suggestion.
+  else if (should_add_trigger_suggestion) {
+    if (address_suggestions.empty()) {
+      // Set `address_suggestions` to the trigger suggestion.
+      address_suggestions = CreateTriggerSuggestion(/*add_separator=*/false);
+      return true;
+    } else {
+      // Expect that there's an `kUndoOrClear` or `kManageAddress` suggestion
+      // in `address_suggestions` if `address_suggestions` is not empty. Insert
+      // the trigger suggestion for prediction improvements before.
+      for (size_t i = 1; i < address_suggestions.size() - 1; ++i) {
+        if (address_suggestions[i].type ==
+                autofill::SuggestionType::kSeparator &&
+            (address_suggestions[i + 1].type ==
+                 autofill::SuggestionType::kUndoOrClear ||
+             address_suggestions[i + 1].type ==
+                 autofill::SuggestionType::kManageAddress)) {
+          const std::vector<autofill::Suggestion> trigger_suggestion =
+              CreateTriggerSuggestion(/*add_separator=*/true);
+          address_suggestions.insert(address_suggestions.begin() + i,
+                                     trigger_suggestion.begin(),
+                                     trigger_suggestion.end());
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 void AutofillPredictionImprovementsManager::
-    ExtractImprovedPredictionsForFormFields(
+    ExtractPredictionImprovementsForFormFields(
         const autofill::FormData& form,
-        const autofill::FormFieldData& trigger_field,
-        FillPredictionsCallback fill_callback) {
-  cache_ = std::nullopt;
+        const autofill::FormFieldData& trigger_field) {
   if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
+    // TODO(crbug.com/359440030): Add error handling (could not extract improved
+    // predictions).
+    UpdateSuggestions(/*suggestions=*/{});
     return;
   }
   client_->GetAXTree(
       base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
-                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field,
-                     std::move(fill_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    FillPredictionsCallback fill_callback,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetFillingEngine()->GetPredictions(
       form, std::move(ax_tree_update),
       base::BindOnce(
           &AutofillPredictionImprovementsManager::OnReceivedPredictions,
-          weak_ptr_factory_.GetWeakPtr(), form, trigger_field,
-          std::move(fill_callback)));
+          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    FillPredictionsCallback fill_callback,
     base::expected<autofill::FormData, bool> improved_predictions) {
   if (!improved_predictions.has_value()) {
     // TODO(crbug.com/359440030): Add error handling.
+    UpdateSuggestions(/*suggestions=*/{});
     return;
   }
 
   cache_ = improved_predictions.value();
 
-  std::move(fill_callback)
-      .Run(autofill::mojom::ActionPersistence::kFill,
-           autofill::FillingProduct::kPredictionImprovements,
-           GetFieldTypesToFill(), kIgnoreableSkipReasons, form, trigger_field,
-           GetValuesToFill());
+  UpdateSuggestions(CreateFillingSuggestion(trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
@@ -232,10 +264,36 @@ AutofillPredictionImprovementsManager::GetValuesToFill() {
   }
   std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
       values_to_fill((*cache_).fields().size());
-  for (const autofill::FormFieldData& field : (*cache_).fields()) {
-    values_to_fill.emplace_back(field.global_id(), field.value());
+  for (size_t i = 0; i < (*cache_).fields().size(); i++) {
+    const autofill::FormFieldData& field = (*cache_).fields()[i];
+    values_to_fill[i] = {field.global_id(), field.value()};
   }
   return values_to_fill;
+}
+
+void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  Reset();
+  update_suggestions_callback_ = std::move(update_suggestions_callback);
+  UpdateSuggestions(CreateLoadingSuggestion());
+  ExtractPredictionImprovementsForFormFields(form, trigger_field);
+}
+
+void AutofillPredictionImprovementsManager::Reset() {
+  cache_ = std::nullopt;
+  update_suggestions_callback_ = base::NullCallback();
+}
+
+void AutofillPredictionImprovementsManager::UpdateSuggestions(
+    const std::vector<autofill::Suggestion>& suggestions) {
+  if (update_suggestions_callback_.is_null()) {
+    return;
+  }
+  update_suggestions_callback_.Run(
+      suggestions,
+      autofill::AutofillSuggestionTriggerSource::kPredictionImprovements);
 }
 
 }  // namespace autofill_prediction_improvements

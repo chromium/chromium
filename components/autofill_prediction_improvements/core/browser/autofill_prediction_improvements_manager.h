@@ -34,37 +34,55 @@ class AutofillPredictionImprovementsManager
   ~AutofillPredictionImprovementsManager() override;
 
   // autofill::AutofillPredictionImprovementsDelegate
-  std::vector<autofill::Suggestion> CreateFillingSuggestion(
-      const autofill::FormFieldData& field) override;
-  bool HasImprovedPredictionsForField(
-      const autofill::FormFieldData& field) override;
-  bool UsedImprovedPredictionsForField(
-      const autofill::FormFieldData& field) override;
-  void ExtractImprovedPredictionsForFormFields(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
-      FillPredictionsCallback fill_callback) override;
-  std::vector<autofill::Suggestion> CreateLoadingSuggestion() override;
-  std::vector<autofill::Suggestion> CreateTriggerSuggestion(
-      bool add_separator) override;
+  bool MaybeUpdateSuggestions(
+      std::vector<autofill::Suggestion>& address_suggestions,
+      const autofill::FormFieldData& field,
+      bool should_add_trigger_suggestion) override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
   void UserFeedbackReceived(
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)
       override;
   void UserClickedLearnMore() override;
+  void OnClickedTriggerSuggestion(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
 
  private:
+  // Receives prediction improvements for all fields in `form`, then calls
+  // `update_suggestions_callback_`.
+  void ExtractPredictionImprovementsForFormFields(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field);
+
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,
-                        FillPredictionsCallback fill_callback,
                         optimization_guide::proto::AXTreeUpdate);
 
   // The unexpected value is always `false` if there was an error retrieving
   // predictions.
   void OnReceivedPredictions(const autofill::FormData& form,
                              const autofill::FormFieldData& trigger_field,
-                             FillPredictionsCallback fill_callback,
                              base::expected<autofill::FormData, bool>);
+
+  // Resets the state of this class.
+  void Reset();
+
+  // Updates currently shown suggestions via `update_suggestions_callback_`.
+  void UpdateSuggestions(const std::vector<autofill::Suggestion>& suggestions);
+
+  // Returns whether improved predictions exist for the `field`. Used to decide
+  // whether a context menu entry is displayed or not.
+  bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
+
+  // Creates a suggestion that calls `ExtractImprovedPredictionsForFormFields()`
+  // when invoked.
+  std::vector<autofill::Suggestion> CreateTriggerSuggestion(bool add_separator);
+
+  // Returns the prediction improvements suggestions if available for the
+  // `field`.
+  std::vector<autofill::Suggestion> CreateFillingSuggestion(
+      const autofill::FormFieldData& field);
 
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
@@ -77,6 +95,13 @@ class AutofillPredictionImprovementsManager
   // improvements.
   // TODO(crbug.com/361414075): Set `cache_` and manage its lifecycle.
   std::optional<autofill::FormData> cache_ = std::nullopt;
+
+  // Updates currently shown suggestions if their
+  // `AutofillClient::SuggestionUiSessionId` hasn't changed since the trigger
+  // suggestion was accepted.
+  base::RepeatingCallback<void(std::vector<autofill::Suggestion>,
+                               autofill::AutofillSuggestionTriggerSource)>
+      update_suggestions_callback_ = base::NullCallback();
 
   // The `decider_` is used to check if the
   // `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` optimization guide can be

@@ -127,12 +127,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
 
   base::expected<autofill::FormData, bool> form_data_or_err =
       test_future.Take();
-  EXPECT_TRUE(form_data_or_err.has_value());
-  EXPECT_TRUE(form_data_or_err.has_value());
-  EXPECT_EQ(1u, form_data_or_err->fields().size());
-  autofill::FormFieldData filled_field_response = form_data_or_err->fields()[0];
-  EXPECT_EQ(u"label", filled_field_response.label());
-  EXPECT_TRUE(filled_field_response.value().empty());
+  EXPECT_FALSE(form_data_or_err.has_value());
 }
 
 TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
