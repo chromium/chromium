@@ -6732,6 +6732,12 @@ const char kEnableWifiQosDescription[] =
     "If enabled the system will start automatic prioritization of egress "
     "traffic with WiFi QoS/WMM.";
 
+const char kEnableWifiQosEnterpriseName[] = "Enable WiFi QoS enterprise";
+const char kEnableWifiQosEnterpriseDescription[] =
+    "If enabled the system will start automatic prioritization of egress "
+    "traffic with WiFi QoS/WMM. This flag only affects Enterprise enrolled "
+    "devices. Requires #enable-wifi-qos to be enabled.";
+
 const char kPanelSelfRefresh2Name[] = "Enable Panel Self Refresh 2";
 const char kPanelSelfRefresh2Description[] =
     "Enable Panel Self Refresh 2/Selective-Update where supported. "

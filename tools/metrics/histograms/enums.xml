@@ -16053,6 +16053,7 @@ from previous Chrome versions.
   <int value="-1916060206" label="enable-display-zoom-setting"/>
   <int value="-1915854488" label="enable-offline-pages"/>
   <int value="-1914773324" label="TerminalSftp:disabled"/>
+  <int value="-1914389617" label="EnableWifiQosEnterprise:enabled"/>
   <int value="-1913801713"
       label="UploadCrashReportsUsingJobScheduler:disabled"/>
   <int value="-1913734393" label="CrosPrivacyHub:disabled"/>
@@ -17074,6 +17075,7 @@ from previous Chrome versions.
   <int value="-1483131886" label="ExperimentalWebAppProfileIsolation:disabled"/>
   <int value="-1482730792" label="stop-in-background:enabled"/>
   <int value="-1482685863" label="enable-request-tablet-site"/>
+  <int value="-1482577709" label="EnableWifiQosEnterprise:disabled"/>
   <int value="-1481990501" label="Windows10CustomTitlebar:disabled"/>
   <int value="-1481918315" label="SmsReceiverCrossDevice:enabled"/>
   <int value="-1481777496" label="DragAndDropAndroid:disabled"/>

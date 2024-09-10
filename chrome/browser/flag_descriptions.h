@@ -3881,6 +3881,9 @@ extern const char kEnableTouchscreensInDiagnosticsAppDescription[];
 extern const char kEnableWifiQosName[];
 extern const char kEnableWifiQosDescription[];
 
+extern const char kEnableWifiQosEnterpriseName[];
+extern const char kEnableWifiQosEnterpriseDescription[];
+
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 

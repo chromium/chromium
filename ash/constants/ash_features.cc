@@ -890,6 +890,15 @@ BASE_FEATURE(kEnableWifiQos,
              "EnableWifiQos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables WiFi QoS to detect and prioritize selected egress network traffic
+// using WiFi QoS/WMM in congested WiFi environments. For an Enterprise enrolled
+// device:
+// - If this flag is enabled, the feature will be controlled by EnableWifiQos;
+// - If this flag is disabled, the feature will be disabled.
+BASE_FEATURE(kEnableWifiQosEnterprise,
+             "EnableWifiQosEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
 // keep-list are enabled in Ash.
 BASE_FEATURE(kEnforceAshExtensionKeeplist,
