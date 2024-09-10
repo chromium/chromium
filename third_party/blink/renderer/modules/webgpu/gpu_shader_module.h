@@ -13,15 +13,13 @@
 namespace blink {
 class GPUCompilationInfo;
 class GPUShaderModuleDescriptor;
-class ExceptionState;
 
 class GPUShaderModule : public DawnObject<wgpu::ShaderModule> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static GPUShaderModule* Create(GPUDevice* device,
-                                 const GPUShaderModuleDescriptor* webgpu_desc,
-                                 ExceptionState& exception_state);
+                                 const GPUShaderModuleDescriptor* webgpu_desc);
   explicit GPUShaderModule(GPUDevice* device,
                            wgpu::ShaderModule shader_module,
                            const String& label);

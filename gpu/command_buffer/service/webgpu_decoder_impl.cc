@@ -1466,10 +1466,9 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   std::vector<const char*> require_device_disabled_toggles;
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
-  // is secure), unless --enable-unsafe-webgpu is used.
-  if (safety_level_ != webgpu::SafetyLevel::kUnsafe) {
-    require_device_enabled_toggles.push_back("disallow_spirv");
-  }
+  // is secure).
+  require_device_enabled_toggles.push_back("disallow_spirv");
+
   // Enable timestamp quantization by default for privacy, unless
   // --enable-webgpu-developer-features is used.
   if (safety_level_ == webgpu::SafetyLevel::kSafe) {
