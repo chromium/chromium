@@ -4,7 +4,6 @@
     --detail-container-margin-bottom: 24px;
     --new-column-selector-width: 42px;
     --table-gap: 8px;
-    height: 100%;
   }
 
   #table {
@@ -15,7 +14,6 @@
     grid-auto-flow: column;
     grid-template-columns: repeat(var(--num-columns), var(--column-width));
     grid-template-rows: auto;
-    height: 100%;
     line-height: 16px;
     padding-inline-end: calc(var(--new-column-selector-width) + var(
         --table-gap)); /* Include space for selector. */
