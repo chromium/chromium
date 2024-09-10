@@ -7,16 +7,17 @@ import './cra/cra-image.js';
 import './speaker-label-consent-dialog-content.js';
 
 import {
+  createRef,
   css,
   html,
   PropertyDeclarations,
   PropertyValues,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
 import {
   settings,
   SpeakerLabelEnableState,
@@ -24,6 +25,7 @@ import {
 } from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
+import {CraButton} from './cra/cra-button.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';
@@ -107,6 +109,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     open: {type: Boolean},
+    step: {state: true},
   };
 
   /**
@@ -117,9 +120,11 @@ export class OnboardingDialog extends ReactiveLitElement {
   /**
    * The currently shown step index starting from 0.
    */
-  step = signal<0|1|2>(0);
+  step: 0|1|2 = 0;
 
   private readonly platformHandler = usePlatformHandler();
+
+  private readonly autoFocusItem = createRef<CraButton>();
 
   get dialog(): HTMLDivElement {
     return assertInstanceof(
@@ -134,6 +139,15 @@ export class OnboardingDialog extends ReactiveLitElement {
         this.dialog.showPopover();
       } else {
         this.dialog.hidePopover();
+      }
+    }
+
+    if (changedProperties.has('step')) {
+      const autoFocusItem = this.autoFocusItem.value;
+      if (autoFocusItem !== undefined) {
+        autoFocusItem.updateComplete.then(() => {
+          autoFocusItem.focus();
+        });
       }
     }
   }
@@ -170,7 +184,7 @@ export class OnboardingDialog extends ReactiveLitElement {
     // Note that all the onboarding_ images are currently placeholders and
     // don't use dynamic color tokens yet.
     // TODO: b/344785475 - Change to final illustration when ready.
-    switch (this.step.value) {
+    switch (this.step) {
       case 0: {
         const nextStep = () => {
           if (this.platformHandler.sodaState.value.kind === 'unavailable') {
@@ -179,7 +193,7 @@ export class OnboardingDialog extends ReactiveLitElement {
             this.close();
             return;
           }
-          this.step.value = 1;
+          this.step = 1;
         };
         return this.renderDialog(
           'onboarding_welcome',
@@ -188,6 +202,7 @@ export class OnboardingDialog extends ReactiveLitElement {
           html`<cra-button
             .label=${i18n.onboardingDialogWelcomeNextButton}
             @click=${nextStep}
+            ${ref(this.autoFocusItem)}
           ></cra-button>`,
         );
       }
@@ -202,7 +217,7 @@ export class OnboardingDialog extends ReactiveLitElement {
             this.close();
             return;
           }
-          this.step.value = 2;
+          this.step = 2;
         };
         const disableTranscription = () => {
           settings.mutate((s) => {
@@ -219,6 +234,7 @@ export class OnboardingDialog extends ReactiveLitElement {
               .label=${i18n.onboardingDialogTranscriptionDeferButton}
               class="left"
               @click=${this.close}
+              ${ref(this.autoFocusItem)}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
@@ -270,6 +286,7 @@ export class OnboardingDialog extends ReactiveLitElement {
               .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
               @click=${this.close}
+              ${ref(this.autoFocusItem)}
             ></cra-button>
             <cra-button
               .label=${i18n[DISALLOW_BUTTON_NAME]}
@@ -283,7 +300,7 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       default:
-        assertExhaustive(this.step.value);
+        assertExhaustive(this.step);
     }
   }
 }
