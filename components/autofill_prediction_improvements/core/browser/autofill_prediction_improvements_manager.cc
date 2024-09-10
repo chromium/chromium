@@ -149,8 +149,11 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
+  autofill::Suggestion feedback_suggestion(
+      autofill::SuggestionType::kPredictionImprovementsFeedback);
+  feedback_suggestion.is_acceptable = false;
   suggestion.payload = payload;
-  return {suggestion};
+  return {suggestion, feedback_suggestion};
 }
 
 std::vector<autofill::Suggestion>

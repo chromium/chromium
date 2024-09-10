@@ -171,7 +171,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
                   SuggestionType::kPredictionImprovementsLoadingState)));
   ASSERT_THAT(
       filling_suggestion,
-      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements)));
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
   const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
           .GetPayload<Suggestion::PredictionImprovementsPayload>();
