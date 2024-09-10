@@ -1142,19 +1142,16 @@ bool GpuInit::InitializeDawn() {
     return false;
   }
 
-  dawn_context_provider_ = gpu::DawnContextProvider::Create(
-      gpu_preferences_,
-      GpuDriverBugWorkarounds(
-          gpu_feature_info_.enabled_gpu_driver_bug_workarounds));
-  if (dawn_context_provider_) {
-    if (dawn_context_provider_->backend_type() == wgpu::BackendType::Vulkan) {
-#if BUILDFLAG(ENABLE_VULKAN)
-      // Even though Dawn successfully initialized Vulkan we still have to check
-      // if the Vulkan driver is problematic and shouldn't be used.
+#if BUILDFLAG(IS_ANDROID)
+  auto validate_adapter_fn = [this](wgpu::BackendType backend_type,
+                                    wgpu::Adapter adapter) {
+    if (backend_type == wgpu::BackendType::Vulkan) {
+      // Check if the GPU and driver version are suitable for using Vulkan
+      // based hardware acceleration.
       wgpu::AdapterInfo adapter_info;
       wgpu::AdapterPropertiesVk adapter_properties_vk;
       adapter_info.nextInChain = &adapter_properties_vk;
-      dawn_context_provider_->GetAdapter().GetInfo(&adapter_info);
+      adapter.GetInfo(&adapter_info);
 
       VulkanPhysicalDeviceProperties device_properties;
       device_properties.device_name = adapter_info.device;
@@ -1162,16 +1159,21 @@ bool GpuInit::InitializeDawn() {
       device_properties.device_id = adapter_info.deviceID;
       device_properties.driver_version = adapter_properties_vk.driverVersion;
 
-#if BUILDFLAG(IS_ANDROID)
       if (!CheckVulkanCompatibilities(device_properties, gpu_info_)) {
-        // The device is not compatible with Vulkan.
-        dawn_context_provider_.reset();
         return false;
       }
-#endif
-#endif
     }
+    return true;
+  };
+#else
+  auto validate_adapter_fn = DawnContextProvider::DefaultValidateAdapterFn;
+#endif
 
+  dawn_context_provider_ = gpu::DawnContextProvider::Create(
+      gpu_preferences_, validate_adapter_fn,
+      GpuDriverBugWorkarounds(
+          gpu_feature_info_.enabled_gpu_driver_bug_workarounds));
+  if (dawn_context_provider_) {
     return true;
   }
 #endif
