@@ -164,6 +164,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Parental-handoff"/>
   <variant name="Password-selection"/>
   <variant name="Perks-discovery"/>
+  <variant name="Personalized-apps"/>
   <variant name="Pin-setup"/>
   <variant name="Quick-start"/>
   <variant name="Recommend-apps"/>
