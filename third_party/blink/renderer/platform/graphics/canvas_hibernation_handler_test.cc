@@ -47,19 +47,12 @@ class CanvasHibernationHandlerTest
     }
   }
 
-  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(
-      const gfx::Size& size,
-      RasterModeHint raster_mode,
-      OpacityMode opacity_mode,
-      std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
+  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const gfx::Size& size,
+                                                  RasterModeHint raster_mode,
+                                                  OpacityMode opacity_mode) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         std::make_unique<Canvas2DLayerBridge>();
-    if (custom_host) {
-      host_ = std::move(custom_host);
-    }
-    if (!host_) {
-      host_ = std::make_unique<FakeCanvasResourceHost>(size);
-    }
+    host_ = std::make_unique<FakeCanvasResourceHost>(size);
     host_->SetPreferred2DRasterMode(raster_mode);
     host_->SetOpacityMode(opacity_mode);
     bridge->SetCanvasResourceHost(host_.get());
