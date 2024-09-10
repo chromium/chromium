@@ -32,7 +32,6 @@ static_library("camera_mic") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
-    "//chrome/browser/ui/ash/media_client",
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//components/vector_icons",
     "//content/public/browser",
@@ -47,7 +46,6 @@ static_library("camera_mic") {
     # so initroducing an Observer should resolve the dependency on
     # c/b/ash/login/session.
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/ash/media_client",
   ]
 }
 
@@ -57,13 +55,13 @@ source_set("unit_tests") {
   sources = [ "vm_camera_mic_manager_unittest.cc" ]
 
   deps = [
+    ":camera_mic",
     "//ash",
     "//ash:test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash/camera_mic",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//components/account_id",
