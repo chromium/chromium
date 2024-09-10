@@ -41,7 +41,7 @@
   // Update the primary account's last-active time (if there is a primary
   // account).
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(profile);
+      IdentityManagerFactory::GetForProfile(profile);
   signin::ActivePrimaryAccountsMetricsRecorder* activeAccountsTracker =
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder();
   // IdentityManager is null for incognito profiles.

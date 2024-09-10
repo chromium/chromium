@@ -44,12 +44,6 @@ signin::IdentityManager* IdentityManagerFactory::GetForProfile(
 }
 
 // static
-signin::IdentityManager* IdentityManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return GetForProfile(browser_state);
-}
-
-// static
 IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
   static base::NoDestructor<IdentityManagerFactory> instance;
   return instance.get();
