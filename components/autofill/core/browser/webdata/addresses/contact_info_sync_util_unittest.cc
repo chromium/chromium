@@ -327,6 +327,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   ContactInfoSpecifics specifics;
 
   specifics.set_guid(kGuid);
+  specifics.set_address_type(ContactInfoSpecifics::REGULAR);
   specifics.set_use_count(123);
   specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
   specifics.set_use_date2_unix_epoch_seconds(kUseDate2.ToTimeT());

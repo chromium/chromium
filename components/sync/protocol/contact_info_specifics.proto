@@ -15,6 +15,15 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 message ContactInfoSpecifics {
+  // Used to distinguish whether the address is the dedicated Home or Work
+  // address of the user's account.
+  // This translates into `AutofillProfile::RecordType::kAccount*`.
+  enum AddressType {
+    REGULAR = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
   // Represents the validation status of a stored value.
   enum VerificationStatus {
     // No verification status assigned.
@@ -71,6 +80,8 @@ message ContactInfoSpecifics {
   optional string guid = 1;
   reserved 2;
   reserved "source";
+  optional AddressType address_type = 56 [default = REGULAR];
+
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 

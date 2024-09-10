@@ -375,6 +375,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(guid);
+  VISIT_ENUM(address_type);
   VISIT(use_count);
   VISIT(use_date_unix_epoch_seconds);
   VISIT(use_date2_unix_epoch_seconds);

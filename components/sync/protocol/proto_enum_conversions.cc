@@ -124,6 +124,17 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::AddressType address_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, AddressType, REGULAR, WORK);
+  switch (address_type) {
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, REGULAR);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, HOME);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, WORK);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status) {
   ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, VerificationStatus,
                      VERIFICATION_STATUS_UNSPECIFIED, SERVER_PARSED);

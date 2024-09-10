@@ -179,6 +179,8 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   sync_pb::ContactInfoSpecifics specifics = base_contact_info_specifics;
 
   specifics.set_guid(profile.guid());
+  // TODO(crbug.com/354706653): Consider the `profile`'s RecordType.
+  specifics.set_address_type(ContactInfoSpecifics::REGULAR);
   specifics.set_use_count(profile.use_count());
   specifics.set_use_date_unix_epoch_seconds(
       (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
@@ -304,6 +306,7 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
+  // TODO(crbug.com/354706653): Consider the `specifics.address_type()`.
   AutofillProfile profile(specifics.guid(),
                           AutofillProfile::RecordType::kAccount,
                           AddressCountryCode(country_code));
@@ -396,6 +399,7 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
       sync_pb::ContactInfoSpecifics(contact_info_specifics);
 
   trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_address_type();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_use_date_unix_epoch_seconds();
   if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
