@@ -175,6 +175,23 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
       }
     }
   }
+  // On ChromeOS we have already checked config availability on disk via the
+  // installer, so we don't need to check the speech::kLanguageComponentConfigs
+  // list.
+#if BUILDFLAG(IS_CHROMEOS)
+  for (const auto& language_name : enabled_and_available_languages) {
+    base::Value::Dict available_language_pack;
+    available_language_pack.Set(kCodeKey, language_name);
+    available_language_pack.Set(
+        kDisplayNameKey,
+        speech::GetLanguageDisplayName(
+            language_name, g_browser_process->GetApplicationLocale()));
+    available_language_pack.Set(
+        kNativeDisplayNameKey,
+        speech::GetLanguageDisplayName(language_name, language_name));
+    available_language_packs.push_back(std::move(available_language_pack));
+  }
+#else
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
         base::Contains(enabled_and_available_languages, config.language_name)) {
@@ -191,7 +208,7 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
       available_language_packs.push_back(std::move(available_language_pack));
     }
   }
-
+#endif
   return SortByDisplayName(std::move(available_language_packs));
 }
 

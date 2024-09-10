@@ -166,6 +166,44 @@ TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
   EXPECT_THAT(expected_livecaption_langs, ::testing::IsSubsetOf(actual_langs));
 }
 
+TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
+  base::test::ScopedFeatureList scoped_feature_list_internal;
+  scoped_feature_list_internal.InitWithFeatures(
+      {::speech::kCrosSodaConchLanguages,
+       ::speech::kFeatureManagementCrosSodaConchLanguages},
+      {});
+  auto expected_livecaption_langs =
+      GetInstance()->GetLiveCaptionEnabledLanguages();
+  EXPECT_THAT(expected_livecaption_langs,
+              ::testing::IsSupersetOf({"da-DK", "nb-NO", "nl-NL", "sv-SE"}));
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
+  base::test::ScopedFeatureList scoped_feature_list_internal;
+  scoped_feature_list_internal.InitWithFeatures(
+      {::speech::kCrosSodaConchLanguages, ::speech::kCrosExpandSodaLanguages,
+       ::speech::kFeatureManagementCrosSodaConchLanguages},
+      {});
+  soda_installer_impl_.reset();
+  soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
+  std::vector<std::string> enabled_and_available_languages;
+  std::vector<base::Value::Dict> available_language_packs;
+  {
+    auto enabled_languages = GetInstance()->GetLiveCaptionEnabledLanguages();
+    auto available_languages = GetInstance()->GetAvailableLanguages();
+    auto available_languages_set = std::unordered_set<std::string>(
+        available_languages.begin(), available_languages.end());
+    for (const auto& enabled_language : enabled_languages) {
+      if (available_languages_set.find(enabled_language) !=
+          available_languages_set.end()) {
+        enabled_and_available_languages.push_back(enabled_language);
+      }
+    }
+  }
+  EXPECT_THAT(enabled_and_available_languages,
+              ::testing::IsSupersetOf({"da-DK", "nb-NO", "nl-NL", "sv-SE"}));
+}
+
 TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
   std::map<std::string, std::string> params;

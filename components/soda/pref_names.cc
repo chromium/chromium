@@ -82,6 +82,22 @@ const char kSodaZhCnConfigPath[] =
 const char kSodaZhTwConfigPath[] =
     "accessibility.captions.soda_zh_tw_config_path";
 
+// The file path of the nb-NO Speech On-Device API (SODA) configuration file.
+const char kSodaNbNoConfigPath[] =
+    "accessibility.captions.soda_nb_no_config_path";
+
+// The file path of the da-DK Speech On-Device API (SODA) configuration file.
+const char kSodaDaDkConfigPath[] =
+    "accessibility.captions.soda_da_dk_config_path";
+
+// The file path of the nl-NL Speech On-Device API (SODA) configuration file.
+const char kSodaNlNlConfigPath[] =
+    "accessibility.captions.soda_nl_nl_config_path";
+
+// The file path of the sv-SE Speech On-Device API (SODA) configuration file.
+const char kSodaSvSeConfigPath[] =
+    "accessibility.captions.soda_sv_se_config_path";
+
 // The list of Speech On-Device API (SODA) language packs installed or
 // registered to be installed.
 const char kSodaRegisteredLanguagePacks[] =
