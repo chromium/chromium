@@ -7,6 +7,7 @@
  * the section containing configuration options for prediction improvements.
  */
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -64,6 +65,11 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
         type: String,
         computed: 'getDeleteEntryConfirmationText_(entryToDelete_)',
       },
+
+      deleteAllEntriesConfirmationShown_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -73,6 +79,7 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
       UserAnnotationsManagerProxyImpl.getInstance();
   private entryToDelete_?: UserAnnotationsEntry;
   private deleteEntryConfirmationText_: string;
+  private deleteAllEntriesConfirmationShown_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -110,6 +117,23 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     }
 
     this.entryToDelete_ = undefined;
+  }
+
+  private onDeleteAllEntriesClick_(): void {
+    this.deleteAllEntriesConfirmationShown_ = true;
+  }
+
+  private onDeleteAllEntriesDialogClose_(): void {
+    const wasDeletionConfirmed =
+        this.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#deleteAllEntriesDialog')!.wasConfirmed();
+    if (wasDeletionConfirmed) {
+      this.userAnnotationsManager_.deleteAllEntries();
+      this.userAnnotationsEntries_ = [];
+    }
+
+    this.deleteAllEntriesConfirmationShown_ = false;
   }
 
   private getDeleteEntryConfirmationText_(entry?: UserAnnotationsEntry):

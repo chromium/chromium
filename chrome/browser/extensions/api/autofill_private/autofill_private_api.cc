@@ -1083,4 +1083,13 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::Run() {
+  // TODO(crbug.com/361437117): Add real API call.
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

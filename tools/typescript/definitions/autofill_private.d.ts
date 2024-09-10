@@ -232,6 +232,7 @@ declare global {
       export function getUserAnnotationsEntries():
           Promise<UserAnnotationsEntry[]>;
       export function deleteUserAnnotationsEntry(entryId: number): void;
+      export function deleteAllUserAnnotationsEntries(): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

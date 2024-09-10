@@ -18,6 +18,11 @@ export interface UserAnnotationsManagerProxy {
    * Delete the user annotation entry by its id.
    */
   deleteEntry(entryId: number): void;
+
+  /**
+   * Deletes all user annotation entries.
+   */
+  deleteAllEntries(): void;
 }
 
 export class UserAnnotationsManagerProxyImpl implements
@@ -28,6 +33,10 @@ export class UserAnnotationsManagerProxyImpl implements
 
   deleteEntry(entryId: number): void {
     chrome.autofillPrivate.deleteUserAnnotationsEntry(entryId);
+  }
+
+  deleteAllEntries(): void {
+    chrome.autofillPrivate.deleteAllUserAnnotationsEntries();
   }
 
   static getInstance(): UserAnnotationsManagerProxy {
