@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -61,16 +60,6 @@ v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
       dom_exception->ToV8(ScriptState::From(isolate, current_context))
           .As<v8::Object>();
   v8::Exception::CaptureStackTrace(current_context, exception_obj);
-
-  // Temporary workaround while debugging the root cause of
-  // https://crbug.com/356158097. The workaround immediately materializes the
-  // stack trace string. The workaround is enabled by default, but can be
-  // disabled by experimental flag.
-  if (!RuntimeEnabledFeatures::
-          DOMExceptionV8CaptureStackTraceDisableWorkaroundEnabled()) {
-    std::ignore =
-        exception_obj->Get(current_context, V8String(isolate, "stack"));
-  }
   return exception_obj;
 }
 
