@@ -88,6 +88,12 @@ export class NetworkRequest {
     bodySize?: number;
   };
 
+  #responseOverrides?: {
+    statusCode?: number;
+    headers?: Network.Header[];
+    cookies?: Network.CookieHeader[];
+  };
+
   #response: {
     hasExtraInfo?: boolean;
     info?: Protocol.Network.Response;
@@ -242,9 +248,10 @@ export class NetworkRequest {
   /** Returns the HTTP status code associated with this request if any. */
   get #statusCode(): number | undefined {
     return (
-      this.#response.paused?.responseStatusCode ??
+      this.#responseOverrides?.statusCode ??
+      this.#response.info?.status ??
       this.#response.extraInfo?.statusCode ??
-      this.#response.info?.status
+      this.#response.paused?.responseStatusCode
     );
   }
 
@@ -627,10 +634,18 @@ export class NetworkRequest {
         cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
       await this.#continueResponse({
-        responseCode: overrides.statusCode,
-        responsePhrase: overrides.reasonPhrase,
-        responseHeaders,
+        responseCode:
+          overrides.statusCode ?? this.#response.paused?.responseStatusCode,
+        responsePhrase:
+          overrides.reasonPhrase ?? this.#response.paused?.responseStatusText,
+        responseHeaders:
+          responseHeaders ?? this.#response.paused?.responseHeaders,
       });
+
+      this.#responseOverrides = {
+        statusCode: overrides.statusCode,
+        headers: overrideHeaders,
+      };
     }
   }
 
@@ -821,7 +836,7 @@ export class NetworkRequest {
         this.#response.info?.fromDiskCache ||
         this.#response.info?.fromPrefetchCache ||
         this.#servedFromCache,
-      headers,
+      headers: this.#responseOverrides?.headers ?? headers,
       mimeType: this.#response.info?.mimeType || '',
       bytesReceived: this.#response.info?.encodedDataLength || 0,
       headersSize: computeHeadersSize(headers),
