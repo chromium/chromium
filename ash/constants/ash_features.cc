@@ -1335,6 +1335,11 @@ BASE_FEATURE(kGameDashboardGamePWAs,
              "GameDashboardGamePWAs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables additional games being evaluated for the Game Dashboard.
+BASE_FEATURE(kGameDashboardGamesInTest,
+             "GameDashboardGamesInTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Game Dashboard Main Menu utility views.
 BASE_FEATURE(kGameDashboardUtilities,
              "GameDashboardUtilities",
@@ -4289,6 +4294,10 @@ bool IsGameDashboardEnabled() {
 
 bool IsGameDashboardGamePWAsEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboardGamePWAs);
+}
+
+bool IsGameDashboardGamesInTestEnabled() {
+  return base::FeatureList::IsEnabled(kGameDashboardGamesInTest);
 }
 
 bool AreGameDashboardUtilitiesEnabled() {

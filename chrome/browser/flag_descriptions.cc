@@ -6986,6 +6986,10 @@ const char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
 const char kGameDashboardGamePWAsDescription[] =
     "Enables Game Dashboard for an additional set of game PWAs.";
 
+const char kGameDashboardGamesInTest[] = "Game Dashboard Games In Test";
+const char kGameDashboardGamesInTestDescription[] =
+    "Enables Game Dashboard for a set of games being further evaluated.";
+
 const char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 const char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";

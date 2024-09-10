@@ -4980,6 +4980,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "game-dashboard-games-in-test",
+    "owners": [
+      "gdomergue@google.com",
+      "phshah@chromium.org",
+      "arc-gaming@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "game-dashboard-utilities",
     "owners": [
       "khayak@google.com",

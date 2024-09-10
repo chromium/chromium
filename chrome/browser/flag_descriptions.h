@@ -4036,6 +4036,9 @@ extern const char kGameDashboardDescription[];
 extern const char kGameDashboardGamePWAs[];
 extern const char kGameDashboardGamePWAsDescription[];
 
+extern const char kGameDashboardGamesInTest[];
+extern const char kGameDashboardGamesInTestDescription[];
+
 extern const char kGameDashboardUtilities[];
 extern const char kGameDashboardUtilitiesDescription[];
 
