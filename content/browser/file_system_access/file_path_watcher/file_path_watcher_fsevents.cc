@@ -371,24 +371,6 @@ void FilePathWatcherFSEvents::DispatchEvents(
     // Use the `kFSEventStreamEventFlagItemRenamed` flag to identify a 'move'
     // event.
     if (event_flags & kFSEventStreamEventFlagItemRenamed) {
-      // Sometimes, FSEvents reports an event with a batch of event flags that
-      // contain both a `kFSEventStreamEventFlagItemRenamed` and a
-      // `kFSEventStreamEventFlagItemXattrMod` flag, which represents writable
-      // file contents being modified.
-      if (event_flags & kFSEventStreamEventFlagItemXattrMod) {
-        // Only report 'modified' change events that are in-scope.
-        if (!event_in_scope) {
-          continue;
-        }
-
-        FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
-        callback_.Run(std::move(change_info),
-                      report_modified_path_ ? event_path : target,
-                      /*error=*/false);
-        continue;
-      }
-
       // Based on testing, moves within-scope for FSEvents will have
       // consecutive event ids that differ by 1, and the event with the higher
       // event id represents the "moved to" part of a move event. This allows
