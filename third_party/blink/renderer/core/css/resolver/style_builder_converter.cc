@@ -949,6 +949,7 @@ FontSelectionValue StyleBuilderConverter::ConvertFontStretch(
 }
 
 FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
   DCHECK(!value.IsPrimitiveValue());
 
@@ -970,8 +971,8 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     const CSSValueList* values = style_range_value->GetObliqueValues();
     CHECK_LT(values->length(), 2u);
     if (values->length()) {
-      return FontSelectionValue(
-          To<CSSPrimitiveValue>(values->Item(0)).ComputeDegrees());
+      return FontSelectionValue(To<CSSPrimitiveValue>(values->Item(0))
+                                    .ComputeDegrees(length_resolver));
     } else {
       identifier_value = style_range_value->GetFontStyleValue();
       if (identifier_value->GetValueID() == CSSValueID::kNormal) {
@@ -991,7 +992,8 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
 FontSelectionValue StyleBuilderConverter::ConvertFontStyle(
     StyleResolverState& state,
     const CSSValue& value) {
-  return StyleBuilderConverterBase::ConvertFontStyle(value);
+  return StyleBuilderConverterBase::ConvertFontStyle(
+      state.CssToLengthConversionData(), value);
 }
 
 FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(

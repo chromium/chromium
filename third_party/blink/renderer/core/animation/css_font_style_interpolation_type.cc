@@ -66,8 +66,10 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
       identifier_value->GetValueID() == CSSValueID::kItalic) {
     return nullptr;
   }
-  return CreateFontStyleValue(
-      StyleBuilderConverterBase::ConvertFontStyle(value));
+  // TODO(40946458): Don't resolve angle here, use unresolved version instead.
+  return CreateFontStyleValue(StyleBuilderConverterBase::ConvertFontStyle(
+      state ? state->CssToLengthConversionData() : CSSToLengthConversionData(),
+      value));
 }
 
 InterpolationValue
@@ -80,9 +82,10 @@ void CSSFontStyleInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,
     StyleResolverState& state) const {
-  state.GetFontBuilder().SetStyle(FontSelectionValue(
-      ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
-              kMinObliqueValue, kMaxObliqueValue)));
+  state.GetFontBuilder().SetStyle(
+      FontSelectionValue(ClampTo(To<InterpolableNumber>(interpolable_value)
+                                     .Value(state.CssToLengthConversionData()),
+                                 kMinObliqueValue, kMaxObliqueValue)));
 }
 
 }  // namespace blink

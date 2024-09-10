@@ -61,6 +61,7 @@ FontDescription FontStyleResolver::ComputeFont(
   // CSSPropertyID::kFontStyle
   if (property_set.HasProperty(CSSPropertyID::kFontStyle)) {
     builder.SetStyle(StyleBuilderConverterBase::ConvertFontStyle(
+        conversion_data,
         *property_set.GetPropertyCSSValue(CSSPropertyID::kFontStyle)));
   }
 

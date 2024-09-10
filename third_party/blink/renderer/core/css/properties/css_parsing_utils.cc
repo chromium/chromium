@@ -1443,11 +1443,13 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     }
   }
   if (CSSMathFunctionValue* result = math_parser.ConsumeValue()) {
-    if (result->ComputeDegrees() < minimum_value) {
+    auto* numeric_result =
+        DynamicTo<CSSMathExpressionNumericLiteral>(result->ExpressionNode());
+    if (numeric_result && numeric_result->DoubleValue() < minimum_value) {
       return CSSNumericLiteralValue::Create(
           minimum_value, CSSPrimitiveValue::UnitType::kDegrees);
     }
-    if (result->ComputeDegrees() > maximum_value) {
+    if (numeric_result && numeric_result->DoubleValue() > maximum_value) {
       return CSSNumericLiteralValue::Create(
           maximum_value, CSSPrimitiveValue::UnitType::kDegrees);
     }
@@ -5416,8 +5418,13 @@ CSSValueList* CombineToRangeList(const CSSPrimitiveValue* range_start,
 
 bool IsAngleWithinLimits(CSSPrimitiveValue* angle) {
   constexpr float kMaxAngle = 90.0f;
-  return angle->GetFloatValue() >= -kMaxAngle &&
-         angle->GetFloatValue() <= kMaxAngle;
+  auto* numeric_angle = DynamicTo<CSSNumericLiteralValue>(angle);
+  if (!numeric_angle) {
+    // Can't resolve math function here without length resolver.
+    return true;
+  }
+  return numeric_angle->DoubleValue() >= -kMaxAngle &&
+         numeric_angle->DoubleValue() <= kMaxAngle;
 }
 
 CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
