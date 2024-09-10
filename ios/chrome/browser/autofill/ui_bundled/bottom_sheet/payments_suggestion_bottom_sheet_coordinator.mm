@@ -145,20 +145,24 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 - (void)displayPaymentDetailsForCreditCardIdentifier:
     (NSString*)creditCardIdentifier {
   _dismissing = YES;
-  autofill::CreditCard* creditCard =
+  std::optional<autofill::CreditCard> creditCard =
       [self.mediator creditCardForIdentifier:creditCardIdentifier];
   if (creditCard) {
     [self.mediator logExitReason:kShowPaymentDetails];
+
     __weak __typeof(self) weakSelf = self;
+    auto callback = base::BindOnce(
+        [](__weak __typeof(self) weak_self, autofill::CreditCard credit_card) {
+          [weak_self.settingsHandler showCreditCardDetails:credit_card
+                                                inEditMode:NO];
+          [weak_self
+                  .browserCoordinatorCommandsHandler dismissPaymentSuggestions];
+        },
+        weakSelf, std::move(*creditCard));
     [self.baseViewController.presentedViewController
         dismissViewControllerAnimated:NO
-                           completion:^{
-                             [weakSelf.settingsHandler
-                                 showCreditCardDetails:creditCard
-                                            inEditMode:NO];
-                             [weakSelf.browserCoordinatorCommandsHandler
-                                     dismissPaymentSuggestions];
-                           }];
+                           completion:base::CallbackToBlock(
+                                          std::move(callback))];
   }
 }
 

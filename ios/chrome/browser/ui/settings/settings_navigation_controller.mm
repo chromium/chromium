@@ -452,8 +452,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       delegate:
                                           (id<SettingsNavigationControllerDelegate>)
                                               delegate
-                                    creditCard:
-                                        (const autofill::CreditCard*)creditCard
+                                    creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode {
   ChromeBrowserState* browserState =
       browser->GetBrowserState()->GetOriginalChromeBrowserState();
@@ -463,7 +462,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
-           initWithCreditCard:*creditCard
+           initWithCreditCard:creditCard
           personalDataManager:personalDataManager];
   if (editMode) {
     // If `creditCard` needs to be edited from the Payments web page, then a
@@ -1179,7 +1178,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self pushViewController:controller animated:YES];
 }
 
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
@@ -1188,7 +1187,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           browserState->GetOriginalChromeBrowserState());
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
-           initWithCreditCard:*creditCard
+           initWithCreditCard:creditCard
           personalDataManager:personalDataManager];
   if (editMode) {
     // If `creditCard` needs to be edited from the Payments web page, then a

@@ -181,8 +181,7 @@ extern NSString* const kSettingsDoneButtonId;
                                       delegate:
                                           (id<SettingsNavigationControllerDelegate>)
                                               delegate
-                                    creditCard:
-                                        (const autofill::CreditCard*)creditCard
+                                    creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode;
 
 // Creates a new DefaultBrowserSettingsTableViewController and the chrome

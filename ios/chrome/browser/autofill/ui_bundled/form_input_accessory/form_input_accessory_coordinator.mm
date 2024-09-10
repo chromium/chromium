@@ -587,7 +587,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)cardCoordinator:(CardCoordinator*)cardCoordinator
-    didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+    didTriggerOpenCardDetails:(autofill::CreditCard)card
                    inEditMode:(BOOL)editMode {
   [self reset];
 
@@ -595,7 +595,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
   if (editMode &&
       [AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:card]) {
     GURL paymentsURL =
-        autofill::payments::GetManageInstrumentUrl(card->instrument_id());
+        autofill::payments::GetManageInstrumentUrl(card.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(

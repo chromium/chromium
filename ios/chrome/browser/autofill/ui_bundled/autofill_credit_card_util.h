@@ -52,7 +52,7 @@
 
 // Evaluates whether the passed `card` should be edited from the Payments web
 // page.
-+ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard*)card;
++ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard&)card;
 
 @end
 

@@ -73,7 +73,7 @@ enum class PasswordCheckReferrer;
 
 // Shows the credit card details view. `editMode` indicates whether the details
 // page should be opened in edit mode.
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode;
 
 // Shows the settings page informing the user how to set Chrome as the default

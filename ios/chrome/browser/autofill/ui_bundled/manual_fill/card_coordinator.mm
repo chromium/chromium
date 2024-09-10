@@ -125,25 +125,30 @@
   }];
 }
 
-- (void)openCardDetails:(const autofill::CreditCard*)card
-             inEditMode:(BOOL)editMode {
+- (void)openCardDetails:(autofill::CreditCard)card inEditMode:(BOOL)editMode {
   CHECK(_personalDataManager);
-  if (card->record_type() == autofill::CreditCard::RecordType::kLocalCard &&
+  if (card.record_type() == autofill::CreditCard::RecordType::kLocalCard &&
       _personalDataManager->payments_data_manager()
           .IsPaymentMethodsMandatoryReauthEnabled() &&
       [_reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(
         IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH);
-    auto completionHandler = ^(ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [self didTriggerOpenCardDetails:card inEditMode:editMode];
-      }
-    };
 
+    __weak __typeof(self) weakSelf = self;
+    auto callback = base::BindOnce(
+        [](__weak __typeof(self) weak_self, autofill::CreditCard card,
+           BOOL edit_mode, ReauthenticationResult result) {
+          if (result != ReauthenticationResult::kFailure) {
+            [weak_self didTriggerOpenCardDetails:std::move(card)
+                                      inEditMode:edit_mode];
+          }
+        },
+        weakSelf, std::move(card), editMode);
     [_reauthenticationModule
         attemptReauthWithLocalizedReason:reason
                     canReusePreviousAuth:YES
-                                 handler:completionHandler];
+                                 handler:base::CallbackToBlock(
+                                             std::move(callback))];
     return;
   }
 
@@ -161,12 +166,11 @@
                     fieldType:(manual_fill::PaymentFieldType)fieldType {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    if (!weakSelf)
-      return;
-    const autofill::CreditCard* autofillCreditCard =
+    std::optional<const autofill::CreditCard> autofillCreditCard =
         [weakSelf.cardMediator findCreditCardfromGUID:card.GUID];
-    if (!autofillCreditCard)
+    if (!autofillCreditCard) {
       return;
+    }
     [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
                            withBaseViewController:weakSelf.baseViewController
                                        recordType:card.recordType
@@ -185,14 +189,19 @@
 
 #pragma mark - Private
 
-- (void)didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+- (void)didTriggerOpenCardDetails:(autofill::CreditCard)card
                        inEditMode:(BOOL)editMode {
   __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate cardCoordinator:weakSelf
-             didTriggerOpenCardDetails:card
-                            inEditMode:editMode];
-  }];
+  auto callback = base::BindOnce(
+      [](__weak __typeof(self) weak_self, autofill::CreditCard card,
+         BOOL edit_mode) {
+        [weak_self.delegate cardCoordinator:weak_self
+                  didTriggerOpenCardDetails:std::move(card)
+                                 inEditMode:edit_mode];
+      },
+      weakSelf, std::move(card), editMode);
+  [self dismissIfNecessaryThenDoCompletion:base::CallbackToBlock(
+                                               std::move(callback))];
 }
 
 @end

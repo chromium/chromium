@@ -2378,7 +2378,7 @@ using UserFeedbackDataCallback =
                  completion:nil];
 }
 
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {

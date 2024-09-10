@@ -137,11 +137,14 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   _webStateList = nullptr;
 }
 
-- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier {
+- (std::optional<autofill::CreditCard>)creditCardForIdentifier:
+    (NSString*)identifier {
   CHECK(identifier);
   CHECK(_personalDataManager);
-  return _personalDataManager->payments_data_manager().GetCreditCardByGUID(
-      base::SysNSStringToUTF8(identifier));
+  autofill::CreditCard* card =
+      _personalDataManager->payments_data_manager().GetCreditCardByGUID(
+          base::SysNSStringToUTF8(identifier));
+  return card ? std::make_optional(*card) : std::nullopt;
 }
 
 - (BOOL)hasCreditCards {

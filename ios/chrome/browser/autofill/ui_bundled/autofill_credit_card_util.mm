@@ -103,8 +103,8 @@
       base::SysNSStringToUTF16(cardNickname));
 }
 
-+ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard*)card {
-  switch (card->record_type()) {
++ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard&)card {
+  switch (card.record_type()) {
     case autofill::CreditCard::RecordType::kLocalCard:
     case autofill::CreditCard::RecordType::kVirtualCard:
       return NO;

@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)editButtonPressed {
   // Check if the card should be edited from the Payments web page.
-  if ([AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:&_creditCard]) {
+  if ([AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:_creditCard]) {
     GURL paymentsURL =
         autofill::payments::GetManageInstrumentUrl(_creditCard.instrument_id());
     OpenNewTabCommand* command =
