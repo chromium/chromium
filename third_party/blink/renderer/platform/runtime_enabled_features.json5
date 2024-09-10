@@ -1510,7 +1510,7 @@
       name: "DocumentPictureInPicturePreferInitialPlacement",
       status: {
         "Android": "",
-        "default": "experimental",
+        "default": "stable",
       },
     },
     // Enables propagating user activation from a document picture-in-picture
