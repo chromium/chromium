@@ -395,6 +395,12 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
                                                   /*show=*/false);
       break;
+    case base::to_underlying(CommandId::kCoralNewDesk):
+      // TODO(yulunwu) implement behavior
+      break;
+    case base::to_underlying(CommandId::kCoralSaveForLater):
+      // TODO(yulunwu) implement behavior
+      break;
     case base::to_underlying(CommandId::kProvideFeedback):
       Shell::Get()->shell_delegate()->OpenFeedbackDialog(
           ShellDelegate::FeedbackSource::kOverview,

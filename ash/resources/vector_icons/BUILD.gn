@@ -110,6 +110,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "color_correction.icon",
     "combine_desks.icon",
     "copy.icon",
+    "coral_open.icon",
     "default_app.icon",
     "delete.icon",
     "desk_bar_shift.icon",
