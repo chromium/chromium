@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * when necessary.
  */
 public class EdgeToEdgeUtils {
+    private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
@@ -60,7 +62,7 @@ public class EdgeToEdgeUtils {
     public static boolean isEnabled() {
         return isLegacyWebsiteOptInEnabled()
                 || isEdgeToEdgeBottomChinEnabled()
-                || isFullWebEdgeToEdgeOptInEnabled();
+                || isEdgeToEdgeWebOptInEnabled();
     }
 
     /**
@@ -90,8 +92,8 @@ public class EdgeToEdgeUtils {
      * Whether drawing the website that has `viewport-fit=cover` fully edge to edge, removing the
      * bottom chin.
      */
-    public static boolean isFullWebEdgeToEdgeOptInEnabled() {
-        return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
+    public static boolean isEdgeToEdgeWebOptInEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
     }
 
     /**
@@ -180,7 +182,7 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
-        if (ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled()) {
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
         // TODO (crbug.com/353724310) Refactor flag check to the E2E web opt-in flag
@@ -223,5 +225,10 @@ public class EdgeToEdgeUtils {
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);
         return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
+    }
+
+    public static void setAlwaysDrawWebEdgeToEdgeForTesting(boolean drawWebEdgeToEdge) {
+        sAlwaysDrawWebEdgeToEdgeForTesting = drawWebEdgeToEdge;
+        ResettersForTesting.register(() -> sAlwaysDrawWebEdgeToEdgeForTesting = false);
     }
 }

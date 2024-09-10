@@ -4463,15 +4463,16 @@ const char kDrawNativeEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on all "
     "native pages.";
 
-const char kDrawWebEdgeToEdgeName[] = "DrawWebEdgeToEdge";
-const char kDrawWebEdgeToEdgeDescription[] =
-    "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on most "
-    "web pages.";
-
 const char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
 const char kEdgeToEdgeBottomChinDescription[] =
     "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "
     "experience.";
+
+const char kEdgeToEdgeWebOptInName[] = "DrawEdgeToEdge";
+const char kEdgeToEdgeWebOptInDescription[] =
+    "Enables Chrome to draw below the Nav Bar on websites that have explicitly "
+    "opted into Edge-to-Edge. Requires DrawCutoutEdgeToEdge to also be "
+    "enabled.";
 
 const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
 const char kDynamicSafeAreaInsetsDescription[] =

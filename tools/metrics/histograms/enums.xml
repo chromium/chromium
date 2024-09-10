@@ -24112,6 +24112,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioAecRequiredForCrasProcessor:disabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
+  <int value="1449281734" label="EdgeToEdgeWebOptIn:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
   <int value="1450198190" label="UseFrameIntervalDecider:enabled"/>
   <int value="1450313630" label="RestartToGainAccessToKeychain:enabled"/>
@@ -25233,6 +25234,7 @@ from previous Chrome versions.
   <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
+  <int value="1890700065" label="EdgeToEdgeWebOptIn:disabled"/>
   <int value="1891210939" label="enable-blink-features"/>
   <int value="1891218220" label="HttpsFirstDialogUi:disabled"/>
   <int value="1891312456" label="AndroidMessagesProdEndpoint:disabled"/>
