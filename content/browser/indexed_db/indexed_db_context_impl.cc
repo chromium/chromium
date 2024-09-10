@@ -215,7 +215,8 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       base_data_path_(base_data_path.empty() ? base::FilePath()
                                              : base_data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
-      quota_client_receiver_(&quota_client_wrapper_) {
+      quota_client_receiver_(&quota_client_wrapper_),
+      force_single_thread_(!!custom_task_runner) {
   TRACE_EVENT0("IndexedDB", "init");
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
@@ -734,6 +735,7 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
         .WithArgs(/*doom=*/false);
   }
   bucket_contexts_.clear();
+  task_runner_limiters_.clear();
 
   // Shutdown won't go through `ShutdownOnIDBSequence()` for in-memory DBs and
   // in some tests.
@@ -1053,8 +1055,11 @@ void IndexedDBContextImpl::FillInBucketMetadata(
       .Then(std::move(result));
 }
 
-void IndexedDBContextImpl::DestroyBucketContext(storage::BucketId bucket_id) {
-    bucket_contexts_.erase(bucket_id);
+void IndexedDBContextImpl::DestroyBucketContext(
+    storage::BucketLocator bucket_locator) {
+  bucket_contexts_.erase(bucket_locator.id);
+  task_runner_limiters_[bucket_locator.storage_key.top_level_site()]
+      .active_bucket_count--;
 }
 
 void IndexedDBContextImpl::EnsureBucketContext(
@@ -1071,7 +1076,7 @@ void IndexedDBContextImpl::EnsureBucketContext(
   bucket_delegate.on_ready_for_destruction = base::BindPostTask(
       idb_task_runner_,
       base::BindOnce(&IndexedDBContextImpl::DestroyBucketContext,
-                     weak_factory_.GetWeakPtr(), bucket_locator.id));
+                     weak_factory_.GetWeakPtr(), bucket_locator));
   bucket_delegate.on_content_changed = base::BindPostTask(
       idb_task_runner_,
       base::BindRepeating(&IndexedDBContextImpl::NotifyIndexedDBContentChanged,
@@ -1100,13 +1105,29 @@ void IndexedDBContextImpl::EnsureBucketContext(
         fsa_context.InitWithNewPipeAndPassReceiver());
   }
 
+  // See docs above `TaskRunnerLimiter`.
+  scoped_refptr<base::SequencedTaskRunner> bucket_task_runner;
+  TaskRunnerLimiter& task_runner_limiter =
+      task_runner_limiters_[bucket_locator.storage_key.top_level_site()];
+  static int kTaskRunnerCountLimit = base::SysInfo::NumberOfProcessors();
+  if (++task_runner_limiter.active_bucket_count > kTaskRunnerCountLimit) {
+    if (!task_runner_limiter.overflow_task_runner) {
+      task_runner_limiter.overflow_task_runner = CreateTaskRunner();
+    }
+    bucket_task_runner = task_runner_limiter.overflow_task_runner;
+  } else {
+    bucket_task_runner = CreateTaskRunner();
+  }
+
   const auto& [iter, inserted] = bucket_contexts_.emplace(
       bucket_locator.id,
       base::SequenceBound<IndexedDBBucketContext>(
-          force_single_thread_ ? IDBTaskRunner() : CreateTaskRunner(), bucket,
-          data_directory, std::move(bucket_delegate), quota_manager_proxy_,
-          io_task_runner_, std::move(cloned_blob_storage_context),
-          std::move(fsa_context), for_each_bucket_context_));
+          force_single_thread_ ? IDBTaskRunner()
+                               : std::move(bucket_task_runner),
+          bucket, data_directory, std::move(bucket_delegate),
+          quota_manager_proxy_, io_task_runner_,
+          std::move(cloned_blob_storage_context), std::move(fsa_context),
+          for_each_bucket_context_));
   DCHECK(inserted);
   if (pending_failure_injector_) {
     iter->second
@@ -1153,5 +1174,8 @@ void IndexedDBContextImpl::PerformStorageCleanup(
 bool IndexedDBContextImpl::BucketContextExists(storage::BucketId bucket_id) {
   return bucket_contexts_.find(bucket_id) != bucket_contexts_.end();
 }
+
+IndexedDBContextImpl::TaskRunnerLimiter::TaskRunnerLimiter() = default;
+IndexedDBContextImpl::TaskRunnerLimiter::~TaskRunnerLimiter() = default;
 
 }  // namespace content

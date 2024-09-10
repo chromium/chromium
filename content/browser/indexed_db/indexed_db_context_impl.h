@@ -156,9 +156,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
     return idb_task_runner_;
   }
 
-  // Runs backing stores (and bucket contexts) on `idb_task_runner_` to simplify
-  // unit tests.
-  void ForceSingleThreadForTesting() { force_single_thread_ = true; }
   const base::FilePath GetFirstPartyDataPathForTesting() const;
   base::SequenceBound<IndexedDBBucketContext>* GetBucketContextForTesting(
       const storage::BucketId& id);
@@ -280,7 +277,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const std::u16string& database_name,
       const std::u16string& object_store_name);
 
-  void DestroyBucketContext(storage::BucketId id);
+  void DestroyBucketContext(storage::BucketLocator bucket_locator);
 
   std::optional<storage::BucketLocator> LookUpBucket(
       storage::BucketId bucket_id);
@@ -365,8 +362,27 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::map<storage::BucketId, base::SequenceBound<IndexedDBBucketContext>>
       bucket_contexts_;
 
+  // For the most part, every bucket gets its own SequencedTaskRunner. But each
+  // "site", i.e. StorageKey's `top_level_site()`, has a cap on the number of
+  // task runners its buckets will be allotted, which is equal to the number of
+  // cores on the device. When creating a new IndexedDBBucketContext, it will
+  // get a unique task runner that runs on the threadpool unless
+  // `active_bucket_count` is over the number of cores, in which case the task
+  // runner will be shared with other buckets.
+  struct TaskRunnerLimiter {
+    TaskRunnerLimiter();
+    ~TaskRunnerLimiter();
+
+    int active_bucket_count = 0;
+    scoped_refptr<base::SequencedTaskRunner> overflow_task_runner;
+  };
+  std::map<net::SchemefulSite, TaskRunnerLimiter> task_runner_limiters_;
+
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 
+  // When true, run backing stores (and bucket contexts) on `idb_task_runner_`
+  // to simplify unit tests. This is set to true when the ctor param
+  // `custom_task_runner` is non null.
   bool force_single_thread_ = false;
 
   // If recording begins on a bucket ID that doesn't currently have a context,

@@ -1351,8 +1351,7 @@ void StoragePartitionImpl::Initialize(
   indexed_db_control_wrapper_ = std::make_unique<IndexedDBControlWrapper>(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
       ChromeBlobStorageContext::GetRemoteFor(browser_context_),
-      std::move(file_system_access_context), GetIOThreadTaskRunner({}),
-      /*task_runner=*/nullptr);
+      std::move(file_system_access_context), GetIOThreadTaskRunner({}));
 
   cache_storage_control_wrapper_ = std::make_unique<CacheStorageControlWrapper>(
       GetIOThreadTaskRunner({}), path,

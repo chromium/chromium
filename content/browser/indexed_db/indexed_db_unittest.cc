@@ -485,7 +485,6 @@ class IndexedDBTest
     return *GetBucketContext(bucket.id);
   }
 
-  // This will assert if `ForceSingleThreadForTesting()` has not been called.
   IndexedDBBucketContext* GetBucketContext(storage::BucketId id) {
     auto* sequence_bound = context_->GetBucketContextForTesting(id);
     if (!sequence_bound) {
@@ -508,7 +507,6 @@ class IndexedDBTest
 
   IndexedDBBucketContextHandle CreateBucketHandle(
       std::optional<storage::BucketLocator> bucket_locator = std::nullopt) {
-    context_->ForceSingleThreadForTesting();
     if (!bucket_locator) {
       const blink::StorageKey storage_key =
           blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -1576,7 +1574,6 @@ TEST(PartitionedLockManager, TestRangeDifferences) {
 }
 
 TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
-  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   storage::BucketInfo bucket_1 = GetOrCreateBucket(
@@ -1662,7 +1659,6 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
 }
 
 TEST_P(IndexedDBTest, CloseSequenceStarts) {
-  context_->ForceSingleThreadForTesting();
   IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
   const storage::BucketId bucket_id =
       bucket_context_handle->bucket_locator().id;
@@ -1941,7 +1937,6 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
 }
 
 TEST_P(IndexedDBTest, TooLongOrigin) {
-  context_->ForceSingleThreadForTesting();
   base::FilePath temp_dir =
       context()->GetFirstPartyDataPathForTesting().DirName();
   int limit = base::GetMaximumPathComponentLength(temp_dir);
@@ -2027,7 +2022,6 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 // Tests that the backing store is closed when the connection is closed during
 // upgrade.
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
-  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2068,7 +2062,6 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 }
 
 TEST_P(IndexedDBTest, DeleteDatabase) {
-  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2137,7 +2130,6 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 }
 
 TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
-  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2237,7 +2229,6 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
 }
 
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
-  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
