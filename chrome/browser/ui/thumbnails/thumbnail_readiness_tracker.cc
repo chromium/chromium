@@ -72,6 +72,15 @@ void ThumbnailReadinessTracker::WebContentsDestroyed() {
   UpdateReadiness(Readiness::kNotReady);
 }
 
+void ThumbnailReadinessTracker::WasDiscarded() {
+  // A new ThumbnailTabHelper and its associated tracker is created every time
+  // a new tab WebContents is created. A new tracker starts at the kNotReady
+  // state. Set this explicitly during discard to reset readiness for the new
+  // discard implementation that retains the tab's WebContents (and consequently
+  // does not recreate the tab helper).
+  UpdateReadiness(Readiness::kNotReady);
+}
+
 void ThumbnailReadinessTracker::UpdateReadiness(Readiness readiness) {
   if (readiness == last_readiness_)
     return;

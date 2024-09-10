@@ -190,7 +190,8 @@ class ThumbnailTabHelper::TabStateTracker
   // ThumbnailImage::Delegate:
   void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {
     capture_driver_.UpdateThumbnailVisibility(is_being_observed);
-    if (is_being_observed) {
+    // Do not attempt to reload discarded tabs for thumbnail observation events.
+    if (is_being_observed && !web_contents()->WasDiscarded()) {
       web_contents()->GetController().LoadIfNecessary();
     }
   }
@@ -200,11 +201,17 @@ class ThumbnailTabHelper::TabStateTracker
   }
 
   void PageReadinessChanged(CaptureReadiness readiness) {
-    if (page_readiness_ == readiness)
+    if (page_readiness_ == readiness) {
       return;
+    }
+
     // If we transition back to a kNotReady state, clear any existing thumbnail,
     // as it will contain an old snapshot, possibly from a different domain.
-    if (readiness == CaptureReadiness::kNotReady) {
+    // Readiness will be reset to kNotReady when a tab is discarded. In this
+    // specific case we do not clear thumbnail data to ensure the existing
+    // preview remains available while discarded tabs are hovered.
+    if (readiness == CaptureReadiness::kNotReady &&
+        !web_contents()->WasDiscarded()) {
       thumbnail_tab_helper_->ClearData();
     }
     page_readiness_ = readiness;

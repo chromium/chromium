@@ -32,6 +32,7 @@ class ThumbnailReadinessTracker : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
+  void WasDiscarded() override;
 
  private:
   void UpdateReadiness(Readiness readiness);
