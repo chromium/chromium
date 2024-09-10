@@ -94,6 +94,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     Signals& operator=(Signals&&);
     ~Signals();
 
+    ukm::SourceId ukm_source_id;
     url::Origin page_origin;
     GURL page_url;
     autofill::FormData form;
