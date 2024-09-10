@@ -688,6 +688,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
             getWindowAndroid().getInsetObserver().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
+            // TODO (crbug/359973775): Pass InsetObserver as a ModalDialogManager ctor arg so that
+            // all instances are registered as inset observers.
+            getModalDialogManager().setInsetObserver(getWindowAndroid().getInsetObserver());
 
             // Make the activity listen to policy change events
             CombinedPolicyProvider.get().addPolicyChangeListener(this);

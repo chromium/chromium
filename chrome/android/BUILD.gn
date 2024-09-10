@@ -1257,6 +1257,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/display_cutout/android:java",
       "//components/browser_ui/media/android:java",
       "//components/browser_ui/media/android:java_resources",
+      "//components/browser_ui/modaldialog/android:junit",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/share/android:java",

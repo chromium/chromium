@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -12,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
@@ -28,6 +30,8 @@ import android.view.Window;
 import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
@@ -50,6 +54,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
+import org.chromium.ui.InsetObserver;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -79,6 +85,7 @@ public class AppModalPresenterTest {
 
     private static Activity sActivity;
     private static ModalDialogManager sManager;
+    private static InsetObserver sInsetObserver;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
@@ -92,6 +99,11 @@ public class AppModalPresenterTest {
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivity),
                                     ModalDialogManager.ModalDialogType.APP);
+                    sInsetObserver =
+                            new InsetObserver(
+                                    new ImmutableWeakReference<>(
+                                            sActivity.getWindow().getDecorView().getRootView()));
+                    sManager.setInsetObserver(sInsetObserver);
                 });
     }
 
@@ -240,6 +252,76 @@ public class AppModalPresenterTest {
                     sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
                     window.getNavigationBarDividerColor());
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testDialogDimensionsWithNonZeroSystemBarsInsets() {
+        doTestDialogDimensions(
+                /* leftInset= */ 50,
+                /* topInset= */ 80,
+                /* rightInset= */ 40,
+                /* bottomInset= */ 64);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testDialogDimensionsWithNoSystemBarsInsets() {
+        doTestDialogDimensions(
+                /* leftInset= */ 0, /* topInset= */ 0, /* rightInset= */ 0, /* bottomInset= */ 0);
+    }
+
+    private void doTestDialogDimensions(
+            int leftInset, int topInset, int rightInset, int bottomInset) {
+        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(true);
+        PropertyModel dialog =
+                createDialog(
+                        sActivity,
+                        sManager,
+                        "title",
+                        mTestObserver,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+
+        var displayMetrics = sActivity.getResources().getDisplayMetrics();
+        var windowWidth = displayMetrics.widthPixels;
+        var windowHeight = displayMetrics.heightPixels;
+
+        // Set a minimum height / width for the dialog view so that it is considered large with
+        // respect to the window size.
+        var customView = new View(sActivity);
+        customView.setMinimumHeight(windowHeight - 20);
+        customView.setMinimumWidth(windowWidth - 20);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> dialog.set(ModalDialogProperties.CUSTOM_VIEW, customView));
+
+        // Apply window insets before dialog is shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var windowInsets =
+                            new WindowInsetsCompat.Builder()
+                                    .setInsets(
+                                            systemBars(),
+                                            Insets.of(leftInset, topInset, rightInset, bottomInset))
+                                    .build();
+                    sInsetObserver.onApplyWindowInsets(
+                            sActivity.getWindow().getDecorView().getRootView(), windowInsets);
+                });
+        showDialogInRoot(sManager, dialog, ModalDialogType.APP);
+
+        // Verify dialog edges don't draw into insets' regions.
+        var view =
+                ((AppModalPresenter) sManager.getCurrentPresenterForTest())
+                        .getDialogViewForTesting();
+        assertTrue(
+                "View is wider than expected.",
+                view.getWidth() <= (windowWidth - 2 * Math.max(rightInset, leftInset)));
+        assertTrue(
+                "View is taller than expected.",
+                view.getHeight() <= (windowHeight - 2 * Math.max(topInset, bottomInset)));
+
+        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(false);
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {

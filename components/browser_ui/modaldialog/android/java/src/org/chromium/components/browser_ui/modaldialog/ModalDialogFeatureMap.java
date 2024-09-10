@@ -8,11 +8,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 
 /** Java accessor for base::Features listed in {@link ModalDialogFeatureList}. */
 @JNINamespace("browser_ui")
 public final class ModalDialogFeatureMap extends FeatureMap {
     private static final ModalDialogFeatureMap sInstance = new ModalDialogFeatureMap();
+    private static boolean sModalDialogLayoutWithSystemInsetsEnabledForTesting;
 
     // Do not instantiate this class.
     private ModalDialogFeatureMap() {}
@@ -26,7 +29,23 @@ public final class ModalDialogFeatureMap extends FeatureMap {
 
     /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
+        if (BuildConfig.IS_FOR_TEST
+                && ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS.equals(
+                        featureName)) {
+            // Disable this feature in all tests by default, unless enabled explicitly.
+            // TODO (crbug/339304231): Use @DisableFeatures/@EnableFeatures in affected test files.
+            return sModalDialogLayoutWithSystemInsetsEnabledForTesting;
+        }
         return getInstance().isEnabledInNative(featureName);
+    }
+
+    /**
+     * @param enabled Whether MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS should be enabled for testing.
+     */
+    public static void setModalDialogLayoutWithSystemInsetsEnabledForTesting(boolean enabled) {
+        sModalDialogLayoutWithSystemInsetsEnabledForTesting = enabled;
+        ResettersForTesting.register(
+                () -> sModalDialogLayoutWithSystemInsetsEnabledForTesting = false);
     }
 
     @Override

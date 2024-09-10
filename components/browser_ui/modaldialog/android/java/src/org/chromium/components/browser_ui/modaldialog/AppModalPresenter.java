@@ -4,8 +4,8 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,13 +13,20 @@ import android.view.WindowManager;
 import androidx.activity.ComponentDialog;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.DialogStyles;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -31,8 +38,14 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     private static final long ENTER_ANIMATION_ESTIMATION_MS = 200;
     private final Context mContext;
     private ComponentDialog mDialog;
+    private ModalDialogView mDialogView;
+    private PropertyModel mModel;
     private PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
             mModelChangeProcessor;
+
+    private InsetObserver mInsetObserver;
+    private Insets mSystemInsets;
+    private OnApplyWindowInsetsListener mWindowInsetsListener;
 
     private class ViewBinder extends ModalDialogViewBinder {
         @Override
@@ -51,7 +64,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         }
     }
 
-    /** @param activity The {@link Activity} on which dialog views will be created and shown. */
+    /**
+     * @param context The {@link Context} associated with the dialog views.
+     */
     public AppModalPresenter(Context context) {
         mContext = context;
     }
@@ -64,7 +79,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     @Override
     protected void addDialogView(
             PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
-        int styles[][] = {
+        mModel = model;
+        int[][] styles = {
             {
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
@@ -85,7 +101,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             }
         };
         int dialogIndex = 0;
-        int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
+        int dialogStyle = mModel.get(ModalDialogProperties.DIALOG_STYLES);
+
         if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG) {
             dialogIndex = 1;
         } else if (dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE) {
@@ -94,7 +111,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             dialogIndex = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 3 : 1;
         }
         int buttonIndex = 0;
-        int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
+        int buttonStyle = mModel.get(ModalDialogProperties.BUTTON_STYLES);
         if (buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE
                 || buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
             buttonIndex = 1;
@@ -111,17 +128,29 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't
         // notify change if the property is not set during initialization.
         mDialog.setCanceledOnTouchOutside(false);
-        ModalDialogView dialogView = loadDialogView();
+        mDialogView = loadDialogView();
+
+        // Observe application of dialog window insets, to calculate margins to avoid drawing the
+        // dialog into the insets' regions. See crbug/365110749 for more details on why we use
+        // |mInsetObserver|, and for tracking a more favorable long-term solution.
+        mWindowInsetsListener =
+                (view, windowInsetsCompat) -> {
+                    updateMargins();
+                    return windowInsetsCompat;
+                };
+        ViewCompat.setOnApplyWindowInsetsListener(
+                getWindow().getDecorView().getRootView(), mWindowInsetsListener);
+
         mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(model, dialogView, new ViewBinder());
+                PropertyModelChangeProcessor.create(mModel, mDialogView, new ViewBinder());
         // setContentView() can trigger using LayoutInflater, which may read from disk.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mDialog.setContentView(dialogView);
+            mDialog.setContentView(mDialogView);
         }
 
         mDialog.setOnShowListener(
                 (dialogInterface) -> {
-                    dialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
+                    mDialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
                 });
 
         if (onDialogCreatedCallback != null) {
@@ -146,11 +175,68 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         if (mDialog != null) {
             mDialog.dismiss();
             mDialog = null;
+            mModel = null;
+            mWindowInsetsListener = null;
         }
+    }
+
+    @Override
+    protected void setInsetObserver(InsetObserver insetObserver) {
+        mInsetObserver = insetObserver;
+    }
+
+    /** Updates dialog margins to avoid drawing into system insets' regions. */
+    private void updateMargins() {
+        if (mInsetObserver == null) return;
+        if (mDialog == null || isFullScreenDialog(mContext, mModel)) return;
+
+        var windowInsets = mInsetObserver.getLastRawWindowInsets();
+        if (windowInsets == null) return;
+
+        var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+        if (systemInsets.equals(mSystemInsets)) return;
+        mSystemInsets = systemInsets;
+
+        int fixedMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
+        int horizontalMargin =
+                Math.max(Math.max(systemInsets.left, systemInsets.right), fixedMargin);
+        int verticalMargin = Math.max(Math.max(systemInsets.top, systemInsets.bottom), fixedMargin);
+
+        mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, horizontalMargin);
+        mModel.set(ModalDialogProperties.VERTICAL_MARGIN, verticalMargin);
+
+        // If the dialog is already showing when the insets change, request a layout for the updated
+        // margins to take effect.
+        if (mDialog.isShowing()) {
+            ViewUtils.requestLayout(mDialogView, "AppModalPresenter.updateMargins");
+        }
+    }
+
+    private static boolean isFullScreenDialog(Context context, PropertyModel model) {
+        assert model != null : "Model should not be null.";
+        int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
+
+        int screenSize =
+                context.getResources().getConfiguration().screenLayout
+                        & Configuration.SCREENLAYOUT_SIZE_MASK;
+        return (dialogStyle == DialogStyles.DIALOG_WHEN_LARGE
+                        && screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE)
+                || dialogStyle == DialogStyles.FULLSCREEN_DIALOG
+                || dialogStyle == DialogStyles.FULLSCREEN_DARK_DIALOG;
     }
 
     @VisibleForTesting
     public Window getWindow() {
         return mDialog.getWindow();
+    }
+
+    ModalDialogView getDialogViewForTesting() {
+        return mDialogView;
+    }
+
+    OnApplyWindowInsetsListener getWindowInsetsListenerForTesting() {
+        return mWindowInsetsListener;
     }
 }
