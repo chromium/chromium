@@ -472,15 +472,12 @@ std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
 }
 
 bool SidePanelCoordinator::IsSidePanelShowing() const {
-  if (auto* side_panel = browser_view_->unified_side_panel()) {
-    return side_panel->GetVisible();
-  }
-  return false;
+  return current_key_.has_value();
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key) const {
-  return IsSidePanelShowing() && current_key_ && current_key_->key == entry_key;
+  return current_key_ && current_key_->key == entry_key;
 }
 
 content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
@@ -502,13 +499,15 @@ void SidePanelCoordinator::DisableAnimationsForTesting() {
       ->DisableAnimationsForTesting();  // IN-TEST
 }
 
-SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return GetLoadingEntry();
+bool SidePanelCoordinator::IsSidePanelEntryShowing(
+    const SidePanelEntry::Key& entry_key,
+    bool for_tab) const {
+  return current_key_ && current_key_->key == entry_key &&
+         current_key_->tab_handle.has_value() == for_tab;
 }
 
-bool SidePanelCoordinator::IsSidePanelEntryShowing(
-    const SidePanelEntry* entry) const {
-  return IsSidePanelEntryShowing(entry->key());
+SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
+  return GetLoadingEntry();
 }
 
 void SidePanelCoordinator::Show(
@@ -685,16 +684,6 @@ SidePanelEntry* SidePanelCoordinator::GetLoadingEntry() const {
               kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
   return content_wrapper->loading_entry();
-}
-
-bool SidePanelCoordinator::IsGlobalEntryShowing(
-    const SidePanelEntry::Key& entry_key) const {
-  if (!IsSidePanelShowing() || !current_key_) {
-    return false;
-  }
-
-  return window_registry_->GetEntryForKey(entry_key) ==
-         GetEntryForUniqueKey(*current_key_);
 }
 
 void SidePanelCoordinator::InitializeSidePanel() {
@@ -1050,10 +1039,11 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
+  bool is_global_entry_showing = current_key_ && !current_key_->tab_handle &&
+                                 current_key_->key == entry->key();
   // If `entry` is a contextual entry and the global entry with the same key is
   // currently being shown, show the tab-scoped `entry`.
-  if (registry == GetActiveContextualRegistry() &&
-      IsGlobalEntryShowing(entry->key())) {
+  if (registry == GetActiveContextualRegistry() && is_global_entry_showing) {
     Show({browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
           entry->key()},
          SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered,
@@ -1072,8 +1062,7 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
-  if (IsSidePanelShowing() &&
-      !browser_view_->unified_side_panel()->IsClosing() && current_key_ &&
+  if (!browser_view_->unified_side_panel()->IsClosing() && current_key_ &&
       (current_key_->key == entry->key())) {
     // If a global entry is deregistered but we are currently showing a
     // tab-scoped key, then do nothing.
@@ -1214,7 +1203,7 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
 }
 
 void SidePanelCoordinator::UpdateHeaderPinButtonState() {
-  if (!IsSidePanelShowing() || !current_key_) {
+  if (!current_key_) {
     return;
   }
 
@@ -1286,52 +1275,61 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from) {
-  if (!observed_view->GetVisible()) {
-    bool closing_global = false;
-    if (current_key_) {
-      // Reset current_key_ first to prevent previous_entry->OnEntryHidden()
-      // from calling multiple times. This could happen in the edge cases when
-      // callback inside current_entry->OnEntryHidden() is calling Close() to
-      // trigger race condition.
-      closing_global = !current_key_->tab_handle;
-      SidePanelEntry* previous_entry = current_entry_.get();
-      current_key_.reset();
-      current_entry_.reset();
-      if (previous_entry) {
-        previous_entry->OnEntryHidden();
-      }
-    }
+  // This method is called in 3 situations:
+  //   (1) The SidePanel was previously invisible, and Show() is called. This is
+  //   independent of the /*suppress_animations*/ parameter, and is re-entrant.
+  //   (2) The SidePanel was previously visible and has finished becoming
+  //   invisible. This is asynchronous if animated, and re-entrant if
+  //   non-animated.
+  //   (3) A parent view or widget changes its visibility state (e.g. window
+  //   becomes visible).
+  //   We currently only take action on (2). We use `current_key_` to
+  //   distinguish (3) from (2). We use visibility to distinguish (1) from (2).
+  if (observed_view->GetVisible() || !current_key_) {
+    return;
+  }
 
-    // Reset active entry values for all observed registries and clear cache for
-    // everything except remaining active entries (i.e. if another tab has an
-    // active contextual entry).
-    if (auto* contextual_registry = GetActiveContextualRegistry()) {
-      contextual_registry->ResetActiveEntry();
-      if (closing_global) {
-        // Reset last active entry in contextual registry as global entry should
-        // take precedence.
-        contextual_registry->ResetLastActiveEntry();
-      }
-    }
-    window_registry_->ResetActiveEntry();
-    ClearCachedEntryViews();
+  bool closing_global = !current_key_->tab_handle;
 
-    // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may
-    // already have deleted the content container, so check that it still
-    // exists.
-    if (auto* content_wrapper =
-            browser_view_->unified_side_panel()->GetViewByID(
-                kSidePanelContentWrapperViewId)) {
-      if (!content_wrapper->children().empty()) {
-        content_wrapper->RemoveChildViewT(content_wrapper->children().front());
-      }
-    }
-    SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
+  // Reset current_key_ first to prevent previous_entry->OnEntryHidden()
+  // from calling multiple times. This could happen in the edge cases when
+  // callback inside current_entry->OnEntryHidden() is calling Close() to
+  // trigger race condition.
+  SidePanelEntry* previous_entry = current_entry_.get();
+  current_key_.reset();
+  current_entry_.reset();
+  if (previous_entry) {
+    previous_entry->OnEntryHidden();
+  }
 
-    for (SidePanelViewStateObserver& view_state_observer :
-         view_state_observers_) {
-      view_state_observer.OnSidePanelDidClose();
+  // Reset active entry values for all observed registries and clear cache for
+  // everything except remaining active entries (i.e. if another tab has an
+  // active contextual entry).
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
+    contextual_registry->ResetActiveEntry();
+    if (closing_global) {
+      // Reset last active entry in contextual registry as global entry should
+      // take precedence.
+      contextual_registry->ResetLastActiveEntry();
     }
+  }
+  window_registry_->ResetActiveEntry();
+  ClearCachedEntryViews();
+
+  // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may
+  // already have deleted the content container, so check that it still
+  // exists.
+  if (auto* content_wrapper = browser_view_->unified_side_panel()->GetViewByID(
+          kSidePanelContentWrapperViewId)) {
+    if (!content_wrapper->children().empty()) {
+      content_wrapper->RemoveChildViewT(content_wrapper->children().front());
+    }
+  }
+  SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
+
+  for (SidePanelViewStateObserver& view_state_observer :
+       view_state_observers_) {
+    view_state_observer.OnSidePanelDidClose();
   }
 }
 

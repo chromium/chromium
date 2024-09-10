@@ -64,12 +64,14 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Browser* browser,
     content::WebContents* web_contents,
     const Extension* extension,
-    SidePanelRegistry* registry)
+    SidePanelRegistry* registry,
+    bool for_tab)
     : profile_(profile),
       browser_(browser),
       web_contents_(web_contents),
       extension_(extension),
-      registry_(registry) {
+      registry_(registry),
+      for_tab_(for_tab) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionSidePanelIntegration));
 
@@ -328,7 +330,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   SidePanelEntry* entry = GetEntry();
   DCHECK(entry);
 
-  if (coordinator->IsSidePanelEntryShowing(entry)) {
+  if (coordinator->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
     coordinator->Close();
   } else {
     entry->ClearCachedView();

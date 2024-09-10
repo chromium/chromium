@@ -87,7 +87,8 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
   ExtensionSidePanelManager(Profile* profile,
                             Browser* browser,
                             content::WebContents* web_contents,
-                            SidePanelRegistry* registry);
+                            SidePanelRegistry* registry,
+                            bool for_tab);
 
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
@@ -125,6 +126,9 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
 
   base::flat_map<ExtensionId, std::unique_ptr<ExtensionSidePanelCoordinator>>
       coordinators_;
+
+  // Whether this class is tab-scoped or window-scoped.
+  const bool for_tab_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

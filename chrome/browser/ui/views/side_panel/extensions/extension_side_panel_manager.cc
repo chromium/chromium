@@ -40,11 +40,13 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
     Profile* profile,
     Browser* browser,
     content::WebContents* web_contents,
-    SidePanelRegistry* registry)
+    SidePanelRegistry* registry,
+    bool for_tab)
     : profile_(profile),
       browser_(browser),
       web_contents_(web_contents),
-      registry_(registry) {
+      registry_(registry),
+      for_tab_(for_tab) {
   side_panel_registry_observation_.Observe(registry_);
   profile_observation_.Observe(profile);
 
@@ -62,7 +64,8 @@ void ExtensionSidePanelManager::CreateForBrowser(
   // std::make_unique<ExtensionSidePanelManager> to access a private
   // constructor.
   auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
-      browser->profile(), browser, /*web_contents=*/nullptr, window_registry));
+      browser->profile(), browser, /*web_contents=*/nullptr, window_registry,
+      /*for_tab=*/false));
   browser->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
 }
 
@@ -82,8 +85,9 @@ void ExtensionSidePanelManager::CreateForTab(Profile* profile,
   // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
   // std::make_unique<ExtensionSidePanelManager> to access a private
   // constructor.
-  auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
-      profile, /*browser=*/nullptr, web_contents, tab_registry));
+  auto manager = absl::WrapUnique(
+      new ExtensionSidePanelManager(profile, /*browser=*/nullptr, web_contents,
+                                    tab_registry, /*for_tab=*/true));
   web_contents->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
 }
 
@@ -227,7 +231,7 @@ void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
     coordinators_.emplace(
         extension->id(),
         std::make_unique<ExtensionSidePanelCoordinator>(
-            profile_, browser_, web_contents_, extension, registry_));
+            profile_, browser_, web_contents_, extension, registry_, for_tab_));
   }
 }
 

@@ -93,9 +93,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
 
-  // TODO(crbug.com/40851017): Move this method to `SidePanelUI` after
-  // decoupling `SidePanelEntry` from views.
-  bool IsSidePanelEntryShowing(const SidePanelEntry* entry) const;
+  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
+  // or window-scoped registry.
+  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+                               bool for_tab) const;
 
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
@@ -160,10 +161,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Returns the current loading entry or nullptr if none exists.
   SidePanelEntry* GetLoadingEntry() const;
-
-  // Returns whether the global entry with the same key as `entry_key` is
-  // showing.
-  bool IsGlobalEntryShowing(const SidePanelEntry::Key& entry_key) const;
 
   // Creates header and SidePanelEntry content container within the side panel.
   void InitializeSidePanel();
@@ -273,6 +270,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // following cases:
   //   * The active tab is switched, and UniqueKey is tab-scoped.
   //   * The entry is removed from tab or window-scoped registry.
+  // The side-panel is showing if and only if current_key_ is set. That means it
+  // must only be set in one place: PopulateSidePanel() and unset in one place:
+  // OnViewVisibilityChanged()
   std::optional<UniqueKey> current_key_;
   // TODO(https://crbug.com/363743081): Remove this member.
   // There are a few cases where the current control flow first modifies the

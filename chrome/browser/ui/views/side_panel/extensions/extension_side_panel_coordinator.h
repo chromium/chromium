@@ -46,7 +46,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                                          Browser* browser,
                                          content::WebContents* web_contents,
                                          const Extension* extension,
-                                         SidePanelRegistry* registry);
+                                         SidePanelRegistry* registry,
+                                         bool for_tab);
   ExtensionSidePanelCoordinator(const ExtensionSidePanelCoordinator&) = delete;
   ExtensionSidePanelCoordinator& operator=(
       const ExtensionSidePanelCoordinator&) = delete;
@@ -158,6 +159,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Cached view for global entry if it was disabled for a specific tab and may
   // be shown again on a different tab where it's enabled.
   std::unique_ptr<views::View> global_entry_view_;
+
+  // Whether this coordinator is tab-scoped or window-scoped.
+  const bool for_tab_;
 
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};
