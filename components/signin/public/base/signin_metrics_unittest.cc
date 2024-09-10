@@ -202,6 +202,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AvatarBubbleSigninWithSyncPromo";
       case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
         return "AccountMenu";
+      case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+        return "AccountMenuFailedSwitch";
       case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
         return "ProductSpecifications";
       case AccessPoint::ACCESS_POINT_MAX:

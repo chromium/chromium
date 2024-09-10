@@ -15,16 +15,20 @@
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
 
+// Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 
+// Starts the sign-out flow. Then call `completion`, with a parameter stating
+// whether the the sign-out was done.
 - (void)triggerSignoutWithTargetRect:(CGRect)targetRect
                           completion:(void (^)(BOOL success))completion;
 
+// Starts the sign-in flow. Then call `completion`, with a parameter stating
+// whether the the sign-out was done.
 - (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:
-                                 (void (^)(id<SystemIdentity> systemIdentity))
-                                     completion;
+                             completion:(void (^)(BOOL success))completion;
 
+// Displays the identity snackbar with `systemIdentity`.
 - (void)triggerAccountSwitchSnackbarWithIdentity:
     (id<SystemIdentity>)systemIdentity;
 

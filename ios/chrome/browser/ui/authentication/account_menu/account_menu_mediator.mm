@@ -242,8 +242,8 @@
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                               callback:^(BOOL success) {
-                                [weakSelf signoutDoneWithSuccess:success
-                                                        callback:callback];
+                                [weakSelf signoutEndedWithSuccess:success
+                                                         callback:callback];
                               }];
 }
 
@@ -264,11 +264,13 @@
   CHECK(newIdentity);
   _accountSwitchingInProgress = YES;
   __weak __typeof(self) weakSelf = self;
+  id<SystemIdentity> fromIdentity = _primaryIdentity;
   [self.delegate triggerSignoutWithTargetRect:targetRect
                                    completion:^(BOOL success) {
                                      [weakSelf
-                                         signoutDoneWithSuccess:success
-                                                 systemIdentity:newIdentity];
+                                         signoutEndedWithSuccess:success
+                                                    fromIdentity:fromIdentity
+                                                      toIdentity:newIdentity];
                                    }];
 }
 
@@ -383,7 +385,8 @@
 }
 
 // Callback for signout.
-- (void)signoutDoneWithSuccess:(BOOL)success callback:(void (^)(BOOL))callback {
+- (void)signoutEndedWithSuccess:(BOOL)success
+                       callback:(void (^)(BOOL))callback {
   if (!success) {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
@@ -393,25 +396,45 @@
 }
 
 // Callback for the first part of the switch, which is a sign-out.
-- (void)signoutDoneWithSuccess:(BOOL)success
-                systemIdentity:(id<SystemIdentity>)systemIdentity {
-  if (!success) {
-    [self restartUpdates];
+- (void)signoutEndedWithSuccess:(BOOL)signoutSuccess
+                   fromIdentity:(id<SystemIdentity>)previousIdentity
+                     toIdentity:(id<SystemIdentity>)newIdentity {
+  if (!signoutSuccess) {
+    // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
+    _accountSwitchingInProgress = NO;
+    [self restartUpdates];
     return;
   }
   __weak __typeof(self) weakSelf = self;
   [self.delegate
-      triggerSigninWithSystemIdentity:systemIdentity
-                           completion:^(id<SystemIdentity> signedInIdentity) {
-                             [weakSelf signinDone:signedInIdentity];
+      triggerSigninWithSystemIdentity:newIdentity
+                           completion:^(BOOL signInSuccess) {
+                             [weakSelf signinEndedWithSuccess:signInSuccess
+                                                 fromIdentity:previousIdentity
+                                                   toIdentity:newIdentity];
                            }];
 }
 
-- (void)signinDone:(id<SystemIdentity>)systemIdentity {
+- (void)signinEndedWithSuccess:(BOOL)success
+                  fromIdentity:(id<SystemIdentity>)previousIdentity
+                    toIdentity:(id<SystemIdentity>)newIdentity {
+  if (success) {
+    [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
+    // Sign-in failed, we sign the user back in their previous account.
+    _authenticationService->SignIn(
+        previousIdentity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
+    [self restartUpdates];
+    _blockUserInteractions = NO;
+  } else {
+    // That should be extremely are. MDM invalidated the previous account
+    // during the switch.
+    [self.delegate mediatorWantsToBeDismissed:self];
+  }
   _accountSwitchingInProgress = NO;
-  [_delegate triggerAccountSwitchSnackbarWithIdentity:systemIdentity];
-  [_delegate mediatorWantsToBeDismissed:self];
 }
 
 // Refresh everything and update the UI according to the change in the state.

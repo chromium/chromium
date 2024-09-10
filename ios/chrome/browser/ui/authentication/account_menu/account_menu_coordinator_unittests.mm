@@ -280,12 +280,11 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
 TEST_F(AccountMenuCoordinatorNonManagedTest, testSignin) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
-  [coordinator_
-      triggerSigninWithSystemIdentity:kSecondaryIdentity
-                           completion:^(id<SystemIdentity> systemIdentity) {
-                             EXPECT_EQ(systemIdentity, kSecondaryIdentity);
-                             closure.Run();
-                           }];
+  [coordinator_ triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                     completion:^(BOOL success) {
+                                       EXPECT_TRUE(success);
+                                       closure.Run();
+                                     }];
 
   run_loop.Run();
 }

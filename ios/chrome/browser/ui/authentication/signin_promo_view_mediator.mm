@@ -128,6 +128,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
@@ -225,6 +226,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
@@ -324,6 +326,7 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
@@ -423,6 +426,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
@@ -511,6 +515,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
@@ -597,6 +602,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;

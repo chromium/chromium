@@ -239,6 +239,9 @@ enum class AccessPoint : int {
   ACCESS_POINT_ACCOUNT_MENU = 67,
   // Signin via Product Specifications.
   ACCESS_POINT_PRODUCT_SPECIFICATIONS = 68,
+  // The user is signed-back into their previous account after failing to switch
+  // to a new one.
+  ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH = 69,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

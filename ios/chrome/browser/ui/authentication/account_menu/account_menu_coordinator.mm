@@ -283,9 +283,7 @@
 }
 
 - (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:
-                                 (void (^)(id<SystemIdentity> systemIdentity))
-                                     completion {
+                             completion:(void (^)(BOOL success))completion {
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
@@ -294,9 +292,7 @@
              postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
       presentingViewController:_navigationController];
 
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    completion(identity);
-  }];
+  [authenticationFlow startSignInWithCompletion:completion];
 }
 
 - (void)triggerAccountSwitchSnackbarWithIdentity:

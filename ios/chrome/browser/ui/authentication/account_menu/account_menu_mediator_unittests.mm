@@ -128,6 +128,16 @@ class AccountMenuMediatorTest : public PlatformTest {
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
+  void SignOut() {
+    base::RunLoop run_loop;
+    base::RepeatingClosure closure = run_loop.QuitClosure();
+    authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
+                                     /*force_clear_browsing_data=*/false, ^() {
+                                       closure.Run();
+                                     });
+    run_loop.Run();
+  }
+
   id<AccountMenuMediatorDelegate> delegate_;
   id<AccountMenuConsumer> consumer_;
   AccountMenuMediator* mediator_;
@@ -281,36 +291,108 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 #pragma mark - AccountMenuMutator
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
-TEST_F(AccountMenuMediatorTest, TestAccountTaped) {
+// when sign-out fail.
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   // Given that the method  `triggerSignoutWithTargetRect:completion` create a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
 
   // Testing the part before the callback.
-  auto target = CGRect();
   // This variable will contain the callback that should be executed once
-  // sign-out is done.
+  // sign-out ends.
   __block void (^onSignoutSuccess)(BOOL) = nil;
-  {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
-    OCMExpect([delegate_
-        triggerSignoutWithTargetRect:target
-                          completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                            onSignoutSuccess = value;
-                            closure.Run();
-                            return true;
-                          }]]);
-    [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                            targetRect:target];
-    run_loop.Run();
-  }
+  auto target = CGRect();
+  OCMExpect([delegate_
+      triggerSignoutWithTargetRect:target
+                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                          onSignoutSuccess = value;
+                          return true;
+                        }]]);
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                          targetRect:target];
   VerifyMock();
 
-  // Testing the sign-out callback.
+  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
+                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_ updatePrimaryAccount]);
+  // Simulate a sign-out failure
+  onSignoutSuccess(false);
+}
+
+// Tests the result of accountTappedWithGaiaID:targetRect:
+// when sign-in fail.
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
+  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
+  // callback in a callback, this tests has three parts.  One part by callback,
+  // and one part for the initial part of the run.
+
+  // Testing the part before the callback.
   // This variable will contain the callback that should be executed once
-  // sign-in is done.
-  __block void (^onSigninSuccess)(id<SystemIdentity>) = nil;
+  // sign-out ends.
+  __block void (^onSignoutSuccess)(BOOL) = nil;
+  auto target = CGRect();
+  OCMExpect([delegate_
+      triggerSignoutWithTargetRect:target
+                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                          onSignoutSuccess = value;
+                          // Actually sign-out, in order to test next step.
+                          SignOut();
+                          return true;
+                        }]]);
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                          targetRect:target];
+  VerifyMock();
+
+  // Simulate a sign-out success.
+  // This variable will contain the callback that should be executed once
+  // sign-in ended.
+  __block void (^onSigninSuccess)(bool) = nil;
+  OCMExpect([delegate_
+      triggerSigninWithSystemIdentity:kSecondaryIdentity
+                           completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                             onSigninSuccess = value;
+                             return true;
+                           }]]);
+  onSignoutSuccess(true);
+
+  // Testing the sign-in callback.
+  // The delegate should not receive any message. The mediator directly sign the
+  // user back in the previous account.
+  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
+                                         gaiaIDsToRemove:@[]]);
+  OCMExpect([consumer_ updatePrimaryAccount]);
+  onSigninSuccess(NO);
+
+  // Checks the user is signed-back in.
+  ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
+                                  signin::ConsentLevel::kSignin));
+}
+// Tests the result of accountTappedWithGaiaID:targetRect:
+// when switch is succesful.
+TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
+  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
+  // callback in a callback, this tests has three parts.  One part by callback,
+  // and one part for the initial part of the run.
+
+  // Testing the part before the callback.
+  // This variable will contain the callback that should be executed once
+  // sign-out ends.
+  __block void (^onSignoutSuccess)(BOOL) = nil;
+  auto target = CGRect();
+  OCMExpect([delegate_
+      triggerSignoutWithTargetRect:target
+                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                          onSignoutSuccess = value;
+                          return true;
+                        }]]);
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                          targetRect:target];
+  VerifyMock();
+
+  // Simulate a sign-out success.
+  // This variable will contain the callback that should be executed once
+  // sign-in ends.
+  __block void (^onSigninSuccess)(bool) = nil;
   {
     base::RunLoop run_loop;
     base::RepeatingClosure closure = run_loop.QuitClosure();

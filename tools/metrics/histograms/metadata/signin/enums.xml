@@ -522,6 +522,7 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Avatar bubble sign in with sync promo"/>
   <int value="67" label="Account menu"/>
   <int value="68" label="Product Specifications"/>
+  <int value="69" label="Account menu failed switch"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
