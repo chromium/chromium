@@ -249,6 +249,9 @@ chromium-metrics-reviews@google.com.
       summary="Returns price related data for shopping websites"/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
+  <variant name="SavedTabGroup"
+      summary="Provides information about a URL can be synced across devices
+               for saved tab groups featuer."/>
   <variant name="SharedCreditCardDiningBenefits"
       summary="This optimization provides information about whether a
                merchant url is eligible for dining credit card benefits.

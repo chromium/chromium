@@ -285,6 +285,9 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page is a good candidate
   // for enabling buy now pay later flow with Zip.
   BUY_NOW_PAY_LATER_ALLOWLIST_ZIP = 70;
+  // Provides information about whether a URL can be synced across devices for
+  // saved tab groups feature.
+  SAVED_TAB_GROUP = 71;
 }
 
 // Presents semantics for how page load URLs should be matched.
