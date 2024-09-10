@@ -1043,6 +1043,10 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
   return 0;
 }
 
+bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property) {
+  return mode_size == tile_property.tile_size;
+}
+
 // Returns a vector that holds the path topology of the display. Returns an
 // empty vector upon failure.
 //

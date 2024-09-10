@@ -60,6 +60,8 @@ Matcher<const CrtcController&> EqualsCrtcConnectorIds(uint32_t crtc,
                Property(&CrtcController::connector, Eq(connector)));
 }
 
+// TODO(b/364634013): Create a test util file for ozone/drm and de-deuplicate
+// EqTileProperty().
 testing::Matcher<TileProperty> EqTileProperty(const TileProperty& expected) {
   return AllOf(Field(&TileProperty::group_id, Eq(expected.group_id)),
                Field(&TileProperty::scale_to_fit_display,
@@ -2298,13 +2300,14 @@ TEST_F(ScreenManagerTest, TileDisplay) {
   controllers_to_enable.emplace_back(
       kPrimaryDisplayId, drm_, crtc_id_1, connector_id_1, gfx::Point(0, 0),
       std::make_unique<drmModeModeInfo>(
-          drmModeModeInfo{.hdisplay = 1920, .vdisplay = 1080}));
+          drmModeModeInfo{.hdisplay = 3840, .vdisplay = 4320}));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, {display::ModesetFlag::kTestModeset,
                               display::ModesetFlag::kCommitModeset}));
 
-  HardwareDisplayController* hdc =
-      screen_manager_->GetDisplayController(gfx::Rect(0, 0, 1920, 1080));
+  HardwareDisplayController* hdc = screen_manager_->GetDisplayController(
+      // This is the full tile composited size.
+      gfx::Rect(0, 0, 3840 * 2, 4320));
   ASSERT_NE(hdc, nullptr);
   ASSERT_TRUE(hdc->IsTiled());
   EXPECT_THAT(hdc->GetTileProperty(),

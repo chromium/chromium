@@ -101,6 +101,8 @@ std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
       /*edid_parser=*/std::nullopt, tile_property);
 }
 
+// TODO(b/364634013): Create a test util file for ozone/drm and de-deuplicate
+// EqTileProperty().
 testing::Matcher<TileProperty> EqTileProperty(const TileProperty& expected) {
   return AllOf(Field(&TileProperty::group_id, Eq(expected.group_id)),
                Field(&TileProperty::scale_to_fit_display,
