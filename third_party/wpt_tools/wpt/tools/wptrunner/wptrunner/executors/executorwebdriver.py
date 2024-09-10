@@ -625,6 +625,8 @@ class WebDriverProtocol(Protocol):
         self.webdriver.start()
 
     def teardown(self):
+        if not self.webdriver:
+            return
         self.logger.debug("Hanging up on WebDriver session")
         try:
             self.webdriver.end()
