@@ -9,11 +9,18 @@
 #include <vector>
 
 #include "components/optimization_guide/proto/substitution.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
 struct SubstitutionResult {
-  std::string input_string;
+  SubstitutionResult();
+  ~SubstitutionResult();
+  SubstitutionResult(SubstitutionResult&&);
+
+  std::string ToString() const;
+
+  on_device_model::mojom::InputPtr input;
   bool should_ignore_input_context;
 };
 
@@ -21,6 +28,8 @@ std::optional<SubstitutionResult> CreateSubstitutions(
     const google::protobuf::MessageLite& request,
     const google::protobuf::RepeatedPtrField<proto::SubstitutedString>&
         config_substitutions);
+
+std::string OnDeviceInputToString(const on_device_model::mojom::Input& input);
 
 }  // namespace optimization_guide
 

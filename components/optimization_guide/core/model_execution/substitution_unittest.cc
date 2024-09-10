@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <sstream>
 
 #include "base/logging.h"
 #include "base/test/test.pb.h"
@@ -98,7 +99,7 @@ TEST_F(SubstitutionTest, RawString) {
   auto result = CreateSubstitutions(request, subs);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is a %test%");
+  EXPECT_EQ(result->ToString(), "hello this is a %test%");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
@@ -131,7 +132,7 @@ TEST_F(SubstitutionTest, ProtoField) {
   auto result = CreateSubstitutions(request, subs);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is a test: nested inner type");
+  EXPECT_EQ(result->ToString(), "hello this is a test: nested inner type");
   EXPECT_TRUE(result->should_ignore_input_context);
 }
 
@@ -196,7 +197,7 @@ TEST_F(SubstitutionTest, Conditions) {
   auto result = CreateSubstitutions(request, subs);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string,
+  EXPECT_EQ(result->ToString(),
             "Cond: false_or_false not_matched "
             "Cond: false_or_true matched "
             "Cond: false_and_true not_matched "
@@ -249,7 +250,7 @@ TEST_F(SubstitutionTest, RepeatedRawField) {
   proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "Tabs: E,E,");
+  EXPECT_EQ(result->ToString(), "Tabs: E,E,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
@@ -263,7 +264,7 @@ TEST_F(SubstitutionTest, RepeatedProtoField) {
   proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "Tabs: tabA,tabB,");
+  EXPECT_EQ(result->ToString(), "Tabs: tabA,tabB,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
@@ -277,7 +278,7 @@ TEST_F(SubstitutionTest, RepeatedZeroBasedIndexField) {
   proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "Tabs: 0,1,");
+  EXPECT_EQ(result->ToString(), "Tabs: 0,1,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
@@ -291,7 +292,7 @@ TEST_F(SubstitutionTest, RepeatedOneBasedIndexField) {
   proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "Tabs: 1,2,");
+  EXPECT_EQ(result->ToString(), "Tabs: 1,2,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
@@ -313,7 +314,7 @@ TEST_F(SubstitutionTest, RepeatedCondition) {
   proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "Tabs: Ten,NotTen,");
+  EXPECT_EQ(result->ToString(), "Tabs: Ten,NotTen,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 

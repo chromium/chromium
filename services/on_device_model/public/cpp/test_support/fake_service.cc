@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
+#include <cstdint>
+
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,6 +21,32 @@ std::string ReadFile(base::File& file) {
   base::MemoryMappedFile map;
   CHECK(map.Initialize(std::move(file)));
   return std::string(base::as_string_view(base::as_chars(map.bytes())));
+}
+
+std::string OnDeviceInputToString(const mojom::Input& input) {
+  std::ostringstream oss;
+  for (const auto& piece : input.pieces) {
+    if (std::holds_alternative<std::string>(piece)) {
+      oss << std::get<std::string>(piece);
+    }
+  }
+  return oss.str();
+}
+
+std::string CtxToString(const mojom::InputOptions& input) {
+  std::string suffix;
+  std::string context = OnDeviceInputToString(*input.input);
+  if (input.token_offset) {
+    context.erase(context.begin(), context.begin() + *input.token_offset);
+    suffix += " off:" + base::NumberToString(*input.token_offset);
+  }
+  if (input.max_tokens) {
+    if (input.max_tokens < context.size()) {
+      context.resize(*input.max_tokens);
+    }
+    suffix += " max:" + base::NumberToString(*input.max_tokens);
+  }
+  return context + suffix;
 }
 
 }  // namespace
@@ -74,7 +102,9 @@ void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
   auto new_session = std::make_unique<FakeOnDeviceSession>(
       settings_, adaptation_model_weight_, model_);
-  new_session->context_ = context_;
+  for (const auto& c : context_) {
+    new_session->context_.push_back(c->Clone());
+  }
   model_->AddSession(std::move(session), std::move(new_session));
 }
 
@@ -82,9 +112,9 @@ void FakeOnDeviceSession::ExecuteImpl(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-  for (const std::string& context : context_) {
+  for (const auto& context : context_) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Context: " + context + "\n";
+    chunk->text = "Context: " + CtxToString(*context) + "\n";
     remote->OnResponse(std::move(chunk));
   }
   if (!adaptation_model_weight_.empty()) {
@@ -95,7 +125,7 @@ void FakeOnDeviceSession::ExecuteImpl(
 
   if (settings_->model_execute_result.empty()) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Input: " + input->text + "\n";
+    chunk->text = "Input: " + OnDeviceInputToString(*input->input) + "\n";
     if (input->top_k > 1) {
       chunk->text += "TopK: " + base::NumberToString(*input->top_k) +
                      ", Temp: " + base::NumberToString(*input->temperature) +
@@ -116,25 +146,15 @@ void FakeOnDeviceSession::ExecuteImpl(
 void FakeOnDeviceSession::AddContextInternal(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::ContextClient> client) {
-  std::string suffix;
-  std::string context = input->text;
-  if (input->token_offset) {
-    context.erase(context.begin(), context.begin() + *input->token_offset);
-    suffix += " off:" + base::NumberToString(*input->token_offset);
-  }
-  if (input->max_tokens) {
-    if (input->max_tokens < context.size()) {
-      context.resize(*input->max_tokens);
-    }
-    suffix += " max:" + base::NumberToString(*input->max_tokens);
-  }
-  context_.push_back(context + suffix);
-  uint32_t max_tokens = input->max_tokens.value_or(input->text.size());
+  uint32_t input_tokens =
+      static_cast<uint32_t>(OnDeviceInputToString(*input->input).size());
+  uint32_t max_tokens = input->max_tokens.value_or(input_tokens);
   uint32_t token_offset = input->token_offset.value_or(0);
+  uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
+  context_.emplace_back(std::move(input));
   if (client) {
     mojo::Remote<mojom::ContextClient> remote(std::move(client));
-    remote->OnComplete(std::min(
-        static_cast<uint32_t>(input->text.size()) - token_offset, max_tokens));
+    remote->OnComplete(tokens_processed);
   }
 }
 

@@ -98,7 +98,7 @@ class FakeOnDeviceSession final : public mojom::Session {
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
-  std::vector<std::string> context_;
+  std::vector<mojom::InputOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
