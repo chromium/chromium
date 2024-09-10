@@ -5,29 +5,32 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_REQUEST_DATA_WRAPPER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_REQUEST_DATA_WRAPPER_H_
 
-#include <memory>
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
-class ResponseCallbackWrapper;
-
 struct RequestDataWrapper {
+  using ResponseCallback = base::OnceCallback<void(
+      base::expected<std::string, TachyonRequestError>)>;
+
   RequestDataWrapper(
       const net::NetworkTrafficAnnotationTag& annotation_tag_param,
       std::string_view url_param,
       int max_retries_param,
-      std::unique_ptr<ResponseCallbackWrapper> response_cb_param);
+      ResponseCallback response_cb_param);
 
   ~RequestDataWrapper();
 
   const net::NetworkTrafficAnnotationTag annotation_tag;
   const std::string_view url;
   const int max_retries;
-  std::unique_ptr<ResponseCallbackWrapper> response_cb;
+  ResponseCallback response_cb;
   int oauth_version = 0;
   int oauth_retry_num = 0;
   std::string content_data;

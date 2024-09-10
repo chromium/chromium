@@ -16,15 +16,11 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
-class SignInGaiaResponse;
 class TachyonAuthedClient;
 
 // Register user with Tachyon and store tachyon token to be used by other
@@ -48,15 +44,13 @@ class TachyonRegistrar {
   std::optional<std::string> GetTachyonToken();
 
  private:
-  void OnResponse(
-      base::OnceCallback<void(bool)> success_cb,
-      base::expected<SignInGaiaResponse,
-                     ResponseCallbackWrapper::TachyonRequestError> response);
+  void OnResponse(base::OnceCallback<void(bool)> success_cb,
+                  base::expected<std::string, TachyonRequestError> response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<TachyonAuthedClient> authed_client_;
-  const raw_ref<const net::NetworkTrafficAnnotationTag> network_annotation_tag_;
+  const net::NetworkTrafficAnnotationTag network_annotation_tag_;
   std::optional<std::string> tachyon_token_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

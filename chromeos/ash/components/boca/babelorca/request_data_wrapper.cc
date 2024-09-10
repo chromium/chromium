@@ -4,12 +4,10 @@
 
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 
-#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
@@ -18,7 +16,7 @@ RequestDataWrapper::RequestDataWrapper(
     const net::NetworkTrafficAnnotationTag& annotation_tag_param,
     std::string_view url_param,
     int max_retries_param,
-    std::unique_ptr<ResponseCallbackWrapper> response_cb_param)
+    ResponseCallback response_cb_param)
     : annotation_tag(annotation_tag_param),
       url(std::move(url_param)),
       max_retries(max_retries_param),
