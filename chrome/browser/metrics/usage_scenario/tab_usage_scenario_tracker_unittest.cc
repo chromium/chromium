@@ -372,7 +372,7 @@ TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
   tab_usage_scenario_tracker_->OnVideoStoppedPlaying(contents2.get());
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
-  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, kInterval);
 }
 
 TEST_F(TabUsageScenarioTrackerTest, VisibleTabPlayingVideoRemoved) {
