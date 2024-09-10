@@ -58,6 +58,7 @@ NSString* const kTabGroupCyanColor = @"tab_group_cyan_color";
 NSString* const kTabGroupPurpleColor = @"tab_group_purple_color";
 NSString* const kTabGroupGreenColor = @"tab_group_green_color";
 NSString* const kTabGroupGreyColor = @"tab_group_grey_color";
+NSString* const kWhiteBlackAlpha50Color = @"white_black_alpha_50_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";

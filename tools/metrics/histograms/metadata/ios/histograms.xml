@@ -399,6 +399,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContextMenu.ImagePreviewDisplayed" enum="BooleanSuccess"
+    expires_after="2025-09-06">
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>Whether the loading of the image preview succeeded.</summary>
+</histogram>
+
 <histogram name="IOS.ContextualPanel.DismissedReason"
     enum="IOSContextualPanelDismissedReason" expires_after="2025-06-30">
   <owner>rkgibson@google.com</owner>

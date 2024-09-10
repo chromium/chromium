@@ -77,7 +77,9 @@ extern NSString* const kTabGroupCyanColor;
 extern NSString* const kTabGroupPurpleColor;
 extern NSString* const kTabGroupGreenColor;
 extern NSString* const kTabGroupGreyColor;
-
+// A semi transparent background color that ensures symbols are visible in
+// light and dark modes.
+extern NSString* const kWhiteBlackAlpha50Color;
 // ***************
 // Standard Colors
 // ***************

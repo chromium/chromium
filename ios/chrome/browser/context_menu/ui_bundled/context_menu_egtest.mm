@@ -870,6 +870,14 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   if (error) {
     GREYFail([error description]);
   }
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // success
+      forHistogram:@"IOS.ContextMenu.ImagePreviewDisplayed"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

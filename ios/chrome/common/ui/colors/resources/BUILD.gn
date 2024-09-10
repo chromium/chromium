@@ -100,6 +100,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/toolbar_button_color.colorset/Contents.json",
     "Assets.xcassets/toolbar_shadow_color.colorset/Contents.json",
     "Assets.xcassets/updated_tertiary_background_color.colorset/Contents.json",
+    "Assets.xcassets/white_black_alpha_50_color.colorset/Contents.json",
     "Assets.xcassets/yellow_500_color.colorset/Contents.json",
     "Assets.xcassets/yellow_600_color.colorset/Contents.json",
   ]

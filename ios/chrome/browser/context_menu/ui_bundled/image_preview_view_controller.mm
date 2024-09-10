@@ -6,9 +6,14 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -42,6 +47,9 @@ const char kLoadImageHTML[] = R"(
   </body>
 </html>
 )";
+
+// Default time interval to wait before showing a spinner.
+constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
 }
 
 @interface ImagePreviewViewController () <WKScriptMessageHandler>
@@ -61,6 +69,13 @@ const char kLoadImageHTML[] = R"(
 
   // The WebState that triggered the menu.
   base::WeakPtr<web::WebState> _webState;
+
+  // Timer for showing the spinner if loading the image takes
+  // too much time.
+  base::OneShotTimer _showSpinnerTimer;
+
+  // The view showing a spinner if the loading is too long.
+  UIView* _spinnerView;
 }
 
 - (instancetype)initWithSrcURL:(NSURL*)URL webState:(web::WebState*)webState {
@@ -94,14 +109,17 @@ const char kLoadImageHTML[] = R"(
   }
 
   self.view.backgroundColor = [UIColor clearColor];
-  // Sets the size to 1,1 as the minimum possible size.
-  self.preferredContentSize = CGSizeMake(1, 1);
-  [self showImage];
-}
+  // Sets the size to the minimum possible size.
+  self.preferredContentSize = CGSizeMake(40, 40);
 
-- (void)imageDataReceived:(NSData*)data {
-  _imageData = data;
-  [self showImage];
+  if (_imageData) {
+    [self showImage];
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    _showSpinnerTimer.Start(FROM_HERE, kShowSpinnerDelay, base::BindOnce(^{
+                              [weakSelf presentSpinner];
+                            }));
+  }
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -111,24 +129,33 @@ const char kLoadImageHTML[] = R"(
   if (!_webState || _webState->IsBeingDestroyed()) {
     return;
   }
-  if (![message.body isKindOfClass:[NSDictionary class]]) {
+  if (_showSpinnerTimer.IsRunning()) {
+    _showSpinnerTimer.Reset();
+  }
+  _spinnerView.hidden = YES;
+
+  auto imageSize = [self parseResponse:message];
+  base::UmaHistogramBoolean("IOS.ContextMenu.ImagePreviewDisplayed",
+                            imageSize.has_value());
+  if (imageSize.has_value()) {
+    _webView.hidden = NO;
+    self.preferredContentSize = imageSize.value();
     return;
   }
-  NSDictionary* body = message.body;
-  if (![body[@"success"] isKindOfClass:[NSNumber class]]) {
-    return;
-  }
-  NSNumber* success = body[@"success"];
-  if (!success.boolValue) {
-    return;
-  }
-  if (![body[@"height"] isKindOfClass:[NSNumber class]] ||
-      ![body[@"width"] isKindOfClass:[NSNumber class]]) {
-    return;
-  }
-  NSNumber* height = body[@"height"];
-  NSNumber* width = body[@"width"];
-  self.preferredContentSize = CGSizeMake(width.doubleValue, height.doubleValue);
+
+  // If there is no value, image loading failed. Show the error view.
+  UIView* errorView = [[UIView alloc] init];
+  [self.view addSubview:errorView];
+  errorView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(self.view, errorView);
+  errorView.backgroundColor = [UIColor colorNamed:kWhiteBlackAlpha50Color];
+
+  UIImageView* errorImageView = [[UIImageView alloc] init];
+  [errorView addSubview:errorImageView];
+  errorImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameCenterConstraints(errorView, errorImageView);
+  [errorImageView setImage:DefaultSymbolWithPointSize(kPhotoSymbol, 17)];
+  errorImageView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
 #pragma mark - Private methods.
@@ -151,6 +178,7 @@ const char kLoadImageHTML[] = R"(
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
   _webView.accessibilityIdentifier =
       kContextMenuImagePreviewAccessibilityIdentifier;
+  _webView.hidden = YES;
 
   [self.view addSubview:_webView];
   AddSameConstraints(self.view, _webView);
@@ -159,6 +187,56 @@ const char kLoadImageHTML[] = R"(
                          name:@"imageLoaded"];
   [_webView loadHTMLString:htmlString
                    baseURL:[NSURL URLWithString:@"about:blank"]];
+}
+
+// Parses the JS message and return the size of the image if `message` is
+// correctly formed.
+- (std::optional<CGSize>)parseResponse:(WKScriptMessage*)message {
+  if (![message.body isKindOfClass:[NSDictionary class]]) {
+    return std::nullopt;
+  }
+  NSDictionary* body = message.body;
+  if (![body[@"success"] isKindOfClass:[NSNumber class]]) {
+    return std::nullopt;
+  }
+  NSNumber* success = body[@"success"];
+  if (!success.boolValue) {
+    return std::nullopt;
+  }
+  if (![body[@"height"] isKindOfClass:[NSNumber class]] ||
+      ![body[@"width"] isKindOfClass:[NSNumber class]]) {
+    return std::nullopt;
+  }
+  CGFloat height = base::apple::ObjCCast<NSNumber>(body[@"height"]).doubleValue;
+  CGFloat width = base::apple::ObjCCast<NSNumber>(body[@"width"]).doubleValue;
+
+  if (isnan(height) || isnan(width) || height <= 0 || width <= 0) {
+    return std::nullopt;
+  }
+  return CGSizeMake(width, height);
+}
+
+// Called when image data is received.
+- (void)imageDataReceived:(NSData*)data {
+  _imageData = data;
+  [self showImage];
+}
+
+// Called if the loading is too long. A spinner is presented.
+- (void)presentSpinner {
+  _spinnerView = [[UIView alloc] init];
+  [self.view addSubview:_spinnerView];
+  _spinnerView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(self.view, _spinnerView);
+  _spinnerView.backgroundColor = [UIColor colorNamed:kWhiteBlackAlpha50Color];
+
+  UIActivityIndicatorView* spinnerIndicatorView =
+      [[UIActivityIndicatorView alloc] init];
+  spinnerIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  spinnerIndicatorView.color = [UIColor colorNamed:kTextSecondaryColor];
+  [_spinnerView addSubview:spinnerIndicatorView];
+  AddSameConstraints(_spinnerView, spinnerIndicatorView);
+  [spinnerIndicatorView startAnimating];
 }
 
 @end
