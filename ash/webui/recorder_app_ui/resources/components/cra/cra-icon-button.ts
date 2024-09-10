@@ -67,6 +67,25 @@ export class CraIconButton extends IconButton {
       }
     `,
   ];
+
+  get buttonElement(): HTMLElement|null {
+    return (
+      this.shadowRoot?.querySelector('md-icon-button') ??
+      this.shadowRoot?.querySelector('md-filled-icon-button') ??
+      this.shadowRoot?.querySelector('md-filled-tonal-icon-button') ?? null
+    );
+  }
+
+  override focus(): void {
+    // Need to manually delegate the focus() call to the inner button,
+    // otherwise the :focus-visible state won't be correct and the focus ring
+    // would always be shown.
+    this.buttonElement?.focus();
+  }
+
+  override blur(): void {
+    this.buttonElement?.blur();
+  }
 }
 
 window.customElements.define('cra-icon-button', CraIconButton);
