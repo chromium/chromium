@@ -59,11 +59,24 @@
   <ul id="entries" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
       <li class="list-item">
-        <div>
+        <div class="start">
           <div class="cr-secondary-text item-label">[[item.key]]</div>
           [[item.value]]
         </div>
+        <cr-icon-button iron-icon="cr20:delete"
+            on-click="onDeleteEntryCick_"
+            title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
+        </cr-icon-button>
       </li>
     </template>
   </ul>
+</template>
+
+<template is="dom-if" if="[[entryToDelete_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteEntryDialog"
+      title-text="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}"
+      body-text="[[deleteEntryConfirmationText_]]"
+      confirm-text="$i18n{delete}"
+      on-close="onDeleteEntryDialogClose_">
+  </settings-simple-confirmation-dialog>
 </template>

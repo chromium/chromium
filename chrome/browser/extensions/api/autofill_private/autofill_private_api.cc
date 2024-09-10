@@ -1067,4 +1067,20 @@ AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
           result)));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateDeleteUserAnnotationsEntryFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
+  std::optional<api::autofill_private::DeleteUserAnnotationsEntry::Params>
+      parameters =
+          api::autofill_private::DeleteUserAnnotationsEntry::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  // TODO(crbug.com/361437117): Replace stubby data with real API call result.
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

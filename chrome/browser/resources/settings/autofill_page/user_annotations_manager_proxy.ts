@@ -13,12 +13,21 @@ export interface UserAnnotationsManagerProxy {
    * Returns user annotations entries.
    */
   getEntries(): Promise<UserAnnotationsEntry[]>;
+
+  /**
+   * Delete the user annotation entry by its id.
+   */
+  deleteEntry(entryId: number): void;
 }
 
 export class UserAnnotationsManagerProxyImpl implements
     UserAnnotationsManagerProxy {
   getEntries(): Promise<UserAnnotationsEntry[]> {
     return chrome.autofillPrivate.getUserAnnotationsEntries();
+  }
+
+  deleteEntry(entryId: number): void {
+    chrome.autofillPrivate.deleteUserAnnotationsEntry(entryId);
   }
 
   static getInstance(): UserAnnotationsManagerProxy {

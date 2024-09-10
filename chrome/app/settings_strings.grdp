@@ -775,6 +775,12 @@
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
     Saved information
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE"  desc="The title of the delete user annotations entry confirmation dialog." translateable="false">
+    Delete annotation entry
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT"  desc="The body text of the delete user annotations entry confirmation dialog dscribing the entry." translateable="false">
+    The following entry will be deleted: <ph name="KEY">$1<ex>Date of birth</ex></ph> / <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
+  </message>
 
   <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">

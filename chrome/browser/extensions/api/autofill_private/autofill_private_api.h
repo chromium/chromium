@@ -402,6 +402,24 @@ class AutofillPrivateGetUserAnnotationsEntriesFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateDeleteUserAnnotationsEntryFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateDeleteUserAnnotationsEntryFunction() = default;
+  AutofillPrivateDeleteUserAnnotationsEntryFunction(
+      const AutofillPrivateDeleteUserAnnotationsEntryFunction&) = delete;
+  AutofillPrivateDeleteUserAnnotationsEntryFunction& operator=(
+      const AutofillPrivateDeleteUserAnnotationsEntryFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.deleteUserAnnotationsEntry",
+                             AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY)
+
+ protected:
+  ~AutofillPrivateDeleteUserAnnotationsEntryFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

@@ -2762,6 +2762,7 @@ Called by update_extension_histograms.py.-->
   <int value="1899" label="ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS"/>
   <int value="1900" label="ENTERPRISEREPORTINGPRIVATE_REPORTDATAMASKINGEVENT"/>
   <int value="1901" label="AUTOFILLPRIVATE_GETUSERANNOTATIONSENTRIES"/>
+  <int value="1902" label="AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

@@ -1274,6 +1274,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
       {"autofillPredictionImprovementsUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
+      {"autofillPredictionImprovementsDeleteEntryDialogTitle",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
+      {"autofillPredictionImprovementsDeleteEntryDialogText",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
