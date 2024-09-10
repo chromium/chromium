@@ -252,10 +252,9 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
   // CanMakePaymentEvent is not triggered because this test app lacks any
   // explicitly verified methods.
   CreateInstalledServiceWorkerPaymentApp(/*with_url_method=*/true);
-  GetApp()->ValidateCanMakePayment(base::BindOnce(
-      [](base::WeakPtr<ServiceWorkerPaymentApp> app, bool result) {
+  GetApp()->ValidateCanMakePayment(
+      base::BindOnce([](base::WeakPtr<ServiceWorkerPaymentApp> app) {
         EXPECT_NE(nullptr, app.get());
-        EXPECT_TRUE(result);
       }));
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
 }
