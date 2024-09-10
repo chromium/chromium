@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -63,6 +64,17 @@ public class PlusAddressCreationModuleTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
+    private static final PlusAddressCreationNormalStateInfo SECOND_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "",
                     /* errorReportInstruction= */ "error! <link>test link</link>",
                     /* learnMoreUrl= */ new GURL("learn.more.com"),
                     /* errorReportUrl= */ new GURL("bug.com"));
@@ -208,24 +220,28 @@ public class PlusAddressCreationModuleTest {
 
     @Test
     @SmallTest
-    public void testConfirmButton_showsLoadingIndicator() throws TimeoutException {
+    public void testFirstTimeUsage_confirm_showError_close() throws TimeoutException {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
-        LoadingView loadingView =
-                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
 
         // Before clicking confirm, there is no loading indicator, but both
         // a confirmation and a cancel button.
-        assertEquals(loadingView.getVisibility(), View.GONE);
+        TextView firstTimeNotice =
+                view.getContentView().findViewById(R.id.plus_address_first_time_use_notice);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
         Button modalConfirmButton =
                 view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button modalCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_cancel_button);
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
         assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
         assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.performClick();
         verify(mBridge).onConfirmRequested();
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
         assertEquals(modalCancelButton.getVisibility(), View.GONE);
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
@@ -233,8 +249,66 @@ public class PlusAddressCreationModuleTest {
         // Hide the loading indicator and resurface the buttons if we show an error.
         mCoordinator.showError(/* errorStateInfo= */ null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
         assertEquals(loadingView.getVisibility(), View.GONE);
         assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertFalse(modalConfirmButton.isEnabled());
         assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertTrue(modalCancelButton.isEnabled());
+
+        modalCancelButton.performClick();
+        verify(mBridge).onCanceled();
+    }
+
+    @Test
+    @SmallTest
+    public void testSecondTimeUsage_confirm_showError_close() {
+        PlusAddressCreationCoordinator coordinator =
+                new PlusAddressCreationCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel,
+                        mTabModelSelector,
+                        mBridge,
+                        SECOND_TIME_USAGE_INFO,
+                        /* refreshSupported= */ true);
+        reset(mBottomSheetController);
+
+        coordinator.requestShowContent();
+        verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
+
+        PlusAddressCreationBottomSheetContent view = mViewCaptor.getValue();
+        assertNotNull(view);
+
+        TextView firstTimeNotice =
+                view.getContentView().findViewById(R.id.plus_address_first_time_use_notice);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        Button modalConfirmButton =
+                view.getContentView().findViewById(R.id.plus_address_confirm_button);
+        Button modalCancelButton =
+                view.getContentView().findViewById(R.id.plus_address_cancel_button);
+        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+
+        // Show the loading indicator and hide the buttons once we click the confirm button.
+        modalConfirmButton.performClick();
+        verify(mBridge).onConfirmRequested();
+        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
+        assertEquals(loadingView.getVisibility(), View.VISIBLE);
+        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+
+        // Hide the loading indicator and resurface the buttons if we show an error.
+        coordinator.showError(/* errorStateInfo= */ null);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertFalse(modalConfirmButton.isEnabled());
+        assertEquals(modalCancelButton.getVisibility(), View.GONE);
     }
 }

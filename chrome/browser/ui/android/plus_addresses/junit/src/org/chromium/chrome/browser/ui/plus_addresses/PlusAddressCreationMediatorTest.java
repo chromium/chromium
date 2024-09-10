@@ -69,7 +69,7 @@ public final class PlusAddressCreationMediatorTest {
         Activity activity = Robolectric.setupActivity(TestActivity.class);
         mModel =
                 PlusAddressCreationCoordinator.createDefaultModel(
-                        mDelegate, /* refreshSupported= */ true);
+                        mDelegate, /* showOnboardingNotice= */ true, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
                         activity,

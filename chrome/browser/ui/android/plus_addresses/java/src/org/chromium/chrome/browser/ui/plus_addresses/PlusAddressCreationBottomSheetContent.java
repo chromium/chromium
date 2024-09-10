@@ -40,8 +40,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     // The button to cancel the plus address creation dialog. Only visible on
     // first use, i.e., when there is a notice screen.
     private final Button mPlusAddressCancelButton;
-    // Whether we are showing a notice.
-    private final boolean mShowingNotice;
     private PlusAddressCreationDelegate mDelegate;
 
     /**
@@ -56,7 +54,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             PlusAddressCreationNormalStateInfo info) {
         mBottomSheetController = bottomSheetController;
 
-        mShowingNotice = !info.getNotice().isEmpty();
         View layout =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
@@ -96,20 +93,16 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         plusAddressErrorReportView.setMovementMethod(LinkMovementMethod.getInstance());
         plusAddressErrorReportView.setVisibility(View.GONE);
 
+        mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
+
         mPlusAddressConfirmButton.setText(info.getConfirmText());
         mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
                     mDelegate.onConfirmRequested();
                 });
 
-        mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
-
-        if (mShowingNotice) {
-            mPlusAddressCancelButton.setText(info.getCancelText());
-            mPlusAddressCancelButton.setOnClickListener((unused) -> mDelegate.onCanceled());
-        } else {
-            mPlusAddressCancelButton.setVisibility(View.GONE);
-        }
+        mPlusAddressCancelButton.setText(info.getCancelText());
+        mPlusAddressCancelButton.setOnClickListener(unused -> mDelegate.onCanceled());
 
         // Apply RTL layout changes.
         int layoutDirection =
@@ -152,6 +145,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressConfirmButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    void setCancelButtonVisible(boolean visible) {
+        mPlusAddressCancelButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     /** Sets the delegate listening for actions the user performs on this bottom sheet. */
     void setDelegate(PlusAddressCreationDelegate delegate) {
         mDelegate = delegate;
@@ -182,9 +179,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
             hideLoadingIndicator();
 
-            if (mShowingNotice) {
-                mPlusAddressCancelButton.setVisibility(View.VISIBLE);
-            }
             return;
         }
 

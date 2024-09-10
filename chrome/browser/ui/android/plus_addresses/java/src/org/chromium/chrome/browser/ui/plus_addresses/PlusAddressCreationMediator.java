@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.content.Context;
@@ -108,8 +110,13 @@ import org.chromium.url.GURL;
     }
 
     void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
-        mModel.set(CONFIRM_BUTTON_ENABLED, false);
-        mModel.set(CONFIRM_BUTTON_VISIBLE, true);
+        if (errorStateInfo == null) {
+            mModel.set(CONFIRM_BUTTON_ENABLED, false);
+            mModel.set(CONFIRM_BUTTON_VISIBLE, true);
+            if (mModel.get(SHOW_ONBOARDING_NOTICE)) {
+                mModel.set(CANCEL_BUTTON_VISIBLE, true);
+            }
+        }
         mBottomSheetContent.showError(errorStateInfo);
     }
 
@@ -142,6 +149,7 @@ import org.chromium.url.GURL;
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_VISIBLE, false);
+        mModel.set(CANCEL_BUTTON_VISIBLE, false);
         mBottomSheetContent.showConfirmationLoadingState();
         mBridge.onConfirmRequested();
     }

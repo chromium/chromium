@@ -112,37 +112,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    public void testFirstTimeUsage() {
-        TextView firstTimeNotice =
-                mBottomSheetContent
-                        .getContentView()
-                        .findViewById(R.id.plus_address_first_time_use_notice);
-        Button cancelButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        assertEquals(cancelButton.getVisibility(), View.VISIBLE);
-
-        cancelButton.callOnClick();
-        verify(mDelegate).onCanceled();
-    }
-
-    @Test
-    @SmallTest
-    public void testSecondTimeUsage() {
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(mActivity, mBottomSheetController, INFO);
-        TextView firstTimeNotice =
-                bottomSheetContent
-                        .getContentView()
-                        .findViewById(R.id.plus_address_first_time_use_notice);
-        Button cancelButton =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
-        assertEquals(cancelButton.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
     public void testConfirmButton_disabledByDefault() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);

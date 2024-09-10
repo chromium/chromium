@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,12 +24,14 @@ class PlusAddressCreationViewBinder {
             PropertyModel model,
             PlusAddressCreationBottomSheetContent view,
             PropertyKey propertyKey) {
-        if (propertyKey == VISIBLE) {
+        if (propertyKey == DELEGATE) {
+            view.setDelegate(model.get(DELEGATE));
+        } else if (propertyKey == SHOW_ONBOARDING_NOTICE) {
+            // This property doesn't require any binding logic.
+        } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == PROPOSED_PLUS_ADDRESS) {
             view.setProposedPlusAddress(model.get(PROPOSED_PLUS_ADDRESS));
-        } else if (propertyKey == DELEGATE) {
-            view.setDelegate(model.get(DELEGATE));
         } else if (propertyKey == REFRESH_ICON_ENABLED) {
             view.setRefreshIconEnabled(model.get(REFRESH_ICON_ENABLED));
         } else if (propertyKey == REFRESH_ICON_VISIBLE) {
@@ -36,6 +40,8 @@ class PlusAddressCreationViewBinder {
             view.setConfirmButtonEnabled(model.get(CONFIRM_BUTTON_ENABLED));
         } else if (propertyKey == CONFIRM_BUTTON_VISIBLE) {
             view.setConfirmButtonVisible(model.get(CONFIRM_BUTTON_VISIBLE));
+        } else if (propertyKey == CANCEL_BUTTON_VISIBLE) {
+            view.setCancelButtonVisible(model.get(CANCEL_BUTTON_VISIBLE));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

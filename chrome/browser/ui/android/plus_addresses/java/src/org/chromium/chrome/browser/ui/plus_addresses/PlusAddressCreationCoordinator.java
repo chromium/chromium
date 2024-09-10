@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.app.Activity;
@@ -45,7 +47,8 @@ public class PlusAddressCreationCoordinator {
                         tabModel,
                         tabModelSelector,
                         bridge);
-        PropertyModel model = createDefaultModel(mMediator, refreshSupported);
+        PropertyModel model =
+                createDefaultModel(mMediator, !info.getNotice().isEmpty(), refreshSupported);
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(activity, bottomSheetController, info);
 
@@ -90,15 +93,19 @@ public class PlusAddressCreationCoordinator {
     }
 
     static PropertyModel createDefaultModel(
-            PlusAddressCreationDelegate delegate, boolean refreshSupported) {
+            PlusAddressCreationDelegate delegate,
+            boolean showOnboardingNotice,
+            boolean refreshSupported) {
         return new PropertyModel.Builder(ALL_KEYS)
+                .with(DELEGATE, delegate)
+                .with(SHOW_ONBOARDING_NOTICE, showOnboardingNotice)
                 .with(VISIBLE, false)
                 .with(PROPOSED_PLUS_ADDRESS, "")
-                .with(DELEGATE, delegate)
                 .with(REFRESH_ICON_ENABLED, false)
                 .with(REFRESH_ICON_VISIBLE, refreshSupported)
                 .with(CONFIRM_BUTTON_ENABLED, false)
                 .with(CONFIRM_BUTTON_VISIBLE, true)
+                .with(CANCEL_BUTTON_VISIBLE, showOnboardingNotice)
                 .build();
     }
 }

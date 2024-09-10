@@ -5,17 +5,20 @@
 package org.chromium.chrome.browser.ui.plus_addresses;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Defines the data model for the {@code PlusAddressCreationView}. */
 class PlusAddressCreationProperties {
+    static final ReadableObjectPropertyKey<PlusAddressCreationDelegate> DELEGATE =
+            new ReadableObjectPropertyKey<>("delegate");
+    static final ReadableBooleanPropertyKey SHOW_ONBOARDING_NOTICE =
+            new ReadableBooleanPropertyKey("show_onboarding_notice");
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final WritableObjectPropertyKey<String> PROPOSED_PLUS_ADDRESS =
             new WritableObjectPropertyKey<>("proposed_plus_address");
-    static final ReadableObjectPropertyKey<PlusAddressCreationDelegate> DELEGATE =
-            new ReadableObjectPropertyKey<>("delegate");
     static final WritableBooleanPropertyKey REFRESH_ICON_ENABLED =
             new WritableBooleanPropertyKey("refresh_icon_enabled");
     static final WritableBooleanPropertyKey REFRESH_ICON_VISIBLE =
@@ -24,15 +27,19 @@ class PlusAddressCreationProperties {
             new WritableBooleanPropertyKey("confirm_button_enabled");
     static final WritableBooleanPropertyKey CONFIRM_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey("confirm_button_visible");
+    static final WritableBooleanPropertyKey CANCEL_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey("cancel_button_visible");
 
     static final PropertyKey[] ALL_KEYS = {
+        DELEGATE,
+        SHOW_ONBOARDING_NOTICE,
         VISIBLE,
         PROPOSED_PLUS_ADDRESS,
-        DELEGATE,
         REFRESH_ICON_ENABLED,
         REFRESH_ICON_VISIBLE,
         CONFIRM_BUTTON_ENABLED,
         CONFIRM_BUTTON_VISIBLE,
+        CANCEL_BUTTON_VISIBLE,
     };
 
     private PlusAddressCreationProperties() {}
