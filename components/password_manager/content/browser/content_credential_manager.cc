@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace password_manager {
 
@@ -20,7 +21,10 @@ ContentCredentialManager::~ContentCredentialManager() = default;
 
 void ContentCredentialManager::BindRequest(
     mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
-  DCHECK(!receiver_.is_bound());
+  if (receiver_.is_bound()) {
+    mojo::ReportBadMessage("CredentialManager is already bound.");
+    return;
+  }
   receiver_.Bind(std::move(receiver));
 
   // The browser side will close the message pipe on DidFinishNavigation before
