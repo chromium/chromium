@@ -92,6 +92,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureTitle", IDS_COMPARE_DISCLOSURE_TITLE},
 
       // Main UI strings:
+      {"addNewColumn", IDS_COMPARE_ADD_NEW_COLUMN},
       {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
       {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"compareErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
@@ -110,6 +111,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
       {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
+      {"openProductPage", IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB},
       {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
       {"priceRowTitle", IDS_COMPARE_PRICE_ROW_TITLE},
       {"productSummaryRowTitle", IDS_COMPARE_PRODUCT_SUMMARY_ROW_TITLE},
