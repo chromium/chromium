@@ -473,7 +473,9 @@ void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
         if (!result->new_password) {
           processed_field = FindField(processed_fields, prediction);
           if (processed_field) {
-            if (processed_field->is_password) {
+            if (processed_field->is_password || prediction.is_override) {
+              // Overrides ignore field type since the overrides are curated by
+              // developers.
               result->new_password = processed_field->field;
               processed_field->is_predicted_as_password = true;
             } else {
@@ -486,7 +488,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
         break;
       case CredentialFieldType::kConfirmationPassword:
         processed_field = FindField(processed_fields, prediction);
-        if (processed_field && processed_field->is_password) {
+        if (processed_field &&
+            (processed_field->is_password || prediction.is_override)) {
           result->confirmation_password = processed_field->field;
           processed_field->is_predicted_as_password = true;
         }

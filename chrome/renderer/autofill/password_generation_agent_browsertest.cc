@@ -1532,24 +1532,6 @@ TEST_F(PasswordGenerationAgentTest,
   EXPECT_FALSE(second_password_element.ShouldRevealPassword());
 }
 
-// Tests that no automatic generation is suggested on text fields parsed as new
-// password field.
-TEST_F(PasswordGenerationAgentTest, NoAutomaticSuggestionOnTextFields) {
-  LoadHTML(
-      R"(
-      <input type="text" id="username-field" name="username-field">
-      <input type="text" id="password-field" name="password-field">
-    )");
-  constexpr char kPasswordElementId[] = "password-field";
-
-  // Simulate parser finding the field to trigger generation on.
-  SetFoundFormEligibleForGeneration(
-      password_generation_, GetMainFrame()->GetDocument(),
-      /*new_password_id=*/kPasswordElementId, /*confirm_password_id=*/nullptr);
-
-  ExpectAutomaticGenerationAvailable(kPasswordElementId, kNotReported);
-}
-
 // Tests that automatic generation is suggested after the field has become a
 // password field at least once.
 TEST_F(PasswordGenerationAgentTest, AutomaticSuggestionOnHasBeenPasswordField) {
