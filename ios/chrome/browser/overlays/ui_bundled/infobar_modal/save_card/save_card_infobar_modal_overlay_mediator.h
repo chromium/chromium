@@ -28,6 +28,10 @@
 // is not successful.
 - (void)creditCardUploadCompleted:(BOOL)card_saved;
 
+// Instructs AutofillSaveCardInfoBarDelegateIOS that modal is not presenting,
+// sets `CreditCardUploadCompletionCallback` to null and stops the overlay.
+- (void)dismissOverlay;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_SAVE_CARD_SAVE_CARD_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
