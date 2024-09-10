@@ -880,6 +880,59 @@ TEST_P(RendererPixelTest, SimpleGreenRect) {
                                  cc::AlphaDiscardingExactPixelComparator()));
 }
 
+// Check that RendererPixelTest can run tests that verify incremental damage.
+TEST_P(RendererPixelTest, SimpleDamageRect) {
+  const gfx::Rect rect(this->device_viewport_size_);
+  const gfx::Rect damage_rect = gfx::Rect(20, 30, 40, 50);
+
+  const SkColor4f background_color = SkColors::kGreen;
+  const SkColor4f foreground_color = SkColors::kBlue;
+
+  std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
+  for (int y = 0; y < rect.height(); y++) {
+    for (int x = 0; x < rect.width(); x++) {
+      expected_output_colors[y * rect.width() + x] =
+          damage_rect.Contains(x, y) ? foreground_color.toSkColor()
+                                     : background_color.toSkColor();
+    }
+  }
+
+  // Draw two frames with semi-transparent content. Both frames should result in
+  // the same image.
+  for (size_t i = 0; i < 2; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame %zu", i));
+
+    auto pass = CreateTestRootRenderPass(AggregatedRenderPassId{1}, rect);
+
+    if (i != 0) {
+      pass->damage_rect = damage_rect;
+    }
+
+    SharedQuadState* shared_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    auto* foreground_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    foreground_quad->SetNew(shared_state, damage_rect, damage_rect,
+                            foreground_color, false);
+
+    // Only add the background in the first frame. If the renderer forces full
+    // damage for all frames, the second frame will not contain the background
+    // color from the first frame.
+    if (i == 0) {
+      auto* background_quad =
+          pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      background_quad->SetNew(shared_state, rect, rect, background_color,
+                              false);
+    }
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    EXPECT_TRUE(this->RunPixelTest(&pass_list, &expected_output_colors,
+                                   cc::AlphaDiscardingExactPixelComparator()));
+  }
+}
+
 TEST_P(RendererPixelTest, OutputSurfaceClipRect) {
   gfx::Rect rect(device_viewport_size_);
 
@@ -938,7 +991,7 @@ TEST_P(RendererPixelTest, SimpleGreenRectNonRootRenderPass) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green_small.png")),
       cc::AlphaDiscardingExactPixelComparator()));
@@ -5027,7 +5080,7 @@ TEST_P(RendererPixelTestWithFlippedOutputSurface, CheckChildPassUnflipped) {
   pass_list.push_back(std::move(root_pass));
 
   // Check that the child pass remains unflipped.
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
       cc::AlphaDiscardingExactPixelComparator()));
@@ -5076,7 +5129,7 @@ TEST_P(GPURendererPixelTest, CheckReadbackSubset) {
                          this->device_viewport_size_.height() / 2,
                          this->device_viewport_size_.width() / 2,
                          this->device_viewport_size_.height() / 2);
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTargetAndArea(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequestAndArea(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("green_small_with_blue_corner.png")),
       cc::AlphaDiscardingExactPixelComparator(), &capture_rect));
@@ -6496,7 +6549,7 @@ TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
 
   // This will only check what was drawn in the child pass, which should never
   // contain a delegated ink trail, so it should be solid green.
-  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green.png")),
       cc::AlphaDiscardingExactPixelComparator()));

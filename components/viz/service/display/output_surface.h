@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/pending_swap_params.h"
@@ -271,6 +272,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void InitDelegatedInkPointRendererReceiver(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver);
+
+  // Read back the contents of this output surface. This reads back the root
+  // render pass and does not affect rendering in the ways that a copy request
+  // might (e.g. damage, overlays, etc). This uses |CopyOutputRequestCallback|
+  // to be able to be used with code that consumes copy output responses.
+  virtual void ReadbackForTesting(
+      CopyOutputRequest::CopyOutputRequestCallback result_callback);
 
  protected:
   struct OutputSurface::Capabilities capabilities_;

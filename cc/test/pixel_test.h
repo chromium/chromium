@@ -74,12 +74,13 @@ class PixelTest : public testing::Test {
                     SkBitmap ref_bitmap,
                     const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTarget(viz::AggregatedRenderPassList* pass_list,
-                                      viz::AggregatedRenderPass* target,
-                                      const base::FilePath& ref_file,
-                                      const PixelComparator& comparator);
+  bool RunPixelTestWithCopyOutputRequest(
+      viz::AggregatedRenderPassList* pass_list,
+      viz::AggregatedRenderPass* target,
+      const base::FilePath& ref_file,
+      const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTargetAndArea(
+  bool RunPixelTestWithCopyOutputRequestAndArea(
       viz::AggregatedRenderPassList* pass_list,
       viz::AggregatedRenderPass* target,
       const base::FilePath& ref_file,

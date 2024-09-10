@@ -153,6 +153,11 @@ void SkiaOutputDevice::SetDependencyTimings(base::TimeTicks task_ready) {
   gpu_task_ready_ = task_ready;
 }
 
+void SkiaOutputDevice::ReadbackForTesting(
+    base::OnceCallback<void(SkBitmap)> callback) {
+  NOTIMPLEMENTED();
+}
+
 void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
   DCHECK_LT(static_cast<int>(pending_swaps_.size()),
             capabilities_.pending_swap_params.GetMax());

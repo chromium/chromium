@@ -299,6 +299,9 @@ class SkiaOutputSurfaceImplOnGpu
   void CleanupImageProcessor();
 #endif
 
+  void ReadbackForTesting(
+      CopyOutputRequest::CopyOutputRequestCallback result_callback);
+
  private:
   struct MailboxAccessData {
     MailboxAccessData();

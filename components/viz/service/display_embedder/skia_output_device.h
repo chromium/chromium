@@ -178,6 +178,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   void SetDependencyTimings(base::TimeTicks task_ready);
 
+  // Copy and return the contents of the surface owned by this device. If this
+  // output device is surfaceless, then reads back from the OS compositor tree,
+  // including non-protected overlays.
+  virtual void ReadbackForTesting(base::OnceCallback<void(SkBitmap)> callback);
+
  protected:
   // Only valid between StartSwapBuffers and FinishSwapBuffers.
   class SwapInfo {

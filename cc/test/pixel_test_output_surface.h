@@ -30,6 +30,9 @@ class PixelTestOutputSurface : public viz::OutputSurface {
       viz::UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
+  void ReadbackForTesting(
+      base::OnceCallback<void(std::unique_ptr<viz::CopyOutputResult>)> callback)
+      override;
 
  private:
   void SwapBuffersCallback();

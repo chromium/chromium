@@ -1699,4 +1699,15 @@ void SkiaOutputSurfaceImpl::CleanupImageProcessor() {
 }
 #endif
 
+void SkiaOutputSurfaceImpl::ReadbackForTesting(
+    CopyOutputRequest::CopyOutputRequestCallback result_callback) {
+  auto callback = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::ReadbackForTesting,
+      base::Unretained(impl_on_gpu_.get()), std::move(result_callback));
+  EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
+                 /*make_current=*/true,
+                 /*need_framebuffer=*/!dependency_->IsOffscreen());
+  FlushGpuTasks(SyncMode::kNoWait);
+}
+
 }  // namespace viz

@@ -2831,4 +2831,35 @@ void SkiaOutputSurfaceImplOnGpu::CleanupImageProcessor() {
 }
 #endif
 
+void SkiaOutputSurfaceImplOnGpu::ReadbackForTesting(
+    CopyOutputRequest::CopyOutputRequestCallback result_callback) {
+  std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  if (dependency_->GetGrShaderCache()) {
+    cache_use.emplace(dependency_->GetGrShaderCache(),
+                      gpu::kDisplayCompositorClientId);
+  }
+
+  output_device_->ReadbackForTesting(base::BindOnce(  // IN-TEST
+      [](std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use,
+         bool is_emulated_rgbx,
+         CopyOutputRequest::CopyOutputRequestCallback result_callback,
+         SkBitmap bitmap) {
+        // Discard alpha if emulating RGBX.
+        if (is_emulated_rgbx) {
+          SkPaint paint;
+          paint.setColor(SkColors::kBlack);
+          paint.setBlendMode(SkBlendMode::kDstATop);
+          SkCanvas canvas(bitmap);
+          canvas.drawPaint(paint);
+        }
+
+        std::move(result_callback)
+            .Run(std::make_unique<CopyOutputSkBitmapResult>(
+                gfx::Rect(gfx::SkISizeToSize(bitmap.dimensions())),
+                std::move(bitmap)));
+      },
+      std::move(cache_use), output_device_->is_emulated_rgbx(),
+      std::move(result_callback)));
+}
+
 }  // namespace viz
