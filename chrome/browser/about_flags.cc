@@ -5386,6 +5386,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacLoopbackAudioForScreenShareName,
      flag_descriptions::kMacLoopbackAudioForScreenShareDescription, kOsMac,
      FEATURE_VALUE_TYPE(media::kMacLoopbackAudioForScreenShare)},
+
+    {"use-sc-content-sharing-picker",
+     flag_descriptions::kUseSCContentSharingPickerName,
+     flag_descriptions::kUseSCContentSharingPickerDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kUseSCContentSharingPicker)},
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     {"web-share", flag_descriptions::kWebShareName,

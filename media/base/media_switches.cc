@@ -367,6 +367,13 @@ BASE_FEATURE(kResumeBackgroundVideo,
 BASE_FEATURE(kMacLoopbackAudioForScreenShare,
              "MacLoopbackAudioForScreenShare",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
+// flag will only use the built-in picker on MacOS 15 Sequoia and later where it
+// is required to avoid recurring permission dialogs.
+BASE_FEATURE(kUseSCContentSharingPicker,
+             "UseSCContentSharingPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)

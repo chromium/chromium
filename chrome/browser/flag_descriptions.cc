@@ -5748,6 +5748,12 @@ const char kUseAdHocSigningForWebAppShimsDescription[] =
     "This allows macOS subsystems to correctly distinguish between multiple "
     "PWAs. Only enabled on macOS 11.7 and later.";
 
+const char kUseSCContentSharingPickerName[] =
+    "Use ScreenCaptureKit picker for stream selection";
+const char kUseSCContentSharingPickerDescription[] =
+    "This feature opens a native picker in MacOS 15+ to allow the  selection "
+    "of a window or screen that will be captured.";
+
 #endif
 
 // Windows and Mac -------------------------------------------------------------

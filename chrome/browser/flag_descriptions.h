@@ -3322,6 +3322,9 @@ extern const char kUseAngleMetal[];
 extern const char kUseAdHocSigningForWebAppShimsName[];
 extern const char kUseAdHocSigningForWebAppShimsDescription[];
 
+extern const char kUseSCContentSharingPickerName[];
+extern const char kUseSCContentSharingPickerDescription[];
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // Windows and Mac ------------------------------------------------------------

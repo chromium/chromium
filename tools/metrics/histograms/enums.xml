@@ -17527,6 +17527,7 @@ from previous Chrome versions.
   <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
   <int value="-1303986525" label="CCTBeforeUnload:enabled"/>
+  <int value="-1303979994" label="UseSCContentSharingPicker:enabled"/>
   <int value="-1303417000" label="UseStorkSmdsServerAddress:enabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>
@@ -24665,6 +24666,7 @@ from previous Chrome versions.
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1673776797"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>
+  <int value="1673943701" label="UseSCContentSharingPicker:disabled"/>
   <int value="1674803174"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:disabled"/>
   <int value="1675848452" label="BluetoothQualityReport:disabled"/>
