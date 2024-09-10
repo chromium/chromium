@@ -56,7 +56,6 @@ class PasswordInputType final : public BaseTextInputType {
   void CapsLockStateMayHaveChanged() override;
   bool ShouldDrawCapsLockIndicator() const override;
   void UpdatePasswordRevealButton();
-  void UpdateStrongPasswordLabel();
   void DidSetValueByUserEdit() override;
   void DidSetValue(const String&, bool value_changed) override;
 

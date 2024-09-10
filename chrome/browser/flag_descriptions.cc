@@ -2957,12 +2957,6 @@ const char kPasswordGenerationExperimentDescription[] =
     "Enables different experiments that modify content and behavior of the "
     "existing generated password suggestion dropdown.";
 
-const char kPasswordGenerationStrongLabelExperimentName[] =
-    "Password generation strong label experiment";
-const char kPasswordGenerationStrongLabelExperimentDescription[] =
-    "Enables adding a 'Strong password' label inside the sign-up password "
-    "field in the password generation flow.";
-
 const char kPasswordManagerShowSuggestionsOnAutofocusName[] =
     "Showing password suggestions on autofocused password forms";
 const char kPasswordManagerShowSuggestionsOnAutofocusDescription[] =

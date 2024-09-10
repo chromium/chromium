@@ -58,7 +58,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -1064,10 +1063,6 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
             .DynamicTo<WebInputElement>();
     if (!element) {
       continue;
-    }
-    if (preview_info.is_password &&
-        base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-      element.SetShouldShowStrongPasswordLabel(false);
     }
     element.SetSuggestedValue(WebString());
     element.SetAutofillState(preview_info.autofill_state);

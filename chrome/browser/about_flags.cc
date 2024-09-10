@@ -10986,13 +10986,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"password-generation-strong-label-experiment",
-     flag_descriptions::kPasswordGenerationStrongLabelExperimentName,
-     flag_descriptions::kPasswordGenerationStrongLabelExperimentDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(blink::features::kPasswordStrongLabel)},
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
     {"trusted-vault-frequent-degraded-recoverability-polling",
      flag_descriptions::kTrustedVaultFrequentDegradedRecoverabilityPollingName,
      flag_descriptions::

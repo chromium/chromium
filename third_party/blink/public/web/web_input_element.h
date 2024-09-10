@@ -81,12 +81,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   // Returns true if the text of the element should be visible.
   bool ShouldRevealPassword() const;
 
-  // If true, forces "Strong Password" label to be visible in the field.
-  void SetShouldShowStrongPasswordLabel(bool value);
-
-  // Returns whether "Strong Password" label should be visible in the field.
-  bool ShouldShowStrongPasswordLabel() const;
-
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether this is the last element within its form.
   bool IsLastInputElementInForm();

@@ -103,14 +103,6 @@ bool WebInputElement::ShouldRevealPassword() const {
   return ConstUnwrap<HTMLInputElement>()->ShouldRevealPassword();
 }
 
-void WebInputElement::SetShouldShowStrongPasswordLabel(bool value) {
-  Unwrap<HTMLInputElement>()->SetShouldShowStrongPasswordLabel(value);
-}
-
-bool WebInputElement::ShouldShowStrongPasswordLabel() const {
-  return ConstUnwrap<HTMLInputElement>()->ShouldShowStrongPasswordLabel();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 bool WebInputElement::IsLastInputElementInForm() {
   return Unwrap<HTMLInputElement>()->IsLastInputElementInForm();

@@ -3079,10 +3079,6 @@
       name: "PasswordReveal",
     },
     {
-      name: "PasswordStrongLabel",
-      status: "experimental",
-    },
-    {
       name: "PaymentApp",
       depends_on: ["PaymentRequest"],
       public: true,

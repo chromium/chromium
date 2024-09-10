@@ -7020,11 +7020,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "password-generation-strong-label-experiment",
-    "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "password-manager-detect-username-in-uff",
     "owners": [
       "vincb@google.com",

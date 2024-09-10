@@ -27,7 +27,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -89,17 +88,11 @@ void CopyElementValueToOtherInputElements(
 
 void PreviewGeneratedValue(WebInputElement& input_element,
                            const blink::WebString& value) {
-  if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-    input_element.SetShouldShowStrongPasswordLabel(true);
-  }
   input_element.SetShouldRevealPassword(true);
   input_element.SetSuggestedValue(value);
 }
 
 void ClearPreviewedValue(WebInputElement& input_element) {
-  if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-    input_element.SetShouldShowStrongPasswordLabel(false);
-  }
   input_element.SetShouldRevealPassword(false);
   input_element.SetSuggestedValue(blink::WebString());
 }
