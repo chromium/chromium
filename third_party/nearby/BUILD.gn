@@ -25,9 +25,7 @@ config("nearby_include_config") {
 }
 
 config("nearby_defines") {
-  defines = [
-    "NEARBY_CHROMIUM=1",
-  ]
+  defines = [ "NEARBY_CHROMIUM=1" ]
 }
 
 ###############################################################################
@@ -659,7 +657,6 @@ source_set("platform_base") {
     "src/internal/platform/base64_utils.cc",
     "src/internal/platform/bluetooth_utils.cc",
     "src/internal/platform/input_stream.cc",
-    "src/internal/platform/nsd_service_info.cc",
     "src/internal/platform/prng.cc",
   ]
   public = [
@@ -701,7 +698,7 @@ source_set("platform_base_error_code_recorder") {
   public_deps = [
     ":connections_enums_proto",
     ":error_code_enums_proto",
-    ":platform_base_logging",
+    ":platform_public_logging",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -713,7 +710,10 @@ source_set("platform_base_uuid") {
   ]
   sources = [ "src/internal/platform/uuid.cc" ]
   public = [ "src/internal/platform/uuid.h" ]
-  public_deps = [ ":platform_api_types" ]
+  public_deps = [
+    ":platform_base",
+    "//crypto:crypto",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -728,11 +728,9 @@ source_set("platform_base_util") {
   ]
   public = [
     "src/internal/platform/base_input_stream.h",
-    "src/internal/platform/base_mutex_lock.h",
     "src/internal/platform/byte_utils.h",
   ]
   public_deps = [
-    ":platform_api_types",
     ":platform_base",
     "//third_party/abseil-cpp:absl",
   ]
