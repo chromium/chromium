@@ -57,6 +57,7 @@ class TestShellDelegate : public ShellDelegate {
       const override;
   std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
+  std::unique_ptr<CoralDelegate> CreateCoralDelegate() const override;
   std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;
   std::unique_ptr<AcceleratorPrefsDelegate> CreateAcceleratorPrefsDelegate()

@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/system_sounds_delegate_impl.h"
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
+#include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -157,6 +158,11 @@ ChromeShellDelegate::CreateCaptureModeDelegate() const {
 std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
 ChromeShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<ClipboardHistoryControllerDelegateImpl>();
+}
+
+std::unique_ptr<ash::CoralDelegate> ChromeShellDelegate::CreateCoralDelegate()
+    const {
+  return std::make_unique<CoralDelegateImpl>();
 }
 
 std::unique_ptr<ash::GameDashboardDelegate>

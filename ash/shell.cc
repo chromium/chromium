@@ -118,6 +118,7 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
@@ -749,6 +750,8 @@ Shell::~Shell() {
   }
 
   ash_dbus_services_.reset();
+
+  coral_delegate_.reset();
 
   saved_desk_controller_.reset();
   saved_desk_delegate_.reset();
@@ -1816,6 +1819,9 @@ void Shell::Init(
   if (features::IsCoralFeatureEnabled() &&
       CoralController::IsSecretKeyMatched()) {
     coral_controller_ = std::make_unique<CoralController>();
+  }
+  if (features::IsBirchCoralEnabled()) {
+    coral_delegate_ = shell_delegate_->CreateCoralDelegate();
   }
 
   if (features::IsPickerUpdateEnabled()) {

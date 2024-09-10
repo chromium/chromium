@@ -43,6 +43,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class ClipboardHistoryControllerDelegate;
+class CoralDelegate;
 class DeskProfilesDelegate;
 class FocusModeDelegate;
 class GameDashboardDelegate;
@@ -77,6 +78,9 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate of the clipboard history feature.
   virtual std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const = 0;
+
+  // Creates and returns the delegate of the Coral feature.
+  virtual std::unique_ptr<CoralDelegate> CreateCoralDelegate() const = 0;
 
   // Creates and returns the delegate of the Game Dashboard feature.
   virtual std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()

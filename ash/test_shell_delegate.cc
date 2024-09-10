@@ -53,6 +53,10 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<TestClipboardHistoryControllerDelegateImpl>();
 }
 
+std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
+  return nullptr;
+}
+
 std::unique_ptr<GameDashboardDelegate>
 TestShellDelegate::CreateGameDashboardDelegate() const {
   return std::make_unique<TestGameDashboardDelegate>();

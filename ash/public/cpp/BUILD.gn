@@ -125,6 +125,7 @@ component("cpp") {
     "clipboard_image_model_factory.h",
     "connectivity_services.cc",
     "connectivity_services.h",
+    "coral_delegate.h",
     "coral_util.cc",
     "coral_util.h",
     "debug_delegate.h",

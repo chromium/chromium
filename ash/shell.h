@@ -136,6 +136,7 @@ class CaptureModeController;
 class ColorPaletteController;
 class ControlVHistogramRecorder;
 class CoralController;
+class CoralDelegate;
 class CrosDisplayConfig;
 class DarkLightModeControllerImpl;
 class DeskProfilesDelegate;
@@ -877,6 +878,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
 
   CoralController* coral_controller() { return coral_controller_.get(); }
+  CoralDelegate* coral_delegate() { return coral_delegate_.get(); }
 
   DragDropController* drag_drop_controller() {
     return drag_drop_controller_.get();
@@ -1307,6 +1309,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 
   std::unique_ptr<CoralController> coral_controller_;
+  std::unique_ptr<CoralDelegate> coral_delegate_;
 
   base::WeakPtrFactory<Shell> weak_factory_{this};
 };

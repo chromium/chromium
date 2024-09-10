@@ -39,6 +39,7 @@ include_rules = [
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/ash/system_sounds_delegate_impl.h",
   "+chrome/browser/ui/ash/user_education",
+  "+chrome/browser/ui/ash/wm",
   "+chrome/browser/ui/browser_command_controller.h",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
