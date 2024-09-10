@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       /* mask_length */ kDisplayFeatureLength};
   {
     view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-    host()->SynchronizeVisualPropertiesIgnoringPendingAck();
+    host()->SynchronizeVisualProperties();
   }
 
   EXPECT_EQ(
