@@ -269,13 +269,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
               CSSRelativeColorSupportsCurrentcolorEnabled()) {
         return false;
       }
-      // TODO(crbug.com/325309578, crbug.com/41492196): expand to all colors
-      // that aren't resolvable at parse time.
-      if (!unresolved_origin_color_->IsIdentifierValue() ||
-          To<CSSIdentifierValue>(unresolved_origin_color_)->GetValueID() !=
-              CSSValueID::kCurrentcolor) {
-        return false;
-      }
       // If the origin color is not resolvable at parse time, fill out the map
       // with just the valid channel names. We still need that information to
       // parse the remainder of the color function.
