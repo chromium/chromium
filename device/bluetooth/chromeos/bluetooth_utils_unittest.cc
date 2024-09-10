@@ -439,7 +439,7 @@ TEST_F(BluetoothUtilsTest, TestPairMetric) {
   auto assert_filtered_user_error_histograms =
       [&](device::ConnectionFailureReason failure_reason) {
         histogram_tester.ExpectBucketCount(
-            "Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered", 0,
+            "Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered2", 0,
             total_count - 1);
       };
 
@@ -509,6 +509,29 @@ TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {
       "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure."
       "Classic",
       2000, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result."
+      "UserErrorsFiltered",
+      0, 0);
+
+  RecordUserInitiatedReconnectionAttemptResult(
+      device::ConnectionFailureReason::kFailed,
+      device::UserInitiatedReconnectionUISurfaces::kSettings);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result."
+      "UserErrorsFiltered",
+      0, 1);
+
+  RecordUserInitiatedReconnectionAttemptResult(
+      device::ConnectionFailureReason::kInprogress,
+      device::UserInitiatedReconnectionUISurfaces::kSettings);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result."
+      "UserErrorsFiltered",
+      0, 1);
 }
 
 TEST_F(BluetoothUtilsTest, TestDisconnectMetric) {
