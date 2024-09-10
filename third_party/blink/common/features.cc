@@ -2277,11 +2277,11 @@ BASE_FEATURE(kSharedStorageAPIM125,
 
 BASE_FEATURE(kSharedStorageCrossOriginScript,
              "SharedStorageCrossOriginScript",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageCreateWorkletUseContextOriginByDefault,
              "SharedStorageCreateWorkletUseContextOriginByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
