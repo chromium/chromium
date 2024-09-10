@@ -137,6 +137,12 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DataSaverMilestonePromo"
       summary="data saver milestone promo"/>
   <variant name="IPH_DataSaverPreview" summary="data saver preview"/>
+  <variant name="IPH_DefaultBrowserPromoMagicStack"
+      summary="Default browser promo in Magic Stack"/>
+  <variant name="IPH_DefaultBrowserPromoMessages"
+      summary="Default browser promo with messages on omnibox paste"/>
+  <variant name="IPH_DefaultBrowserPromoSettingCard"
+      summary="Default browser promo in Chrome settings"/>
   <variant name="IPH_DefaultSiteView" summary="default site view info on iOS"/>
   <variant name="IPH_DesktopCustomizeChrome"
       summary="customizing new tab page"/>

@@ -66,6 +66,19 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
   }
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+  if (kClankDefaultBrowserPromosGroup.name == group->name) {
+    // Default browser promos in this groups can only be shown once every seven
+    // days.
+    std::optional<GroupConfig> config = GroupConfig();
+    config->valid = true;
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("default_browser_promos_group_trigger",
+                                  Comparator(EQUAL, 0), 7, kMaxStoragePeriod);
+    return config;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (kIPHDummyGroup.name == group->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.

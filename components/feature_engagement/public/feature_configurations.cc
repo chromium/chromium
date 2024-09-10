@@ -9,6 +9,7 @@
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/group_constants.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/metrics/field_trial_params.h"
@@ -1591,6 +1592,63 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         "IPH_AutofillVirtualCardSuggestion");
     config->session_rate_impact.affected_features->push_back(
         "IPH_KeyboardAccessoryBarSwiping");
+
+    return config;
+  }
+
+  if (kIPHDefaultBrowserPromoMagicStackFeature.name == feature->name) {
+    // A config that allows the default browser promo Magic Stack to be shown:
+    // * Up to 3 times
+    // * Neither Magic Stack, Messages, nor the settings card has been triggered
+    // in the last 7 days.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("default_browser_promo_magic_stack_trigger",
+                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
+    config->groups.push_back(kClankDefaultBrowserPromosGroup.name);
+
+    return config;
+  }
+
+  if (kIPHDefaultBrowserPromoMessagesFeature.name == feature->name) {
+    // A config that allows the default browser promo messages to be shown:
+    // * Up to 2 times
+    // * Neither Magic Stack, Messages, nor the settings card has been triggered
+    // in the last 7 days.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("default_browser_promo_messages_trigger",
+                    Comparator(LESS_THAN, 2), k10YearsInDays, k10YearsInDays);
+    config->used = EventConfig("default_browser_promo_messages_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("default_browser_promo_messages_dismissed",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays));
+    config->groups.push_back(kClankDefaultBrowserPromosGroup.name);
+    return config;
+  }
+
+  if (kIPHDefaultBrowserPromoSettingCardFeature.name == feature->name) {
+    // A config that allows the default browser promo setting card to be shown:
+    // * Up to 4 times
+    // * Neither Magic Stack, Messages, nor the settings card has been triggered
+    // in the last 7 days.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("default_browser_promo_setting_card_trigger",
+                    Comparator(LESS_THAN, 4), k10YearsInDays, k10YearsInDays);
+    config->used = EventConfig("default_browser_promo_setting_card_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("default_browser_promo_setting_card_dismissed",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays));
+    config->groups.push_back(kClankDefaultBrowserPromosGroup.name);
 
     return config;
   }

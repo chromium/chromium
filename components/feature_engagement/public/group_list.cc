@@ -22,6 +22,9 @@ const base::Feature* const kAllGroups[] = {
     &kiOSDefaultBrowserPromosGroup,
     &kiOSTailoredDefaultBrowserPromosGroup,
 #endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    &kClankDefaultBrowserPromosGroup,
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 }  // namespace
 

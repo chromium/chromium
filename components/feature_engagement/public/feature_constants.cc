@@ -255,6 +255,15 @@ BASE_FEATURE(kIPHDataSaverMilestonePromoFeature,
 BASE_FEATURE(kIPHDataSaverPreviewFeature,
              "IPH_DataSaverPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDefaultBrowserPromoMagicStackFeature,
+             "IPH_DefaultBrowserPromoMagicStack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDefaultBrowserPromoMessagesFeature,
+             "IPH_DefaultBrowserPromoMessages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDefaultBrowserPromoSettingCardFeature,
+             "IPH_DefaultBrowserPromoSettingCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadHomeFeature,
              "IPH_DownloadHome",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -94,6 +94,12 @@ DEFINE_VARIATION_PARAM(kIPHChromeReengagementNotification2Feature,
                        "IPH_ChromeReengagementNotification2");
 DEFINE_VARIATION_PARAM(kIPHChromeReengagementNotification3Feature,
                        "IPH_ChromeReengagementNotification3");
+DEFINE_VARIATION_PARAM(kIPHDefaultBrowserPromoMagicStackFeature,
+                       "IPH_DefaultBrowserPromoMagicStack");
+DEFINE_VARIATION_PARAM(kIPHDefaultBrowserPromoMessagesFeature,
+                       "IPH_DefaultBrowserPromoMessages");
+DEFINE_VARIATION_PARAM(kIPHDefaultBrowserPromoSettingCardFeature,
+                       "IPH_DefaultBrowserPromoSettingCard");
 DEFINE_VARIATION_PARAM(kIPHDownloadSettingsFeature, "IPH_DownloadSettings");
 DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadContinuingFeature,
                        "IPH_DownloadInfoBarDownloadContinuing");
@@ -532,6 +538,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHChromeReengagementNotification1Feature),
         VARIATION_ENTRY(kIPHChromeReengagementNotification2Feature),
         VARIATION_ENTRY(kIPHChromeReengagementNotification3Feature),
+        VARIATION_ENTRY(kIPHDefaultBrowserPromoMagicStackFeature),
+        VARIATION_ENTRY(kIPHDefaultBrowserPromoMessagesFeature),
+        VARIATION_ENTRY(kIPHDefaultBrowserPromoSettingCardFeature),
         VARIATION_ENTRY(kIPHDownloadSettingsFeature),
         VARIATION_ENTRY(kIPHDownloadInfoBarDownloadContinuingFeature),
         VARIATION_ENTRY(kIPHDownloadInfoBarDownloadsAreFasterFeature),
