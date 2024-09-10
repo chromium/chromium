@@ -3845,7 +3845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.Adaptation" enum="AdaptationReason"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3855,7 +3855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.AdvancedFeatureTags" enum="AdvancedFeatureTagType"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3867,7 +3867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.CrossOriginContent" enum="Boolean"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3877,7 +3877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.EncryptionMode" enum="HLSEncryptionMode"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3888,7 +3888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.InvalidRenditions" units="count"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3920,7 +3920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.PlaylistSegmentExtension" enum="PlaylistSegmentType"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3931,7 +3931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.UnparsableManifest" units="sparse"
-    expires_after="2024-09-11">
+    expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
