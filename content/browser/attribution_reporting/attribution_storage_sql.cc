@@ -914,6 +914,108 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
          DeactivateSources(source_ids_to_deactivate) && transaction.Commit();
 }
 
+namespace {
+
+struct ScopeData {
+  base::Time max_source_time = base::Time::Min();
+  std::vector<StoredSource::Id> sources_without_reports;
+  std::vector<StoredSource::Id> sources_with_reports;
+
+  ScopeData() = default;
+
+  ScopeData(const ScopeData&) = delete;
+  ScopeData& operator=(const ScopeData&) = delete;
+
+  ScopeData(ScopeData&&) = default;
+  ScopeData& operator=(ScopeData&&) = default;
+
+  void Assign(std::vector<StoredSource::Id>& source_ids_to_delete,
+              std::vector<StoredSource::Id>& source_ids_to_deactivate) && {
+    if (source_ids_to_delete.empty()) {
+      source_ids_to_delete = std::move(sources_without_reports);
+    } else {
+      source_ids_to_delete.insert(source_ids_to_delete.end(),
+                                  sources_without_reports.begin(),
+                                  sources_without_reports.end());
+    }
+
+    if (source_ids_to_deactivate.empty()) {
+      source_ids_to_deactivate = std::move(sources_with_reports);
+    } else {
+      source_ids_to_deactivate.insert(source_ids_to_deactivate.end(),
+                                      sources_with_reports.begin(),
+                                      sources_with_reports.end());
+    }
+  }
+};
+
+using ScopeDataMap = std::map<std::string, ScopeData>;
+
+// Assigns sources for all but the top `remaining_scopes_allowed` scopes to be
+// deleted or deactivated.
+void SelectScopes(ScopeDataMap scope_datas,
+                  size_t remaining_scopes_allowed,
+                  std::vector<StoredSource::Id>& source_ids_to_delete,
+                  std::vector<StoredSource::Id>& source_ids_to_deactivate) {
+  CHECK_GT(scope_datas.size(), remaining_scopes_allowed);
+
+  // It can be more efficient to find the bottom scopes than the top.
+  size_t to_select;
+  bool keep_selected;
+  if (size_t diff = scope_datas.size() - remaining_scopes_allowed;
+      remaining_scopes_allowed < diff) {
+    to_select = remaining_scopes_allowed;
+    keep_selected = true;
+  } else {
+    to_select = diff;
+    keep_selected = false;
+  }
+
+  const auto cmp = [keep_selected](const ScopeDataMap::node_type& a,
+                                   const ScopeDataMap::node_type& b) {
+    return (std::tie(a.mapped().max_source_time, a.key()) >
+            std::tie(b.mapped().max_source_time, b.key())) == keep_selected;
+  };
+
+  std::vector<ScopeDataMap::node_type> selected;
+  selected.reserve(to_select);
+
+  while (!scope_datas.empty() && selected.size() < to_select) {
+    selected.emplace_back(scope_datas.extract(scope_datas.begin()));
+  }
+
+  base::ranges::make_heap(selected, cmp);
+
+  while (!scope_datas.empty()) {
+    auto scope = scope_datas.extract(scope_datas.begin());
+
+    if (cmp(scope, selected.front())) {
+      // Unfortunately, there is no existing function for replacing the top
+      // of the heap, necessitating pop-then-push here.
+      base::ranges::pop_heap(selected, cmp);
+      std::swap(selected.back(), scope);
+      base::ranges::push_heap(selected, cmp);
+    }
+
+    if (keep_selected) {
+      std::move(scope.mapped())
+          .Assign(source_ids_to_delete, source_ids_to_deactivate);
+    }
+  }
+
+  if (!keep_selected) {
+    for (auto& scope : selected) {
+      std::move(scope.mapped())
+          .Assign(source_ids_to_delete, source_ids_to_deactivate);
+    }
+  }
+
+  DeduplicateSourceIds(source_ids_to_delete);
+  DeduplicateSourceIds(source_ids_to_deactivate);
+}
+
+}  // namespace
+
 // TODO(apaseltiner): This logic is very similar to that of
 // `UpdateOrRemoveSourcesWithIncompatibleScopeFields()`. Can we deduplicate some
 // of the logic?
@@ -921,18 +1023,6 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     const StorableSource& source,
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  struct Record {
-    std::string scope;
-    StoredSource::Id id;
-    bool has_reports;
-    base::Time source_time;
-
-    bool operator<(const Record& other) const {
-      return source_time > other.source_time ||
-             (source_time == other.source_time && scope > other.scope);
-    }
-  };
 
   const auto& registration = source.registration();
 
@@ -964,7 +1054,7 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     PrepareGetMatchingSourcesStatement(statement,
                                        base::span_from_ref(destination));
 
-    std::vector<Record> records;
+    ScopeDataMap scope_datas;
     std::vector<StoredSource::Id> source_ids_to_delete;
     std::vector<StoredSource::Id> source_ids_to_deactivate;
 
@@ -1005,33 +1095,27 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
           break;
         }
 
-        records.emplace_back(std::move(scope), source_id, has_reports,
-                             this_source_time);
+        auto [scope_data, _] =
+            scope_datas.try_emplace(std::move(scope), ScopeData());
+        scope_data->second.max_source_time =
+            std::max(scope_data->second.max_source_time, this_source_time);
+
+        AssignSourceForDeactivationOrDeletion(
+            source_id, has_reports,
+            /*source_ids_to_delete=*/scope_data->second.sources_without_reports,
+            /*source_ids_to_deactivate=*/
+            scope_data->second.sources_with_reports);
       }
     }
     if (!statement.Succeeded()) {
       return false;
     }
 
-    if (remaining_scopes_allowed > 0) {
-      base::ranges::sort(records);
-
-      // We use a `std::set` here instead of `base::flat_set` because the number
-      // of insertions may be large. We use `std::string_view` to avoid having
-      // to move values out of `records`.
-      for (std::set<std::string_view> selected_scopes;
-           const auto& record : records) {
-        if (selected_scopes.size() < remaining_scopes_allowed) {
-          selected_scopes.insert(record.scope);
-        } else if (!selected_scopes.contains(record.scope)) {
-          AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
-                                                source_ids_to_delete,
-                                                source_ids_to_deactivate);
-        }
-      }
-
-      DeduplicateSourceIds(source_ids_to_delete);
-      DeduplicateSourceIds(source_ids_to_deactivate);
+    // It's only necessary to compute the top scopes when there are more scopes
+    // than allowed.
+    if (scope_datas.size() > remaining_scopes_allowed) {
+      SelectScopes(std::move(scope_datas), remaining_scopes_allowed,
+                   source_ids_to_delete, source_ids_to_deactivate);
     }
 
     if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
