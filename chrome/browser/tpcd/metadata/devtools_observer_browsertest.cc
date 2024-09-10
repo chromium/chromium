@@ -23,6 +23,7 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_devtools_protocol_client.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -40,7 +41,8 @@ class TpcdMetadataDevtoolsObserverBrowserTest
       public content::TestDevToolsProtocolClient {
  public:
   explicit TpcdMetadataDevtoolsObserverBrowserTest(
-      bool enable_metadata_feature = true)
+      bool enable_metadata_feature = true,
+      bool enable_staged_control = true)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     enabled_features_.push_back(
         {content_settings::features::kTrackingProtection3pcd, {}});
@@ -51,6 +53,11 @@ class TpcdMetadataDevtoolsObserverBrowserTest
       enabled_features_.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
       disabled_features_.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    enable_staged_control_ = enable_staged_control;
+    if (!enable_staged_control) {
+      disabled_features_.push_back(net::features::kTpcdMetadataStageControl);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -80,12 +87,19 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     const std::string third_party_pattern_spec_2 = "c.test";
 
     Metadata metadata;
+    // If staged control is enabled, DTRP values must be set to 0 to avoid
+    // flakiness if the entry is dropped. If staged control is disabled, the
+    // values can be tested.
+    std::optional<uint32_t> dtrp =
+        enable_staged_control_ ? std::nullopt : std::make_optional(50u);
+    std::optional<uint32_t> dtrp_override =
+        enable_staged_control_ ? std::nullopt : std::make_optional(20u);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_1, first_party_pattern_spec,
-        Parser::kSource1pDt, /*dtrp=*/50u);
+        Parser::kSource1pDt, dtrp);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_2, first_party_pattern_spec,
-        Parser::kSource3pDt, /*dtrp=*/50u, /*dtrp_override=*/20u);
+        Parser::kSource3pDt, dtrp, dtrp_override);
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(
         metadata.SerializeAsString());
 
@@ -197,6 +211,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
             std::move(details)));
   }
 
+  bool enable_staged_control_ = true;
   base::test::ScopedFeatureList feature_list_;
   std::vector<base::test::FeatureRefAndParams> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
@@ -204,9 +219,29 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   raw_ptr<TpcdMetadataDevtoolsObserver> devtools_observer_ = nullptr;
 };
 
-// TODO(https://crbug.com/341211478): Flaky.
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DISABLED_EmitsDevtoolsIssues) {
+                       EmitsDevtoolsIssues) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForIssueAndCheck({"b.test"}, 0u, true);
+
+  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
+  WaitForIssueAndCheck({"c.test"}, 0u, false);
+}
+
+// Setting the DTRP values in the issue needs to be tested with the flag off.
+// Otherwise, a non-zero DTRP value might filter the entry and the issue will
+// never fire.
+class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
+    : public TpcdMetadataDevtoolsObserverBrowserTest {
+ public:
+  TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest()
+      : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_metadata_feature=*/true,
+            /*enable_staged_control=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest,
+                       EmitsDevtoolsIssuesWithDtrpValues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
   WaitForIssueAndCheck({"b.test"}, 50u, true);
 
