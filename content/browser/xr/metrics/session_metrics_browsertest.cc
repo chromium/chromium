@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SessionMetricsPrerenderingBrowserTest,
 
   // Load a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   EXPECT_FALSE(host_observer.was_activated());
   entries = test_ukm_recorder.GetEntriesByName(

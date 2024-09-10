@@ -190,9 +190,9 @@ bool AppActivity::HasJoinableClient(
   return base::ranges::any_of(
       connected_clients_,
       [policy, &origin, frame_tree_node_id](const auto& client) {
-        return IsAutoJoinAllowed(policy, origin, frame_tree_node_id,
+        return IsAutoJoinAllowed(policy, origin, frame_tree_node_id.value(),
                                  client.second->origin(),
-                                 client.second->frame_tree_node_id());
+                                 client.second->frame_tree_node_id().value());
       });
 }
 

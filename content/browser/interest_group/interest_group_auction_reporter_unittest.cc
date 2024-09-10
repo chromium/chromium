@@ -1637,7 +1637,7 @@ TEST_F(InterestGroupAuctionReporterTest, InvalidPrivateAggregationRequests) {
   SetUpAndStartSingleSellerAuction();
 
   interest_group_auction_reporter_
-      ->OnNavigateToWinningAdCallback(FrameTreeNode::kFrameTreeNodeInvalidId)
+      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
       .Run();
 
   WaitForReportResultAndRunCallback(
@@ -1675,7 +1675,7 @@ TEST_F(InterestGroupAuctionReporterTest, InvalidPrivateAggregationRequests2) {
   SetUpAndStartSingleSellerAuction();
 
   interest_group_auction_reporter_
-      ->OnNavigateToWinningAdCallback(FrameTreeNode::kFrameTreeNodeInvalidId)
+      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
       .Run();
 
   WaitForReportResultAndRunCallback(

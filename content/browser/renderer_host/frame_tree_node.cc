@@ -115,14 +115,6 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   bool observing_original_opener_;
 };
 
-// TODO(https://crbug.com/361344235): Remove.
-const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
-
-// TODO(https://crbug.com/361344235): Remove.
-static_assert(FrameTreeNode::kFrameTreeNodeInvalidId ==
-                  RenderFrameHost::kNoFrameTreeNodeId,
-              "Have consistent sentinel values for an invalid FTN id.");
-
 // static
 FrameTreeNodeId::Generator FrameTreeNode::frame_tree_node_id_generator_;
 

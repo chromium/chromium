@@ -73,9 +73,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     virtual ~Observer() = default;
   };
 
-  // TODO(https://crbug.com/361344235): Remove.
-  static const int kFrameTreeNodeInvalidId;
-
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
   // regardless of which FrameTree it is in.
   static FrameTreeNode* GloballyFindByID(FrameTreeNodeId frame_tree_node_id);
