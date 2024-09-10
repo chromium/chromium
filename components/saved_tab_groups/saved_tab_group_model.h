@@ -130,12 +130,14 @@ class SavedTabGroupModel {
                         SavedTabGroupTab tab,
                         std::optional<LocalTabID> local_id);
 
-  // Removes saved tab `tab_id` in the specified group denoted by
-  // `group_id` if it exists. We delete the group instead if the last tab is
-  // removed from it. Notify local observers if the tab was removed locally, and
-  // sync observers if it was removed from sync.
+  // Removes saved tab `tab_id` in the specified group denoted by `group_id` if
+  // it exists. The group is deleted if the last tab is removed from it.
+  // Notifies observers if the tab was removed locally.
   void RemoveTabFromGroupLocally(const base::Uuid& group_id,
                                  const base::Uuid& tab_id);
+
+  // Similar to above but the group with `group_id` must exist. Notifies
+  // observers that the tab was removed from sync.
   void RemoveTabFromGroupFromSync(const base::Uuid& group_id,
                                   const base::Uuid& tab_id);
 

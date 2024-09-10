@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
@@ -34,21 +33,18 @@ class SharedTabGroupDataSpecifics;
 
 namespace tab_groups {
 class SavedTabGroup;
-class SavedTabGroupModel;
+class SyncBridgeTabGroupModelWrapper;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA data type.
 class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  using SharedTabGroupLoadCallback =
-      base::OnceCallback<void(std::vector<SavedTabGroup>,
-                              std::vector<SavedTabGroupTab>)>;
-
+  // `model_wrapper` and `pref_service` must not be null and must outlive the
+  // current object.
   SharedTabGroupDataSyncBridge(
-      SavedTabGroupModel* model,
+      SyncBridgeTabGroupModelWrapper* model_wrapper,
       syncer::OnceDataTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      PrefService* pref_service,
-      SharedTabGroupLoadCallback on_load_callback);
+      PrefService* pref_service);
 
   SharedTabGroupDataSyncBridge(const SharedTabGroupDataSyncBridge&) = delete;
   SharedTabGroupDataSyncBridge& operator=(const SharedTabGroupDataSyncBridge&) =
@@ -97,14 +93,12 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
  private:
   // Loads the data already stored in the DataTypeStore.
-  void OnStoreCreated(SharedTabGroupLoadCallback on_load_callback,
-                      const std::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::DataTypeStore> store);
 
   // Calls ModelReadyToSync if there are no errors to report and propagaters the
   // stored entries to `on_load_callback`.
   void OnReadAllDataAndMetadata(
-      SharedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -173,9 +167,8 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
 
-  // The Model used to represent the current state of saved and shared tab
-  // groups.
-  raw_ptr<SavedTabGroupModel> model_;
+  // The model wrapper used to access and mutate SavedTabGroupModel.
+  raw_ptr<SyncBridgeTabGroupModelWrapper> model_wrapper_;
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

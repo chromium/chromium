@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
 
 class PrefService;
 
@@ -89,7 +90,10 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
       observation_{this};
 
+  SyncBridgeTabGroupModelWrapper saved_bridge_model_wrapper_;
   std::unique_ptr<SavedTabGroupSyncBridge> saved_bridge_;
+
+  SyncBridgeTabGroupModelWrapper shared_bridge_model_wrapper_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;
 
   // Temporary storage of groups and tabs loaded from the disk for both saved

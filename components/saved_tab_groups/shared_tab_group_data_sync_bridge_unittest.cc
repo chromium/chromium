@@ -24,6 +24,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
@@ -245,14 +246,17 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
     ResetBridgeAndModel();
     saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
+    sync_bridge_model_wrapper_ =
+        std::make_unique<SyncBridgeTabGroupModelWrapper>(
+            syncer::SHARED_TAB_GROUP_DATA, saved_tab_group_model_.get(),
+            base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
+                           base::Unretained(saved_tab_group_model_.get())));
     mock_model_observer_.ObserveModel(saved_tab_group_model_.get());
 
     bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
-        saved_tab_group_model_.get(),
+        sync_bridge_model_wrapper_.get(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_,
-        base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
-                       base::Unretained(saved_tab_group_model_.get())));
+        processor_.CreateForwardingProcessor(), &pref_service_);
     observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
         *saved_tab_group_model_, *bridge_);
     task_environment_.RunUntilIdle();
@@ -265,6 +269,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     observer_forwarder_.reset();
     mock_model_observer_.Reset();
     bridge_.reset();
+    sync_bridge_model_wrapper_.reset();
     saved_tab_group_model_.reset();
   }
 
@@ -353,6 +358,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
+  std::unique_ptr<SyncBridgeTabGroupModelWrapper> sync_bridge_model_wrapper_;
   testing::NiceMock<MockTabGroupModelObserver> mock_model_observer_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::DataTypeStore> store_;

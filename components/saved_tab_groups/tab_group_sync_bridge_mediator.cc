@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
+#include "components/sync/base/data_type.h"
 
 namespace tab_groups {
 
@@ -23,7 +24,19 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
     PrefService* pref_service,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration)
-    : model_(model) {
+    : model_(model),
+      saved_bridge_model_wrapper_(
+          syncer::SAVED_TAB_GROUP,
+          model,
+          base::BindOnce(
+              &TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded,
+              base::Unretained(this))),
+      shared_bridge_model_wrapper_(
+          syncer::SHARED_TAB_GROUP_DATA,
+          model,
+          base::BindOnce(
+              &TabGroupSyncBridgeMediator::OnSharedGroupsWithTabsLoaded,
+              base::Unretained(this))) {
   CHECK(model_);
   CHECK(saved_tab_group_configuration);
   // `shared_tab_group_configuration` can be null when the feature is disabled.
@@ -31,19 +44,15 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
   // It is safe to use base::Unretained() because current object outlives the
   // bridges.
   saved_bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
-      model_, std::move(saved_tab_group_configuration->data_type_store_factory),
-      std::move(saved_tab_group_configuration->change_processor), pref_service,
-      base::BindOnce(&TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded,
-                     base::Unretained(this)));
+      &saved_bridge_model_wrapper_,
+      std::move(saved_tab_group_configuration->data_type_store_factory),
+      std::move(saved_tab_group_configuration->change_processor), pref_service);
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
-        model_,
+        &shared_bridge_model_wrapper_,
         std::move(shared_tab_group_configuration->data_type_store_factory),
         std::move(shared_tab_group_configuration->change_processor),
-        pref_service,
-        base::BindOnce(
-            &TabGroupSyncBridgeMediator::OnSharedGroupsWithTabsLoaded,
-            base::Unretained(this)));
+        pref_service);
   }
 }
 

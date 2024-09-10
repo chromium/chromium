@@ -15,8 +15,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/proto/shared_tab_group_data.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
@@ -217,9 +217,8 @@ std::string ExtractCollaborationId(
 // Parses stored entries and populates the result to the `on_load_callback`.
 std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     const std::vector<proto::SharedTabGroupData>& stored_entries,
-    SavedTabGroupModel* model,
-    const syncer::EntityMetadataMap& sync_metadata,
-    SharedTabGroupDataSyncBridge::SharedTabGroupLoadCallback on_load_callback) {
+    SyncBridgeTabGroupModelWrapper* model_wrapper,
+    const syncer::EntityMetadataMap& sync_metadata) {
   DVLOG(2) << "Loading SharedTabGroupData entries from the disk: "
            << stored_entries.size();
 
@@ -270,7 +269,7 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     tabs_missing_groups.push_back(specifics);
   }
 
-  std::move(on_load_callback).Run(std::move(groups), std::move(tabs));
+  model_wrapper->Initialize(std::move(groups), std::move(tabs));
   return tabs_missing_groups;
 }
 
@@ -314,19 +313,18 @@ size_t AdjustPreferredTabIndex(size_t position_insert_before,
 }  // namespace
 
 SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
-    SavedTabGroupModel* model,
+    SyncBridgeTabGroupModelWrapper* model_wrapper,
     syncer::OnceDataTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    PrefService* pref_service,
-    SharedTabGroupLoadCallback on_load_callback)
-    : syncer::DataTypeSyncBridge(std::move(change_processor)), model_(model) {
-  CHECK(model_);
+    PrefService* pref_service)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
+      model_wrapper_(model_wrapper) {
+  CHECK(model_wrapper_);
 
   std::move(create_store_callback)
       .Run(syncer::SHARED_TAB_GROUP_DATA,
            base::BindOnce(&SharedTabGroupDataSyncBridge::OnStoreCreated,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(on_load_callback)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SharedTabGroupDataSyncBridge::~SharedTabGroupDataSyncBridge() {
@@ -427,7 +425,7 @@ SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
 
   // Iterate over all the shared groups and tabs to find corresponding entities
   // for commit.
-  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+  for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
     CHECK(group->collaboration_id().has_value());
 
     if (parsed_guids.contains(group->saved_guid())) {
@@ -452,7 +450,7 @@ std::unique_ptr<syncer::DataBatch>
 SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+  for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
     CHECK(group->collaboration_id().has_value());
     AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(*group),
                     group->collaboration_id().value());
@@ -522,7 +520,7 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
   // removing them from within the same loop would modify the same underlying
   // storage.
   std::map<base::Uuid, std::vector<base::Uuid>> group_and_tabs_to_close_locally;
-  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+  for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
     std::vector<base::Uuid> tabs_to_close_locally;
     for (const SavedTabGroupTab& tab : group->saved_tabs()) {
       tabs_to_close_locally.emplace_back(tab.saved_tab_guid());
@@ -540,9 +538,13 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
   for (const auto& [group_id, tabs_to_close_locally] :
        group_and_tabs_to_close_locally) {
     for (const base::Uuid& tab_id : tabs_to_close_locally) {
-      model_->RemoveTabFromGroupFromSync(group_id, tab_id);
+      model_wrapper_->RemoveTabFromGroup(group_id, tab_id);
     }
-    model_->RemovedFromSync(group_id);
+
+    // The group could be removed when the last tab is closed.
+    if (model_wrapper_->GetGroup(group_id)) {
+      model_wrapper_->RemoveGroup(group_id);
+    }
   }
 
   // Delete all shared tabs and sync metadata from the store.
@@ -581,13 +583,13 @@ bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
 void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_->is_loaded()) {
+  if (!store_ || !model_wrapper_->IsInitialized()) {
     // Ignore any changes before the model is successfully initialized.
     VLOG(2) << "SavedTabGroupAddedLocally called while not initialized";
     return;
   }
 
-  const SavedTabGroup* group = model_->Get(guid);
+  const SavedTabGroup* group = model_wrapper_->GetGroup(guid);
   CHECK(group);
   CHECK(group->is_shared_tab_group());
 
@@ -621,7 +623,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_->is_loaded()) {
+  if (!store_ || !model_wrapper_->IsInitialized()) {
     // Ignore any changes before the model is successfully initialized.
     VLOG(2) << "SavedTabGroupUpdatedLocally called while not initialized";
     return;
@@ -629,7 +631,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
 
   // The bridge must be called for the shared tab groups only which is
   // guaranteed by the TabGroupSyncBridgeMediator.
-  const SavedTabGroup* group = model_->Get(group_guid);
+  const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
   CHECK(group);
   CHECK(group->is_shared_tab_group());
 
@@ -653,7 +655,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
 void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
     const SavedTabGroup& removed_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_->is_loaded()) {
+  if (!store_ || !model_wrapper_->IsInitialized()) {
     // Ignore any changes before the model is successfully initialized.
     VLOG(2) << "SavedTabGroupRemovedLocally called while not initialized";
     return;
@@ -680,7 +682,6 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
 }
 
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
-    SharedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
@@ -689,13 +690,12 @@ void SharedTabGroupDataSyncBridge::OnStoreCreated(
   }
 
   store_ = std::move(store);
-  store_->ReadAllDataAndMetadata(base::BindOnce(
-      &SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_load_callback)));
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
-    SharedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
@@ -716,9 +716,8 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
   }
 
   // TODO(crbug.com/319521964): Handle tabs missing groups.
-  LoadStoredEntries(std::move(stored_entries), model_,
-                    metadata_batch->GetAllMetadata(),
-                    std::move(on_load_callback));
+  LoadStoredEntries(std::move(stored_entries), model_wrapper_,
+                    metadata_batch->GetAllMetadata());
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
@@ -742,24 +741,26 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
 
   CHECK(specifics.has_tab_group());
 
-  if (!model_->Contains(group_guid)) {
+  if (!model_wrapper_->GetGroup(group_guid)) {
     // This is a new remotely created group. Add the group from sync into local
     // storage.
     StoreSpecifics(write_batch, specifics);
-    model_->AddedFromSync(
+    model_wrapper_->AddGroup(
         SpecificsToSharedTabGroup(specifics, collaboration_id));
     return;
   }
 
   // Update the existing group with remote data.
   // TODO(crbug.com/319521964): handle group position properly.
-  const SavedTabGroup* existing_group = model_->MergeRemoteGroupMetadata(
-      group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
-      SyncColorToTabGroupColor(specifics.tab_group().color()),
-      /*position=*/std::nullopt,
-      /*creator_cache_guid=*/std::nullopt,
-      /*last_updater_cache_guid=*/std::nullopt,
-      TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros()));
+  const SavedTabGroup* existing_group =
+      model_wrapper_->MergeRemoteGroupMetadata(
+          group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
+          SyncColorToTabGroupColor(specifics.tab_group().color()),
+          /*position=*/std::nullopt,
+          /*creator_cache_guid=*/std::nullopt,
+          /*last_updater_cache_guid=*/std::nullopt,
+          TimeFromWindowsEpochMicros(
+              specifics.update_time_windows_epoch_micros()));
   CHECK(existing_group);
 
   // TODO(crbug.com/319521964): consider checking that collaboration ID never
@@ -786,7 +787,7 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
     return;
   }
 
-  const SavedTabGroup* existing_group = model_->Get(group_guid);
+  const SavedTabGroup* existing_group = model_wrapper_->GetGroup(group_guid);
   if (existing_group && existing_group->ContainsTab(tab_guid)) {
     const size_t position_insert_before = PositionToInsertRemoteTab(
         specifics.tab().unique_position(), *existing_group);
@@ -795,7 +796,7 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
     CHECK(current_tab_index.has_value());
 
     const SavedTabGroupTab* merged_tab =
-        model_->MergeRemoteTab(SpecificsToSharedTabGroupTab(
+        model_wrapper_->MergeRemoteTab(SpecificsToSharedTabGroupTab(
             specifics, AdjustPreferredTabIndex(position_insert_before,
                                                current_tab_index.value())));
 
@@ -817,7 +818,7 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
 
   if (existing_group) {
     // This is a new tab for the group.
-    model_->AddTabToGroupFromSync(
+    model_wrapper_->AddTabToGroup(
         existing_group->saved_guid(),
         SpecificsToSharedTabGroupTab(
             specifics,
@@ -843,14 +844,14 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
 
   // Check if the model contains the group guid. If so, remove that group and
   // all of its tabs.
-  if (model_->Contains(guid)) {
-    model_->RemovedFromSync(guid);
+  if (model_wrapper_->GetGroup(guid)) {
+    model_wrapper_->RemoveGroup(guid);
     return;
   }
 
   if (const SavedTabGroup* group_containing_tab =
-          model_->GetGroupContainingTab(guid)) {
-    model_->RemoveTabFromGroupFromSync(group_containing_tab->saved_guid(),
+          model_wrapper_->GetGroupContainingTab(guid)) {
+    model_wrapper_->RemoveTabFromGroup(group_containing_tab->saved_guid(),
                                        guid);
   }
 }
