@@ -123,6 +123,7 @@ source_set("side_panel") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
     "//chrome/common/accessibility:mojo_bindings",
     "//components/lens",

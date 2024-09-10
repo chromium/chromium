@@ -5262,7 +5262,6 @@ static_library("ui") {
       "webauthn/user_actions.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
-      "webui/side_panel/customize_chrome/customize_chrome_section.h",
       "window_name_prompt/window_name_prompt.cc",
 
       # This test header is included because it contains forward declarations
@@ -5291,6 +5290,7 @@ static_library("ui") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:public",
