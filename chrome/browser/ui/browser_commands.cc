@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -120,6 +121,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -180,6 +182,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -2330,6 +2333,21 @@ void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const int position) {
   if (static_cast<int>(urls.size()) <
       commerce::kProductSpecificationsMinTabsCount) {
+    return;
+  }
+
+  auto* prefs = browser->profile()->GetPrefs();
+  // If user has not accepted the latest disclosure, show the disclosure dialog
+  // first.
+  if (prefs &&
+      prefs->GetInteger(
+          commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
+          static_cast<int>(shopping_service::mojom::
+                               ProductSpecificationsDisclosureVersion::kV1)) {
+    commerce::DialogArgs dialog_args(urls, std::string(), /*in_new_tab=*/true);
+    commerce::ProductSpecificationsDisclosureDialog::ShowDialog(
+        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
+        std::move(dialog_args));
     return;
   }
 
