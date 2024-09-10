@@ -59,6 +59,11 @@ body {
   color: var(--foreground-color);
 }
 
+#learn-more-link {
+  font: 14px/20px Google Sans, Roboto, Arial, sans-serif;
+  text-align: center;
+  color: var(--link-text-color);
+}
 /* Media queries for resizing */
 /* Note: while same as for Safe Browsing Quiet Interstitial */
 /* ems are converted to px so that the same unit measure */
@@ -79,6 +84,10 @@ body {
   }
 
   #message {
+    display: none;
+  }
+
+  #learn-more-link {
     display: none;
   }
 

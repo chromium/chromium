@@ -4,10 +4,25 @@
 
 package org.chromium.android_webview.test;
 
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.not;
+
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -65,6 +80,9 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String MATURE_SITE_IFRAME_TITLE = "IFrame mature site";
     private static final String MATURE_SITE_IFRAME_PATH = "/mature-inner.html";
     private static final String BLOCKED_SITE_TITLE = "This content is blocked.";
+    private static final String LEARN_MORE_LINK = "learn-more-link";
+    private static final String SUPPORT_CENTER_HOST = "support.google.com";
+    private static final String SUPPORT_CENTER_PATH = "/families";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
@@ -240,6 +258,35 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                         throw new RuntimeException(e);
                     }
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
+    public void testClickLearnMoreLink() throws Throwable {
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, null);
+        try {
+            Intents.init();
+            intending(not(IntentMatchers.isInternal()))
+                    .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            loadUrl(requestUrl);
+            assertPageTitle(BLOCKED_SITE_TITLE);
+
+            final String script = "document.getElementById('" + LEARN_MORE_LINK + "').click();";
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, script);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> Intents.getIntents().size() > 0, "An intent should be received");
+            intended(
+                    allOf(
+                            hasAction(Intent.ACTION_VIEW),
+                            hasData(hasHost(SUPPORT_CENTER_HOST)),
+                            hasData(hasPath(SUPPORT_CENTER_PATH))));
+        } finally {
+            Intents.release();
+        }
     }
 
     private String setUpWebPage(String path, String title, @Nullable String iFrameUrl) {
