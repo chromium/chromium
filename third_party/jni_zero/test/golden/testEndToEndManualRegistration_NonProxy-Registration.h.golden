@@ -10,7 +10,6 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
 // Class Accessors.
 #ifndef org_jni_1zero_SampleNonProxy_clazz_defined
 #define org_jni_1zero_SampleNonProxy_clazz_defined
@@ -20,7 +19,6 @@ inline jclass org_jni_1zero_SampleNonProxy_clazz(JNIEnv* env) {
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
-
 
 // Forward declarations (methods).
 
@@ -43,8 +41,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBo
     jbyteArray favicon,
     jstring title,
     jobject visits);
-JNI_POSSIBLE_BOUNDARY_EXPORT void
-    Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
     JNIEnv* env,
     jclass jcaller,
     jbyteArray state,
@@ -57,8 +54,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAl
     JNIEnv* env,
     jobject jcaller,
     jstring find);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobjectArray
-    Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
     JNIEnv* env,
     jclass jcaller);
 JNI_POSSIBLE_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
@@ -85,8 +81,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jthrowable
-    Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
+JNI_POSSIBLE_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
     JNIEnv* env,
     jclass jcaller,
     jthrowable e);
@@ -103,8 +98,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRec
     jobject jcaller,
     jint sessionId,
     jobjectArray results);
-
-
 // Method declarations.
 
 static const JNINativeMethod kMethods_org_jni_1zero_SampleNonProxy[] = {
@@ -161,7 +154,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_SampleNonProxy
 
 // Registration function.
 
-namespace  {
+namespace {
 
 bool RegisterNatives(JNIEnv* env) {
   if (!RegisterNative_org_jni_1zero_SampleNonProxy(env))
@@ -170,8 +163,6 @@ bool RegisterNatives(JNIEnv* env) {
   return true;
 }
 
-}  // namespace 
-
+}  // namespace
 
 #endif  // TEMP_DIR_HEADER_
-
