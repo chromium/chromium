@@ -85,15 +85,17 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.ungroup_tab_group_menu_item,
-                        R.id.ungroup_tab,
-                        /* startIconId= */ Resources.ID_NULL,
-                        /* iconTintColorStateList= */ Resources.ID_NULL,
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        isIncognito,
-                        true));
+        if (!hasCollaborationData) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.ungroup_tab_group_menu_item,
+                            R.id.ungroup_tab,
+                            /* startIconId= */ Resources.ID_NULL,
+                            /* iconTintColorStateList= */ Resources.ID_NULL,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            true));
+        }
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
             itemList.add(
