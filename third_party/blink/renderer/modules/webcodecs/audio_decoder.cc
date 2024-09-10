@@ -40,6 +40,42 @@
 
 namespace blink {
 
+bool VerifyDescription(const AudioDecoderConfig& config,
+                       String* js_error_message) {
+  // https://www.w3.org/TR/webcodecs-flac-codec-registration
+  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
+  bool description_required = false;
+  if (config.codec() == "flac" || config.codec() == "vorbis") {
+    description_required = true;
+  }
+
+  if (description_required && !config.hasDescription()) {
+    *js_error_message = "Invalid config; description is required.";
+    return false;
+  }
+
+  // For Opus with more than 2 channels, we need a description. While we can
+  // guess a channel mapping for up to 8 channels, we don't know whether the
+  // encoded Opus streams will be mono or stereo streams.
+  if (config.codec() == "opus" && config.numberOfChannels() > 2 &&
+      !config.hasDescription()) {
+    *js_error_message =
+        "Invalid config; description is required for multi-channel Opus.";
+    return false;
+  }
+
+  if (config.hasDescription()) {
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+
+    if (!desc_wrapper.data()) {
+      *js_error_message = "Invalid config; description is detached.";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   AudioDecoderConfig* copy = AudioDecoderConfig::Create();
   copy->setCodec(config.codec());
@@ -165,24 +201,9 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     return audio_type;
   }
 
-  // https://www.w3.org/TR/webcodecs-flac-codec-registration
-  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
-  bool description_required = false;
-  if (config.codec() == "flac" || config.codec() == "vorbis")
-    description_required = true;
-
-  if (description_required && !config.hasDescription()) {
-    *js_error_message = "Invalid config; description is required.";
+  if (!VerifyDescription(config, js_error_message)) {
+    CHECK(!js_error_message->empty());
     return std::nullopt;
-  }
-
-  if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
-
-    if (!desc_wrapper.data()) {
-      *js_error_message = "Invalid config; description is detached.";
-      return std::nullopt;
-    }
   }
 
   media::AudioCodec codec = media::AudioCodec::kUnknown;
