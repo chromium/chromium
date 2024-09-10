@@ -102,14 +102,6 @@ size_t GetNumDesiredIconSizesForShortcut() {
 #endif
 }
 
-void DeleteShortcutInfoOnUIThread(std::unique_ptr<ShortcutInfo> shortcut_info,
-                                  ResultCallback callback,
-                                  Result result) {
-  shortcut_info.reset();
-  if (callback)
-    std::move(callback).Run(result);
-}
-
 void CreatePlatformShortcutsAndPostCallback(
     const base::FilePath& shortcut_data_path,
     const ShortcutLocations& creation_locations,
@@ -547,21 +539,6 @@ void ScheduleUpdatePlatformShortcuts(
                      std::move(shortcut_data_dir), std::move(old_app_title),
                      locations, std::move(on_complete)),
       std::move(shortcut_info));
-}
-
-void PostShortcutIOTaskAndReplyWithResult(
-    base::OnceCallback<Result(const ShortcutInfo&)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback reply) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Ownership of |shortcut_info| moves to the Reply, which is guaranteed to
-  // outlive the const reference.
-  const ShortcutInfo& shortcut_info_ref = *shortcut_info;
-  GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(std::move(task), std::cref(shortcut_info_ref)),
-      base::BindOnce(&DeleteShortcutInfoOnUIThread, std::move(shortcut_info),
-                     std::move(reply)));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner() {
