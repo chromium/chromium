@@ -2095,6 +2095,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpNoVarySearch.HasUnrecognizedKeys" enum="Boolean"
+    expires_after="2025-02-20">
+  <owner>jbroman@chromium.org</owner>
+  <owner>liviutinta@chromium.org</owner>
+  <summary>
+    Whether any unrecognized keys were seen at the root dictionary of a
+    No-Vary-Search response header. Recorded each time one is parsed as a
+    dictionary, whether or not it affects caching in any way.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpOriginalContentLengthV2" units="bytes"
     expires_after="never">
 <!-- expires-never: Input to Lingo pipelines. -->

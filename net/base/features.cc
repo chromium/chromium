@@ -600,4 +600,8 @@ BASE_FEATURE(kKeepWhitespaceForDataUrls,
              "KeepWhitespaceForDataUrls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
+             "NoVarySearchIgnoreUnrecognizedKeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

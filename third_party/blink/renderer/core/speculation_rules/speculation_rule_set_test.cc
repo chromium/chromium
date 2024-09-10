@@ -4241,24 +4241,6 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseErrorRuleAccepted) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "expects_no_vary_search": "para"
-        }
-      ]
-    })",
-                      KURL("https://example.com"), execution_context());
-    EXPECT_FALSE(rule_set->HasError());
-    ASSERT_TRUE(rule_set->HasWarnings());
-    EXPECT_THAT(
-        rule_set->warning_messages()[0].Utf8(),
-        ::testing::HasSubstr(
-            "No-Vary-Search hint value contains unknown dictionary keys"));
-  }
-  {
-    auto* rule_set =
-        CreateRuleSet(R"({
-      "prefetch": [{
-          "source": "list",
-          "urls": ["https://example.com/prefetch/list/page1.html"],
           "expects_no_vary_search": "key-order=a"
         }
       ]

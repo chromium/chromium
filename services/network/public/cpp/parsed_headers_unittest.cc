@@ -8,9 +8,11 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
@@ -75,6 +77,10 @@ TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsNotDictionary) {
 }
 
 TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsUnknownDictionaryKey) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kNoVarySearchIgnoreUnrecognizedKeys)) {
+    GTEST_SKIP() << "unrecognized keys are now ignored";
+  }
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"

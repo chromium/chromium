@@ -1264,7 +1264,7 @@ void NoVarySearchPrerenderBrowserTest::TestNoVarySearchHeaderFailure(
 // Test that a No-Vary-Search header is malformed.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
                        MalformedNoVarySearchHeader) {
-  TestNoVarySearchHeaderFailure("No-Vary-Search: malformed=(\"a\")",
+  TestNoVarySearchHeaderFailure("No-Vary-Search: malformed(\"a\")",
                                 FinishedReason::kNoVarySearchHeaderParseFailed);
 }
 
