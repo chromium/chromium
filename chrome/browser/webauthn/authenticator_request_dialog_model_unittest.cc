@@ -1102,10 +1102,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
        // create(): Hybrid hint should show QR.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {},
-        {add, t(internal)}, qr},
+        {add, t(internal), t(usb)}, qr},
        // ... even if there are paired phones.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")}, {p("a"),
-        add, t(internal)}, qr},
+        add, t(internal), t(usb)}, qr},
        // But not if Hybrid isn't a valid transport.
        {L, mc, {usb, internal}, {rk, hint_hybrid}, {}, {t(internal), t(usb)},
 #if BUILDFLAG(IS_MAC)
@@ -1154,10 +1154,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {L, ga, {cable}, {has_winapi, rk, hint_sk}, {}, {add, winapi}, plat_ui},
 
        // get(): Hybrid hint should show QR.
-       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add}, qr},
+       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add, t(usb)}, qr},
        // ... even if there are paired phones.
        {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")},
-        {p("a"), add}, qr},
+        {p("a"), add, t(usb)}, qr},
        // But not if hybrid isn't available.
        {L, ga, {usb, internal}, {rk, hint_hybrid}, {}, {t(usb)}, usb_ui},
        // If older webauthn.dll is present, don't jump to it since it doesn't do
@@ -1171,7 +1171,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // If credentials are found on a platform authenticator, they are still
        // shown.
        {L, ga, {usb, internal, cable}, {one_cred, rk, hint_hybrid}, {},
-        {c(cred1), add}, mss},
+        {c(cred1), add, t(usb)}, mss},
 
        // get(): Client device hint should trigger webauthn.dll, if it exists.
        {L, ga, {cable}, {rk, has_winapi, hint_plat}, {}, {add, winapi},

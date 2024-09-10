@@ -444,9 +444,9 @@ struct AuthenticatorRequestDialogModel
   // errors.
   bool offer_try_again_in_ui = true;
   bool ble_adapter_is_powered = false;
-  // security_key_is_possible is true if a security key might be used for the
-  // current transaction.
-  bool security_key_is_possible = false;
+  // show_security_key_on_qr_sheet is true if the security key option should be
+  // offered on the QR sheet.
+  bool show_security_key_on_qr_sheet = false;
   bool is_off_the_record = false;
 
   std::optional<int> max_bio_samples;

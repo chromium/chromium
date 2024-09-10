@@ -1279,7 +1279,7 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
 }
 
 bool AuthenticatorQRSheetModel::ShowSecurityKeyLabel() const {
-  return dialog_model()->security_key_is_possible;
+  return dialog_model()->show_security_key_on_qr_sheet;
 }
 
 std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {

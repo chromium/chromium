@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
@@ -752,6 +753,11 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
       });
 
   if (mech_it != model_->mechanisms.end()) {
+    if (transport == AuthenticatorTransport::kHybrid) {
+      // If the site sent a "hybrid" hint, focus the UI exclusively on the
+      // hybrid case and don't suggest security keys.
+      model_->show_security_key_on_qr_sheet = false;
+    }
     mech_it->callback.Run();
     return true;
   }
@@ -2170,13 +2176,14 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
 
   // If the new UI is enabled, only show USB as an option if the QR code is
   // not available, if tapping it would trigger a prompt to enable BLE, or if
-  // hints will cause us to jump to USB UI.
+  // hints suggest that hybrid and USB should be separate options.
   const bool include_usb_option =
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
       (!include_add_phone_option ||
        transport_availability_.ble_status != BleStatus::kOn ||
-       hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice);
+       hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice ||
+       hints_.transport == AuthenticatorTransport::kHybrid);
 
   if (include_add_phone_option) {
     std::u16string label = l10n_util::GetStringUTF16(
@@ -2401,7 +2408,7 @@ void AuthenticatorRequestDialogController::
       transport_availability_.resident_key_requirement;
   model_->ble_adapter_is_powered =
       transport_availability_.ble_status == BleStatus::kOn;
-  model_->security_key_is_possible =
+  model_->show_security_key_on_qr_sheet =
       base::Contains(transport_availability_.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model_->is_off_the_record = transport_availability_.is_off_the_record_context;
