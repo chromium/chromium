@@ -45,9 +45,7 @@ a:focus-visible {
 .file {
   align-items: center;
   display: flex;
-  height: 52px;
-  padding-bottom: 2px;
-  padding-top: 2px;
+  height: 56px;
   position: relative;
   text-decoration: none;
   overflow: hidden;
@@ -74,6 +72,7 @@ a:focus-visible {
 .file:last-of-type {
   border-radius: 0 0 var(--ntp-module-item-border-radius)
       var(--ntp-module-item-border-radius);
+  padding-bottom: var(--ntp-module-first-element-top-padding);
 }
 
 .icon-container {
