@@ -215,6 +215,7 @@ class ShellView : public views::BoxLayoutView,
                       .SetProperty(
                           views::kFlexBehaviorKey,
                           views::FlexSpecification(
+                              views::LayoutOrientation::kHorizontal,
                               views::MinimumFlexSizeRule::kScaleToMinimum,
                               views::MaximumFlexSizeRule::kUnbounded))
                       // Left padding  = 2, Right padding = 2
