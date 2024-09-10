@@ -151,6 +151,7 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -899,6 +900,34 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
 #endif
 
   return true;
+}
+
+bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
+    download::DownloadItem* item) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_obfuscation::kEnterpriseFileObfuscation)) {
+    return false;
+  }
+
+  // Skip obfuscation for chrome-initiated downloads.
+  if (item && !item->RequireSafetyChecks()) {
+    return false;
+  }
+
+  // Skip obfuscation if there are no matching connector policies and for
+  // report-only scans.
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  if (profile) {
+    auto settings =
+        safe_browsing::DeepScanningRequest::ShouldUploadBinary(item);
+    return settings.has_value() &&
+           settings.value().block_until_verdict ==
+               enterprise_connectors::BlockUntilVerdict::kBlock;
+  }
+#endif
+  return false;
 }
 
 bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(

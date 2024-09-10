@@ -92,6 +92,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
 
   // Whether the file should be stored in memory.
   bool use_in_memory_file = false;
+
+  // Whether the file contents need to be obfuscated.
+  bool needs_obfuscation = false;
 };
 
 }  // namespace download

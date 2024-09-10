@@ -2083,6 +2083,7 @@ static_library("browser") {
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/enterprise/content",
     "//components/enterprise/device_trust",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/error_page/common",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",

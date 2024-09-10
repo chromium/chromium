@@ -763,6 +763,10 @@ void DownloadManagerImpl::CreateNewDownloadItemToStart(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   download::DownloadItemImpl* download = CreateActiveItem(id, *info);
+  if (delegate_ && info->save_info) {
+    info->save_info->needs_obfuscation =
+        delegate_->ShouldObfuscateDownload(download);
+  }
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
   std::move(callback).Run(
       std::move(info), download,

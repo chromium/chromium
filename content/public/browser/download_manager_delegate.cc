@@ -59,6 +59,11 @@ bool DownloadManagerDelegate::ShouldOpenDownload(
   return true;
 }
 
+bool DownloadManagerDelegate::ShouldObfuscateDownload(
+    download::DownloadItem* item) {
+  return false;
+}
+
 bool DownloadManagerDelegate::InterceptDownloadIfApplicable(
     const GURL& url,
     const std::string& user_agent,

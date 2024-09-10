@@ -112,6 +112,7 @@ class ChromeDownloadManagerDelegate
   bool ShouldOpenDownload(
       download::DownloadItem* item,
       content::DownloadOpenDelayedCallback callback) override;
+  bool ShouldObfuscateDownload(download::DownloadItem* item) override;
   bool InterceptDownloadIfApplicable(
       const GURL& url,
       const std::string& user_agent,

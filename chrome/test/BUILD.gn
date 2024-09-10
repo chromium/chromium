@@ -6756,6 +6756,7 @@ test("unit_tests") {
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/enterprise/common/proto:legacy_tech_events_proto",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/favicon/core/test:test_support",
     "//components/feature_engagement/public",
     "//components/feed/core/v2:feed_core_stubs",
