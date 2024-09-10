@@ -2417,7 +2417,7 @@ void LockContentsView::OnPinUnlock(bool is_primary) {
       is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
   AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
   data_dispatcher_->SetPinEnabledForUser(user, true,
-                                         /*avaiable_at*/ std::nullopt);
+                                         /*avaiable_at=*/ std::nullopt);
   HideAuthErrorMessage();
 }
 
