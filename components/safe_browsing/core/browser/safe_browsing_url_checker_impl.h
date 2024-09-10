@@ -112,6 +112,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check,
+      bool check_allowlist_before_hash_database,
       SessionID tab_id);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
@@ -334,6 +335,13 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // If this check allows navigation to commit before it completes.
   const bool is_async_check_;
+
+  // If the allowlist should be checked before the hash database check. This
+  // is useful to speed up the check if the allowlist check is faster than the
+  // hash database check. Callers should only set this value to true if they
+  // fully trust the correctness of the allowlist or there are other mitigations
+  // in place when blocklisted URLs are mistakenly added in the allowlist.
+  bool check_allowlist_before_hash_database_ = false;
 
   // The current tab ID. Used sometimes for identifying the referrer chain for
   // URL real-time lookups. Can be |SessionID::InvalidValue()|.

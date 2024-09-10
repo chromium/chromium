@@ -129,7 +129,8 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
-      url, threat_types_, database_manager_, CheckBrowseUrlType::kHashDatabase);
+      url, threat_types_, database_manager_, CheckBrowseUrlType::kHashDatabase,
+      /*check_allowlist=*/false);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                      weak_factory_.GetWeakPtr(), fallback_trigger));
