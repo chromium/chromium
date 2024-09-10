@@ -161,7 +161,7 @@ void PeripheralsAppDelegateImpl::ConvertPeripheralsResponseProto(
   apps::AppInstallIcon app_install_icon{
       .url = GURL(icon.url()),
       .width_in_pixels = icon.width_in_pixels(),
-      .mime_type = "image/svg+xml",
+      .mime_type = icon.mime_type(),
       .is_masking_allowed = icon.is_masking_allowed()};
   // Callback execution is not critical if object is deleted before icon load.
   // This should rarely occur as the InputDeviceSettingsController, the primary
