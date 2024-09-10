@@ -373,8 +373,7 @@ bool Canvas2DLayerBridge::Restore() {
     }
   }
 
-  if (resource_host_)
-    resource_host_->UpdateMemoryUsage();
+  resource_host_->UpdateMemoryUsage();
 
   return ResourceProvider();
 }
