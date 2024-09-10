@@ -18,6 +18,8 @@ class PlusAddressCreationProperties {
             new ReadableObjectPropertyKey<>("delegate");
     static final WritableBooleanPropertyKey REFRESH_ICON_ENABLED =
             new WritableBooleanPropertyKey("refresh_icon_enabled");
+    static final WritableBooleanPropertyKey REFRESH_ICON_VISIBLE =
+            new WritableBooleanPropertyKey("refresh_icon_visible");
     static final WritableBooleanPropertyKey CONFIRM_BUTTON_ENABLED =
             new WritableBooleanPropertyKey("confirm_button_enabled");
     static final WritableBooleanPropertyKey CONFIRM_BUTTON_VISIBLE =
@@ -28,6 +30,7 @@ class PlusAddressCreationProperties {
         PROPOSED_PLUS_ADDRESS,
         DELEGATE,
         REFRESH_ICON_ENABLED,
+        REFRESH_ICON_VISIBLE,
         CONFIRM_BUTTON_ENABLED,
         CONFIRM_BUTTON_VISIBLE,
     };

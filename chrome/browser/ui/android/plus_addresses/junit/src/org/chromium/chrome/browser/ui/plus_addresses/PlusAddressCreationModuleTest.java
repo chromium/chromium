@@ -162,6 +162,18 @@ public class PlusAddressCreationModuleTest {
 
     @Test
     @SmallTest
+    public void testRefreshButton_hideRefreshButton() {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+
+        mCoordinator.hideRefreshButton();
+        assertEquals(refreshIcon.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
     public void testLegacyErrorHandling_confirmDisabledIfConfirmRequestFails() {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
         Button modalConfirmButton =

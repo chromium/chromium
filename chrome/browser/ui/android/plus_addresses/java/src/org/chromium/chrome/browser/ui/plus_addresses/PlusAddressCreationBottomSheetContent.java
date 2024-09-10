@@ -53,8 +53,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     public PlusAddressCreationBottomSheetContent(
             Activity activity,
             BottomSheetController bottomSheetController,
-            PlusAddressCreationNormalStateInfo info,
-            boolean refreshSupported) {
+            PlusAddressCreationNormalStateInfo info) {
         mBottomSheetController = bottomSheetController;
 
         mShowingNotice = !info.getNotice().isEmpty();
@@ -104,9 +103,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                 });
 
         mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
-        if (refreshSupported) {
-            mRefreshIcon.setVisibility(View.VISIBLE);
-        }
 
         if (mShowingNotice) {
             mPlusAddressCancelButton.setText(info.getCancelText());
@@ -142,6 +138,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         } else {
             mRefreshIcon.setOnClickListener(null);
         }
+    }
+
+    void setRefreshIconVisible(boolean visible) {
+        mRefreshIcon.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void setConfirmButtonEnabled(boolean enabled) {
@@ -205,10 +205,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         description.setText(errorStateInfo.getDescription());
         okButton.setText(errorStateInfo.getOkText());
         cancelButton.setText(errorStateInfo.getCancelText());
-    }
-
-    public void hideRefreshButton() {
-        mRefreshIcon.setVisibility(View.GONE);
     }
 
     // BottomSheetContent implementation follows:

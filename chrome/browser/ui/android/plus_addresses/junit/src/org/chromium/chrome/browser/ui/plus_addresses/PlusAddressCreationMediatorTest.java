@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.app.Activity;
@@ -66,7 +67,9 @@ public final class PlusAddressCreationMediatorTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.setupActivity(TestActivity.class);
-        mModel = PlusAddressCreationCoordinator.createDefaultModel(mDelegate);
+        mModel =
+                PlusAddressCreationCoordinator.createDefaultModel(
+                        mDelegate, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
                         activity,
@@ -107,10 +110,9 @@ public final class PlusAddressCreationMediatorTest {
         verify(mBottomSheetContent).showError(eq(ERROR_STATE));
     }
 
-    @Test
     public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {
         mMediator.hideRefreshButton();
-        verify(mBottomSheetContent).hideRefreshButton();
+        assertFalse(mModel.get(REFRESH_ICON_VISIBLE));
     }
 
     @Test

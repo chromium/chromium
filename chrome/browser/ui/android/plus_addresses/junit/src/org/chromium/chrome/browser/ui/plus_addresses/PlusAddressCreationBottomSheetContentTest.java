@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -68,7 +67,6 @@ public class PlusAddressCreationBottomSheetContentTest {
                     /* errorReportUrl= */ new GURL("bug.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
-    private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo RESERVE_ERROR_STATE =
             new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
@@ -84,10 +82,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        mBottomSheetController,
-                        FIRST_TIME_USAGE_INFO,
-                        REFRESH_SUPPORTED);
+                        mActivity, mBottomSheetController, FIRST_TIME_USAGE_INFO);
         mBottomSheetContent.setDelegate(mDelegate);
     }
 
@@ -117,31 +112,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    public void testRefreshButton_RefreshSupported() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-
-        mBottomSheetContent.hideRefreshButton();
-        assertEquals(refreshIcon.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
-    public void testRefreshButton_RefreshNotSupported() {
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        mBottomSheetController,
-                        FIRST_TIME_USAGE_INFO,
-                        /* refreshSupported= */ false);
-        ImageView refreshIcon =
-                bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
     public void testFirstTimeUsage() {
         TextView firstTimeNotice =
                 mBottomSheetContent
@@ -160,8 +130,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     @SmallTest
     public void testSecondTimeUsage() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(
-                        mActivity, mBottomSheetController, INFO, /* refreshSupported= */ false);
+                new PlusAddressCreationBottomSheetContent(mActivity, mBottomSheetController, INFO);
         TextView firstTimeNotice =
                 bottomSheetContent
                         .getContentView()
@@ -170,17 +139,6 @@ public class PlusAddressCreationBottomSheetContentTest {
                 bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
         assertEquals(firstTimeNotice.getVisibility(), View.GONE);
         assertEquals(cancelButton.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @SmallTest
-    public void testRefreshButton_HideRefreshButton() {
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
-
-        mBottomSheetContent.hideRefreshButton();
-        assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 
     @Test

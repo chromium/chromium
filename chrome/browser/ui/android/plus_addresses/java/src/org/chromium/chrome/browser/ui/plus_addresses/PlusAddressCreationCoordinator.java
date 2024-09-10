@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.app.Activity;
@@ -44,10 +45,9 @@ public class PlusAddressCreationCoordinator {
                         tabModel,
                         tabModelSelector,
                         bridge);
-        PropertyModel model = createDefaultModel(mMediator);
+        PropertyModel model = createDefaultModel(mMediator, refreshSupported);
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(
-                        activity, bottomSheetController, info, refreshSupported);
+                new PlusAddressCreationBottomSheetContent(activity, bottomSheetController, info);
 
         mMediator.setModel(model);
         mMediator.setBottomSheetContent(bottomSheetContent);
@@ -89,12 +89,14 @@ public class PlusAddressCreationCoordinator {
         mMediator = mediator;
     }
 
-    static PropertyModel createDefaultModel(PlusAddressCreationDelegate delegate) {
+    static PropertyModel createDefaultModel(
+            PlusAddressCreationDelegate delegate, boolean refreshSupported) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(PROPOSED_PLUS_ADDRESS, "")
                 .with(DELEGATE, delegate)
                 .with(REFRESH_ICON_ENABLED, false)
+                .with(REFRESH_ICON_VISIBLE, refreshSupported)
                 .with(CONFIRM_BUTTON_ENABLED, false)
                 .with(CONFIRM_BUTTON_VISIBLE, true)
                 .build();

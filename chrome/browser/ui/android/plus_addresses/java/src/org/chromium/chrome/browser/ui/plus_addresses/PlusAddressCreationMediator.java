@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.content.Context;
@@ -113,7 +114,7 @@ import org.chromium.url.GURL;
     }
 
     void hideRefreshButton() {
-        mBottomSheetContent.hideRefreshButton();
+        mModel.set(REFRESH_ICON_VISIBLE, false);
     }
 
     /** Hide the bottom sheet (if showing) and clean up observers. */
