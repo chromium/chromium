@@ -17,6 +17,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsFeatureState, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -76,6 +77,7 @@ export interface ProductSpecificationsElement {
     specs: HTMLElement,
     summaryTable: TableElement,
     syncPromo: HTMLElement,
+    turnOnSyncButton: CrButtonElement,
   };
 }
 
@@ -390,6 +392,16 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private showSyncSetupFlow_() {
+    assert(this.productSpecificationsFeatureState_);
+    assert(!this.productSpecificationsFeatureState_.isSyncingTabCompare);
+
+    // If user's already signed in at the account level, then user needs to turn
+    // on the compare-specific sync from settings.
+    if (this.productSpecificationsFeatureState_.isSignedIn) {
+      OpenWindowProxyImpl.getInstance().openUrl(
+          'chrome://settings/syncSetup/advanced');
+      return;
+    }
     this.shoppingApi_.showSyncSetupFlow();
   }
 

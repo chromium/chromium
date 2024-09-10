@@ -1146,6 +1146,9 @@ void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
       commerce::IsProductSpecificationsAllowedForEnterprise(pref_service_);
   state_ptr->is_quality_logging_allowed =
       commerce::IsProductSpecificationsQualityLoggingAllowed(pref_service_);
+  state_ptr->is_signed_in =
+      shopping_service_->GetAccountChecker() &&
+      shopping_service_->GetAccountChecker()->IsSignedIn();
 
   std::move(callback).Run(std::move(state_ptr));
   return;
