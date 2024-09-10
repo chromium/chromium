@@ -243,6 +243,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   virtual void SelectAll();
 
+  void ClearTextSelection();
+
   // Gets the list of DocumentAttachmentInfo from the document.
   virtual const std::vector<DocumentAttachmentInfo>&
   GetDocumentAttachmentInfoList() const;
@@ -427,6 +429,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   PDFiumPage* GetPage(size_t index);
 
   bool IsValidLink(const std::string& url);
+
+  // Sets whether form highlight should be enabled or cleared.
+  void SetFormHighlight(bool enable_form);
 
  private:
   // This helper class is used to detect the difference in selection between
@@ -849,11 +854,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
-
-  // Sets whether form highlight should be enabled or cleared.
-  void SetFormHighlight(bool enable_form);
-
-  void ClearTextSelection();
 
   const raw_ptr<PDFiumEngineClient> client_;
 
