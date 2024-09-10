@@ -542,6 +542,18 @@
     <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date.">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>
     </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the commerce bottom sheet." >
+      Commerce bottom sheet
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_FULL" desc="Accessibility string that describes fully opening the commerce bottom sheet.">
+      Commerce bottom sheet opened at full height
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_CLOSED" desc="Accessibility string that describes closing the commerce bottom sheet.">
+      Commerce bottom sheet closed
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_HALF" desc="Accessibility string that describes half opening the commerce bottom sheet.">
+      Commerce bottom sheet opened at half height
+    </message>
     </if> <!-- is_android -->
 
   <!-- For Compare -->
