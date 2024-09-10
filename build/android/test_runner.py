@@ -323,12 +323,14 @@ def AddDeviceOptions(parser):
       '--enable-device-cache',
       action='store_true',
       help='Cache device state to disk between runs')
-  parser.add_argument(
-      '--skip-clear-data',
-      action='store_true',
-      help='Do not wipe app data between tests. Use this to '
-           'speed up local development and never on bots '
-                     '(increases flakiness)')
+  parser.add_argument('--list-data',
+                      action='store_true',
+                      help='List files pushed to device and exit.')
+  parser.add_argument('--skip-clear-data',
+                      action='store_true',
+                      help='Do not wipe app data between tests. Use this to '
+                      'speed up local development and never on bots '
+                      '(increases flakiness)')
   parser.add_argument(
       '--recover-devices',
       action='store_true',
@@ -1218,6 +1220,15 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
       sys.stderr.write('Test does not support --list-tests (type={}).\n'.format(
           args.command))
       return 1
+
+  if getattr(args, 'list_data', False):
+    with out_manager, env, test_instance, test_run:
+      data_deps = test_run.GetDataDepsForListing()
+
+    print('There are {} data files:'.format(len(data_deps)))
+    for d in data_deps:
+      print(d)
+    return 0
 
   ### Run.
   with out_manager, json_finalizer():

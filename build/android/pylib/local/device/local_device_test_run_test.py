@@ -14,32 +14,6 @@ from pylib.local.device import local_device_test_run
 import mock  # pylint: disable=import-error
 
 
-class SubstituteDeviceRootTest(unittest.TestCase):
-
-  def testNoneDevicePath(self):
-    self.assertEqual(
-        '/fake/device/root',
-        local_device_test_run.SubstituteDeviceRoot(None, '/fake/device/root'))
-
-  def testStringDevicePath(self):
-    self.assertEqual(
-        '/another/fake/device/path',
-        local_device_test_run.SubstituteDeviceRoot('/another/fake/device/path',
-                                                   '/fake/device/root'))
-
-  def testListWithNoneDevicePath(self):
-    self.assertEqual(
-        '/fake/device/root/subpath',
-        local_device_test_run.SubstituteDeviceRoot([None, 'subpath'],
-                                                   '/fake/device/root'))
-
-  def testListWithoutNoneDevicePath(self):
-    self.assertEqual(
-        '/another/fake/device/path',
-        local_device_test_run.SubstituteDeviceRoot(
-            ['/', 'another', 'fake', 'device', 'path'], '/fake/device/root'))
-
-
 class TestLocalDeviceTestRun(local_device_test_run.LocalDeviceTestRun):
 
   # pylint: disable=abstract-method

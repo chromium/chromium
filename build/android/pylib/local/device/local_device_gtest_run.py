@@ -31,6 +31,7 @@ from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
 from pylib.symbols import stack_symbolizer
 from pylib.utils import code_coverage_utils
+from pylib.utils import device_dependencies
 from pylib.utils import google_storage_helper
 from pylib.utils import logdog_helper
 from py_trace_event import trace_event
@@ -456,19 +457,18 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         device_root = self._delegate.GetTestDataRoot(dev)
         if self._env.force_main_user:
           device_root = dev.ResolveSpecialPath(device_root)
-        host_device_tuples_substituted = [
-            (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
-            for h, d in host_device_tuples]
+        resolved_host_device_tuples = device_dependencies.SubstituteDeviceRoot(
+            host_device_tuples, device_root)
         dev.PlaceNomediaFile(device_root)
         dev.PushChangedFiles(
-            host_device_tuples_substituted,
+            resolved_host_device_tuples,
             delete_device_stale=True,
             as_root=self._env.force_main_user,
             # Some gtest suites, e.g. unit_tests, have data dependencies that
             # can take longer than the default timeout to push. See
             # crbug.com/791632 for context.
             timeout=600 * math.ceil(_GetDeviceTimeoutMultiplier() / 10))
-        if not host_device_tuples:
+        if not resolved_host_device_tuples:
           dev.RemovePath(device_root,
                          force=True,
                          recursive=True,

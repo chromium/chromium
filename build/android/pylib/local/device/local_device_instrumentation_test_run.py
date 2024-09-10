@@ -41,9 +41,9 @@ from pylib.output import remote_output_manager
 from pylib.symbols import stack_symbolizer
 from pylib.utils import chrome_proxy_utils
 from pylib.utils import code_coverage_utils
+from pylib.utils import device_dependencies
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
-from pylib.utils.device_dependencies import DevicePathComponentsFor
 from py_trace_event import trace_event
 from py_trace_event import trace_time
 from py_utils import contextlib_ext
@@ -579,18 +579,16 @@ class LocalDeviceInstrumentationTestRun(
         # commands. Don't resolve if the path is passed to app through flags.
         if self._env.force_main_user:
           device_root = device.ResolveSpecialPath(device_root)
-        host_device_tuples_substituted = [
-            (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
-            for h, d in host_device_tuples
-        ]
+        resolved_host_device_tuples = device_dependencies.SubstituteDeviceRoot(
+            host_device_tuples, device_root)
         logging.info('Pushing data dependencies.')
-        for h, d in host_device_tuples_substituted:
+        for h, d in resolved_host_device_tuples:
           logging.debug('  %r -> %r', h, d)
         dev.PlaceNomediaFile(device_root)
-        dev.PushChangedFiles(host_device_tuples_substituted,
+        dev.PushChangedFiles(resolved_host_device_tuples,
                              delete_device_stale=True,
                              as_root=self._env.force_main_user)
-        if not host_device_tuples_substituted:
+        if not resolved_host_device_tuples:
           dev.RunShellCommand(['rm', '-rf', device_root],
                               check_return=True,
                               as_root=self._env.force_main_user)
@@ -607,8 +605,9 @@ class LocalDeviceInstrumentationTestRun(
           webview_flags.append('--webview-verbose-logging')
 
         def _get_variations_seed_path_arg(seed_path):
-          seed_path_components = DevicePathComponentsFor(seed_path)
-          test_seed_path = local_device_test_run.SubstituteDeviceRoot(
+          seed_path_components = device_dependencies.DevicePathComponentsFor(
+              seed_path)
+          test_seed_path = device_dependencies.SubstituteDeviceRootSingle(
               seed_path_components, test_data_root_dir)
           return '--variations-test-seed-path={0}'.format(test_seed_path)
 
