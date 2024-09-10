@@ -66,6 +66,7 @@ export interface TableColumn {
 export interface ProductSpecificationsElement {
   $: {
     empty: HTMLElement,
+    errorToast: CrToastElement,
     header: HeaderElement,
     loading: HTMLElement,
     newColumnSelector: NewColumnSelectorElement,
@@ -220,6 +221,7 @@ export class ProductSpecificationsElement extends PolymerElement {
         this, 'click',
         () => {
           this.$.offlineToast.hide();
+          this.$.errorToast.hide();
         },
         /*useCapture=*/ true);
     this.eventTracker_.add(window, 'online', () => {
@@ -279,6 +281,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     const start = Date.now();
     this.showEmptyState_ = false;
     this.loadingState_ = {loading: true, urlCount: urls.length};
+    this.$.errorToast.hide();
 
     const tableColumns: TableColumn[] = [];
     if (urls.length) {
@@ -306,6 +309,12 @@ export class ProductSpecificationsElement extends PolymerElement {
               aggregatedDataByUrl.get(url)?.priceInsightsInfo || null),
         });
       }));
+
+      // Show an error message if we didn't get back any dimensions. Note that
+      // the URLs in the comparison will still be displayed as columns.
+      if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
+        this.$.errorToast.show();
+      }
     }
 
     // Enforce a minimum amount of time in the loading state to avoid it

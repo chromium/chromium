@@ -100,6 +100,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyProductSelector", IDS_COMPARE_EMPTY_PRODUCT_SELECTOR},
       {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_COMPARE_EMPTY_STATE_TITLE},
+      {"errorMessage", IDS_COMPARE_ERROR_DESCRIPTION},
       {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
       {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
