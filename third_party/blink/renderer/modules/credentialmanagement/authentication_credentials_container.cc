@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential_error.h"
@@ -1470,6 +1471,14 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
     GetForIdentity(script_state, resolver, *options, *options->identity());
+    return promise;
+  }
+
+  if (IsDigitalIdentityCredentialType(*options) &&
+      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+          resolver->GetExecutionContext())) {
+    DiscoverDigitalIdentityCredentialFromExternalSource(
+        resolver, exception_state, *options);
     return promise;
   }
 
