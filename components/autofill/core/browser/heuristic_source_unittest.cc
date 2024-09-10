@@ -15,10 +15,9 @@ namespace autofill {
 // Depending on `kAutofillModelPredictions`, the active heuristic source will
 // differ.
 //
-// Currently, the available heuristic sources are the ML model and
-// the pattern sources. If the model predictions are disabled, then
-// only pattern sources are used. If model predictions are enabled,
-// `kMachineLearning` is also considered. Depending on
+// Currently, the available heuristic sources are the ML model and regexes.
+// If the model predictions are disabled, then only regexes are used. If model
+// predictions are enabled, `kMachineLearning` is also considered. Depending on
 // `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
 // as the active heuristic source.
 
@@ -65,7 +64,7 @@ INSTANTIATE_TEST_SUITE_P(
 // instances.
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kLegacy},
+            .expected_active_source = HeuristicSource::kLegacyRegexes},
 
         HeuristicSourceParams{
             .model_predictions_feature = true,
@@ -73,7 +72,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kLegacy}
+            .expected_active_source = HeuristicSource::kLegacyRegexes}
 #else
         HeuristicSourceParams{
             .model_predictions_feature = true,
@@ -81,9 +80,9 @@ INSTANTIATE_TEST_SUITE_P(
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kDefault},
+            .expected_active_source = HeuristicSource::kDefaultRegexes},
         HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kDefault}
+            .expected_active_source = HeuristicSource::kDefaultRegexes}
 #endif
         ));
 

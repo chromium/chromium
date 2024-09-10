@@ -21,7 +21,7 @@ namespace {
 bool MatchesPattern(std::u16string_view input, std::string_view pattern_name) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      pattern_name, /*language_code=*/std::nullopt, *GetActivePatternSource());
+      pattern_name, /*language_code=*/std::nullopt, *GetActivePatternFile());
   return std::ranges::any_of(patterns, [&](MatchPatternRef pattern_ref) {
     return MatchesRegex(
         input, *cache->GetRegexPattern((*pattern_ref).positive_pattern));

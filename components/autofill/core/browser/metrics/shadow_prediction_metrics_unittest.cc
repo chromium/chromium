@@ -122,7 +122,7 @@ TEST(AutofillShadowPredictionMetricsTest, SubmissionWithoutShadowPredictions) {
                                /*server_types=*/{NAME_FULL, EMAIL_ADDRESS});
 
   base::HistogramTester histogram_tester;
-  LogShadowPredictions(form, HeuristicSource::kDefault);
+  LogShadowPredictions(form, HeuristicSource::kDefaultRegexes);
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.ShadowPredictions.ExperimentalToDefault"),
@@ -136,18 +136,18 @@ TEST(AutofillShadowPredictionMetricsTest,
   FormStructure form(FormData{});
   test_api(form).PushField().set_possible_types({NAME_FULL});
   test_api(form).PushField().set_possible_types({EMAIL_ADDRESS});
-  test_api(form).SetFieldTypes(/*heuristic_types=*/
-                               {{{HeuristicSource::kDefault, NAME_FULL},
-                                 {HeuristicSource::kExperimental, NAME_FULL}},
-                                {{HeuristicSource::kDefault, SEARCH_TERM},
-                                 {HeuristicSource::kExperimental,
-                                  EMAIL_ADDRESS}}},
-                               {NAME_FULL, EMAIL_ADDRESS});
+  test_api(form)
+      .SetFieldTypes(/*heuristic_types=*/
+                     {{{HeuristicSource::kDefaultRegexes, NAME_FULL},
+                       {HeuristicSource::kExperimentalRegexes, NAME_FULL}},
+                      {{HeuristicSource::kDefaultRegexes, SEARCH_TERM},
+                       {HeuristicSource::kExperimentalRegexes, EMAIL_ADDRESS}}},
+                     {NAME_FULL, EMAIL_ADDRESS});
 
   base::HistogramTester histogram_tester;
   // Shadow predictions between default and experiment are only emitted if
   // experimental is active.
-  LogShadowPredictions(form, HeuristicSource::kExperimental);
+  LogShadowPredictions(form, HeuristicSource::kExperimentalRegexes);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -167,7 +167,7 @@ TEST(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
                                /*server_types=*/{NAME_FULL, EMAIL_ADDRESS});
 
   base::HistogramTester histogram_tester;
-  LogShadowPredictions(form, HeuristicSource::kDefault);
+  LogShadowPredictions(form, HeuristicSource::kDefaultRegexes);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

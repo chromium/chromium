@@ -378,7 +378,7 @@ const auto& GetFailingTestNames() {
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacyRegexes) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }

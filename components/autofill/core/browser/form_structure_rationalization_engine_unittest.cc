@@ -56,11 +56,11 @@ std::vector<FieldType> GetTypes(
   return server_types;
 }
 
-PatternSource GetPatternSource() {
+PatternFile GetPatternFile() {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return PatternSource::kDefault;
+  return PatternFile::kDefault;
 #else
-  return PatternSource::kLegacy;
+  return PatternFile::kLegacy;
 #endif
 }
 
@@ -133,9 +133,9 @@ TEST(FormStructureRationalizationEngine,
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
   GeoIpCountryCode kBR = GeoIpCountryCode("BR");
   GeoIpCountryCode kUS = GeoIpCountryCode("US");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
-  ParsingContext kBRContext(kBR, LanguageCode("pt"), GetPatternSource());
-  ParsingContext kUSContext(kUS, LanguageCode("en"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
+  ParsingContext kBRContext(kBR, LanguageCode("pt"), GetPatternFile());
+  ParsingContext kUSContext(kUS, LanguageCode("en"), GetPatternFile());
 
   EnvironmentCondition no_country_required =
       EnvironmentConditionBuilder().Build();
@@ -160,7 +160,7 @@ TEST(FormStructureRationalizationEngine,
      IsEnvironmentConditionFulfilled_CheckExperiment) {
   using internal::IsEnvironmentConditionFulfilled;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
 
   EnvironmentCondition no_experiment_required =
       EnvironmentConditionBuilder().Build();
@@ -194,7 +194,7 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckPossibleTypes) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
 
   FieldCondition no_possible_types_required = {};
   FieldCondition requires_address_line1_type = {
@@ -233,7 +233,7 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckRegex) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
 
   FieldCondition no_regex_match_required = {};
   FieldCondition requires_dependent_locality_match = {
@@ -299,7 +299,7 @@ TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -328,7 +328,7 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -357,7 +357,7 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -389,7 +389,7 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(GetTypes(fields),
@@ -419,7 +419,7 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternSource());
+  ParsingContext kMXContext(kMX, LanguageCode("es"), GetPatternFile());
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
@@ -448,7 +448,7 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
   });
 
   GeoIpCountryCode kDE = GeoIpCountryCode("DE");
-  ParsingContext kDEContext(kDE, LanguageCode("de"), GetPatternSource());
+  ParsingContext kDEContext(kDE, LanguageCode("de"), GetPatternFile());
   ApplyRationalizationEngineRules(kDEContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -477,7 +477,7 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternSource());
+  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternFile());
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -506,7 +506,7 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternSource());
+  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternFile());
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -532,7 +532,7 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternSource());
+  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternFile());
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -558,7 +558,7 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternSource());
+  ParsingContext kPLContext(kPL, LanguageCode("pl"), GetPatternFile());
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -585,7 +585,7 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(kIT, LanguageCode("it"), GetPatternSource());
+  ParsingContext kITContext(kIT, LanguageCode("it"), GetPatternFile());
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
@@ -611,7 +611,7 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(kIT, LanguageCode("it"), GetPatternSource());
+  ParsingContext kITContext(kIT, LanguageCode("it"), GetPatternFile());
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(

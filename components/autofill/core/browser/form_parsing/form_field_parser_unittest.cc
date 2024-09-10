@@ -36,7 +36,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
                       LanguageCode language = LanguageCode("")) {
     ParsingContext context(client_country, language,
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     FormFieldParser::ParseFormFields(context, fields_,
                                      /*is_form_tag=*/true,
                                      field_candidates_map_);
@@ -46,7 +46,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Like `ParseFormFields()`, but using `ParseSingleFieldForms()` instead.
   int ParseSingleFieldForms() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     FormFieldParser::ParseSingleFieldForms(context, fields_,
                                            field_candidates_map_);
     return field_candidates_map_.size();
@@ -54,7 +54,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
 
   int ParseStandaloneCVCFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     FormFieldParser::ParseStandaloneCVCFields(context, fields_,
                                               field_candidates_map_);
     return field_candidates_map_.size();
@@ -62,7 +62,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
 
   int ParseStandaloneEmailFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     FormFieldParser::ParseStandaloneEmailFields(context, fields_,
                                                 field_candidates_map_);
     return field_candidates_map_.size();
@@ -125,14 +125,14 @@ TEST_P(MatchTest, Match) {
   field.set_parseable_label(label);
   for (const auto& pattern : positive_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_TRUE(FormFieldParser::MatchForTesting(context, &field, pattern,
                                                  {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_FALSE(FormFieldParser::MatchForTesting(context, &field, pattern,
                                                   {MatchAttribute::kLabel}));
@@ -173,7 +173,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     EXPECT_TRUE(FormFieldParser::MatchForTesting(
         context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
@@ -182,7 +182,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternSource().value());
+                           GetActivePatternFile().value());
     EXPECT_FALSE(FormFieldParser::MatchForTesting(
         context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }

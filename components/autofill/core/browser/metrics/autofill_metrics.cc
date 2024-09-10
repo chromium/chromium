@@ -2383,17 +2383,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
       switch (event->heuristic_source) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        case HeuristicSource::kLegacy:
+        case HeuristicSource::kLegacyRegexes:
           heuristic_legacy_type = event->field_type;
           break;
 #else
-        case HeuristicSource::kDefault:
+        case HeuristicSource::kDefaultRegexes:
           heuristic_default_type = event->field_type;
           break;
-        case HeuristicSource::kExperimental:
+        case HeuristicSource::kExperimentalRegexes:
           heuristic_experimental_type = event->field_type;
           break;
-        case HeuristicSource::kPredictionImprovements:
+        case HeuristicSource::kPredictionImprovementRegexes:
           // Prediction improvements are currently ignored for Autofill based
           // UKM logging.
           break;

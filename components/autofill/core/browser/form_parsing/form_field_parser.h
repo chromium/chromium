@@ -87,7 +87,7 @@ class RegexMatchesCache {
 struct ParsingContext {
   ParsingContext(GeoIpCountryCode client_country,
                  LanguageCode page_language,
-                 PatternSource pattern_source,
+                 PatternFile pattern_file,
                  DenseSet<RegexFeature> active_features = {},
                  LogManager* log_manager = nullptr);
   ParsingContext(const ParsingContext&) = delete;
@@ -96,9 +96,9 @@ struct ParsingContext {
 
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
-  // Mutable so that the caches can be reused across different pattern sources
+  // Mutable so that the caches can be reused across different pattern files
   // and active features. Since the cache works at a regex level, this is safe.
-  PatternSource pattern_source;
+  PatternFile pattern_file;
   DenseSet<RegexFeature> active_features;
 
   // Cache for autofill features that are tested on hot code paths. Testing

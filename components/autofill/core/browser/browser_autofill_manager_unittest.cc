@@ -3752,18 +3752,16 @@ class BrowserAutofillManagerWithLogEventsTest
       size_t field_signature_rank = 1) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    // Default pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
-        .heuristic_source = HeuristicSource::kDefault,
+        .heuristic_source = HeuristicSource::kDefaultRegexes,
         .is_active_heuristic_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });
 #else
-    // Legacy pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,
-        .heuristic_source = HeuristicSource::kLegacy,
+        .heuristic_source = HeuristicSource::kLegacyRegexes,
         .is_active_heuristic_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });

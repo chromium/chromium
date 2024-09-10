@@ -19,25 +19,26 @@ HeuristicSource GetActiveHeuristicSource() {
     return HeuristicSource::kMachineLearning;
   }
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return GetActiveRegexFeatures().empty() ? HeuristicSource::kDefault
-                                          : HeuristicSource::kExperimental;
+  return GetActiveRegexFeatures().empty()
+             ? HeuristicSource::kDefaultRegexes
+             : HeuristicSource::kExperimentalRegexes;
 #else
-  return HeuristicSource::kLegacy;
+  return HeuristicSource::kLegacyRegexes;
 #endif
 }
 
-std::optional<PatternSource> HeuristicSourceToPatternSource(
+std::optional<PatternFile> HeuristicSourceToPatternFile(
     HeuristicSource source) {
   switch (source) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    case HeuristicSource::kLegacy:
-      return PatternSource::kLegacy;
+    case HeuristicSource::kLegacyRegexes:
+      return PatternFile::kLegacy;
 #else
-    case HeuristicSource::kDefault:
-    case HeuristicSource::kExperimental:
-      return PatternSource::kDefault;
-    case HeuristicSource::kPredictionImprovements:
-      return PatternSource::kPredictionImprovements;
+    case HeuristicSource::kDefaultRegexes:
+    case HeuristicSource::kExperimentalRegexes:
+      return PatternFile::kDefault;
+    case HeuristicSource::kPredictionImprovementRegexes:
+      return PatternFile::kPredictionImprovements;
 #endif
     case autofill::HeuristicSource::kMachineLearning:
       return std::nullopt;

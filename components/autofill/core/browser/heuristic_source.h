@@ -11,25 +11,18 @@
 
 namespace autofill {
 
-// The different sets of heuristic sources that are available.
-// Local heuristics can either be regex or machine learning model.
+// The different ways to compute heuristic predictions.
 // At field level, heuristic predictions are associated to a HeuristicSource,
 // describing which mechanism computed them.
-// At parsing level, only the set of regexes used is relevant. There, the code
-// is parameterized by a PatternSource (a subset of HeuristicSource).
-// When adding a new value to PatternSource, add it to HeuristicSource
-// as well. When adding a new value to HeuristicSource, it's required to account
-// for it in `GetActiveHeuristicSource()`, `GetNonActiveHeuristicSources()`
-// and `HeuristicToPatternSource()`.
 enum class HeuristicSource {
-// Same values used in `PatternSource` with additional value
-// for the ML model.
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  kLegacy,
+  kLegacyRegexes,
 #else
-  kDefault,
-  kExperimental,
-  kPredictionImprovements,
+  kDefaultRegexes,
+  // Corresponds to regexes from the default file, but with at least one
+  // `RegexFeature` enabled.
+  kExperimentalRegexes,
+  kPredictionImprovementRegexes,
 #endif
   kMachineLearning,
   kMaxValue = kMachineLearning
@@ -38,10 +31,9 @@ enum class HeuristicSource {
 // The active heuristic sources depend on the build config and Finch configs.
 HeuristicSource GetActiveHeuristicSource();
 
-// Converts a `HeuristicSource` to `PatternSource`. If the passed
-// source is not a `PatternSource` then a nullopt is returned.
-std::optional<PatternSource> HeuristicSourceToPatternSource(
-    HeuristicSource source);
+// Converts a `HeuristicSource` the corresponding `PatternFile`, in case the
+// `source` is using regexes. Otherwise, nullopt is returned.
+std::optional<PatternFile> HeuristicSourceToPatternFile(HeuristicSource source);
 
 }  // namespace autofill
 

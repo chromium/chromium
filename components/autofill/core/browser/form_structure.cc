@@ -195,22 +195,22 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  // The `PatternSource` parameter is overwritten again immediately before
+  // The `PatternFile` parameter is overwritten again immediately before
   // parsing and doesn't matter here.
   ParsingContext context(client_country_, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-                         PatternSource::kDefault,
+                         PatternFile::kDefault,
 #else
-                         PatternSource::kLegacy,
+                         PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
 
   // The active heuristic source might not be a pattern source.
   std::optional<FieldCandidatesMap> active_predictions;
   HeuristicSource active_heuristic_source = GetActiveHeuristicSource();
-  if (std::optional<PatternSource> pattern_source =
-          HeuristicSourceToPatternSource(active_heuristic_source)) {
-    context.pattern_source = *pattern_source;
+  if (std::optional<PatternFile> pattern_file =
+          HeuristicSourceToPatternFile(active_heuristic_source)) {
+    context.pattern_file = *pattern_file;
     active_predictions = ParseFieldTypesWithPatterns(context);
     AssignBestFieldTypes(*active_predictions, active_heuristic_source);
   }
@@ -252,15 +252,15 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
     std::optional<FieldCandidatesMap> active_predictions,
     ParsingContext& context) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (GetActiveHeuristicSource() == HeuristicSource::kDefault) {
+  if (GetActiveHeuristicSource() == HeuristicSource::kDefaultRegexes) {
     return;
   }
   // When a non-default source is active, shadow predictions between this
   // non-default source and default are emitted. Compute default predictions.
-  context.pattern_source = PatternSource::kDefault;
+  context.pattern_file = PatternFile::kDefault;
   context.active_features.clear();
   AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
-                       HeuristicSource::kDefault);
+                       HeuristicSource::kDefaultRegexes);
 #endif
 }
 

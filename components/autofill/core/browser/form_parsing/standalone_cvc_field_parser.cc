@@ -31,7 +31,7 @@ std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> cvc_patterns =
       GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context.page_language,
-                       context.pattern_source);
+                       context.pattern_file);
 
   if (ParseField(context, scanner, cvc_patterns, &field,
                  "CREDIT_CARD_VERIFICATION_CODE(standalone)")) {
@@ -51,7 +51,7 @@ bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
   }
 
   base::span<const MatchPatternRef> gift_card_patterns = GetMatchPatterns(
-      "GIFT_CARD", context.page_language, context.pattern_source);
+      "GIFT_CARD", context.page_language, context.pattern_file);
 
   size_t saved_cursor = scanner->SaveCursor();
   const bool gift_card_match =

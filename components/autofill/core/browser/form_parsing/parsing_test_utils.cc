@@ -74,7 +74,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   UpdateRanks(fields_);
   AutofillScanner scanner(fields_);
   ParsingContext context(client_country, page_language,
-                         *GetActivePatternSource());
+                         *GetActivePatternFile());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
@@ -94,7 +94,7 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const LanguageCode& page_language) {
   UpdateRanks(fields_);
   ParsingContext context(client_country, page_language,
-                         *GetActivePatternSource());
+                         *GetActivePatternFile());
   AutofillScanner scanner(fields_);
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of

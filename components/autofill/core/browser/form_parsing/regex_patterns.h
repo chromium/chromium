@@ -70,9 +70,7 @@ class MatchPatternRef {
 
 // The different sets of patterns available for parsing.
 // Each enum constant corresponds to a JSON file.
-// When adding a new value, it's require to add it to
-// `HeuristicSource` as well.
-enum class PatternSource : uint8_t {
+enum class PatternFile : uint8_t {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   // Patterns whose stability is above suspicion.
   kLegacy,
@@ -84,10 +82,9 @@ enum class PatternSource : uint8_t {
 #endif
 };
 
-// The active pattern and the available patterns depend on the build config and
-// the Finch config. If the active `HeuristicSource` is not a `PatternSource`,
-// then a nullopt is returned.
-std::optional<PatternSource> GetActivePatternSource();
+// The active file depend on the build config and enabled features. If the
+// active `HeuristicSource` is not based on a JSON file, nullopt is returned.
+std::optional<PatternFile> GetActivePatternFile();
 
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.
@@ -102,12 +99,12 @@ std::optional<PatternSource> GetActivePatternSource();
 base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source);
+    PatternFile pattern_file);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     FieldType type,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source);
+    PatternFile pattern_file);
 
 // Returns true iff there at least one pattern for some PatternSource and
 // pattern name.
