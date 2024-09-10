@@ -802,10 +802,8 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
   }
 }
 
-// (crbug.com/362684605, andypaicu): this test causes a deterministic failure in
-// an entirely different test.
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
-                       DISABLED_TestPositionUsingZoom) {
+                       MAYBE_TestPositionUsingZoom) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   ExecuteJs(kWebContentsElementId, "setFontSizeSmall"));
