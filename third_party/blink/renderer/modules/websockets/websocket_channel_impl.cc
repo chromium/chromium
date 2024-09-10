@@ -406,8 +406,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     base::OnceClosure completion_callback) {
   DVLOG(1) << this << " Send(" << message << ") (std::string argument)";
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
-                                 WebSocketOpCode::kOpCodeText, true,
-                                 message.c_str(), message.length());
+                                 WebSocketOpCode::kOpCodeText, true, message);
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
     "WebSocketSend", InspectorWebSocketTransferEvent::Data,
     execution_context_.Get(), identifier_, message.length());
@@ -448,7 +447,8 @@ void WebSocketChannelImpl::Send(
   // Since Binary data are not displayed in Inspector, this does not
   // affect actual behavior.
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
-                                 WebSocketOpCode::kOpCodeBinary, true, "", 0);
+                                 WebSocketOpCode::kOpCodeBinary, true,
+                                 base::span_from_cstring(""));
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
     "WebSocketSend", InspectorWebSocketTransferEvent::Data,
     execution_context_.Get(), identifier_, blob_data_handle->size());
@@ -466,7 +466,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
            << "(DOMArrayBuffer argument)";
   probe::DidSendWebSocketMessage(
       execution_context_, identifier_, WebSocketOpCode::kOpCodeBinary, true,
-      static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
+      base::as_chars(buffer.ByteSpan().subspan(byte_offset, byte_length)));
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
     "WebSocketSend", InspectorWebSocketTransferEvent::Data,
     execution_context_.Get(), identifier_, byte_length);

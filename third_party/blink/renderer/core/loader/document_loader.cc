@@ -1267,9 +1267,8 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
     }
     GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
                                                   encoded_data.size());
-    probe::DidReceiveData(
-        probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
-        encoded_data.ptr_or_null_if_no_data(), encoded_data.size());
+    probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
+                          main_resource_identifier_, this, encoded_data);
   }
 
   TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::HandleData",

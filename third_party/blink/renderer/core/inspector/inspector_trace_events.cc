@@ -170,14 +170,14 @@ void InspectorTraceEvents::DidReceiveResourceResponse(
                                         loader, identifier, frame, response);
 }
 
-void InspectorTraceEvents::DidReceiveData(uint64_t identifier,
-                                          DocumentLoader* loader,
-                                          const char* data,
-                                          uint64_t encoded_data_length) {
+void InspectorTraceEvents::DidReceiveData(
+    uint64_t identifier,
+    DocumentLoader* loader,
+    base::SpanOrSize<const char> encoded_data) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "ResourceReceivedData", inspector_receive_data_event::Data, loader,
-      identifier, frame, encoded_data_length);
+      identifier, frame, encoded_data.size());
 }
 
 void InspectorTraceEvents::DidFinishLoading(uint64_t identifier,

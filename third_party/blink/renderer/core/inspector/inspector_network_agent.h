@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
@@ -126,8 +127,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                   const Resource*);
   void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
-                      const char* data,
-                      uint64_t data_length);
+                      base::SpanOrSize<const char> data);
   void DidReceiveBlob(uint64_t identifier,
                       DocumentLoader*,
                       scoped_refptr<BlobDataHandle>);
@@ -201,8 +201,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void DidSendWebSocketMessage(uint64_t identifier,
                                int op_code,
                                bool masked,
-                               const char* payload,
-                               size_t payload_length);
+                               base::span<const char> payload);
   void DidReceiveWebSocketMessageError(uint64_t identifier, const String&);
 
   void WebTransportCreated(ExecutionContext*,

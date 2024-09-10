@@ -4,6 +4,7 @@
     export_symbol: "CORE_EXPORT",
     include_path: "third_party/blink/renderer/core/inspector",
     includes: [
+      "base/containers/span_or_size.h",
       "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h",
       "third_party/blink/public/web/web_media_inspector.h",
       "third_party/blink/renderer/core/animation/animation.h",

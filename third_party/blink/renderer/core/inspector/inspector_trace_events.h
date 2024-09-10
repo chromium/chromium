@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span_or_size.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -110,8 +111,7 @@ class CORE_EXPORT InspectorTraceEvents
                                   const Resource*);
   void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
-                      const char* data,
-                      uint64_t data_length);
+                      base::SpanOrSize<const char> encoded_data);
   void DidFinishLoading(uint64_t identifier,
                         DocumentLoader*,
                         base::TimeTicks monotonic_finish_time,
