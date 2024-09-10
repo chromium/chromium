@@ -109,6 +109,18 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       CustomizeToolbarCanNotBeCalledFromIncognitoWindow) {
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
+  AddBlankTabAndShow(incognito_browser);
+  auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
+      incognito_browser, actions::kActionCut, container());
+  EXPECT_FALSE(
+      pinned_button->IsCommandIdEnabled(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        TranslateStatusIndicator) {
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->profile());
