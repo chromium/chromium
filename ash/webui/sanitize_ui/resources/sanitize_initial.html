@@ -28,13 +28,13 @@ cros-button {
 }
 </style>
 
-<div slot="body">
+<div slot="body" role="dialog">
   <svg class="extensions-icon"
        preserveAspectRatio="xMidYMid meet"
        role="img" viewBox="0 0 32 32">
     <use href="svg/extension_off_32.svg#extension_off_32"></use>
   </svg>
-  <div class="title">$i18n{sanitizeDialogTitle}</div>
+  <h2><div class="title">$i18n{sanitizeDialogTitle}</div></h2>
   <div class="sanitize-description">
     $i18n{sanitizeDescription}
     $i18n{sanitizeDialogExplanation}

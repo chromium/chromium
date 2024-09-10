@@ -27,16 +27,15 @@
   </div>
   <template is="dom-if" if="[[isSanitizeAllowed_]]">
     <div class="settings-box two-line hr">
-      <div class="start" id="title" aria-hidden="true">
+      <div class="start" id="sanitizeTitle" aria-hidden="true">
         $i18n{sanitizeTitle}
-        <div class="secondary" id="secondaryText" aria-hidden="true">
+        <div class="secondary" aria-hidden="true">
           $i18n{sanitizeShortDescription}
         </div>
       </div>
       <cr-button id="sanitizeButton"
           on-click="onShowSanitizeDialog_"
-          aria-labelledby="title"
-          aria-describedby="secondaryText"
+          aria-labelledby="sanitizeTitle"
           deep-link-focus-id$="[[Setting.kSanitize]]">
         $i18n{sanitizeButton}
       </cr-button>
