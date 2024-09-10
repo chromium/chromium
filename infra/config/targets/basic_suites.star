@@ -5267,7 +5267,6 @@ targets.legacy_basic_suite(
                 expiration_sec = 18000,
                 hard_timeout_sec = 14400,
             ),
-            experiment_percentage = 100,
         ),
     },
 )
