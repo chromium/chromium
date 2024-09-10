@@ -109,6 +109,9 @@
    <message name="IDS_SELECT_PLUS_ADDRESS_TITLE_IOS" desc="The title shown in the sheet listing all plus addresses for selections" translateable="false">
         Select Plus Address
     </message>
+    <message name="IDS_SELECT_PLUS_ADDRESS_HEADER_TEXT_IOS" desc="The header text shown in the sheet listing all plus addresses for selection" translateable="false">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+    </message>
 
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">

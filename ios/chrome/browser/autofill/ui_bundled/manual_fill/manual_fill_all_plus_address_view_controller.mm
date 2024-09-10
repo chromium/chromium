@@ -12,13 +12,17 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace manual_fill {
 
-enum ManualFallbackItemType : NSInteger { kPlusAddress = kItemTypeEnumZero };
+enum ManualFallbackItemType : NSInteger {
+  kHeader = kItemTypeEnumZero,
+  kPlusAddress
+};
 
 }  // namespace manual_fill
 
@@ -56,6 +60,8 @@ enum ManualFallbackItemType : NSInteger { kPlusAddress = kItemTypeEnumZero };
   doneButton.accessibilityIdentifier =
       manual_fill::kPlusAddressDoneButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = doneButton;
+
+  [self addHeaderItem];
 }
 
 #pragma mark - UITableViewDataSource
@@ -122,6 +128,18 @@ enum ManualFallbackItemType : NSInteger { kPlusAddress = kItemTypeEnumZero };
                  [plusAddressCell configureWithFaviconAttributes:attributes];
                }
              }];
+}
+
+// Adds a header containing text.
+- (void)addHeaderItem {
+  TableViewLinkHeaderFooterItem* headerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:manual_fill::ManualFallbackItemType::kHeader];
+
+  headerItem.text =
+      l10n_util::GetNSString(IDS_SELECT_PLUS_ADDRESS_HEADER_TEXT_IOS);
+
+  [self presentHeaderItem:headerItem];
 }
 
 @end
