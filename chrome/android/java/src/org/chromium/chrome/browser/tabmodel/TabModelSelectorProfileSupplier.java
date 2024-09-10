@@ -96,6 +96,8 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
         if (profile == null) {
             throw new IllegalStateException("Null is not a valid value to set for the profile.");
         }
+        // TODO(365814339): Convert to checked exception once all callsites are fixed.
+        assert !profile.shutdownStarted() : "Attempting to set an already destroyed Profile";
         super.set(profile);
     }
 
@@ -108,6 +110,8 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
             // to be notified when the profile becomes available.
             throw new IllegalStateException("Attempting to read a null profile from the supplier");
         }
+        // TODO(365814339): Convert to checked exception once all callsites are fixed.
+        assert !profile.shutdownStarted() : "Attempting to access an already destroyed Profile";
         return profile;
     }
 
