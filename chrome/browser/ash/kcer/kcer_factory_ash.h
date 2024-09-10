@@ -72,6 +72,11 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
   // experiment is needed.
   static void RecordPkcs12CertDualWritten();
 
+  // Clears cached NSS state. Useful for unittests using Kcer with a test NSS
+  // database, the test should clear the Kcer state when finished to avoid
+  // leaking into the next test. This must be called on the IO thread.
+  static void ClearNssTokenMapForTesting();
+
  private:
   friend base::NoDestructor<KcerFactoryAsh>;
 
@@ -152,6 +157,7 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
 
   base::WeakPtr<Kcer> GetKcerImpl(Profile* profile);
   void RecordPkcs12CertDualWrittenImpl();
+  void ClearNssTokenMapForTestingImpl();
 
   // Implements ash::SessionObserver.
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

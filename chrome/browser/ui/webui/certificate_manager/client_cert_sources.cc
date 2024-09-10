@@ -57,12 +57,17 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
+#include "chrome/browser/ash/net/client_cert_store_ash.h"
+#include "chrome/browser/ash/net/client_cert_store_kcer.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/kcer_histograms.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/user.h"
 #include "net/cert/nss_cert_database.h"
 #endif
 
@@ -116,7 +121,33 @@ class ClientCertStoreLoader {
       active_requests_;
 };
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ClientCertStoreFactoryAsh : public ClientCertStoreFactory {
+ public:
+  explicit ClientCertStoreFactoryAsh(Profile* profile) : profile_(profile) {}
+
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
+    if (ash::features::ShouldUseKcerClientCertStore()) {
+      return std::make_unique<ash::ClientCertStoreKcer>(
+          nullptr,  // no additional provider
+          kcer::KcerFactoryAsh::GetKcer(profile_));
+    } else {
+      const user_manager::User* user =
+          ash::ProfileHelper::Get()->GetUserByProfile(profile_);
+      // Use the device-wide system key slot only if the user is affiliated on
+      // the device.
+      const bool use_system_key_slot = user->IsAffiliated();
+      return std::make_unique<ash::ClientCertStoreAsh>(
+          nullptr,  // no additional provider
+          use_system_key_slot, user->username_hash(),
+          ash::ClientCertStoreAsh::PasswordDelegateFactory());
+    }
+  }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+#elif BUILDFLAG(USE_NSS_CERTS)
 class ClientCertStoreFactoryNSS : public ClientCertStoreFactory {
  public:
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
@@ -141,9 +172,12 @@ class ClientCertStoreFactoryMac : public ClientCertStoreFactory {
 };
 #endif
 
-std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader() {
-  // TODO(crbug.com/40928765): use ClientCertStoreKcer on IS_CHROMEOS_ASH build
-#if BUILDFLAG(USE_NSS_CERTS)
+std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader(
+    Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<ClientCertStoreLoader>(
+      std::make_unique<ClientCertStoreFactoryAsh>(profile));
+#elif BUILDFLAG(USE_NSS_CERTS)
   return std::make_unique<ClientCertStoreLoader>(
       std::make_unique<ClientCertStoreFactoryNSS>());
 #elif BUILDFLAG(IS_WIN)
@@ -618,9 +652,10 @@ CreatePlatformClientCertSource(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<CrosClientCertSource>(
-      CreatePlatformClientCertLoader(), remote_client, profile);
+      CreatePlatformClientCertLoader(profile), remote_client, profile);
 #else
-  return std::make_unique<ClientCertSource>(CreatePlatformClientCertLoader());
+  return std::make_unique<ClientCertSource>(
+      CreatePlatformClientCertLoader(profile));
 #endif
 }
 

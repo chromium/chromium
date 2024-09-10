@@ -194,6 +194,11 @@ void KcerFactoryAsh::RecordPkcs12CertDualWritten() {
   GetInstance()->RecordPkcs12CertDualWrittenImpl();
 }
 
+// static
+void KcerFactoryAsh::ClearNssTokenMapForTesting() {
+  GetInstance()->ClearNssTokenMapForTestingImpl();
+}
+
 KcerFactoryAsh::KcerFactoryAsh()
     : ProfileKeyedServiceFactory(
           "KcerFactoryAsh",
@@ -317,6 +322,11 @@ void KcerFactoryAsh::RecordPkcs12CertDualWrittenImpl() {
     return;
   }
   prefs->SetBoolean(prefs::kNssChapsDualWrittenCertsExist, true);
+}
+
+void KcerFactoryAsh::ClearNssTokenMapForTestingImpl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  nss_tokens_io_.clear();
 }
 
 bool KcerFactoryAsh::ServiceIsCreatedWithBrowserContext() const {

@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <pk11pub.h>
+#include <secmodt.h>
+
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/common/pref_names.h"
@@ -13,13 +20,44 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "crypto/nss_util_internal.h"
+#include "crypto/scoped_test_nss_chromeos_user.h"
+#include "crypto/scoped_test_system_nss_key_slot.h"
+#include "net/cert/x509_util_nss.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
+
+namespace {
+
+constexpr char kUsername[] = "test@example.com";
+
+bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
+  if (!slot) {
+    return false;
+  }
+  crypto::ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot));
+  if (!cert_list) {
+    return false;
+  }
+  net::SHA256HashValue hash;
+  if (!base::HexStringToSpan(hash_hex, hash.data)) {
+    return false;
+  }
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    if (net::x509_util::CalculateFingerprint256(node->cert) == hash) {
+      return true;
+    }
+  }
+  return false;
+}
 
 class FakeCertificateManagerPage
     : public certificate_manager_v2::mojom::CertificateManagerPage {
@@ -44,23 +82,34 @@ class FakeCertificateManagerPage
       receiver_;
 };
 
-class ClientCertSourceAshUnitTest : public ChromeRenderViewHostTestHarness,
-                                    public testing::WithParamInterface<bool> {
+}  // namespace
+
+class ClientCertSourceAshUnitTest
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        chromeos::features::kEnablePkcs12ToChapsDualWrite, EnableDualWrite());
+    ASSERT_TRUE(test_nss_user_.constructed_successfully());
+    test_nss_user_.FinishInit();
+
+    feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kEnablePkcs12ToChapsDualWrite,
+          dual_write_enabled()},
+         {ash::features::kUseKcerClientCertStore, kcer_enabled()}});
+
+    ASSERT_TRUE(profile_manager_.SetUp());
+    crosapi::IdleServiceAsh::DisableForTesting();
+    ash::LoginState::Initialize();
+    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 
     ChromeRenderViewHostTestHarness::SetUp();
 
-    auto account = AccountId::FromUserEmail("test@example.com");
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account, false, user_manager::UserType::kRegular, profile());
-    fake_user_manager_->OnUserProfileCreated(account, profile()->GetPrefs());
-    fake_user_manager_->LoginUser(account);
-
-    FakeNssService::InitializeForBrowserContext(profile(),
-                                                /*enable_system_slot=*/true);
+        account_, /*is_affiliated=*/false, user_manager::UserType::kRegular,
+        profile());
+    fake_user_manager_->OnUserProfileCreated(account_, profile()->GetPrefs());
+    fake_user_manager_->LoginUser(account_);
 
     fake_page_ = std::make_unique<FakeCertificateManagerPage>(
         fake_page_remote_.BindNewPipeAndPassReceiver());
@@ -70,23 +119,33 @@ class ClientCertSourceAshUnitTest : public ChromeRenderViewHostTestHarness,
   }
 
   void TearDown() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
     cert_source_.reset();
     fake_user_manager_.Reset();
-    ui::SelectFileDialog::SetFactory(nullptr);
+    crosapi_manager_.reset();
+    ash::LoginState::Shutdown();
+    kcer::KcerFactoryAsh::ClearNssTokenMapForTesting();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  bool EnableDualWrite() const { return GetParam(); }
+  bool dual_write_enabled() const { return std::get<0>(GetParam()); }
+  bool kcer_enabled() const { return std::get<1>(GetParam()); }
+
+  std::string username_hash() const {
+    return user_manager::FakeUserManager::GetFakeUsernameHash(account_);
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  AccountId account_{AccountId::FromUserEmail(kUsername)};
+  crypto::ScopedTestNSSChromeOSUser test_nss_user_{username_hash()};
+  crypto::ScopedTestSystemNSSKeySlot test_nss_system_slot_{
+      /*simulate_token_loader=*/true};
 
-  // local_state prefs are necessary for ChromeSelectFilePolicy.
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
+  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+      fake_user_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 
   mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
       fake_page_remote_;
@@ -107,6 +166,10 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
   // The SHA256 hash of the certificate in client.p12, as a hex string.
   constexpr char kTestClientCertHashHex[] =
       "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
+
+  EXPECT_FALSE(SlotContainsCertWithHash(
+      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
+      kTestClientCertHashHex));
 
   {
     base::test::TestFuture<
@@ -147,8 +210,12 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
     EXPECT_TRUE(import_result->is_success());
     EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
                   prefs::kNssChapsDualWrittenCertsExist),
-              EnableDualWrite());
+              dual_write_enabled());
   }
+
+  EXPECT_TRUE(SlotContainsCertWithHash(
+      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
+      kTestClientCertHashHex));
 
   {
     base::test::TestFuture<
@@ -269,4 +336,6 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
   EXPECT_FALSE(import_result);
 }
 
-INSTANTIATE_TEST_SUITE_P(Foo, ClientCertSourceAshUnitTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(Foo,
+                         ClientCertSourceAshUnitTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
