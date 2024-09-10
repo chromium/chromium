@@ -21,7 +21,16 @@ using CardName = std::string;
 // Where the position of the card should be placed.
 enum class EphemeralHomeModuleRank { kTop, kLast, kNotShown };
 
-float EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank rank);
+constexpr float EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank rank) {
+  switch (rank) {
+    case EphemeralHomeModuleRank::kTop:
+      return 1;
+    case EphemeralHomeModuleRank::kLast:
+      return 0.01;
+    case EphemeralHomeModuleRank::kNotShown:
+      return -1;
+  }
+}
 
 using CardSignalMap = std::map<CardName, std::map<SignalKey, /*index=*/size_t>>;
 

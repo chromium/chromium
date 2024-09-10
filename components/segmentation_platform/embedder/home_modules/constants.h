@@ -11,6 +11,9 @@ namespace segmentation_platform {
 const char kIsNewUser[] = "is_new_user";
 const char kIsSynced[] = "is_sycned";
 
+// Placeholder output label for segmentation model executor.
+const char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
+
 // Labels for emphemeral IOS modules.
 const char kPriceTrackingNotificationPromo[] = "price_tracking_promo";
 

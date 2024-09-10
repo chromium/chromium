@@ -8,17 +8,6 @@
 
 namespace segmentation_platform::home_modules {
 
-float EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank rank) {
-  switch (rank) {
-    case EphemeralHomeModuleRank::kTop:
-      return 1;
-    case EphemeralHomeModuleRank::kLast:
-      return 0.01;
-    case EphemeralHomeModuleRank::kNotShown:
-      return -1;
-  }
-}
-
 AllCardSignals::AllCardSignals(CardSignalMap signal_map,
                                std::vector<float> signals)
     : signal_map_(std::move(signal_map)), signals_(std::move(signals)) {}

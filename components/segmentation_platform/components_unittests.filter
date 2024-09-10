@@ -18,6 +18,7 @@
 *DummyModelProviderFactoryImplTest.*
 *DummySegmentationPlatformServiceTest.*
 *EphemeralHomeModuleBackendTest.*
+*EphemeralHomeModuleBackendWithTestCard.*
 *FailedUkmDatabaseTest.*
 *FeatureAggregatorImplTest.*
 *FeatureListQueryProcessorNoDbCacheTest.*

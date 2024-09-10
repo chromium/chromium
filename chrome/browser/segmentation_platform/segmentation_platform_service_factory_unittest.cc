@@ -669,7 +669,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   std::vector<std::string> result = {};
   ExpectGetClassificationResult(
       kEphemeralHomeModuleBackendKey, prediction_options, input_context,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kFailed,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/result);
 }
 

@@ -7,6 +7,11 @@
 namespace segmentation_platform::home_modules {
 
 CardSelectionInfo::ShowResult::ShowResult() = default;
+CardSelectionInfo::ShowResult::ShowResult(EphemeralHomeModuleRank position)
+    : position(position) {}
+CardSelectionInfo::ShowResult::ShowResult(EphemeralHomeModuleRank position,
+                                          const std::string& result_label)
+    : position(position), result_label(result_label) {}
 CardSelectionInfo::ShowResult::ShowResult(const ShowResult& result) = default;
 CardSelectionInfo::ShowResult::~ShowResult() = default;
 

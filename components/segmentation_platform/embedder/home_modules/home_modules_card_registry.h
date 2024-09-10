@@ -20,6 +20,10 @@ namespace segmentation_platform::home_modules {
 class HomeModulesCardRegistry : public base::SupportsUserData::Data {
  public:
   explicit HomeModulesCardRegistry(PrefService* profile_prefs);
+  // For testing.
+  HomeModulesCardRegistry(
+      PrefService* profile_prefs,
+      std::vector<std::unique_ptr<CardSelectionInfo>> cards);
   ~HomeModulesCardRegistry() override;
 
   HomeModulesCardRegistry(const HomeModulesCardRegistry&) = delete;
@@ -53,6 +57,12 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
  private:
   // Populats `all_cards_by_priority_`.
   void CreateAllCards();
+
+  // Initializes the registry after all cards are added.
+  void InitializeAfterAddingCards();
+
+  // Adds `card_labels` to the registry.
+  void AddCardLabels(const std::vector<std::string>& card_labels);
 
   const raw_ptr<PrefService> profile_prefs_;
 
