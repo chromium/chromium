@@ -262,6 +262,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Commit"/>
 </enum>
 
+<!-- LINT.IfChange(HistoryNavigationDirection) -->
+
+<enum name="HistoryNavigationDirection">
+  <int value="0" label="Back"/>
+  <int value="1" label="Forward"/>
+  <int value="2" label="Same entry (e.g. session restore)"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/back_forward_cache_metrics.h:HistoryNavigationDirection) -->
+
 <enum name="HistoryNavType">
   <int value="0" label="kMainFrame"/>
   <int value="1" label="kMainFrameAndSubframe"/>

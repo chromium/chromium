@@ -528,6 +528,19 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
   if (back_forward_cache_allowed) {
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.HistoryNavigationOutcome",
                               outcome);
+    int nav_offset = navigation->GetNavigationEntryOffset();
+    HistoryNavigationDirection direction =
+        nav_offset == 0
+            ? HistoryNavigationDirection::kSameEntry
+            : (nav_offset < 0 ? HistoryNavigationDirection::kBack
+                              : HistoryNavigationDirection::kForward);
+    if (navigation->IsServedFromBackForwardCache()) {
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.RestoredNavigationDirection", direction);
+    } else {
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.NonRestoredNavigationDirection", direction);
+    }
   }
 
   UMA_HISTOGRAM_ENUMERATION(
