@@ -35,12 +35,14 @@ EXTRA_PATHS.append(GPU_DIR)
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
     # Directories.
+    'bad_machine_finder',
     'flake_suppressor',
     'gold_inexact_matching',
     'gpu_tests',
     'machine_times',
     'unexpected_passes',
     # Files.
+    'find_bad_machines.py',
     'get_machine_times.py',
     'unexpected_pass_finder.py',
 ]

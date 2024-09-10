@@ -3645,11 +3645,13 @@ group("gpu_pytype") {
   testonly = true
 
   data = [
+    "//content/test/gpu/find_bad_machines.py",
     "//content/test/gpu/get_machine_times.py",
     "//content/test/gpu/run_pytype.py",
     "//content/test/gpu/unexpected_pass_finder.py",
     "//content/test/gpu/validate_tag_consistency.py",
 
+    "//content/test/gpu/bad_machine_finder/",
     "//content/test/gpu/gold_inexact_matching/",
     "//content/test/gpu/flake_suppressor/",
     "//content/test/gpu/machine_times/",
