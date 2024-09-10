@@ -81,29 +81,24 @@
     border-radius: 8px;
   }
 
-  ::slotted([slot=selector]) {
-    position: sticky;
-    right: 0;
-    top: 0;
-  }
-
-  :host([can-scroll]) ::slotted([slot=selector]) {
-    /* Prevent scrolling past the slotted selector. */
-    position: absolute;
-    z-index: 2;
-  }
-
-  #gradientLayer {
+  #selectorGradient {
     display: none;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  :host([can-scroll]) #gradientLayer {
+  :host([can-scroll]) #selectorGradient {
     background: linear-gradient(270deg, white 10%, transparent 110%);
     display: block;
-    height: 50px;
+    height: 42px;
     position: absolute;
     right: 0;
     top: 0;
+    transition: opacity 0.2s ease-out;
     width: 134px;
     z-index: 1;
+  }
+
+  :host([show-forward-button_]) #selectorGradient {
+    opacity: 1;
   }

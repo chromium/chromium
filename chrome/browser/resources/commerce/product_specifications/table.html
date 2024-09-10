@@ -1,9 +1,9 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --column-width: 220px;
-    --last-column-overflow-x: visible;
-    --table-gap: 8px;
     --detail-container-margin-bottom: 24px;
+    --new-column-selector-width: 42px;
+    --table-gap: 8px;
   }
 
   #table {
@@ -15,6 +15,8 @@
     grid-template-columns: repeat(var(--num-columns), var(--column-width));
     grid-template-rows: auto;
     line-height: 16px;
+    padding-inline-end: calc(var(--new-column-selector-width) + var(
+        --table-gap)); /* Include space for selector. */
     width: fit-content;
   }
 
@@ -22,10 +24,6 @@
     display: grid;
     grid-template-rows: subgrid;
     width: var(--column-width);
-  }
-
-  .col:last-of-type {
-    overflow-x: var(--last-column-overflow-x);
   }
 
   .col[is-dragging] {
@@ -110,6 +108,13 @@
   .col:not([is-first-column]) .detail-title span {
     visibility: hidden;
   }
+
+  ::slotted([slot=newColumnSelector]) {
+    order: var(--num-columns); /* Keep at the end during drag-and-drop. */
+    position: sticky;
+    right: 0;
+    z-index: 2;
+  }
 </style>
 
 <div id="table" on-pointerleave="onHideOpenTabButton_">
@@ -177,4 +182,5 @@
       </template>
     </div>
   </template>
+  <slot name="newColumnSelector"></slot>
 </div>

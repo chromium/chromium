@@ -76,7 +76,10 @@ export class HorizontalCarouselElement extends CrLitElement {
       /**
          True if slotted table is overflown on the right side of the carousel.
        */
-      showForwardButton_: {type: Boolean},
+      showForwardButton_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 

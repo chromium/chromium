@@ -60,14 +60,6 @@
     margin-top: 32px;
   }
 
-  horizontal-carousel[can-scroll] #summaryTable {
-    --last-column-overflow-x: hidden;
-  }
-
-  #newColumnSelector {
-    margin-inline-start: 8px;
-  }
-
   #footer {
     align-items: center;
     color: var(--color-side-panel-card-secondary-foreground);
@@ -118,11 +110,11 @@
           on-url-remove="onUrlRemove_"
           on-url-order-update="onUrlOrderUpdate_"
           on-unavailable-action-attempted="showOfflineToast_">
+        <new-column-selector slot="newColumnSelector"
+            excluded-urls="[[getTableUrls_(tableColumns_)]]"
+            on-selected-url-change="onUrlAdd_">
+        </new-column-selector>
     </product-specifications-table>
-    <new-column-selector slot="selector" id="newColumnSelector"
-        excluded-urls="[[getTableUrls_(tableColumns_)]]"
-        on-selected-url-change="onUrlAdd_">
-    </new-column-selector>
   </horizontal-carousel>
 </div>
 <div id="footer" hidden$="[[showEmptyState_]]">

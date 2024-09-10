@@ -24,7 +24,6 @@ export function getHtml(this: HorizontalCarouselElement) {
     <div id="startProbe"></div>
     <slot name="table" id="slottedTable"></slot>
     <div id="endProbe"></div>
-    <slot name="selector"></slot>
-    <div id=gradientLayer></div>
+    <div id=selectorGradient></div>
   </div>`;
 }
