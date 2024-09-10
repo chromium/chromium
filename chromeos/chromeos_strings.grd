@@ -684,6 +684,12 @@
         <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Graduation app in the app shelf. Graduation allows user to transfer data from their EDU account to their consumer account.">
           Graduation
         </message>
+        <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Graduation flow.">
+          Back
+        </message>
+        <message name="IDS_GRADUATION_APP_DONE_BUTTON_LABEL" desc="Text for a button that is clicked to indicate that the Graduation flow is complete.">
+          Done
+        </message>
         <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
           Please wait...
         </message>
