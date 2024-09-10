@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,6 +37,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/incognito.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
@@ -54,6 +56,7 @@
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -240,7 +243,84 @@ scoped_refptr<Extension> ConvertToExtension(
   return extension;
 }
 
+using IncognitoManifestKeys = api::incognito::ManifestKeys;
+
+base::debug::CrashKeyString* GetExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_token_id", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetIncognitoModeCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_token_incog_mode", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetIncognitoProcessCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_token_incog_process", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+const ExtensionId& GetExtensionIdValue(const Extension* extension) {
+  return extension->id();
+}
+
+const char* GetIncognitoModeValue(const Extension* extension) {
+  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  if (!info) {
+    return "no_incognito_info";
+  }
+  return api::incognito::ToString(info->mode);
+}
+
+const char* GetIncognitoProcessValue(
+    const ExtensionsRendererClient* renderer_client) {
+  if (!renderer_client) {
+    return "no_renderer_client";
+  }
+  return renderer_client->IsIncognitoProcess() ? "yes" : "no";
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a set of missing activation token related crash keys.
+//
+// It is created when being notified that an extension worker will evaluate (is
+// in the process of starting) and we might detect that there isn't an
+// activation token recorded for the extension worker.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedActivationTokenMissingCrashKeys {
+ public:
+  explicit ScopedActivationTokenMissingCrashKeys(
+      const Extension* extension,
+      const ExtensionsRendererClient* renderer_client)
+      : extension_id_crash_key_(GetExtensionIdCrashKey(),
+                                GetExtensionIdValue(extension)),
+        incognito_mode_crash_key_(GetIncognitoModeCrashKey(),
+                                  GetIncognitoModeValue(extension)),
+        incognito_process_crash_key_(
+            GetIncognitoProcessCrashKey(),
+            GetIncognitoProcessValue(renderer_client)) {}
+  ~ScopedActivationTokenMissingCrashKeys() = default;
+
+ private:
+  // ExtensionId of the extension.
+  base::debug::ScopedCrashKeyString extension_id_crash_key_;
+
+  // What the api::incognito::IncognitoMode is for the extension.
+  base::debug::ScopedCrashKeyString incognito_mode_crash_key_;
+
+  // Whether the renderer process for the extension was launched incognito.
+  base::debug::ScopedCrashKeyString incognito_process_crash_key_;
+};
+
+}  // namespace debug
 
 Dispatcher::PendingServiceWorker::PendingServiceWorker(
     blink::WebServiceWorkerContextProxy* context_proxy)
@@ -577,7 +657,12 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   std::unique_ptr<IPCMessageSender> ipc_sender =
       IPCMessageSender::CreateWorkerThreadIPCMessageSender(
           worker_dispatcher, context_proxy, service_worker_version_id);
-  CHECK(worker_activation_token.has_value());
+  {
+    // TODO(crbug.com/357889496): Remove these crash keys once bug is resolved.
+    debug::ScopedActivationTokenMissingCrashKeys activation_token_missing_keys(
+        extension, ExtensionsRendererClient::Get());
+    CHECK(worker_activation_token.has_value());
+  }
   worker_dispatcher->AddWorkerData(
       context_proxy, service_worker_version_id, worker_activation_token,
       service_worker_token, context,
