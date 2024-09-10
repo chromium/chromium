@@ -134,10 +134,6 @@ ChromeIOSTranslateClient::GetAcceptLanguagesService() {
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 }
 
-int ChromeIOSTranslateClient::GetInfobarIconID() const {
-  return IDR_IOS_INFOBAR_TRANSLATE;
-}
-
 bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateServiceIOS::IsTranslatableURL(url);
 }

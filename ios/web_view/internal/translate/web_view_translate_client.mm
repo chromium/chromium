@@ -117,11 +117,6 @@ WebViewTranslateClient::GetAcceptLanguagesService() {
   return accept_languages_;
 }
 
-int WebViewTranslateClient::GetInfobarIconID() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
-}
-
 bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {
   return !url.is_empty() && !url.SchemeIs(url::kFtpScheme);
 }

@@ -108,8 +108,6 @@ class ChromeTranslateClient
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;
-  int GetInfobarIconID() const override;
-
   // Trigger a manual translation when the necessary state (e.g. source
   // language) is ready.
   void ManualTranslateWhenReady();

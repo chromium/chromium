@@ -868,8 +868,6 @@ static_library("ui") {
       "android/infobars/permission_infobar.cc",
       "android/infobars/permission_infobar.h",
       "android/infobars/simple_confirm_infobar_builder.cc",
-      "android/infobars/translate_compact_infobar.cc",
-      "android/infobars/translate_compact_infobar.h",
       "android/login_handler_android.cc",
       "android/logo/logo_bridge.cc",
       "android/logo/logo_bridge.h",

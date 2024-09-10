@@ -92,14 +92,6 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Returns the whether or not the Autotranslate Snackbar should be used.
-bool IsMessageUISnackbarEnabled() {
-  constexpr base::FeatureParam<bool> kIsSnackbarEnabled(
-      &translate::kTranslateMessageUI,
-      translate::kTranslateMessageUISnackbarParam, true);
-  return kIsSnackbarEnabled.Get();
-}
-
 // helper function for use in ChromeTranslateClient::ShowTranslateUI.
 bool IsAutomaticTranslationType(translate::TranslationType type) {
   return type == translate::TranslationType::kAutomaticTranslationByHref ||
@@ -226,7 +218,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
-// Translate uses a bubble UI on desktop and an infobar on Android (here)
+// Translate uses a bubble UI on desktop and the Message UI on Android (here)
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(!TranslateService::IsTranslateBubbleEnabled());
@@ -240,8 +232,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
     // Use the automatic translation Snackbar if the current translation is an
     // automatic translation and there was no error.
     if (IsAutomaticTranslationType(translate_type) &&
-        step != translate::TRANSLATE_STEP_TRANSLATE_ERROR &&
-        IsMessageUISnackbarEnabled()) {
+        step != translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
       // The Automatic translation snackbar is only shown after translation
       // has completed. The translating step is a no-op with the Snackbar.
       if (step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) {
@@ -254,8 +245,8 @@ bool ChromeTranslateClient::ShowTranslateUI(
         auto_translate_snackbar_controller_->ShowSnackbar(target_language);
       }
     } else {
-      // Snackbar disabled or not an automatic translation. Use
-      // TranslateMessage.
+      // Snackbar disabled or not an automatic translation. If not an automatic
+      // translation, use TranslateMessage.
       if (!translate_message_) {
         translate_message_ = std::make_unique<translate::TranslateMessage>(
             web_contents(), translate_manager_->GetWeakPtr(),
@@ -264,15 +255,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
       translate_message_->ShowTranslateStep(step, source_language,
                                             target_language);
     }
-  } else {
-    // Infobar UI.
-    translate::TranslateInfoBarDelegate::Create(
-        step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
-        translate_manager_->GetWeakPtr(),
-        infobars::ContentInfoBarManager::FromWebContents(web_contents()), step,
-        source_language, target_language, error_type, triggered_from_menu);
   }
-
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(true);
 #else
   DCHECK(TranslateService::IsTranslateBubbleEnabled());
@@ -317,8 +300,9 @@ ChromeTranslateClient::GetAcceptLanguagesService() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-int ChromeTranslateClient::GetInfobarIconID() const {
-  return IDR_ANDROID_INFOBAR_TRANSLATE;
+std::unique_ptr<infobars::InfoBar> ChromeTranslateClient::CreateInfoBar(
+    std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
+  return nullptr;
 }
 
 void ChromeTranslateClient::ManualTranslateWhenReady() {

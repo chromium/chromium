@@ -20,9 +20,6 @@ found in the LICENSE file.
     <!-- Text size of descriptive controls on an infobar. -->
     <dimen name="infobar_descriptive_text_size">14sp</dimen>
 
-    <!-- Dimensions for compact translate infobar. -->
-    <dimen name="infobar_translate_fade_edge_length">18dp</dimen>
-
     <!-- Overlay Panel dimensions -->
     <dimen name="overlay_panel_end_buttons_width">94dp</dimen>
     <dimen name="overlay_panel_padded_button_width">41dp</dimen>
