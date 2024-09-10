@@ -492,6 +492,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.text = passwordDetails.note;
   item.editingEnabled = self.tableView.editing;
   item.delegate = self;
+
+  // Make the text field non-interactable in non-editing table view state and
+  // when the note is empty, so that UITextView does not capture taps in that
+  // case and they can be handled by `didSelectRowAtIndexPath`.
+  item.textFieldInteractionEnabled =
+      self.tableView.editing || passwordDetails.note.length > 0;
   return item;
 }
 
@@ -679,7 +685,11 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
       TableViewMultiLineTextEditCell* textFieldCell =
           base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
-      [textFieldCell.textView becomeFirstResponder];
+      if (!self.tableView.editing && textFieldCell.textView.text.length == 0) {
+        [self switchToEditingOnEmptyNoteTapAtIndexPath:indexPath];
+      } else {
+        [textFieldCell.textView becomeFirstResponder];
+      }
       break;
     }
     case PasswordDetailsItemTypeDismissWarningButton:
@@ -770,8 +780,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case PasswordDetailsItemTypeMoveToAccountButton:
       return !self.editing;
     case PasswordDetailsItemTypeDeleteButton:
-    case PasswordDetailsItemTypeNote:
       return self.editing;
+    case PasswordDetailsItemTypeNote: {
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      TableViewMultiLineTextEditCell* textFieldCell =
+          base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+      return self.editing || textFieldCell.textView.text.length == 0;
+    }
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
       return NO;
@@ -1401,6 +1416,26 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self presentViewController:popoverViewController
                      animated:YES
                    completion:nil];
+}
+
+// Switches to editing mode and makes the note text field at `indexPath` the
+// first responder.
+- (void)switchToEditingOnEmptyNoteTapAtIndexPath:(NSIndexPath*)indexPath {
+  [super editButtonPressed];
+  [self reloadData];
+
+  // After switching to editing mode, the note that was originally tapped might
+  // not be visible on the screen anymore when there's a lot of credential
+  // groups (since there are additional elements appearing, e.g. "Delete
+  // password" buttons).
+  UITableView* tableView = self.tableView;
+  [tableView scrollToRowAtIndexPath:indexPath
+                   atScrollPosition:UITableViewScrollPositionBottom
+                           animated:NO];
+  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  TableViewMultiLineTextEditCell* textFieldCell =
+      base::apple::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+  [textFieldCell.textView becomeFirstResponder];
 }
 
 #pragma mark - AutofillEditTableViewController

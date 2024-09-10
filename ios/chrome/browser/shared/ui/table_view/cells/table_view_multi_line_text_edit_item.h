@@ -24,8 +24,11 @@
 // Whether the text field is enabled for editing.
 @property(nonatomic, assign) BOOL editingEnabled;
 
-// Whether the text typed in `textView` is valid.
+// Whether the text typed in `textView` is valid. YES by default.
 @property(nonatomic, assign) BOOL validText;
+
+// Whether interaction with the text field is enabled. YES by default.
+@property(nonatomic, assign) BOOL textFieldInteractionEnabled;
 
 @end
 
