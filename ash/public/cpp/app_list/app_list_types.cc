@@ -528,6 +528,9 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsKeyboardBrightnessUpIcon;
     case kKeyboardShortcutKeyboardBacklightToggle:
       return &kKsKeyboardBrightnessToggleIcon;
+    // Accessibility.
+    case kKeyboardShortcutAccessibility:
+      return &kKsAccessibilityIcon;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case kKeyboardShortcutKeyboardRightAlt:
       return &kRightAltInternalIcon;

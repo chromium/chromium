@@ -140,6 +140,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvArrowLeftIcon;
     case ui::VKEY_RIGHT:
       return &ash::kKsvArrowRightIcon;
+    case ui::VKEY_ACCESSIBILITY:
+      return &ash::kKsAccessibilityIcon;
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:

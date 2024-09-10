@@ -685,6 +685,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutKeyboardBrightnessDown,
     kKeyboardShortcutKeyboardBrightnessUp,
     kKeyboardShortcutKeyboardRightAlt,
+    kKeyboardShortcutAccessibility,
   };
 
   // Only used for SearchResultTextItemType kString

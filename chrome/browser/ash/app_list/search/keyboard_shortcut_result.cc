@@ -136,6 +136,8 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER;
     case ash::SearchResultTextItem::kKeyboardShortcutSearch:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
+    case ash::SearchResultTextItem::kKeyboardShortcutAccessibility:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY;
     case ash::SearchResultTextItem::kKeyboardShortcutKeyboardRightAlt:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return IDS_KEYBOARD_RIGHT_ALT_LABEL;
@@ -266,6 +268,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutInputModeChange;
     case (KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE):
       return IconCode::kKeyboardShortcutMicrophone;
+    case (KeyboardCode::VKEY_ACCESSIBILITY):
+      return IconCode::kKeyboardShortcutAccessibility;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case (KeyboardCode::VKEY_RIGHT_ALT):
       return IconCode::kKeyboardShortcutKeyboardRightAlt;
@@ -281,7 +285,8 @@ std::optional<ash::SearchResultTextItem::IconCode>
 KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
   static constexpr auto kIconCodes = base::MakeFixedFlatMap<std::u16string_view,
                                                             IconCode>(
-      {{u"ArrowDown", IconCode::kKeyboardShortcutDown},
+      {{u"Accessibility", IconCode::kKeyboardShortcutAccessibility},
+       {u"ArrowDown", IconCode::kKeyboardShortcutDown},
        {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
        {u"ArrowRight", IconCode::kKeyboardShortcutRight},
        {u"ArrowUp", IconCode::kKeyboardShortcutUp},

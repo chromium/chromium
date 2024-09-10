@@ -184,6 +184,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ime_menu_on_screen_keyboard.icon",
     "ime_menu_write.icon",
     "ink_pen.icon",
+    "ks_accessibility.icon",
     "ks_all_apps.icon",
     "ks_assistant.icon",
     "ks_browser_search.icon",
