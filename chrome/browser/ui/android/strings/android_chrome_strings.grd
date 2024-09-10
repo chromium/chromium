@@ -2907,6 +2907,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_NOTIFICATION" desc="Content description for the tab title with a notification status.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, new or updated tab
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
         Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
       </message>
