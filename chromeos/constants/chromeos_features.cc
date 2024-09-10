@@ -165,7 +165,7 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature.
-BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMahi, "Mahi", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature from the feature management
 // module.

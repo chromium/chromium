@@ -1956,7 +1956,7 @@ BASE_FEATURE(kMacAddressRandomization,
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi,
              "MediaAppPdfMahi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lens support in the Media App.
 BASE_FEATURE(kMediaAppLens, "MediaAppLens", base::FEATURE_ENABLED_BY_DEFAULT);

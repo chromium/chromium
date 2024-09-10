@@ -13690,6 +13690,13 @@
                         "Mahi",
                         "MediaAppPdfMahi"
                     ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "Mahi",
+                        "MediaAppPdfMahi"
+                    ]
                 }
             ]
         }
