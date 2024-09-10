@@ -1513,7 +1513,10 @@ void DeskBarViewBase::FinalizeDragDesk() {
 void DeskBarViewBase::OnDeskAdded(const Desk* desk, bool from_undo) {
   DeskNameView::CommitChanges(GetWidget());
 
+  // If a desk is added while overview mode is exiting, then the overview grid
+  // will have already been destroyed and we must not try to expand the bar.
   const bool is_expanding_bar_view =
+      overview_grid() &&
       new_desk_button_->state() == DeskIconButton::State::kZero;
   UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
   MaybeUpdateDeskActionButtonTooltips();

@@ -2621,6 +2621,22 @@ TEST_P(DesksTest, RemoveDisplayWhileSwitchingDesks) {
   EXPECT_EQ(desk_2, controller->active_desk());
 }
 
+// Tests that creating a new desk while overview is exiting doesn't cause a
+// crash. Regression test for http://b/365546169
+TEST_P(DesksTest, AddDeskWhileExitingOverview) {
+  UpdateDisplay("800x600");
+
+  EnterOverview();
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Exit overview (with an animation) and immediately create a second desk.
+  ExitOverview();
+  NewDesk();
+}
+
 class DesksWithMultiDisplayOverview : public AshTestBase {
  public:
   DesksWithMultiDisplayOverview() = default;
