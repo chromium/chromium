@@ -2704,10 +2704,22 @@ chromium-metrics-reviews@google.com.
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
-    Logged after each page navigation. Logs the matching user-familiarity
-    heuristics for the site. If the site satisifies multiple heuristics the
-    metric will be logged multiple times. NO_HEURISTIC_MATCH is logged if no
-    user-familiarity heuristics match for the site.
+    Logged after each non-incognito page navigation. Logs the matching
+    user-familiarity heuristics for the site. If the site satisifies multiple
+    heuristics the metric will be logged multiple times. NO_HEURISTIC_MATCH is
+    logged if no user-familiarity heuristics match for the site.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
+    enum="SiteFamiliarityHeuristicName" expires_after="2025-01-05">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged after each off-the-record page navigation. Logs the matching
+    user-familiarity heuristics for the site. If the site satisifies multiple
+    heuristics the metric will be logged multiple times. NO_HEURISTIC_MATCH is
+    logged if no user-familiarity heuristics match for the site.
   </summary>
 </histogram>
 

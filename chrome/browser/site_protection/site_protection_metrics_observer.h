@@ -54,6 +54,9 @@ class SiteProtectionMetricsObserver
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
+  // Returns whether there are any pending asynchronous tasks.
+  bool HasPendingTasksForTesting();
+
  private:
   friend class content::WebContentsUserData<SiteProtectionMetricsObserver>;
 

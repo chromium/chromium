@@ -67,22 +67,26 @@ void SiteProtectionMetricsObserver::OnEngagementEvent(
 }
 
 void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
+  std::optional<GotPointsNavigation> got_points_navigation =
+      std::move(got_points_navigation_);
+  got_points_navigation_ = std::nullopt;
+
   // HistoryService is null in tests.
   if (!history_service_) {
     return;
   }
 
-  std::optional<GotPointsNavigation> got_points_navigation =
-      std::move(got_points_navigation_);
-  got_points_navigation_ = std::nullopt;
+  GURL last_committed_url = page.GetMainDocument().GetLastCommittedURL();
+  if (!last_committed_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
 
   // Store any in-progress data in `metrics_data` so that we can still log the
   // matching heuristics even if the page navigates prior to the asynchronous
   // data fetches completing.
   auto metrics_data = std::make_unique<MetricsData>();
   metrics_data->ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
-  metrics_data->last_committed_url =
-      page.GetMainDocument().GetLastCommittedURL();
+  metrics_data->last_committed_url = last_committed_url;
   metrics_data->last_committed_origin =
       page.GetMainDocument().GetLastCommittedOrigin();
   metrics_data->data_fetch_start_time = base::Time::Now();
@@ -122,6 +126,10 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
       &task_tracker_);
+}
+
+bool SiteProtectionMetricsObserver::HasPendingTasksForTesting() {
+  return weak_factory_.HasWeakPtrs();
 }
 
 void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
@@ -227,7 +235,10 @@ void SiteProtectionMetricsObserver::LogMetrics(
   for (SiteFamiliarityHeuristicName heuristic :
        metrics_data->matched_heuristics) {
     base::UmaHistogramEnumeration(
-        "SafeBrowsing.SiteProtection.FamiliarityHeuristic", heuristic);
+        profile_->IsOffTheRecord()
+            ? "SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
+            : "SafeBrowsing.SiteProtection.FamiliarityHeuristic",
+        heuristic);
   }
 
   ukm::builders::SiteFamiliarityHeuristicResult(metrics_data->ukm_source_id)
