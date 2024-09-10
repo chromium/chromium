@@ -13,8 +13,6 @@ static_library("ash") {
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
     "login_screen_shown_observer.h",
-    "management_disclosure_client_impl.cc",
-    "management_disclosure_client_impl.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
     "screenshot_area.cc",
@@ -220,6 +218,11 @@ static_library("ash") {
     "//ui/events/ozone/evdev",
     "//ui/touch_selection",
     "//url",
+
+    # TODO(b/330527825): Remove this when management_disclosure source set
+    # becomes built by some build bots. //chrome/browser/ui/ash does not depend
+    # on this now, but we should make sure to build this for code health.
+    "//chrome/browser/ui/ash/management_disclosure",
   ]
 
   allow_circular_includes_from = [

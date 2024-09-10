@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/management_disclosure_client_impl.h"
+#include "chrome/browser/ui/ash/management_disclosure/management_disclosure_client_impl.h"
 
 #include "ash/public/cpp/login_screen.h"
 
