@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/SogouPromoDialog.java",
     "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
     "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
   ]
@@ -100,6 +101,7 @@ robolectric_library("junit") {
     "//components/search_engines/android:java",
     "//components/search_engines/android:test_utils_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
@@ -122,6 +124,7 @@ android_library("unit_device_javatests") {
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/search_engines/android:delegate_java",
     "//components/search_engines/android:java",
     "//components/search_engines/android:test_utils_java",
     "//content/public/test/android:content_java_test_support",

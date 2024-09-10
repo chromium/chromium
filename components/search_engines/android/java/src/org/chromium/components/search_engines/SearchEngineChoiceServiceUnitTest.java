@@ -91,7 +91,7 @@ public class SearchEngineChoiceServiceUnitTest {
     public void testFakeDelegate() {
         var service =
                 new SearchEngineChoiceService(
-                        new FakeSearchEngineCountryDelegate(mContext, /* enableLogging= */ true));
+                        new FakeSearchEngineCountryDelegate(/* enableLogging= */ true));
 
         if (mIsClayBlockingEnabled) {
             // It should have generally sensible values and make the dialog be shown.

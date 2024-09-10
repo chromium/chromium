@@ -198,7 +198,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
-    private @Nullable ChoiceDialogCoordinator mChoiceDialogCoordinator;
     private @NonNull DataSharingTabManager mDataSharingTabManager;
     private @NonNull DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     private final OneshotSupplierImpl<TabGroupModelFilter> mOneshotFilterSupplier =
@@ -1236,9 +1235,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
         if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            mChoiceDialogCoordinator =
-                    ChoiceDialogCoordinator.maybeShow(mActivity, mModalDialogManagerSupplier.get());
-            if (mChoiceDialogCoordinator != null) {
+            if (ChoiceDialogCoordinator.maybeShow(mActivity, mModalDialogManagerSupplier.get())) {
                 return true;
             }
         }

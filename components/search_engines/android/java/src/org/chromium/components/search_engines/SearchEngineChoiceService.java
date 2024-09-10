@@ -68,8 +68,7 @@ public class SearchEngineChoiceService {
             var delegate =
                     SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
                                     && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()
-                            ? new FakeSearchEngineCountryDelegate(
-                                    context, /* enableLogging= */ true)
+                            ? new FakeSearchEngineCountryDelegate(/* enableLogging= */ true)
                             : new SearchEngineCountryDelegateImpl(context);
             sInstance = new SearchEngineChoiceService(delegate);
         }

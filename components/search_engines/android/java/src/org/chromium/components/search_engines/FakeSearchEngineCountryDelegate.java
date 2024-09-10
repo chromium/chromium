@@ -4,8 +4,6 @@
 
 package org.chromium.components.search_engines;
 
-import android.content.Context;
-
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Log;
@@ -24,8 +22,8 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
             new ObservableSupplierImpl<>(true);
 
     @MainThread
-    public FakeSearchEngineCountryDelegate(Context context, boolean enableLogging) {
-        super(context);
+    public FakeSearchEngineCountryDelegate(boolean enableLogging) {
+        super(/* context= */ null);
         ThreadUtils.assertOnUiThread();
 
         mEnableLogging = enableLogging;
@@ -100,7 +98,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         if (mEnableLogging) {
             Log.i(TAG, "launchDeviceChoiceScreens() -> updating supplier");
         }
-        mIsChoiceRequired.set(true);
+        mIsChoiceRequired.set(false);
     }
 
     @Override

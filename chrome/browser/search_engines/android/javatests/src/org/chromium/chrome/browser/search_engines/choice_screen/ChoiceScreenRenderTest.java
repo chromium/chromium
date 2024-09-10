@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -35,6 +36,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.search_engines.FakeSearchEngineCountryDelegate;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -58,25 +61,25 @@ public class ChoiceScreenRenderTest {
             MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private ModalDialogManager mDialogManager;
-    private ChoiceDialogCoordinator mChoiceDialogCoordinator;
 
     @Before
     public void setUp() {
+        FeatureList.setDisableNativeForTesting(true);
         mActivityTestRule.launchActivity(null);
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mChoiceDialogCoordinator =
-                            new ChoiceDialogCoordinator(
-                                    mActivityTestRule.getActivity(), mDialogManager);
-                });
+                () ->
+                        SearchEngineChoiceService.setInstanceForTests(
+                                new SearchEngineChoiceService(
+                                        new FakeSearchEngineCountryDelegate(
+                                                /* enableLogging= */ false))));
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
     public void testFirstChoiceScreenBlockingDialog() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
 
         mRenderTestRule.render(getDialogView(), "first_choice_screen_blocking_dialog");
     }
@@ -84,7 +87,7 @@ public class ChoiceScreenRenderTest {
     @Test
     @LargeTest
     public void testFirstChoiceScreenBlockingDialogButton() {
-        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
 
         onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
 
@@ -98,7 +101,7 @@ public class ChoiceScreenRenderTest {
     @Feature("RenderTest")
     @DisabledTest(message = "b/355054464: UI is not final yet.")
     public void testSecondChoiceScreenDialog() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
 
         onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
 
@@ -112,5 +115,9 @@ public class ChoiceScreenRenderTest {
                     assertNotNull(dialogModel);
                     return dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
                 });
+    }
+
+    private void showDialog() {
+        ChoiceDialogCoordinator.maybeShow(mActivityTestRule.getActivity(), mDialogManager);
     }
 }
