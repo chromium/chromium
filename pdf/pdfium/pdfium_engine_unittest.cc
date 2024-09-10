@@ -1806,24 +1806,10 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
 
-class ReadOnlyTestClient : public TestClient {
- public:
-  ReadOnlyTestClient() = default;
-  ~ReadOnlyTestClient() override = default;
-  ReadOnlyTestClient(const ReadOnlyTestClient&) = delete;
-  ReadOnlyTestClient& operator=(const ReadOnlyTestClient&) = delete;
-
-  // Mock PDFiumEngineClient methods.
-  MOCK_METHOD(void,
-              FormFieldFocusChange,
-              (PDFiumEngineClient::FocusFieldType),
-              (override));
-};
-
 using PDFiumEngineReadOnlyTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
-  NiceMock<ReadOnlyTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
