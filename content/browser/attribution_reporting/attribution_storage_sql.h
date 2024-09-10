@@ -482,14 +482,6 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   // Aggregate Attribution:
 
-  // Checks if the given aggregatable attribution is allowed according to the
-  // L1 budget policy specified by the delegate.
-  RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
-      const AttributionReport::AggregatableAttributionData&
-          aggregatable_attribution,
-      int remaining_aggregatable_attribution_budget)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   // Adjusts the aggregatable budget for the source event by
   // `additional_budget_consumed`.
   [[nodiscard]] bool AdjustBudgetConsumedForSource(

@@ -2573,8 +2573,9 @@ bool AttributionStorageSql::ClearReportsForSourceIds(
   return transaction.Commit();
 }
 
-RateLimitResult
-AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
+namespace {
+
+RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
     const AttributionReport::AggregatableAttributionData&
         aggregatable_attribution,
     int remaining_aggregatable_attribution_budget) {
@@ -2592,6 +2593,8 @@ AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
 
   return RateLimitResult::kAllowed;
 }
+
+}  // namespace
 
 bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     StoredSource::Id source_id,
