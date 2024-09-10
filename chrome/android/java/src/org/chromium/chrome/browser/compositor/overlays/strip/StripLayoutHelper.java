@@ -172,6 +172,7 @@ public class StripLayoutHelper
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
+    private static final int MESSAGE_HOVER_CARD = 3;
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
@@ -185,6 +186,11 @@ public class StripLayoutHelper
             "Android.TabStrip.PlaceholderStripTabsNeededDuringRestoreCount";
     private static final String PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME =
             "Android.TabStrip.PlaceholderStripVisibleDuration";
+
+    // Hover card constants
+    @VisibleForTesting static final int MAX_HOVER_CARD_DELAY_MS = 800;
+    @VisibleForTesting static final int MIN_HOVER_CARD_DELAY_MS = 300;
+    private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER = 300;
 
     // An observer that is notified of changes to a {@link TabGroupModelFilter} object.
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
@@ -459,6 +465,8 @@ public class StripLayoutHelper
     // Tab hover state.
     private StripLayoutTab mLastHoveredTab;
     private StripTabHoverCardView mTabHoverCardView;
+    private long mLastHoverCardExitTime;
+    private boolean mHoverCardDelayDisabledForTesting;
 
     // Tab Group Sync.
     private float mTabStripHeight;
@@ -515,6 +523,7 @@ public class StripLayoutHelper
         mTabDragSource = tabDragSource;
         mWindowAndroid = windowAndroid;
         mActionConfirmationManager = actionConfirmationManager;
+        mLastHoverCardExitTime = INVALID_TIME;
         mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
         mWindowRectSupplier = windowRectSupplier;
@@ -2068,6 +2077,10 @@ public class StripLayoutHelper
 
         // Remove the highlight from the last hovered tab.
         updateHoveredTabAttachedState(mLastHoveredTab, false);
+        mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
+        if (mTabHoverCardView.isShown()) {
+            mLastHoverCardExitTime = SystemClock.uptimeMillis();
+        }
         mTabHoverCardView.hide();
         mLastHoveredTab = null;
     }
@@ -2102,6 +2115,65 @@ public class StripLayoutHelper
         updateHoveredTabAttachedState(mLastHoveredTab, true);
 
         // Show the tab hover card.
+        // Just in case, cancel the previous delayed hover card event.
+        mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
+        if (shouldShowHoverCardImmediately()) {
+            showTabHoverCardView();
+        } else {
+            mStripTabEventHandler.sendEmptyMessageDelayed(
+                    MESSAGE_HOVER_CARD, getHoverCardDelay(mLastHoveredTab.getWidth()));
+        }
+    }
+
+    private boolean shouldShowHoverCardImmediately() {
+        if (mAnimationsDisabledForTesting) {
+            return true;
+        }
+
+        if (mLastHoverCardExitTime == INVALID_TIME) {
+            return false;
+        }
+
+        long elapsedTime = SystemClock.uptimeMillis() - mLastHoverCardExitTime;
+        return elapsedTime <= SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER;
+    }
+
+    @VisibleForTesting
+    int getHoverCardDelay(float tabWidth) {
+        // Delay is calculated as a logarithmic scale and bounded by a minimum width
+        // based on the width of a pinned tab and a maximum of the standard width.
+        //
+        //  delay (ms)
+        //           |
+        // max delay-|                                    *
+        //           |                          *
+        //           |                    *
+        //           |                *
+        //           |            *
+        //           |         *
+        //           |       *
+        //           |     *
+        //           |    *
+        // min delay-|****
+        //           |___________________________________________ tab width
+        //               |                                |
+        //       pinned tab width               standard tab width
+
+        tabWidth = MathUtils.clamp(tabWidth, mMinTabWidth, mMaxTabWidth);
+        double logarithmicFraction =
+                Math.log(tabWidth - mMinTabWidth + 1.f)
+                        / Math.log(mMaxTabWidth - mMinTabWidth + 1.f);
+        int scalingFactor = MAX_HOVER_CARD_DELAY_MS - MIN_HOVER_CARD_DELAY_MS;
+        int delay = (int) (logarithmicFraction * scalingFactor) + MIN_HOVER_CARD_DELAY_MS;
+
+        return delay;
+    }
+
+    private void showTabHoverCardView() {
+        if (mLastHoveredTab == null) {
+            return;
+        }
+
         int hoveredTabIndex = findIndexForTab(mLastHoveredTab.getTabId());
         mTabHoverCardView.show(
                 mModel.getTabAt(hoveredTabIndex),
@@ -2109,6 +2181,11 @@ public class StripLayoutHelper
                 mLastHoveredTab.getDrawX(),
                 mLastHoveredTab.getWidth(),
                 mHeight);
+    }
+
+    /** Disables hover card delay for testing purposes. */
+    public void disableHoverCardDelayForTesting() {
+        mHoverCardDelayDisabledForTesting = true;
     }
 
     private void updateHoveredTabAttachedState(StripLayoutTab tab, boolean hovered) {
@@ -5074,6 +5151,10 @@ public class StripLayoutHelper
                     mUpdateHost.requestUpdate();
                     break;
                 case MESSAGE_UPDATE_SPINNER:
+                    mUpdateHost.requestUpdate();
+                    break;
+                case MESSAGE_HOVER_CARD:
+                    showTabHoverCardView();
                     mUpdateHost.requestUpdate();
                     break;
                 default:

@@ -75,7 +75,7 @@ public class StripLayoutTab extends StripLayoutView {
 
                 @Override
                 public Float get(StripLayoutTab object) {
-                    return object.getHeight();
+                    return object.getWidth();
                 }
             };
 

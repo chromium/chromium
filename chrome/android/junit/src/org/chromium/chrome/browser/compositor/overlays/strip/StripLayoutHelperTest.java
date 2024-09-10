@@ -5029,6 +5029,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
         mContext.getResources().getDisplayMetrics().density = 1f;
+
+        mStripLayoutHelper.disableHoverCardDelayForTesting();
     }
 
     @Test
@@ -5077,5 +5079,27 @@ public class StripLayoutHelperTest {
 
         // Verify the observer has been removed as expected.
         verify(mTabGroupModelFilter).removeTabGroupObserver(observer);
+    }
+
+    @Test
+    public void testHoverCardDelay() {
+        initializeTabHoverTest();
+
+        assertEquals(
+                "Hover card delay for min tab is incorrect.",
+                mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL),
+                StripLayoutHelper.MIN_HOVER_CARD_DELAY_MS);
+        assertEquals(
+                "Hover card delay for width < min tab is incorrect.",
+                mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL - 1.f),
+                StripLayoutHelper.MIN_HOVER_CARD_DELAY_MS);
+        assertEquals(
+                "Hover card delay for medium tab is incorrect.",
+                mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_MEDIUM),
+                684);
+        assertEquals(
+                "Hover card delay for max tab is incorrect.",
+                mStripLayoutHelper.getHoverCardDelay(TabUiThemeUtil.getMaxTabStripTabWidthDp()),
+                StripLayoutHelper.MAX_HOVER_CARD_DELAY_MS);
     }
 }
