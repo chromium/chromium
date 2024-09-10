@@ -1,8 +1,9 @@
 <style include="cr-hidden-style">
   :host {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    max-height: 100%;
     width: fit-content;
   }
 
@@ -23,6 +24,7 @@
   }
 
   :host([show-table-data-unavailable-container_]) #summaryContainer {
+    min-height: 621px;
     justify-content: center;
   }
 
@@ -93,6 +95,23 @@
   #turnOnSyncButton {
     margin-top: 32px;
   }
+
+  #selectorGradient {
+    background: linear-gradient(270deg, var(
+      --color-product-specifications-summary-background) 10%, transparent 110%);
+    display: block;
+    height: var(--new-column-selector-width);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    transition: opacity 0.2s ease-out;
+    width: 134px;
+  }
+
+  horizontal-carousel[show-forward-button] #selectorGradient {
+    opacity: 1;
+  }
 </style>
 <product-specifications-header id="header" subtitle="[[setName_]]"
     menu-button-disabled$="[[loadingState_.loading]]"
@@ -159,6 +178,7 @@
           on-url-remove="onUrlRemove_"
           on-url-order-update="onUrlOrderUpdate_"
           on-unavailable-action-attempted="showOfflineToast_">
+        <div slot="selectorGradient" id="selectorGradient"></div>
         <new-column-selector slot="newColumnSelector"
             id="newColumnSelector"
             excluded-urls="[[getTableUrls_(tableColumns_)]]"
