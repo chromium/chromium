@@ -500,7 +500,7 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }  // namespace
 
 void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaders)) {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(*request_)) {
     return;
   }
   // Avoid attaching the header in cases where the Cookie header is not included
@@ -1594,7 +1594,7 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaders)) {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(*request_)) {
     return false;
   }
   if (!ShouldAddCookieHeader() ||

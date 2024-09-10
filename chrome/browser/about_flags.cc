@@ -11595,7 +11595,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kStorageAccessHeaders)},
+     FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
 
     {"autofill-upstream-updated-ui",
      flag_descriptions::kAutofillUpstreamUpdatedUiName,

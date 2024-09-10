@@ -161,6 +161,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
+  // Returns true if there is a setting for the origin trial for storage access
+  // headers indicating that the url and first party url are participating.
+  bool IsStorageAccessHeaderOriginTrialEnabled(
+      const GURL& url,
+      const GURL& first_party_url) const;
+
  private:
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,

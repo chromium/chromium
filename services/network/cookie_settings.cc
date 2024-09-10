@@ -444,4 +444,13 @@ void CookieSettings::AugmentInclusionStatus(
       net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
 }
 
+bool CookieSettings::IsStorageAccessHeaderOriginTrialEnabled(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  return GetContentSetting(
+             url, first_party_url,
+             ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+             /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
+}
+
 }  // namespace network

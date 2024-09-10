@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/storage_access_api/storage_access_header_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,15 +19,17 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using content::URLLoaderInterceptor;
@@ -85,11 +88,13 @@ namespace storage_access_api::trial {
 constexpr char kDomainEnabledForTrial[] = "a.test";
 constexpr char kIframePath[] = "origin-trial-iframe";
 constexpr char kIframePathWithSubdomains[] = "origin-trial-iframe-subdomains";
+constexpr char kRetryPath[] = "/retry-with-storage-access";
+constexpr char kHeaderNotProvidedSentinel[] = "HEADER_NOT_PROVIDED";
 
 // Following tokens generated with the instructions at:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
 
-// Origin Trials token for `kTrialEnabledDomain` generated with:
+// Origin Trials token for `kDomainEnabledForTrial` generated with:
 // tools/origin_trials/generate_token.py  https://a.test:46665
 // StorageAccessHeader
 inline constexpr char kDomainOriginTrialToken[] =
@@ -98,7 +103,7 @@ inline constexpr char kDomainOriginTrialToken[] =
     "SUg95VrygUAAABaeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6NDY2NjUiLCAiZmVhdHVyZSI"
     "6ICJTdG9yYWdlQWNjZXNzSGVhZGVyIiwgImV4cGlyeSI6IDE3MjY2MDA4MzR9";
 
-// Origin Trials token for `kTrialEnabledDomain` and all its subdomains
+// Origin Trials token for `kDomainEnabledForTrial` and all its subdomains
 // generated with: tools/origin_trials/generate_token.py  https://a.test:46665
 // StorageAccessHeader --is-subdomain
 inline constexpr char kSubdomainMatchingOriginTrialToken[] =
@@ -121,7 +126,7 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeatures({::features::kPersistentOriginTrials,
-                                net::features::kStorageAccessHeadersTrial},
+                                network::features::kStorageAccessHeadersTrial},
                                {});
     PlatformBrowserTest::SetUp();
   }
@@ -131,7 +136,16 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("chrome/test/data/")));
-
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request) {
+          return HandleRetryRequest(retry_path_fetch_count_, request);
+        }));
+    https_server_.RegisterRequestMonitor(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request) {
+          most_recent_request_headers_ = request.headers;
+        }));
     // TODO: crbug.com/40860522 - A consistent `port` is currently needed
     // because OT tokens are tied to specific origins and therefore the
     // browsertests in this class need to run with origins containing the same
@@ -146,6 +160,14 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
     // dynamic token generation is supported.
     ASSERT_TRUE(https_server_.Start(/*port=*/46665));
 
+    prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permissions::PermissionRequestManager::FromWebContents(
+                GetActiveWebContents()));
+    // Don't respond to the prompt at all, by default.
+    prompt_factory_->set_response_type(
+        permissions::PermissionRequestManager::NONE);
+
     // We use a URLLoaderInterceptor to intercept the loads needed to
     // enable the origin trials for testing.
     url_loader_interceptor_ =
@@ -154,6 +176,7 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
               return OnRequest(params);
             }));
 
+    // Block third party cookies in all tests.
     GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
@@ -162,6 +185,7 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
 
   void TearDownOnMainThread() override {
     url_loader_interceptor_.reset();
+    prompt_factory_.reset();
     PlatformBrowserTest::TearDownOnMainThread();
   }
 
@@ -173,11 +197,29 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
     return https_server_.GetURL(host, path);
   }
 
- protected:
+  void EnsureUserInteractionOn(std::string_view host,
+                               Browser* browser_ptr = nullptr) {
+    if (browser_ptr == nullptr) {
+      browser_ptr = browser();
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser_ptr, GetURL(std::string(host), "/empty.html")));
+    ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), ""));
+  }
+
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  permissions::MockPermissionPromptFactory* prompt_factory() {
+    return prompt_factory_.get();
+  }
+
+  net::test_server::HttpRequest::HeaderMap MostRecentRequestHeaders() {
+    return most_recent_request_headers_;
+  }
+
+ private:
   PrefService* GetPrefs() {
     return user_prefs::UserPrefs::Get(
         GetActiveWebContents()->GetBrowserContext());
@@ -209,9 +251,43 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
     return true;
   }
 
+  // Needed to test the retry flow of SAA Headers.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
+      int& fetch_count,
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path_piece() != kRetryPath) {
+      return nullptr;
+    }
+
+    fetch_count++;
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/plain");
+    http_response->AddCustomHeader("Activate-Storage-Access", "retry");
+
+    auto lookup_header_value =
+        [&](std::string_view header_name) -> std::string {
+      std::string value = kHeaderNotProvidedSentinel;
+      if (auto it = request.headers.find(header_name);
+          it != request.headers.end()) {
+        value = it->second;
+      }
+      return base::JoinString({header_name, value}, ":");
+    };
+
+    http_response->set_content(
+        lookup_header_value(net::HttpRequestHeaders::kSecFetchStorageAccess));
+
+    return http_response;
+  }
+
+  int retry_path_fetch_count_ = 0;
   base::test::ScopedFeatureList features_;
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+  net::test_server::HttpRequest::HeaderMap most_recent_request_headers_;
 };
 
 // This tests that no `STORAGE_ACCESS_HEADER_ORIGIN_TRIAL` content settings are
@@ -349,4 +425,100 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       CONTENT_SETTING_BLOCK);
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
+                       TrialHeader_CreatesRequestHeader) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL embedding_site = GetURL("b.test", "/iframe.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+  NavigateFrameTo(
+      GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
+  // Subsequent requests should include the header.
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Contains(testing::Pair(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
+                       TrialHeader_WithInactiveCase) {
+  EnsureUserInteractionOn(kDomainEnabledForTrial);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL embedding_site = GetURL("b.test", "/iframe_blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+
+  NavigateFrameTo(
+      GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial));
+  EXPECT_THAT(
+      MostRecentRequestHeaders(),
+      testing::Contains(testing::Pair(
+          net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
+                       TrialHeader_WithRetryToActive) {
+  EnsureUserInteractionOn(kDomainEnabledForTrial);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL embedding_site = GetURL("b.test", "/iframe_blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+
+  NavigateFrameTo(
+      GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial, kRetryPath));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Contains(testing::Pair(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess, "active")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
+                       TrialHeader_LoadTokenIsSupported) {
+  EnsureUserInteractionOn(kDomainEnabledForTrial);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL embedding_site = GetURL("b.test", "/iframe_blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+
+  NavigateFrameTo(
+      GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
+
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial,
+                         "/set-header?Activate-Storage-Access: load"));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
+                       TrialHeader_LosesHeaderWithoutToken) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL embedding_site = GetURL("b.test", "/iframe.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+
+  NavigateFrameTo(
+      GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial));
+  ASSERT_THAT(MostRecentRequestHeaders(),
+              testing::Contains(testing::Pair(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
+  // The previous navigation did not contain an OT token, subsequent navigations
+  // should not contain the header.
+  NavigateFrameTo(GetURL(kDomainEnabledForTrial));
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              testing::Not(testing::Contains(testing::Key(
+                  net::HttpRequestHeaders::kSecFetchStorageAccess))));
+}
 }  // namespace storage_access_api::trial

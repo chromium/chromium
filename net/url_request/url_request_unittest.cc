@@ -13387,6 +13387,7 @@ class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
       std::optional<cookie_util::StorageAccessStatus> storage_access_status)
       : expectations_(std::move(expectations)) {
     set_storage_access_status(storage_access_status);
+    set_is_storage_access_header_enabled(true);
   }
 
   ~PatternedExpectBypassCacheNetworkDelegate() override {
@@ -13411,9 +13412,7 @@ class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
 
 class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
  public:
-  StorageAccessHeaderURLRequestTest() {
-    features_.InitAndEnableFeature(features::kStorageAccessHeaders);
-  }
+  StorageAccessHeaderURLRequestTest() = default;
 
   ~StorageAccessHeaderURLRequestTest() override {
     EXPECT_TRUE(http_test_server()->ShutdownAndWaitUntilComplete());
@@ -13522,8 +13521,6 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
 
   base::Lock lock_;
   std::vector<ResponseKind> response_sequence_ GUARDED_BY(lock_);
-
-  base::test::ScopedFeatureList features_;
 };
 
 // This test case makes a request to `kStorageAccessRetryPath`, which responds

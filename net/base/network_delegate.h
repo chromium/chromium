@@ -95,6 +95,10 @@ class NET_EXPORT NetworkDelegate {
   std::optional<cookie_util::StorageAccessStatus> GetStorageAccessStatus(
       const URLRequest& request) const;
 
+  // Returns true if the `Sec-Fetch-Storage-Access` request header flow is
+  // enabled on this request.
+  bool IsStorageAccessHeaderEnabled(const URLRequest& request) const;
+
   // PrivacySetting is kStateDisallowed iff the given |url| has to be
   // requested over connection that is not tracked by the server.
   //
@@ -309,6 +313,9 @@ class NET_EXPORT NetworkDelegate {
 
   virtual std::optional<cookie_util::StorageAccessStatus>
   OnGetStorageAccessStatus(const URLRequest& request) const = 0;
+
+  virtual bool OnIsStorageAccessHeaderEnabled(
+      const URLRequest& request) const = 0;
 };
 
 }  // namespace net

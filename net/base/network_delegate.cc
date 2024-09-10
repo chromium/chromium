@@ -141,6 +141,12 @@ NetworkDelegate::GetStorageAccessStatus(const URLRequest& request) const {
   return OnGetStorageAccessStatus(request);
 }
 
+bool NetworkDelegate::IsStorageAccessHeaderEnabled(
+    const URLRequest& request) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return OnIsStorageAccessHeaderEnabled(request);
+}
+
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
     const URLRequest& request) const {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::ForcePrivacyMode");

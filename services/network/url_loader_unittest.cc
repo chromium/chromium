@@ -4995,9 +4995,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
 
 class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
  public:
-  StorageAccessHeaderURLLoaderTest() {
-    features_.InitAndEnableFeature(net::features::kStorageAccessHeaders);
-  }
+  StorageAccessHeaderURLLoaderTest() = default;
 
  protected:
   static constexpr char kStorageAccessRedirectLoadPath[] =
@@ -5019,7 +5017,6 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
     http_response->AddCustomHeader("Location", "/empty.html");
     return http_response;
   }
-  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
@@ -5053,6 +5050,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kNone);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5076,6 +5074,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kInactive);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5099,6 +5098,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kActive);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5121,6 +5121,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kActive);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5135,6 +5136,32 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
 
   // The redirect response included the `load` header, but the final response
   // did not, so the URLLoader should not propagate it.
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       StorageAccessHeader_NoLoadWhenHeaderNotenabled) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  // `TestNetworkDelegate::`OnIsStorageAccessHeaderEnabled` should have returned
+  // false when called during the request, so `load_with_storage_access` should
+  // still be false.
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 

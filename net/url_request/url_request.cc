@@ -1329,7 +1329,7 @@ bool URLRequest::ShouldSetLoadWithStorageAccess() const {
     }
     NOTREACHED();
   };
-  return base::FeatureList::IsEnabled(features::kStorageAccessHeaders) &&
+  return network_delegate()->IsStorageAccessHeaderEnabled(*this) &&
          storage_access_can_be_activated() && response_headers() &&
          response_headers()->HasStorageAccessLoadHeader();
 }

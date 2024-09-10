@@ -62,6 +62,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2920,7 +2921,7 @@ class StorageAccessHeadersDisabledBrowserTest
  public:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     return {
-        {net::features::kStorageAccessHeaders},
+        {network::features::kStorageAccessHeaders},
     };
   }
 };
@@ -2952,7 +2953,7 @@ class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {net::features::kStorageAccessHeaders, {}},
+        {network::features::kStorageAccessHeaders, {}},
     };
   }
 };
@@ -3189,7 +3190,7 @@ class StorageAccessHeadersWithFedCMBrowserTest
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> features =
         StorageAccessAPIAutograntsWithFedCMBrowserTest::GetEnabledFeatures();
-    features.push_back({net::features::kStorageAccessHeaders, {}});
+    features.push_back({network::features::kStorageAccessHeaders, {}});
     return features;
   }
 };
