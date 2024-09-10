@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -19,23 +22,38 @@ namespace tabs {
 
 namespace {
 // TODO(b/362269642): Make this constant finch configurable.
+
+// Duration of inactivity after which a tab is considered stale.
 constexpr int kStaleThresholdDurationDays = 7;
-constexpr int kTimerIntervalMinutes = 10;
+// Interval between a recomputation of stale tabs.
+constexpr base::TimeDelta kTimerIntervalMinutes = base::Minutes(10);
+// Minimum number of tabs in the tabstrip to show the nudge.
+constexpr int kMinTabCountForNudge = 15;
+// Minimum percentage of stale tabs in the tabstrip to show the nudge.
+constexpr double kStaleTabPercentageThreshold = 0.10;
+// Default interval after showing a nudge to prevent another nudge from being
+// shown.
+constexpr base::TimeDelta kDefaultNudgeTimerIntervalMinutes =
+    base::Minutes(6 * 60);
 }  // namespace
 
 TabDeclutterController::TabDeclutterController(TabStripModel* tab_strip_model)
     : stale_tab_threshold_duration_(base::Days(kStaleThresholdDurationDays)),
-      timer_interval_minutes_(base::Minutes(kTimerIntervalMinutes)),
+      declutter_timer_interval_minutes_(kTimerIntervalMinutes),
+      nudge_timer_interval_minutes_(kDefaultNudgeTimerIntervalMinutes),
       declutter_timer_(std::make_unique<base::RepeatingTimer>()),
+      nudge_timer_(std::make_unique<base::OneShotTimer>(
+          base::DefaultTickClock::GetInstance())),
       tab_strip_model_(tab_strip_model) {
-  StartTimer();
+  StartDeclutterTimer();
+  StartNudgeTimer();
 }
 
 TabDeclutterController::~TabDeclutterController() {}
 
-void TabDeclutterController::StartTimer() {
+void TabDeclutterController::StartDeclutterTimer() {
   declutter_timer_->Start(
-      FROM_HERE, timer_interval_minutes_,
+      FROM_HERE, declutter_timer_interval_minutes_,
       base::BindRepeating(&TabDeclutterController::ProcessStaleTabs,
                           base::Unretained(this)));
 }
@@ -71,15 +89,36 @@ void TabDeclutterController::ProcessStaleTabs() {
     observer.OnStaleTabsProcessed(tabs);
   }
 
-  if (DeclutterNudgeCriteriaMet()) {
+  if (DeclutterNudgeCriteriaMet(tabs)) {
+    if (!tabs.empty()) {
+      StartNudgeTimer();
+    }
+
     for (auto& observer : observers_) {
       observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
     }
   }
 }
 
-bool TabDeclutterController::DeclutterNudgeCriteriaMet() {
-  // TODO(shibalik): Implement whether the declutter nudge can be shown.
+bool TabDeclutterController::DeclutterNudgeCriteriaMet(
+    const std::vector<tabs::TabModel*> stale_tabs) {
+  if (nudge_timer_->IsRunning()) {
+    return false;
+  }
+
+  const int total_tab_count = tab_strip_model_->GetTabCount();
+
+  if (total_tab_count < kMinTabCountForNudge) {
+    return false;
+  }
+
+  const int required_stale_tabs = static_cast<int>(
+      std::ceil(total_tab_count * kStaleTabPercentageThreshold));
+
+  if (static_cast<int>(stale_tabs.size()) < required_stale_tabs) {
+    return false;
+  }
+
   return true;
 }
 
@@ -89,7 +128,18 @@ void TabDeclutterController::SetTimerForTesting(
   declutter_timer_->Stop();
   declutter_timer_ = std::make_unique<base::RepeatingTimer>(tick_clock);
   declutter_timer_->SetTaskRunner(task_runner);
-  StartTimer();
+  StartDeclutterTimer();
+
+  nudge_timer_->Stop();
+  nudge_timer_ = std::make_unique<base::OneShotTimer>(tick_clock);
+  StartNudgeTimer();
+}
+
+void TabDeclutterController::StartNudgeTimer() {
+  if (!nudge_timer_->IsRunning()) {
+    nudge_timer_->Start(FROM_HERE, nudge_timer_interval_minutes_,
+                        base::BindOnce([]() {}));
+  }
 }
 
 }  // namespace tabs

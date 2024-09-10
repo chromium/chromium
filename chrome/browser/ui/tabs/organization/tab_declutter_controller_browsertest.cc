@@ -83,6 +83,14 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  void AddTabsWithLastActiveTime(int num_tabs, int last_active_days) {
+    for (int i = 0; i < num_tabs; ++i) {
+      browser()->tab_strip_model()->AppendWebContents(
+          CreateWebContents(base::Time::Now() - base::Days(last_active_days)),
+          false);
+    }
+  }
+
  protected:
   std::unique_ptr<content::WebContents> CreateWebContents(
       base::Time last_active_time) {
@@ -107,25 +115,18 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   tab_declutter_controller_->SetTimerForTesting(task_runner->GetMockTickClock(),
                                                 task_runner);
 
-  // Add 4 out of date tabs.
-  browser()->tab_strip_model()->AppendWebContents(
-      CreateWebContents(base::Time::Now() - base::Days(8)), false);
-  browser()->tab_strip_model()->AppendWebContents(
-      CreateWebContents(base::Time::Now() - base::Days(8)), false);
-  browser()->tab_strip_model()->AppendWebContents(
-      CreateWebContents(base::Time::Now() - base::Days(8)), false);
-  browser()->tab_strip_model()->AppendWebContents(
-      CreateWebContents(base::Time::Now() - base::Days(8)), false);
+  // Add 4 tabs that are 8 days old. These are all stale.
+  AddTabsWithLastActiveTime(4, 8);
 
   // Make one of the tabs pinned and another grouped.
   browser()->tab_strip_model()->SetTabPinned(1, true);
   browser()->tab_strip_model()->AddToNewGroup(std::vector<int>{2});
 
   task_runner->FastForwardBy(
-      tab_declutter_controller_->timer_interval_minutes());
+      tab_declutter_controller_->declutter_timer_interval_minutes());
 
   EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
-  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 
   // Tabs at index 3 and 4 are stale tabs.
   std::vector<tabs::TabModel*> expected_stale_tabs;
@@ -133,4 +134,74 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   expected_stale_tabs.push_back(browser()->tab_strip_model()->GetTabAtIndex(4));
 
   EXPECT_EQ(fake_observer.processed_tabs(), expected_stale_tabs);
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestTriggerDeclutterUIWhenCriteriaMet) {
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller_->AddObserver(&fake_observer);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller_->SetTimerForTesting(task_runner->GetMockTickClock(),
+                                                task_runner);
+
+  // Add 12 tabs that are 2 days old (not stale) and 4 tabs that are 8 days old
+  // (stale).
+  AddTabsWithLastActiveTime(12, 2);
+  AddTabsWithLastActiveTime(4, 8);
+
+  // Move forward in time to simulate declutter timer triggering.
+  task_runner->FastForwardBy(
+      tab_declutter_controller_->nudge_timer_interval_minutes());
+
+  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestNudgeNotTriggeredWhenTabCountBelowThreshold) {
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller_->AddObserver(&fake_observer);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller_->SetTimerForTesting(task_runner->GetMockTickClock(),
+                                                task_runner);
+
+  // Add 12 tabs that are 8 days old (stale).
+  AddTabsWithLastActiveTime(12, 8);
+
+  // Move forward in time to simulate declutter timer triggering.
+  task_runner->FastForwardBy(
+      tab_declutter_controller_->nudge_timer_interval_minutes());
+
+  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestNudgeNotTriggeredWhenStaleTabCountBelowThreshold) {
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller_->AddObserver(&fake_observer);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller_->SetTimerForTesting(task_runner->GetMockTickClock(),
+                                                task_runner);
+
+  // Add 14 tabs that are 2 days old (not stale) and 1 tab that are 8 days old
+  // (stale).
+  AddTabsWithLastActiveTime(14, 2);
+  AddTabsWithLastActiveTime(1, 8);
+
+  // Move forward in time to simulate declutter timer triggering.
+  task_runner->FastForwardBy(
+      tab_declutter_controller_->nudge_timer_interval_minutes());
+
+  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }

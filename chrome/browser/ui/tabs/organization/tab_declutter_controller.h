@@ -40,21 +40,35 @@ class TabDeclutterController {
     return stale_tab_threshold_duration_;
   }
 
-  base::TimeDelta timer_interval_minutes() const {
-    return timer_interval_minutes_;
+  base::TimeDelta declutter_timer_interval_minutes() const {
+    return declutter_timer_interval_minutes_;
+  }
+
+  base::TimeDelta nudge_timer_interval_minutes() const {
+    return nudge_timer_interval_minutes_;
   }
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
-  void StartTimer();
-  bool DeclutterNudgeCriteriaMet();
+  void StartDeclutterTimer();
+  bool DeclutterNudgeCriteriaMet(const std::vector<tabs::TabModel*> stale_tabs);
   void ProcessStaleTabs();
+  void StartNudgeTimer();
 
+  // Duration of inactivity after which a tab is considered stale.
   base::TimeDelta stale_tab_threshold_duration_;
-  base::TimeDelta timer_interval_minutes_;
+  // Interval between a recomputation of stale tabs.
+  base::TimeDelta declutter_timer_interval_minutes_;
+  // Interval after showing a nudge to prevent another nudge from being shown.
+  base::TimeDelta nudge_timer_interval_minutes_;
+  // The timer that is responsible for calculating stale tabs on getting
+  // triggered.
   std::unique_ptr<base::RepeatingTimer> declutter_timer_;
+  // The timer that is responsible for blocking the nudge from showing.
+  std::unique_ptr<base::OneShotTimer> nudge_timer_;
+
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
 };
