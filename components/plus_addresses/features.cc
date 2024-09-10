@@ -139,6 +139,13 @@ BASE_FEATURE(kPlusAddressSettingsRefreshDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// When enabled, creation suggestions do not contain a label prior to the user
+// acknowledging the notice. When labels are shown, they contain information
+// about the forwarding address.
+BASE_FEATURE(kPlusAddressSuggestionRedesign,
+             "PlusAddressSuggestionRedesign",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,

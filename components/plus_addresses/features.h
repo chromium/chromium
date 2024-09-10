@@ -95,6 +95,9 @@ BASE_DECLARE_FEATURE(kPlusAddressSettingsRefreshDesktop);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressSuggestionRedesign);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressUserOnboardingEnabled);
 
 }  // namespace plus_addresses::features

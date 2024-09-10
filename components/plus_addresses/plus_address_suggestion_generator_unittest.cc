@@ -34,6 +34,7 @@ using autofill::SuggestionType;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Property;
 using PasswordFormClassification =
     autofill::AutofillClient::PasswordFormClassification;
@@ -176,6 +177,26 @@ TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// Tests that the creation suggestion contains no labels if the notice has not
+// been accepted.
+TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressSuggestionRedesign};
+  setting_service().set_has_accepted_notice(false);
+
+  PlusAddressSuggestionGenerator generator(
+      &setting_service(), &allocator(),
+      url::Origin::Create(GURL("https://foo.bar")));
+  EXPECT_THAT(
+      generator.GetSuggestions(
+          /*is_creation_enabled=*/true, PasswordFormClassification(),
+          FormFieldData(),
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          /*affiliated_profiles=*/{}),
+      ElementsAre(AllOf(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
+                        Field(&Suggestion::labels, IsEmpty()))));
+}
 
 }  // namespace
 }  // namespace plus_addresses

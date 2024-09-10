@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -72,6 +73,21 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   return suggestion;
+}
+
+std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
+    bool has_accepted_notice) {
+  // On Android, there are no labels since the Keyboard Accessory only allows
+  // for single line chips.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return {};
+  }
+  if (!has_accepted_notice &&
+      base::FeatureList::IsEnabled(features::kPlusAddressSuggestionRedesign)) {
+    return {};
+  }
+  return {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
 }
 
 }  // namespace
@@ -176,10 +192,10 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddress);
 
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-  }
+  suggestion.labels = CreateLabelsForCreateSuggestion(
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled) ||
+      setting_service_->GetHasAcceptedNotice());
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
   suggestion.feature_for_iph =
