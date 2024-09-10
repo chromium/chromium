@@ -317,9 +317,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_CONSIDER_PHONE_NUMBER_SEPARATORS_VALID_LABELS,
                 "Makes label inference accept strings made up of  '(', ')', and '-' as labels."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_CONTENT_EDITABLE_CHANGE_EVENTS,
-                "When enabled, autofill responds to content editable change events."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_CACHE_FOR_REGEX_MATCHING,
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
