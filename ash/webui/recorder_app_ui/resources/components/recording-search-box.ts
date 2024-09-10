@@ -152,6 +152,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
     // after the transition is completed.
     const searchBox = html`<cros-textfield
       ?disabled=${!this.opened.value}
+      aria-hidden=${!this.opened.value}
       placeholder=${i18n.recordingListSearchBoxPlaceholder}
       shaded
       type="text"

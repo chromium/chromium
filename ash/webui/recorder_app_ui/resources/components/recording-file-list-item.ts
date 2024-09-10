@@ -464,6 +464,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
           <cra-icon-button
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
+            aria-hidden=${!this.menuShown.value}
             @click=${this.onShowRecordingInfoClick}
             aria-label=${i18n.playbackMenuShowDetailOption}
           >
@@ -472,6 +473,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
           <cra-icon-button
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
+            aria-hidden=${!this.menuShown.value}
             @click=${this.onExportRecordingClick}
             aria-label=${i18n.playbackMenuExportOption}
           >
@@ -480,6 +482,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
           <cra-icon-button
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
+            aria-hidden=${!this.menuShown.value}
             @click=${this.onDeleteRecordingClick}
             aria-label=${i18n.playbackMenuDeleteOption}
           >
