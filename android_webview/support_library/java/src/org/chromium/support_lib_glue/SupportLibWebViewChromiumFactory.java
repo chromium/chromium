@@ -93,7 +93,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ATTRIBUTION_BEHAVIOR,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
-                Features.WEB_AUTHENTICATION,
+                Features.WEB_AUTHENTICATION + Features.DEV_SUFFIX,
                 Features.SPECULATIVE_LOADING,
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL + Features.DEV_SUFFIX,
