@@ -1326,6 +1326,20 @@ void LensOverlayController::CloseUIPart2(
         ->RemoveObserver(this);
   }
 
+  if (overlay_view_) {
+    // Remove and delete the overlay view and web view. Not doing so will result
+    // in dangling pointers when the browser closes. Note the trailing `T` on
+    // the method name -- this removes `overlay_view_` and returns a unique_ptr
+    // to it which we then discard.  Without the `T`, it returns nothing and
+    // frees nothing. Since technically the views are owned by
+    // contents_web_view, we need to release our reference using std::exchange
+    // to avoid a dangling pointer which throws an error when DCHECK is on.
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
+  }
+  overlay_web_view_ = nullptr;
+  overlay_view_ = nullptr;
+
   tab_contents_view_observer_.Reset();
   omnibox_tab_helper_observer_.Reset();
   find_tab_observer_.Reset();
@@ -1343,21 +1357,6 @@ void LensOverlayController::CloseUIPart2(
   selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
-  lens_overlay_blur_layer_delegate_.reset();
-
-  if (overlay_view_) {
-    // Remove and delete the overlay view and web view. Not doing so will result
-    // in dangling pointers when the browser closes. Note the trailing `T` on
-    // the method name -- this removes `overlay_view_` and returns a unique_ptr
-    // to it which we then discard.  Without the `T`, it returns nothing and
-    // frees nothing. Since technically the views are owned by
-    // contents_web_view, we need to release our reference using std::exchange
-    // to avoid a dangling pointer which throws an error when DCHECK is on.
-    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
-    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
-  }
-  overlay_web_view_ = nullptr;
-  overlay_view_ = nullptr;
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
@@ -1785,24 +1784,6 @@ void LensOverlayController::ActivityRequestedByOverlay(
 void LensOverlayController::AddBackgroundBlur() {
   // We do not blur unless the overlay is currently active.
   if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
-    return;
-  }
-
-  if (lens::features::GetLensOverlayUseCustomBlur()) {
-    overlay_view_->SetPaintToLayer();
-    ui::Layer* background_layer = overlay_view_->layer();
-    background_layer->SetFillsBoundsOpaquely(true);
-
-    content::RenderWidgetHostView* live_page_view = tab_->GetContents()
-                                                        ->GetPrimaryMainFrame()
-                                                        ->GetRenderViewHost()
-                                                        ->GetWidget()
-                                                        ->GetView();
-
-    // Create the blur delegate which will start blurring the background;
-    lens_overlay_blur_layer_delegate_ =
-        std::make_unique<lens::LensOverlayBlurLayerDelegate>(background_layer,
-                                                             live_page_view);
     return;
   }
 
