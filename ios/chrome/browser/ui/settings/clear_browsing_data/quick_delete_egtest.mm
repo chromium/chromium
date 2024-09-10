@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
@@ -43,6 +44,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupCreateButton;
+using chrome_test_util::RecentTabsDestinationButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
@@ -642,6 +644,23 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // be visible by the end.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
+
+  // Go to Recent Tabs.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsDestinationButton()];
+
+  // Check that the tabs closed through Quick Delete are not shown in Recent
+  // Tabs.
+  id<GREYMatcher> recentTabsTable = grey_accessibilityID(
+      kRecentTabsTableViewControllerAccessibilityIdentifier);
+  id<GREYMatcher> titleOfPage =
+      grey_allOf(grey_ancestor(recentTabsTable),
+                 chrome_test_util::StaticTextWithAccessibilityLabel(@"Echo"),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:titleOfPage]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that when Quick Delete is opened from Privacy Settings and tabs are

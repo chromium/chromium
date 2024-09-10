@@ -102,9 +102,11 @@ void ClosingWebStateObserverBrowserAgent::WebStateListWillChange(
   }
 
   web::WebState* detached_web_state = detach_change.detached_web_state();
-  RecordHistoryForWebStateAtIndex(detached_web_state,
-                                  detach_change.detached_from_index());
-  if (detach_change.is_user_action()) {
+  if (!detach_change.is_tabs_cleanup()) {
+    RecordHistoryForWebStateAtIndex(detached_web_state,
+                                    detach_change.detached_from_index());
+  }
+  if (detach_change.is_user_action() || detach_change.is_tabs_cleanup()) {
     SnapshotTabHelper::FromWebState(detached_web_state)->RemoveSnapshot();
   }
 }
