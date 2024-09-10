@@ -656,7 +656,6 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
   sm_.ExpectSpeechPattern("1 of 3");
-  sm_.ExpectSpeechPattern("List with 3 items");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }

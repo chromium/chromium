@@ -86,7 +86,6 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
                /*height=*/0);
 
   SetProperty(views::kMarginsKey, kImageGridMargin);
-  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
   AddChildView(CreateImageGridColumn());
   AddChildView(CreateImageGridColumn());
