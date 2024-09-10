@@ -76,6 +76,24 @@ class FingerprintingProtectionFilterDryRunBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class FingerprintingProtectionFilterEnabledInIncognitoBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest();
+
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest(
+      const FingerprintingProtectionFilterEnabledInIncognitoBrowserTest&) =
+      delete;
+  FingerprintingProtectionFilterEnabledInIncognitoBrowserTest& operator=(
+      const FingerprintingProtectionFilterEnabledInIncognitoBrowserTest&) =
+      delete;
+
+  ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // CHROME_BROWSER_FINGERPRINTING_PROTECTION_FINGERPRINTING_PROTECTION_FILTER_BROWSER_TEST_HARNESS_H_

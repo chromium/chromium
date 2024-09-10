@@ -72,4 +72,18 @@ FingerprintingProtectionFilterDryRunBrowserTest::
 FingerprintingProtectionFilterDryRunBrowserTest::
     ~FingerprintingProtectionFilterDryRunBrowserTest() = default;
 
+// ======= FingerprintingProtectionFilterEnabledInIncognitoBrowserTest ========
+
+FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
+    FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableFingerprintingProtectionFilterInIncognito,
+        {{"activation_level", "enabled"}}}},
+      /*disabled_features=*/{});
+}
+
+FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
+    ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() = default;
+
 }  // namespace fingerprinting_protection_filter
