@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/fetcher_config.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -192,4 +193,10 @@ std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   return base::StrCat(target);
 }
 
+std::unique_ptr<net::BackoffEntry> FetcherConfig::BackoffEntry() const {
+  if (!backoff_policy.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<net::BackoffEntry>(&backoff_policy.value());
+}
 }  // namespace supervised_user

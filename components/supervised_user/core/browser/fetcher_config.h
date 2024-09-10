@@ -121,6 +121,9 @@ struct FetcherConfig {
   // ServicePath({"a", "b", "c"}) -> /path/ab/with/template/c
   // ServicePath({"a", "b", "c", "d"}) -> /path/ab/with/template/cd
   std::string ServicePath(const PathArgs& args) const;
+
+  // Creates backoff entry based on the exact policy from this config.
+  std::unique_ptr<net::BackoffEntry> BackoffEntry() const;
 };
 
 inline constexpr FetcherConfig kClassifyUrlConfig = {

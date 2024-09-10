@@ -14,11 +14,12 @@ std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback,
     const FetcherConfig& config,
     version_info::Channel channel) {
   return CreateFetcher<kidsmanagement::ClassifyUrlResponse>(
-      identity_manager, url_loader_factory, request, config, /*args=*/{},
-      channel);
+      identity_manager, url_loader_factory, request, std::move(callback),
+      config, /*args=*/{}, channel);
 }
 
 std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
@@ -29,8 +30,8 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
   kidsmanagement::ListMembersRequest request;
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
       CreateFetcher<kidsmanagement::ListMembersResponse>(
-          identity_manager, url_loader_factory, request, config);
-  fetcher->Start(std::move(callback));
+          identity_manager, url_loader_factory, request, std::move(callback),
+          config);
   return fetcher;
 }
 
@@ -38,8 +39,10 @@ std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::PermissionRequest& request,
+    PermissionRequestFetcher::Callback callback,
     const FetcherConfig& config) {
   return CreateFetcher<kidsmanagement::CreatePermissionRequestResponse>(
-      identity_manager, url_loader_factory, request, config);
+      identity_manager, url_loader_factory, request, std::move(callback),
+      config);
 }
 }  // namespace supervised_user

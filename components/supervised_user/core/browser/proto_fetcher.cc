@@ -284,7 +284,7 @@ void OverallMetrics::RecordRetryCount(int count) const {
                               count);
 }
 
-AbstractProtoFetcher::AbstractProtoFetcher(
+FetchProcess::FetchProcess(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view payload,
@@ -299,16 +299,16 @@ AbstractProtoFetcher::AbstractProtoFetcher(
       fetcher_(identity_manager,
                fetcher_config.access_token_config,
                base::BindOnce(
-                   &AbstractProtoFetcher::OnAccessTokenFetchComplete,
+                   &FetchProcess::OnAccessTokenFetchComplete,
                    base::Unretained(this),  // Unretained(.) is safe because
                                             // `this` owns `fetcher_`.
                    url_loader_factory)) {}
-AbstractProtoFetcher::~AbstractProtoFetcher() = default;
-bool AbstractProtoFetcher::IsMetricsRecordingEnabled() const {
+FetchProcess::~FetchProcess() = default;
+bool FetchProcess::IsMetricsRecordingEnabled() const {
   return metrics_.has_value();
 }
 
-void AbstractProtoFetcher::RecordMetrics(const ProtoFetcherStatus& status) {
+void FetchProcess::RecordMetrics(const ProtoFetcherStatus& status) {
   if (!IsMetricsRecordingEnabled()) {
     return;
   }
@@ -325,31 +325,31 @@ void AbstractProtoFetcher::RecordMetrics(const ProtoFetcherStatus& status) {
   }
 }
 
-void AbstractProtoFetcher::OnAccessTokenFetchComplete(
+void FetchProcess::OnAccessTokenFetchComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
         access_token) {
   if (!access_token.has_value()) {
     access_token_auth_error_ = access_token.error();
-    if (config_.access_token_config.credentials_requirement ==
+    if (config_->access_token_config.credentials_requirement ==
         AccessTokenConfig::CredentialsRequirement::kStrict) {
       OnError(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
       return;
     }
   }
 
-  simple_url_loader_ =
-      InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
-                                config_, args_, channel_, GetRequestPayload());
+  simple_url_loader_ = InitializeSimpleUrlLoader(
+      base::OptionalFromExpected(access_token), config_.get(), args_, channel_,
+      GetRequestPayload());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(
-          &AbstractProtoFetcher::OnSimpleUrlLoaderComplete,
+          &FetchProcess::OnSimpleUrlLoaderComplete,
           base::Unretained(this)));  // Unretained(.) is safe because
                                      // `this` owns `simple_url_loader_`.
 }
 
-void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
+void FetchProcess::OnSimpleUrlLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   if (!IsLoadingSuccessful(*simple_url_loader_) ||
       !HasHttpOkResponse(*simple_url_loader_)) {
@@ -361,8 +361,8 @@ void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
   OnResponse(std::move(response_body));
 }
 
-std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
-  if (config_.method == FetcherConfig::Method::kGet) {
+std::optional<std::string> FetchProcess::GetRequestPayload() const {
+  if (config_->method == FetcherConfig::Method::kGet) {
     CHECK(payload_.empty());
     return std::nullopt;
   }

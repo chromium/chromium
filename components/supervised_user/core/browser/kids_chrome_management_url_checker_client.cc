@@ -64,16 +64,18 @@ void OnResponse(
       .Run(url, ToSafeSearchClientClassification(classify_url_response.get()));
 }
 
-// Flips order of arguments so that the sole unbound argument will be the
-// request.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>> ClassifyURL(
+// Flips order of arguments so that the unbound arguments will be the
+// request and callback.
+std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const FetcherConfig& config,
     version_info::Channel channel,
-    const kidsmanagement::ClassifyUrlRequest& request) {
+    const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback) {
   return CreateClassifyURLFetcher(*identity_manager, url_loader_factory,
-                                  request, config, channel);
+                                  request, std::move(callback), config,
+                                  channel);
 }
 
 FetcherConfig GetFetcherConfig() {
