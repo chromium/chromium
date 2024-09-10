@@ -8141,6 +8141,12 @@ const char kFollowingFeedSidepanelDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         //  BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
+const char kTaskManagerDesktopRefreshDescription[] =
+    "Enables a refreshed design for the Task Manager on Desktop platforms.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =
     "Enable the network service sandbox.";

@@ -4108,6 +4108,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-task-manager-desktop-refresh",
+    "owners": [
+      "mwoj@google.com",
+      "cros-sw-perf@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-task-manager-end-process-disabled-for-extension",
     "owners": [
       "simonha@chromium.org"

@@ -349,6 +349,13 @@ BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables the Task Manager Desktop Refresh project.
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTaskManagerDesktopRefresh,
+             "TaskManagerDesktopRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
 BASE_FEATURE(kTriggerNetworkDataMigration,
@@ -425,4 +432,5 @@ BASE_FEATURE(kReportPakFileIntegrity,
 BASE_FEATURE(kRemovalOfIWAsFromTabCapture,
              "RemovalOfIWAsFromTabCapture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -11883,6 +11883,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kExcludeDisplayInMirrorMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-task-manager-desktop-refresh",
+     flag_descriptions::kTaskManagerDesktopRefreshName,
+     flag_descriptions::kTaskManagerDesktopRefreshDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTaskManagerDesktopRefresh)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-payment-settings-card-promo-and-scan-card",
      flag_descriptions::kAutofillEnablePaymentSettingsCardPromoAndScanCardName,

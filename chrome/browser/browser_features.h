@@ -140,6 +140,10 @@ BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kTaskManagerDesktopRefresh);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -156,6 +160,7 @@ BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
 
 BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
