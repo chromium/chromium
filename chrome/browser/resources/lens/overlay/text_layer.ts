@@ -1135,13 +1135,33 @@ export class TextLayerElement extends PolymerElement {
    *     Returns null if no word is at the given point.
    */
   private wordIndexFromPoint(x: number, y: number): number|null {
-    const topMostElement = this.shadowRoot!.elementFromPoint(x, y);
-    if (!topMostElement || !(topMostElement instanceof HTMLElement)) {
+    const elements = this.shadowRoot!.elementsFromPoint(x, y);
+    if (elements.length === 0) {
       return null;
     }
-    const detectedWordIndex =
-        this.$.wordsContainer.indexForElement(topMostElement);
-    if (detectedWordIndex === null) {
+
+    const words: Word[] = [];
+    for (const element of elements) {
+      if (!(element instanceof HTMLElement)) {
+        continue;
+      }
+      const wordIndex = this.$.wordsContainer.indexForElement(element);
+      if (wordIndex !== null) {
+        words.push(this.renderedWords[wordIndex]);
+      }
+    }
+
+    const imageBounds = this.selectionOverlayRect;
+    const normalizedX = (x - imageBounds.left) / imageBounds.width;
+    const normalizedY = (y - imageBounds.top) / imageBounds.height;
+    const detectedWord = bestHit(words, {x: normalizedX, y: normalizedY});
+    if (detectedWord === null) {
+      return null;
+    }
+
+    const detectedWordIndex = this.renderedWords.indexOf(detectedWord);
+    // `indexOf()` returns -1 when index not found.
+    if (detectedWordIndex < 0) {
       return null;
     }
     return this.shouldRenderTranslateWords ?
