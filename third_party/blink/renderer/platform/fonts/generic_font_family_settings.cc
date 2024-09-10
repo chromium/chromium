@@ -39,7 +39,7 @@ namespace blink {
 // A holdback feature to measure the performance impact.
 BASE_FEATURE(kGenericFontSettingCache,
              "GenericFontSettingCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 GenericFontFamilySettings::GenericFontFamilySettings(
     const GenericFontFamilySettings& other)
