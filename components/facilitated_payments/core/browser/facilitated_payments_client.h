@@ -41,6 +41,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Provides access to the core information of the user's primary account.
   virtual std::optional<CoreAccountInfo> GetCoreAccountInfo() = 0;
 
+  // Returns true if the device is being used in the landscape mode.
+  virtual bool IsInLandscapeMode() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // If the UI was shown, then returns true and later invokes the
   // `on_user_decision_callback` with the result of user's selection: a boolean

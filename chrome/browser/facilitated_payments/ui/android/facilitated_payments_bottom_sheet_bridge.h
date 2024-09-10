@@ -36,6 +36,9 @@ class FacilitatedPaymentsBottomSheetBridge {
 
   virtual ~FacilitatedPaymentsBottomSheetBridge();
 
+  // Returns true if the device is being used in the landscape mode.
+  virtual bool IsInLandscapeMode();
+
   // Show the payment prompt containing user's `bank_account_suggestions`.
   // Return true if a new bottom sheet is created and shown. Otherwise, return
   // false.

@@ -27,6 +27,9 @@ class FacilitatedPaymentsController {
 
   virtual ~FacilitatedPaymentsController();
 
+  // Returns true if the device is being used in the landscape mode.
+  virtual bool IsInLandscapeMode();
+
   // Asks the `view_` to show the FOP selector. Returns whether the surface was
   // successfully shown.
   virtual bool Show(

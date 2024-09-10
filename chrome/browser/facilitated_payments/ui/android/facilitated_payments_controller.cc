@@ -30,6 +30,10 @@ FacilitatedPaymentsController::~FacilitatedPaymentsController() {
   }
 }
 
+bool FacilitatedPaymentsController::IsInLandscapeMode() {
+  return view_->IsInLandscapeMode();
+}
+
 bool FacilitatedPaymentsController::Show(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {

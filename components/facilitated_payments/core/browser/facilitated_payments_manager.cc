@@ -217,6 +217,14 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
     return;
   }
 
+  // Pix payment flow can't be completed in the landscape mode as platform
+  // doesn't support it yet.
+  if (client_->IsInLandscapeMode() &&
+      !base::FeatureList::IsEnabled(kEnablePixPaymentsInLandscapeMode)) {
+    Reset();
+    return;
+  }
+
   if (!GetApiClient()) {
     Reset();
     return;

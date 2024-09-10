@@ -150,6 +150,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetCoreAccountInfo,
               (),
               (override));
+  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(bool,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
@@ -212,9 +213,9 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     payments_data_manager_->SetSyncServiceForTest(&sync_service_);
     ON_CALL(*client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
-
     ON_CALL(*client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(&payments_network_interface_));
+    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
   }
 
   void TearDown() override {
@@ -1685,6 +1686,41 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                /*is_pix_code_valid=*/true);
 
   EXPECT_EQ(nullptr, manager_->api_client_.get());
+}
+
+// Test class for devices being used in the landscape mode.
+class FacilitatedPaymentsManagerTestInLandscapeMode
+    : public FacilitatedPaymentsManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    FacilitatedPaymentsManagerTest::SetUp();
+    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(true));
+    scoped_feature_list_.InitWithFeatureState(kEnablePixPaymentsInLandscapeMode,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FacilitatedPaymentsManagerTestInLandscapeMode,
+                         testing::Bool());
+
+TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
+       PixPayflowBlockedWhenFlagDisabled) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
+  // In landscape mode, checking the API client's availability (which is part of
+  // Pix payflow) is only done if the `EnablePixPaymentsInLandscapeMode` flag is
+  // enabled.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_))
+      .Times(GetParam() ? 1 : 0);
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
 }
 
 }  // namespace payments::facilitated

@@ -42,6 +42,11 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
             Delegate delegate,
             Profile profile);
 
+    /**
+     * @return True if the device is being used in the landscape mode.
+     */
+    boolean isInLandscapeMode();
+
     /** Displays a FOP selector in a bottom sheet. */
     boolean showSheet(List<BankAccount> bankAccounts);
 

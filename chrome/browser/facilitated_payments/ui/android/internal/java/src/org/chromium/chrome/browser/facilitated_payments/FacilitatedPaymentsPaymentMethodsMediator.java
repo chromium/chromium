@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
@@ -69,6 +70,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mModel = model;
         mDelegate = delegate;
         mProfile = profile;
+    }
+
+    boolean isInLandscapeMode() {
+        return mContext.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     boolean showSheet(List<BankAccount> bankAccounts) {

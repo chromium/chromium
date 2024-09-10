@@ -68,6 +68,14 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     }
 
     /**
+     * @return True if the device is being used in the landscape mode.
+     */
+    @CalledByNative
+    public boolean isInLandscapeMode() {
+        return mComponent.isInLandscapeMode();
+    }
+
+    /**
      * Requests to show a FOP selector in a bottom sheet.
      *
      * <p>If a Facilitated Payments bottom sheet is being shown, then the FOP selector replaces the

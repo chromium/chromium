@@ -46,6 +46,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
+    public boolean isInLandscapeMode() {
+        return mMediator.isInLandscapeMode();
+    }
+
+    @Override
     public boolean showSheet(List<BankAccount> bankAccounts) {
         return mMediator.showSheet(bankAccounts);
     }
