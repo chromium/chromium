@@ -117,7 +117,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
   auto features = BuildPredictionRequestFeatures(request);
   if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionPredictionsV3)) {
+          permissions::features::kPermissionPredictionsV3) ||
+      prediction_source == PredictionSource::USE_ONDEVICE) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
       VLOG(1) << "[CPSS] Historic prompt count ("
