@@ -1705,7 +1705,6 @@ TEST_F(HardwareDisplayControllerTest, ModesetTileToNonTileMode) {
   DrmOverlayPlaneList modeset_planes;
   modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
   modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
-  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
 
   // Modeset to a tile mode first so that both CRTCs are enabled.
   drmModeModeInfo tile_mode = {.hdisplay = 300, .vdisplay = 200};
@@ -1724,6 +1723,76 @@ TEST_F(HardwareDisplayControllerTest, ModesetTileToNonTileMode) {
                     Property(&CrtcController::is_enabled, Eq(true)))),
           Pointee(AllOf(Property(&CrtcController::crtc, Eq(secondary_crtc_)),
                         Property(&CrtcController::is_enabled, Eq(false))))));
+}
+
+TEST_F(HardwareDisplayControllerTest, TileDisplayPageflipWithCrtcOffset) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/0);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList planes;
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  drmModeModeInfo tile_mode = {.hdisplay = 300, .vdisplay = 200};
+  EXPECT_TRUE(ModesetWithPlanes(planes, tile_mode));
+  EXPECT_EQ(1, drm_->get_commit_count());
+
+  SchedulePageFlip(std::move(planes));
+  drm_->RunCallbacks();
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
+  EXPECT_EQ(1, successful_page_flips_count_);
+  EXPECT_EQ(2, drm_->get_commit_count());
+
+  std::unordered_map<uint32_t, std::vector<HardwareDisplayPlane*>>
+      crtc_planes_map;
+  for (const auto& plane : drm_->plane_manager()->planes()) {
+    if (plane->owning_crtc() == 0) {
+      continue;
+    }
+    crtc_planes_map[plane->owning_crtc()].push_back(plane.get());
+  }
+  EXPECT_THAT(crtc_planes_map, SizeIs(2));
+
+  // Expect all planes to belong to either CRTCs and have the proper offsets.
+  std::unordered_map<uint32_t, gfx::Point> crtc_offset_map = {
+      {primary_crtc_, gfx::Point(0, 0)},
+      {secondary_crtc_, gfx::Point(-300, 0)}};
+  for (const auto& [crtc, crtc_planes] : crtc_planes_map) {
+    EXPECT_TRUE(crtc_offset_map.find(crtc) != crtc_offset_map.end());
+
+    for (const auto* plane : crtc_planes) {
+      ScopedDrmObjectPropertyPtr plane_props =
+          drm_->GetObjectProperties(plane->id(), DRM_MODE_OBJECT_PLANE);
+      {
+        DrmWrapper::Property prop;
+        GetDrmPropertyForName(drm_.get(), plane_props.get(), "CRTC_X", &prop);
+        EXPECT_EQ(static_cast<int>(prop.value), crtc_offset_map[crtc].x());
+      }
+      {
+        DrmWrapper::Property prop;
+        GetDrmPropertyForName(drm_.get(), plane_props.get(), "CRTC_Y", &prop);
+        EXPECT_EQ(static_cast<int>(prop.value), crtc_offset_map[crtc].y());
+      }
+    }
+  }
 }
 
 }  // namespace ui

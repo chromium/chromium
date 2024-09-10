@@ -237,7 +237,8 @@ void HardwareDisplayPlaneManager::BeginFrame(
 bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
-    uint32_t crtc_id) {
+    uint32_t crtc_id,
+    std::optional<gfx::Point> crtc_offset) {
   auto hw_planes_iter = planes_.begin();
   for (const auto& plane : overlay_list) {
     HardwareDisplayPlane* hw_plane = nullptr;
@@ -255,7 +256,7 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
       return false;
     }
 
-    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id,
+    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, crtc_offset,
                       OverlayPlaneToDrmSrcRect(plane))) {
       RestoreCurrentPlaneList(plane_list);
       return false;

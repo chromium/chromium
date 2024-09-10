@@ -1248,4 +1248,15 @@ TEST(IsTileModeTest, NotTileMode) {
   EXPECT_FALSE(IsTileMode(gfx::Size(1920, 1080), property));
 }
 
+TEST(TileCrtcOffset, Origin) {
+  TileProperty property = {.tile_size = gfx::Size(1000, 2000),
+                           .location = gfx::Point(0, 0)};
+  EXPECT_EQ(GetTileCrtcOffset(property), gfx::Point(0, 0));
+}
+
+TEST(TileCrtcOffset, NotOrigin) {
+  TileProperty property = {.tile_size = gfx::Size(1000, 2000),
+                           .location = gfx::Point(1, 2)};
+  EXPECT_EQ(GetTileCrtcOffset(property), gfx::Point(1000, 4000));
+}
 }  // namespace ui

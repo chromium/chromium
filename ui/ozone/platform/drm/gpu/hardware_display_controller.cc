@@ -320,6 +320,10 @@ HardwareDisplayController::ScheduleOrTestPageFlip(
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
 
   for (const auto& controller : crtc_controllers_) {
+    if (!controller->is_enabled()) {
+      continue;
+    }
+
     if (!controller->AssignOverlayPlanes(
             &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false))
       return PageFlipResult::kFailedPlaneAssignment;

@@ -2180,11 +2180,13 @@ TEST(HardwareDisplayPlaneManagerAtomic, EnableBlend) {
       drm_device, buffer.get(), kDefaultBufferSize);
   DrmOverlayPlane overlay(DrmOverlayPlane::TestPlane(framebuffer));
   overlay.enable_blend = true;
-  plane_manager->SetPlaneData(&plane_list, &hw_plane, overlay, 1, gfx::Rect());
+  plane_manager->SetPlaneData(&plane_list, &hw_plane, overlay, 1, std::nullopt,
+                              gfx::Rect());
   EXPECT_EQ(hw_plane.framebuffer(), framebuffer->framebuffer_id());
 
   overlay.enable_blend = false;
-  plane_manager->SetPlaneData(&plane_list, &hw_plane, overlay, 1, gfx::Rect());
+  plane_manager->SetPlaneData(&plane_list, &hw_plane, overlay, 1, std::nullopt,
+                              gfx::Rect());
   EXPECT_EQ(hw_plane.framebuffer(), framebuffer->opaque_framebuffer_id());
 }
 
@@ -2252,5 +2254,31 @@ TEST_F(HardwareDisplayPlaneManagerSeamlessModeTest,
   EXPECT_NE(wrong_crtc_id, crtc_id_);
   EXPECT_DCHECK_DEATH(
       plane_manager_->TestSeamlessMode(wrong_crtc_id, arbitrary_mode));
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CrtcOffsetPageFlip) {
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+  fake_drm_->InitializeState(/*use_atomic=*/true);
+
+  DrmOverlayPlaneList assigns;
+  assigns.push_back(DrmOverlayPlane::TestPlane(fake_buffer_));
+  HardwareDisplayPlaneList hdpl;
+
+  const gfx::Point crtc_offset = gfx::Point(-100, -200);
+  scoped_refptr<PageFlipRequest> page_flip_request =
+      base::MakeRefCounted<PageFlipRequest>(base::TimeDelta());
+  fake_drm_->plane_manager()->BeginFrame(&hdpl);
+  EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &hdpl, assigns, fake_drm_->crtc_property(0).id, crtc_offset));
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
+
+  // DrmWrapper::Property::value is a uint64_t, even though the crtc offset is
+  // negative.
+  EXPECT_EQ(GetPlanePropertyValue(kPlaneOffset, "CRTC_X"),
+            static_cast<uint64_t>(-100));
+  EXPECT_EQ(GetPlanePropertyValue(kPlaneOffset, "CRTC_Y"),
+            static_cast<uint64_t>(-200));
 }
 }  // namespace ui

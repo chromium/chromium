@@ -194,6 +194,8 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
 // tile-composited mode.
 bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property);
 
+const gfx::Point GetTileCrtcOffset(const TileProperty& tiled_property);
+
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 
 std::optional<TileProperty> ParseTileBlob(
