@@ -354,15 +354,16 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
                                        /*last_updated_timestamp=*/base::Time());
       });
 
-  ON_CALL(favicon_service_, GetFaviconImageForPageURL)
-      .WillByDefault(
-          [icon_url](auto, favicon_base::FaviconImageCallback callback, auto) {
-            favicon_base::FaviconImageResult result;
-            result.icon_url = GURL(icon_url);
-            std::move(callback).Run(result);
-            base::CancelableTaskTracker::TaskId kTaskId = 1;
-            return kTaskId;
-          });
+  ON_CALL(favicon_service_, GetLargestRawFaviconForPageURL)
+      .WillByDefault([icon_url](auto, auto, auto,
+                                favicon_base::FaviconRawBitmapCallback callback,
+                                auto) {
+        favicon_base::FaviconRawBitmapResult result;
+        result.icon_url = GURL(icon_url);
+        std::move(callback).Run(result);
+        base::CancelableTaskTracker::TaskId kTaskId = 1;
+        return kTaskId;
+      });
 
   // Create the expected proto.
   sync_pb::UnencryptedSharingMessage message;
@@ -401,13 +402,13 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally_FeatureDisabled) {
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   EXPECT_CALL(*device_source_, GetDeviceByGuid(guid)).Times(0);
 
-  ON_CALL(favicon_service_, GetFaviconImageForPageURL)
-      .WillByDefault(
-          [](auto, favicon_base::FaviconImageCallback callback, auto) {
-            std::move(callback).Run(favicon_base::FaviconImageResult());
-            base::CancelableTaskTracker::TaskId kTaskId = 1;
-            return kTaskId;
-          });
+  ON_CALL(favicon_service_, GetLargestRawFaviconForPageURL)
+      .WillByDefault([](auto, auto, auto,
+                        favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
+        base::CancelableTaskTracker::TaskId kTaskId = 1;
+        return kTaskId;
+      });
 
   EXPECT_CALL(*sharing_message_sender_, SendUnencryptedMessageToDevice)
       .Times(0);

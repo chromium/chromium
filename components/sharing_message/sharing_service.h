@@ -33,7 +33,7 @@ class FaviconService;
 }  // namespace favicon
 
 namespace favicon_base {
-struct FaviconImageResult;
+struct FaviconRawBitmapResult;
 }  // namespace favicon_base
 
 namespace send_tab_to_self {
@@ -191,7 +191,7 @@ class SharingService : public KeyedService,
   // iOS devices.
   void SendNotificationForSendTabToSelfPush(
       const send_tab_to_self::SendTabToSelfEntry& entry,
-      const favicon_base::FaviconImageResult& result);
+      const favicon_base::FaviconRawBitmapResult& result);
 
   std::unique_ptr<SharingSyncPreference> sync_prefs_;
   std::unique_ptr<VapidKeyManager> vapid_key_manager_;
