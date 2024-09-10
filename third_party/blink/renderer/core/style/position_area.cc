@@ -291,23 +291,23 @@ std::optional<AnchorQuery> PositionArea::UsedRight() const {
 
 std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
 PositionArea::AlignJustifySelfFromPhysical(
-    WritingDirectionMode container_writing_direction) const {
-  StyleSelfAlignmentData align(ItemPosition::kStart,
-                               OverflowAlignment::kDefault);
-  StyleSelfAlignmentData align_reverse(ItemPosition::kEnd,
-                                       OverflowAlignment::kDefault);
-  StyleSelfAlignmentData justify(ItemPosition::kStart,
-                                 OverflowAlignment::kDefault);
-  StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd,
-                                         OverflowAlignment::kDefault);
+    WritingDirectionMode container_writing_direction,
+    bool is_containing_block_scrollable) const {
+  const OverflowAlignment overflow = is_containing_block_scrollable
+                                         ? OverflowAlignment::kUnsafe
+                                         : OverflowAlignment::kDefault;
+
+  StyleSelfAlignmentData align(ItemPosition::kStart, overflow);
+  StyleSelfAlignmentData align_reverse(ItemPosition::kEnd, overflow);
+  StyleSelfAlignmentData justify(ItemPosition::kStart, overflow);
+  StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd, overflow);
 
   if ((FirstStart() == PositionAreaRegion::kTop &&
        FirstEnd() == PositionAreaRegion::kBottom) ||
       (FirstStart() == PositionAreaRegion::kCenter &&
        FirstEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    align = align_reverse = {ItemPosition::kAnchorCenter,
-                             OverflowAlignment::kDefault};
+    align = align_reverse = {ItemPosition::kAnchorCenter, overflow};
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -320,14 +320,28 @@ PositionArea::AlignJustifySelfFromPhysical(
       (SecondStart() == PositionAreaRegion::kCenter &&
        SecondEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    justify = justify_reverse = {ItemPosition::kAnchorCenter,
-                                 OverflowAlignment::kDefault};
+    justify = justify_reverse = {ItemPosition::kAnchorCenter, overflow};
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
     if (SecondStart() == PositionAreaRegion::kLeft) {
       std::swap(justify, justify_reverse);
     }
+  }
+
+  if ((FirstStart() == PositionAreaRegion::kTop &&
+       FirstEnd() == PositionAreaRegion::kTop) ||
+      (FirstStart() == PositionAreaRegion::kBottom &&
+       FirstEnd() == PositionAreaRegion::kBottom)) {
+    align.SetOverflow(OverflowAlignment::kUnsafe);
+    align_reverse.SetOverflow(OverflowAlignment::kUnsafe);
+  }
+  if ((SecondStart() == PositionAreaRegion::kLeft &&
+       SecondEnd() == PositionAreaRegion::kLeft) ||
+      (SecondStart() == PositionAreaRegion::kRight &&
+       SecondEnd() == PositionAreaRegion::kRight)) {
+    justify.SetOverflow(OverflowAlignment::kUnsafe);
+    justify_reverse.SetOverflow(OverflowAlignment::kUnsafe);
   }
 
   PhysicalToLogical converter(container_writing_direction, align,

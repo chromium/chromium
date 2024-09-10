@@ -483,6 +483,10 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
       GetConstraintSpace().GetWritingDirection();
   default_containing_block_info_for_fixed_.writing_direction =
       GetConstraintSpace().GetWritingDirection();
+  default_containing_block_info_for_absolute_.is_scroll_container =
+      container_builder_->Node().IsScrollContainer();
+  default_containing_block_info_for_fixed_.is_scroll_container =
+      container_builder_->Node().IsScrollContainer();
   if (container_builder_->HasBlockSize()) {
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
@@ -790,7 +794,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       container_offset += fragmentainer_descendant.containing_block.Offset();
 
       ContainingBlockInfo containing_block_info{
-          writing_direction,
+          writing_direction, containing_block_fragment->IsScrollContainer(),
           LogicalRect(container_offset, content_size),
           fragmentainer_descendant.containing_block.RelativeOffset(),
           fragmentainer_descendant.containing_block.Offset()};
@@ -1068,6 +1072,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         block_info.key.Get(),
         ContainingBlockInfo{
             inline_writing_direction,
+            /* is_scroll_container */ false,
             LogicalRect(container_offset, inline_cb_size),
             total_relative_offset,
             containing_block_offset - block_info.value->relative_offset});
@@ -2118,14 +2123,10 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       ToPhysicalSize(container_rect.size,
                      node_info.default_writing_direction.GetWritingMode());
 
-  // "used" position-area offsets. Don't use the position-area offsets directly
-  // as they may be clamped to produce non-negative space. Instead take the
-  // difference between the base, and adjusted container-info.
-  const BoxStrut position_area_offsets = ([&]() -> BoxStrut {
-    if (!candidate_style.PositionAreaOffsets()) {
-      return BoxStrut();
-    }
-
+  // The container insets. Don't use the position-area offsets directly as they
+  // may be clamped to produce non-negative space. Instead take the difference
+  // between the base, and adjusted container-info.
+  const BoxStrut container_insets = ([&]() -> BoxStrut {
     const LogicalRect& base_rect = node_info.base_container_info.rect;
     const BoxStrut insets(
         container_rect.offset.inline_offset - base_rect.offset.inline_offset,
@@ -2158,18 +2159,13 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     return builder.ToConstraintSpace();
   })();
 
-  const LogicalAlignment alignment =
-      ComputeAlignment(candidate_style, container_writing_direction,
-                       candidate_writing_direction);
+  const LogicalAlignment alignment = ComputeAlignment(
+      candidate_style, container_info.is_scroll_container,
+      container_writing_direction, candidate_writing_direction);
 
   const LogicalOofInsets insets =
       ComputeOutOfFlowInsets(candidate_style, space.AvailableSize(), alignment,
                              candidate_writing_direction);
-
-  const LogicalAnchorCenterPosition anchor_center_position =
-      ComputeAnchorCenterPosition(candidate_style, alignment,
-                                  candidate_writing_direction,
-                                  space.AvailableSize());
 
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box) to be relative to the padding-box.
@@ -2188,8 +2184,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
       node_info.node, space.AvailableSize(), alignment, insets, static_position,
-      anchor_center_position, container_writing_direction,
-      candidate_writing_direction);
+      container_writing_direction, candidate_writing_direction);
 
   {
     auto& document = node_info.node.GetDocument();
@@ -2257,11 +2252,17 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                             border_padding, ReplacedSizeMode::kNormal);
   }
 
+  const LogicalAnchorCenterPosition anchor_center_position =
+      ComputeAnchorCenterPosition(candidate_style, alignment,
+                                  candidate_writing_direction,
+                                  space.AvailableSize());
+
   OffsetInfo offset_info;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
-      node_info.node, candidate_style, space, imcb, alignment, border_padding,
-      replaced_size, container_writing_direction, &node_dimensions);
+      node_info.node, candidate_style, space, imcb, anchor_center_position,
+      alignment, border_padding, replaced_size, container_insets,
+      container_writing_direction, &node_dimensions);
 
   PhysicalToLogicalGetter has_non_auto_inset(
       candidate_writing_direction, candidate_style,
@@ -2283,10 +2284,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxInlineEnd(),
             imcb_for_position_fallback->inline_start,
             imcb_for_position_fallback->InlineEndOffset(),
-            position_area_offsets.inline_start,
-            position_area_offsets.inline_end, has_non_auto_inset.InlineStart(),
-            has_non_auto_inset.InlineEnd(), &inline_scroll_min,
-            &inline_scroll_max)) {
+            container_insets.inline_start, container_insets.inline_end,
+            has_non_auto_inset.InlineStart(), has_non_auto_inset.InlineEnd(),
+            &inline_scroll_min, &inline_scroll_max)) {
       return std::nullopt;
     }
   }
@@ -2295,8 +2295,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   // our min/max sizes, only run if needed.
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOofBlockDimensions(
-        node_info.node, candidate_style, space, imcb, alignment, border_padding,
-        replaced_size, container_writing_direction, &node_dimensions);
+        node_info.node, candidate_style, space, imcb, anchor_center_position,
+        alignment, border_padding, replaced_size, container_insets,
+        container_writing_direction, &node_dimensions);
   }
 
   // Calculate the block scroll offset range where the block dimension fits.
@@ -2308,7 +2309,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxBlockEnd(),
             imcb_for_position_fallback->block_start,
             imcb_for_position_fallback->BlockEndOffset(),
-            position_area_offsets.block_start, position_area_offsets.block_end,
+            container_insets.block_start, container_insets.block_end,
             has_non_auto_inset.BlockStart(), has_non_auto_inset.BlockEnd(),
             &block_scroll_min, &block_scroll_max)) {
       return std::nullopt;

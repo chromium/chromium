@@ -111,8 +111,8 @@ class CORE_EXPORT PositionArea {
   // alignments to be passed into ResolvedAlignSelf()/ResolvedJustifySelf().
   // Return value is an <align-self, justify-self> pair.
   std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
-  AlignJustifySelfFromPhysical(
-      WritingDirectionMode container_writing_direction) const;
+  AlignJustifySelfFromPhysical(WritingDirectionMode container_writing_direction,
+                               bool is_containing_block_scrollable) const;
 
   // Made public because they are used in unit test expectations.
   static AnchorQuery AnchorTop();
