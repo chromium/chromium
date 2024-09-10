@@ -462,6 +462,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login_state:browser_tests",
       "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
