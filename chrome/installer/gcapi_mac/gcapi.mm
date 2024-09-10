@@ -91,8 +91,8 @@ bool IsMacOSVersionSupported() {
     macos_version = 100 * (darwin_major_version - 9);
   }
 
-  // Chrome is known to work on 10.13 - 13.x.
-  return macos_version >= 1013 && macos_version < 1400;
+  // Chrome is known to work on 11.0 - 15.x.
+  return macos_version >= 1100 && macos_version < 1600;
 }
 
 // Returns the pid/gid of the logged-in user, even if getuid() claims that the
