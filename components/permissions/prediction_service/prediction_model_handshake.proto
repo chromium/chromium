@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package permissions;
+
+// This message is used to provide the backed info about the Chrome client. The
+// backend can use this information to select a model which needs to be sent to
+// the client.
+message WebPermissionPredictionsClientInfo {
+  // The chrome milestone version.
+  // For example a Chrome client with version 128.0.6613.115 will have 128 as
+  // the milestone.
+  optional int32 milestone = 1;
+}
