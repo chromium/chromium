@@ -20,6 +20,7 @@ class BoxLayoutView;
 namespace ash {
 
 class AnchoredNudge;
+class GameDashboardBatteryView;
 class GameDashboardContext;
 class IconButton;
 class PillButton;
@@ -196,6 +197,9 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // The clock displayed in the utility cluster row. Visible for testing.
   raw_ptr<TimeView> clock_view_ = nullptr;
+
+  // The battery displayed in the utility cluster row. Visible for testing.
+  raw_ptr<GameDashboardBatteryView> battery_view_ = nullptr;
 };
 
 }  // namespace ash

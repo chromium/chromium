@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_button_reveal_controller.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
@@ -144,6 +145,13 @@ TimeView* GameDashboardContextTestApi::GetMainMenuClockView() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
   return main_menu_view->clock_view_;
+}
+
+GameDashboardBatteryView*
+GameDashboardContextTestApi::GetMainMenuBatteryView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->battery_view_;
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {

@@ -728,6 +728,8 @@ component("ash") {
     "frame_throttler/frame_throttling_controller.cc",
     "frame_throttler/frame_throttling_controller.h",
     "frame_throttler/frame_throttling_observer.h",
+    "game_dashboard/game_dashboard_battery_view.cc",
+    "game_dashboard/game_dashboard_battery_view.h",
     "game_dashboard/game_dashboard_button.cc",
     "game_dashboard/game_dashboard_button.h",
     "game_dashboard/game_dashboard_button_reveal_controller.cc",

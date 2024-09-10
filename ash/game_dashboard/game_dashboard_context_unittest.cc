@@ -17,6 +17,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
@@ -37,10 +38,13 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/power/battery_saver_controller.h"
+#include "ash/system/power/power_status.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -51,13 +55,13 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_util.h"
-#include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -839,6 +843,30 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void UpdatePowerStatus(double battery_percent,
+                         base::TimeDelta time_to_empty) {
+    power_manager::PowerSupplyProperties props;
+
+    // Determine battery state.
+    auto external_power =
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+    auto battery_state =
+        power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
+
+    // Set battery percentage.
+    props.set_battery_percent(battery_percent);
+
+    // Set battery state.
+    props.set_external_power(external_power);
+    props.set_battery_state(battery_state);
+
+    // Set time.
+    props.set_is_calculating_battery_time(false);
+    props.set_battery_time_to_empty_sec(time_to_empty.InSecondsF());
+
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+  }
+
   std::unique_ptr<aura::Window> game_window_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
   int frame_header_height_ = 0;
@@ -1477,10 +1505,46 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
       /*other_window_test_api=*/test_api_.get());
 }
 
+// Verifies that the battery view in the Main Menu has desired functionality in
+// terms of visibility, responsiveness and formatting.
+TEST_F(GameDashboardContextTest, MainMenuBatteryView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  test_api_->OpenTheMainMenu();
+  auto* battery_view = test_api_->GetMainMenuBatteryView();
+
+  // Ensure that the battery view is visible.
+  ASSERT_TRUE(battery_view);
+  ASSERT_TRUE(battery_view->GetVisible());
+
+  // Ensure that the battery view updates accordingly when the theme changes.
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
+  const auto light_theme_image = battery_view->GetImageModel();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(true);
+  const auto dark_theme_image = battery_view->GetImageModel();
+  ASSERT_NE(light_theme_image, dark_theme_image);
+
+  // Ensure that the battery view updates when the power status changes.
+  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
+  UpdatePowerStatus(features::kBatterySaverActivationChargePercent.Get(),
+                    base::Hours(8));
+  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
+  ASSERT_NE(dark_theme_image, battery_view->GetImageModel());
+}
+
+// Verifies that the clock view in the Main Menu has desired functionality in
+// terms of visibility, responsiveness and formatting.
 TEST_F(GameDashboardContextTest, MainMenuClockView) {
   // Enable Game Dashboard utilities flag.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
 
