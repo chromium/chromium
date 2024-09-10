@@ -131,7 +131,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom != UIUserInterfaceIdiomPad) {
     UIImage* closeImage =
-        SymbolWithPalette(DefaultSymbolWithConfiguration(@"xmark.circle.fill",
+        SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
                                                          symbolConfiguration),
                           colors);
     UIBarButtonItem* closeButton =
@@ -174,8 +174,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIMenu* ellipsisMenu = [UIMenu
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
   UIImage* ellipsisImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(@"ellipsis.circle.fill",
-                                                       symbolConfiguration),
+      SymbolWithPalette(DefaultSymbolWithConfiguration(
+                            kEllipsisCircleFillSymbol, symbolConfiguration),
                         colors);
   UIBarButtonItem* ellipsisButton =
       [[UIBarButtonItem alloc] initWithImage:ellipsisImage menu:ellipsisMenu];
