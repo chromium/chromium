@@ -131,6 +131,7 @@ source_set("magic_stack") {
     ":constants",
     ":public",
     "//base",
+    "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/public/features",
