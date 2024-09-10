@@ -243,9 +243,11 @@ void PlaybackQueuePrepareRequest::OnDataParsed(std::unique_ptr<Queue> queue) {
 
 PlaybackQueueNextRequest::PlaybackQueueNextRequest(
     RequestSender* sender,
+    const PlaybackQueueNextRequestPayload& payload,
     Callback callback,
     const std::string& playback_queue_name)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      payload_(payload),
       callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   playback_queue_name_ = playback_queue_name;
@@ -272,6 +274,13 @@ bool PlaybackQueueNextRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
 
 HttpRequestMethod PlaybackQueueNextRequest::GetRequestType() const {
   return HttpRequestMethod::kPost;
+}
+
+bool PlaybackQueueNextRequest::GetContentData(std::string* upload_content_type,
+                                              std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+  *upload_content = payload_.ToJson();
+  return true;
 }
 
 void PlaybackQueueNextRequest::ProcessURLFetchResults(

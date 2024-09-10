@@ -45,6 +45,15 @@ struct PlaybackQueuePrepareRequestPayload {
   std::optional<ShuffleMode> shuffle_mode;
 };
 
+// Payload for PlaybackQueueNextRequests. Currently, all fields are optional so
+// it's empty;.
+struct PlaybackQueueNextRequestPayload {
+  PlaybackQueueNextRequestPayload();
+  ~PlaybackQueueNextRequestPayload();
+
+  std::string ToJson() const;
+};
+
 // Payload used as a request body for the API request that reports the playback.
 struct ReportPlaybackRequestPayload {
   enum class PlaybackState {

@@ -152,6 +152,7 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<QueueContainer>, ApiErrorCode>)>;
 
   PlaybackQueueNextRequest(RequestSender* sender,
+                           const PlaybackQueueNextRequestPayload& payload,
                            Callback callback,
                            const std::string& playback_queue_name);
   PlaybackQueueNextRequest(const PlaybackQueueNextRequest&) = delete;
@@ -171,6 +172,8 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  bool GetContentData(std::string* upload_content_type,
+                      std::string* upload_content) override;
   HttpRequestMethod GetRequestType() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
@@ -182,6 +185,8 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   static std::unique_ptr<QueueContainer> Parse(const std::string& json);
 
   void OnDataParsed(std::unique_ptr<QueueContainer> queue_container);
+
+  const PlaybackQueueNextRequestPayload payload_;
 
   // Playlist queue name. Unique identifier of a queue.
   std::string playback_queue_name_;

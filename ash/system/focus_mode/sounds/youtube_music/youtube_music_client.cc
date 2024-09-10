@@ -221,6 +221,7 @@ void YouTubeMusicClient::PlaybackQueueNext(
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<google_apis::youtube_music::PlaybackQueueNextRequest>(
           request_sender,
+          google_apis::youtube_music::PlaybackQueueNextRequestPayload(),
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now()),
           playback_queue_id));

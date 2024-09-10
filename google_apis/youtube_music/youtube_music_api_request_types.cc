@@ -174,6 +174,19 @@ std::string PlaybackQueuePrepareRequestPayload::ToJson() const {
   return json.value();
 }
 
+PlaybackQueueNextRequestPayload::PlaybackQueueNextRequestPayload() = default;
+PlaybackQueueNextRequestPayload::~PlaybackQueueNextRequestPayload() = default;
+
+std::string PlaybackQueueNextRequestPayload::ToJson() const {
+  // All fields are optional so this is currently an empty dictionary.
+  base::Value::Dict root;
+
+  const std::optional<std::string> json = base::WriteJson(root);
+  CHECK(json);
+
+  return json.value();
+}
+
 ReportPlaybackRequestPayload::Params::Params(
     const bool initial_report,
     const std::string& playback_reporting_token,
