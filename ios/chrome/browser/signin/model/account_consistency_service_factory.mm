@@ -16,7 +16,9 @@
 namespace ios {
 
 AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountConsistencyService") {
+    : ProfileKeyedServiceFactoryIOS("AccountConsistencyService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(ios::CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
