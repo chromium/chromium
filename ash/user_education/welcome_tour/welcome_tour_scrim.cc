@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -306,10 +307,6 @@ WelcomeTourScrim::WelcomeTourScrim() {
   // Observe `shell` so that scrims can be dynamically created/destroyed when
   // root windows are added/removed.
   shell_observation_.Observe(shell);
-
-  // Observe the window tree host manager so that scrims can be destroyed when
-  // the window tree host manager is shutdown.
-  window_tree_host_manager_observation_.Observe(window_tree_host_mgr);
 }
 
 WelcomeTourScrim::~WelcomeTourScrim() {
@@ -325,22 +322,16 @@ void WelcomeTourScrim::OnRootWindowWillShutdown(aura::Window* root_window) {
   Reset(root_window);
 }
 
-void WelcomeTourScrim::OnWindowTreeHostManagerShutdown() {
-  // Cache `shell` and associated window tree host manager.
-  auto* shell = Shell::Get();
-  CHECK(shell);
-  auto* window_tree_host_mgr = shell->window_tree_host_manager();
+void WelcomeTourScrim::OnShellDestroying() {
+  auto* window_tree_host_mgr = Shell::Get()->window_tree_host_manager();
   CHECK(window_tree_host_mgr);
-
-  // Reset observation.
-  CHECK(window_tree_host_manager_observation_.IsObservingSource(
-      window_tree_host_mgr));
-  window_tree_host_manager_observation_.Reset();
 
   // Destroy scrims for every root window.
   for (aura::Window* root_window : window_tree_host_mgr->GetAllRootWindows()) {
     Reset(root_window);
   }
+
+  shell_observation_.Reset();
 }
 
 void WelcomeTourScrim::Init(aura::Window* root_window) {

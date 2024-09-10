@@ -342,9 +342,6 @@ void WindowTreeHostManager::ShutdownRoundedDisplays() {
 }
 
 void WindowTreeHostManager::Shutdown() {
-  for (auto& observer : observers_)
-    observer.OnWindowTreeHostManagerShutdown();
-
   effective_resolution_UMA_timer_->Reset();
 
   cursor_window_controller_.reset();
@@ -413,14 +410,6 @@ void WindowTreeHostManager::InitHosts() {
       EnableRoundedCorners(display);
     }
   }
-}
-
-void WindowTreeHostManager::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void WindowTreeHostManager::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 // static

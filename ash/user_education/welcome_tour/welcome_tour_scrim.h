@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -26,8 +25,7 @@ class Shell;
 // scrims are automatically removed. Only a single `WelcomeTourScrim` instance
 // may exist at a time, and the `WelcomeTourController` is responsible for
 // ensuring existence if and only if the Welcome Tour is in progress.
-class ASH_EXPORT WelcomeTourScrim : public ShellObserver,
-                                    public WindowTreeHostManager::Observer {
+class ASH_EXPORT WelcomeTourScrim : public ShellObserver {
  public:
   // Names for layers so they are easy to distinguish in debugging/testing.
   static constexpr char kLayerName[] = "WelcomeTourScrim";
@@ -44,9 +42,7 @@ class ASH_EXPORT WelcomeTourScrim : public ShellObserver,
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
-
-  // WindowTreeHostManager::Observer:
-  void OnWindowTreeHostManagerShutdown() override;
+  void OnShellDestroying() override;
 
   // Initializes the scrim for the specified `root_window`.
   void Init(aura::Window* root_window);
@@ -61,12 +57,6 @@ class ASH_EXPORT WelcomeTourScrim : public ShellObserver,
   // Used to observe `Shell` for the addition/destruction of root windows so
   // that scrims can be created/destroyed appropriately.
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
-
-  // Used to observe the window tree host manager for shutdown so that scrims
-  // can be destroyed appropriately.
-  base::ScopedObservation<WindowTreeHostManager,
-                          WindowTreeHostManager::Observer>
-      window_tree_host_manager_observation_{this};
 };
 
 }  // namespace ash
