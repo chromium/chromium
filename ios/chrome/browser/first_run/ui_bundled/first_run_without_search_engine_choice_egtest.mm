@@ -1284,7 +1284,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 // Tests that the History Sync Opt-In screen contains the avatar of the
 // signed-in user, and the correct background image for the avatar.
-- (void)testHistorySyncLayout {
+// TODO(crbug.com/365786558): Test flaky on simulator
+- (void)DISABLED_testHistorySyncLayout {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
