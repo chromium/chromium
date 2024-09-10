@@ -73,6 +73,8 @@ class BubbleViewPixelTest
         features::kVcBackgroundReplace};
     if (IsVcDlcUiEnabled()) {
       enabled_features.push_back(features::kVcDlcUi);
+    } else {
+      disabled_features.push_back(features::kVcDlcUi);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

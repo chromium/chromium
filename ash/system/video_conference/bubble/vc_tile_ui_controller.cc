@@ -59,8 +59,13 @@ std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
       /*is_togglable=*/true, FeatureTile::TileType::kCompact);
   tile_ = tile->GetWeakPtr();
 
-  // Set up view ids for the tile and its children.
-  tile->SetID(BubbleViewID::kToggleEffectsButton);
+  // Assign the ID, if present, to the outermost container view. Only used in
+  // tests.
+  std::optional<int> container_id =
+      effect_ ? effect_->container_id() : std::nullopt;
+  tile->SetID(container_id.has_value() ? container_id.value()
+                                       : BubbleViewID::kToggleEffectsButton);
+
   tile->label()->SetID(BubbleViewID::kToggleEffectLabel);
   tile->icon_button()->SetID(BubbleViewID::kToggleEffectIcon);
 

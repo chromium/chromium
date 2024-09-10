@@ -3189,7 +3189,7 @@ BASE_FEATURE(kVcResizeThumbnail,
 
 // Controls whether the DLC downloading UI for video conferencing tiles is
 // enabled.
-BASE_FEATURE(kVcDlcUi, "VcDlcUi", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVcDlcUi, "VcDlcUi", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This is only used as a way to disable portrait relighting.
 BASE_FEATURE(kVcPortraitRelight,
