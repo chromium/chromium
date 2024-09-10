@@ -83,7 +83,9 @@ ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(Browser* browser)
     : browser_(browser) {
   CHECK(browser_);
-  browser->tab_strip_model()->AddObserver(this);
+  if (browser_->profile()->IsRegularProfile()) {
+    browser->tab_strip_model()->AddObserver(this);
+  }
   shopping_service_ =
       ShoppingServiceFactory::GetForBrowserContext(browser->profile());
   if (shopping_service_) {
@@ -360,6 +362,11 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
   // offer the entry point.
   if (!CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
+    return;
+  }
+
+  // Entry point should never show for windows with non-regular profile.
+  if (!browser_->profile()->IsRegularProfile()) {
     return;
   }
 
