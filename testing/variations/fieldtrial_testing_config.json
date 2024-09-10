@@ -12069,6 +12069,21 @@
             ]
         }
     ],
+    "IOSNewSyncOptInIllustration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewSyncOptInIllustration"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOverflowMenuCustomization": [
         {
             "platforms": [
