@@ -518,4 +518,30 @@ TEST_P(ScrollableAreaTest, ScrollOffsetFromScrollStartDataNonZeroMin) {
   EXPECT_EQ(offset.x(), max_horizontal_scroll_offset);
 }
 
+TEST_P(ScrollableAreaTest, FilterIncomingScrollDuringSmoothUserScroll) {
+  using mojom::blink::ScrollType;
+  MockScrollableArea* area =
+      MockScrollableArea::Create(ScrollOffset(100, 100), ScrollOffset(0, 0));
+  area->set_active_smooth_scroll_type_for_testing(ScrollType::kUser);
+  const std::vector<mojom::blink::ScrollType> scroll_types = {
+      ScrollType::kUser,       ScrollType::kProgrammatic,
+      ScrollType::kClamping,   ScrollType::kCompositor,
+      ScrollType::kAnchoring,  ScrollType::kSequenced,
+      ScrollType::kScrollStart};
+
+  // ScrollTypes which we do not filter even if there is an active
+  // kUser smooth scroll.
+  std::set<mojom::blink::ScrollType> exempted_types = {
+      ScrollType::kUser,
+      ScrollType::kCompositor,
+      ScrollType::kClamping,
+      ScrollType::kAnchoring,
+  };
+
+  for (const auto& incoming_type : scroll_types) {
+    const bool should_filter = !exempted_types.contains(incoming_type);
+    EXPECT_EQ(area->ShouldFilterIncomingScroll(incoming_type), should_filter);
+  }
+}
+
 }  // namespace blink

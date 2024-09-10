@@ -667,6 +667,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
                            PopupOverlayScrollbarShouldNotFadeOut);
+  FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
+                           FilterIncomingScrollDuringSmoothUserScroll);
 
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
@@ -717,10 +719,16 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
         incoming_type == mojom::blink::ScrollType::kAnchoring) {
       return false;
     }
-    // If the current smooth scroll is UserScroll, but the incoming scroll is
-    // not, filter the incoming scroll. See crbug.com/913009 for more details.
+    // If the current smooth scroll is a kUser scroll, i.e. a smooth scroll
+    // triggered by find-in-page, filter the incoming scroll unless it is:
+    // - another find-in-page scroll (kUser),
+    // - a gesture scroll (kCompositor), or
+    // - an update from the current find-in-page scroll animation running on the
+    //   compositor (kCompositor).
+    // See crbug.com/913009, crbug.com/365493092 for more details.
     if (old_type == mojom::blink::ScrollType::kUser &&
-        incoming_type != mojom::blink::ScrollType::kUser) {
+        incoming_type != mojom::blink::ScrollType::kUser &&
+        incoming_type != mojom::blink::ScrollType::kCompositor) {
       return true;
     }
     // TODO(crbug.com/325081538, crbug.com/342093060): Ideally, if the incoming
@@ -732,6 +740,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     //     kCompositorProgrammatic and
     //   - pass the ScrollType from the compositor to the main thread.
     return false;
+  }
+
+  void set_active_smooth_scroll_type_for_testing(
+      mojom::blink::ScrollType type) {
+    active_smooth_scroll_type_ = type;
   }
 
   // This animator is used to handle painting animations for MacOS scrollbars
