@@ -1252,12 +1252,13 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        getStripLayoutHelper(tab.isIncognito()).willCloseTab(time(), tab);
+                        getStripLayoutHelper(tab.isIncognitoBranded()).willCloseTab(time(), tab);
                     }
 
                     @Override
                     public void tabRemoved(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognito()).tabClosed(time(), tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded())
+                                .tabClosed(time(), tab.getId());
                         updateModelSwitcherButton();
                     }
 
@@ -1265,7 +1266,7 @@ public class StripLayoutHelperManager
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
                         // For right-direction move, layout helper re-ordering logic
                         // expects destination index = position + 1
-                        getStripLayoutHelper(tab.isIncognito())
+                        getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabMoved(
                                         time(),
                                         tab.getId(),
@@ -1275,7 +1276,7 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void tabClosureUndone(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognito())
+                        getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabClosureCancelled(time(), tab.getId());
                         updateModelSwitcherButton();
                     }
@@ -1289,13 +1290,23 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void tabPendingClosure(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognito()).tabClosed(time(), tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded())
+                                .tabClosed(time(), tab.getId());
+                        updateModelSwitcherButton();
+                    }
+
+                    @Override
+                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                        if (tabs.isEmpty()) return;
+                        getStripLayoutHelper(tabs.get(0).isIncognitoBranded())
+                                .multipleTabsClosed(tabs);
                         updateModelSwitcherButton();
                     }
 
                     @Override
                     public void onFinishingTabClosure(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognito()).tabClosed(time(), tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded())
+                                .tabClosed(time(), tab.getId());
                         updateModelSwitcherButton();
                     }
 
@@ -1308,7 +1319,7 @@ public class StripLayoutHelperManager
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (tab.getId() == lastId) return;
-                        getStripLayoutHelper(tab.isIncognito())
+                        getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabSelected(time(), tab.getId(), lastId, false);
                     }
 
@@ -1316,7 +1327,7 @@ public class StripLayoutHelperManager
                     public void didAddTab(
                             Tab tab, int type, int creationState, boolean markedForSelection) {
                         boolean onStartup = type == TabLaunchType.FROM_RESTORE;
-                        getStripLayoutHelper(tab.isIncognito())
+                        getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabCreated(
                                         time(),
                                         tab.getId(),

@@ -1218,14 +1218,32 @@ public class StripLayoutHelper
 
         // 2. Rebuild the strip.
         computeAndUpdateTabOrders(!closingLastTab, false);
+    }
 
-        mUpdateHost.requestUpdate();
+    /**
+     * Called when a multiple tabs are being closed. When called, the closing tabs will not be part
+     * of the model.
+     *
+     * @param tabs The list of tabs that are being closed.
+     */
+    public void multipleTabsClosed(List<Tab> tabs) {
+        // 1. Find out if we're closing the last tab.  This determines if we resize immediately.
+        // We know mStripTabs.length >= 1 because findTabById did not return null.
+        boolean closingLastTab = false;
+        for (Tab tab : tabs) {
+            if (mStripTabs[mStripTabs.length - 1].getTabId() == tab.getId()) {
+                closingLastTab = true;
+                break;
+            }
+        }
+
+        // 2. Rebuild the strip.
+        computeAndUpdateTabOrders(!closingLastTab, false);
     }
 
     /** Called when all tabs are closed at once. */
     public void willCloseAllTabs() {
         computeAndUpdateTabOrders(true, false);
-        mUpdateHost.requestUpdate();
     }
 
     /**
@@ -2567,6 +2585,17 @@ public class StripLayoutHelper
                 shouldShowTrailingMargins);
     }
 
+    /**
+     * Rebuilds the list of {@link StripLayoutTab}s based on the {@link TabModel}. Reuses strip tabs
+     * that still exist in the model. Sets tabs at their new position and animates any width
+     * changes, unless a multi-step close is running. Requests a layout update.
+     *
+     * @param delayResize Whether or not the resultant width changes should be delayed (for the
+     *     multi-step close animation.
+     * @param deferAnimations Whether or not the resultant width changes should automatically run,
+     *     or returned as a list to be kicked off simultaneously with other animations.
+     * @return The list of width {@link Animator}s to run, if any.
+     */
     private List<Animator> computeAndUpdateTabOrders(boolean delayResize, boolean deferAnimations) {
         final int count = mModel.getCount();
         StripLayoutTab[] tabs = new StripLayoutTab[count];
