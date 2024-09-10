@@ -158,6 +158,26 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
   }
 }
 
+void TabUsageScenarioTracker::OnTabDiscarded(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Record that the ukm::SourceID associated with this tab isn't visible
+  // anymore, if necessary.
+  auto iter = visible_tabs_.find(web_contents);
+  CHECK_EQ(iter != visible_tabs_.end(),
+           web_contents->GetVisibility() == content::Visibility::VISIBLE);
+  if (iter != visible_tabs_.end() &&
+      iter->second.first != ukm::kInvalidSourceId) {
+    usage_scenario_data_store_->OnUkmSourceBecameHidden(iter->second.first,
+                                                        iter->second.second);
+    // Discard may destroy the associated WebContents or replace the
+    // WebContent's primary document with an empty docoument. For the latter
+    // case the source id must be invalidated as the UKM source should no longer
+    // be considered valid.
+    iter->second.first = ukm::kInvalidSourceId;
+  }
+}
+
 void TabUsageScenarioTracker::OnTabInteraction(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -275,6 +275,16 @@ UsageScenarioDataStoreImpl::GetVisibleSourceIdsForTesting() {
   return ret;
 }
 
+bool UsageScenarioDataStoreImpl::TrackingPlayingVideoInActiveTabForTesting()
+    const {
+  return !playing_video_in_active_tab_since_.is_null();
+}
+
+bool UsageScenarioDataStoreImpl::
+    TrackingPlayingFullScreenVideoSingleMonitorForTesting() const {
+  return !is_playing_full_screen_video_single_monitor_since_.is_null();
+}
+
 void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update feature usage durations in |interval_data_|.

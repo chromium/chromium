@@ -359,6 +359,21 @@ class TabStatsTracker::WebContentsUsageObserver
       tab_stats_observer.OnMediaDestroyed(web_contents());
   }
 
+  void WasDiscarded() override {
+    if (ukm_source_id_) {
+      ukm::builders::TabManager_TabLifetime(ukm_source_id_)
+          .SetTimeSinceNavigation(
+              (base::TimeTicks::Now() - navigation_time_).InMilliseconds())
+          .Record(ukm::UkmRecorder::Get());
+      ukm_source_id_ = 0;
+    }
+
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnTabDiscarded(web_contents());
+    }
+  }
+
  private:
   raw_ptr<TabStatsTracker> tab_stats_tracker_;
   // The last navigation time associated with this tab.
