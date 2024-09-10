@@ -180,6 +180,7 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
   }
 
   MOCK_METHOD(void, ResizeAndFocusPopupWindow, (), (override));
+  MOCK_METHOD(void, SetCustomYPosition, (int y), (override));
 };
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
@@ -2470,4 +2471,46 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // disclosure text.
   EXPECT_EQ(FedCmAccountSelectionView::State::MULTI_ACCOUNT_PICKER,
             controller->state_);
+}
+
+// Tests that a login to IDP pop-up opened during a button flow sets a custom Y
+// position. This is so that the pop-up covers the loading modal dialog to
+// direct user attention towards the pop-up.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowLoadingDialogSetsCustomYPosition) {
+  auto controller = CreateAndShowLoadingDialog();
+
+  // Open login to IDP pop-up and expect it to call `SetCustomYPosition`.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  EXPECT_CALL(*popup_window, SetCustomYPosition).Times(1);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  dialog_widget_.reset();
+}
+
+// Tests that a use other account pop-up opened during a button flow does not
+// set a custom Y position.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowUseOtherAccountPopupDoesNotSetCustomYPosition) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, SignInMode::kExplicit);
+
+  // Open use other account pop-up and expect it to call `SetCustomYPosition`.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  EXPECT_CALL(*popup_window, SetCustomYPosition).Times(0);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  dialog_widget_.reset();
 }
