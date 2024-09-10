@@ -1010,7 +1010,9 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
   DCHECK(item_result.item);
   const InlineItem& item = *item_result.item;
   const LayoutObject* layout_object = item.GetLayoutObject();
-  LayoutUnit content_size = container_builder_.LineHeight();
+  const LayoutUnit content_size =
+      container_builder_.LineHeight() -
+      container_builder_.TrimBlockEndBy().value_or(LayoutUnit());
 
   // layout_object may be null in certain cases, e.g. if it's a kBidiControl.
   if (layout_object && layout_object->IsBR()) {

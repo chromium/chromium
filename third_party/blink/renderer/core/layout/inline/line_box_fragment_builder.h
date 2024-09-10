@@ -70,6 +70,9 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
     line_box_bfc_block_offset_ = offset;
   }
 
+  const std::optional<LayoutUnit>& TrimBlockEndBy() const {
+    return trim_block_end_by_;
+  }
   void SetTrimBlockEndBy(LayoutUnit trim_block_end_by) {
     trim_block_end_by_ = trim_block_end_by;
   }

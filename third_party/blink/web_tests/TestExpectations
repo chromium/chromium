@@ -1234,7 +1234,6 @@ crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
 # CSS Inline `text-box-trim` and `text-box-edge` properties.
-crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-float-clear-br-003.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-005.html [ Failure ]
 
