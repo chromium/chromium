@@ -285,7 +285,7 @@ void AppShimController::PreInitFeatureState(
        "StandardCompliantHostCharacters",
        "StandardCompliantNonSpecialSchemeURLParsing",
        "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional",
-       "SonomaAccessibilityActivationRefinements"});
+       "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache"});
 }
 
 // static

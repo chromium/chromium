@@ -415,8 +415,8 @@ extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
 // The HTTP RTT threshold: decide whether the
 // `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
 // practically according to the network connection state.
-BLINK_COMMON_EXPORT
-extern const base::FeatureParam<base::TimeDelta> kHttpRttThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kHttpRttThreshold);
 // The cost reduction for the multiplexed requests when
 // `kDelayLowPriorityRequestsAccordingToNetworkState` is enabled.
 BLINK_COMMON_EXPORT

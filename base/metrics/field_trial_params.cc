@@ -27,20 +27,10 @@
 
 namespace base {
 
-namespace {
-
-bool IsCacheEnabled() {
-  static const bool enabled =
-      FeatureList::IsEnabled(features::kFeatureParamWithCache);
-  return enabled;
-}
-
-}  // namespace
-
 namespace internal {
 
 bool IsFeatureParamWithCacheEnabled() {
-  return IsCacheEnabled();
+  return FeatureList::IsEnabled(features::kFeatureParamWithCache);
 }
 
 }  // namespace internal
