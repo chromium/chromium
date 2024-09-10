@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "services/network/public/mojom/no_vary_search.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
@@ -556,6 +557,7 @@ void SpeculationRuleSet::SetWarnings(Vector<String> warning_messages) {
 // static
 SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
                                               ExecutionContext* context) {
+  CHECK(context, base::NotFatalUntil::M131);
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-speculation-rules
 
   const String& source_text = source->GetSourceText();
