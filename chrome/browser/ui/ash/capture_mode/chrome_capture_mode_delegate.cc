@@ -283,9 +283,7 @@ base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
 }
 
 base::FilePath ChromeCaptureModeDelegate::GetOneDriveMountPointPath() const {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  return profile ? ash::cloud_upload::GetODFSFuseboxMount(profile)
-                 : base::FilePath();
+  return policy::local_user_files::GetODFSVirtualPath();
 }
 
 ChromeCaptureModeDelegate::PolicyCapturePath
