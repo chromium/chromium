@@ -267,4 +267,23 @@ std::string ReportPlaybackRequestPayload::ToJson() const {
   return json.value();
 }
 
+SignedRequest::SignedRequest(RequestSender* sender)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()) {}
+
+SignedRequest::~SignedRequest() = default;
+
+void SignedRequest::SetSigningHeaders(std::vector<std::string>&& headers) {
+  headers_ = headers;
+}
+
+HttpRequestMethod SignedRequest::GetRequestType() const {
+  // Signed requests must have a body so they are always POSTs.
+  return HttpRequestMethod::kPost;
+}
+
+std::vector<std::string> SignedRequest::GetExtraRequestHeaders() const {
+  CHECK(!headers_.empty());
+  return headers_;
+}
+
 }  // namespace google_apis::youtube_music

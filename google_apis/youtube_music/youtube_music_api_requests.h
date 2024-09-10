@@ -103,7 +103,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
 // Request that prepares the playback queue for the API server. For API usage,
 // please check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/queues/preparePlayback
-class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
+class PlaybackQueuePrepareRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<Queue>, ApiErrorCode>)>;
@@ -122,7 +122,6 @@ class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
-  HttpRequestMethod GetRequestType() const override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
   void ProcessURLFetchResults(
@@ -146,7 +145,7 @@ class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
 // Request to play the next in the playback queue for the API server. For API
 // usage, please check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/queues/next
-class PlaybackQueueNextRequest : public UrlFetchRequestBase {
+class PlaybackQueueNextRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<QueueContainer>, ApiErrorCode>)>;
@@ -174,7 +173,6 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
-  HttpRequestMethod GetRequestType() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -199,7 +197,7 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
 // Request to report the playback to the API server. For API usage, please check
 // below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback
-class ReportPlaybackRequest : public UrlFetchRequestBase {
+class ReportPlaybackRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<ReportPlaybackResult>, ApiErrorCode>)>;
@@ -217,7 +215,6 @@ class ReportPlaybackRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
-  HttpRequestMethod GetRequestType() const override;
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override;
   void ProcessURLFetchResults(
