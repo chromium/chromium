@@ -88,7 +88,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
   override render(): RenderResult {
     return html`<div id="container">
       <cra-icon name="summarize_auto"></cra-icon>
-      <div id="main">
+      <div id="main" role="dialog" aria-labelledby="header">
         <span id="header">${i18n.summaryDownloadModelHeader}</span>
         <span id="description">${i18n.summaryDownloadModelDescription}</span>
         <div id="actions">
