@@ -134,6 +134,9 @@ class AutofillPlusAddressDelegate {
 
   using HideSuggestionsCallback =
       base::OnceCallback<void(SuggestionHidingReason)>;
+  using PlusAddressErrorDialogType = AutofillClient::PlusAddressErrorDialogType;
+  using ShowErrorDialogCallback =
+      base::OnceCallback<void(PlusAddressErrorDialogType, base::OnceClosure)>;
   // A callback to inform the user that there is an affiliated domain (first
   // parameter) with an existing plus address (second parameter).
   using ShowAffiliationErrorDialogCallback =
@@ -148,7 +151,8 @@ class AutofillPlusAddressDelegate {
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
-      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog) = 0;
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+      ShowErrorDialogCallback show_error_dialog) = 0;
 };
 
 }  // namespace autofill

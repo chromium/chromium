@@ -302,6 +302,15 @@ void ChromeAutofillClient::OfferPlusAddressCreation(
   controller->OfferCreation(main_frame_origin, std::move(callback));
 }
 
+void ChromeAutofillClient::ShowPlusAddressError(
+    PlusAddressErrorDialogType error_dialog_type,
+    base::OnceClosure on_accepted) {
+#if !BUILDFLAG(IS_ANDROID)
+  plus_addresses::ShowInlineCreationErrorDialog(
+      web_contents(), error_dialog_type, std::move(on_accepted));
+#endif
+}
+
 void ChromeAutofillClient::ShowPlusAddressAffiliationError(
     std::u16string affiliated_domain,
     std::u16string affiliated_plus_address,

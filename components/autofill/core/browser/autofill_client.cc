@@ -86,6 +86,10 @@ void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {}
 
+void AutofillClient::ShowPlusAddressError(
+    PlusAddressErrorDialogType error_dialog_type,
+    base::OnceClosure on_accepted) {}
+
 void AutofillClient::ShowPlusAddressAffiliationError(
     std::u16string affiliated_domain,
     std::u16string affiliated_plus_address,

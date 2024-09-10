@@ -70,7 +70,8 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                UpdateSuggestionsCallback,
                HideSuggestionsCallback,
                PlusAddressCallback,
-               ShowAffiliationErrorDialogCallback),
+               ShowAffiliationErrorDialogCallback,
+               ShowErrorDialogCallback),
               (override));
 };
 

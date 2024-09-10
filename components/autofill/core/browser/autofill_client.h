@@ -256,6 +256,18 @@ class AutofillClient {
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                         PlusAddressCallback callback);
 
+  enum class PlusAddressErrorDialogType {
+    kGenericError,
+    // The quota for plus address creation is exhausted (account-wide or
+    // site-specific).
+    kQuotaExhausted
+  };
+  // Shows UI to inform the user about a plus address error (apart from
+  // affiliation errors).
+  virtual void ShowPlusAddressError(
+      PlusAddressErrorDialogType error_dialog_type,
+      base::OnceClosure on_accepted);
+
   // Shows UI to inform the user about a plus address affiliation error.
   virtual void ShowPlusAddressAffiliationError(
       std::u16string affiliated_domain,

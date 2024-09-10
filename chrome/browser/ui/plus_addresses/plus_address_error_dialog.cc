@@ -50,7 +50,10 @@ void ShowInlineCreationAffiliationErrorDialog(
 }
 
 void ShowInlineCreationErrorDialog(content::WebContents* web_contents,
+                                   PlusAddressErrorDialogType error_dialog_type,
                                    base::OnceClosure on_accepted) {
+  // TODO(crbug.com/362445807): Differentiate dialog design based on
+  // `error_dialog_type`.
   constrained_window::ShowWebModal(
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(

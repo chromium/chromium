@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace content {
@@ -30,7 +31,10 @@ void ShowInlineCreationAffiliationErrorDialog(
 
 // Shows a tab-modal error dialog that offers trying again and runs
 // `on_accepted` if the user chooses to do so.
+using PlusAddressErrorDialogType =
+    autofill::AutofillClient::PlusAddressErrorDialogType;
 void ShowInlineCreationErrorDialog(content::WebContents* web_contents,
+                                   PlusAddressErrorDialogType error_dialog_type,
                                    base::OnceClosure on_accepted);
 
 }  // namespace plus_addresses

@@ -260,6 +260,14 @@ class MockAutofillClient : public TestAutofillClient {
               OfferPlusAddressCreation,
               (const url::Origin&, PlusAddressCallback),
               (override));
+  MOCK_METHOD(void,
+              ShowPlusAddressAffiliationError,
+              (std::u16string, std::u16string, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              ShowPlusAddressError,
+              (AutofillClient::PlusAddressErrorDialogType, base::OnceClosure),
+              (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
               ShowEditAddressProfileDialog,
@@ -2499,22 +2507,23 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
 
     // `MoveArg` only supports moving out a single argument and cannot be
     // combined via `DoAll` - therefore use a helper.
-    EXPECT_CALL(
-        plus_address_delegate(),
-        OnAcceptedInlineSuggestion(_, base::span<const Suggestion>(suggestions),
-                                   /*current_suggestion_index=*/0, _, _, _, _))
-        .WillOnce([&](const url::Origin& primary_main_frame_origin,
-                      base::span<const Suggestion> current_suggestions,
-                      size_t current_suggestion_index,
-                      UpdateSuggestionsCallback update_suggestions_callback,
-                      HideSuggestionsCallback hide_suggestions_callback,
-                      PlusAddressCallback fill_field_callback,
-                      AutofillPlusAddressDelegate::
-                          ShowAffiliationErrorDialogCallback) {
-          update_callback = std::move(update_suggestions_callback);
-          hide_callback = std::move(hide_suggestions_callback);
-          filling_callback = std::move(fill_field_callback);
-        });
+    EXPECT_CALL(plus_address_delegate(),
+                OnAcceptedInlineSuggestion(
+                    _, base::span<const Suggestion>(suggestions),
+                    /*current_suggestion_index=*/0, _, _, _, _, _))
+        .WillOnce(
+            [&](const url::Origin& primary_main_frame_origin,
+                base::span<const Suggestion> current_suggestions,
+                size_t current_suggestion_index,
+                UpdateSuggestionsCallback update_suggestions_callback,
+                HideSuggestionsCallback hide_suggestions_callback,
+                PlusAddressCallback fill_field_callback,
+                AutofillPlusAddressDelegate::ShowAffiliationErrorDialogCallback,
+                AutofillPlusAddressDelegate::ShowErrorDialogCallback) {
+              update_callback = std::move(update_suggestions_callback);
+              hide_callback = std::move(hide_suggestions_callback);
+              filling_callback = std::move(fill_field_callback);
+            });
     EXPECT_CALL(client(),
                 UpdateAutofillSuggestions(
                     updated_suggestions, FillingProduct::kPlusAddresses,
@@ -2547,6 +2556,95 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
   std::move(hide_callback).Run(SuggestionHidingReason::kAcceptSuggestion);
   check.Call();
   std::move(filling_callback).Run(base::UTF16ToUTF8(plus_address));
+}
+
+// Tests that `OnAcceptedInlineSuggestion` gets passed a
+// `ShowAffiliationErrorDialogCallback` that, when run, triggers showing a plus
+// address affiliation error dialog in `AutofillClient`. If that dialog is
+// accepted, the affiliated plus address is filled.
+TEST_F(AutofillExternalDelegateUnitTest,
+       PlusAddressInlineAcceptedAffiliationError) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/u"Create plus address",
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(client(), GetAutofillSuggestions)
+      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(123));
+
+  const std::u16string affiliated_domain = u"https://bar.com";
+  const std::u16string affiliated_plus_address = u"foo@bar.com";
+
+  AutofillPlusAddressDelegate::ShowAffiliationErrorDialogCallback
+      show_affiliation_error_callback;
+  {
+    EXPECT_CALL(plus_address_delegate(),
+                OnAcceptedInlineSuggestion(
+                    _, base::span<const Suggestion>(suggestions),
+                    /*current_suggestion_index=*/0, _, _, _, _, _))
+        .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
+    // Simulate accepting the dialog.
+    EXPECT_CALL(client(), ShowPlusAddressAffiliationError(
+                              affiliated_domain, affiliated_plus_address, _))
+        .WillOnce(RunOnceCallback<2>());
+    EXPECT_CALL(manager(),
+                FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                   mojom::FieldActionType::kReplaceAll,
+                                   HasQueriedFormId(), HasQueriedFieldId(),
+                                   affiliated_plus_address,
+                                   SuggestionType::kCreateNewPlusAddressInline,
+                                   std::optional(EMAIL_ADDRESS)));
+  }
+
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(show_affiliation_error_callback);
+  // Simulate showing the affiliation error dialog.
+  std::move(show_affiliation_error_callback)
+      .Run(affiliated_domain, affiliated_plus_address);
+}
+
+// Tests that `OnAcceptedInlineSuggestion` gets passed a
+// `ShowErrorDialogCallback` that, when run, triggers showing a plus address
+// error dialog in `AutofillClient`.
+TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAcceptedQuotaError) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/u"Create plus address",
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(client(), GetAutofillSuggestions)
+      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(123));
+
+  AutofillPlusAddressDelegate::ShowErrorDialogCallback show_error_callback;
+  {
+    EXPECT_CALL(plus_address_delegate(),
+                OnAcceptedInlineSuggestion(
+                    _, base::span<const Suggestion>(suggestions),
+                    /*current_suggestion_index=*/0, _, _, _, _, _))
+        .WillOnce(MoveArg<7>(&show_error_callback));
+    EXPECT_CALL(
+        client(),
+        ShowPlusAddressError(
+            AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted, _));
+  }
+
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(show_error_callback);
+  std::move(show_error_callback)
+      .Run(AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted,
+           base::DoNothing());
 }
 
 TEST_F(

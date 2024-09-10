@@ -1684,12 +1684,24 @@ void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
       CreateSingleFieldFillCallback(SuggestionType::kCreateNewPlusAddressInline,
                                     /*field_type_used=*/EMAIL_ADDRESS));
 
+  auto show_error = base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self,
+         AutofillClient::PlusAddressErrorDialogType error_dialog_type,
+         base::OnceClosure on_accepted) {
+        if (!self) {
+          return;
+        }
+        self->manager_->client().ShowPlusAddressError(error_dialog_type,
+                                                      std::move(on_accepted));
+      },
+      GetWeakPtr());
+
   delegate->OnAcceptedInlineSuggestion(
       manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
       /*current_suggestion_index=*/it - suggestions.begin(),
       CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
       CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddressInline),
-      std::move(show_affiliation_error));
+      std::move(show_affiliation_error), std::move(show_error));
 }
 
 }  // namespace autofill

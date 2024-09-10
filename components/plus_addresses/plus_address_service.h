@@ -133,8 +133,8 @@ class PlusAddressService : public KeyedService,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
-      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog)
-      override;
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+      ShowErrorDialogCallback show_error_dialog) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

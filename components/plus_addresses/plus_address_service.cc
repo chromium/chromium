@@ -122,6 +122,13 @@ bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
   return excluded_sites.contains(GetEtldPlusOne(origin));
 }
 
+// Returns whether `error` indicates an exhausted plus address quota.
+bool IsQuotaError(const PlusAddressRequestError& error) {
+  return error.type() == PlusAddressRequestErrorType::kNetworkError &&
+         error.http_response_code().value_or(net::HTTP_REQUEST_TIMEOUT) ==
+             net::HTTP_TOO_MANY_REQUESTS;
+}
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -641,7 +648,8 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
     UpdateSuggestionsCallback update_suggestions_callback,
     HideSuggestionsCallback hide_suggestions_callback,
     PlusAddressCallback fill_field_callback,
-    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog) {
+    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+    ShowErrorDialogCallback show_error_dialog) {
   // TODO(crbug.com/362445807): Record metrics.
   const std::u16string suggested_address =
       current_suggestions[current_suggestion_index]
@@ -664,13 +672,25 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
       [](HideSuggestionsCallback hide_callback,
          PlusAddressCallback fill_callback,
          ShowAffiliationErrorDialogCallback show_affiliation_error,
+         ShowErrorDialogCallback show_error,
          const PlusAddress& requested_address,
          const PlusProfileOrError& profile_or_error) {
         // Always hide the popup.
         std::move(hide_callback)
             .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
         if (!profile_or_error.has_value()) {
-          // TODO(crbug.com/362445807): Handle errors during creation.
+          if (IsQuotaError(profile_or_error.error())) {
+            std::move(show_error)
+                .Run(PlusAddressErrorDialogType::kQuotaExhausted,
+                     /*on_accepted=*/base::DoNothing());
+            return;
+          }
+          // TODO(crbug.com/362445807): Pass a callback that re-shows the
+          // popup. Add tests for that case.
+          std::move(show_error)
+              .Run(PlusAddressErrorDialogType::kGenericError,
+                   /*on_accepted=*/base::DoNothing());
+          return;
         }
         // TODO(crbug.com/362445807): Improve formatting of domain.
         if (requested_address != profile_or_error->plus_address) {
@@ -683,7 +703,8 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
         std::move(fill_callback).Run(profile_or_error->plus_address.value());
       },
       std::move(hide_suggestions_callback), std::move(fill_field_callback),
-      std::move(show_affiliation_error_dialog), requested_plus_address);
+      std::move(show_affiliation_error_dialog), std::move(show_error_dialog),
+      requested_plus_address);
   ConfirmPlusAddress(primary_main_frame_origin,
                      std::move(requested_plus_address), std::move(callback));
 }

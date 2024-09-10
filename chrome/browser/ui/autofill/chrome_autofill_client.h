@@ -98,6 +98,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   GetAutofillPredictionImprovementsDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
+  void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,
+                            base::OnceClosure on_accepted) override;
   void ShowPlusAddressAffiliationError(std::u16string affiliated_domain,
                                        std::u16string affiliated_plus_address,
                                        base::OnceClosure on_accepted) override;

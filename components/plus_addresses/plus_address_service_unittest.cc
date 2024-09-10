@@ -712,7 +712,8 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), fill_callback.Get(),
-      /*show_affiliation_error_dialog=*/base::DoNothing());
+      /*show_affiliation_error_dialog=*/base::DoNothing(),
+      /*show_error_dialog=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
@@ -760,12 +761,61 @@ TEST_F(PlusAddressServiceRequestsTest,
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
-      show_affiliation_error_callback.Get());
+      show_affiliation_error_callback.Get(),
+      /*show_error_dialog=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(affiliated_profile));
+}
+
+// Tests that when the server call to create a plus address from an inline
+// suggestion returns with a TOO_MANY_REQUESTS error, a call is made to show an
+// error dialog that the quota is exhausted.
+TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionQuotaError) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
+      update_callback;
+  base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
+  base::MockCallback<PlusAddressService::ShowErrorDialogCallback>
+      show_error_callback;
+
+  PlusProfile profile = test::CreatePlusProfile();
+  PlusProfile affiliated_profile = test::CreatePlusProfile2();
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload =
+      Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*profile.plus_address));
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    EXPECT_CALL(update_callback, Run(ElementsAre(IsCreateInlineSuggestion(
+                                         /*has_proposed_address=*/true)),
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(hide_callback,
+                Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(
+        show_error_callback,
+        Run(PlusAddressService::PlusAddressErrorDialogType::kQuotaExhausted,
+            _));
+  }
+  service().OnAcceptedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      /*current_suggestion_index=*/0, update_callback.Get(),
+      hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
+      /*show_affiliation_error_dialog=*/base::DoNothing(),
+      show_error_callback.Get());
+  check.Call();
+
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_TOO_MANY_REQUESTS);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
