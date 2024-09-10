@@ -189,12 +189,21 @@ INSTANTIATE_TEST_SUITE_P(
         FormTypesForLoggingTestData(
             {CREDIT_CARD_STANDALONE_VERIFICATION_CODE},
             {FormTypeNameForLogging::kStandaloneCvcForm}),
-        // An address form has no credit card form types.
+        // A standalone CVC form (with legacy CREDIT_CARD_VERIFICATION_CODE
+        // field) is not considered a credit card form.
+        FormTypesForLoggingTestData(
+            {CREDIT_CARD_VERIFICATION_CODE},
+            {FormTypeNameForLogging::kStandaloneCvcForm}),
+        // A single field address form has no credit card form types.
         FormTypesForLoggingTestData({NAME_FIRST}, {}),
         // A form containing an address field and a credit card field, has one
         // credit card form type.
+        FormTypesForLoggingTestData({CREDIT_CARD_NUMBER, ADDRESS_HOME_LINE1},
+                                    {FormTypeNameForLogging::kCreditCardForm}),
+        // A form containing an address field and a cvc field, has one credit
+        // card form type.
         FormTypesForLoggingTestData(
-            {CREDIT_CARD_NUMBER, ADDRESS_HOME_LINE1},
+            {CREDIT_CARD_VERIFICATION_CODE, ADDRESS_HOME_LINE1},
             {FormTypeNameForLogging::kCreditCardForm})));
 
 // Test fixture for testing `GetFormTypesForLogging()`.
