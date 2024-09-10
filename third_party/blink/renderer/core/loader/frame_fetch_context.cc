@@ -418,14 +418,15 @@ void FrameFetchContext::PrepareRequest(
   request.SetStorageAccessApiStatus(
       document_->GetExecutionContext()->GetStorageAccessApiStatus());
 
-  if (!minimal_prep && document_loader_->ForceFetchCacheMode()) {
-    request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
-  }
-
-  if (const AttributionSrcLoader* attribution_src_loader =
-          GetFrame()->GetAttributionSrcLoader()) {
-    request.SetAttributionReportingSupport(
-        attribution_src_loader->GetSupport());
+  if (!minimal_prep) {
+    if (document_loader_->ForceFetchCacheMode()) {
+      request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+    }
+    if (const AttributionSrcLoader* attribution_src_loader =
+            GetFrame()->GetAttributionSrcLoader()) {
+      request.SetAttributionReportingSupport(
+          attribution_src_loader->GetSupport());
+    }
   }
 
   // If the original request included the attribute to opt-in to shared storage,
@@ -848,6 +849,13 @@ void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
   }
   if (document_loader_->ForceFetchCacheMode()) {
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+  }
+  // ResourceFetcher::DidLoadResourceFromMemoryCache() may call out in such a
+  // way that the AttributionSupport is needed.
+  if (const AttributionSrcLoader* attribution_src_loader =
+          GetFrame()->GetAttributionSrcLoader()) {
+    request.SetAttributionReportingSupport(
+        attribution_src_loader->GetSupport());
   }
 }
 
