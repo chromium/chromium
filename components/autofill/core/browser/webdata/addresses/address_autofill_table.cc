@@ -668,14 +668,14 @@ bool AddressAutofillTable::RemoveAutofillProfile(const std::string& guid) {
 }
 
 bool AddressAutofillTable::RemoveAllAutofillProfiles(
-    AutofillProfile::RecordType record_type) {
+    DenseSet<AutofillProfile::RecordType> record_types) {
   sql::Transaction transaction(db());
   std::vector<AutofillProfile> profiles;
   // TODO(crbug.com/40100455): Since the `kAddressTypeTokensTable` doesn't have
   // a `kRecordType` column, it's non-trivial to remove the correct entries from
   // that table. For simplicity, the current implementation fetches all profiles
   // to remove and removes them manually. Rewrite to a DELETE SQL query.
-  if (!GetAutofillProfiles({record_type}, profiles)) {
+  if (!GetAutofillProfiles(record_types, profiles)) {
     return false;
   }
   return transaction.Begin() &&

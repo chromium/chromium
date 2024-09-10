@@ -203,7 +203,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
       AutofillProfile(AutofillProfile::RecordType::kAccount,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
 
-  EXPECT_TRUE(table_.RemoveAllAutofillProfiles(record_type()));
+  EXPECT_TRUE(table_.RemoveAllAutofillProfiles({record_type()}));
 
   // Expect that the profiles from `record_type()` are gone.
   std::vector<AutofillProfile> profiles;

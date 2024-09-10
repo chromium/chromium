@@ -94,8 +94,9 @@ class AddressAutofillTable : public WebDatabaseTable {
   // indicates where the profile was synced from.
   bool RemoveAutofillProfile(const std::string& guid);
 
-  // Removes all profiles from the given `record_type`.
-  bool RemoveAllAutofillProfiles(AutofillProfile::RecordType record_type);
+  // Removes all profiles of the given `record_types`.
+  bool RemoveAllAutofillProfiles(
+      DenseSet<AutofillProfile::RecordType> record_types);
 
   // Retrieves a profile with guid `guid`.
   std::optional<AutofillProfile> GetAutofillProfile(
