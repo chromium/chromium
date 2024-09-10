@@ -728,8 +728,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that the user interface style is respected after a drag and drop.
-// TODO(crbug.com/332714545): Test is flaky.
-- (void)FLAKY_testTraitCollection {
+- (void)testTraitCollection {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
   [ChromeEarlGrey openNewTab];
