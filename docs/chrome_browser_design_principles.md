@@ -245,6 +245,46 @@ FooService : public KeyedService {
 * Threaded code should have DCHECKs asserting correct sequence.
     * Provides documentation and correctness checks.
     * See base/sequence_checker.h.
+* Avoid tight coupling of unrelated features.
+    * This results in O(N^2) complexity, since every pair of features ends up
+      implicitly coupled.
+    * The proper solution is to work with UX to use consistent design language,
+      which in turn results in O(N) complexity.
+```cpp
+// Good, complexity is O(N) and no tight coupling using a well-understood and
+// common design pattern: modality. Similar logic will be needed in other modal
+// UIs. The logic in this class does not change regardless of how many other new
+// modal features are created.
+class Sparkles {
+  // Shows sparkles over the entire tab. Should not be shown over other Chrome
+  // contents (e.g. print preview)
+  void Show() {
+    if (tab_->CanShowModalUI()) {
+      MakeSparkles();
+      // Prevents other modals from showing until the member is reset.
+      modal_ui_ = tab_->ShowModalUI();
+    }
+  }
+
+  std::unique_ptr<ScopedTabModalUI> modal_ui_;
+  raw_ptr<TabInterface> tab_;
+};
+
+// Bad. Introduces tight coupling between unrelated features. Similar logic is
+// needed in PrintPreview and DevTools. Complexity will scale with O(N^2). When
+// a new modal feature is created, every modal feature will need to be updated.
+class Sparkles {
+  void Show() {
+    if (PrintPreview::Showing()) {
+      return;
+    }
+    if (DevTools::Showing()) {
+      return;
+    }
+    MakeSparkles();
+  }
+};
+```
 * Most features should be gated by base::Feature, API keys and/or gn build
   configuration, not C preprocessor conditionals e.g. `#if
   BUILDFLAG(FEATURE_FOO)`.
