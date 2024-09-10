@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -100,6 +103,62 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
       break;
   }
 
+    // Fuchsia doesn't support symlinks. Android and iOS only support Bucket
+    // File System observations.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  base::FilePath path = resolved_token->url().path();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](base::FilePath path) -> bool {
+            base::FilePath check_path;
+            // `base::NormalizeFilePath()` resolves any file path elements like
+            // symbolic links or junctions by returning the target file path.
+            if (!base::NormalizeFilePath(path, &check_path)) {
+              check_path = path;
+            }
+            DCHECK(path.empty() == check_path.empty());
+            return check_path != path;
+          },
+          std::move(path)),
+      base::BindOnce(&FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction,
+                     weak_factory_.GetWeakPtr(), std::move(handle),
+                     std::move(callback), resolved_token->url(), is_recursive,
+                     handle_type));
+#else
+  DidCheckIfSymlinkOrJunction(std::move(handle), std::move(callback),
+                              resolved_token->url(), is_recursive, handle_type,
+                              /*is_symlink_or_junction=*/false);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
+}
+
+void FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction(
+    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    ObserveCallback callback,
+    storage::FileSystemURL url,
+    bool is_recursive,
+    FileSystemAccessPermissionContext::HandleType handle_type,
+    bool is_symlink_or_junction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(
+      "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction",
+      is_symlink_or_junction);
+  // Observing symlink and junction is not supported for Origin Trial.
+  // TODO(crbug.com/363195541): Add support for symlinks and junctions for
+  // feature launch.
+  if (is_symlink_or_junction) {
+    std::move(callback).Run(
+        blink::mojom::FileSystemAccessError::New(
+            blink::mojom::FileSystemAccessStatus::kFileError,
+            base::File::FILE_ERROR_INVALID_OPERATION,
+            "Symlinks or junctions cannot be observed"),
+        mojo::NullReceiver());
+    return;
+  }
+
   manager_->DoFileSystemOperation(
       FROM_HERE,
       handle_type == FileSystemAccessPermissionContext::HandleType::kDirectory
@@ -107,8 +166,8 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
           : &storage::FileSystemOperationRunner::FileExists,
       base::BindOnce(&FileSystemAccessObserverHost::DidCheckItemExists,
                      weak_factory_.GetWeakPtr(), std::move(handle),
-                     std::move(callback), resolved_token->url(), is_recursive),
-      resolved_token->url());
+                     std::move(callback), url, is_recursive),
+      url);
 }
 
 void FileSystemAccessObserverHost::DidCheckItemExists(
