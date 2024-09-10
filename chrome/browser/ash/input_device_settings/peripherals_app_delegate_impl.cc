@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -105,6 +106,15 @@ void PeripheralsAppDelegateImpl::OnDeviceInfoFetched(
 void PeripheralsAppDelegateImpl::GetCompanionAppInfo(
     const std::string& device_key,
     GetCompanionAppInfoCallback callback) {
+  // Ensure that the build uses the Google-internal file containing the
+  // official API keys, which are required to make queries to the Almanac.
+  if (!google_apis::IsGoogleChromeAPIKeyUsed() && !is_testing_) {
+    LOG(ERROR) << "Invalid API key or missing internal file. Cannot make "
+                  "queries to Almanac. Device key: "
+               << device_key;
+    return;
+  }
+
   Profile* active_user_profile = GetActiveUserProfile();
   device_info_manager_ =
       std::make_unique<apps::DeviceInfoManager>(active_user_profile);
