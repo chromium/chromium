@@ -233,6 +233,21 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   }
 }
 
+bool AuthenticationService::IsAccountSwitchInProgress() {
+  return accountSwitchInProgress_;
+}
+
+base::ScopedClosureRunner
+AuthenticationService::DeclareAccountSwitchInProgress() {
+  CHECK(!accountSwitchInProgress_);
+  accountSwitchInProgress_ = true;
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](AuthenticationService* service) {
+        service->accountSwitchInProgress_ = false;
+      },
+      this));
+}
+
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }

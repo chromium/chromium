@@ -5,18 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_H_
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 namespace syncer {
@@ -154,6 +155,13 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
+  // Returns whether an account switch is in progress.
+  bool IsAccountSwitchInProgress();
+
+  // The account switch is considered to be in progress while the returned
+  // object exists. Can only be called when no switch is in progress.
+  base::ScopedClosureRunner DeclareAccountSwitchInProgress();
+
  private:
   friend class FakeAuthenticationService;
   friend class AuthenticationServiceTest;
@@ -222,6 +230,9 @@ class AuthenticationService : public KeyedService,
   // method on this object except Initialize() or Shutdown() if this pointer
   // is null.
   std::unique_ptr<AuthenticationServiceDelegate> delegate_;
+
+  // Whether an account is currently switching.
+  bool accountSwitchInProgress_ = false;
 
   // Pointer to the KeyedServices used by AuthenticationService.
   raw_ptr<PrefService> pref_service_ = nullptr;

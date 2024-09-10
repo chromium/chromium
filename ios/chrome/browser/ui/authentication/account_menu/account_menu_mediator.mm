@@ -7,6 +7,7 @@
 #import <optional>
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -52,6 +53,8 @@
   // Whether the account menu operations requires the user interacitons to be
   // ignored.
   BOOL _blockUserInteractions;
+  // This object is set iff an account switch is in progress.
+  base::ScopedClosureRunner _accountSwitchInProgress;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -60,9 +63,6 @@
   // The type of account error that is being displayed in the error section for
   // signed in accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
-
-  // Whether an account switching is in progress.
-  BOOL _accountSwitchingInProgress;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -104,6 +104,7 @@
 }
 
 - (void)disconnect {
+  _accountSwitchInProgress.RunAndReset();
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -200,7 +201,7 @@
       [self updateIdentities];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if (_accountSwitchingInProgress) {
+      if (_authenticationService->IsAccountSwitchInProgress()) {
         return;
       }
       [self.delegate mediatorWantsToBeDismissed:self];
@@ -262,7 +263,8 @@
     }
   }
   CHECK(newIdentity);
-  _accountSwitchingInProgress = YES;
+  _accountSwitchInProgress =
+      _authenticationService->DeclareAccountSwitchInProgress();
   __weak __typeof(self) weakSelf = self;
   id<SystemIdentity> fromIdentity = _primaryIdentity;
   [self.delegate triggerSignoutWithTargetRect:targetRect
@@ -402,7 +404,7 @@
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
-    _accountSwitchingInProgress = NO;
+    _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
     return;
   }
@@ -419,6 +421,7 @@
 - (void)signinEndedWithSuccess:(BOOL)success
                   fromIdentity:(id<SystemIdentity>)previousIdentity
                     toIdentity:(id<SystemIdentity>)newIdentity {
+  _accountSwitchInProgress.RunAndReset();
   if (success) {
     [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self];
@@ -434,7 +437,6 @@
     // during the switch.
     [self.delegate mediatorWantsToBeDismissed:self];
   }
-  _accountSwitchingInProgress = NO;
 }
 
 // Refresh everything and update the UI according to the change in the state.
