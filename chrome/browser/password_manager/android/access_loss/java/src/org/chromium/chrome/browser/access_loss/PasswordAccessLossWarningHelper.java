@@ -25,7 +25,8 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
+import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
@@ -161,7 +162,7 @@ class PasswordAccessLossWarningHelper {
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            PasswordManagerHelper.showMainSettingsAndStartExport(mContext);
+                            PasswordExportLauncher.showMainSettingsAndStartExport(mContext);
                         })
                 .build();
     }
@@ -185,7 +186,7 @@ class PasswordAccessLossWarningHelper {
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            PasswordManagerHelper.launchGmsUpdate(mContext);
+                            GmsUpdateLauncher.launch(mContext);
                         })
                 .build();
     }
@@ -211,7 +212,7 @@ class PasswordAccessLossWarningHelper {
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            PasswordManagerHelper.showMainSettingsAndStartExport(mContext);
+                            PasswordExportLauncher.showMainSettingsAndStartExport(mContext);
                         })
                 .build();
     }

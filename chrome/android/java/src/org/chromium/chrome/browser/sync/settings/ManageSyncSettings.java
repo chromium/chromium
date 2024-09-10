@@ -38,7 +38,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -1136,7 +1136,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
                 return;
             case SyncError.UPM_BACKEND_OUTDATED:
-                PasswordManagerHelper.launchGmsUpdate(getContext());
+                GmsUpdateLauncher.launch(getContext());
                 return;
             case SyncError.NO_ERROR:
             default:

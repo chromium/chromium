@@ -46,6 +46,7 @@ android_library("java") {
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android:utils_java",
     "//chrome/browser/password_manager/android/pwd_check_wrapper:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

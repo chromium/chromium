@@ -154,6 +154,6 @@ public class PasswordManagerErrorMessageHelperBridge {
     static void launchGmsUpdate(WindowAndroid windowAndroid) {
         assert windowAndroid.getActivity().get() != null;
         Activity activity = windowAndroid.getActivity().get();
-        PasswordManagerHelper.launchGmsUpdate(activity);
+        GmsUpdateLauncher.launch(activity);
     }
 }
