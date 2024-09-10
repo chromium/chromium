@@ -771,6 +771,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature("V8ScavengerHigherCapacity"),
+        Flag.baseFeature("V8SeparateGCPhases"),
         Flag.baseFeature("V8SingleThreadedGCInBackground"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundNoIncrementalMarking"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundParallelPause"),
