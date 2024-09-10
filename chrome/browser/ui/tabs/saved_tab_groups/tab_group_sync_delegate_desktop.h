@@ -20,9 +20,9 @@ class Browser;
 class Profile;
 class TabStripModel;
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace tabs {
+class TabModel;
+}
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -50,15 +50,15 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
 
  private:
   // Opens the tabs in `saved_group` in `browser`. These tabs are not grouped.
-  std::map<content::WebContents*, base::Uuid>
-  OpenTabsAndMapWebcontentsToTabUUIDs(Browser* const browser,
-                                      const SavedTabGroup& saved_group);
-  // Adds the opened tabs from OpenTabsAndMapWebcontentsToTabUUIDs into a tab
+  std::map<tabs::TabModel*, base::Uuid> OpenTabsAndMapToUuids(
+      Browser* const browser,
+      const SavedTabGroup& saved_group);
+
+  // Adds the opened tabs from OpenTabsAndMapToUuids into a tab
   // group and links it to `saved_group`.
   TabGroupId AddOpenedTabsToGroup(
       TabStripModel* tab_strip_model,
-      const std::map<content::WebContents*, base::Uuid>&
-          opened_web_contents_to_uuid,
+      const std::map<tabs::TabModel*, base::Uuid>& opened_web_contents_to_uuid,
       const SavedTabGroup& saved_group);
 
   // The service used to query and manage SavedTabGroups.
