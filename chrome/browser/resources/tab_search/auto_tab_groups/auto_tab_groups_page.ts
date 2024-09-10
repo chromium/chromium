@@ -245,6 +245,13 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     this.apiProxy_.requestTabOrganization();
   }
 
+  protected onNameChange_(
+      event: CustomEvent<{organizationId: number, name: string}>) {
+    this.apiProxy_.renameTabOrganization(
+        this.session_!.sessionId, event.detail.organizationId,
+        event.detail.name);
+  }
+
   protected onRejectClick_(event: CustomEvent<{organizationId: number}>) {
     this.apiProxy_.rejectTabOrganization(
         this.session_!.sessionId, event.detail.organizationId);
@@ -255,19 +262,19 @@ export class AutoTabGroupsPageElement extends CrLitElement {
   }
 
   protected onCreateGroupClick_(
-      event: CustomEvent<{organizationId: number, name: string, tabs: Tab[]}>) {
+      event: CustomEvent<{organizationId: number, tabs: Tab[]}>) {
     this.apiProxy_.acceptTabOrganization(
         this.session_!.sessionId, event.detail.organizationId,
-        event.detail.name, event.detail.tabs);
+        event.detail.tabs);
   }
 
   protected onCreateAllGroupsClick_(event: CustomEvent<{
-    organizations: Array<{organizationId: number, name: string, tabs: Tab[]}>,
+    organizations: Array<{organizationId: number, tabs: Tab[]}>,
   }>) {
     event.detail.organizations.forEach((organization) => {
       this.apiProxy_.acceptTabOrganization(
           this.session_!.sessionId, organization.organizationId,
-          organization.name, organization.tabs);
+          organization.tabs);
     });
   }
 

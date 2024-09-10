@@ -21,11 +21,13 @@ export interface TabSearchApiProxy {
 
   declutterTabs(tabIds: number[]): void;
 
-  acceptTabOrganization(
-      sessionId: number, organizationId: number, name: string,
-      tabs: Tab[]): void;
+  acceptTabOrganization(sessionId: number, organizationId: number, tabs: Tab[]):
+      void;
 
   rejectTabOrganization(sessionId: number, organizationId: number): void;
+
+  renameTabOrganization(
+      sessionId: number, organizationId: number, name: string): void;
 
   excludeFromStaleTabs(tabId: number): void;
 
@@ -96,13 +98,18 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
   }
 
   acceptTabOrganization(
-      sessionId: number, organizationId: number, name: string, tabs: Tab[]) {
-    this.handler.acceptTabOrganization(
-        sessionId, organizationId, stringToMojoString16(name), tabs);
+      sessionId: number, organizationId: number, tabs: Tab[]) {
+    this.handler.acceptTabOrganization(sessionId, organizationId, tabs);
   }
 
   rejectTabOrganization(sessionId: number, organizationId: number) {
     this.handler.rejectTabOrganization(sessionId, organizationId);
+  }
+
+  renameTabOrganization(
+      sessionId: number, organizationId: number, name: string) {
+    this.handler.renameTabOrganization(
+        sessionId, organizationId, stringToMojoString16(name));
   }
 
   excludeFromStaleTabs(tabId: number) {

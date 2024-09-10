@@ -45,6 +45,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
         @value-changed="${this.onNameChanged_}"
         aria-label="${this.getInputAriaLabel_()}"
         @focus="${this.onInputFocus_}"
+        @blur="${this.onInputBlur_}"
         @keydown="${this.onInputKeyDown_}">
     </cr-input>
   `}

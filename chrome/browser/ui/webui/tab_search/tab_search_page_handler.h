@@ -73,10 +73,12 @@ class TabSearchPageHandler
   void AcceptTabOrganization(
       int32_t session_id,
       int32_t organization_id,
-      const std::u16string& name,
       std::vector<tab_search::mojom::TabPtr> tabs) override;
   void RejectTabOrganization(int32_t session_id,
                              int32_t organization_id) override;
+  void RenameTabOrganization(int32_t session_id,
+                             int32_t organization_id,
+                             const std::u16string& name) override;
   void ExcludeFromStaleTabs(int32_t tab_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetStaleTabs(GetStaleTabsCallback callback) override;

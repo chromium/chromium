@@ -191,7 +191,6 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     const organizations = groups.map((group: AutoTabGroupsGroupElement) => {
       return {
         organizationId: group.organizationId,
-        name: group.name,
         tabs: group.tabs,
       };
     });

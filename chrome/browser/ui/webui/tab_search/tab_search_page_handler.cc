@@ -269,7 +269,6 @@ void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
 void TabSearchPageHandler::AcceptTabOrganization(
     int32_t session_id,
     int32_t organization_id,
-    const std::u16string& name,
     std::vector<tab_search::mojom::TabPtr> tabs) {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
@@ -304,10 +303,6 @@ void TabSearchPageHandler::AcceptTabOrganization(
     organization->RemoveTabData(tab_id);
   }
 
-  if (organization->GetDisplayName() != name) {
-    organization->SetCurrentName(name);
-  }
-
   organization_service_->AcceptTabOrganization(browser, session_id,
                                                organization_id);
 
@@ -326,6 +321,18 @@ void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,
   }
 
   organization->Reject();
+}
+
+void TabSearchPageHandler::RenameTabOrganization(int32_t session_id,
+                                                 int32_t organization_id,
+                                                 const std::u16string& name) {
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  organization->SetCurrentName(name);
 }
 
 void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {

@@ -214,14 +214,18 @@ interface PageHandler {
   // Bulk close multiple tabs as part of the declutter workflow.
   DeclutterTabs(array<int32> tab_ids);
 
-  // Accept the tab organization, updated with the specified name and tab list.
+  // Accept the tab organization, updated with the specified tab list.
   AcceptTabOrganization(int32 session_id,
                         int32 organization_id,
-                        mojo_base.mojom.String16 name,
                         array<Tab> tabs);
 
   // Reject the tab organization.
   RejectTabOrganization(int32 session_id, int32 organization_id);
+
+  // Rename the tab organization.
+  RenameTabOrganization(int32 session_id,
+                        int32 organization_id,
+                        mojo_base.mojom.String16 name);
 
   // Exclude the given tab from the stale tabs list.
   ExcludeFromStaleTabs(int32 tab_id);

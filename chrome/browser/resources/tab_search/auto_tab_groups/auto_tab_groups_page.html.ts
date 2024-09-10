@@ -28,6 +28,7 @@ export function getHtml(this: AutoTabGroupsPageElement) {
         .session="${this.session_}"
         ?multi-tab-organization="${this.multiTabOrganization_}"
         available-height="${this.availableHeight_}"
+        @name-change="${this.onNameChange_}"
         @reject-click="${this.onRejectClick_}"
         @reject-all-groups-click="${this.onRejectAllGroupsClick_}"
         @create-group-click="${this.onCreateGroupClick_}"

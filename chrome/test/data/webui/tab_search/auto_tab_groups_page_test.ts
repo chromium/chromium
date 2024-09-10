@@ -187,6 +187,21 @@ suite('AutoTabGroupsPageTest', () => {
     assertFalse(!!queryEditButton());
   });
 
+  test('Rename propagates to api proxy', async () => {
+    await autoTabGroupsPageSetup();
+
+    const results =
+        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
+    assertTrue(!!results);
+    results.dispatchEvent(new CustomEvent(
+        'name-change', {detail: {organizationId: 1, name: 'new-name'}}));
+
+    const [_sessionId, organizationId, name] =
+        await testApiProxy.whenCalled('renameTabOrganization');
+    assertEquals(1, organizationId);
+    assertEquals('new-name', name);
+  });
+
   test('Tab close removes from tab list', async () => {
     await autoTabGroupsPageSetup();
 
