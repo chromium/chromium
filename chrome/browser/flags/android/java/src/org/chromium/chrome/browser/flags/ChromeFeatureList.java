@@ -329,6 +329,8 @@ public abstract class ChromeFeatureList {
             "FingerprintingProtectionUserBypass";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
+    public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
+            "ForceBrowserControlsUponExitingFullscreen";
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
             "ForceDisableExtendedSyncPromos";
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
@@ -867,6 +869,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
+    public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =
+            newMutableFlagWithSafeDefault(FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN, true);
     public static final MutableFlagWithSafeDefault sGtsCloseTabAnimation =
             newMutableFlagWithSafeDefault(GTS_CLOSE_TAB_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

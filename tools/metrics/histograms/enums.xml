@@ -23718,6 +23718,8 @@ from previous Chrome versions.
   <int value="1284364448" label="MicrosoftOfficeWebAppExperiment:disabled"/>
   <int value="1284910808" label="disable-checker-imaging"/>
   <int value="1285169797" label="ClipboardHistoryNudgeSessionReset:disabled"/>
+  <int value="1285582572"
+      label="ForceBrowserControlsUponExitingFullscreen:disabled"/>
   <int value="1285905715" label="WebXRHitTest:enabled"/>
   <int value="1286195560" label="enable-download-warning-improvements"/>
   <int value="1286692760" label="NtpMiddleSlotPromoDismissal:enabled"/>
@@ -25504,6 +25506,8 @@ from previous Chrome versions.
   <int value="2000291475"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:enabled"/>
   <int value="2000903602" label="MantaService:disabled"/>
+  <int value="2001233385"
+      label="ForceBrowserControlsUponExitingFullscreen:enabled"/>
   <int value="2001505416" label="CorbAllowlistAlsoAppliesToOorCors:enabled"/>
   <int value="2001520126" label="AccountManagementFlowsV2:enabled"/>
   <int value="2001562962"

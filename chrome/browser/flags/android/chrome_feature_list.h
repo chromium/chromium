@@ -102,6 +102,7 @@ BASE_DECLARE_FEATURE(kEducationalTipModule);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kForceBrowserControlsUponExitingFullscreen);
 BASE_DECLARE_FEATURE(kForceListTabSwitcher);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);

@@ -250,6 +250,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExperimentsForAgsa,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
+    &kForceBrowserControlsUponExitingFullscreen,
     &kForceListTabSwitcher,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
@@ -727,6 +728,10 @@ BASE_FEATURE(kEducationalTipModule,
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kForceBrowserControlsUponExitingFullscreen,
+             "ForceBrowserControlsUponExitingFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFullscreenInsetsApiMigration,
