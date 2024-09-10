@@ -141,6 +141,7 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   tabs_ = group.saved_tabs();
 
   UpdateButtonLayout();
+  UpdateAccessibleName();
 }
 
 std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
@@ -164,16 +165,6 @@ bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          event_utils::IsPossibleDispositionEvent(e);
-}
-
-void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  // We must set the updated accessible name directly in the cache to override
-  // the one set in `LabelButton::SetText`. This is temporary.
-  //
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  GetViewAccessibility().SetName(GetAccessibleNameForButton());
 }
 
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -212,6 +203,15 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
                 IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT, GetText(),
                 opened_state);
   return saved_group_acessible_name;
+}
+
+void SavedTabGroupButton::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+}
+
+void SavedTabGroupButton::SetText(const std::u16string& text) {
+  LabelButton::SetText(text);
+  UpdateAccessibleName();
 }
 
 void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
