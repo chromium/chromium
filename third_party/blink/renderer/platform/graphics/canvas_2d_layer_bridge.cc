@@ -180,7 +180,8 @@ CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
 
 CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   CHECK(resource_host_);
-  CanvasResourceProvider* resource_provider = ResourceProvider();
+  CanvasResourceProvider* resource_provider =
+      resource_host_->ResourceProvider();
 
   if (resource_host_->context_lost()) {
     DCHECK(!resource_provider);
@@ -248,8 +249,10 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
 
 void Canvas2DLayerBridge::PageVisibilityChanged() {
   bool page_is_visible = resource_host_->IsPageVisible();
-  if (ResourceProvider())
-    ResourceProvider()->SetResourceRecyclingEnabled(page_is_visible);
+  if (resource_host_->ResourceProvider()) {
+    resource_host_->ResourceProvider()->SetResourceRecyclingEnabled(
+        page_is_visible);
+  }
 
   // Conserve memory.
   if (resource_host_->GetRasterMode() == RasterMode::kGPU) {
@@ -258,7 +261,8 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     }
   }
 
-  if (features::IsCanvas2DHibernationEnabled() && ResourceProvider() &&
+  if (features::IsCanvas2DHibernationEnabled() &&
+      resource_host_->ResourceProvider() &&
       resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible &&
       !hibernation_scheduled_) {
     resource_host_->ClearLayerTexture();
@@ -329,12 +333,13 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
     resource_host_->FlushRecording(FlushReason::kWritePixels);
 
     // Short-circuit out if an error occurred while flushing the recording.
-    if (!ResourceProvider()->IsValid()) {
+    if (!resource_host_->ResourceProvider()->IsValid()) {
       return false;
     }
   }
 
-  return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
+  return resource_host_->ResourceProvider()->WritePixels(orig_info, pixels,
+                                                         row_bytes, x, y);
 }
 
 bool Canvas2DLayerBridge::Restore() {
@@ -343,7 +348,7 @@ bool Canvas2DLayerBridge::Restore() {
   if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
     return false;
   }
-  DCHECK(!ResourceProvider());
+  DCHECK(!resource_host_->ResourceProvider());
 
   resource_host_->ClearLayerTexture();
 
@@ -417,7 +422,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
   if (!GetOrCreateResourceProvider())
     return nullptr;
   resource_host_->FlushRecording(reason);
-  return ResourceProvider()->Snapshot(reason);
+  return resource_host_->ResourceProvider()->Snapshot(reason);
 }
 
 void Canvas2DLayerBridge::Logger::ReportHibernationEvent(
