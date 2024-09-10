@@ -13,4 +13,20 @@ mojom("mojo_bindings") {
   ]
 
   webui_module_path = ""
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "history.mojom.FormFactor"
+          cpp = "::syncer::DeviceInfo::FormFactor"
+        },
+      ]
+      traits_headers = [
+        "//components/sync_device_info/device_info.h",
+        "history_types_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//components/sync_device_info" ]
+    },
+  ]
 }

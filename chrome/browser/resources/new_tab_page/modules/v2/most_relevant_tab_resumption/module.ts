@@ -13,7 +13,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
-import {DeviceType} from '../../../history_types.mojom-webui.js';
+import {FormFactor} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
@@ -192,18 +192,18 @@ private shouldShowDeviceIcon_:
   }
 
   private computeIcon_(tab: Tab): string {
-    switch (tab.deviceType) {
-      case DeviceType.kDesktop:
+    switch (tab.formFactor) {
+      case FormFactor.kDesktop:
         return 'tab_resumption:computer';
-      case DeviceType.kPhone:
+      case FormFactor.kPhone:
         return 'tab_resumption:phone';
-      case DeviceType.kTablet:
+      case FormFactor.kTablet:
         return 'tab_resumption:tablet';
-      case DeviceType.kAutomotive:
+      case FormFactor.kAutomotive:
         return 'tab_resumption:automotive';
-      case DeviceType.kWearable:
+      case FormFactor.kWearable:
         return 'tab_resumption:wearable';
-      case DeviceType.kTv:
+      case FormFactor.kTv:
         return 'tab_resumption:tv';
       default:
         return 'tab_resumption:globe';

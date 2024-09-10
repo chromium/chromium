@@ -255,7 +255,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
   auto tabs_mojom = RunGetTabs();
   ASSERT_EQ(2u, tabs_mojom.size());
   for (const auto& tab_mojom : tabs_mojom) {
-    ASSERT_EQ(history::mojom::DeviceType::kUnknown, tab_mojom->device_type);
+    ASSERT_EQ(syncer::DeviceInfo::FormFactor::kUnknown, tab_mojom->form_factor);
     ASSERT_EQ("sample_title", tab_mojom->title);
     ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl), tab_mojom->url);
   }

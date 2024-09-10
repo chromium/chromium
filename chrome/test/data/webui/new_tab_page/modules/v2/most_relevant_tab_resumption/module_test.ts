@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {Tab} from 'chrome://new-tab-page/history_types.mojom-webui.js';
-import {DecorationType, DeviceType} from 'chrome://new-tab-page/history_types.mojom-webui.js';
+import {DecorationType, FormFactor} from 'chrome://new-tab-page/history_types.mojom-webui.js';
 import type {DismissModuleElementEvent, DismissModuleInstanceEvent, MostRelevantTabResumptionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {PageHandlerRemote, ScoredURLUserAction} from 'chrome://new-tab-page/most_relevant_tab_resumption.mojom-webui.js';
@@ -32,7 +32,7 @@ function createSampleTab(
           type: DecorationType.kVisitedXAgo,
           displayString: 'You visited 0 seconds ago',
         },
-        deviceType: DeviceType.kDesktop,
+        formFactor: FormFactor.kDesktop,
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},
         urlKey: '',

@@ -65,8 +65,7 @@ std::u16string FormatRelativeTime(const base::Time& time) {
 history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
                                   base::Time last_active = base::Time()) {
   auto tab_mojom = history::mojom::Tab::New();
-  tab_mojom->device_type =
-      history::mojom::DeviceType(static_cast<int>(tab.visit.device_type));
+  tab_mojom->form_factor = tab.visit.device_type;
   tab_mojom->session_name = tab.session_name;
 
   base::Value::Dict dictionary;
@@ -79,10 +78,14 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
 
 // Helper method to create mojom tab objects from HistoryEntry objects.
 history::mojom::TabPtr HistoryEntryVisitToMojom(
-    const history::AnnotatedVisit& visit) {
+    const history::AnnotatedVisit& visit,
+    const std::optional<std::string>& client_name,
+    syncer::DeviceInfo::FormFactor device_type) {
   auto tab_mojom = history::mojom::Tab::New();
-  tab_mojom->device_type =
-      history::mojom::DeviceType(history::mojom::DeviceType::kUnknown);
+  tab_mojom->form_factor = device_type;
+  if (client_name) {
+    tab_mojom->session_name = client_name.value();
+  }
 
   base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, visit.url_row.title(),
@@ -379,11 +382,12 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
             URLVisitAggregateDataType::kTab);
       }
     } else {
-      const history::AnnotatedVisit* visit =
-          visited_url_ranking::GetHistoryEntryVisitIfExists(
-              url_visit_aggregate);
-      if (visit) {
-        auto history_tab_mojom = HistoryEntryVisitToMojom(*visit);
+      const URLVisitAggregate::HistoryData* history_data =
+          GetHistoryDataIfExists(url_visit_aggregate);
+      if (history_data) {
+        auto history_tab_mojom = HistoryEntryVisitToMojom(
+            history_data->last_visited, history_data->visit.client_name,
+            history_data->visit.device_type);
         history_tab_mojom->url =
             **url_visit_aggregate.GetAssociatedURLs().begin();
         history_tab_mojom->url_key = url_visit_aggregate.url_key;

@@ -7,15 +7,15 @@ module history.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
-// Device Types.
-enum DeviceType {
-  kUnknown,
-  kDesktop,
-  kPhone,
-  kTablet,
-  kAutomotive,
-  kWearable,
-  kTv,
+// Device form factors. See also `syncer::FormFactor`.
+enum FormFactor {
+  kUnknown = 0,
+  kDesktop = 1,
+  kPhone = 2,
+  kTablet = 3,
+  kAutomotive = 4,
+  kWearable = 5,
+  kTv = 6,
 };
 
 // Reasons for showing tab in Tab Resumption module.
@@ -34,7 +34,7 @@ struct Decoration {
 struct Tab {
   // Type of device for displaying device icon
   // See components/sync_device_info/device_info.h
-  DeviceType device_type;
+  FormFactor form_factor;
 
   // Name of session to be displayed on surfaces such as NTP.
   string? session_name;
