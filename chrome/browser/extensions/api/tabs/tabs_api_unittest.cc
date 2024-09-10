@@ -29,7 +29,7 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -37,6 +37,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -123,6 +124,11 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
     return GetTabStripModel()->GetActiveWebContents();
   }
 
+  tab_groups::TabGroupSyncService* sync_service() {
+    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        browser()->profile());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* root_window() { return test_helper_.GetContext(); }
 #endif
@@ -162,6 +168,10 @@ void TabsApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_.reset(Browser::Create(params));
+
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+  saved_service->SetIsInitializedForTesting(true);
 }
 
 void TabsApiUnitTest::TearDown() {
@@ -553,6 +563,9 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   web_contents_tester->NavigateAndCommit(kExampleCom);
   EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Group the tab and save it.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup(
       {GetTabStripModel()->GetIndexOfWebContents(raw_contents)});
@@ -564,15 +577,11 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-
   if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
     // The group is not saved by default if we enter here. Manually save it.
-    saved_service->SaveGroup(group);
-    ASSERT_NE(nullptr, saved_service->model()->Get(group));
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+    ASSERT_TRUE(saved_service->GetGroup(group));
   }
 
   EXPECT_TRUE(
@@ -591,7 +600,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
     EXPECT_EQ(GetActiveWebContents(), raw_contents);
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Reset the active states, and then test highlighted for a saved tab.
     GetTabStripModel()->ActivateTabAt(
@@ -611,7 +621,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
     EXPECT_EQ(GetActiveWebContents(), raw_contents);
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Reset the active states, and then test selected state for a saved tab.
     GetTabStripModel()->ActivateTabAt(
@@ -632,7 +643,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(GetTabStripModel()->IsTabSelected(
         GetTabStripModel()->GetIndexOfWebContents(raw_contents)));
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Test Muted state.
     scoped_refptr<const Extension> extension =
@@ -644,7 +656,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Test setting the opener.
     scoped_refptr<const Extension> extension =
@@ -657,7 +670,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Test setting the disard state.
     scoped_refptr<const Extension> extension =
@@ -669,7 +683,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   {  // Test setting URL should pass.
     scoped_refptr<const Extension> extension =
@@ -682,7 +697,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
   }
-  ASSERT_NE(nullptr, saved_service->model()->Get(group));
+
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   // Test setting pinned state should pass. This must be done last since pinning
   // destroys the group.
@@ -696,7 +712,16 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
   }
-  ASSERT_EQ(nullptr, saved_service->model()->Get(group));
+
+  if (!tab_groups::IsTabGroupsSaveV2Enabled() &&
+      tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    // Listener layer for the migration flag is reliant on v2 being enabled. For
+    // this reason we do not observe the group when the tab is removed which is
+    // why the group still exists when the last tab is removed.
+    ASSERT_TRUE(saved_service->GetGroup(group));
+  } else {
+    ASSERT_FALSE(saved_service->GetGroup(group));
+  }
 }
 
 // Tests that calling chrome.tabs.update with a JavaScript URL results
@@ -873,6 +898,9 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabAllowed) {
   }
   ASSERT_EQ(kNumTabs, GetTabStripModel()->count());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Group the tab and save it.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
@@ -883,11 +911,10 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  }
 
   // Use the TabsUpdateFunction to navigate to chromium.org
   int tab_extension_id = sessions::SessionTabHelper::IdForTab(
@@ -903,9 +930,6 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabAllowed) {
 
   EXPECT_EQ(GetTabStripModel()->GetWebContentsAt(0), web_contentses[1]);
   EXPECT_EQ(GetTabStripModel()->GetWebContentsAt(1), web_contentses[0]);
-
-  // Clean up.
-  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
 }
 
 // Test that the tabs.group() function correctly rearranges sets of tabs within
@@ -1154,11 +1178,14 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTab) {
   // group the first tab. make sure its saved.
   tab_groups::TabGroupId old_group = GetTabStripModel()->AddToNewGroup({0});
   if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    tab_groups::SavedTabGroupKeyedService* saved_service =
-        tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+    tab_groups::TabGroupSyncService* saved_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
             browser()->profile());
-    ASSERT_NE(saved_service, nullptr);
-    saved_service->SaveGroup(old_group);
+    ASSERT_TRUE(saved_service);
+
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+            old_group));
   }
 
   // with extensions group the 2 tabs into a new group.
@@ -1244,6 +1271,9 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroup) {
   }
   ASSERT_EQ(1, GetTabStripModel()->count());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Group the tab and save it.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data(
@@ -1254,11 +1284,10 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroup) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  }
 
   auto function = base::MakeRefCounted<TabsUngroupFunction>();
   function->set_extension(extension);
@@ -1412,6 +1441,9 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTab) {
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Save the tab and expect that it can not be navigated forwards or backwards.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup(
       {GetTabStripModel()->GetIndexOfWebContents(web_contents)});
@@ -1423,11 +1455,10 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTab) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  }
 
   {
     auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
@@ -1711,6 +1742,9 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
   web_contents_tester->NavigateAndCommit(kExampleCom);
   EXPECT_EQ(kExampleCom, web_contents->GetLastCommittedURL());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Group the tab and save it.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup(
       {GetTabStripModel()->GetIndexOfWebContents(web_contents)});
@@ -1722,11 +1756,10 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  }
 
   // The tab discard function should fail.
   auto function = base::MakeRefCounted<TabsDiscardFunction>();
@@ -1734,9 +1767,6 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
   EXPECT_TRUE(api_test_utils::RunFunction(
       function.get(), base::StringPrintf("[%d]", tab_id), profile(),
       api_test_utils::FunctionMode::kNone));
-
-  // Clean up.
-  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1768,6 +1798,9 @@ TEST_F(TabsApiUnitTest,
   web_contents_tester->NavigateAndCommit(kExampleCom);
   EXPECT_EQ(kExampleCom, web_contents->GetLastCommittedURL());
 
+  tab_groups::TabGroupSyncService* saved_service = sync_service();
+  ASSERT_TRUE(saved_service);
+
   // Group the tab and save it.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup(
       {GetTabStripModel()->GetIndexOfWebContents(web_contents)});
@@ -1779,11 +1812,10 @@ TEST_F(TabsApiUnitTest,
       ->GetTabGroup(group)
       ->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_service->AddGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  }
 
   // The tab discard function should not fail.
   auto function = base::MakeRefCounted<TabsDiscardFunction>();
@@ -1795,9 +1827,6 @@ TEST_F(TabsApiUnitTest,
   content::WebContents* new_contents_at_index =
       GetTabStripModel()->GetWebContentsAt(index);
   EXPECT_TRUE(new_contents_at_index->WasDiscarded());
-
-  // Clean up.
-  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
