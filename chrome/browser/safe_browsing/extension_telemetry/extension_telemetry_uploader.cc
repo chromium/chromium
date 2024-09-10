@@ -160,14 +160,20 @@ void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ExtensionTelemetryUploader::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), !access_token.empty()));
 }
 
 void ExtensionTelemetryUploader::OnURLLoaderComplete(
+    bool has_access_token,
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  if (has_access_token) {
+    MaybeLogCookieReset(*url_loader_,
+                        SafeBrowsingAuthenticatedEndpoint::kExtensionTelemetry);
+  }
 
   RetryOrFinish(url_loader_->NetError(), response_code, *response_body.get());
 }

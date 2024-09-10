@@ -299,6 +299,11 @@ void MultipartUploadRequest::OnURLLoaderComplete(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
 
+  if (!access_token_.empty()) {
+    MaybeLogCookieReset(*url_loader_,
+                        SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
+  }
+
   RetryOrFinish(url_loader_->NetError(), response_code,
                 std::move(response_body));
 }

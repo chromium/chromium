@@ -215,6 +215,11 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
+  if (!access_token_.empty()) {
+    MaybeLogCookieReset(*url_loader_,
+                        SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
+  }
+
   // If there is an error or if the metadata check has already determined a
   // verdict, CanUploadContent() returns false.
   response_code = url_loader_->ResponseInfo()->headers->response_code();

@@ -108,6 +108,7 @@ class ClientSideDetectionService
 
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
                            base::Time start_time,
+                           bool has_access_token,
                            std::unique_ptr<std::string> response_body);
 
   // Sends a request to the SafeBrowsing servers with the ClientPhishingRequest.

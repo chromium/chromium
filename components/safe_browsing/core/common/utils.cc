@@ -23,6 +23,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
@@ -117,6 +118,15 @@ bool CanGetReputationOfUrl(const GURL& url) {
   }
 
   return true;
+}
+
+void MaybeLogCookieReset(const network::SimpleURLLoader& loader,
+                         SafeBrowsingAuthenticatedEndpoint endpoint) {
+  if (loader.ResponseInfo() &&
+      loader.ResponseInfo()->headers->HasHeader("Set-Cookie")) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.AuthenticatedCookieResetEndpoint", endpoint);
+  }
 }
 
 void SetAccessTokenAndClearCookieInResourceRequest(

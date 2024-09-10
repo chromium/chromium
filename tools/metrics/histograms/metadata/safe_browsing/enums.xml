@@ -270,6 +270,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="SUCCESS_REFERRER"/>
 </enum>
 
+<enum name="SafeBrowsingAuthenticatedEndpoint">
+  <int value="0" label="Deep scanning"/>
+  <int value="1" label="Download protection"/>
+  <int value="2" label="Extension telemetry"/>
+  <int value="3" label="Client side detection"/>
+  <int value="4" label="Password protection"/>
+  <int value="5" label="Threat details"/>
+  <int value="6" label="Realtime URL lookup"/>
+</enum>
+
 <enum name="SafeBrowsingBinaryUploadResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

@@ -202,6 +202,7 @@ bool ClientSideDetectionService::IsLocalResource(
 void ClientSideDetectionService::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
     base::Time start_time,
+    bool has_access_token,
     std::unique_ptr<std::string> response_body) {
   base::UmaHistogramTimes("SBClientPhishing.NetworkRequestDuration",
                           base::Time::Now() - start_time);
@@ -219,6 +220,11 @@ void ClientSideDetectionService::OnURLLoaderComplete(
     RecordHttpResponseOrErrorCode("SBClientPhishing.NetworkResult",
                                   url_loader->NetError(),
                                   response_code.value());
+  }
+
+  if (has_access_token) {
+    MaybeLogCookieReset(
+        *url_loader, SafeBrowsingAuthenticatedEndpoint::kClientSideDetection);
   }
 
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
@@ -332,7 +338,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ClientSideDetectionService::OnURLLoaderComplete,
-                     base::Unretained(this), loader.get(), base::Time::Now()));
+                     base::Unretained(this), loader.get(), base::Time::Now(),
+                     !access_token.empty()));
 
   // Remember which callback and URL correspond to the current fetcher object.
   std::unique_ptr<ClientPhishingReportInfo> info(new ClientPhishingReportInfo);

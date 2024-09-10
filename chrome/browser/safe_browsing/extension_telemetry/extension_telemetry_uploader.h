@@ -58,7 +58,8 @@ class ExtensionTelemetryUploader {
   void SendRequest(const std::string& access_token);
 
   // Callback when SimpleURLLoader gets the response.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(bool has_access_token,
+                           std::unique_ptr<std::string> response_body);
 
   // Called by OnURLLoaderComplete to handle successful/failed upload.
   void RetryOrFinish(int net_error,

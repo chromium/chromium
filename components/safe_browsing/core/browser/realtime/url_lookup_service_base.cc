@@ -522,6 +522,11 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   MaybeLogProtegoPingCookieHistograms(request_had_cookie, was_first_request,
                                       sent_with_token);
 
+  if (sent_with_token) {
+    MaybeLogCookieReset(*url_loader,
+                        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
+  }
+
   if (response_code == net::HTTP_UNAUTHORIZED &&
       access_token_string.has_value()) {
     OnResponseUnauthorized(access_token_string.value());

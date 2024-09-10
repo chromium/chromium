@@ -264,6 +264,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.AuthenticatedCookieResetEndpoint"
+    enum="SafeBrowsingAuthenticatedEndpoint" expires_after="2024-12-09">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records which endpoint changed the Safe Browsing cookie on an authenticated
+    request. This is temporary logging to understand a performance change in
+    https://crbug.com/40789301. This is logged every time the Safe Browsing
+    cookie is changed on an authenticated request (once per network request,
+    which is roughly once per navigation).
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.BlockingPage.ThreatType" enum="SBThreatType"
     expires_after="2025-02-10">
   <owner>xinghuilu@chromium.org</owner>

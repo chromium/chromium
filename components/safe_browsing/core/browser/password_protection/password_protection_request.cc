@@ -396,7 +396,7 @@ void PasswordProtectionRequest::SendRequestWithToken(
     url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         password_protection_service_->url_loader_factory().get(),
         base::BindOnce(&PasswordProtectionRequest::OnURLLoaderComplete,
-                       AsWeakPtr()));
+                       AsWeakPtr(), has_access_token));
   }
 }
 
@@ -414,6 +414,7 @@ void PasswordProtectionRequest::StartTimeout() {
 }
 
 void PasswordProtectionRequest::OnURLLoaderComplete(
+    bool has_access_token,
     std::unique_ptr<std::string> response_body) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   int response_code = 0;
@@ -424,6 +425,11 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
 
   LogPasswordProtectionNetworkResponseAndDuration(
       response_code, url_loader_->NetError(), request_start_time_);
+
+  if (has_access_token) {
+    MaybeLogCookieReset(*url_loader_,
+                        SafeBrowsingAuthenticatedEndpoint::kPasswordProtection);
+  }
 
   if (!is_success || net::HTTP_OK != response_code) {
     Finish(RequestOutcome::FETCH_FAILED, nullptr);

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -59,6 +60,28 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name);
 // (5) Its hostname is a dotless domain.
 // (6) Its hostname is less than 4 characters.
 bool CanGetReputationOfUrl(const GURL& url);
+
+// List of callers of
+// `SetAccessTokenAndClearCookieInResourceRequest`. This is used for
+// logging the histogram SafeBrowsing.AuthenticatedCookieResetEndpoint.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SafeBrowsingAuthenticatedEndpoint {
+  kDeepScanning = 0,
+  kDownloadProtection = 1,
+  kExtensionTelemetry = 2,
+  kClientSideDetection = 3,
+  kPasswordProtection = 4,
+  kThreatDetails = 5,
+  kRealtimeUrlLookup = 6,
+  kMaxValue = kRealtimeUrlLookup,
+};
+
+// Log the SafeBrowsing.AuthenticatedCookieResetEndpoint histogram, if
+// appropriate.
+void MaybeLogCookieReset(const network::SimpleURLLoader& loader,
+                         SafeBrowsingAuthenticatedEndpoint endpoint);
 
 // Set |access_token| in |resource_request|. Remove cookies in the request
 // since we only need one identifier.
