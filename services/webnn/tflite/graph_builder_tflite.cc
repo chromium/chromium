@@ -22,7 +22,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
-#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
 namespace webnn::tflite {
 

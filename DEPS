@@ -1774,7 +1774,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '33d0937c6bdf5ec999939fb17f2a553183d14a74',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '134b526d6110061469168e7e0511822a8e30bcaf',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2361,7 +2361,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e34549db516f8712f678fcd4bc411613b5cc5295',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/Maratyszcza/pthreadpool.git' + '@' + '4fe0e1e183925bf8cfa6aae24237e724a96479b8',
+    Var('chromium_git') + '/external/github.com/Maratyszcza/pthreadpool.git' + '@' + '560c60d342a76076f0557a3946924c6478470044',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2527,7 +2527,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '0109742147fab2b753a92090f0480a125a93818b',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'd29299c16ec49623af1294900dba53fc8864f0bb',
 
   'src/third_party/turbine/cipd': {
       'packages': [

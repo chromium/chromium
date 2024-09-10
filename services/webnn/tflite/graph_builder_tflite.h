@@ -21,7 +21,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
-#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
 namespace webnn::tflite {
 
