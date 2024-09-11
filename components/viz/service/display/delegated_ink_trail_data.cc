@@ -160,8 +160,7 @@ void DelegatedInkTrailData::ErasePointsOlderThanMetadata(
   // drawn by the app. Since the metadata timestamp will only increase, we can
   // safely erase every point earlier than it and be left only with the points
   // that can be drawn.
-  while (points_.size() > 0 && points_.begin()->first < metadata->timestamp() &&
-         points_.begin()->second != metadata->point())
+  while (points_.size() > 0 && points_.begin()->first < metadata->timestamp())
     points_.erase(points_.begin());
 }
 

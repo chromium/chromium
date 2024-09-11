@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -128,7 +129,9 @@ DelegatedInkPointRendererBase::FilterPoints() {
                            TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
   }
 
-  CHECK(points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get()));
+  if (!points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get())) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   return points_to_draw;
 }
