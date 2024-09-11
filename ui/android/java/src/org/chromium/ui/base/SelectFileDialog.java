@@ -339,6 +339,15 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         mAllowMultiple = multiple;
         mWindowAndroid = (sWindowAndroidForTesting == null) ? window : sWindowAndroidForTesting;
 
+        // No mime types or extra choosers needed for open-directory.
+        if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)) {
+            Intent intent = new Intent(mIntentAction);
+            if (!mWindowAndroid.showIntent(intent, this, R.string.low_memory_error)) {
+                onFileNotSelected();
+            }
+            return;
+        }
+
         mSupportsImageCapture =
                 mWindowAndroid.canResolveActivity(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
         mSupportsVideoCapture =
@@ -560,10 +569,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
-        // Set to all types if not a dir, and restrict further by MIME-type below.
-        if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(getContentIntent.getAction())) {
-            getContentIntent.setType(ALL_TYPES);
-        }
+        // Set to all types, and restrict further by MIME-type below.
+        getContentIntent.setType(ALL_TYPES);
 
         if (mMimeTypes.size() > 0) {
             // If some of the extensions are generic, just let user selectall files.
@@ -623,10 +630,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
-        // Set to all types if not a dir, but potentially restricted further by MIME-type below.
-        if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(getContentIntent.getAction())) {
-            getContentIntent.setType(ALL_TYPES);
-        }
+        // Set to all types, but potentially restricted further by MIME-type below.
+        getContentIntent.setType(ALL_TYPES);
 
         ArrayList<Intent> extraIntents = new ArrayList<Intent>();
         if (acceptsSingleType()) {

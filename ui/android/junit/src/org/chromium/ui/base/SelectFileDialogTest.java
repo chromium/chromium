@@ -269,6 +269,43 @@ public class SelectFileDialogTest {
     }
 
     @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testMimeTypesWithExternalPickerOpenDocumentTree() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Setup WindowAndroid#showIntent to succeed (and validate the call).
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            // Validate open-dir intent has no extra choosers, mimes, etc.
+                            Intent intent = (Intent) invocation.getArguments()[0];
+                            assertEquals(null, intent.getExtra(Intent.EXTRA_INTENT));
+                            assertEquals(null, intent.getType());
+                            assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                            assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Simulate showing the dialog, allowing a directory to be selected.
+        selectFileDialog.selectFile(
+                Intent.ACTION_OPEN_DOCUMENT_TREE,
+                /* fileTypes= */ new String[] {},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
     public void testMimeTypesWithExternalPickerNoAcceptList() throws Exception {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
