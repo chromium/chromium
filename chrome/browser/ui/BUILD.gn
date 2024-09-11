@@ -2218,10 +2218,6 @@ static_library("ui") {
       "webui/nearby_internals/nearby_internals_ui_trigger_handler.h",
       "webui/nearby_internals/quick_pair/quick_pair_handler.cc",
       "webui/nearby_internals/quick_pair/quick_pair_handler.h",
-      "webui/nearby_share/nearby_share_dialog_ui.cc",
-      "webui/nearby_share/nearby_share_dialog_ui.h",
-      "webui/nearby_share/shared_resources.cc",
-      "webui/nearby_share/shared_resources.h",
     ]
 
     deps += [
@@ -2590,6 +2586,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/system_web_dialog",
       "//chrome/browser/ui/webui/ash/user_image",
       "//chrome/browser/ui/webui/ash/vc_tray_tester",
+      "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
@@ -3031,6 +3028,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
+      "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
     ]
 

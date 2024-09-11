@@ -5234,6 +5234,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
       "//chrome/browser/ui/webui/ash/vm",
+      "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
@@ -5649,6 +5650,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/settings/services/metrics",
       "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
+      "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
     ]
 

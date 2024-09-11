@@ -41,6 +41,7 @@ static_library("multidevice") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/nearby_share",
     "//chrome/common",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/osauth/public",
