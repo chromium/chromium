@@ -28,9 +28,7 @@ void LensOverlayRequestIdGenerator::ResetRequestId() {
 }
 
 void LensOverlayRequestIdGenerator::CreateNewAnalyticsId() {
-  std::array<uint8_t, kAnalyticsIdBytesSize> bytes;
-  base::RandBytes(bytes);
-  analytics_id_ = std::string(bytes.begin(), bytes.end());
+  analytics_id_ = base::RandBytesAsString(kAnalyticsIdBytesSize);
 }
 
 void LensOverlayRequestIdGenerator::IncrementImageSequenceId() {
