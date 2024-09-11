@@ -23,15 +23,6 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
              "AutofillGivePrecedenceToNumericQuantities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/40151750): Remove this feature flag after the explicit save
-// prompts for address profiles is complete.
-// When enabled, address profile save problem will contain a dropdown for
-// assigning a nickname to the address profile. Relevant only if the
-// AutofillAddressProfileSavePrompt feature is enabled.
-BASE_FEATURE(kAutofillAddressProfileSavePromptNicknameSupport,
-             "AutofillAddressProfileSavePromptNicknameSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target

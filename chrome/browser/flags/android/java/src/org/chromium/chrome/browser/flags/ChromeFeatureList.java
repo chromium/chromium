@@ -181,8 +181,6 @@ public abstract class ChromeFeatureList {
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
-    public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
-            "AutofillAddressProfileSavePromptNicknameSupport";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
             "AutofillAllowNonHttpActivation";
     public static final String AUTOFILL_ENABLE_CARD_ART_IMAGE = "AutofillEnableCardArtImage";
