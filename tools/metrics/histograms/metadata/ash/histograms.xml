@@ -4812,7 +4812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
-    expires_after="2024-09-01">
+    expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -8949,7 +8949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
-    units="%" expires_after="2024-10-06">
+    units="%" expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -9822,7 +9822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
-    expires_after="2025-01-26">
+    expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
   <summary>
@@ -9835,7 +9835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
-    units="%" expires_after="2024-10-16">
+    units="%" expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -9851,7 +9851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
-    units="%" expires_after="2024-10-16">
+    units="%" expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -9865,7 +9865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
-    expires_after="2024-10-16">
+    expires_after="2025-09-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
