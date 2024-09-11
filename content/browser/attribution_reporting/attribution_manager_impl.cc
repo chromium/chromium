@@ -140,6 +140,9 @@ enum class ConversionReportSendRetryCount {
 
 const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 
+const base::TimeDelta kReportDeliveryFirstRetryDelay = base::Minutes(5);
+const base::TimeDelta kReportDeliverySecondRetryDelay = base::Minutes(15);
+
 }  // namespace
 
 // This class consolidates logic regarding when to schedule the browser to send
@@ -231,8 +234,8 @@ bool IsStorageKeySessionOnly(
 }
 
 const base::TimeDelta ReportRetryDelay(bool is_first_retry) {
-  return is_first_retry ? kAttributionReportDeliveryFirstRetryDelay.Get()
-                        : kAttributionReportDeliverySecondRetryDelay.Get();
+  return is_first_retry ? kReportDeliveryFirstRetryDelay
+                        : kReportDeliverySecondRetryDelay;
 }
 
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
