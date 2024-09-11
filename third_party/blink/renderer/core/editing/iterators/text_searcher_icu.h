@@ -27,7 +27,13 @@ class CORE_EXPORT TextSearcherICU {
   DISALLOW_NEW();
 
  public:
+  enum ConstructLocalTag { kConstructLocal };
+
+  // Instantiate with the global UStringSearch instance.
+  // We can't have multiple instances constructed by this.
   TextSearcherICU();
+  // Instantiate with a local UStringSearch instance.
+  explicit TextSearcherICU(ConstructLocalTag);
   TextSearcherICU(const TextSearcherICU&) = delete;
   TextSearcherICU& operator=(const TextSearcherICU&) = delete;
   ~TextSearcherICU();

@@ -63,12 +63,32 @@ class SearcherFactory {
   SearcherFactory(const SearcherFactory&) = delete;
   SearcherFactory& operator=(const SearcherFactory&) = delete;
 
+  // Returns the global instance. If this is called again before calling
+  // ReleaseSearcher(), this function crashes.
   static UStringSearch* AcquireSearcher() {
     Instance().Lock();
     return Instance().searcher_;
   }
+  // Creates a normal instance. We may create instances multiple times with
+  // this function.  A returned pointer should be destructed by
+  // ReleaseSearcher().
+  static UStringSearch* CreateLocal() { return CreateSearcher(); }
 
-  static void ReleaseSearcher() { Instance().Unlock(); }
+  static void ReleaseSearcher(UStringSearch* searcher) {
+    if (searcher == Instance().searcher_) {
+      // Leave the static object pointing to valid strings (pattern=target,
+      // text=buffer). Otherwise, usearch_reset() will results in
+      // 'use-after-free' error.
+      UErrorCode status = U_ZERO_ERROR;
+      usearch_setPattern(searcher, &kNewlineCharacter, 1, &status);
+      DCHECK(U_SUCCESS(status));
+      usearch_setText(searcher, &kNewlineCharacter, 1, &status);
+      DCHECK(U_SUCCESS(status));
+      Instance().Unlock();
+    } else {
+      usearch_close(searcher);
+    }
+  }
 
  private:
   static SearcherFactory& Instance() {
@@ -125,18 +145,14 @@ static bool IsWholeWordMatch(base::span<const UChar> text,
 }
 
 // Grab the single global searcher.
-// If we ever have a reason to do more than once search buffer at once, we'll
-// have to move to multiple searchers.
 TextSearcherICU::TextSearcherICU()
     : searcher_(SearcherFactory::AcquireSearcher()) {}
 
+TextSearcherICU::TextSearcherICU(ConstructLocalTag)
+    : searcher_(SearcherFactory::CreateLocal()) {}
+
 TextSearcherICU::~TextSearcherICU() {
-  // Leave the static object pointing to valid strings (pattern=target,
-  // text=buffer). Otheriwse, usearch_reset() will results in 'use-after-free'
-  // error.
-  SetPattern(base::span<const UChar>({kNewlineCharacter}));
-  SetText(base::span<const UChar>({kNewlineCharacter}));
-  SearcherFactory::ReleaseSearcher();
+  SearcherFactory::ReleaseSearcher(searcher_);
 }
 
 void TextSearcherICU::SetPattern(const StringView& pattern,
