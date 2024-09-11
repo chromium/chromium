@@ -11817,6 +11817,21 @@
             ]
         }
     ],
+    "IOSDownloadPDFExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DownloadedPDFOpening"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
