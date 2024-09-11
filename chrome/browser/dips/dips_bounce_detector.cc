@@ -31,13 +31,12 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -130,6 +129,18 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
 }
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
+
+DIPSWebContentsObserver::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
+
+void DIPSWebContentsObserver::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DIPSWebContentsObserver::RemoveObserver(const Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -591,13 +602,11 @@ void DIPSWebContentsObserver::OnRedirectChainEnded(
   // guaranteed to outlive the call.
   dips_service_->HandleRedirectChain(
       CloneRedirects(redirects), std::make_unique<DIPSRedirectChainInfo>(chain),
-      base::BindRepeating(
-          &DIPSWebContentsObserver::IncrementPageSpecificBounceCount,
-          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&DIPSWebContentsObserver::OnStatefulBounce,
+                          weak_factory_.GetWeakPtr()));
 }
 
-void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
-    const GURL& final_url) {
+void DIPSWebContentsObserver::OnStatefulBounce(const GURL& final_url) {
   // Do nothing if the current URL doesn't match the final URL of the chain.
   // This means that the user has navigated away from the bounce destination, so
   // we don't want to update settings for the wrong site.
@@ -605,11 +614,9 @@ void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
     return;
   }
 
-  // TODO: crbug.com/343631048 - move this out of DIPSWebContentsObserver into a
-  // DIPSService::Observer.
-  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
-      web_contents()->GetPrimaryPage());
-  pscs->IncrementStatefulBounceCount();
+  for (auto& observer : observers_) {
+    observer.OnStatefulBounce(web_contents());
+  }
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
