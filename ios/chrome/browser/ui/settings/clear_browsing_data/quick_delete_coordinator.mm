@@ -147,7 +147,8 @@
                                          endTime:(base::Time)endTime
                                   cachedTabsInfo:
                                       (tabs_closure_util::WebStateIDToTime)
-                                          cachedTabsInfo {
+                                          cachedTabsInfo
+                            forceWebStatesReload:(BOOL)forceWebStatesReload {
   CHECK(_canPerformTabsClosureAnimation);
   CHECK_EQ(Browser::Type::kRegular, self.browser->type());
 
@@ -178,6 +179,16 @@
           self.browser->GetBrowserState());
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
 
+  BrowsingDataRemover::RemovalParams params{
+      .show_activity_indicator =
+          BrowsingDataRemover::ActivityIndicatorPolicy::kNoIndicator,
+  };
+
+  if (forceWebStatesReload) {
+    params.reload_web_states =
+        BrowsingDataRemover::WebStatesReloadPolicy::kForceReload;
+  }
+
   __weak QuickDeleteCoordinator* weakSelf = self;
   ProceduralBlock dismissCompletionBlock = ^() {
     [weakSelf animateTabsClosureWithBeginTime:beginTime
@@ -185,7 +196,8 @@
                                    activeTabs:activeTabsToClose
                                        groups:tabGroupsWithTabsToClose
                               allInactiveTabs:allInactiveTabsWillClose
-                          browsingDataRemover:browsingDataRemover];
+                          browsingDataRemover:browsingDataRemover
+                    browsingDataRemoverParams:params];
   };
 
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
@@ -240,7 +252,8 @@
                                               std::set<int>>)
                                         tabGroupsWithTabsToClose
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
-                browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover {
+                browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+          browsingDataRemoverParams:(BrowsingDataRemover::RemovalParams)params {
   base::OnceClosure onRemoverCompletion = base::BindOnce(
       [](UIWindow* window, std::unique_ptr<ScopedUIBlocker> uiBlocker) {
         uiBlocker.reset();
@@ -263,7 +276,7 @@
   base::OnceClosure onAnimationCompletion = base::BindOnce(
       &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
       beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
-      std::move(onRemoverCompletion));
+      std::move(onRemoverCompletion), params);
 
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);

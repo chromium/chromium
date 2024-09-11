@@ -207,20 +207,34 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
       _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
   base::Time beginTime = browsing_data::CalculateBeginDeleteTime(timePeriod);
   base::Time endTime = browsing_data::CalculateEndDeleteTime(timePeriod);
+  BrowsingDataRemover::RemovalParams params{
+      .show_activity_indicator =
+          BrowsingDataRemover::ActivityIndicatorPolicy::kNoIndicator,
+  };
 
   base::OnceClosure removeBrowsingDataCompletion;
 
   // If we can perform the tabs closure animation, then don't close the tabs
   // right away, but perform the animation which will eventually close the tabs.
+  // Also delay the reload of tabs that is needed when site data and cache is
+  // delete to the end of the tabs being closed. This avoids reloading and
+  // consequently writting history of tabs that will be closed.
   if (shouldCloseTabs && _canPerformTabsClosureAnimation) {
+    params.reload_web_states =
+        BrowsingDataRemover::WebStatesReloadPolicy::kNoReload;
+    BOOL forceWebStatesReload =
+        IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_CACHE);
+
     __weak __typeof(self) weakSelf = self;
     removeBrowsingDataCompletion = base::BindOnce(
-        [](__typeof(self) strongSelf, base::Time beginTime,
-           base::Time endTime) {
-          [strongSelf triggerTabsClosureAnimationWithBeginTime:beginTime
-                                                       endTime:endTime];
+        [](__typeof(self) strongSelf, base::Time beginTime, base::Time endTime,
+           bool forceWebStatesReload) {
+          [strongSelf
+              triggerTabsClosureAnimationWithBeginTime:beginTime
+                                               endTime:endTime
+                                  forceWebStatesReload:forceWebStatesReload];
         },
-        weakSelf, beginTime, endTime);
+        weakSelf, beginTime, endTime, forceWebStatesReload);
   } else {
     __weak __typeof(self.consumer) weakConsumer = self.consumer;
     removeBrowsingDataCompletion = base::BindOnce(
@@ -245,7 +259,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     std::move(delayedCompletion).Run();
   } else {
     _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
-                                        std::move(delayedCompletion));
+                                        std::move(delayedCompletion), params);
   }
 }
 
@@ -311,14 +325,17 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 #pragma mark - Private
 
 // Trigger the tab closure animation along with the actual closure of the
-// WebStates within [`beginTime`, `endTime`[.
+// WebStates within [`beginTime`, `endTime`[ and indicates if reloading tabs is
+// necessary after the deletion has happen.
 - (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
-                                         endTime:(base::Time)endTime {
+                                         endTime:(base::Time)endTime
+                            forceWebStatesReload:(BOOL)forceWebStatesReload {
   CHECK(_canPerformTabsClosureAnimation);
   [_presentationHandler
       triggerTabsClosureAnimationWithBeginTime:beginTime
                                        endTime:endTime
-                                cachedTabsInfo:_cachedTabsInfo];
+                                cachedTabsInfo:_cachedTabsInfo
+                          forceWebStatesReload:forceWebStatesReload];
 }
 
 // Creates counters for browsing history, passwords and form data browsing data

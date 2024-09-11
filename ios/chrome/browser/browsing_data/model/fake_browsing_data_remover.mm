@@ -10,7 +10,8 @@ bool FakeBrowsingDataRemover::IsRemoving() const {
 
 void FakeBrowsingDataRemover::Remove(browsing_data::TimePeriod time_period,
                                      BrowsingDataRemoveMask remove_mask,
-                                     base::OnceClosure callback) {
+                                     base::OnceClosure callback,
+                                     RemovalParams params) {
   last_remove_mask_ = remove_mask;
   if (success) {
     NotifyBrowsingDataRemoved(last_remove_mask_);
@@ -22,7 +23,8 @@ void FakeBrowsingDataRemover::Remove(browsing_data::TimePeriod time_period,
 void FakeBrowsingDataRemover::RemoveInRange(base::Time start_time,
                                             base::Time end_time,
                                             BrowsingDataRemoveMask remove_mask,
-                                            base::OnceClosure callback) {}
+                                            base::OnceClosure callback,
+                                            RemovalParams params) {}
 
 void FakeBrowsingDataRemover::SetCachedTabsInfo(
     tabs_closure_util::WebStateIDToTime cached_tabs_info) {}
