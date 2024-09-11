@@ -3917,7 +3917,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
 
-  WaitForHistograms({kErrorTypeHistogram});
+  WaitForHistogramsWithSampleCounts({std::make_tuple(kErrorTypeHistogram, 2)});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
 }
@@ -3969,7 +3969,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_EQ("Finish executing 'test-operation'",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
 
-  WaitForHistograms({kErrorTypeHistogram});
+  WaitForHistogramsWithSampleCounts({std::make_tuple(kErrorTypeHistogram, 2)});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
 }
