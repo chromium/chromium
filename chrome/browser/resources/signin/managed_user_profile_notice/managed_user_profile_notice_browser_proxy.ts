@@ -15,17 +15,20 @@ export enum State {
   SUCCESS = 2,
   TIMEOUT = 3,
   ERROR = 4,
+  VALUE_PROPOSITION = 5,
 }
 
 // Managed user profile info sent from C++.
 export interface ManagedUserProfileInfo {
+  accountName: string;
+  continueAs: string;
+  email: string;
   pictureUrl: string;
   showEnterpriseBadge: boolean;
   title: string;
   subtitle: string;
   enterpriseInfo: string;
   proceedLabel: string;
-  showCancelButton: boolean;
   checkLinkDataCheckboxByDefault: boolean;
 }
 

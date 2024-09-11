@@ -1069,8 +1069,35 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Dice Web Signin Interception Bubble-->
+      <if expr="not use_titlecase">
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
+          desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
+          Sign in to Chromium?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Make Chromium your own
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
+          desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Use Chromium without an account
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
+          desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
+          Sign In to Chromium?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Make Chromium Your Own
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
+          desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Use Chromium Without an Account
+        </message>
+      </if>
+
       <if expr="not chromeos_ash and not is_android and not chromeos_lacros">
-        <!-- Dice Web Signin Interception Bubble-->
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
         </message>
@@ -1125,33 +1152,6 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
           You’ll be signed out of most sites when you close all Chromium windows, except your Google Account if you’re signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
         </message>
-
-        <if expr="not use_titlecase">
-          <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
-            desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
-            Sign in to Chromium?
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-            Make Chromium your own
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
-            desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-            Use Chromium without an account
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
-            desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
-            Sign In to Chromium?
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-            Make Chromium Your Own
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
-            desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-            Use Chromium Without an Account
-          </message>
-        </if>
         <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
           desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chromium Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chromium?' with a bubble shown under it.">
           Click to close the Chromium sign-in dialog

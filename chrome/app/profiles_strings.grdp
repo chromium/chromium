@@ -658,6 +658,9 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
     </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to securely separate your work and personal browsing. Increase your productivity while protecting sensitive company data.
+    </message>
 
     <!-- Supervised user profile signin IPH -->
     <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->

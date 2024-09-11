@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './strings.m.js';
 import './managed_user_profile_notice_disclosure.js';
+import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
@@ -79,7 +80,9 @@ export class ManagedUserProfileNoticeAppElement extends
       },
 
       /** The label for the button to proceed with the flow */
+      continueAs_: {type: String},
       proceedLabel_: {type: String},
+      cancelLabel_: {type: String},
 
       /** Whether to show the cancel button on the screen */
       showCancelButton_: {type: Boolean},
@@ -99,6 +102,9 @@ export class ManagedUserProfileNoticeAppElement extends
     };
   }
 
+  protected email_: string;
+  protected accountName_: string;
+  private continueAs_: string;
   protected showEnterpriseBadge_: boolean = false;
   protected pictureUrl_: string;
   protected title_: string;
@@ -106,10 +112,12 @@ export class ManagedUserProfileNoticeAppElement extends
   private enterpriseInfo_: string;
   protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
   protected proceedLabel_: string;
+  protected cancelLabel_: string;
   protected disableProceedButton_: boolean = false;
   private showCancelButton_: boolean = true;
   private currentState_: State = State.DISCLOSURE;
-  protected showDisclosure_: boolean = true;
+  protected showValueProposition_: boolean = false;
+  protected showDisclosure_: boolean = false;
   protected showProcessing_: boolean = false;
   protected showSuccess_: boolean = false;
   protected showTimeout_: boolean = false;
@@ -126,6 +134,11 @@ export class ManagedUserProfileNoticeAppElement extends
         changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('currentState_')) {
+      this.cancelLabel_ = this.computeCancelLabel_();
+    }
+
+    if (changedPrivateProperties.has('currentState_') ||
+        changedPrivateProperties.has('continueAs_')) {
       this.proceedLabel_ = this.computeProceedLabel_();
     }
   }
@@ -138,8 +151,10 @@ export class ManagedUserProfileNoticeAppElement extends
     this.addWebUiListener(
         'on-profile-info-changed',
         (info: ManagedUserProfileInfo) => this.setProfileInfo_(info));
-    this.managedUserProfileNoticeBrowserProxy_.initialized().then(
-        info => this.setProfileInfo_(info));
+    this.managedUserProfileNoticeBrowserProxy_.initialized().then(info => {
+      this.setProfileInfo_(info);
+      this.updateCurrentState_(loadTimeData.getInteger('initialState'));
+    });
   }
 
   /** Called when the proceed button is clicked. */
@@ -156,15 +171,18 @@ export class ManagedUserProfileNoticeAppElement extends
 
   private setProfileInfo_(info: ManagedUserProfileInfo) {
     this.pictureUrl_ = info.pictureUrl;
+    this.email_ = info.email;
+    this.accountName_ = info.accountName;
+    this.continueAs_ = info.continueAs;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;
     this.subtitle_ = info.subtitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
-    this.showCancelButton_ = info.showCancelButton;
   }
 
   private updateCurrentState_(state: State) {
     this.currentState_ = state;
+    this.showValueProposition_ = state === State.VALUE_PROPOSITION;
     this.showDisclosure_ = state === State.DISCLOSURE;
     this.showProcessing_ = state === State.PROCESSING;
     this.showSuccess_ = state === State.SUCCESS;
@@ -179,11 +197,20 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   protected allowCancel_() {
-    return this.showCancelButton_ && this.showDisclosure_;
+    return this.showDisclosure_ || this.showValueProposition_;
+  }
+
+  private computeCancelLabel_() {
+    return this.currentState_ === State.VALUE_PROPOSITION &&
+            !loadTimeData.getBoolean('enforcedByPolicy') ?
+        this.i18n('cancelValueProp') :
+        this.i18n('cancelLabel');
   }
 
   private computeProceedLabel_() {
     switch (this.currentState_) {
+      case State.VALUE_PROPOSITION:
+        return this.continueAs_;
       case State.DISCLOSURE:
       case State.PROCESSING:
         return this.i18n('continueLabel');

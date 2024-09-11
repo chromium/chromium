@@ -53,8 +53,7 @@ ${this.useLegacyUi_ ? html`
         ?disabled="${this.disableProceedButton_}">
       ${this.proceedLabel_}
     </cr-button>
-    <cr-button id="cancel-button" @click="${this.onCancel_}"
-        ?hidden="${!this.showCancelButton_}">
+    <cr-button id="cancel-button" @click="${this.onCancel_}">
       $i18n{cancelLabel}
     </cr-button>
   </div>

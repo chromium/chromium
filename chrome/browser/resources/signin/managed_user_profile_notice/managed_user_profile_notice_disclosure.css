@@ -11,7 +11,7 @@
  * #include=signin-shared tangible-sync-style-shared-lit
  * #css_wrapper_metadata_end */
 
-:host() {
+:host {
   color: var(--cr-primary-text-color);
 }
 

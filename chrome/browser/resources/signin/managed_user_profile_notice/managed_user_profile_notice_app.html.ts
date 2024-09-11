@@ -12,6 +12,13 @@ ${this.useUpdatedUi_ ? html`
     <img class="tangible-sync-style-left-banner" alt="">
     <img class="tangible-sync-style-right-banner" alt="">
     <div id="content-container">
+      ${this.showValueProposition_ ? html`
+        <managed-user-profile-notice-value-prop id="value-prop"
+            title="$i18n{signinIntoChrome}" subtitle="$i18n{valuePropSubtitle}"
+            picture-url="${this.pictureUrl_}"
+            email="${this.email_}" account-name="${this.accountName_}">
+        ` : ''}
+        </managed-user-profile-notice-value-prop>
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
             title="${this.title_}" subtitle="${this.subtitle_}"
@@ -55,7 +62,7 @@ ${this.useUpdatedUi_ ? html`
     </cr-button>
     <cr-button id="cancel-button" @click="${this.onCancel_}"
         ?hidden="${!this.allowCancel_()}">
-      $i18n{cancelLabel}
+      ${this.cancelLabel_}
     </cr-button>
   </div>
 ` : ''}

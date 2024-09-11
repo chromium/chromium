@@ -45,6 +45,7 @@ class ManagedUserProfileNoticeHandler
     kSuccess = 2,
     kTimeout = 3,
     kError = 4,
+    kValueProposition = 5
   };
   ManagedUserProfileNoticeHandler(
       Browser* browser,

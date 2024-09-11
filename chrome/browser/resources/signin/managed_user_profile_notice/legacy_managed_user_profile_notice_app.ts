@@ -87,9 +87,6 @@ export class LegacyManagedUserProfileNoticeAppElement extends
       /** The label for the button to proceed with the flow */
       proceedLabel_: {type: String},
 
-      /** Whether to show the cancel button on the screen */
-      showCancelButton_: {type: Boolean},
-
       disableProceedButton_: {type: Boolean},
 
       linkData_: {
@@ -111,7 +108,6 @@ export class LegacyManagedUserProfileNoticeAppElement extends
   protected proceedLabel_: string;
   protected disableProceedButton_: boolean = false;
   protected linkData_: boolean = false;
-  protected showCancelButton_: boolean = true;
   private defaultProceedLabel_: string;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
@@ -158,7 +154,6 @@ export class LegacyManagedUserProfileNoticeAppElement extends
     this.enterpriseInfo_ = info.enterpriseInfo;
     this.defaultProceedLabel_ = info.proceedLabel;
     this.proceedLabel_ = this.defaultProceedLabel_;
-    this.showCancelButton_ = info.showCancelButton;
     this.linkData_ = info.checkLinkDataCheckboxByDefault;
   }
 
