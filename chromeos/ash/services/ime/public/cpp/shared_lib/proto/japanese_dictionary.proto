@@ -41,6 +41,10 @@ message DeleteJapaneseDictionaryRequest {
   optional int64 dictionary_id = 1;
 }
 
+message ExportJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+}
+
 // Based on:
 // https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto
 message JapaneseDictionary {
