@@ -50,6 +50,9 @@ bool RendererExtensionRegistry::Contains(
 bool RendererExtensionRegistry::Insert(
     const scoped_refptr<const Extension>& extension) {
   DCHECK(content::RenderThread::Get());
+  // TODO(crbug.com/357889496): This should check to confirm that the activation
+  // token is set for service worker based extensions (except for incognito
+  // spanning mode), and is not set for non service worker based extensions.
   base::AutoLock lock(lock_);
   return extensions_.Insert(extension);
 }
@@ -100,7 +103,6 @@ void RendererExtensionRegistry::SetWorkerActivationToken(
     const scoped_refptr<const Extension>& extension,
     base::UnguessableToken worker_activation_token) {
   DCHECK(content::RenderThread::Get());
-  DCHECK(Contains(extension->id()));
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
 
   base::AutoLock lock(lock_);

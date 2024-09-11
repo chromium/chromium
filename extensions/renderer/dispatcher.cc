@@ -985,6 +985,17 @@ void Dispatcher::LoadExtensions(
 
     RendererExtensionRegistry* extension_registry =
         RendererExtensionRegistry::Get();
+
+    // The order of setting the token before inserting the extension is
+    // intentional so that DidInitializeServiceWorkerContextOnWorkerThread()
+    // will pause the worker evaluation
+    // (WillEvaluateServiceWorkerOnWorkerThread()) from running before we have
+    // these two necessary pieces of information for setting up the extension
+    // bindings.
+    if (worker_activation_token.has_value()) {
+      extension_registry->SetWorkerActivationToken(
+          extension, std::move(*worker_activation_token));
+    }
     // TODO(jlulejian): This is deliberately a CHECK because other parts of the
     // renderer assume that an extension has been loaded (e.g. specifically
     // worker script evaluation process). If this fails, other CHECK()s and
@@ -992,11 +1003,6 @@ void Dispatcher::LoadExtensions(
     CHECK(extension_registry->Insert(extension));
 
     unloaded_extensions_.erase(extension->id());
-
-    if (worker_activation_token.has_value()) {
-      extension_registry->SetWorkerActivationToken(
-          extension, std::move(*worker_activation_token));
-    }
 
     ExtensionsRendererClient::Get()->OnExtensionLoaded(*extension);
 
