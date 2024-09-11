@@ -3,6 +3,13 @@
  * found in the LICENSE file.
  */
 
+body.showing-blocked-site-message {
+  --header-color: var(--google-gray-900);
+  --paragraph-color: var(--google-gray-700);
+  --callout-text-color: var(--google-gray-900);
+  --callout-bg-color: var(--google-gray-100);
+}
+
 .supervised-user-verify #main-content a {
   color: var(--google-blue-700);
   text-decoration: none;
@@ -14,8 +21,38 @@
   height: 120px;
 }
 
+.showing-blocked-site-message {
+  #blocked-site-message {
+    align-items: center;
+    background-color: var(--callout-bg-color);
+    border-radius: 8px;
+    color: var(--header-color);
+    justify-content: flex-start;
+    padding: 16px;
+    width: max-content;
+  }
+
+  #blocked-site-message-header,
+  #blocked-site-message-reason {
+    background-color: var(--callout-bg-color);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  #blocked-site-message-reason {
+    font-size: 0.8em;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .supervised-user-verify .icon {
     background-image: url(images/error_page_illustration_dark_theme.svg);
+  }
+
+  body.showing-blocked-site-message {
+    --callout-bg-color: var(--google-gray-800);
+    --callout-text-color: var(--google-gray-200);
+    --header-color: #e9eaed;
+    --paragraph-color: var(--google-gray-500);
   }
 }

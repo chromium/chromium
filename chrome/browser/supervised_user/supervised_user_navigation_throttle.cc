@@ -221,6 +221,24 @@ bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
   return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 }
+
+SupervisedUserVerificationPage::VerificationPurpose
+GetVerificationPurposeFromFilteringReason(
+    supervised_user::FilteringBehaviorReason reason) {
+  switch (reason) {
+    case supervised_user::FilteringBehaviorReason::DEFAULT:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          DEFAULT_BLOCKED_SITE;
+    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          SAFE_SITES_BLOCKED_SITE;
+    case supervised_user::FilteringBehaviorReason::MANUAL:
+      return SupervisedUserVerificationPage::VerificationPurpose::
+          MANUAL_BLOCKED_SITE;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
 #endif
 
 void SupervisedUserNavigationThrottle::OnInterstitialResult(
@@ -248,8 +266,7 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
                 supervised_user::CreateReauthenticationInterstitial(
                     *navigation_handle(),
-                    SupervisedUserVerificationPage::VerificationPurpose::
-                        BLOCKED_SITE)));
+                    GetVerificationPurposeFromFilteringReason(reason_))));
         return;
       }
 #endif

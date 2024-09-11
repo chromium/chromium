@@ -400,7 +400,7 @@ CreateSupervisedUserVerificationPageForBlockedSite(
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
+      SupervisedUserVerificationPage::VerificationPurpose::DEFAULT_BLOCKED_SITE,
       /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,

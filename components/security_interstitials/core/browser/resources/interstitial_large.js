@@ -81,6 +81,10 @@ function setupEvents() {
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph =
       loadTimeData.getBoolean('show_recurrent_error_paragraph');
+  const showBlockedSiteMessage =
+      loadTimeData.valueExists('show_blocked_site_message') ?
+      loadTimeData.getBoolean('show_blocked_site_message') :
+      false;
 
   const body = document.querySelector('#body');
   if (ssl || blockedInterception) {
@@ -206,6 +210,16 @@ function setupEvents() {
         .classList.add(HIDDEN_CLASS);
   } else {
     body.classList.add('showing-recurrent-error-message');
+  }
+
+  if (showBlockedSiteMessage) {
+    document.querySelector('#blocked-site-message')
+        .classList.remove(HIDDEN_CLASS);
+    body.classList.add('showing-blocked-site-message');
+    document.getElementById('blocked-site-message-header').textContent =
+        loadTimeData.getString('blockedSiteMessageHeader');
+    document.getElementById('blocked-site-message-reason').textContent =
+        loadTimeData.getString('blockedSiteMessageReason');
   }
 
   const diagnosticLink = document.querySelector('#diagnostic-link');
