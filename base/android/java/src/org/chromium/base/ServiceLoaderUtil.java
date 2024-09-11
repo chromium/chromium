@@ -32,14 +32,10 @@ import java.util.ServiceLoader;
  *       return provider != null ? provider.getInstance() : null;
  *   }
  *
- * To set up MyInterfaceImpl:
- *   1) Enable Annotation Processor:
- *     android_library("my_impl_java") {
- *       annotation_processor_deps =
- *           [ "//third_party/android_deps:auto_service_processor" ]
- *     }
- *   2) Add annotation to impl class:
- *     @AutoService(MyInterface.class)
+ * To configure MyInterfaceImpl:
+ *     import org.chromium.build.annotations.ServiceImpl;
+ *
+ *     @ServiceImpl(MyInterface.class)
  *     public class MyInterfaceImpl implements MyInterface {
  *         // Must have a public no-arg constructor.
  *         ...

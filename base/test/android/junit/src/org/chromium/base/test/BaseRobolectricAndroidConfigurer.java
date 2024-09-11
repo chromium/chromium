@@ -4,8 +4,6 @@
 
 package org.chromium.base.test;
 
-import com.google.auto.service.AutoService;
-
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
@@ -13,10 +11,11 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.TimeoutTimer;
+import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.testing.local.ChromiumAndroidConfigurer;
 
 /** Tells Robolectric which classes to exclude from its sandbox. */
-@AutoService(ChromiumAndroidConfigurer.ExtraConfiguration.class)
+@ServiceImpl(ChromiumAndroidConfigurer.ExtraConfiguration.class)
 public class BaseRobolectricAndroidConfigurer
         implements ChromiumAndroidConfigurer.ExtraConfiguration {
     @Override

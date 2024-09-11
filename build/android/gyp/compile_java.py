@@ -4,6 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import functools
 import itertools
 import logging
@@ -307,6 +308,7 @@ def ProcessJavacOutput(output, target_name):
 
 def CreateJarFile(jar_path,
                   classes_dir,
+                  services_map=None,
                   service_provider_configuration_dir=None,
                   additional_jar_files=None,
                   extra_classes_jar=None):
@@ -322,6 +324,11 @@ def CreateJarFile(jar_path,
           zip_path = os.path.relpath(config_file,
                                      service_provider_configuration_dir)
           zip_helpers.add_to_zip_hermetic(z, zip_path, src_path=config_file)
+      if services_map:
+        for service_class, impl_classes in sorted(services_map.items()):
+          zip_path = 'META-INF/services/' + service_class
+          data = ''.join(f'{x}\n' for x in sorted(impl_classes))
+          zip_helpers.add_to_zip_hermetic(z, zip_path, data=data)
 
       if additional_jar_files:
         for src_path, zip_path in additional_jar_files:
@@ -336,8 +343,12 @@ def CreateJarFile(jar_path,
 # Java lines end in semicolon, whereas Kotlin lines do not.
 _PACKAGE_RE = re.compile(r'^package\s+(.*?)(;|\s*$)', flags=re.MULTILINE)
 
+_SERVICE_IMPL_RE = re.compile(
+    r'^(\s*)@ServiceImpl\(\s*(.+?)\.class\).*?\sclass\s+(\w+)',
+    flags=re.MULTILINE | re.DOTALL)
+
 # Finds all top-level classes (by looking for those that are not indented).
-_CLASSES_RE = re.compile(
+_TOP_LEVEL_CLASSES_RE = re.compile(
     # Start of line, or after /* package */
     r'^(?:/\*.*\*/\s*)?'
     # Annotations
@@ -349,7 +360,7 @@ _CLASSES_RE = re.compile(
     flags=re.MULTILINE)
 
 
-def _ParsePackageAndClassNames(source_file):
+def _ParseJavaSource(source_file, services_map):
   """This should support both Java and Kotlin files."""
   data = pathlib.Path(source_file).read_text()
 
@@ -357,18 +368,48 @@ def _ParsePackageAndClassNames(source_file):
   if m := _PACKAGE_RE.search(data):
     package_name = m.group(1)
 
-  class_names = _CLASSES_RE.findall(data)
+  class_names = _TOP_LEVEL_CLASSES_RE.findall(data)
+
+  # Very rare, so worth an upfront check.
+  if '@ServiceImpl' in data:
+    for indent, service_class, impl_class in _SERVICE_IMPL_RE.findall(data):
+      # Assume indent means nested class that is one level deep.
+      if indent:
+        impl_class = f'{class_names[0]}${impl_class}'
+      else:
+        assert class_names[0] == impl_class
+
+      # Parse imports to resolve the class.
+      dot_idx = service_class.find('.')
+      # Handle @ServiceImpl(OuterClass.InnerClass.class)
+      outer_class = service_class if dot_idx == -1 else service_class[:dot_idx]
+
+      if m := re.search(r'^import\s+([\w\.]*\.' + outer_class + r')[;\s]',
+                        data,
+                        flags=re.MULTILINE):
+        service_class = m.group(1) + service_class[len(outer_class):]
+      else:
+        service_class = f'{package_name}.{service_class}'
+
+      # Convert OuterClass.InnerClass -> OuterClass$InnerClass.
+      for m in list(re.finditer(r'\.[A-Z]', service_class))[1:]:
+        idx = m.start()
+        service_class = service_class[:idx] + '$' + service_class[idx + 1:]
+
+      services_map[service_class].append(f'{package_name}.{impl_class}')
+
   return package_name, class_names
 
 
-class _InfoFileContext:
-  """Manages the creation of the class->source file .info file."""
+class _MetadataParser:
 
   def __init__(self, chromium_code, excluded_globs):
     self._chromium_code = chromium_code
     self._excluded_globs = excluded_globs
     # Map of .java path -> .srcjar/nested/path.java.
     self._srcjar_files = {}
+    # Map of @ServiceImpl class -> impl class
+    self.services_map = collections.defaultdict(list)
 
   def AddSrcJarSources(self, srcjar_path, extracted_paths, parent_dir):
     for path in extracted_paths:
@@ -405,7 +446,7 @@ class _InfoFileContext:
     name_as_class_glob = fully_qualified_name.replace('.', '/') + '.class'
     return not build_utils.MatchesGlob(name_as_class_glob, self._excluded_globs)
 
-  def Run(self, output_path, java_files, kt_files=None):
+  def ParseAndWriteInfoFile(self, output_path, java_files, kt_files=None):
     """Writes a .jar.info file.
 
     Maps fully qualified names for classes to either the java file that they
@@ -414,7 +455,7 @@ class _InfoFileContext:
     logging.info('Collecting info file entries')
     entries = {}
     for path in itertools.chain(java_files, kt_files or []):
-      package_name, class_names = _ParsePackageAndClassNames(path)
+      package_name, class_names = _ParseJavaSource(path, self.services_map)
       source = self._srcjar_files.get(path, path)
       for fully_qualified_name in self._ProcessInfo(path, package_name,
                                                     class_names, source):
@@ -537,13 +578,14 @@ def _RunCompiler(changes,
 
   java_files = java_files.copy()
   java_srcjars = options.java_srcjars
-  save_info_file = jar_info_path is not None
+  parse_java_files = jar_info_path is not None
 
   # Use jar_path's directory to ensure paths are relative (needed for rbe).
   temp_dir = jar_path + '.staging'
   build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
-  info_file_context = None
+  metadata_parser = _MetadataParser(options.chromium_code,
+                                    options.jar_info_exclude_globs)
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
     service_provider_configuration = os.path.join(
@@ -569,14 +611,7 @@ def _RunCompiler(changes,
           java_files = list(changes.IterChangedPaths())
           java_srcjars = None
 
-          # Reuse old .info file.
-          save_info_file = False
-
           build_utils.ExtractAll(jar_path, classes_dir, pattern='*.class')
-
-    if save_info_file:
-      info_file_context = _InfoFileContext(options.chromium_code,
-                                           options.jar_info_exclude_globs)
 
     if intermediates_out_dir is None:
       intermediates_out_dir = temp_dir
@@ -590,9 +625,9 @@ def _RunCompiler(changes,
         extracted_files = build_utils.ExtractAll(
             srcjar, no_clobber=True, path=input_srcjars_dir, pattern='*.java')
         java_files.extend(extracted_files)
-        if save_info_file:
-          info_file_context.AddSrcJarSources(srcjar, extracted_files,
-                                             input_srcjars_dir)
+        if parse_java_files:
+          metadata_parser.AddSrcJarSources(srcjar, extracted_files,
+                                           input_srcjars_dir)
       logging.info('Done extracting srcjars')
 
     if options.header_jar:
@@ -627,8 +662,8 @@ def _RunCompiler(changes,
       logging.debug('Build command %s', cmd)
       start = time.time()
       before_join_callback = None
-      if save_info_file:
-        before_join_callback = lambda: info_file_context.Run(
+      if parse_java_files:
+        before_join_callback = lambda: metadata_parser.ParseAndWriteInfoFile(
             jar_info_path, java_files, kt_files)
 
       build_utils.CheckOutput(cmd,
@@ -639,11 +674,12 @@ def _RunCompiler(changes,
                               before_join_callback=before_join_callback)
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
-    elif save_info_file:
-      info_file_context.Run(jar_info_path, java_files, kt_files)
+    elif parse_java_files:
+      metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
-    CreateJarFile(jar_path, classes_dir, service_provider_configuration,
-                  options.additional_jar_files, options.kotlin_jar_path)
+    CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
+                  service_provider_configuration, options.additional_jar_files,
+                  options.kotlin_jar_path)
 
     # Remove input srcjars that confuse Android Studio:
     # https://crbug.com/353326240

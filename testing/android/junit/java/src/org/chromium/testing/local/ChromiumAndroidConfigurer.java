@@ -4,8 +4,6 @@
 
 package org.chromium.testing.local;
 
-import com.google.auto.service.AutoService;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +12,8 @@ import org.robolectric.config.AndroidConfigurer;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.ShadowProviders;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 import java.util.Optional;
 import java.util.ServiceLoader;
 
@@ -21,7 +21,7 @@ import java.util.ServiceLoader;
  * Tells Robolectric which classes to exclude from its sandbox. This is required to avoid the need
  * to create a new Robolectric ClassLoader for each distinct set of Shadows.
  */
-@AutoService(AndroidConfigurer.class)
+@ServiceImpl(AndroidConfigurer.class)
 public class ChromiumAndroidConfigurer extends AndroidConfigurer {
     public interface ExtraConfiguration {
         void withConfig(InstrumentationConfiguration.Builder builder, Config config);

@@ -4,7 +4,6 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -18,6 +17,8 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.SimpleTreeVisitor;
 import com.sun.tools.javac.code.Symbol;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +28,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 
 /** Triggers an error for {@link org.chromium.base.TraceEvent} usages with non string literals. */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "NoDynamicStringsInTraceEventCheck",
         summary = "Only use of string literals are allowed in trace events.",

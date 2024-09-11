@@ -27,11 +27,9 @@ java_binary("errorprone_plugin") {
   enable_errorprone = false
   enable_bytecode_checks = false
 
-  annotation_processor_deps =
-      [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
+    "//build/android:build_java",
     "//third_party/android_build_tools/error_prone:error_prone_java",
     "//third_party/android_build_tools/error_prone_javac:error_prone_javac_java",
-    "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
   ]
 }
