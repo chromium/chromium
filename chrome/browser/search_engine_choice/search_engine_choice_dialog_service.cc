@@ -195,11 +195,11 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
 
     NOTREACHED(base::NotFatalUntil::M127);
   } else {
-    if (base::FeatureList::IsEnabled(
-            switches::kSearchEngineChoiceGuestExperience) &&
-        profile_->IsGuestSession() && save_guest_mode_selection) {
-      g_browser_process->local_state()->SetInt64(
-          prefs::kDefaultSearchProviderGuestModePrepopulatedId, prepopulate_id);
+    if (search_engine_choice_service_
+            ->IsProfileEligibleForDseGuestPropagation() &&
+        save_guest_mode_selection) {
+      search_engine_choice_service_->PropagateSearchEngineBetweenGuestSessions(
+          prepopulate_id);
     }
     template_url_service_->SetUserSelectedDefaultSearchProvider(
         selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);
@@ -334,6 +334,13 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
 
     return search_engines::SearchEngineChoiceScreenConditions::
         kAlreadyCompleted;
+  }
+
+  if (search_engine_choice_service_
+          ->IsProfileEligibleForDseGuestPropagation() &&
+      search_engine_choice_service_->ShouldPropagateDseBetweenGuestSessions()) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kUsingPersistedGuestSessionChoice;
   }
 
   if (web_app::AppBrowserController::IsWebApp(&browser)) {
