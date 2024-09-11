@@ -68,9 +68,6 @@ class PLATFORM_EXPORT LayoutPoint {
   constexpr LayoutUnit X() const { return x_; }
   constexpr LayoutUnit Y() const { return y_; }
 
-  void SetX(LayoutUnit x) { x_ = x; }
-  void SetY(LayoutUnit y) { y_ = y; }
-
   WTF::String ToString() const;
 
  private:
