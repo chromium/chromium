@@ -1333,7 +1333,7 @@ BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the Game Dashboard for additional PWA games.
 BASE_FEATURE(kGameDashboardGamePWAs,
              "GameDashboardGamePWAs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables additional games being evaluated for the Game Dashboard.
 BASE_FEATURE(kGameDashboardGamesInTest,
