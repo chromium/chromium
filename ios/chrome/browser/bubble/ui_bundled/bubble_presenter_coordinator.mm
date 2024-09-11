@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ui/base/device_form_factor.h"
@@ -91,7 +92,8 @@
             GetDispatcherForProfile(browserState);
   }
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
-
+  id<PopupMenuCommands> popupMenuHandler =
+      HandlerForProtocol(commandDispatcher, PopupMenuCommands);
   switch (type) {
     case InProductHelpType::kDiscoverFeedMenu: {
       [_presenter presentDiscoverFeedMenuTipBubble];
@@ -105,21 +107,28 @@
       [_presenter
           presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
               DiscoverFeedServiceFactory::GetForBrowserState(browserState)
-                  ->GetFeedMetricsRecorder()];
+                  ->GetFeedMetricsRecorder()
+                                               popupMenuHandler:
+                                                   popupMenuHandler];
       break;
     }
     case InProductHelpType::kDefaultSiteView: {
-      [_presenter presentDefaultSiteViewTipBubbleWithSettingsMap:
-                      ios::HostContentSettingsMapFactory::GetForBrowserState(
-                          browserState)];
+      [_presenter
+          presentDefaultSiteViewTipBubbleWithSettingsMap:
+              ios::HostContentSettingsMapFactory::GetForBrowserState(
+                  browserState)
+                                        popupMenuHandler:popupMenuHandler];
       break;
     }
     case InProductHelpType::kWhatsNew: {
-      [_presenter presentWhatsNewBottomToolbarBubble];
+      [_presenter presentWhatsNewBottomToolbarBubbleWithPopupMenuHandler:
+                      popupMenuHandler];
       break;
     }
     case InProductHelpType::kPriceNotificationsWhileBrowsing: {
-      [_presenter presentPriceNotificationsWhileBrowsingTipBubble];
+      [_presenter
+          presentPriceNotificationsWhileBrowsingTipBubbleWithPopupMenuHandler:
+              popupMenuHandler];
       break;
     }
     case InProductHelpType::kLensKeyboard: {

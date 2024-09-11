@@ -392,6 +392,12 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   self.hasBlueDot = hasBlueDot;
 }
 
+- (void)notifyIPHBubblePresenting {
+  // Remove blue dot if IPH bubble will be presenting on tools menu button.
+  self.hasBlueDot = NO;
+  [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
+}
+
 #pragma mark - Overflow Menu Bubble methods
 
 - (BubbleViewControllerPresenter*)

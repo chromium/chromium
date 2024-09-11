@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -338,7 +339,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-    (FeedMetricsRecorder*)recorder {
+            (FeedMetricsRecorder*)recorder
+                                             popupMenuHandler:
+                                                 (id<PopupMenuCommands>)
+                                                     popupMenuHandler {
   if (![self canPresentBubble])
     return;
 
@@ -360,13 +364,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                   IDS_IOS_FOLLOW_WHILE_BROWSING_IPH)
                   anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _followWhileBrowsingBubbleTipPresenter = presenter;
   }
   [recorder recordFollowRecommendationIPHShown];
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
-    (raw_ptr<HostContentSettingsMap>)settingsMap {
+            (raw_ptr<HostContentSettingsMap>)settingsMap
+                                      popupMenuHandler:(id<PopupMenuCommands>)
+                                                           popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -395,11 +402,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   anchorPoint:toolsMenuAnchor];
   if (!presenter)
     return;
-
+  [popupMenuHandler notifyIPHBubblePresenting];
   _defaultPageModeTipBubblePresenter = presenter;
 }
 
-- (void)presentWhatsNewBottomToolbarBubble {
+- (void)presentWhatsNewBottomToolbarBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -420,11 +428,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         voiceOverAnnouncement:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT)
                   anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _whatsNewBubblePresenter = presenter;
   }
 }
 
-- (void)presentPriceNotificationsWhileBrowsingTipBubble {
+- (void)presentPriceNotificationsWhileBrowsingTipBubbleWithPopupMenuHandler:
+    (id<PopupMenuCommands>)popupMenuHandler {
   if (![self canPresentBubble]) {
     return;
   }
@@ -447,6 +457,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
               voiceOverAnnouncement:text
                         anchorPoint:toolsMenuAnchor];
   if (presenter) {
+    [popupMenuHandler notifyIPHBubblePresenting];
     _priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
   }
 }

@@ -581,6 +581,10 @@ using base::UserMetricsAction;
   [self.popupMenuHelpCoordinator updateBlueDotVisibility];
 }
 
+- (void)notifyIPHBubblePresenting {
+  [self.popupMenuHelpCoordinator notifyIPHBubblePresenting];
+}
+
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showMenuCustomization {

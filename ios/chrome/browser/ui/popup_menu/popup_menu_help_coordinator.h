@@ -37,6 +37,9 @@
 // Updates the blue dot visibility based on eligibility.
 - (void)updateBlueDotVisibility;
 
+// Notifies that IPH bubble will be presenting on tools menu button.
+- (void)notifyIPHBubblePresenting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_HELP_COORDINATOR_H_
