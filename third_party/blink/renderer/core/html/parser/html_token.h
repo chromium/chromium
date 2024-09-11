@@ -116,7 +116,6 @@ class HTMLToken {
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
     const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
-    const UCharLiteralBuffer<32>& ValueBuffer() const { return value_; }
 
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_);
