@@ -590,7 +590,15 @@ def execute_telemetry_benchmark(command_generator,
 
     if not no_output_conversion:
       expected_perf_filename = os.path.join(temp_dir, 'histograms.json')
-      shutil.move(expected_perf_filename, output_paths.perf_results)
+      if os.path.exists(expected_perf_filename):
+        shutil.move(expected_perf_filename, output_paths.perf_results)
+      elif return_code:
+        print(f'The benchmark failed with status code {return_code}, '
+              'and did not produce perf results output. '
+              'Check benchmark output for more details.')
+      else:
+        print('The benchmark returned a success status code, '
+              'but did not product perf results output.')
 
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
