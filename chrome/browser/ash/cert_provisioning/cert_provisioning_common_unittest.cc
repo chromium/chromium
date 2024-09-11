@@ -46,40 +46,35 @@ const MakeFromValueTestCase kMakeFromValueTests[] = {
     {"MinimalDict",
      R"({
            "policy_version": "cert_profile_version_1",
-           "cert_profile_id": "cert_profile_1"
+           "cert_profile_id": "cert_profile_1",
+           "key_algorithm": "rsa"
          })",
      CertProfile(/*profile_id=*/"cert_profile_1",
                  /*name=*/std::string(),
                  /*policy_version=*/"cert_profile_version_1",
+                 /*key_type=*/KeyType::kRsa,
                  /*is_va_enabled=*/true,
                  /*renewal_period=*/base::Seconds(0),
                  /*protocol_version=*/ProtocolVersion::kStatic)},
     {"MissingPolicyVersion",
      R"({
-           "cert_profile_id": "cert_profile_1"
+           "cert_profile_id": "cert_profile_1",
+           "key_algorithm": "rsa"
          })",
      std::nullopt},
     {"MissingCertProfileId",
      R"({
-           "policy_version": "cert_profile_version_1"
+           "policy_version": "cert_profile_version_1",
+           "key_algorithm": "rsa"
          })",
      std::nullopt},
-    {"AllFields",
+    {"MissingKeyAlgorithm",
      R"({
            "policy_version": "cert_profile_version_1",
-           "name": "test_name",
-           "renewal_period_seconds": 10,
-           "cert_profile_id": "cert_profile_1",
-           "protocol_version": 2,
-           "enable_remote_attestation_check": false
+           "cert_profile_id": "cert_profile_1"
          })",
-     CertProfile(/*profile_id=*/"cert_profile_1",
-                 /*name=*/"test_name",
-                 /*policy_version=*/"cert_profile_version_1",
-                 /*is_va_enabled=*/false,
-                 /*renewal_period=*/base::Seconds(10),
-                 /*protocol_version=*/ProtocolVersion::kDynamic)},
-    {"AllFieldsWithKeyAlgorithm",
+     std::nullopt},
+    {"AllFieldsWithRsaKeyAlgorithm",
      R"({
            "policy_version": "cert_profile_version_1",
            "name": "test_name",
@@ -92,6 +87,24 @@ const MakeFromValueTestCase kMakeFromValueTests[] = {
      CertProfile(/*profile_id=*/"cert_profile_1",
                  /*name=*/"test_name",
                  /*policy_version=*/"cert_profile_version_1",
+                 /*key_type=*/KeyType::kRsa,
+                 /*is_va_enabled=*/false,
+                 /*renewal_period=*/base::Seconds(10),
+                 /*protocol_version=*/ProtocolVersion::kDynamic)},
+    {"AllFieldsWithEcKeyAlgorithm",
+     R"({
+           "policy_version": "cert_profile_version_1",
+           "name": "test_name",
+           "renewal_period_seconds": 10,
+           "cert_profile_id": "cert_profile_1",
+           "protocol_version": 2,
+           "enable_remote_attestation_check": false,
+           "key_algorithm": "ec",
+         })",
+     CertProfile(/*profile_id=*/"cert_profile_1",
+                 /*name=*/"test_name",
+                 /*policy_version=*/"cert_profile_version_1",
+                 /*key_type=*/KeyType::kEc,
                  /*is_va_enabled=*/false,
                  /*renewal_period=*/base::Seconds(10),
                  /*protocol_version=*/ProtocolVersion::kDynamic)},
@@ -103,13 +116,14 @@ const MakeFromValueTestCase kMakeFromValueTests[] = {
            "cert_profile_id": "cert_profile_1",
            "protocol_version": 2,
            "enable_remote_attestation_check": false,
-           "key_algorithm": "ecdsa",
+           "key_algorithm": "unsupported",
          })",
      std::nullopt},
     {"BadProtocolVersion",
      R"({
            "policy_version": "cert_profile_version_1",
            "cert_profile_id": "cert_profile_1",
+           "key_algorithm": "rsa",
            "protocol_version": 3,
          })",
      std::nullopt}};

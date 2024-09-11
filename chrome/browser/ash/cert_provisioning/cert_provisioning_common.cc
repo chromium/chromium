@@ -89,6 +89,10 @@ void DeleteVaKeysWithMatchBehavior(
       request, base::BindOnce(wrapped_callback, std::move(callback)));
 }
 
+bool IsValidKeyType(const std::string& key_type) {
+  return key_type == "rsa" || key_type == "ec";
+}
+
 }  // namespace
 
 std::string CertificateProvisioningWorkerStateToString(
@@ -146,12 +150,14 @@ bool IsFinalState(CertProvisioningWorkerState state) {
 CertProfile::CertProfile(CertProfileId profile_id,
                          std::string name,
                          std::string policy_version,
+                         KeyType key_type,
                          bool is_va_enabled,
                          base::TimeDelta renewal_period,
                          ProtocolVersion protocol_version)
     : profile_id(profile_id),
       name(std::move(name)),
       policy_version(std::move(policy_version)),
+      key_type(key_type),
       is_va_enabled(is_va_enabled),
       renewal_period(renewal_period),
       protocol_version(protocol_version) {}
@@ -165,7 +171,7 @@ CertProfile::~CertProfile() = default;
 
 std::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value::Dict& value) {
-  static_assert(kVersion == 6, "This function should be updated");
+  static_assert(kVersion == 7, "This function should be updated");
 
   const std::string* id = value.FindString(kCertProfileIdKey);
   const std::string* name = value.FindString(kCertProfileNameKey);
@@ -179,11 +185,11 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   std::optional<int> protocol_version =
       value.FindInt(kCertProfileProtocolVersion);
 
-  if (!id || !policy_version) {
+  if (!id || !policy_version || !key_type) {
     return std::nullopt;
   }
 
-  if (key_type && *key_type != "rsa") {
+  if (!IsValidKeyType(*key_type)) {
     LOG(ERROR) << "Unsupported key type received: " << *key_type;
     return std::nullopt;
   }
@@ -208,16 +214,23 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   }
   result.protocol_version = *parsed_protocol_version;
 
+  if (*key_type == "rsa") {
+    result.key_type = KeyType::kRsa;
+  } else if (*key_type == "ec") {
+    result.key_type = KeyType::kEc;
+  }
+
   return result;
 }
 
 bool CertProfile::operator==(const CertProfile& other) const {
-  static_assert(kVersion == 6, "This function should be updated");
+  static_assert(kVersion == 7, "This function should be updated");
   return ((profile_id == other.profile_id) && (name == other.name) &&
           (policy_version == other.policy_version) &&
           (is_va_enabled == other.is_va_enabled) &&
           (renewal_period == other.renewal_period) &&
-          (protocol_version == other.protocol_version));
+          (protocol_version == other.protocol_version) &&
+          (key_type == other.key_type));
 }
 
 bool CertProfile::operator!=(const CertProfile& other) const {
@@ -226,12 +239,13 @@ bool CertProfile::operator!=(const CertProfile& other) const {
 
 bool CertProfileComparator::operator()(const CertProfile& a,
                                        const CertProfile& b) const {
-  static_assert(CertProfile::kVersion == 6, "This function should be updated");
+  static_assert(CertProfile::kVersion == 7, "This function should be updated");
   return ((a.profile_id < b.profile_id) || (a.name < b.name) ||
           (a.policy_version < b.policy_version) ||
           (a.is_va_enabled < b.is_va_enabled) ||
           (a.renewal_period < b.renewal_period) ||
-          (a.protocol_version < b.protocol_version));
+          (a.protocol_version < b.protocol_version) ||
+          (a.key_type < b.key_type));
 }
 
 //==============================================================================
