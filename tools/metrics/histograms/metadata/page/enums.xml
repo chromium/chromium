@@ -293,19 +293,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Prerender Activation Navigation"/>
 </enum>
 
-<enum name="PageLoadPrerenderObserverEvent">
-  <int value="0" label="OnPrerenderStart"/>
-  <int value="1" label="DidActivatePrerenderedPage"/>
-  <int value="2" label="OnFirstPaintInPage"/>
-  <int value="3" label="OnFirstContentfulPaintInPage"/>
-  <int value="4" label="OnFirstInputInPage"/>
-  <int value="5" label="OnComplete"/>
-  <int value="6" label="FlushMetricsOnAppEnterBackground"/>
-  <int value="7" label="RecordSessionEndHistograms"/>
-  <int value="8" label="RecordLayoutShiftScoreMetrics"/>
-  <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
-</enum>
-
 <enum name="PageLoadPrerenderVisibilityAtActivation">
   <int value="0" label="Hidden"/>
   <int value="1" label="Occluded"/>

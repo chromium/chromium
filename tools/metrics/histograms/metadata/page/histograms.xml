@@ -3403,17 +3403,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.Prerender2.ObserverEvent"
-    enum="PageLoadPrerenderObserverEvent" expires_after="2024-09-15">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
-  <summary>
-    Counts page load observer events related to Prerender2, like
-    FirstContentfulPaint. Recorded when those events are observed in
-    PrerenderPageLoaderMetricsObserver.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.Prerender2.VisibilityAtActivation"
     enum="PageLoadPrerenderVisibilityAtActivation" expires_after="2024-02-04">
   <owner>nhiroki@chromium.org</owner>
