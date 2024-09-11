@@ -383,8 +383,6 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         std::make_unique<NiceMock<MockPersonalDataManager>>());
     pdm().set_address_data_manager(
         std::make_unique<NiceMock<MockAddressDataManager>>());
-    client().set_plus_address_delegate(
-        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
     autofill_driver_ =
         std::make_unique<NiceMock<MockAutofillDriver>>(&client());
     auto mock_browser_autofill_manager =
@@ -456,10 +454,6 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   }
   MockAddressDataManager& address_data_manager() {
     return static_cast<MockAddressDataManager&>(pdm().address_data_manager());
-  }
-  MockAutofillPlusAddressDelegate& plus_address_delegate() {
-    return static_cast<MockAutofillPlusAddressDelegate&>(
-        *client().GetPlusAddressDelegate());
   }
   MockCreditCardAccessManager& cc_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
@@ -2140,10 +2134,49 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+class AutofillExternalDelegatePlusAddressUnitTest
+    : public AutofillExternalDelegateUnitTest {
+ public:
+  AutofillExternalDelegatePlusAddressUnitTest() = default;
+
+  void SetUp() override {
+    AutofillExternalDelegateUnitTest::SetUp();
+    client().set_plus_address_delegate(
+        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
+  }
+
+ protected:
+  MockAutofillPlusAddressDelegate& plus_address_delegate() {
+    return static_cast<MockAutofillPlusAddressDelegate&>(
+        *client().GetPlusAddressDelegate());
+  }
+
+  const std::vector<Suggestion>& suggestions() const { return suggestions_; }
+
+  void ShowPlusAddressInlineSuggestion(
+      std::optional<std::u16string> plus_address) {
+    IssueOnQuery();
+
+    suggestions_.emplace_back(/*main_text=*/u"Create plus address",
+                              SuggestionType::kCreateNewPlusAddressInline);
+    suggestions_.back().payload = Suggestion::PlusAddressPayload(plus_address);
+    OnSuggestionsReturned(queried_field().global_id(), suggestions_);
+    ON_CALL(client(), GetAutofillSuggestions)
+        .WillByDefault(Return(base::span<const Suggestion>(suggestions_)));
+    client().set_suggestion_ui_session_id(
+        AutofillClient::SuggestionUiSessionId(123));
+  }
+
+ private:
+  // The currently shown suggestions. Kept as a member since
+  // `GetAutofillSuggestions` returns a span.
+  std::vector<Suggestion> suggestions_;
+};
+
 // Mock out an existing plus address autofill suggestion, and ensure that
 // choosing it results in the field being filled with its value (as opposed to
 // the mocked address used in the creation flow).
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        ExternalDelegateFillsExistingPlusAddress) {
   IssueOnQuery();
 
@@ -2189,7 +2222,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Mock out the new plus address creation flow, and ensure that its completion
 // results in the field being filled with the resulting plus address.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        ExternalDelegateOffersPlusAddressCreation) {
   const std::u16string kMockPlusAddressForCreationCallback =
       u"test+1234@test.example";
@@ -2239,25 +2272,18 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that showing a plus address inline suggestion calls
 // `AutofillPlusAddressDelegate` with a callback that updates the Autofill
 // popup.
-TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionShown) {
-  IssueOnQuery();
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressInlineSuggestionShown) {
+  ShowPlusAddressInlineSuggestion(std::nullopt);
 
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/plus_address,
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload();
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(123));
   {
     InSequence s;
-    std::vector<Suggestion> updated_suggestions = suggestions;
+    std::vector<Suggestion> updated_suggestions = suggestions();
     updated_suggestions[0].payload =
-        Suggestion::PlusAddressPayload(plus_address);
+        Suggestion::PlusAddressPayload(u"test+plus@test.example");
     EXPECT_CALL(plus_address_delegate(),
                 OnShowedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions), _))
+                    _, base::span<const Suggestion>(suggestions()), _))
         .WillOnce(RunOnceCallback<2>(updated_suggestions,
                                      AutofillSuggestionTriggerSource::
                                          kPlusAddressUpdatedInBrowserProcess));
@@ -2267,20 +2293,16 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionShown) {
                     AutofillSuggestionTriggerSource::
                         kPlusAddressUpdatedInBrowserProcess));
   }
-  external_delegate().OnSuggestionsShown(suggestions);
+
+  external_delegate().OnSuggestionsShown(suggestions());
 }
 
 // Tests that selecting an inline plus address suggestion previews the value
 // stored in the payload.
-TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionSelected) {
-  IssueOnQuery();
-
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressInlineSuggestionSelected) {
   const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/plus_address,
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ShowPlusAddressInlineSuggestion(plus_address);
 
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(
@@ -2290,53 +2312,36 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionSelected) {
                          HasQueriedFormId(), HasQueriedFieldId(), plus_address,
                          SuggestionType::kCreateNewPlusAddressInline,
                          std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidSelectSuggestion(suggestions[0]);
+  external_delegate().DidSelectSuggestion(suggestions()[0]);
 }
 
 // Tests that selecting an inline plus address suggestion with an empty address
 // value does not preview anything.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        PlusAddressInlineSuggestionSelectedWithNoAddress) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/plus_address,
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload();
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ShowPlusAddressInlineSuggestion(std::nullopt);
 
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
-  external_delegate().DidSelectSuggestion(suggestions[0]);
+  external_delegate().DidSelectSuggestion(suggestions()[0]);
 }
 
 // Tests that triggering the extra button action on a plus address inline
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
-  client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(123));
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressExtraButtonAction) {
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   {
     InSequence s;
 
-    std::vector<Suggestion> updated_suggestions = suggestions;
+    std::vector<Suggestion> updated_suggestions = suggestions();
     updated_suggestions.back().payload = Suggestion::PlusAddressPayload();
     EXPECT_CALL(driver(), RendererShouldClearPreviewedForm);
     EXPECT_CALL(plus_address_delegate(),
                 OnClickedRefreshInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions),
+                    _, base::span<const Suggestion>(suggestions()),
                     /*current_suggestion_index=*/0, _))
         .WillOnce(RunOnceCallback<3>(updated_suggestions,
                                      AutofillSuggestionTriggerSource::
@@ -2349,13 +2354,13 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
   }
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      suggestions[0], SuggestionButtonAction());
+      suggestions()[0], SuggestionButtonAction());
 }
 
 // Tests that triggering the extra button action on a plus address error
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        PlusAddressExtraButtonActionForErrorSuggestion) {
   IssueOnQuery();
 
@@ -2398,35 +2403,24 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Tests that running the update callback is a no-op if the session id of the
 // suggestions UI has changed since the update callback was requested.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        PlusAddressExtraButtonActionUiSessionIdChanged) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(u"Some other suggestion");
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   base::OnceCallback<void(std::vector<Suggestion>,
                           AutofillSuggestionTriggerSource)>
       update_callback;
-
   EXPECT_CALL(client(), UpdateAutofillSuggestions).Times(0);
   EXPECT_CALL(plus_address_delegate(),
               OnClickedRefreshInlineSuggestion(
-                  _, base::span<const Suggestion>(suggestions),
-                  /*current_suggestion_index=*/1, _))
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _))
       .WillOnce(MoveArg<3>(&update_callback));
 
   client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(3));
   external_delegate().DidPerformButtonActionForSuggestion(
-      suggestions[1], SuggestionButtonAction());
+      suggestions()[0], SuggestionButtonAction());
   ASSERT_TRUE(update_callback);
 
   // Now simulate that the popup has a new session id.
@@ -2434,63 +2428,42 @@ TEST_F(AutofillExternalDelegateUnitTest,
       AutofillClient::SuggestionUiSessionId(4));
   std::move(update_callback)
       .Run(
-          suggestions,
+          suggestions(),
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
 // Tests that running the update callback is safe even after AED has been
 // destroyed.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        PlusAddressExtraButtonActionIsAlwaysSafeToCall) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(u"Some other suggestion");
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   base::OnceCallback<void(std::vector<Suggestion>,
                           AutofillSuggestionTriggerSource)>
       update_callback;
-
   EXPECT_CALL(client(), UpdateAutofillSuggestions).Times(0);
   EXPECT_CALL(plus_address_delegate(),
               OnClickedRefreshInlineSuggestion(
-                  _, base::span<const Suggestion>(suggestions),
-                  /*current_suggestion_index=*/1, _))
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _))
       .WillOnce(MoveArg<3>(&update_callback));
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      suggestions[1], SuggestionButtonAction());
+      suggestions()[0], SuggestionButtonAction());
   ASSERT_TRUE(update_callback);
   ResetDriver();
   std::move(update_callback)
       .Run(
-          suggestions,
+          suggestions(),
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
 // Tests that triggering the extra button action on a plus address inline
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
-  IssueOnQuery();
-
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
   const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
-  client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(123));
+  ShowPlusAddressInlineSuggestion(plus_address);
 
   using UpdateSuggestionsCallback =
       AutofillPlusAddressDelegate::UpdateSuggestionsCallback;
@@ -2499,7 +2472,7 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
   UpdateSuggestionsCallback update_callback;
   HideSuggestionsCallback hide_callback;
   PlusAddressCallback filling_callback;
-  std::vector<Suggestion> updated_suggestions = suggestions;
+  std::vector<Suggestion> updated_suggestions = suggestions();
   updated_suggestions.back().is_loading = Suggestion::IsLoading(true);
   MockFunction<void()> check;
   {
@@ -2509,7 +2482,7 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
     // combined via `DoAll` - therefore use a helper.
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions),
+                    _, base::span<const Suggestion>(suggestions()),
                     /*current_suggestion_index=*/0, _, _, _, _, _))
         .WillOnce(
             [&](const url::Origin& primary_main_frame_origin,
@@ -2542,7 +2515,7 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
                                    std::optional(EMAIL_ADDRESS)));
   }
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
+  external_delegate().DidAcceptSuggestion(suggestions()[0],
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(update_callback);
   ASSERT_TRUE(hide_callback);
@@ -2562,21 +2535,9 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAccepted) {
 // `ShowAffiliationErrorDialogCallback` that, when run, triggers showing a plus
 // address affiliation error dialog in `AutofillClient`. If that dialog is
 // accepted, the affiliated plus address is filled.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        PlusAddressInlineAcceptedAffiliationError) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
-  client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(123));
-
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
   const std::u16string affiliated_domain = u"https://bar.com";
   const std::u16string affiliated_plus_address = u"foo@bar.com";
 
@@ -2585,7 +2546,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   {
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions),
+                    _, base::span<const Suggestion>(suggestions()),
                     /*current_suggestion_index=*/0, _, _, _, _, _))
         .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
     // Simulate accepting the dialog.
@@ -2601,7 +2562,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                    std::optional(EMAIL_ADDRESS)));
   }
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
+  external_delegate().DidAcceptSuggestion(suggestions()[0],
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(show_affiliation_error_callback);
   // Simulate showing the affiliation error dialog.
@@ -2612,25 +2573,15 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that `OnAcceptedInlineSuggestion` gets passed a
 // `ShowErrorDialogCallback` that, when run, triggers showing a plus address
 // error dialog in `AutofillClient`.
-TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAcceptedQuotaError) {
-  IssueOnQuery();
-
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"Create plus address",
-                           SuggestionType::kCreateNewPlusAddressInline);
-  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-  ON_CALL(client(), GetAutofillSuggestions)
-      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
-  client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(123));
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressInlineAcceptedQuotaError) {
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   AutofillPlusAddressDelegate::ShowErrorDialogCallback show_error_callback;
   {
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions),
+                    _, base::span<const Suggestion>(suggestions()),
                     /*current_suggestion_index=*/0, _, _, _, _, _))
         .WillOnce(MoveArg<7>(&show_error_callback));
     EXPECT_CALL(
@@ -2639,7 +2590,7 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineAcceptedQuotaError) {
             AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted, _));
   }
 
-  external_delegate().DidAcceptSuggestion(suggestions[0],
+  external_delegate().DidAcceptSuggestion(suggestions()[0],
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(show_error_callback);
   std::move(show_error_callback)
