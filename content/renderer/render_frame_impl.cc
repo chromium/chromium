@@ -5561,7 +5561,7 @@ void RenderFrameImpl::BeginNavigation(
     // All frames in a WebUI process must have the same enabled_bindings_, so
     // we can do a per-frame check here rather than a process-wide check.
     bool should_fork = HasWebUIScheme(url) || HasWebUIScheme(old_url) ||
-                       !enabled_bindings_.empty();
+                       enabled_bindings_.HasAny(kWebUIBindingsPolicySet);
     if (should_fork) {
       OpenURL(std::move(info));
       return;  // Suppress the load here.
