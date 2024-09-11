@@ -118,6 +118,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -278,6 +279,8 @@
   AccountMenuCoordinator* _accountMenuCoordinator;
   // Coordinator for presenting the Home customization menu.
   HomeCustomizationCoordinator* _customizationCoordinator;
+  // Coordinator for the tab group indicator.
+  TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -371,6 +374,9 @@
   [self configureContentSuggestionsCoordinator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
+  if (IsTabGroupIndicatorEnabled()) {
+    [self configureTabGroupIndicator];
+  }
 
   self.started = YES;
 }
@@ -395,6 +401,11 @@
   // browsers!
 
   [sceneState.appState removeObserver:self];
+
+  if (IsTabGroupIndicatorEnabled()) {
+    [_tabGroupIndicatorCoordinator stop];
+    _tabGroupIndicatorCoordinator = nil;
+  }
 
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;
@@ -832,6 +843,20 @@
   self.NTPViewController.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   self.NTPViewController.mutator = self.NTPMediator;
+}
+
+// Configures the `_tabGroupIndicatorCoordinator` and sets the
+// `tabGroupIndicatorView` to the `headerViewController`.
+- (void)configureTabGroupIndicator {
+  // The `_tabGroupIndicatorCoordinator` should be configured after the
+  // `AdaptiveToolbarCoordinator` to gain access to the `NTPViewController`.
+  _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
+      initWithBaseViewController:self.NTPViewController
+                         browser:self.browser];
+  _tabGroupIndicatorCoordinator.toolbarHeightDelegate = nil;
+  [_tabGroupIndicatorCoordinator start];
+  [self.headerViewController
+      setTabGroupIndicatorView:_tabGroupIndicatorCoordinator.view];
 }
 
 // Configures the main ViewController managed by this Coordinator.

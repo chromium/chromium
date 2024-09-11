@@ -16,6 +16,11 @@ extern const CGFloat kTabGroupIndicatorColoredDotSize;
 // Margin between the tab group indicator view colored dot and label.
 extern const CGFloat kTabGroupIndicatorSeparationMargin;
 
+// Top margin for the NTP tab group indicator view.
+extern const CGFloat kTabGroupIndicatorNTPTopMargin;
+// Margin between the NTP tab group indicator and the toolbar.
+extern const CGFloat kTabGroupIndicatorNTPToolbarMargin;
+
 // Accessibility identifier for the tab group indicator view.
 extern NSString* const kTabGroupIndicatorViewIdentifier;
 

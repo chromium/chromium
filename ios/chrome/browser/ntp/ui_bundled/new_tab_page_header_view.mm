@@ -12,6 +12,10 @@
 #import "base/feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
@@ -22,10 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -219,6 +221,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIImageView* _accountDiscParticleBadgeImageView;
   // The New Feature badge on the customization menu's entrypoint.
   UIView* _customizationNewFeatureBadge;
+
+  // Constraints to update the `toolbarView`'s postion according to the
+  // `tabGroupIndicatorView`'s visibility.
+  NSLayoutConstraint* _toolbarNoTabGroupIndicartorConstraint;
+  NSLayoutConstraint* _toolbarTabGroupIndicartorConstraint;
 }
 
 #pragma mark - Public
@@ -238,12 +245,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)addToolbarView:(UIView*)toolbarView {
   _toolBarView = toolbarView;
   [self addSubview:toolbarView];
+
+  _toolbarNoTabGroupIndicartorConstraint =
+      [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [toolbarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [toolbarView.heightAnchor
         constraintEqualToConstant:content_suggestions::FakeToolbarHeight()],
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    _toolbarNoTabGroupIndicartorConstraint,
   ]];
 }
 
@@ -510,6 +520,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
+  if (IsTabGroupIndicatorEnabled()) {
+    [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
+  }
 
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
@@ -748,6 +761,29 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _customizationNewFeatureBadge.alpha = 0;
 }
 
+- (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
+  CHECK(IsTabGroupIndicatorEnabled());
+  offset = fmax(offset, 0);
+
+  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
+  BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
+  _tabGroupIndicatorView.available = isAvailable;
+
+  // Make the view disappear while the indicator is scrolled out of the screen.
+  _tabGroupIndicatorView.alpha =
+      1 - fmax(0, (offset / kTabGroupIndicatorHeight));
+
+  _toolbarTabGroupIndicartorConstraint.constant =
+      kTabGroupIndicatorNTPToolbarMargin - offset;
+  if (_tabGroupIndicatorView.hidden) {
+    _toolbarTabGroupIndicartorConstraint.active = NO;
+    _toolbarNoTabGroupIndicartorConstraint.active = YES;
+  } else {
+    _toolbarNoTabGroupIndicartorConstraint.active = NO;
+    _toolbarTabGroupIndicartorConstraint.active = YES;
+  }
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -785,6 +821,34 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     AddSameConstraints(_fakeLocationBar, _fakeLocationBarHighlightView);
   }
   return _fakeLocationBar;
+}
+
+#pragma mark - Setters
+
+// Sets tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  _tabGroupIndicatorView = view;
+  _tabGroupIndicatorView.hidden = YES;
+  _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tabGroupIndicatorView.showSeparator = YES;
+  [self addSubview:_tabGroupIndicatorView];
+
+  _toolbarTabGroupIndicartorConstraint = [_toolBarView.topAnchor
+      constraintEqualToAnchor:_tabGroupIndicatorView.bottomAnchor
+                     constant:kTabGroupIndicatorNTPToolbarMargin];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.tabGroupIndicatorView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor],
+    [self.tabGroupIndicatorView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor],
+    [self.tabGroupIndicatorView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:kTabGroupIndicatorNTPTopMargin],
+    [_tabGroupIndicatorView.heightAnchor
+        constraintEqualToConstant:kTabGroupIndicatorHeight],
+  ]];
+  [self updateTabGroupIndicatorAvailabilityWithOffset:0];
 }
 
 #pragma mark - Private

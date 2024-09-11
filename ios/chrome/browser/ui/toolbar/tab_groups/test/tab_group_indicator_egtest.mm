@@ -31,7 +31,9 @@ NSString* const kGroupTitle = @"Group Title";
 
 // Matcher for the tab group indicator view.
 id<GREYMatcher> TabGroupIndicatorViewMatcher() {
-  return grey_accessibilityID(kTabGroupIndicatorViewIdentifier);
+  return grey_allOf(
+      grey_ancestor(grey_accessibilityID(kTabGroupIndicatorViewIdentifier)),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the tab group indicator view with `title` as title.
@@ -131,7 +133,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 
   // Check that the indicator is not visible.
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_nil()];
 
   // Create a tab cell.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
@@ -173,7 +175,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 
   // Check that the indicator is not visible.
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_nil()];
 
   // Create a tab cell.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
@@ -186,7 +188,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 
   // Check that the indicator is still not visible.
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that opening a new tab in the group from the tab group indicator menu
@@ -386,7 +388,56 @@ void CreateDefaultTabGroupAndOpenMenu(
 
   // Check that the indicator is not visible.
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the tab group indicator is correctly displayed on the NTP.
+- (void)testTabGroupIndicatorNTP {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+
+  // Check that the indicator is not visible.
+  [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "New tab in group" button.
+  [[EarlGrey
+      selectElementWithMatcher:MenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)]
+      performAction:grey_tap()];
+
+  // Check that there are now two tabs and the current tab has changed.
+  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+                  @"Expected 2 tabs to be present.");
+  NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
+  GREYAssertNotEqual(kTab1Title, newTabTitle,
+                     @"New current tab should have a different title");
+
+  // Check that the indicator is visible.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll down the NTP and check that the indicator is not visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Scroll up the NTP and check that the indicator is visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

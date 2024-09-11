@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -212,6 +213,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
   if (self.isShowing) {
+    if (IsTabGroupIndicatorEnabled()) {
+      [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
+    }
     CGFloat progress =
         self.logoIsShowing || !IsRegularXRegularSizeClass(self)
             ? [self.headerView searchFieldProgressForOffset:offset]
@@ -348,6 +352,10 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)hideBadgeOnCustomizationMenu {
   CHECK(IsHomeCustomizationEnabled());
   [self.headerView hideBadgeOnCustomizationMenu];
+}
+
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  self.headerView.tabGroupIndicatorView = view;
 }
 
 #pragma mark - Private
