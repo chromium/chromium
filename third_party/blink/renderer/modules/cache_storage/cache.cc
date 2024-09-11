@@ -534,8 +534,8 @@ class Cache::FetchHandler final : public ScriptFunction::Callable {
     // promise is never returned to script or chained to another handler.
     // If we return our real result and an exception occurs then unhandled
     // promise errors will occur.
-    ScriptValue rtn =
-        ScriptPromiseUntyped::CastUndefined(script_state).AsScriptValue();
+    ScriptValue rtn(script_state->GetIsolate(),
+                    ToResolvedUndefinedPromise(script_state).V8Promise());
 
     // If there is no loader, we were created as a reject handler.
     if (!response_loader_) {
