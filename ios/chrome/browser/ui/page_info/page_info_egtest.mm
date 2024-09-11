@@ -511,7 +511,15 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-- (void)testLastVisitedSectionDisplaysYesterday {
+// TODO(crbug.com/366003628): Test is flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  testLastVisitedSectionDisplaysYesterday
+#else
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  DISABLED_testLastVisitedSectionDisplaysYesterday
+#endif
+- (void)MAYBE_testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
