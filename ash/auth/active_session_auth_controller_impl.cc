@@ -170,8 +170,11 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     Reason reason,
     AuthCompletionCallback on_auth_complete) {
   LOG(WARNING) << "Show is requested with reason: " << ReasonToString(reason);
-  if (IsShown()) {
+  if (on_auth_complete_) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
+    // Reply to the new `on_auth_complete` callback passed in the most recent
+    // invocation of this method, instead of the stored `on_auth_complete_`,
+    // that belongs to the previous invocation.
     std::move(on_auth_complete)
         .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
     return false;
