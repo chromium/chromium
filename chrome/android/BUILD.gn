@@ -1043,6 +1043,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/browser_controls/android:junit",
       "//chrome/browser/commerce/android:java",
+      "//chrome/browser/commerce/android:junit",
       "//chrome/browser/commerce/merchant_viewer/android:junit",
       "//chrome/browser/commerce/price_change/android:junit",
       "//chrome/browser/commerce/price_insights/android:junit",
