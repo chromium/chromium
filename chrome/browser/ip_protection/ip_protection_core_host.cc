@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -339,6 +340,9 @@ void IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
         result = kFailedBSAOther;
         break;
     }
+    base::UmaHistogramSparse(
+        "NetworkService.IpProtection.TryGetAuthTokensErrors",
+        base::PersistentHash(tokens.status().ToString()));
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted got an error: "
             << static_cast<int>(result);
     TryGetAuthTokensComplete(std::nullopt, std::move(callback), result);

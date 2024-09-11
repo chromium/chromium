@@ -14,12 +14,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "components/prefs/testing_pref_service.h"
@@ -47,6 +47,8 @@ constexpr char kTryGetAuthTokensResultHistogram[] =
     "NetworkService.IpProtection.TryGetAuthTokensResult";
 constexpr char kOAuthTokenFetchHistogram[] =
     "NetworkService.IpProtection.OAuthTokenFetchTime";
+constexpr char kTryGetAuthTokensErrorHistogram[] =
+    "NetworkService.IpProtection.TryGetAuthTokensErrors";
 constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
@@ -449,6 +451,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError400) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA400, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4043967578,  // base::PersistentHash("INVALID_ARGUMENT: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -469,6 +475,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError401) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA401, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4264091263,  // base::PersistentHash("UNAUTHENTICATED: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -489,6 +499,11 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError403) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA403, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      4104528123,  // base::PersistentHash("PERMISSION_DENIED: uhoh")
+      1);
+  // Failed to parse GetInitialDataResponse
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
@@ -509,6 +524,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensErrorHistogram,
+      2844845398,  // base::PersistentHash("UNKNOWN: uhoh")
+      1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
