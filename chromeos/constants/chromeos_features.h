@@ -93,6 +93,8 @@ BASE_DECLARE_FEATURE(kFeatureManagementRoundedWindows);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationWidthIncrease);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kOverviewSessionInitOptimizations);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kPreinstalledWebAppsCoreOnly);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickAnswersMaterialNextUI);
@@ -181,6 +183,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool AreOverviewSessionInitOptimizationsEnabled();
 }  // namespace features
 }  // namespace chromeos
 
