@@ -344,7 +344,7 @@ def CreateJarFile(jar_path,
 _PACKAGE_RE = re.compile(r'^package\s+(.*?)(;|\s*$)', flags=re.MULTILINE)
 
 _SERVICE_IMPL_RE = re.compile(
-    r'^(\s*)@ServiceImpl\(\s*(.+?)\.class\).*?\sclass\s+(\w+)',
+    r'^([\t ]*)@ServiceImpl\(\s*(.+?)\.class\).*?\sclass\s+(\w+)',
     flags=re.MULTILINE | re.DOTALL)
 
 # Finds all top-level classes (by looking for those that are not indented).
@@ -360,10 +360,8 @@ _TOP_LEVEL_CLASSES_RE = re.compile(
     flags=re.MULTILINE)
 
 
-def _ParseJavaSource(source_file, services_map):
+def ParseJavaSource(data, services_map):
   """This should support both Java and Kotlin files."""
-  data = pathlib.Path(source_file).read_text()
-
   package_name = ''
   if m := _PACKAGE_RE.search(data):
     package_name = m.group(1)
@@ -455,7 +453,8 @@ class _MetadataParser:
     logging.info('Collecting info file entries')
     entries = {}
     for path in itertools.chain(java_files, kt_files or []):
-      package_name, class_names = _ParseJavaSource(path, self.services_map)
+      data = pathlib.Path(path).read_text()
+      package_name, class_names = ParseJavaSource(data, self.services_map)
       source = self._srcjar_files.get(path, path)
       for fully_qualified_name in self._ProcessInfo(path, package_name,
                                                     class_names, source):
