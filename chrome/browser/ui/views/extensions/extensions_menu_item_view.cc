@@ -305,8 +305,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE);
   const int icon_label_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  const int menu_item_vertical_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
   const int horizontal_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
@@ -323,10 +321,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kHorizontal)
               .SetIgnoreDefaultMainAxisMargins(true)
-              // Spacing between menu items is done by setting the top margin.
-              // Horizontal margins are added by the parent view.
-              .SetInteriorMargin(
-                  gfx::Insets::TLBR(menu_item_vertical_spacing, 0, 0, 0))
               .AddChildren(
                   // Primary action button.
                   views::Builder<ExtensionsMenuButton>(
