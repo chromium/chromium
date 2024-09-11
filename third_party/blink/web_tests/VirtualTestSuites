@@ -3377,22 +3377,6 @@
     "expires": "Jun 1, 2025",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
-  {
-    "prefix": "import-assertions-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/scripting-1/the-script-element/css-module",
-      "external/wpt/html/semantics/scripting-1/the-script-element/import-attributes",
-      "external/wpt/html/semantics/scripting-1/the-script-element/json-module",
-      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.js",
-      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.js",
-      "http/tests/inspector-protocol/css/constructed-stylesheet-source-url.js"
-    ],
-    "exclusive_tests": "ALL",
-    "args": ["--js-flags=--harmony-import-assertions"],
-    "expires": "Aug 1, 2024",
-    "owners": ["syg@chromium.org"]
-  },
   "select-parser-relaxation is needed in addition to",
   "stylable-select-disabled because we might launch parser changes first.",
   {
