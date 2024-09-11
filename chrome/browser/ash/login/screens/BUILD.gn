@@ -431,6 +431,7 @@ source_set("browser_tests") {
     "quick_start_screen_browsertest.cc",
     "recommend_apps_screen_browsertest.cc",
     "smart_privacy_protection_screen_browsertest.cc",
+    "split_modifier_keyboard_info_screen_browsertest.cc",
     "sync_consent_browsertest.cc",
     "terms_of_service_screen_browsertest.cc",
     "theme_selection_screen_browsertest.cc",
