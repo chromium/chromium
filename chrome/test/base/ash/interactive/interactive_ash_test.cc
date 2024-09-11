@@ -63,6 +63,28 @@ constexpr char kFindElementWithTextActionJs[] = R"(
   })";
 
 // This JavaScript defines a function "action" that returns `true` if `el`
+// and a sibling of the element contains the expected inner texts.
+constexpr char kFindMatchingTextsInElementAndSibling[] = R"(
+  function action(el) {
+    if (!el) {
+      return false;
+    }
+
+    var textElement = el.shadowRoot.querySelector(%s);
+    if (!textElement || textElement.innerText.indexOf(%s) == -1) {
+      return false;
+    }
+
+    var siblingElement = el.shadowRoot.querySelector(%s);
+    if (!siblingElement || siblingElement.innerText.indexOf(%s) == -1) {
+      return false;
+    }
+
+    return true;
+  }
+)";
+
+// This JavaScript defines a function "action" that returns `true` if `el`
 // contains the expected inner text. Before returning `el` is clicked.
 constexpr char kClickElementWithTextActionJs[] = R"(
   function action(el) {
@@ -706,6 +728,22 @@ InteractiveAshTest::WaitForAnyElementTextContains(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForAnyElementAndSiblingTextContains(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& root,
+    const WebContentsInteractionTestUtil::DeepQuery& selectors,
+    const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+    const std::string& expected_text,
+    const WebContentsInteractionTestUtil::DeepQuery& sibling_element,
+    const std::string& sibling_expected_text) {
+  return FindElementAndDoActionOnChildren(
+      element_id, root, selectors,
+      FindMatchingTextsInElementAndSibling(element_with_text, expected_text,
+                                           sibling_element,
+                                           sibling_expected_text));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementHasAttribute(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element,
@@ -950,4 +988,17 @@ const std::string InteractiveAshTest::ClickElementWithSiblingContainsText(
                             DeepQueryToSelectors(element_with_text).c_str(),
                             base::GetQuotedJSONString(expected).c_str(),
                             DeepQueryToSelectors(element_to_click).c_str());
+}
+
+const std::string InteractiveAshTest::FindMatchingTextsInElementAndSibling(
+    const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+    const std::string& expected_text,
+    const WebContentsInteractionTestUtil::DeepQuery& sibling_element,
+    const std::string& sibling_expected_text) {
+  return base::StringPrintf(
+      kFindMatchingTextsInElementAndSibling,
+      DeepQueryToSelectors(element_with_text).c_str(),
+      base::GetQuotedJSONString(expected_text).c_str(),
+      DeepQueryToSelectors(sibling_element).c_str(),
+      base::GetQuotedJSONString(sibling_expected_text).c_str());
 }

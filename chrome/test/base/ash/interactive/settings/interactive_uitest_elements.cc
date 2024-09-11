@@ -485,7 +485,8 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput() {
 namespace wifi {
 
 WebContentsInteractionTestUtil::DeepQuery WifiNetworksList() {
-  return InternetPage() + "settings-internet-subpage" + "div#networkListDiv";
+  return InternetPage() + "settings-internet-subpage" +
+         "network-list#networkList";
 }
 
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle() {

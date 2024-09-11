@@ -278,6 +278,19 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& selectors,
       const std::string& expected);
 
+  // This function is similar to `WaitForAnyElementTextContains()`
+  // it also checks that any sibling of the element contains a certain text
+  // `sibling_text`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForAnyElementAndSiblingTextContains(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& root,
+      const WebContentsInteractionTestUtil::DeepQuery& selectors,
+      const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+      const std::string& expected_text,
+      const WebContentsInteractionTestUtil::DeepQuery& sibling_element,
+      const std::string& sibling_expected_text);
+
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have attribute
   // `attribute`.
@@ -399,6 +412,15 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
       const std::string& expected,
       const WebContentsInteractionTestUtil::DeepQuery& element_to_click);
+
+  // Returns the JS code that searches for an element selected by
+  // `element_with_text` that contains the `expected_text`, and when found will
+  // check that a `sibling_element` contains text `sibling_expected_text`.
+  const std::string FindMatchingTextsInElementAndSibling(
+      const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+      const std::string& expected_text,
+      const WebContentsInteractionTestUtil::DeepQuery& sibling_element,
+      const std::string& sibling_expected_text);
 };
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
