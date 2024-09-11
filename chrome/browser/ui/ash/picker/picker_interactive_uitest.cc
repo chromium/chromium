@@ -109,6 +109,10 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
   };
 
   PickerInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kPicker,
+                              ash::features::kPickerGrid},
+        /*disabled_features=*/{});
     ash::PickerController::DisableFeatureKeyCheck();
     ash::PickerController::DisableFeatureTourForTesting();
   }
@@ -158,7 +162,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{ash::features::kPicker};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Searches for 'thumbs up', checks the top emoji result is '👍', and inserts it
