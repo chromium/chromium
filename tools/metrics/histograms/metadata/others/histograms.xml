@@ -6838,6 +6838,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Posix.NoEncryptionPrefixFound" enum="BooleanAllowed"
+    expires_after="2025-08-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    True, iff the data did not have the required encryption prefix, and was
+    returned without modification to the caller. This is emitted every time
+    OSCrypt attempts to decrypt a non-empty value on platforms using
+    os_crypt_posix.cc (e.g. Android, Chrome OS, Fushsia).
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Win.Decrypt.Result" enum="BooleanSuccess"
     expires_after="2025-02-10">
   <owner>wfh@chromium.org</owner>
