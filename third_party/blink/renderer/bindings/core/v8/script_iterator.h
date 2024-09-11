@@ -160,8 +160,7 @@ class CORE_EXPORT ScriptIterator {
 
   // Returns true if the iterator is still not done.
   bool Next(ExecutionContext* execution_context,
-            ExceptionState& exception_state,
-            v8::Local<v8::Value> value = v8::Local<v8::Value>());
+            ExceptionState& exception_state);
 
   v8::MaybeLocal<v8::Value> GetValue() {
     return value_.Get(ScriptState::ForCurrentRealm(isolate_));

@@ -140,8 +140,7 @@ ScriptIterator::ScriptIterator(v8::Isolate* isolate,
 }
 
 bool ScriptIterator::Next(ExecutionContext* execution_context,
-                          ExceptionState& exception_state,
-                          v8::Local<v8::Value> value) {
+                          ExceptionState& exception_state) {
   DCHECK(!IsNull());
 
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate_);
@@ -154,10 +153,9 @@ bool ScriptIterator::Next(ExecutionContext* execution_context,
 
   TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> next_return_value;
-  if (!V8ScriptRunner::CallFunction(next_method.As<v8::Function>(),
-                                    execution_context,
-                                    iterator_.Get(script_state),
-                                    value.IsEmpty() ? 0 : 1, &value, isolate_)
+  if (!V8ScriptRunner::CallFunction(
+           next_method.As<v8::Function>(), execution_context,
+           iterator_.Get(script_state), 0, nullptr, isolate_)
            .ToLocal(&next_return_value)) {
     done_ = true;
     return false;
