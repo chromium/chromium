@@ -98,7 +98,7 @@ TEST_F(TypingCommandTest,
   TypingCommand::InsertText(
       GetDocument(), " ", 0,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
-  EXPECT_EQ("<div contenteditable>^<h1></h1>|</div>",
+  EXPECT_EQ("<div contenteditable><h1>\xC2\xA0|</h1></div>",
             GetSelectionTextFromBody());
 }
 

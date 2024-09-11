@@ -51,11 +51,11 @@ var target2 = setupForFiringTest('<p id="target2" contentEditable>This text shou
 document.execCommand("insertText", false, target2Text);
 
 // An "delete" command should dispatch an input event.
-var target3 = setupForFiringTest('<p id="target3" contentEditable>This text shouldn be deleted.</p>', '');
+var target3 = setupForFiringTest('<p id="target3" contentEditable>This text shouldn be deleted.</p>', '<br>');
 document.execCommand("delete", false);
 
 // A command other than text-editing should dispatch an input event.
-// Also note that createLink is a composite command, 
+// Also note that createLink is a composite command,
 // so this test also ensures that even composite command dispatches the event only once.
 var target4 = setupForFiringTest('<p id="target4" contentEditable>This text should be a link.</p>', "<a href=\"http://www.example.com/\">This text should be a link.</a>");
 document.execCommand("createLink", false, "http://www.example.com/");
@@ -88,7 +88,7 @@ var target7 = setupForFiringTest('<p id="target7" contentEditable>Replaced</p>',
 sel.selectAllChildren(target7);
 eventSender.keyDown('X');
 
-var target8 = setupForFiringTest('<p id="target8" contentEditable>Deleted</p>', '');
+var target8 = setupForFiringTest('<p id="target8" contentEditable>Deleted</p>', '<br>');
 sel.selectAllChildren(target8);
 eventSender.keyDown('Delete');
 

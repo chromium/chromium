@@ -26,13 +26,13 @@ selection_test(
       '<div contenteditable="true">',
         '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
           '<span>^foo<br></span>',
-          'barbarbar|',
+          'bar<br>barbar',
         '</blockquote>',
-        '<span contenteditable="false">',
-          '<span contenteditable="true"></span>',
-          '<ol>bar</ol>',
-        '</span>',
+        '<span contenteditable="false">|',
+          '<span contenteditable="true">',
+          '<ol></ol>',
+        '</span><ol>bar</ol></span>',
       '</div>'
     ],
-  'The test passes if it does not rash.');
+  'The test passes if it does not crash.');
 </script>

@@ -21,7 +21,10 @@
       selection.removeAllRanges();
       selection.addRange(range);
       document.execCommand("delete");
-      assert_equals(element.firstChild, null, "Text node deleted");
+      if (subtest=="revert")
+        assert_equals(element.innerHTML, "<br>", "Text node replaced with <br> tag");
+      else
+        assert_equals(element.firstChild, null, "Text node deleted");
     }, "all:" + subtest + " does not turn off contenteditable");
   }
 </script>

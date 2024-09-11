@@ -140,12 +140,13 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
                              .SetSanitizeMarkup(true)
                              .Build());
   // Should not crash.
-  EXPECT_TRUE(command.Apply());
+  // Editing state is aborted after the body stops being editable.
+  EXPECT_FALSE(command.Apply());
 
   // The command removes the <style>, so the <body> stops being editable,
   // and then "x" is not removed.
   EXPECT_FALSE(IsEditable(*GetDocument().body()));
-  EXPECT_EQ("|x", GetSelectionTextFromBody());
+  EXPECT_EQ("^x|", GetSelectionTextFromBody());
 }
 
 // This is a regression test for https://crbug.com/1307391

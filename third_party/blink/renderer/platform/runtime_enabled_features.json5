@@ -3528,6 +3528,12 @@
       status: "stable",
     },
     {
+      // When enabled, the root element will have a placeholder after all text is deleted.
+      // crbug.com/40702380
+      name: "RootElementWithPlaceHolderAfterDeletingSelection",
+      status: "stable",
+    },
+    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
