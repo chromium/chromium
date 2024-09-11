@@ -538,6 +538,7 @@ void SavedTabGroupBar::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<LocalTabGroupID>& local_id) {
   SavedTabGroupUpdated(sync_id);
+  MaybeShowClosePromo(sync_id);
 }
 
 void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
