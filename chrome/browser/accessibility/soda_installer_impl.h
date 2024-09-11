@@ -37,7 +37,6 @@ class SodaInstallerImpl : public SodaInstaller,
   // Currently only implemented in the chromeos-specific subclass.
   base::FilePath GetSodaBinaryPath() const override;
 
-  // Currently only implemented in the chromeos-specific subclass.
   base::FilePath GetLanguagePath(const std::string& language) const override;
 
   // SodaInstaller:

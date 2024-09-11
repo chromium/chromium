@@ -105,6 +105,8 @@ class LiveCaptionController : public KeyedService,
   void CreateUI();
   void DestroyUI();
 
+  void MaybeSetLiveCaptionLanguage();
+
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<content::BrowserContext> browser_context_;

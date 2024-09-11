@@ -3,6 +3,7 @@ include_rules = [
   "+chromeos/ash/components/dbus",
   "+components/component_updater/component_updater_paths.h",
   "+components/crx_file",
+  "+components/language/core/browser",
   "+components/live_caption",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",

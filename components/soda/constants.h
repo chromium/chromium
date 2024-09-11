@@ -13,6 +13,8 @@
 #include "components/soda/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 
+class PrefService;
+
 namespace speech {
 
 extern const char kUsEnglishLocale[];
@@ -312,6 +314,13 @@ const std::string GetInstallationResultMetricForLanguagePack(
     const LanguageCode& language_code);
 const std::string GetInstallationResultMetricForLanguage(
     const std::string& language);
+
+// Returns the available Live Caption language best matching the
+// application locale, one of the user's preferred languages, or en-US if none
+// of the other languages match.
+const std::string GetDefaultLiveCaptionLanguage(
+    const std::string& application_locale,
+    PrefService* profile_prefs);
 
 }  // namespace speech
 

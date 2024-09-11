@@ -153,6 +153,13 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Gets a list of locales enabled by the Finch flag.
   virtual std::vector<std::string> GetLiveCaptionEnabledLanguages() const;
 
+  // Registers a language pack by adding it to the preference tracking the
+  // installed SODA language packs.
+  void RegisterLanguage(const std::string& language, PrefService* global_prefs);
+
+  void UnregisterLanguage(const std::string& language,
+                          PrefService* global_prefs);
+
  protected:
   // Initializes language and installs the per-language components.
   virtual void InitLanguages(PrefService* profile_prefs,
@@ -180,16 +187,9 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // 100.
   void NotifyOnSodaProgress(LanguageCode language_code, int progress);
 
-  // Registers a language pack by adding it to the preference tracking the
-  // installed SODA language packs.
-  void RegisterLanguage(const std::string& language, PrefService* global_prefs);
-
   // Unregisters all language packs by clearing the preference tracking the
   // installed SODA language packs.
   void UnregisterLanguages(PrefService* global_prefs);
-
-  void UnregisterLanguage(const std::string& language,
-                          PrefService* global_prefs);
 
   // Returns whether or not the language pack for a given language is
   // installed. The language should be localized in BCP-47, e.g. "en-US".

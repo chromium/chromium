@@ -41,7 +41,14 @@ base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
 
 base::FilePath SodaInstallerImpl::GetLanguagePath(
     const std::string& language) const {
-  DLOG(FATAL) << "GetLanguagePath not supported on this platform";
+  std::optional<speech::SodaLanguagePackComponentConfig> config =
+      speech::GetLanguageComponentConfig(language);
+  if (config.has_value() &&
+      config.value().language_code != speech::LanguageCode::kNone) {
+    return g_browser_process->local_state()->GetFilePath(
+        config.value().config_path_pref);
+  }
+
   return base::FilePath();
 }
 
