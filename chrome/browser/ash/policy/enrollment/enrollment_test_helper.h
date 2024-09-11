@@ -27,7 +27,9 @@ class EnrollmentTestHelper {
   EnrollmentTestHelper(const EnrollmentTestHelper&) = delete;
   EnrollmentTestHelper& operator=(const EnrollmentTestHelper&) = delete;
 
-  // Configures ash::switches::IsRevenBranding() checks to pass.
+  // Pretends that the device is not a Chrome ("nonchrome") device.
+  void SetUpNonchromeDevice();
+  // Pretends that the device is a ChromeOS Flex device.
   void SetUpFlexDevice();
   // Configures OobeConfiguration with an enrollment token for testing.
   void SetUpEnrollmentTokenConfig(

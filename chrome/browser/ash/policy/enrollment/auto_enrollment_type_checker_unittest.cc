@@ -59,12 +59,6 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   ~AutoEnrollmentTypeCheckerTest() override = default;
 
  protected:
-  void SetUpNonchromeDevice() {
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kFirmwareTypeKey,
-        ash::system::kFirmwareTypeValueNonchrome);
-  }
-
   void SetUpFlexDeviceWithFREOnFlexEnabled() {
     enrollment_test_helper_.SetUpFlexDevice();
     enrollment_test_helper_.EnableFREOnFlex();
@@ -736,7 +730,7 @@ TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, KillSwitch) {
 }
 
 TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, NonChrome) {
-  SetUpNonchromeDevice();
+  enrollment_test_helper_.SetUpNonchromeDevice();
 
   AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
 
@@ -769,7 +763,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
   void SetUp() override {
     AutoEnrollmentTypeCheckerTest::SetUp();
     if (device_os_ == DeviceOs::Nonchrome) {
-      SetUpNonchromeDevice();
+      enrollment_test_helper_.SetUpNonchromeDevice();
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
       enrollment_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {

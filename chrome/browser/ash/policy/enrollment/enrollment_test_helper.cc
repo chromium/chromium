@@ -29,11 +29,15 @@ EnrollmentTestHelper::~EnrollmentTestHelper() {
   ash::OobeConfigurationClient::Shutdown();
 }
 
-void EnrollmentTestHelper::SetUpFlexDevice() {
-  command_line_->GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kRevenBranding);
+void EnrollmentTestHelper::SetUpNonchromeDevice() {
   statistics_provider_->SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNonchrome);
+}
+
+void EnrollmentTestHelper::SetUpFlexDevice() {
+  SetUpNonchromeDevice();
+  command_line_->GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kRevenBranding);
 }
 
 void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
