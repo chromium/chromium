@@ -92,11 +92,8 @@ enum class SearchEngineChoiceScreenConditions {
   // The browser attempting to show the choice screen in a dialog is already
   // showing a choice screen.
   kAlreadyBeingShown = 16,
-  // The user made the choice in the guest session and opted to save it across
-  // guest sessions.
-  kUsingPersistedGuestSessionChoice = 17,
 
-  kMaxValue = kUsingPersistedGuestSessionChoice,
+  kMaxValue = kAlreadyBeingShown,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenConditions)
 

@@ -15,10 +15,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -348,16 +346,10 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
 
-  TestingProfile* parent_guest = profile_manager()->CreateGuestProfile();
-  Profile* child_guest = parent_guest->GetOffTheRecordProfile(
-      Profile::OTRProfileID::PrimaryID(), false);
-
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-      parent_guest,
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(child_guest);
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  profile()->SetGuestSession(/*guest=*/true);
+
   const int kPrepopulatedId =
       search_engine_choice_dialog_service->GetSearchEngines()
           .at(0)
@@ -379,16 +371,10 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
 
-  TestingProfile* parent_guest = profile_manager()->CreateGuestProfile();
-  Profile* child_guest = parent_guest->GetOffTheRecordProfile(
-      Profile::OTRProfileID::PrimaryID(), false);
-
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-      parent_guest,
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(child_guest);
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  profile()->SetGuestSession(/*guest=*/true);
+
   const int kPrepopulatedId =
       search_engine_choice_dialog_service->GetSearchEngines()
           .at(0)

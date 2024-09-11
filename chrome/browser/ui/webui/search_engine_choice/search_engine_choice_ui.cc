@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -38,11 +39,13 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
-std::string GetChoiceListJSON(
-    SearchEngineChoiceDialogService& search_engine_choice_dialog_service) {
+std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile);
+  CHECK(search_engine_choice_dialog_service);
   const TemplateURL::TemplateURLVector choices =
-      search_engine_choice_dialog_service.GetSearchEngines();
+      search_engine_choice_dialog_service->GetSearchEngines();
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
@@ -118,18 +121,11 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
-  source->AddString(
-      "choiceList",
-      GetChoiceListJSON(CHECK_DEREF(search_engine_choice_dialog_service)));
-
-  search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-          &profile_.get());
-  source->AddBoolean(
-      "showGuestCheckbox",
-      search_engine_choice_service->IsProfileEligibleForDseGuestPropagation());
+  source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
+  source->AddBoolean("showGuestCheckbox",
+                     base::FeatureList::IsEnabled(
+                         switches::kSearchEngineChoiceGuestExperience) &&
+                         profile_->IsGuestSession());
 
   webui::SetupWebUIDataSource(
       source,

@@ -36,15 +36,9 @@ class SearchEngineChoiceService : public KeyedService {
   SearchEngineChoiceService(
       PrefService& profile_prefs,
       PrefService* local_state,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      bool is_profile_eligible_for_dse_guest_propagation,
-#endif
       int variations_country_id = country_codes::kCountryIDUnknown);
   SearchEngineChoiceService(PrefService& profile_prefs,
                             PrefService* local_state,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-                            bool is_profile_eligible_for_dse_guest_propagation,
-#endif
                             variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
@@ -97,20 +91,6 @@ class SearchEngineChoiceService : public KeyedService {
   // in tests.
   void ClearCountryIdCacheForTesting();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Returns whether the profile is eligible for the default search engine to be
-  // used across all guest sessions.
-  bool IsProfileEligibleForDseGuestPropagation() const;
-
-  // Returns whether there is a default search engine configured to be
-  // propagated to new guest sessions.
-  bool ShouldPropagateDseBetweenGuestSessions() const;
-
-  // Save the `prepopulated_id` of the chosen search engine to be used for all
-  // guest sessions.
-  void PropagateSearchEngineBetweenGuestSessions(int prepopulated_id);
-#endif
-
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -120,7 +100,7 @@ class SearchEngineChoiceService : public KeyedService {
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
-  void ProcessPendingChoiceScreenDisplayState();
+  void ProcessPendingChoiceScreenDisplayState(PrefService* local_state);
 
   int GetCountryIdInternal();
 
@@ -129,10 +109,6 @@ class SearchEngineChoiceService : public KeyedService {
 #endif
 
   const raw_ref<PrefService> profile_prefs_;
-  const raw_ptr<PrefService> local_state_;
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  bool is_profile_eligible_for_dse_guest_propagation_ = false;
-#endif
   const int variations_country_id_;
 
   // Used to ensure that the value returned from `GetCountryId` never changes
