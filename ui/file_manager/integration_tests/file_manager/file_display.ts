@@ -595,10 +595,11 @@ export async function fileDisplayWithoutVolumesThenMountDrive() {
   const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('drive');
 
-  // The fake Google Drive should be empty.
+  // The fake Google Drive should be empty and read only label should show.
   await remoteCall.waitForFiles(appId, []);
+  await remoteCall.waitForElement(appId, '#read-only-indicator:not([hidden])');
 
-  // Remount Drive. The curent directory should be changed from the Google
+  // Remount Drive. The current directory should be changed from the Google
   // Drive FakeItem to My Drive.
   await sendTestMessage({name: 'mountDrive'});
 
@@ -608,8 +609,11 @@ export async function fileDisplayWithoutVolumesThenMountDrive() {
   // Add an entry to Drive.
   await addEntries(['drive'], [ENTRIES.newlyAdded]);
 
-  // Wait for "My Drive" files to display in the file list.
+  // Wait for "My Drive" files to display in the file list and read only label
+  // should hide.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
   await remoteCall.waitForFiles(appId, [ENTRIES.newlyAdded.getExpectedRow()]);
+  await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
 }
 
 /**
