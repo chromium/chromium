@@ -621,10 +621,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
         Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_IN_INCOGNITO" desc="Explanation that a 3P password manager may prompt to save passwords in incognito." formatter_data="android_java">
-        Note: When using “other providers”, the browser informs the configured AutofillService about sites and fields visited in incognito.\nThe AutofillService uses this information to autofill your data and may store data in the process. Autofill data saved in incognito mode is stored even after incognito mode ends and available outside incognito mode.
-      </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?
       </message>
