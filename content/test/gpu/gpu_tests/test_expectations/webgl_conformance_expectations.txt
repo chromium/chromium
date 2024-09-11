@@ -558,7 +558,7 @@ crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-arr
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/354627705 [ angle-metal intel-0x3e9b mac no-clang-coverage release ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
+crbug.com/354627705 [ amd-0x7340 angle-metal mac no-clang-coverage release ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
