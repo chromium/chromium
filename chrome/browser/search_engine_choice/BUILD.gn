@@ -1,0 +1,151 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/args.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("search_engine_choice") {
+  sources = [ "search_engine_choice_service_factory.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "search_engine_choice_dialog_service.h",
+      "search_engine_choice_dialog_service_factory.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/ui:browser_list",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/search_engines",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "search_engine_choice_service_factory.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":search_engine_choice",
+    "//chrome/browser:browser_process",
+    "//components/search_engines",
+    "//components/variations/service",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "search_engine_choice_dialog_service.cc",
+      "search_engine_choice_dialog_service_factory.cc",
+    ]
+
+    deps += [
+      "//build:branding_buildflags",
+      "//chrome/browser/search_engines",
+      "//chrome/common:non_code_constants",
+      "//components/country_codes",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/kiosk" ]
+    }
+  }
+}
+
+if (!is_android) {
+  if (!is_chrome_for_testing) {
+    source_set("browser_tests") {
+      testonly = true
+
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      sources = [ "search_engine_choice_dialog_browsertest.cc" ]
+
+      deps = [
+        ":search_engine_choice",
+        "//base",
+        "//base/test:test_support",
+        "//build:buildflag_header_h",
+        "//chrome/browser",
+        "//chrome/browser:browser_process",
+        "//chrome/browser:test_support",
+        "//chrome/browser/search_engines",
+        "//chrome/browser/ui",
+        "//chrome/browser/web_applications",
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//chrome/common",
+        "//chrome/common:non_code_constants",
+        "//chrome/test:test_support",
+        "//chrome/test:test_support_ui",
+        "//components/keep_alive_registry",
+        "//components/keyed_service/content",
+        "//components/keyed_service/core",
+        "//components/search_engines",
+        "//components/search_engines:test_support",
+        "//components/version_info",
+        "//components/webapps/common",
+        "//content/public/browser",
+        "//content/test:test_support",
+        "//testing/gmock",
+        "//testing/gtest",
+        "//ui/base:types",
+      ]
+    }
+
+    if (!is_chromeos_device) {
+      source_set("interactive_ui_tests") {
+        testonly = true
+
+        defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+        sources = [ "search_engine_choice_dialog_interactive_uitest.cc" ]
+
+        deps = [
+          ":search_engine_choice",
+          "//base",
+          "//base/test:test_support",
+          "//chrome/app:command_ids",
+          "//chrome/browser/profiles:profile",
+          "//chrome/browser/search_engines",
+          "//chrome/browser/ui",
+          "//chrome/browser/ui:browser_element_identifiers",
+          "//chrome/test:test_support_ui",
+          "//components/country_codes",
+          "//components/search_engines",
+          "//components/variations",
+          "//content/test:test_support",
+          "//testing/gtest",
+          "//ui/base",
+        ]
+      }
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "search_engine_choice_dialog_service_unittest.cc" ]
+
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/search_engines",
+      "//chrome/test:test_support",
+      "//components/country_codes",
+      "//components/search_engines",
+      "//components/signin/public/base",
+      "//components/web_modal:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

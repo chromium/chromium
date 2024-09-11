@@ -463,6 +463,7 @@ static_library("test_support") {
     "//chrome/browser:test_support",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/supervised_user:test_support",
     "//chrome/child",
     "//chrome/common:non_code_constants",
@@ -3288,7 +3289,10 @@ if (!is_android) {
     }
 
     if (!is_chrome_for_testing) {
-      sources += [ "../browser/search_engine_choice/search_engine_choice_dialog_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/search_engine_choice",
+        "//chrome/browser/search_engine_choice:browser_tests",
+      ]
     }
 
     if (enable_compose) {
@@ -6427,7 +6431,6 @@ test("unit_tests") {
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
       "../browser/screen_ai/screen_ai_install_state_unittest.cc",
-      "../browser/search_engine_choice/search_engine_choice_dialog_service_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
@@ -6667,6 +6670,7 @@ test("unit_tests") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/search",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform:test_utils",
     "//chrome/browser/share",
@@ -8260,6 +8264,7 @@ test("unit_tests") {
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/search/background",
       "//chrome/browser/search/background:constants",
+      "//chrome/browser/search_engine_choice:unit_tests",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
@@ -10570,6 +10575,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search",
+      "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
@@ -10949,10 +10955,6 @@ if (!is_android && !is_chromeos_device) {
       "base/interactive_ui_tests_main.cc",
     ]
 
-    if (!is_chrome_for_testing) {
-      sources += [ "../browser/search_engine_choice/search_engine_choice_dialog_interactive_uitest.cc" ]
-    }
-
     if (is_mac || is_linux || is_win) {
       sources += [
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
@@ -11146,6 +11148,13 @@ if (!is_android && !is_chromeos_device) {
       "//ui/views",
       "//ui/web_dialogs:test_support",
     ]
+
+    if (!is_chrome_for_testing) {
+      deps += [
+        "//chrome/browser/search_engine_choice",
+        "//chrome/browser/search_engine_choice:interactive_ui_tests",
+      ]
+    }
 
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:interactive_ui_tests" ]

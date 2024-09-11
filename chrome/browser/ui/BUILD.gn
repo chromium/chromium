@@ -425,6 +425,8 @@ static_library("ui") {
     "//chrome/browser/resources:dev_ui_resources",
     "//chrome/browser/resources:resources",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
     "//chrome/browser/share",
     "//chrome/browser/signin:identity_manager_provider",
@@ -747,6 +749,7 @@ static_library("ui") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/ui/autofill:impl",
+    "//chrome/browser/search_engine_choice:impl",
   ]
 
   if (enable_vr && is_win) {

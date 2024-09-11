@@ -782,6 +782,7 @@ source_set("extensions") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/themes",

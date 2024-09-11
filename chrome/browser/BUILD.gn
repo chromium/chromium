@@ -1422,8 +1422,6 @@ static_library("browser") {
     "resources_util.h",
     "safe_browsing/metrics/safe_browsing_metrics_provider.cc",
     "safe_browsing/metrics/safe_browsing_metrics_provider.h",
-    "search_engine_choice/search_engine_choice_service_factory.cc",
-    "search_engine_choice/search_engine_choice_service_factory.h",
     "search_engines/template_url_service_factory.cc",
     "search_provider_logos/logo_service_factory.cc",
     "search_provider_logos/logo_service_factory.h",
@@ -1854,6 +1852,8 @@ static_library("browser") {
     # TODO(crbug.com/360599255): Remove this circular dependency when //c/b/content_settings
     # get modularized.
     "//chrome/browser/ui/blocked_content:impl",
+
+    "//chrome/browser/search_engine_choice:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1958,6 +1958,8 @@ static_library("browser") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/search",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
     "//chrome/browser/share",
     "//chrome/browser/sharing:buildflags",
@@ -4058,10 +4060,6 @@ static_library("browser") {
       "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
       "safe_browsing/generated_safe_browsing_pref.h",
-      "search_engine_choice/search_engine_choice_dialog_service.cc",
-      "search_engine_choice/search_engine_choice_dialog_service.h",
-      "search_engine_choice/search_engine_choice_dialog_service_factory.cc",
-      "search_engine_choice/search_engine_choice_dialog_service_factory.h",
       "send_tab_to_self/desktop_notification_handler.cc",
       "send_tab_to_self/desktop_notification_handler.h",
       "serial/chrome_serial_delegate.cc",
@@ -8961,6 +8959,7 @@ static_library("test_support") {
     "//chrome/browser/autofill:interactive_ui_tests",
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/search_engine_choice:browser_tests",
     "//chrome/test:test_support",
   ]
 
@@ -9024,6 +9023,7 @@ static_library("test_support") {
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/browser/share:share",
     "//chrome/common",
