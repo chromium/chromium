@@ -23,7 +23,7 @@ import {bestHit} from './hit.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
-import type {CursorData, DetectedTextContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
+import type {CursorData, SelectedRegionContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
@@ -226,6 +226,12 @@ export class TextLayerElement extends PolymerElement {
   // IoU threshold for finding words in region.
   private selectTextTriggerThreshold: number =
       loadTimeData.getValue('selectTextTriggerThreshold');
+  // Timeout for onTextReceived. We do not want to show the selected region
+  // context menu until either the text is received or the timeout elapses.
+  private textReceivedTimeout: number =
+      loadTimeData.getValue('textReceivedTimeout');
+  private textReceivedTimeoutID: number = 0;
+  private textReceivedTimeoutElapsedOrCleared = false;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override ready() {
@@ -260,6 +266,10 @@ export class TextLayerElement extends PolymerElement {
       this.browserProxy.callbackRouter.setTextSelection.addListener(
           this.selectWords.bind(this)),
     ];
+
+    this.textReceivedTimeoutID = setTimeout(() => {
+      this.textReceivedTimeoutElapsedOrCleared = true;
+    }, this.textReceivedTimeout);
   }
 
   override disconnectedCallback() {
@@ -300,26 +310,36 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private detectTextInRegion(box: CenterRotatedBox) {
-    const selection =
-        findWordsInRegion(this.renderedWords, box, this.selectionOverlayRect);
-    if (selection.iou < this.selectTextTriggerThreshold) {
+    // If we are still waiting for the text, hide the context menu.
+    if (!this.textReceivedTimeoutElapsedOrCleared) {
       this.dispatchEvent(new CustomEvent(
-          'hide-detected-text-context-menu', {bubbles: true, composed: true}));
+          'hide-selected-region-context-menu',
+          {bubbles: true, composed: true}));
       return;
     }
-    const left = box.box.x - box.box.width / 2;
-    const right = box.box.x + box.box.width / 2;
-    const top = box.box.y - box.box.height / 2;
-    const bottom = box.box.y + box.box.height / 2;
-    this.dispatchEvent(new CustomEvent<DetectedTextContextMenuData>(
-        'show-detected-text-context-menu', {
+
+    const selection =
+        findWordsInRegion(this.renderedWords, box, this.selectionOverlayRect);
+    // Words may be found in the region even if the IOU threshold is not met.
+    // If IOU threshold is not met, behave as if no words were found. Show the
+    // context menu but do not send the selection indices so that options for
+    // detected text are not shown.
+    if (selection.iou < this.selectTextTriggerThreshold) {
+      this.dispatchEvent(new CustomEvent<SelectedRegionContextMenuData>(
+          'show-selected-region-context-menu', {
+            bubbles: true,
+            composed: true,
+            detail: {box, selectionStartIndex: -1, selectionEndIndex: -1},
+          }));
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent<SelectedRegionContextMenuData>(
+        'show-selected-region-context-menu', {
           bubbles: true,
           composed: true,
           detail: {
-            left,
-            right,
-            top,
-            bottom,
+            box,
             selectionStartIndex: selection.startIndex,
             selectionEndIndex: selection.endIndex,
           },
@@ -535,7 +555,7 @@ export class TextLayerElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent(
         'hide-selected-text-context-menu', {bubbles: true, composed: true}));
     this.dispatchEvent(new CustomEvent(
-        'hide-detected-text-context-menu', {bubbles: true, composed: true}));
+        'hide-selected-region-context-menu', {bubbles: true, composed: true}));
     this.dispatchTextHighlightState();
   }
 
@@ -663,6 +683,9 @@ export class TextLayerElement extends PolymerElement {
     afterNextRender(this, () => {
       this.computeTranslatedWordBoundingBoxes();
     });
+
+    this.textReceivedTimeoutElapsedOrCleared = true;
+    clearTimeout(this.textReceivedTimeoutID);
 
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.

@@ -55,6 +55,10 @@ BASE_FEATURE(kLensOverlayTranslateButton,
              "LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayImageContextMenuActions,
+             "LensOverlayImageContextMenuActions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -232,6 +236,18 @@ constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
 
 constexpr base::FeatureParam<int> kLensOverlayFindBarStringsVariant{
     &kLensOverlay, "find-bar-strings-variant", 0};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayImageContextMenuActionsEnableCopyAsImage{
+        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", true};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayImageContextMenuActionsEnableSaveAsImage{
+        &kLensOverlayImageContextMenuActions, "enable-save-as-image", true};
+
+constexpr base::FeatureParam<int>
+    kLensOverlayImageContextMenuActionsTextReceivedTimeout{
+        &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -609,6 +625,20 @@ int GetLensOverlayFindBarStringsVariant() {
 
 bool IsLensOverlayTranslateButtonEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayTranslateButton);
+}
+
+bool IsLensOverlayCopyAsImageEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayImageContextMenuActions) &&
+         kLensOverlayImageContextMenuActionsEnableCopyAsImage.Get();
+}
+
+bool IsLensOverlaySaveAsImageEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayImageContextMenuActions) &&
+         kLensOverlayImageContextMenuActionsEnableSaveAsImage.Get();
+}
+
+int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
+  return kLensOverlayImageContextMenuActionsTextReceivedTimeout.Get();
 }
 
 }  // namespace lens::features

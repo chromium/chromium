@@ -33,6 +33,8 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'issueTranslateFullPageRequest',
       'notifyOverlayInitialized',
       'copyText',
+      'copyImage',
+      'saveAsImage',
       'recordUkmAndTaskCompletionForLensOverlayInteraction',
     ]);
   }

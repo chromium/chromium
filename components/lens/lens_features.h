@@ -516,6 +516,19 @@ extern int GetLensOverlayFindBarStringsVariant();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayTranslateButtonEnabled();
 
+// Whether to show the copy as image context menu option.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayCopyAsImageEnabled();
+
+// Whether to show the save as image context menu option.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlaySaveAsImageEnabled();
+
+// Time to wait for Lens text response before displaying the selected region
+// context menu, in milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

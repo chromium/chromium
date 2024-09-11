@@ -17387,6 +17387,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE" desc="Notification shown in the Lens Overlay when the user has copied selected text to the clipboard.">
       Text copied
     </message>
+    <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE" desc="Notification shown in the Lens Overlay when the user has copied the selected image to the clipboard.">
+      Image copied
+    </message>
     <message name="IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL" desc="Text that is shown in the tooltip of the more options button in the Lens Overlay.">
       More options
     </message>
@@ -17401,6 +17404,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_LENS_OVERLAY_SELECT_TEXT" desc="Command in the Lens Overlay context menu to select text.">
       Select text
+    </message>
+    <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE" desc="Command in the Lens Overlay context menu to copy the selected screen region to the clipboard as an image.">
+      Copy as image
+    </message>
+    <message name="IDS_LENS_OVERLAY_SAVE_AS_IMAGE" desc="Command in the Lens Overlay context menu to save the selected screen region to disk as an image file.">
+      Save as image
     </message>
     <message name="IDS_LENS_OVERLAY_LEARN_MORE" desc="Text that is shown in the more options menu to open the help center article.">
       Learn more

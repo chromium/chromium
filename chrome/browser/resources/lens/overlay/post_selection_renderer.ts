@@ -187,7 +187,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.height = 0;
     this.width = 0;
     this.dispatchEvent(new CustomEvent(
-        'hide-detected-text-context-menu', {bubbles: true, composed: true}));
+        'hide-selected-region-context-menu', {bubbles: true, composed: true}));
     this.notifyPostSelectionUpdated();
   }
 

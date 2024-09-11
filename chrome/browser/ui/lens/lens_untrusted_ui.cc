@@ -48,6 +48,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
   html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);
+  html_source->AddLocalizedString("copyAsImage",
+                                  IDS_LENS_OVERLAY_COPY_AS_IMAGE);
+  html_source->AddLocalizedString("copyAsImageToastMessage",
+                                  IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE);
   html_source->AddLocalizedString("copyToastMessage",
                                   IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
   html_source->AddLocalizedString("dismiss",
@@ -60,6 +64,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("moreOptions",
                                   IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL);
   html_source->AddLocalizedString("myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY);
+  html_source->AddLocalizedString("saveAsImage",
+                                  IDS_LENS_OVERLAY_SAVE_AS_IMAGE);
   html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK);
   html_source->AddLocalizedString("cursorTooltipDragMessage",
                                   IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE);
@@ -157,6 +163,14 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayTranslateButton",
       lens::features::IsLensOverlayTranslateButtonEnabled());
+  html_source->AddBoolean("enableCopyAsImage",
+                          lens::features::IsLensOverlayCopyAsImageEnabled());
+  html_source->AddBoolean("enableSaveAsImage",
+                          lens::features::IsLensOverlaySaveAsImageEnabled());
+  html_source->AddInteger(
+      "textReceivedTimeout",
+      lens::features::
+          GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
 
   // Two instances of LensUntrustedUI are constructed: one for the main overlay
   // and one for the side panel. We cannot distinguish them at this time. As a

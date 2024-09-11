@@ -76,6 +76,12 @@ suite('SelectionOverlay', function() {
     };
   }
 
+  async function addEmptyText() {
+    const text = createText([]);
+    callbackRouterRemote.textReceived(text);
+    await waitAfterNextRender(selectionOverlayElement);
+  }
+
   async function addWords() {
     const text = createText([
       createParagraph([
@@ -90,7 +96,6 @@ suite('SelectionOverlay', function() {
       ]),
     ]);
     callbackRouterRemote.textReceived(text);
-    await flushTasks();
     await waitAfterNextRender(selectionOverlayElement);
   }
 
@@ -334,7 +339,7 @@ suite('SelectionOverlay', function() {
 
   // <if expr="not chromeos_lacros">
   test(
-      'verify that region search over text triggers detected text context menu',
+      'verify that region search over text triggers detected text options',
       async () => {
         await addWords();
 
@@ -347,8 +352,10 @@ suite('SelectionOverlay', function() {
         assertEquals(
             0,
             testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
-        assertTrue(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertTrue(selectionOverlayElement
+                       .getShowSelectedRegionContextMenuForTesting());
+        assertTrue(selectionOverlayElement
+                       .getShowDetectedTextContextMenuOptionsForTesting());
 
         testBrowserProxy.handler.reset();
         selectionOverlayElement.handleSelectTextForTesting();
@@ -361,7 +368,8 @@ suite('SelectionOverlay', function() {
       });
 
   test(
-      `verify that adding text after region selection triggers detected text context menu`,
+      `verify that adding text after region selection triggers detected text ` +
+          `options`,
       async () => {
         callbackRouterRemote.setPostRegionSelection({
           box: normalizedBox({x: 65, y: 25, width: 30, height: 30}),
@@ -376,8 +384,10 @@ suite('SelectionOverlay', function() {
         assertEquals(
             0,
             testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
-        assertTrue(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertTrue(selectionOverlayElement
+                       .getShowSelectedRegionContextMenuForTesting());
+        assertTrue(selectionOverlayElement
+                       .getShowDetectedTextContextMenuOptionsForTesting());
 
         testBrowserProxy.handler.reset();
         selectionOverlayElement.handleSelectTextForTesting();
@@ -389,41 +399,68 @@ suite('SelectionOverlay', function() {
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
+  test('verify that select text in detected text options works', async () => {
+    await addWords();
+
+    await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+    selectionOverlayElement.handleSelectTextForTesting();
+
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('hello there test', textQuery);
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    assertFalse(
+        selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+  });
+
+  test('verify that translate in detected text options works', async () => {
+    await addWords();
+
+    await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+    selectionOverlayElement.handleTranslateDetectedTextForTesting();
+
+    const textQuery = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateSelectionRequest');
+    assertDeepEquals('hello there test', textQuery);
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    assertFalse(
+        selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+    assertFalse(
+        selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+  });
+
   test(
-      'verify that select text in detected text context menu works',
+      'verify that copy as image in selected region context menu works',
       async () => {
         await addWords();
 
         await simulateDrag(
             selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
-        selectionOverlayElement.handleSelectTextForTesting();
+        selectionOverlayElement.handleCopyAsImageForTesting();
 
-        const textQuery = await testBrowserProxy.handler.whenCalled(
-            'issueTextSelectionRequest');
-        assertDeepEquals('hello there test', textQuery);
-        assertEquals(
-            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-        assertFalse(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        await testBrowserProxy.handler.whenCalled('copyImage');
+
+        // Verify context menu hides when an option is selected.
+        assertFalse(selectionOverlayElement
+                        .getShowSelectedRegionContextMenuForTesting());
       });
 
   test(
-      'verify that translate in detected text context menu works', async () => {
+      'verify that save as image in selected region context menu works',
+      async () => {
         await addWords();
 
         await simulateDrag(
             selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
-        selectionOverlayElement.handleTranslateDetectedTextForTesting();
+        selectionOverlayElement.handleSaveAsImageForTesting();
 
-        const textQuery = await testBrowserProxy.handler.whenCalled(
-            'issueTranslateSelectionRequest');
-        assertDeepEquals('hello there test', textQuery);
-        assertEquals(
-            1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-        assertFalse(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
-        assertFalse(
-            selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+        await testBrowserProxy.handler.whenCalled('saveAsImage');
+
+        // Verify context menu hides when an option is selected.
+        assertFalse(selectionOverlayElement
+                        .getShowSelectedRegionContextMenuForTesting());
       });
   // </if>
 
@@ -453,6 +490,21 @@ suite('SelectionOverlay', function() {
         postSelectionStyles.getPropertyValue('--selection-left'),
         expectedLeft.toString().substring(0, 6));
   });
+
+  test(
+      'verify that region search triggers selected region context menu',
+      async () => {
+        await addEmptyText();
+
+        await simulateDrag(
+            selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+        await waitAfterNextRender(selectionOverlayElement);
+
+        assertTrue(selectionOverlayElement
+                       .getShowSelectedRegionContextMenuForTesting());
+        assertFalse(selectionOverlayElement
+                        .getShowDetectedTextContextMenuOptionsForTesting());
+      });
 
   test('verify that tapping an object triggers post selection', async () => {
     await addObjects();
@@ -592,7 +644,7 @@ suite('SelectionOverlay', function() {
         });
 
     assertFalse(
-        selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
     assertTrue(
         selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
 
@@ -636,11 +688,10 @@ suite('SelectionOverlay', function() {
               y: wordElBoundingBox.bottom,
             });
 
-        assertFalse(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertFalse(selectionOverlayElement
+                        .getShowSelectedRegionContextMenuForTesting());
         assertTrue(
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
-
 
         selectionOverlayElement.handleTranslateForTesting();
         const textQuery = await testBrowserProxy.handler.whenCalled(
@@ -1074,8 +1125,8 @@ suite('SelectionOverlay', function() {
         assertDeepEquals('wow a translation no', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-        assertFalse(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertFalse(selectionOverlayElement
+                        .getShowSelectedRegionContextMenuForTesting());
         assertEquals(
             1,
             metrics.count(
@@ -1111,8 +1162,8 @@ suite('SelectionOverlay', function() {
             {x: 80, y: 40});
 
         await waitAfterNextRender(selectionOverlayElement);
-        assertFalse(
-            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertFalse(selectionOverlayElement
+                        .getShowSelectedRegionContextMenuForTesting());
         assertTrue(
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
 

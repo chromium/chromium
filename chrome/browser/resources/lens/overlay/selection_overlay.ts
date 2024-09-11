@@ -22,6 +22,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
@@ -76,18 +77,12 @@ export interface SelectedTextContextMenuData {
   selectionEndIndex: number;
 }
 
-export interface DetectedTextContextMenuData {
-  // The left-most position of the detected text.
-  left: number;
-  // The right-most position of the detected text.
-  right: number;
-  // The highest position of the detected text.
-  top: number;
-  // The lowest position of the detected text.
-  bottom: number;
-  // The selection start index of the text.
+export interface SelectedRegionContextMenuData {
+  // The bounds of the selected region.
+  box: CenterRotatedBox;
+  // The selection start index of the detected text, or -1 if none.
   selectionStartIndex: number;
-  // The end selection index of the text.
+  // The end selection index of the detected text, or -1 if none.
   selectionEndIndex: number;
 }
 
@@ -95,13 +90,13 @@ export interface SelectionOverlayElement {
   $: {
     backgroundImageCanvas: HTMLCanvasElement,
     cursor: HTMLElement,
-    detectedTextContextMenu: HTMLElement,
     initialFlashScrim: HTMLDivElement,
     objectSelectionLayer: ObjectLayerElement,
     overlayShimmerCanvas: OverlayShimmerCanvasElement,
     overlayShimmer: OverlayShimmerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
+    selectedRegionContextMenu: HTMLElement,
     selectedTextContextMenu: HTMLElement,
     selectionOverlay: HTMLElement,
     textSelectionLayer: TextLayerElement,
@@ -149,15 +144,19 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         value: false,
         reflectToAttribute: true,
       },
-      showDetectedTextContextMenu: {
+      showSelectedRegionContextMenu: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
+      showDetectedTextContextMenuOptions: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       selectedTextContextMenuX: Number,
       selectedTextContextMenuY: Number,
-      detectedTextContextMenuX: Number,
-      detectedTextContextMenuY: Number,
+      selectedRegionContextMenuX: Number,
+      selectedRegionContextMenuY: Number,
       canvasHeight: Number,
       canvasWidth: Number,
       isPointerInside: Boolean,
@@ -171,6 +170,18 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         readOnly: true,
         value: loadTimeData.getBoolean('useShimmerCanvas'),
+      },
+      enableCopyAsImage: {
+        type: Boolean,
+        readOnly: true,
+        value: loadTimeData.getBoolean('enableCopyAsImage'),
+        reflectToAttribute: true,
+      },
+      enableSaveAsImage: {
+        type: Boolean,
+        readOnly: true,
+        value: loadTimeData.getBoolean('enableSaveAsImage'),
+        reflectToAttribute: true,
       },
       isClosing: {
         type: Boolean,
@@ -207,12 +218,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private isInitialSize: boolean = true;
   private showTranslateContextMenuItem: boolean = true;
   private showSelectedTextContextMenu: boolean;
-  private showDetectedTextContextMenu: boolean;
+  private showSelectedRegionContextMenu: boolean;
+  private showDetectedTextContextMenuOptions: boolean;
   // Location at which to show the context menus.
   private selectedTextContextMenuX: number;
   private selectedTextContextMenuY: number;
-  private detectedTextContextMenuX: number;
-  private detectedTextContextMenuY: number;
+  private selectedRegionContextMenuX: number;
+  private selectedRegionContextMenuY: number;
   // Width and height values for rendering the background image canvas as the
   // proper dimensions.
   private canvasHeight: number;
@@ -221,6 +233,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // bounds of the screenshot and the part the user interacts with. This should
   // be used instead of call getBoundingClientRect().
   private selectionOverlayRect: DOMRect;
+  // The selected region on which the context menu is being displayed. Used as
+  // argument for copy and save as image calls.
+  private selectedRegionContextMenuBox: CenterRotatedBox;
   private highlightedText: string = '';
   private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
@@ -234,6 +249,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean;
   private useShimmerCanvas: boolean;
+  private enableCopyAsImage: boolean;
+  private enableSaveAsImage: boolean;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether the default background scrim is currently being darkened.
@@ -332,24 +349,33 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
-    this.eventTracker_.add(
-        document, 'show-detected-text-context-menu', (e: CustomEvent) => {
-          this.showDetectedTextContextMenu = true;
-          this.detectedTextContextMenuX = e.detail.left;
-          this.detectedTextContextMenuY = e.detail.bottom;
-          this.detectedTextStartIndex = e.detail.selectionStartIndex;
-          this.detectedTextEndIndex = e.detail.selectionEndIndex;
-        });
     this.eventTracker_.add(document, 'hide-selected-text-context-menu', () => {
       this.showSelectedTextContextMenu = false;
       this.textSelectionStartIndex = -1;
       this.textSelectionEndIndex = -1;
     });
-    this.eventTracker_.add(document, 'hide-detected-text-context-menu', () => {
-      this.showDetectedTextContextMenu = false;
-      this.detectedTextStartIndex = -1;
-      this.detectedTextEndIndex = -1;
-    });
+    this.eventTracker_.add(
+        document, 'show-selected-region-context-menu',
+        (e: CustomEvent<SelectedRegionContextMenuData>) => {
+          this.selectedRegionContextMenuX =
+              e.detail.box.box.x - e.detail.box.box.width / 2;
+          this.selectedRegionContextMenuY =
+              e.detail.box.box.y + e.detail.box.box.height / 2;
+          this.selectedRegionContextMenuBox = e.detail.box;
+          this.detectedTextStartIndex = e.detail.selectionStartIndex;
+          this.detectedTextEndIndex = e.detail.selectionEndIndex;
+          this.showDetectedTextContextMenuOptions =
+              this.detectedTextStartIndex !== -1 &&
+              this.detectedTextEndIndex !== -1;
+          this.showSelectedRegionContextMenu = this.enableCopyAsImage ||
+              this.enableSaveAsImage || this.showDetectedTextContextMenuOptions;
+        });
+    this.eventTracker_.add(
+        document, 'hide-selected-region-context-menu', () => {
+          this.showSelectedRegionContextMenu = false;
+          this.detectedTextStartIndex = -1;
+          this.detectedTextEndIndex = -1;
+        });
     this.eventTracker_.add(document, 'darken-extra-scrim-opacity', () => {
       this.darkenExtraScrim = true;
     });
@@ -826,7 +852,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY);
     // Do not intercept events that should go to the following elements.
     if (elementsAtPoint.includes(this.$.selectedTextContextMenu) ||
-        elementsAtPoint.includes(this.$.detectedTextContextMenu)) {
+        elementsAtPoint.includes(this.$.selectedRegionContextMenu)) {
       return true;
     }
     // Ignore multi touch events and non-left/right click events.
@@ -888,6 +914,22 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.textSelectionStartIndex, this.textSelectionEndIndex);
     this.showSelectedTextContextMenu = false;
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
+  }
+
+  private handleCopyAsImage() {
+    BrowserProxyImpl.getInstance().handler.copyImage(
+        this.selectedRegionContextMenuBox);
+    this.showSelectedRegionContextMenu = false;
+    this.dispatchEvent(new CustomEvent('copied-as-image', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private handleSaveAsImage() {
+    BrowserProxyImpl.getInstance().handler.saveAsImage(
+        this.selectedRegionContextMenuBox);
+    this.showSelectedRegionContextMenu = false;
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.
@@ -961,12 +1003,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.screenshotDataReceived.bind(this));
   }
 
-  getShowDetectedTextContextMenuForTesting() {
-    return this.showDetectedTextContextMenu;
+  getShowSelectedRegionContextMenuForTesting() {
+    return this.showSelectedRegionContextMenu;
   }
 
   getShowSelectedTextContextMenuForTesting() {
     return this.showSelectedTextContextMenu;
+  }
+
+  getShowDetectedTextContextMenuOptionsForTesting() {
+    return this.showDetectedTextContextMenuOptions;
   }
 
   handleSelectTextForTesting() {
@@ -983,6 +1029,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   handleTranslateForTesting() {
     this.handleTranslate();
+  }
+
+  handleCopyAsImageForTesting() {
+    this.handleCopyAsImage();
+  }
+
+  handleSaveAsImageForTesting() {
+    this.handleSaveAsImage();
   }
 }
 

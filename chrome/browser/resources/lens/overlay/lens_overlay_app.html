@@ -61,7 +61,7 @@
     display: none;
   }
 
-  #copyToast {
+  #toast {
     justify-content: space-between;
   }
 
@@ -170,7 +170,6 @@
     on-screenshot-rendered="onScreenshotRendered"
     on-selection-overlay-clicked="handleSelectionOverlayClicked"
     on-pointer-released="handlePointerReleased"
-    on-text-copied="showTextCopiedToast"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
     style="
@@ -187,8 +186,8 @@
     --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
     --color-overlay-icon: white;
     --color-overlay-button-label: white;">
-  <cr-toast id="copyToast" duration="4000">
-    <div>$i18n{copyToastMessage}</div>
+  <cr-toast id="toast" duration="4000">
+    <div>[[toastMessage]]</div>
     <cr-button on-click="onHideToastClick">
       $i18n{dismiss}
     </cr-button>
