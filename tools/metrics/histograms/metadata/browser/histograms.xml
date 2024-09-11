@@ -435,7 +435,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.UnuploadedCrashShouldNotReportReason"
     enum="EnterpriseReportingUnuploadedCrashShouldNotReportReason"
-    expires_after="2024-10-18">
+    expires_after="2025-05-01">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
