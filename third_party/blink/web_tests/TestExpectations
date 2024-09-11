@@ -7977,10 +7977,6 @@ crbug.com/363353213 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtp
 # TODO(crbug.com/362797911): Re-enable this test
 crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
 
-# Temporarily ignore failures until https://crrev.com/c/5828823 rolls in.
-crbug.com/364508698 external/wpt/wasm/jsapi/js-string/constants.tentative.any.html [ Failure Pass ]
-crbug.com/364508698 external/wpt/wasm/jsapi/js-string/constants.tentative.any.worker.html [ Failure Pass ]
-
 # These tests only pass because wasm type reflection is implied by the
 # experimental JSPI flag. Temporarily disable them as we remove the obsolete
 # flag implication on the V8 side, and re-enable them with up-to-date
