@@ -15,7 +15,47 @@
 
 namespace blink {
 
-TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase) {
+TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase_LateResolveEnabled) {
+  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(true);
+
+  const String test_case = "rgb(from red r g b)";
+  CSSParserTokenStream stream(test_case);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  ColorFunctionParser parser;
+  const CSSValue* result =
+      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  EXPECT_TRUE(result->IsRelativeColorValue());
+  const cssvalue::CSSRelativeColorValue* color =
+      To<cssvalue::CSSRelativeColorValue>(result);
+
+  const CSSValue& origin = color->OriginColor();
+  EXPECT_TRUE(origin.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(origin).GetValueID(), CSSValueID::kRed);
+
+  EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
+
+  const CSSValue& channel0 = color->Channel0();
+  EXPECT_TRUE(channel0.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel0).GetValueID(), CSSValueID::kR);
+
+  const CSSValue& channel1 = color->Channel1();
+  EXPECT_TRUE(channel1.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel1).GetValueID(), CSSValueID::kG);
+
+  const CSSValue& channel2 = color->Channel2();
+  EXPECT_TRUE(channel2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kB);
+
+  EXPECT_EQ(color->Alpha(), nullptr);
+}
+
+TEST(ColorFunctionParserTest,
+     RelativeColorWithKeywordBase_LateResolveDisabled) {
+  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(false);
+
   const String test_case = "rgb(from red r g b)";
   CSSParserTokenStream stream(test_case);
 

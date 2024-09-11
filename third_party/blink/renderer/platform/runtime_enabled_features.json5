@@ -1150,6 +1150,11 @@
       status: "stable",
     },
     {
+      // crbug.com/359616070
+      name: "CSSRelativeColorLateResolveAlways",
+      status: "stable",
+    },
+    {
       // crbug.com/325309578
       name: "CSSRelativeColorSupportsCurrentcolor",
       status: "experimental",

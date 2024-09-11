@@ -2468,10 +2468,16 @@ StyleColor ResolveColorValue(const CSSLengthResolver& length_resolver,
         ResolveColorValue(length_resolver, relative_color_value->OriginColor(),
                           text_link_colors, used_color_scheme, color_provider,
                           is_in_web_app_scope, for_visited_link);
-    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
-        origin_color, relative_color_value->ColorInterpolationSpace(),
-        relative_color_value->Channel0(), relative_color_value->Channel1(),
-        relative_color_value->Channel2(), relative_color_value->Alpha()));
+    const StyleColor::UnresolvedRelativeColor* unresolved_relative_color =
+        MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
+            origin_color, relative_color_value->ColorInterpolationSpace(),
+            relative_color_value->Channel0(), relative_color_value->Channel1(),
+            relative_color_value->Channel2(), relative_color_value->Alpha());
+    if (origin_color.IsAbsoluteColor()) {
+      return StyleColor(unresolved_relative_color->Resolve(Color()));
+    } else {
+      return StyleColor(unresolved_relative_color);
+    }
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
