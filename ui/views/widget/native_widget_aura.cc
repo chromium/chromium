@@ -1094,8 +1094,10 @@ void NativeWidgetAura::OnPaint(const ui::PaintContext& context) {
 void NativeWidgetAura::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  GetWidget()->DeviceScaleFactorChanged(old_device_scale_factor,
-                                        new_device_scale_factor);
+  if (Widget* widget = GetWidget()) {
+    widget->DeviceScaleFactorChanged(old_device_scale_factor,
+                                     new_device_scale_factor);
+  }
 }
 
 void NativeWidgetAura::OnWindowDestroying(aura::Window* window) {
