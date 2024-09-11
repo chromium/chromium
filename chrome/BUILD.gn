@@ -58,7 +58,11 @@ if (is_android) {
   import("//third_party/icu/config.gni")
 }
 
-if (is_chromeos_ash) {
+# b/365489014: CrOS' chrome.sections_embedded target breaks on component builds;
+# there's no clear value of supporting it there, so disable it.
+_cros_generate_embed_section_target = is_chromeos_ash && !is_component_build
+
+if (_cros_generate_embed_section_target) {
   import("//build/chromeos/embed_sections.gni")
 }
 
@@ -1858,7 +1862,7 @@ if (is_linux || is_chromeos) {
   }
 }
 
-if (is_chromeos_ash) {
+if (_cros_generate_embed_section_target) {
   embed_sections("section_embedded_chrome_binary") {
     binary_input = "$root_out_dir/chrome"
     sections_embedded_binary_output = "$root_out_dir/chrome.sections_embedded"
