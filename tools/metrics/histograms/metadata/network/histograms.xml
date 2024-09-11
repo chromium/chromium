@@ -49,6 +49,25 @@ chromium-metrics-reviews@google.com.
   <variant name="WiFi.SecurityPasswordProtected"/>
 </variants>
 
+<variants name="HTTPRequestConnectionProtocol">
+  <variant name="Multiplexed"/>
+  <variant name="Simple"/>
+</variants>
+
+<variants name="HTTPRequestMethod">
+  <variant name="Get"/>
+</variants>
+
+<variants name="HTTPRequestResult">
+  <variant name="ClientError"/>
+  <variant name="ServerError"/>
+  <variant name="Success"/>
+</variants>
+
+<variants name="HTTPRequestType">
+  <variant name="MainFrame"/>
+</variants>
+
 <variants name="IPsecVPNType">
   <variant name="Ikev2" summary="IKEv2"/>
   <variant name="L2tpIpsec" summary="L2TP/IPsec"/>
@@ -5199,6 +5218,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalHeadersSize"
+    units="bytes" expires_after="2025-08-01">
+  <owner>ortuno@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
+  <summary>
+    The total size of request headers. Many servers reject requests where
+    headers exceed a certain size, which can cause cross-site leaks. This
+    metrics helps us understand what those header sizes are. Recorded at the
+    start of a request's response.
+  </summary>
+  <token key="Multiplexed" variants="HTTPRequestConnectionProtocol"/>
+  <token key="RequestType" variants="HTTPRequestType"/>
+  <token key="Method" variants="HTTPRequestMethod"/>
+  <token key="Result" variants="HTTPRequestResult"/>
+</histogram>
+
+<histogram
     name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalRequestSize"
     units="bytes" expires_after="2025-08-01">
   <owner>ortuno@chromium.org</owner>
@@ -5206,23 +5242,30 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total size of network requests. Many servers reject requests that exceed
     a certain size, which can cause cross-site leaks. This metrics helps us
-    understand what those sizes are.
+    understand what those sizes are. Recorded at the start of a request's
+    response.
   </summary>
-  <token key="Multiplexed">
-    <variant name="Multiplexed"/>
-    <variant name="Simple"/>
-  </token>
-  <token key="RequestType">
-    <variant name="MainFrame"/>
-  </token>
-  <token key="Method">
-    <variant name="Get"/>
-  </token>
-  <token key="Result">
-    <variant name="ClientError"/>
-    <variant name="ServerError"/>
-    <variant name="Success"/>
-  </token>
+  <token key="Multiplexed" variants="HTTPRequestConnectionProtocol"/>
+  <token key="RequestType" variants="HTTPRequestType"/>
+  <token key="Method" variants="HTTPRequestMethod"/>
+  <token key="Result" variants="HTTPRequestResult"/>
+</histogram>
+
+<histogram
+    name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalUrlSize"
+    units="bytes" expires_after="2025-08-01">
+  <owner>ortuno@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
+  <summary>
+    The total size of the requested URL. Many servers reject requests that
+    exceed a certain size, which can cause cross-site leaks. This metrics helps
+    us understand how much URLs contribute to that size. Recorded at the start
+    of a request's response.
+  </summary>
+  <token key="Multiplexed" variants="HTTPRequestConnectionProtocol"/>
+  <token key="RequestType" variants="HTTPRequestType"/>
+  <token key="Method" variants="HTTPRequestMethod"/>
+  <token key="Result" variants="HTTPRequestResult"/>
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.DisabledReason"

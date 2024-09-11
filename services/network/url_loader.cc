@@ -481,6 +481,18 @@ ResponseHeaderToRawHeaderPairs(
   return header_array;
 }
 
+bool IsMultiplexedConnection(const net::HttpResponseInfo& response_info) {
+  switch (net::HttpConnectionInfoToCoarse(response_info.connection_info)) {
+    case net::HttpConnectionInfoCoarse::kHTTP1:
+      return false;
+    case net::HttpConnectionInfoCoarse::kHTTP2:
+    case net::HttpConnectionInfoCoarse::kQUIC:
+      return true;
+    case net::HttpConnectionInfoCoarse::kOTHER:
+      return false;
+  }
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -3016,10 +3028,7 @@ void URLLoader::RecordRequestMetrics() {
       "NetworkService", "Requests"};
 
   const net::HttpResponseInfo& response_info = url_request_->response_info();
-  net::HttpConnectionInfoCoarse connection_info =
-      net::HttpConnectionInfoToCoarse(response_info.connection_info);
-  if (connection_info == net::HttpConnectionInfoCoarse::kHTTP2 ||
-      connection_info == net::HttpConnectionInfoCoarse::kQUIC) {
+  if (IsMultiplexedConnection(response_info)) {
     histogram_prefix_pieces.push_back("Multiplexed");
   } else {
     histogram_prefix_pieces.push_back("Simple");
@@ -3067,6 +3076,16 @@ void URLLoader::RecordRequestMetrics() {
         histogram_prefix_pieces.pop_back();
         return name;
       };
+
+  base::UmaHistogramCounts100000(make_histogram_name("TotalUrlSize"),
+                                 url_request_->url().spec().size());
+
+  // HTTP/2 and HTTP/3 requests don't separate request line from headers so no
+  // need to record header metrics separately.
+  if (!IsMultiplexedConnection(response_info)) {
+    base::UmaHistogramCounts100000(make_histogram_name("TotalHeadersSize"),
+                                   raw_request_headers_size_);
+  }
 
   // For HTTP/2 and HTTP/3 the request line is included in the headers, but
   // `raw_request_line_size_` is 0 for these requests, so we can add it
