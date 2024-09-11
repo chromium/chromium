@@ -3528,6 +3528,25 @@
     ]
   },
   {
+    "prefix": "expect-no-embedded-resources",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/expect-no-embedded-resources"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DocumentPolicyExpectNoEmbeddedResources"
+    ],
+    "expires": "Jan 14, 2025",
+    "owners": [
+      "alexnj@chromium.org"
+    ]
+  },
+  {
     "prefix": "document-picture-in-picture-user-activation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

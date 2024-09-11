@@ -254,6 +254,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                              int newly_consumed_characters,
                              int tokens_parsed) const;
 
+  bool ShouldSkipPreloadScan();
+
   HTMLInputStream input_;
   const HTMLParserOptions options_;
   Member<HTMLParserReentryPermit> reentry_permit_ =
@@ -292,6 +294,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   // Set to true if PumpTokenizer() was called at least once.
   bool did_pump_tokenizer_ = false;
+
+  // Cached result of ShouldSkipPreloadScan()
+  bool should_skip_preload_scan_ = false;
 };
 
 }  // namespace blink
