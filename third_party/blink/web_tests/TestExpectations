@@ -7820,6 +7820,9 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 # Gardener 2024-06-28
 crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
 
+# Remove this when GPUAdapter requestAdapterInfo() method is removed from the web platform.
+crbug.com/335383516 http/tests/inspector-protocol/issues/gpuadapter-requestadapterinfo-deprecation.js [ Skip Timeout ]
+
 # Gardener 2024-07-11
 crbug.com/352455679 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Failure Pass Timeout ]
 crbug.com/352455679 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Failure Pass Timeout ]
