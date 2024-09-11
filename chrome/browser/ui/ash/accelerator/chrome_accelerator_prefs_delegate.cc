@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/accelerator/chrome_accelerator_prefs_delegate.h"
 
-#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/user_manager/user_manager.h"
