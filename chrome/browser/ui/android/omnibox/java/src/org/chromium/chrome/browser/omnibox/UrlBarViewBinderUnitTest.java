@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
+import static org.chromium.chrome.browser.omnibox.UrlBarProperties.SELECT_ALL_ON_FOCUS;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
 import android.app.Activity;
@@ -83,6 +84,73 @@ public class UrlBarViewBinderUnitTest {
         int newExpectColor = Color.GREEN;
         mModel.set(HINT_TEXT_COLOR, newExpectColor);
         Assert.assertEquals(newExpectColor, mUrlBar.getHintTextColors().getDefaultColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetSelectAllOnFocus() {
+        testSetSelectAllOnFocus(
+                /* selectAllOnFocus= */ true,
+                /* whileFocused= */ false,
+                /* expectSelection= */ true);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetSelectAllOnFocus_whileFocused() {
+        testSetSelectAllOnFocus(
+                /* selectAllOnFocus= */ true,
+                /* whileFocused= */ true,
+                /* expectSelection= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testUnsetSelectAllOnFocus() {
+        testSetSelectAllOnFocus(
+                /* selectAllOnFocus= */ false,
+                /* whileFocused= */ false,
+                /* expectSelection= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testUnsetSelectAllOnFocus_whileFocused() {
+        testSetSelectAllOnFocus(
+                /* selectAllOnFocus= */ false,
+                /* whileFocused= */ true,
+                /* expectSelection= */ false);
+    }
+
+    private void testSetSelectAllOnFocus(
+            boolean selectAllOnFocus, boolean whileFocused, boolean expectSelection) {
+        String text = "test";
+        mUrlBar.setText(text);
+        mUrlBar.setFocusable(true);
+        Assert.assertFalse(mUrlBar.isFocused());
+        Assert.assertFalse(mUrlBar.hasSelection());
+
+        // Prevent the {@link mMediator} from clearing {@link text} on focus.
+        mUrlBar.setOnFocusChangeListener(null);
+
+        if (whileFocused) {
+            mUrlBar.requestFocus();
+            Assert.assertTrue(mUrlBar.isFocused());
+        }
+
+        mModel.set(SELECT_ALL_ON_FOCUS, selectAllOnFocus);
+
+        if (!whileFocused) {
+            mUrlBar.requestFocus();
+            Assert.assertTrue(mUrlBar.isFocused());
+        }
+
+        Assert.assertEquals(expectSelection, mUrlBar.hasSelection());
+
+        if (expectSelection) {
+            Assert.assertEquals(0, mUrlBar.getSelectionStart());
+            Assert.assertEquals(text.length(), mUrlBar.getSelectionEnd());
+        }
     }
 
     @Test

@@ -103,6 +103,8 @@ class UrlBarViewBinder {
                                 ? view.getHandwritingBoundsOffsetTop()
                                 : 0);
             }
+        } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
+            view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
         }
     }
 

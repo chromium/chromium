@@ -161,6 +161,10 @@ BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
 BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

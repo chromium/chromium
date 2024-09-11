@@ -301,7 +301,12 @@ public class SearchResumptionModuleMediatorUnitTest {
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))
-                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
+                    .startZeroSuggest(
+                            any(),
+                            eq(mUrlToTrack),
+                            anyInt(),
+                            any(),
+                            /* isOnFocusContext= */ eq(false));
         }
 
         mFeatureListValues.addFeatureFlagOverride(

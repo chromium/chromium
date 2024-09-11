@@ -287,6 +287,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         }
     }
 
+    /** Sets whether the view should select all on focus. */
+    public void setSelectAllOnFocus(boolean selectAllOnFocus) {
+        mModel.set(UrlBarProperties.SELECT_ALL_ON_FOCUS, selectAllOnFocus);
+    }
+
     /** Set the listener to be notified for URL direction changes. */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);

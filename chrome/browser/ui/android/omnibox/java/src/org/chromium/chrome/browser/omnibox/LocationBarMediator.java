@@ -191,6 +191,7 @@ class LocationBarMediator
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
     private boolean mUrlFocusedWithoutAnimations;
+    private boolean mUrlFocusedWithPastedText;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
     private boolean mShouldShowLensButtonWhenUnfocused;
@@ -207,7 +208,6 @@ class LocationBarMediator
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    private boolean mShouldClearOmniboxOnFocus = true;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private SearchEngineUtils mSearchEngineUtils;
 
@@ -302,10 +302,12 @@ class LocationBarMediator
 
         if (hasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
-            // Don't clear Omnibox if the user just pasted text to NTP Omnibox.
-            if (mShouldClearOmniboxOnFocus) {
+            boolean shouldRetainOmniboxOnFocus = OmniboxFeatures.shouldRetainOmniboxOnFocus();
+            if (!mUrlFocusedWithPastedText && !shouldRetainOmniboxOnFocus) {
                 setUrlBarText(
                         UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+            } else if (shouldRetainOmniboxOnFocus) {
+                mUrlCoordinator.setSelectAllOnFocus(true);
             }
         } else {
             mUrlFocusedFromFakebox = false;
@@ -758,8 +760,9 @@ class LocationBarMediator
                     MeasureSpec.makeMeasureSpec(
                             mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));
         }
-        // Reset to the default value.
-        mShouldClearOmniboxOnFocus = true;
+        // Reset to the default values.
+        mUrlCoordinator.setSelectAllOnFocus(false);
+        mUrlFocusedWithPastedText = false;
     }
 
     /**
@@ -1345,7 +1348,7 @@ class LocationBarMediator
                 mUrlFocusedFromFakebox = true;
             }
 
-            mShouldClearOmniboxOnFocus = pastedText == null;
+            mUrlFocusedWithPastedText = pastedText != null;
 
             if (urlHasFocus && mUrlFocusedWithoutAnimations) {
                 handleUrlFocusAnimation(true);

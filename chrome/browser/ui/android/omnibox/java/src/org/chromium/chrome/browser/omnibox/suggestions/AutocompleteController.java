@@ -163,17 +163,25 @@ public class AutocompleteController {
      * @param url The url of the currently loaded web page.
      * @param pageClassification The page classification of the current tab.
      * @param title The title of the currently loaded web page.
+     * @param isOnFocusContext Whether the request is made on focus (as opposed to on a text
+     *     change).
      */
     public void startZeroSuggest(
             @NonNull String omniboxText,
             @NonNull GURL url,
             int pageClassification,
-            @NonNull String title) {
+            @NonNull String title,
+            boolean isOnFocusContext) {
         if (mNativeController == 0) return;
 
         AutocompleteControllerJni.get()
                 .onOmniboxFocused(
-                        mNativeController, omniboxText, url.getSpec(), pageClassification, title);
+                        mNativeController,
+                        omniboxText,
+                        url.getSpec(),
+                        pageClassification,
+                        title,
+                        isOnFocusContext);
     }
 
     /**
@@ -478,7 +486,8 @@ public class AutocompleteController {
                 String omniboxText,
                 String currentUrl,
                 int pageClassification,
-                String currentTitle);
+                String currentTitle,
+                boolean isOnFocusContext);
 
         void deleteMatchElement(
                 long nativeAutocompleteControllerAndroid,
