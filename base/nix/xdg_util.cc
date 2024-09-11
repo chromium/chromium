@@ -311,4 +311,24 @@ void CreateLaunchOptionsWithXdgActivation(
       base::BindOnce(create_token_cb, std::move(callback)));
 }
 
+std::string XdgDesktopPortalRequestPath(const std::string& sender,
+                                        const std::string& token) {
+  // Since version 0.9 of xdg-desktop-portal, the handle will be of the form
+  // /org/freedesktop/portal/desktop/request/SENDER/TOKEN where SENDER is the
+  // callers unique name, with the initial ':' removed and all '.' replaced by
+  // '_', and TOKEN is a unique token that the caller provided with the
+  // handle_token key in the options vardict. See:
+  // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
+  static constexpr char kObjectPathRequestFormat[] =
+      "/org/freedesktop/portal/desktop/request/$1/$2";
+
+  auto sender_name =
+      !sender.empty() && sender[0] == ':' ? sender.substr(1) : sender;
+  std::string bus_name;
+  base::ReplaceChars(sender_name, ".", "_", &bus_name);
+  return ReplaceStringPlaceholders(kObjectPathRequestFormat,
+                                   std::vector<std::string>{bus_name, token},
+                                   nullptr);
+}
+
 }  // namespace base::nix

@@ -87,7 +87,8 @@ BASE_EXPORT extern const char kXdgActivationTokenSwitch[];
 // a directory path. |fallback_dir| is the directory relative to $HOME that we
 // use if |env_name| cannot be found or is empty. |fallback_dir| may be NULL.
 // Examples of |env_name| are XDG_CONFIG_HOME and XDG_DATA_HOME.
-BASE_EXPORT FilePath GetXDGDirectory(Environment* env, const char* env_name,
+BASE_EXPORT FilePath GetXDGDirectory(Environment* env,
+                                     const char* env_name,
                                      const char* fallback_dir);
 
 // Wrapper around xdg_user_dir_lookup() from src/base/third_party/xdg-user-dirs
@@ -145,6 +146,12 @@ BASE_EXPORT void SetXdgActivationTokenCreator(
 // `LaunchOptions` containing the token if available, or empty `LaunchOptions`.
 BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
     XdgActivationLaunchOptionsCallback callback);
+
+// Returns a request path as specified in v0.9 of xdg-desktop-portal:
+// https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
+BASE_EXPORT
+std::string XdgDesktopPortalRequestPath(const std::string& sender,
+                                        const std::string& token);
 
 }  // namespace nix
 }  // namespace base

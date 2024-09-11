@@ -13,7 +13,7 @@
 
 // Many APIs in ::dbus are required to be called from the same thread
 // (https://crbug.com/130984). Therefore, a SingleThreadedTaskRunner is
-// maintained and accessible through GetDBusTaskRunner(), from which all calls
+// maintained and accessible through GetTaskRunner(), from which all calls
 // to dbus on Linux have to be made.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -22,6 +22,7 @@
 
 namespace dbus_thread_linux {
 
+// Obtains a task runner to handle DBus IO for usage on desktop Linux.
 COMPONENT_EXPORT(DBUS)
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
