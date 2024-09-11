@@ -100,7 +100,6 @@ void Canvas2DLayerBridge::Hibernate() {
   CHECK(resource_host_);
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
-  CHECK(resource_host_);
 
   hibernation_scheduled_ = false;
 
