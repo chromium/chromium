@@ -162,6 +162,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.NOTIFICATIONS:
       case ContentSettingsTypes.POINTER_LOCK:
       case ContentSettingsTypes.SERIAL_PORTS:
+      case ContentSettingsTypes.SMART_CARD_READERS:
       case ContentSettingsTypes.STORAGE_ACCESS:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:

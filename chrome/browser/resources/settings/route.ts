@@ -88,6 +88,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
   }
+  if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
+    r.SITE_SETTINGS_SMART_CARD_READERS =
+        r.SITE_SETTINGS.createChild('smartCardReaders');
+  }
   if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
     r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   }

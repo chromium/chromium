@@ -3368,7 +3368,15 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
       {"offerWritingHelpRemoveDisabledSiteAriaLabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
-  };
+      {"siteSettingsSmartCardReaders", IDS_SITE_SETTINGS_SMART_CARD_READERS},
+      {"siteSettingsSmartCardReadersDescription",
+       IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION},
+      {"siteSettingsSmartCardReadersDefaultDescription",
+       IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION},
+      {"siteSettingsSmartCardReadersAllowed",
+       IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED},
+      {"siteSettingsSmartCardReadersBlocked",
+       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Tracking protection learn more links.

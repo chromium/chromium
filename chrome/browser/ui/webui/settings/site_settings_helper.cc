@@ -168,6 +168,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
+    {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
+    {ContentSettingsType::SMART_CARD_DATA, "smart-card-readers-data"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -235,9 +237,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
-    // TODO(crbug.com/40275778): Update name once UI design is done.
-    {ContentSettingsType::SMART_CARD_GUARD, nullptr},
-    {ContentSettingsType::SMART_CARD_DATA, nullptr},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
     {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
     {ContentSettingsType::DIRECT_SOCKETS, nullptr},

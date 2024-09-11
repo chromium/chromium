@@ -369,6 +369,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:database',
     },
     {
+      route: routes.SITE_SETTINGS_SMART_CARD_READERS,
+      id: Id.SMART_CARD_READERS,
+      label: 'siteSettingsSmartCardReaders',
+      icon: 'privacy:smart-card-reader',
+      enabledLabel: 'siteSettingsSmartCardReadersAllowed',
+      disabledLabel: 'siteSettingsSmartCardReadersBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
       label: 'siteSettingsSound',
@@ -526,6 +536,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
               Id.POINTER_LOCK,
+              Id.SMART_CARD_READERS,
 
             ]),
             contentBasic: buildItemListFromIds([

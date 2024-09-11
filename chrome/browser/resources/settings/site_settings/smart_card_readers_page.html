@@ -1,0 +1,20 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  .content-settings-header,
+  .radio-group {
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+
+<div class="content-settings-header secondary">
+  $i18n{siteSettingsSmartCardReadersDescription}
+</div>
+<settings-category-default-radio-group
+    category="[[contentSettingsType_]]"
+    description=
+        "$i18n{siteSettingsSmartCardReadersDefaultDescription}"
+    allow-option-label=
+        "$i18n{siteSettingsSmartCardReadersAllowed}"
+    allow-option-icon="privacy:smart-card-reader"
+    block-option-label="$i18n{siteSettingsSmartCardReadersBlocked}"
+    block-option-icon="privacy:smart-card-reader-off">
+</settings-category-default-radio-group>

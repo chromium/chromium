@@ -50,6 +50,7 @@ export enum ContentSettingsTypes {
   PROTOCOL_HANDLERS = 'register-protocol-handler',
   SENSORS = 'sensors',
   SERIAL_PORTS = 'serial-ports',
+  SMART_CARD_READERS = 'smart-card-readers',
   SOUND = 'sound',
   STORAGE_ACCESS = 'storage-access',
   TRACKING_PROTECTION = 'tracking-protection',

@@ -23,6 +23,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/offer_writing_help_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
+import '../site_settings/smart_card_readers_page.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -156,6 +157,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
+        },
+      },
+
+      enableSmartCardReadersContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
         },
       },
 
@@ -359,6 +368,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
+  private enableSmartCardReadersContentSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
