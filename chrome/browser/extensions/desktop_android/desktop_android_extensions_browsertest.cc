@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -17,27 +18,6 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
-
-namespace {
-
-// Attempts to load (parse) an extension from the given `file_path`, returning
-// it on success. On failure, adds a test failure.
-scoped_refptr<const Extension> LoadExtensionFromDirectory(
-    const base::FilePath& file_path) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  std::string load_error;
-  scoped_refptr<const Extension> extension = file_util::LoadExtension(
-      file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
-  if (!extension) {
-    ADD_FAILURE() << "Failed to create extension: " << load_error;
-    return nullptr;
-  }
-
-  return extension;
-}
-
-}  // namespace
 
 class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
  public:
@@ -53,6 +33,42 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Returns the main `BrowserContext`.
+  content::BrowserContext* GetBrowserContext() {
+    return GetActiveWebContents()->GetBrowserContext();
+  }
+
+  // Attempts to parse and load an extension from the given `file_path` and add
+  // it to the extensions system (which will also activate the extension).
+  // Returns the extension on success; on failure, returns null and adds a test
+  // failure.
+  const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::string load_error;
+    scoped_refptr<const Extension> extension = file_util::LoadExtension(
+        file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
+    if (!extension) {
+      ADD_FAILURE() << "Failed to parse extension: " << load_error;
+      return nullptr;
+    }
+
+    content::BrowserContext* browser_context =
+        GetActiveWebContents()->GetBrowserContext();
+
+    auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
+        ExtensionSystem::Get(browser_context));
+    android_system->AddExtension(extension);
+
+    ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
+    if (!registry->enabled_extensions().Contains(extension->id())) {
+      ADD_FAILURE() << "Extension is not properly enabled.";
+      return nullptr;
+    }
+
+    return extension.get();
   }
 };
 
@@ -128,14 +144,6 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  content::BrowserContext* browser_context =
-      GetActiveWebContents()->GetBrowserContext();
-
-  auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
-      ExtensionSystem::Get(browser_context));
-  ASSERT_TRUE(android_system);
-  android_system->AddExtension(extension);
-
   GURL extension_page = extension->GetResourceURL("page.html");
 
   ResultCatcher result_catcher;
@@ -144,6 +152,35 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
   EXPECT_EQ("Hello, world",
             content::EvalJs(GetActiveWebContents(), "document.body.innerText"));
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Test service worker-based extensions properly load and have the service
+// worker initialize and run.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       ServiceWorkerBasedExtension) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function sanityCheck() {
+             chrome.test.assertEq(2, 1 + 1);
+             chrome.test.succeed();
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher result_catcher;
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions
