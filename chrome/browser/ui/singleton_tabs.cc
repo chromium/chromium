@@ -17,12 +17,6 @@
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/url_handler/url_handler.h"
-#endif
-
 namespace {
 
 // Returns true if two URLs are equal after taking |replacements| into account.
@@ -38,14 +32,6 @@ bool CompareURLsWithReplacements(const GURL& url,
 }  // namespace
 
 void ShowSingletonTab(Profile* profile, const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    ash::TryOpenUrl(url, WindowOpenDisposition::SINGLETON_TAB,
-                    NavigateParams::RESPECT,
-                    ash::ChromeSchemeSemantics::kLacros);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   NavigateParams params(
       GetSingletonTabNavigateParams(displayer.browser(), url));
@@ -53,14 +39,6 @@ void ShowSingletonTab(Profile* profile, const GURL& url) {
 }
 
 void ShowSingletonTab(Browser* browser, const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    ash::TryOpenUrl(url, WindowOpenDisposition::SINGLETON_TAB,
-                    NavigateParams::RESPECT,
-                    ash::ChromeSchemeSemantics::kLacros);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   Navigate(&params);
 }
@@ -69,13 +47,6 @@ void ShowSingletonTabOverwritingNTP(
     Profile* profile,
     const GURL& url,
     NavigateParams::PathBehavior path_behavior) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    ash::TryOpenUrl(url, WindowOpenDisposition::SINGLETON_TAB, path_behavior,
-                    ash::ChromeSchemeSemantics::kLacros);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   NavigateParams params(
       GetSingletonTabNavigateParams(displayer.browser(), url));
@@ -87,13 +58,6 @@ void ShowSingletonTabOverwritingNTP(
     Browser* browser,
     const GURL& url,
     NavigateParams::PathBehavior path_behavior) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    ash::TryOpenUrl(url, WindowOpenDisposition::SINGLETON_TAB, path_behavior,
-                    ash::ChromeSchemeSemantics::kLacros);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   params.path_behavior = path_behavior;
   ShowSingletonTabOverwritingNTP(&params);
@@ -101,12 +65,6 @@ void ShowSingletonTabOverwritingNTP(
 
 void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
   DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(crosapi::browser_util::IsAshWebBrowserEnabled() ||
-        ash::switches::IsAshDebugBrowserEnabled());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   content::WebContents* contents =
       params->browser->tab_strip_model()->GetActiveWebContents();
   if (contents) {
