@@ -94,7 +94,6 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         MockitoAnnotations.initMocks(this);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
                 /* isAvailable= */ false);
-        CipherFactory.resetInstanceForTesting(mCipherFactoryMock);
         mTabModelSelectorObservableSupplier.set(mTabModelSelectorMock);
         mIncognitoRestoreAppLaunchDrawBlocker =
                 new IncognitoRestoreAppLaunchDrawBlocker(
@@ -103,7 +102,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                         mIntentSupplier,
                         mShouldIgnoreIntentSupplier,
                         mActivityLifecycleDispatcherMock,
-                        mUnblockDrawRunnableMock);
+                        mUnblockDrawRunnableMock,
+                        mCipherFactoryMock);
 
         // Check that the we added the native init observer.
         verify(mActivityLifecycleDispatcherMock, times(1))

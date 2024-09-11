@@ -534,7 +534,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this::isTablet,
                         mTabModelProfileSupplier,
                         new IncognitoRestoreAppLaunchDrawBlockerFactory(
-                                this::getSavedInstanceState, getTabModelSelectorSupplier()));
+                                this::getSavedInstanceState,
+                                getTabModelSelectorSupplier(),
+                                CipherFactory.getInstance()));
     }
 
     @Override
