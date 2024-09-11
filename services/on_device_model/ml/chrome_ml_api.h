@@ -342,6 +342,11 @@ struct ChromeMLAPI {
   void (*SessionSizeInTokens)(ChromeMLSession session,
                               const std::string& text,
                               const ChromeMLSizeInTokensFn& fn);
+  void (*SessionSizeInTokensInputPiece)(ChromeMLSession session,
+                                        ChromeMLModel model,
+                                        const ml::InputPiece* input,
+                                        size_t input_size,
+                                        const ChromeMLSizeInTokensFn& fn);
 
   // Scores the first token of the given text.
   void (*SessionScore)(ChromeMLSession session,
