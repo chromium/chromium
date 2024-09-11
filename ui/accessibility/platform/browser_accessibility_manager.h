@@ -502,10 +502,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
  protected:
   FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
-  FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithEmptyName);
-  FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
-                           TestShouldFireEventForAlertEventWithNonEmptyName);
 
   explicit BrowserAccessibilityManager(AXNodeIdDelegate& node_id_delegate,
                                        AXPlatformTreeManagerDelegate* delegate);
