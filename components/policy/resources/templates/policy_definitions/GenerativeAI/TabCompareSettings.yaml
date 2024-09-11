@@ -1,6 +1,5 @@
 caption: Tab Compare settings
 default: 0
-default_for_enterprise_users: 1
 desc: |-
   Tab Compare is an AI-powered tool for comparing information across a user's tabs. As an example, the feature can be offered to the user when multiple tabs with products in a similar category are open.
 
