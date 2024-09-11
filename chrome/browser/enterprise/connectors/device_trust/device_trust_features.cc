@@ -16,7 +16,7 @@ bool IsKeyRotationEnabled() {
 
 BASE_FEATURE(kDTCKeyUploadedBySharedAPIEnabled,
              "DTCKeyUploadedBySharedAPIEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDTCKeyUploadedBySharedAPI() {
   return base::FeatureList::IsEnabled(kDTCKeyUploadedBySharedAPIEnabled);
