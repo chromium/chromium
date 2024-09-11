@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
@@ -41,6 +43,7 @@
   QuickDeleteViewController* _viewController;
   QuickDeleteMediator* _mediator;
   QuickDeleteBrowsingDataCoordinator* _browsingDataCoordinator;
+  std::unique_ptr<ScopedUIBlocker> _windowUIBlocker;
 
   // The tabs closure animation should only be performed if Quick Delete is
   // opened on top of a tab or the tab grid.
@@ -195,6 +198,15 @@
                          completion:dismissCompletionBlock];
 }
 
+- (void)blockOtherWindows {
+  SceneState* sceneState = self.browser->GetSceneState();
+  _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+}
+
+- (void)releaseOtherWindows {
+  _windowUIBlocker.reset();
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
@@ -230,7 +242,8 @@
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
                 browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover {
   base::OnceClosure onRemoverCompletion = base::BindOnce(
-      [](UIWindow* window) {
+      [](UIWindow* window, std::unique_ptr<ScopedUIBlocker> uiBlocker) {
+        uiBlocker.reset();
         window.userInteractionEnabled = YES;
         window.accessibilityElementsHidden = NO;
 
@@ -245,7 +258,7 @@
         // rearrange.
         TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
       },
-      self.baseViewController.view.window);
+      self.baseViewController.view.window, std::move(_windowUIBlocker));
 
   base::OnceClosure onAnimationCompletion = base::BindOnce(
       &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
@@ -264,6 +277,9 @@
 
 // Disconnects all instances.
 - (void)disconnect {
+  if (_windowUIBlocker) {
+    _windowUIBlocker.reset();
+  }
   _viewController.presentationHandler = nil;
   _viewController.mutator = nil;
   _viewController.presentationController.delegate = nil;

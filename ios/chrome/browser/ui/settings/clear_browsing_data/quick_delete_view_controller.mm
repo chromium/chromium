@@ -367,9 +367,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Disable accessibility elements on entire window to avoid Voiceover focusing
   // on new elements during the deletion or the animation.
   self.view.window.accessibilityElementsHidden = YES;
+  [self.presentationHandler blockOtherWindows];
 }
 
 - (void)deletionFinished {
+  [self.presentationHandler releaseOtherWindows];
   // Allow the user to dismiss the bottom sheet, but still not interact with
   // contents of the bottom sheet.
   self.view.userInteractionEnabled = NO;
