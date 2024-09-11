@@ -54,14 +54,11 @@ static constexpr int kInvalidTabId = -1;
 // sources that are currently unavailable. This function returns a simplified
 // FetchOptions instance.
 FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
-                                                bool fetch_local_tab,
                                                 bool fetch_history) {
   FetchOptions::URLTypeSet expected_types = {
       FetchOptions::URLType::kActiveRemoteTab};
-  if (fetch_local_tab) {
-    expected_types.Put(FetchOptions::URLType::kLocalVisit);
-  }
   if (fetch_history) {
+    expected_types.Put(FetchOptions::URLType::kActiveLocalTab);
     expected_types.Put(FetchOptions::URLType::kLocalVisit);
     expected_types.Put(FetchOptions::URLType::kRemoteVisit);
     expected_types.Put(FetchOptions::URLType::kCCTVisit);
@@ -91,7 +88,6 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
         j_suggestions_(j_suggestions),
         j_callback_(j_callback),
         fetch_options_(CreateFetchOptionsForTabResumption(current_time,
-                                                          fetch_local_tabs,
                                                           fetch_history)),
         config_({.key = visited_url_ranking::kTabResumptionRankerKey}) {}
 
