@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_RENDERER_AW_SAFE_BROWSING_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
-#define ANDROID_WEBVIEW_RENDERER_AW_SAFE_BROWSING_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
+#ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_RENDERER_SECURITY_INTERSTITIAL_PAGE_CONTROLLER_DELEGATE_IMPL_H_
+#define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_RENDERER_SECURITY_INTERSTITIAL_PAGE_CONTROLLER_DELEGATE_IMPL_H_
 
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -14,23 +14,23 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace android_webview {
+namespace security_interstitials {
 
-class AwSafeBrowsingErrorPageControllerDelegateImpl
+class SecurityInterstitialPageControllerDelegateImpl
     : public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<
-          AwSafeBrowsingErrorPageControllerDelegateImpl> {
+          SecurityInterstitialPageControllerDelegateImpl> {
  public:
-  explicit AwSafeBrowsingErrorPageControllerDelegateImpl(
+  explicit SecurityInterstitialPageControllerDelegateImpl(
       content::RenderFrame* render_frame);
 
   // Disallow copy and assign
-  AwSafeBrowsingErrorPageControllerDelegateImpl(
-      const AwSafeBrowsingErrorPageControllerDelegateImpl&) = delete;
-  AwSafeBrowsingErrorPageControllerDelegateImpl& operator=(
-      const AwSafeBrowsingErrorPageControllerDelegateImpl&) = delete;
+  SecurityInterstitialPageControllerDelegateImpl(
+      const SecurityInterstitialPageControllerDelegateImpl&) = delete;
+  SecurityInterstitialPageControllerDelegateImpl& operator=(
+      const SecurityInterstitialPageControllerDelegateImpl&) = delete;
 
-  ~AwSafeBrowsingErrorPageControllerDelegateImpl() override;
+  ~SecurityInterstitialPageControllerDelegateImpl() override;
 
   // Notifies us that a navigation error has occurred and will be committed
   void PrepareForErrorPage();
@@ -48,6 +48,6 @@ class AwSafeBrowsingErrorPageControllerDelegateImpl
   bool committed_error_ = false;
 };
 
-}  // namespace android_webview
+}  // namespace security_interstitials
 
-#endif  // ANDROID_WEBVIEW_RENDERER_AW_SAFE_BROWSING_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_RENDERER_SECURITY_INTERSTITIAL_PAGE_CONTROLLER_DELEGATE_IMPL_H_

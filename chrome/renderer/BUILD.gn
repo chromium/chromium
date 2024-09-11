@@ -196,7 +196,7 @@ static_library("renderer") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
     "//components/search:search",
-    "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
+    "//components/security_interstitials/content/renderer",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
     "//components/spellcheck:buildflags",

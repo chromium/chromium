@@ -65,6 +65,7 @@ include_rules = [
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
+  "+components/security_interstitials/content/renderer",
   "+components/signin/public/base/signin_buildflags.h",
   "+components/signin/public/base/signin_switches.h",
   "+components/spellcheck/renderer",

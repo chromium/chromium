@@ -108,6 +108,7 @@
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
+#include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
@@ -658,6 +659,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 
   new NetErrorHelper(render_frame);
+
+  new security_interstitials::SecurityInterstitialPageControllerDelegateImpl(
+      render_frame);
 
   new SupervisedUserErrorPageControllerDelegateImpl(render_frame);
 
@@ -1368,6 +1372,9 @@ void ChromeContentRendererClient::PrepareErrorPage(
           http_method == "POST", std::move(alternative_error_page_info),
           error_html);
 
+  security_interstitials::SecurityInterstitialPageControllerDelegateImpl::Get(
+      render_frame)
+      ->PrepareForErrorPage();
   SupervisedUserErrorPageControllerDelegateImpl::Get(render_frame)
       ->PrepareForErrorPage();
 }
