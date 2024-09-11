@@ -7119,6 +7119,12 @@ const char kImeKoreanOnlyModeSwitchOnRightAltDescription[] =
     "When enabled and in Korean input method, right-Alt key location solely "
     "toggles internal Korean/English mode, without Alt modifier functionality";
 
+const char kImeSwitchCheckConnectionStatusName[] =
+    "Enable Ime switching using global boolean";
+const char kImeSwitchCheckConnectionStatusDescription[] =
+    "When enabled and swapping between input methods, this prevents a race "
+    "condition.";
+
 const char kIppFirstSetupForUsbPrintersName[] =
     "Try to setup USB printers with IPP first";
 const char kIppFirstSetupForUsbPrintersDescription[] =

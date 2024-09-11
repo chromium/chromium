@@ -4111,6 +4111,9 @@ extern const char kImeKoreanModeSwitchDebugDescription[];
 extern const char kImeKoreanOnlyModeSwitchOnRightAltName[];
 extern const char kImeKoreanOnlyModeSwitchOnRightAltDescription[];
 
+extern const char kImeSwitchCheckConnectionStatusName[];
+extern const char kImeSwitchCheckConnectionStatusDescription[];
+
 extern const char kIppFirstSetupForUsbPrintersName[];
 extern const char kIppFirstSetupForUsbPrintersDescription[];
 
