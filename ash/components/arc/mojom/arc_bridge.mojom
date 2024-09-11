@@ -145,7 +145,7 @@ interface ArcBridgeHost {
 
   // Notifies Chrome that the ErrorNotificationInstance interface is ready.
   [MinVersion=67] OnErrorNotificationInstanceReady@172(
-    pending_remote<ErrorNotificationInstance> instance_remote);
+      pending_remote<ErrorNotificationInstance> instance_remote);
 
   // Notifies Chrome that the FileSystemInstance interface is ready.
   [MinVersion=13] OnFileSystemInstanceReady@119(
