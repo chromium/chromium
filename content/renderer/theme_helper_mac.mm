@@ -14,15 +14,6 @@ bool CGFontRenderingGetFontSmoothingDisabled(void);
 
 namespace content {
 
-void SystemColorsDidChange(int aqua_color_variant) {
-  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-
-  // Register the defaults in the NSArgumentDomain, which is considered
-  // volatile. Registering in the normal application domain fails from within
-  // the sandbox.
-  [defaults removeVolatileDomainForName:NSArgumentDomain];
-}
-
 bool IsSubpixelAntialiasingAvailable() {
   // See https://trac.webkit.org/changeset/239306/webkit for more info.
   return !CGFontRenderingGetFontSmoothingDisabled();

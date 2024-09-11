@@ -7,10 +7,6 @@
 
 namespace content {
 
-// Updates the process-wide preferences for system theme colors, by setting
-// the respective NSUserDefaults.
-void SystemColorsDidChange(int aqua_color_variant);
-
 // MacOS 10.14 (Mojave) disabled subpixel anti-aliasing by default, but this can
 // be overridden with a setting (CGFontRenderingFontSmoothingDisabled).
 bool IsSubpixelAntialiasingAvailable();

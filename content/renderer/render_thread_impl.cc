@@ -1565,8 +1565,6 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 
 void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
 #if BUILDFLAG(IS_MAC)
-  SystemColorsDidChange(aqua_color_variant);
-
   // Let blink know it should invalidate and recalculate styles for elements
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
