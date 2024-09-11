@@ -209,20 +209,7 @@ bool ShouldResourceBeKeptStrongReferenceByType(
     const SecurityOrigin* settings_object_origin) {
   // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
 
-  if (base::FeatureList::IsEnabled(
-          features::kMemoryCacheStrongReferenceFilterCrossOriginScripts) &&
-      resource->GetType() == ResourceType::kScript &&
-      !SecurityOrigin::Create(resource->Url())
-           ->IsSameOriginWith(settings_object_origin)) {
-    return false;
-  }
-
-  return (resource->GetType() == ResourceType::kImage &&
-          !base::FeatureList::IsEnabled(
-              features::kMemoryCacheStrongReferenceFilterImages)) ||
-         (resource->GetType() == ResourceType::kScript &&
-          !base::FeatureList::IsEnabled(
-              features::kMemoryCacheStrongReferenceFilterScripts)) ||
+  return resource->GetType() == ResourceType::kScript ||
          resource->GetType() == ResourceType::kFont ||
          resource->GetType() == ResourceType::kCSSStyleSheet ||
          resource->GetType() == ResourceType::kMock;  // For tests.

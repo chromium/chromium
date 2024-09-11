@@ -1695,18 +1695,6 @@ BASE_FEATURE(kResourceFetcherStoresStrongReferences,
              "ResourceFetcherStoresStrongReferences",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterImages,
-             "MemoryCacheStrongReferenceFilterImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterScripts,
-             "MemoryCacheStrongReferenceFilterScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMemoryCacheStrongReferenceFilterCrossOriginScripts,
-             "MemoryCacheStrongReferenceFilterCrossOriginScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
 // Finch study showed no improvement on Android for strong memory cache.

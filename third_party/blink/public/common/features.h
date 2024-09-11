@@ -1138,18 +1138,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // Whether the ResourceFetcher should store strong references too.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
-// Exclude images from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterImages);
-// Exclude scripts from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterScripts);
-// Exclude cross origin scripts from the saved strong references for resources.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceFilterCrossOriginScripts);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 
