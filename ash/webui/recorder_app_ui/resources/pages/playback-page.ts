@@ -819,11 +819,14 @@ export class PlaybackPage extends ReactiveLitElement {
     return html`
       <div id="inline-slider">
         <cra-icon-button
-          buttonstyle="floating"
+          buttonstyle="toggle"
           @click=${this.toggleMuted}
           aria-label=${i18n.playbackMuteButtonTooltip}
+          class="with-floating-style"
+          .selected=${this.audioPlayer.muted.value}
         >
           ${this.renderVolumeIcon()}
+          <cra-icon slot="selectedIcon" name="volume_mute"></cra-icon>
         </cra-icon-button>
         ${this.renderVolumeSlider()}
       </div>

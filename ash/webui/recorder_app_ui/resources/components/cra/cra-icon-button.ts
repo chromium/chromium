@@ -65,6 +65,31 @@ export class CraIconButton extends IconButton {
           40px
         );
       }
+
+      :host([buttonStyle="toggle"].with-floating-style) md-filled-icon-button {
+        --md-filled-icon-button-selected-container-color: #00000000;
+        --md-filled-icon-button-toggle-selected-focus-icon-color: var(
+          --cros-sys-on_surface
+        );
+        --md-filled-icon-button-toggle-selected-hover-icon-color: var(
+          --cros-sys-on_surface
+        );
+        --md-filled-icon-button-toggle-selected-hover-state-layer-color: var(
+          --cros-sys-hover_on_subtle
+        );
+        --md-filled-icon-button-toggle-selected-icon-color: var(
+          --cros-sys-on_surface
+        );
+        --md-filled-icon-button-toggle-selected-pressed-icon-color: var(
+          --cros-sys-on_surface
+        );
+        --md-filled-icon-button-toggle-selected-pressed-state-layer-color: var(
+          --cros-sys-ripple_neutral_on_subtle
+        );
+        --md-filled-icon-button-toggle-pressed-state-layer-color: var(
+          --cros-sys-ripple_neutral_on_subtle
+        );
+      }
     `,
   ];
 
