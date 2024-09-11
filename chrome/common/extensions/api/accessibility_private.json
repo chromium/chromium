@@ -738,7 +738,7 @@
           {
             "name": "useRewriters",
             "type": "boolean",
-            "description": "If true, uses rewriters for the key event; only allowed if used from Dictation. Otherwise indicates that rewriters should be skipped.",
+            "description": "If true, uses rewriters for the key event; only allowed if used from Dictation or FaceGaze. Otherwise indicates that rewriters should be skipped.",
             "optional": true
           }
         ]
