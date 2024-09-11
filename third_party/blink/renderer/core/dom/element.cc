@@ -8719,24 +8719,23 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   }
 }
 
-ScriptValue Element::requestPointerLock(ScriptState* script_state,
-                                        const PointerLockOptions* options,
-                                        ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Element::requestPointerLock(
+    ScriptState* script_state,
+    const PointerLockOptions* options,
+    ExceptionState& exception_state) {
   if (!GetDocument().GetPage()) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
-               script_state, MakeGarbageCollected<DOMException>(
-                                 DOMExceptionCode::kWrongDocumentError,
-                                 "PointerLock cannot be request when there "
-                                 "is no frame or that frame has no page."))
-        .AsScriptValue();
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kWrongDocumentError,
+                          "PointerLock cannot be requested when there "
+                          "is no frame or that frame has no page."));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
   GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
       resolver, this, options);
-  return promise.AsScriptValue();
+  return resolver->Promise();
 }
 
 SpellcheckAttributeState Element::GetSpellcheckAttributeState() const {

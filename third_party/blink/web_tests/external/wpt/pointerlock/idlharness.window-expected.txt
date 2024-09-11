@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Element interface: operation requestPointerLock(optional PointerLockOptions)
-  assert_unreached: Throws "TypeError: Illegal invocation" instead of rejecting promise Reached unreachable code
-Harness: the test ran to completion.
-
