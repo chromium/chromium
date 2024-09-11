@@ -199,6 +199,8 @@ source_set("manual_fill_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "address_view_controller_unittest.mm",
+    "card_view_controller_unittest.mm",
     "chip_button_unittest.mm",
     "expanded_manual_fill_view_controller_unittest.mm",
     "fallback_view_controller_unittest.mm",
@@ -214,6 +216,7 @@ source_set("unit_tests") {
     "manual_fill_credit_card_unittest.mm",
     "manual_fill_labeled_chip_unittest.mm",
     "manual_fill_password_mediator_unittest.mm",
+    "password_view_controller_unittest.mm",
   ]
   deps = [
     ":manual_fill",
@@ -250,6 +253,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/sync/model",

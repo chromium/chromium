@@ -75,6 +75,7 @@ enum ManualFallbackItemType : NSInteger {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.Profiles",
                            addresses.count);
 
+  self.noRegularDataItemsToShowHeaderItem = nil;
   if (!addresses.count && IsKeyboardAccessoryUpgradeEnabled()) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
@@ -82,7 +83,7 @@ enum ManualFallbackItemType : NSInteger {
                              kNoAddressesMessage];
     textHeaderFooterItem.text =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES);
-    self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+    self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
   if (base::FeatureList::IsEnabled(

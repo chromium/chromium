@@ -153,6 +153,8 @@ enum ManualFallbackItemType : NSInteger {
                              credentials.count);
   }
 
+  self.noRegularDataItemsToShowHeaderItem = nil;
+
   for (ManualFillCredentialItem* credentialItem in credentials) {
     credentialItem.type = manual_fill::ManualFallbackItemType::kCredential;
   }
@@ -167,7 +169,7 @@ enum ManualFallbackItemType : NSInteger {
                                kNoCredentialsMessage];
       textHeaderFooterItem.text =
           l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-      self.noDataItemsToShowHeaderItem = textHeaderFooterItem;
+      self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
     } else {
       ManualFillTextItem* emptyCredentialItem = [[ManualFillTextItem alloc]
           initWithType:manual_fill::ManualFallbackItemType::
