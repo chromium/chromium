@@ -40,9 +40,9 @@ constexpr std::string_view kDefaultLanguageCode = "en";
 
 // Map from keyword -> sum of position weightings
 std::map<std::u16string, double, std::less<>> CombineSearchTerms(
-    base::span<const std::string> long_search_terms) {
+    base::span<const std::string_view> long_search_terms) {
   std::map<std::u16string, double, std::less<>> ret;
-  for (const std::string& long_string : long_search_terms) {
+  for (std::string_view long_string : long_search_terms) {
     std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
         long_string, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
         base::SplitResult::SPLIT_WANT_NONEMPTY);
@@ -80,7 +80,7 @@ void AddDataFromFileToMap(
       const std::string* emoji_string = base->FindString("string");
       CHECK(emoji_string) << "All emoji should have names";
       // Gather possible search terms for the emoji
-      std::vector<std::string> search_terms;
+      std::vector<std::string_view> search_terms;
       const base::Value::List* keywords = base->FindList("keywords");
       if (keywords) {
         search_terms.reserve(keywords->size());
