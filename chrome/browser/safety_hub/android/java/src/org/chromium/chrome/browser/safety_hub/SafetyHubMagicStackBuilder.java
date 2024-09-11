@@ -72,6 +72,8 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
 
     @Override
     public boolean isEligible() {
+        if (!mProfileSupplier.hasValue()) return false;
+
         if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
             SafetyHubHatsBridge.getForProfile(getRegularProfile())
                     .triggerControlHatsSurvey(mTabModelSelector);
