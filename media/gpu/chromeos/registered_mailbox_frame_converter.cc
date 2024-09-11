@@ -41,13 +41,11 @@ void RegisteredMailboxFrameConverter::ConvertFrameImpl(
   // |mailbox| is not backed by a GPU texture, so using a texture target of 0
   // is fine.
   constexpr uint32_t kTextureTarget = 0;
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-  mailbox_holders[0] =
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(), kTextureTarget);
+  gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), kTextureTarget);
 
   // Creates a mailbox-backed VideoFrame with |mailbox| and |frame|'s metadata.
-  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapNativeTextures(
-      frame->format(), mailbox_holders, VideoFrame::ReleaseMailboxCB(),
+  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapNativeTexture(
+      frame->format(), mailbox_holder, VideoFrame::ReleaseMailboxCB(),
       frame->coded_size(), frame->visible_rect(), frame->natural_size(),
       frame->timestamp());
   if (!mailbox_frame) {

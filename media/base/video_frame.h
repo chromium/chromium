@@ -247,13 +247,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp,
       bool zero_initialize_memory);
 
-  // Wraps a set of native textures with a VideoFrame.
-  // |mailbox_holders_release_cb| will be called with a sync token as the
+  // Wraps a native texture with a VideoFrame.
+  // |mailbox_holder_release_cb| will be called with a sync token as the
   // argument when the VideoFrame is to be destroyed.
-  static scoped_refptr<VideoFrame> WrapNativeTextures(
+  static scoped_refptr<VideoFrame> WrapNativeTexture(
       VideoPixelFormat format,
-      const gpu::MailboxHolder (&mailbox_holder)[kMaxPlanes],
-      ReleaseMailboxCB mailbox_holders_release_cb,
+      const gpu::MailboxHolder& mailbox_holder,
+      ReleaseMailboxCB mailbox_holder_release_cb,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
@@ -929,9 +929,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // VideoFrame.
   const uint8_t* data_[kMaxPlanes];
 
-  // Native texture mailboxes, if this is a IsTexture() frame.
-  gpu::MailboxHolder mailbox_holders_[kMaxPlanes];
-  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holders_and_gmb_release_cb_;
+  // Native texture mailbox, if this is a IsTexture() frame.
+  gpu::MailboxHolder mailbox_holder_;
+  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
   // created via VideoFrame::WrapSharedImage().

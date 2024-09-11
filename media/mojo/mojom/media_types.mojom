@@ -472,10 +472,9 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   uint32 texture_target;
 };
 
-// This defines video frame data stored in texture mailboxes.
+// This defines video frame data stored in texture mailbox.
 struct MailboxVideoFrameData {
-  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+  gpu.mojom.MailboxHolder mailbox_holder;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 

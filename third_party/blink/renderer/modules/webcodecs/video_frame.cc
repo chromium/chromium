@@ -818,8 +818,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
-    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
-        sbi->GetMailboxHolder()};
+    gpu::MailboxHolder mailbox_holder = sbi->GetMailboxHolder();
     const bool is_origin_top_left = sbi->IsOriginTopLeft();
 
     // The sync token needs to be updated when |frame| is released, but
@@ -835,12 +834,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     auto client_shared_image = sbi->GetSharedImage();
     if (client_shared_image) {
       frame = media::VideoFrame::WrapSharedImage(
-          format, std::move(client_shared_image), mailbox_holders[0].sync_token,
-          mailbox_holders[0].texture_target, std::move(release_cb), coded_size,
+          format, std::move(client_shared_image), mailbox_holder.sync_token,
+          mailbox_holder.texture_target, std::move(release_cb), coded_size,
           parsed_init.visible_rect, parsed_init.display_size, timestamp);
     } else {
-      frame = media::VideoFrame::WrapNativeTextures(
-          format, mailbox_holders, std::move(release_cb), coded_size,
+      frame = media::VideoFrame::WrapNativeTexture(
+          format, mailbox_holder, std::move(release_cb), coded_size,
           parsed_init.visible_rect, parsed_init.display_size, timestamp);
     }
 
