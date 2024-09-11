@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
+#include "base/rand_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -209,6 +210,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const raw_ptr<PrefetchMatchingURLLoaderFactory> owner_;
 
   static bool allow_external_preflights_for_testing_;
+
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace cors

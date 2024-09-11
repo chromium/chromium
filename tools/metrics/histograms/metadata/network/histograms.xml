@@ -4776,6 +4776,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart.Duration"
+    units="microseconds" expires_after="2025-09-10">
+  <owner>olivier@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>
+    Logs the time spent in CorsURLLoaderFactory::CreateLoaderAndStart.
+
+    Logged on exiting the function. Subsampled to one out of one thousand times.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram
+    name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart.ThreadDuration"
+    units="microseconds" expires_after="2025-09-10">
+  <owner>olivier@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>
+    Logs the thread time spent in CorsURLLoaderFactory::CreateLoaderAndStart.
+
+    Logged on exiting the function. Subsampled to one out of one thousand times.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+
+    Only recorded on clients with thread tick support.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.DeletedOldCacheData" enum="Boolean"
     expires_after="2024-12-30">
   <owner>wfh@chromium.org</owner>
