@@ -5,10 +5,11 @@
 # found in the LICENSE file.
 
 import functools
+import itertools
 import logging
-import multiprocessing
 import optparse
 import os
+import pathlib
 import re
 import shutil
 import sys
@@ -332,37 +333,32 @@ def CreateJarFile(jar_path,
   logging.info('Completed jar file: %s', jar_path)
 
 
+# Java lines end in semicolon, whereas Kotlin lines do not.
+_PACKAGE_RE = re.compile(r'^package\s+(.*?)(;|\s*$)', flags=re.MULTILINE)
+
+# Finds all top-level classes (by looking for those that are not indented).
+_CLASSES_RE = re.compile(
+    # Start of line, or after /* package */
+    r'^(?:/\*.*\*/\s*)?'
+    # Annotations
+    r'(?:@\w+(?:\(.*\))\s+)*'
+    r'(?:(?:public|protected|private)\s+)?'
+    r'(?:(?:static|abstract|final|sealed)\s+)*'
+    r'(?:class|@?interface|enum|record)\s+'
+    r'(\w+?)\b[^"]*?$',
+    flags=re.MULTILINE)
+
+
 def _ParsePackageAndClassNames(source_file):
   """This should support both Java and Kotlin files."""
+  data = pathlib.Path(source_file).read_text()
+
   package_name = ''
-  class_names = []
-  with open(source_file) as f:
-    for l in f:
-      # Strip unindented comments.
-      # Considers a leading * as a continuation of a multi-line comment (our
-      # linter doesn't enforce a space before it like there should be).
-      l = re.sub(r'^(?://.*|/?\*.*?(?:\*/\s*|$))', '', l)
-      # Stripping things between double quotes (strings), so if the word "class"
-      # shows up in a string this doesn't trigger. This isn't strictly correct
-      # (with escaped quotes) but covers a very large percentage of cases.
-      l = re.sub('(?:".*?")', '', l)
+  if m := _PACKAGE_RE.search(data):
+    package_name = m.group(1)
 
-      # Java lines end in semicolon, whereas Kotlin lines do not.
-      m = re.match(r'package\s+(.*?)(;|\s*$)', l)
-      if m and not package_name:
-        package_name = m.group(1)
-
-      # Not exactly a proper parser, but works for sources that Chrome uses.
-      # In order to not match nested classes, it just checks for lack of indent.
-      m = re.match(r'(?:\S.*?)?(?:class|@?interface|enum)\s+(.+?)\b', l)
-      if m:
-        class_names.append(m.group(1))
+  class_names = _CLASSES_RE.findall(data)
   return package_name, class_names
-
-
-def _ProcessSourceFileForInfo(source_file):
-  package_name, class_names = _ParsePackageAndClassNames(source_file)
-  return source_file, package_name, class_names
 
 
 class _InfoFileContext:
@@ -373,10 +369,6 @@ class _InfoFileContext:
     self._excluded_globs = excluded_globs
     # Map of .java path -> .srcjar/nested/path.java.
     self._srcjar_files = {}
-    # List of generators from pool.imap_unordered().
-    self._results = []
-    # Lazily created multiprocessing.Pool.
-    self._pool = None
 
   def AddSrcJarSources(self, srcjar_path, extracted_paths, parent_dir):
     for path in extracted_paths:
@@ -384,19 +376,6 @@ class _InfoFileContext:
       # structure.
       self._srcjar_files[path] = '{}/{}'.format(
           srcjar_path, os.path.relpath(path, parent_dir))
-
-  def SubmitFiles(self, source_files):
-    if not source_files:
-      return
-    if self._pool is None:
-      # Restrict to just one process to not slow down compiling. Compiling
-      # is always slower.
-      self._pool = multiprocessing.Pool(1)
-    logging.info('Submitting %d files for info', len(source_files))
-    self._results.append(
-        self._pool.imap_unordered(_ProcessSourceFileForInfo,
-                                  source_files,
-                                  chunksize=1000))
 
   def _CheckPathMatchesClassName(self, source_file, package_name, class_name):
     if source_file.endswith('.java'):
@@ -416,7 +395,8 @@ class _InfoFileContext:
       if '_aidl.srcjar' in source:
         continue
       assert not self._chromium_code or len(class_names) == 1, (
-          'Chromium java files must only have one class: {}'.format(source))
+          'Chromium java files must only have one class: {} found: {}'.format(
+              source, class_names))
       if self._chromium_code:
         # This check is not necessary but nice to check this somewhere.
         self._CheckPathMatchesClassName(java_file, package_name, class_names[0])
@@ -425,36 +405,21 @@ class _InfoFileContext:
     name_as_class_glob = fully_qualified_name.replace('.', '/') + '.class'
     return not build_utils.MatchesGlob(name_as_class_glob, self._excluded_globs)
 
-  def _Collect(self):
-    if self._pool is None:
-      return {}
-    ret = {}
-    for result in self._results:
-      for java_file, package_name, class_names in result:
-        source = self._srcjar_files.get(java_file, java_file)
-        for fully_qualified_name in self._ProcessInfo(java_file, package_name,
-                                                      class_names, source):
-          if self._ShouldIncludeInJarInfo(fully_qualified_name):
-            ret[fully_qualified_name] = java_file
-    return ret
-
-  def Close(self):
-    # Work around for Python 2.x bug with multiprocessing and daemon threads:
-    # https://bugs.python.org/issue4106
-    if self._pool is not None:
-      logging.info('Joining multiprocessing.Pool')
-      self._pool.terminate()
-      self._pool.join()
-      logging.info('Done.')
-
-  def Commit(self, output_path):
+  def Run(self, output_path, java_files, kt_files=None):
     """Writes a .jar.info file.
 
     Maps fully qualified names for classes to either the java file that they
     are defined in or the path of the srcjar that they came from.
     """
     logging.info('Collecting info file entries')
-    entries = self._Collect()
+    entries = {}
+    for path in itertools.chain(java_files, kt_files or []):
+      package_name, class_names = _ParsePackageAndClassNames(path)
+      source = self._srcjar_files.get(path, path)
+      for fully_qualified_name in self._ProcessInfo(path, package_name,
+                                                    class_names, source):
+        if self._ShouldIncludeInJarInfo(fully_qualified_name):
+          entries[fully_qualified_name] = path
 
     logging.info('Writing info file: %s', output_path)
     with action_helpers.atomic_output(output_path, mode='wb') as f:
@@ -640,10 +605,6 @@ def _RunCompiler(changes,
                              pattern='META-INF/services/*')
       logging.info('Done extracting service provider configs')
 
-    if save_info_file and java_files:
-      info_file_context.SubmitFiles(java_files)
-      info_file_context.SubmitFiles(kt_files)
-
     if java_files:
       # Don't include the output directory in the initial set of args since it
       # being in a temp dir makes it unstable (breaks md5 stamping).
@@ -665,13 +626,21 @@ def _RunCompiler(changes,
 
       logging.debug('Build command %s', cmd)
       start = time.time()
+      before_join_callback = None
+      if save_info_file:
+        before_join_callback = lambda: info_file_context.Run(
+            jar_info_path, java_files, kt_files)
+
       build_utils.CheckOutput(cmd,
                               print_stdout=options.chromium_code,
                               stdout_filter=process_javac_output_partial,
                               stderr_filter=process_javac_output_partial,
-                              fail_on_output=options.warnings_as_errors)
+                              fail_on_output=options.warnings_as_errors,
+                              before_join_callback=before_join_callback)
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
+    elif save_info_file:
+      info_file_context.Run(jar_info_path, java_files, kt_files)
 
     CreateJarFile(jar_path, classes_dir, service_provider_configuration,
                   options.additional_jar_files, options.kotlin_jar_path)
@@ -685,13 +654,8 @@ def _RunCompiler(changes,
         if '_jni_java/' in p and not p.endswith('Jni.java'):
           os.unlink(p)
 
-    if save_info_file:
-      info_file_context.Commit(jar_info_path)
-
     logging.info('Completed all steps in _RunCompiler')
   finally:
-    if info_file_context:
-      info_file_context.Close()
     shutil.rmtree(temp_dir)
 
 
