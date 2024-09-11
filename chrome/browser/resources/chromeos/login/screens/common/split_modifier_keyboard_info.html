@@ -76,10 +76,10 @@ found in the LICENSE file.
 <oobe-adaptive-dialog id="splitModifierKeyboardInfoDialog" role="dialog">
   <iron-icon slot="icon" icon="oobe-48:keyboard"></iron-icon>
   <h1 slot="title" aria-live="polite">
-    Test new feature on your device after setup
+    [[i18nDynamic(locale, 'splitModifierTitle')]]
   </h1>
   <div slot="subtitle">
-    Test new feature on your device after setup.
+    [[i18nDynamic(locale, 'splitModifierSubtitle')]]
   </div>
   <div slot="content" class="flex layout vertical center">
     <div class="illustration-content">
@@ -93,12 +93,12 @@ found in the LICENSE file.
             role="heading"
             aria-level="2"
             tabindex="0"
-            aria-description="Test your device with the new features added to the Chromebook and more.">
+            aria-description="[[i18nDynamic(locale, 'splitModifierFirstDescriptionAccessibility')]]">
           <span class="title">
-            Testing
+            [[i18nDynamic(locale, 'splitModifierFirstDescriptionTitle')]]
           </span>
           <span class="subtitle">
-            Test your device with the new features added to the Chromebook and more.
+            [[i18nDynamic(locale, 'splitModifierFirstDescriptionText')]]
           </span>
         </div>
       </div>
@@ -108,12 +108,12 @@ found in the LICENSE file.
             role="heading"
             aria-level="2"
             tabindex="0"
-            aria-description="Test your device with the new features added to the Chromebook and more.">
+            aria-description="[[i18nDynamic(locale, 'splitModifierSecondDescriptionAccessibility')]]">
           <span class="title">
-            Testing
+            [[i18nDynamic(locale, 'splitModifierSecondDescriptionTitle')]]
           </span>
           <span class="subtitle">
-            Test your device with the new features added to the Chromebook and more.
+            [[i18nDynamic(locale, 'splitModifierSecondDescriptionText')]]
           </span>
         </div>
       </div>

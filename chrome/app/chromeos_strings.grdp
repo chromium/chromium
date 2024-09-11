@@ -6908,6 +6908,32 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Switch themes at sunrise and sunset
   </message>
 
+  <!-- Split Modifier Screen -->
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_TITLE" desc="Title of the split modifier info screen." translateable="false">
+    Test new feature on your device after setup
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SUBTITLE" desc="Subtitle of the split modifier info screen." translateable="false">
+    Test new feature on your device after setup.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TITLE" desc="Title of the first description section." translateable="false">
+    Testing
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE" desc="Title of the second description section." translateable="false">
+    Testing
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TEXT" desc="Text inside the second description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the second description section." translateable="false">
+    Test your device with the new features added to the Chromebook and more.
+  </message>
+
   <!-- Touchpad Scroll -->
   <message name="IDS_OOBE_TOUCHPAD_SCROLL_TITLE" desc="Title of the touchpad scroll direction screen.">
     Change touchpad scrolling direction
