@@ -14,6 +14,13 @@ if (icu_use_data_file) {
   }
 }
 
+if (is_chrome_branded && is_official_build) {
+  bundle_data("me2me_provisionprofile") {
+    sources = [ "//remoting/internal/mac/Google_Chrome_Remote_Desktop_Remote_Access.provisionprofile" ]
+    outputs = [ "{{bundle_contents_dir}}/embedded.provisionprofile" ]
+  }
+}
+
 source_set("constants") {
   defines = [
     "HOST_BUNDLE_NAME=\"" + me2me_host_bundle_name + "\"",
@@ -128,6 +135,10 @@ target("mac_app_bundle", "remoting_me2me_host") {
 
   if (icu_use_data_file) {
     deps += [ ":icu_data" ]
+  }
+
+  if (is_chrome_branded && is_official_build) {
+    deps += [ ":me2me_provisionprofile" ]
   }
 }
 
