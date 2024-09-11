@@ -665,9 +665,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   gced_var_or_field.Register(match_finder);
 
   OptionalMemberMatcher optional_member(diagnostics, record_cache);
-  if (options.enable_optional_member_check) {
-    optional_member.Register(match_finder);
-  }
+  optional_member.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

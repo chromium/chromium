@@ -48,9 +48,6 @@ struct BlinkGCPluginOptions {
   // Enables checks for raw pointers, refs and unique_ptr of traceable types.
   bool enable_ptrs_to_traceable_check = false;
 
-  // Enables checks for optionals of members.
-  bool enable_optional_member_check = false;
-
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;
