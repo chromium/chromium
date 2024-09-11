@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -74,6 +75,7 @@ class ShortcutsBackendTest : public testing::Test,
   bool DeleteShortcutsWithURL(const GURL& url);
   bool DeleteShortcutsWithIDs(
       const ShortcutsDatabase::ShortcutIDs& deleted_ids);
+  bool DeleteOldShortcuts();
   bool ShortcutExists(const std::u16string& terms) const;
   std::vector<std::u16string> ShortcutsMapTexts() const;
   void ClearShortcutsMap();
@@ -202,6 +204,10 @@ bool ShortcutsBackendTest::DeleteShortcutsWithURL(const GURL& url) {
 bool ShortcutsBackendTest::DeleteShortcutsWithIDs(
     const ShortcutsDatabase::ShortcutIDs& deleted_ids) {
   return backend_->DeleteShortcutsWithIDs(deleted_ids);
+}
+
+bool ShortcutsBackendTest::DeleteOldShortcuts() {
+  return backend_->DeleteOldShortcuts();
 }
 
 bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) const {
@@ -413,6 +419,57 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   EXPECT_TRUE(DeleteShortcutsWithIDs(deleted_ids));
 
   ASSERT_EQ(0U, shortcuts_map().size());
+}
+
+TEST_F(ShortcutsBackendTest, DeleteOldShortcuts) {
+  InitBackend();
+
+  // Define shortcuts that are 1, 10, 100 and 1000 days old.
+  ShortcutsDatabase::Shortcut shortcut1(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"google",
+      MatchCoreForTesting("http://www.google.com"),
+      base::Time::Now() - base::Days(1), 100);
+  EXPECT_TRUE(AddShortcut(shortcut1));
+
+  ShortcutsDatabase::Shortcut shortcut2(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"yahoo",
+      MatchCoreForTesting("http://www.yahoo.com"),
+      base::Time::Now() - base::Days(10), 10);
+  EXPECT_TRUE(AddShortcut(shortcut2));
+
+  ShortcutsDatabase::Shortcut shortcut3(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"baidu",
+      MatchCoreForTesting("http://www.baidu.com"),
+      base::Time::Now() - base::Days(100), 1000);
+  EXPECT_TRUE(AddShortcut(shortcut3));
+
+  ShortcutsDatabase::Shortcut shortcut4(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"bing",
+      MatchCoreForTesting("http://www.bing.com"),
+      base::Time::Now() - base::Days(1000), 1);
+  EXPECT_TRUE(AddShortcut(shortcut4));
+
+  ASSERT_EQ(4U, shortcuts_map().size());
+  EXPECT_EQ(shortcut1.id, shortcuts_map().find(shortcut1.text)->second.id);
+  EXPECT_EQ(shortcut2.id, shortcuts_map().find(shortcut2.text)->second.id);
+  EXPECT_EQ(shortcut3.id, shortcuts_map().find(shortcut3.text)->second.id);
+  EXPECT_EQ(shortcut4.id, shortcuts_map().find(shortcut4.text)->second.id);
+
+  EXPECT_TRUE(DeleteOldShortcuts());
+
+  // After deleting old shortcuts, the two that are more than 90 days old should
+  // no longer be present.
+  ASSERT_EQ(2U, shortcuts_map().size());
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut1_iter(
+      shortcuts_map().find(shortcut1.text));
+  ASSERT_TRUE(shortcut1_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut1.id, shortcut1_iter->second.id);
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut2_iter(
+      shortcuts_map().find(shortcut2.text));
+  ASSERT_TRUE(shortcut2_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut2.id, shortcut2_iter->second.id);
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut3.text));
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut4.text));
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {

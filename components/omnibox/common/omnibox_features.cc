@@ -538,11 +538,6 @@ BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
              "ReportApplicationLanguageInSearchRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables storing successful query/match in the shortcut database On Android.
-BASE_FEATURE(kOmniboxShortcutsAndroid,
-             "OmniboxShortcutsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable asynchronous Omnibox/Suggest view inflation.
 BASE_FEATURE(kOmniboxAsyncViewInflation,
              "OmniboxAsyncViewInflation",
@@ -551,6 +546,16 @@ BASE_FEATURE(kOmniboxAsyncViewInflation,
 // Use FusedLocationProvider on Android to fetch device location.
 BASE_FEATURE(kUseFusedLocationProvider,
              "UseFusedLocationProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables storing successful query/match in the shortcut database On Android.
+BASE_FEATURE(kOmniboxShortcutsAndroid,
+             "OmniboxShortcutsAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables deletion of old shortcuts on profile load.
+BASE_FEATURE(kOmniboxDeleteOldShortcuts,
+             "OmniboxDeleteOldShortcuts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

@@ -8326,15 +8326,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="ShortcutsProvider.DatabaseSize" units="units"
-    expires_after="2025-02-10">
-  <owner>mpearson@chromium.org</owner>
-  <summary>
-    The number of entries in shortcuts backend's database when initialized,
-    which happens during profile load.
-  </summary>
-</histogram>
-
 <histogram name="Shutdown.BrowserExit.Time2" units="ms"
     expires_after="2025-02-10">
   <owner>etienneb@chromium.org</owner>

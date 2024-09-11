@@ -163,10 +163,6 @@ const int kCommitIntervalSeconds = 10;
 // deleting some.
 const int kMaxRedirectCount = 32;
 
-// The number of days old a history entry can be before it is considered "old"
-// and is deleted.
-constexpr int kExpireDaysThreshold = 90;
-
 // The maximum number of days for which domain visit metrics are computed
 // each time HistoryBackend::GetDomainDiversity() is called.
 constexpr int kDomainDiversityMaxBacktrackedDays = 7;

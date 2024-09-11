@@ -2815,6 +2815,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ShortcutsProvider.DatabaseSize" units="units"
+    expires_after="2025-02-10">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of entries in `ShortcutsBackend`'s database. Recorded once on
+    profile load. See also ShortcutsProvider.DatabaseSize.OldEntries and
+    ShortcutsProvider.OldEntryDeletions.
+  </summary>
+</histogram>
+
+<histogram name="ShortcutsProvider.DatabaseSize.OldEntries" units="units"
+    expires_after="2025-02-10">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of entries in `ShortcutsBackend`'s database that are older than
+    90 days. Recorded once on profile load.
+
+    This value is expected to be near 0 as there are two mechanisms to delete
+    old entries. The first is individual deletions due to notificaitons that the
+    associated URL has been deleted from the history system. This mechanism is
+    not 100% reliable, however, since the URL deletions are performed by
+    HistoryService, which may be started up before ShortcutsBackend, which
+    handles the notifications. Therefore the second mechanism is a batch
+    deletion of all entries older than 90 days by ShortcutsBackend on profile
+    load. The count of deletions via the second mechanism is recorded in
+    ShortcutsProvider.OldEntryDeletions.
+
+    See also ShortcutsProvider.DatabaseSize.
+  </summary>
+</histogram>
+
+<histogram name="ShortcutsProvider.OldEntryDeletions" units="units"
+    expires_after="2025-02-10">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of entries in `ShortcutsBackend`'s database that were deleted due
+    to being older than 90 days. Recorded once on profile load.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

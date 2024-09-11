@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/uuid.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -30,8 +32,16 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace {
+
+// The amount of time, in minutes, to wait after initialization before
+// attempting to expire old shortcuts. Used to avoid contention with other work
+// performed on profile loading and to outwait the 30 second delay before
+// `ExpireHistoryBackend` starts history deletions, in case the initialization
+// of that and `ShortcutsBackend` happen around the same time.
+const int kInitialExpirationDelayMinutes = 2;
 
 // Takes Match classification vector and removes all matched positions,
 // compacting repetitions if necessary.
@@ -443,16 +453,31 @@ void ShortcutsBackend::OnHistoryDeletions(
 void ShortcutsBackend::InitInternal() {
   DCHECK(current_state_ == INITIALIZING);
   db_->Init();
+
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
+
   temp_shortcuts_map_ = std::make_unique<ShortcutMap>();
   temp_guid_map_ = std::make_unique<GuidMap>();
+  const base::Time now(base::Time::Now());
+  int num_old_shortcuts = 0;
   for (ShortcutsDatabase::GuidToShortcutMap::const_iterator it(
            shortcuts.begin());
        it != shortcuts.end(); ++it) {
     (*temp_guid_map_)[it->first] = temp_shortcuts_map_->insert(
         std::make_pair(base::i18n::ToLower(it->second.text), it->second));
+    if (now - it->second.last_access_time >
+        base::Days(history::HistoryBackend::kExpireDaysThreshold)) {
+      num_old_shortcuts++;
+    }
   }
+
+  // Record database statistics.
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize",
+                             temp_shortcuts_map_->size());
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize.OldEntries",
+                             num_old_shortcuts);
+
   main_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ShortcutsBackend::InitCompleted, this));
 }
@@ -462,14 +487,19 @@ void ShortcutsBackend::InitCompleted() {
   temp_shortcuts_map_->swap(shortcuts_map_);
   temp_shortcuts_map_.reset(nullptr);
   temp_guid_map_.reset(nullptr);
-  // This histogram is expired but the code was intentionally left behind so
-  // it can be easily re-enabled when launching Shortcuts provider on Android
-  // or iOS.
-  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize",
-                             shortcuts_map_.size());
+
   current_state_ = INITIALIZED;
   for (ShortcutsBackendObserver& observer : observer_list_)
     observer.OnShortcutsLoaded();
+
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxDeleteOldShortcuts)) {
+    main_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&ShortcutsBackend::DeleteOldShortcuts),
+            weak_factory_.GetWeakPtr()),
+        base::Minutes(kInitialExpirationDelayMinutes));
+  }
 }
 
 bool ShortcutsBackend::AddShortcut(
@@ -566,4 +596,18 @@ bool ShortcutsBackend::DeleteAllShortcuts() {
              base::BindOnce(
                  base::IgnoreResult(&ShortcutsDatabase::DeleteAllShortcuts),
                  db_.get()));
+}
+
+bool ShortcutsBackend::DeleteOldShortcuts() {
+  ShortcutsDatabase::ShortcutIDs shortcut_ids;
+  const base::Time now(base::Time::Now());
+  for (const auto& guid_pair : guid_map_) {
+    if (now - guid_pair.second->second.last_access_time >
+        base::Days(history::HistoryBackend::kExpireDaysThreshold)) {
+      shortcut_ids.push_back(guid_pair.first);
+    }
+  }
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions",
+                             shortcut_ids.size());
+  return DeleteShortcutsWithIDs(shortcut_ids);
 }
