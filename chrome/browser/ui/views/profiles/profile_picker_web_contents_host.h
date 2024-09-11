@@ -61,6 +61,9 @@ class ProfilePickerWebContentsHost {
   virtual web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHost() = 0;
 
+  // Clears the current state an Shows the main screen.
+  virtual void Reset() = 0;
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Changes the visibility of the host's native toolbar, which shows a back
   // button.

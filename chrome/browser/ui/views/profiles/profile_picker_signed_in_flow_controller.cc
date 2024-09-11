@@ -168,6 +168,13 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
+void ProfilePickerSignedInFlowController::ResetHost() {
+  CHECK(IsInitialized());
+
+  Cancel();
+  host_->Reset();
+}
+
 std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
     const {
   // The new profile theme may be overridden by an existing policy theme. This

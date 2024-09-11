@@ -148,3 +148,12 @@ content::WebContents*
 ProfileManagementFlowController::GetSignedOutFlowWebContents() const {
   return signed_out_flow_web_contents_.get();
 }
+
+void ProfileManagementFlowController::Reset() {
+  Step previous_step = current_step_;
+
+  // Activate the initial step.
+  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
+  // Unregister the previous active step.
+  UnregisterStep(previous_step);
+}

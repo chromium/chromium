@@ -52,6 +52,7 @@ class MockHost : public ProfilePickerWebContentsHost {
   MOCK_METHOD(web_modal::WebContentsModalDialogHost*,
               GetWebContentsModalDialogHost,
               ());
+  MOCK_METHOD(void, Reset, ());
 };
 
 Profile* GetContentsProfile(content::WebContents* contents) {

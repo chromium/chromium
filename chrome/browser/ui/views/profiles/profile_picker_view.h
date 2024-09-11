@@ -79,6 +79,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
   content::WebContentsDelegate* GetWebContentsDelegate() override;
+  void Reset() override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;

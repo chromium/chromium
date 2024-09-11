@@ -545,6 +545,10 @@ ProfilePickerView::GetWebContentsModalDialogHost() {
   return this;
 }
 
+void ProfilePickerView::Reset() {
+  flow_controller_->Reset();
+}
+
 void ProfilePickerView::SwitchToSignedOutPostIdentityFlow(
     std::optional<SkColor> profile_color,
     base::TimeTicks profile_picked_time_on_startup,

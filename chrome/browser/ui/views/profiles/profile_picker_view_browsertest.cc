@@ -92,10 +92,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
@@ -1215,6 +1217,50 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 
   // Default profile is now active.
   EXPECT_NE(default_profile_entry->GetActiveTime(), base::Time());
+}
+
+// Regression tetst for b/360733721.
+IN_PROC_BROWSER_TEST_F(
+    ForceSigninProfilePickerCreationFlowBrowserTest,
+    ForceSigninWithPatternMatchingShouldFailSigninWithWrongPatternEmail) {
+  // Set the username pattern restriction.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kGoogleServicesUsernamePattern, "*.google.com");
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  size_t initial_number_of_profiles = profile_manager->GetNumberOfProfiles();
+
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  GURL initial_picker_url =
+      ProfilePicker::GetWebViewForTesting()->GetWebContents()->GetURL();
+
+  // Start the signin process.
+  Profile* profile_being_created = StartDiceSignIn(true);
+  // Profile will be destroyed at the end of the flow.
+  ProfileDestructionWaiter destruction_waiter(profile_being_created);
+  // During signin process a new profile is created.
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(),
+            initial_number_of_profiles + 1u);
+
+  // Make sure that the ProfilePicker navigated.
+  EXPECT_NE(initial_picker_url,
+            ProfilePicker::GetWebViewForTesting()->GetWebContents()->GetURL());
+
+  const std::string email = "joe.consumer@gmail.com";
+  // Verify that patternt does not match.
+  ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state, email));
+  // Signing in with a profile that does not match the pattern should stop the
+  // profile creation flow.
+  FinishDiceSignIn(profile_being_created, email, "Joe", kNoHostedDomainFound);
+
+  // Returning to the profile picker main page.
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  // Created profile is destroyed.
+  destruction_waiter.Wait();
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_number_of_profiles);
+  // TODO(b/360733721): Should also test that the dialog is opened with an error
+  // shown when implemented.
 }
 
 class ForceSigninProfilePickerCreationFlowBrowserTestWithPRE
