@@ -1705,14 +1705,16 @@ BASE_FEATURE(kMemoryCacheStrongReference,
 #endif
 );
 
-const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceTotalSizeThresholdParam{
-        &kMemoryCacheStrongReference,
-        "memory_cache_strong_ref_total_size_threshold", 15 * 1024 * 1024};
-const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceResourceSizeThresholdParam{
-        &kMemoryCacheStrongReference,
-        "memory_cache_strong_ref_resource_size_threshold", 3 * 1024 * 1024};
+BASE_FEATURE_PARAM(int,
+                   kMemoryCacheStrongReferenceTotalSizeThresholdParam,
+                   &kMemoryCacheStrongReference,
+                   "memory_cache_strong_ref_total_size_threshold",
+                   15 * 1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kMemoryCacheStrongReferenceResourceSizeThresholdParam,
+                   &kMemoryCacheStrongReference,
+                   "memory_cache_strong_ref_resource_size_threshold",
+                   3 * 1024 * 1024);
 
 // Used to control the collection of anchor element metrics (crbug.com/856683).
 // If kNavigationPredictor is enabled, then metrics of anchor elements

@@ -3045,9 +3045,9 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
     return;
   }
 
-  static const size_t total_size_threshold = static_cast<size_t>(
+  const size_t total_size_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
-  static const size_t resource_size_threshold = static_cast<size_t>(
+  const size_t resource_size_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceResourceSizeThresholdParam.Get());
   const size_t resource_size =
       static_cast<size_t>(resource->GetResponse().DecodedBodyLength());

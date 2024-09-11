@@ -1129,12 +1129,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);
 // The threshold for the total decoded size of resources that keep strong
 // references.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceTotalSizeThresholdParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMemoryCacheStrongReferenceTotalSizeThresholdParam);
 // The threshold for the decoded size of a resource that can keep a strong
 // reference.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMemoryCacheStrongReferenceResourceSizeThresholdParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMemoryCacheStrongReferenceResourceSizeThresholdParam);
 // Whether the ResourceFetcher should store strong references too.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
