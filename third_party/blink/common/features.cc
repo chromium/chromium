@@ -1753,10 +1753,6 @@ BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOriginAgentClusterDefaultWarning,
-             "OriginAgentClusterDefaultWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOriginTrialStateHostApplyFeatureDiff,
              "OriginTrialStateHostApplyFeatureDiff",
              base::FEATURE_ENABLED_BY_DEFAULT);

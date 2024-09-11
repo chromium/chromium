@@ -6334,24 +6334,6 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
-  // TODO(crbug.com/1259920): Remove this check once the Origin-Agent-Cluster
-  // default behaviour change has been default-enabled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kOriginAgentClusterDefaultWarning) &&
-      Loader()) {
-    const AtomicString& origin_agent_cluster_header =
-        Loader()->GetResponse().HttpHeaderField(
-            http_names::kOriginAgentCluster);
-    if (origin_agent_cluster_header != "?0" &&
-        origin_agent_cluster_header != "?1") {
-      DCHECK(!dom_window_->GetAgent()->IsOriginKeyed());
-      Deprecation::CountDeprecation(
-          GetExecutionContext(),
-          WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader);
-      // No return; warning only.
-    }
-  }
-
   if (GetFrame()) {
     // This code should never fire for fenced frames because it should be
     // blocked by permission policy.

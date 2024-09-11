@@ -1158,11 +1158,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
-// This flag enables a console warning in cases where document.domain is set
-// without origin agent clustering being explicitly disabled.
-// (This is a transitory behaviour on the road to perma-enabling
-// kOriginAgentClusterDefaultEnabled above.)
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultWarning);
 
 // Kill-switch for any calls to the mojo interface OriginTrialStateHost
 // in the RuntimeFeatureStateOverrideContext class. If

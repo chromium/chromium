@@ -1795,20 +1795,6 @@
   },
 
   {
-    "prefix": "origin-agent-cluster-default-warning",
-    "owners": ["vogelheim@chromium.org", "wjmaclean@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "wpt_internal/origin-agent-cluster-default-warning" ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=OriginAgentClusterDefaultWarning",
-      "--disable-features=OriginAgentClusterDefaultEnable,OriginKeyedProcessesByDefault",
-      "--disable-auto-wpt-origin-isolation"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-
-  {
     "prefix": "webauthn-remote-desktop-client-override",
     "owners": ["martinkr@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
