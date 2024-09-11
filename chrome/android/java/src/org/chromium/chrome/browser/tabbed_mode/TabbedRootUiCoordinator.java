@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -117,7 +116,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -200,8 +198,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private @NonNull DataSharingTabManager mDataSharingTabManager;
     private @NonNull DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
-    private final OneshotSupplierImpl<TabGroupModelFilter> mOneshotFilterSupplier =
-            new OneshotSupplierImpl<>();
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -419,7 +415,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         mActivity.getResources(),
-                        mOneshotFilterSupplier,
                         mTabGroupUiActionHandlerSupplier);
 
         initAppHeaderCoordinator(savedInstanceState);
@@ -621,14 +616,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
-
-        new OneShotCallback<>(
-                mTabModelSelectorSupplier,
-                (selector) ->
-                        mOneshotFilterSupplier.set(
-                                (TabGroupModelFilter)
-                                        selector.getTabModelFilterProvider()
-                                                .getTabModelFilter(/* isIncognito= */ false)));
 
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
