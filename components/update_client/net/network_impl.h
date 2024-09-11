@@ -18,7 +18,6 @@
 
 namespace network {
 class SharedURLLoaderFactory;
-class SimpleURLLoader;
 }  // namespace network
 
 namespace update_client {
@@ -63,7 +62,6 @@ class NetworkFetcherImpl : public NetworkFetcher {
   static constexpr int kMaxRetriesOnNetworkChange = 3;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   SendCookiesPredicate cookie_predicate_;
 };
 

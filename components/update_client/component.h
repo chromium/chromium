@@ -351,6 +351,9 @@ class Component {
   // The decision may be predicated on the expected size of the download.
   bool CanDoBackgroundDownload(int64_t size) const;
 
+  // Returns true if the component has a differential update.
+  bool HasDiffUpdate() const;
+
   void AppendEvent(base::Value::Dict event);
 
   // Changes the component state and notifies the caller of the |Handle|

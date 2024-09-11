@@ -214,8 +214,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
     update_context->components[id]->Handle(base::DoNothing());
   }
 
-  update_context->update_checker =
-      update_checker_factory_.Run(config_, config_->GetPersistedData());
+  update_context->update_checker = update_checker_factory_.Run(config_);
 
   update_context->update_checker->CheckForUpdates(
       update_context, config_->ExtraRequestParams(),
@@ -407,11 +406,7 @@ void UpdateEngine::HandleComponentComplete(
     update_context->next_update_delay = component->GetUpdateDuration();
     queue.pop();
     if (!component->events().empty()) {
-      ping_manager_->SendPing(
-          *component, *config_->GetPersistedData(),
-          base::BindOnce([](base::OnceClosure callback, int,
-                            const std::string&) { std::move(callback).Run(); },
-                         std::move(callback)));
+      ping_manager_->SendPing(*component, std::move(callback));
       return;
     }
   }

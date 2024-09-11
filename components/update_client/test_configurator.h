@@ -34,6 +34,7 @@ class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatchChromiumFactory;
 class ProtocolHandlerFactory;
+class TestActivityDataService;
 class UnzipChromiumFactory;
 
 #define POST_INTERCEPT_SCHEME "https"
@@ -76,6 +77,8 @@ class TestConfigurator : public Configurator {
   explicit TestConfigurator(PrefService* pref_service);
   TestConfigurator(const TestConfigurator&) = delete;
   TestConfigurator& operator=(const TestConfigurator&) = delete;
+
+  TestActivityDataService* GetActivityDataService() const;
 
   // Overrides for Configurator.
   base::TimeDelta InitialDelay() const override;
@@ -138,6 +141,7 @@ class TestConfigurator : public Configurator {
   bool enabled_cup_signing_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<PersistedData> persisted_data_;
+  raw_ptr<TestActivityDataService> activity_data_service_;
   std::vector<GURL> update_check_urls_;
   GURL ping_url_;
   scoped_refptr<update_client::UnzipChromiumFactory> unzip_factory_;

@@ -43,7 +43,7 @@ class PingManagerTest : public testing::Test,
   PingManagerTest();
   ~PingManagerTest() override = default;
 
-  PingManager::Callback MakePingCallback();
+  base::OnceClosure MakePingCallback();
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
 
   // Overrides from testing::Test.
@@ -58,9 +58,6 @@ class PingManagerTest : public testing::Test,
 
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<PingManager> ping_manager_;
-
-  int error_ = -1;
-  std::string response_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -99,15 +96,8 @@ void PingManagerTest::Quit() {
   }
 }
 
-PingManager::Callback PingManagerTest::MakePingCallback() {
-  return base::BindOnce(&PingManagerTest::PingSentCallback,
-                        base::Unretained(this));
-}
-
-void PingManagerTest::PingSentCallback(int error, const std::string& response) {
-  error_ = error;
-  response_ = response;
-  Quit();
+base::OnceClosure PingManagerTest::MakePingCallback() {
+  return base::BindOnce(&PingManagerTest::Quit, base::Unretained(this));
 }
 
 scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
@@ -151,8 +141,7 @@ TEST_P(PingManagerTest, SendPing) {
     config_->GetPersistedData()->SetCohortHint("abc", "ch1");
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -223,8 +212,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -267,8 +255,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -310,8 +297,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -340,8 +326,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.PingOnly(crx_component, {.event_type = 4, .result = 1});
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -372,8 +357,7 @@ TEST_P(PingManagerTest, SendPing) {
       component.crx_component_ = CrxComponent();
       component.previous_version_ = base::Version("1.0");
       component.AppendEvent(component.MakeEventUpdateComplete());
-      ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                              MakePingCallback());
+      ping_manager_->SendPing(component, MakePingCallback());
 
       RunThreads();
 
@@ -403,8 +387,7 @@ TEST_P(PingManagerTest, SendPing) {
         });
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                            MakePingCallback());
+    ping_manager_->SendPing(component, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -437,26 +420,36 @@ TEST_P(PingManagerTest, SendPing) {
 // the ping URL is unsecure.
 TEST_P(PingManagerTest, RequiresEncryption) {
   config_->SetPingUrl(GURL("http:\\foo\bar"));
+  auto interceptor = std::make_unique<URLLoaderPostInterceptor>(
+      config_->test_url_loader_factory());
+  EXPECT_TRUE(interceptor);
 
   const auto update_context = MakeMockUpdateContext();
+  {
+    Component component(*update_context, "abc");
+    component.crx_component_ = CrxComponent();
+    component.crx_component_->version = base::Version("1.0");
+    component.crx_component_->ap = "ap1";
+    component.crx_component_->brand = "BRND";
+    component.state_ = std::make_unique<Component::StateUpdated>(&component);
+    component.previous_version_ = base::Version("1.0");
+    component.next_version_ = base::Version("2.0");
+    component.AppendEvent(component.MakeEventUpdateComplete());
+    // The default value for |requires_network_encryption| is true.
+    EXPECT_TRUE(component.crx_component_->requires_network_encryption);
 
-  Component component(*update_context, "abc");
-  component.crx_component_ = CrxComponent();
-  component.crx_component_->version = base::Version("1.0");
+    config_->GetPersistedData()->SetCohort("abc", "c1");
+    config_->GetPersistedData()->SetCohortName("abc", "cn1");
+    config_->GetPersistedData()->SetCohortHint("abc", "ch1");
 
-  // The default value for |requires_network_encryption| is true.
-  EXPECT_TRUE(component.crx_component_->requires_network_encryption);
+    EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
+    ping_manager_->SendPing(component, MakePingCallback());
+    RunThreads();
 
-  component.state_ = std::make_unique<Component::StateUpdated>(&component);
-  component.previous_version_ = base::Version("1.0");
-  component.next_version_ = base::Version("2.0");
-  component.AppendEvent(component.MakeEventUpdateComplete());
-
-  ping_manager_->SendPing(component, *config_->GetPersistedData(),
-                          MakePingCallback());
-  RunThreads();
-
-  EXPECT_EQ(-2, error_);
+    // Should not send
+    EXPECT_EQ(0, interceptor->GetCount()) << interceptor->GetRequestsAsString();
+  }
+  config_->SetIsMachineExternallyManaged(std::nullopt);
 }
 
 }  // namespace update_client

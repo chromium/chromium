@@ -20,7 +20,6 @@ class GURL;
 
 namespace update_client {
 
-class Component;
 struct CrxComponent;
 
 extern const char kArchAmd64[];
@@ -31,9 +30,6 @@ extern const char kArchArm64[];
 // Installer attributes are component-specific metadata, which may be serialized
 // in an update check request.
 using InstallerAttribute = std::pair<std::string, std::string>;
-
-// Returns true if the |component| contains a valid differential update url.
-bool HasDiffUpdate(const Component& component);
 
 // Returns true if the |status_code| represents a server error 5xx.
 bool IsHttpServerError(int status_code);

@@ -75,8 +75,7 @@ class MockUpdateCheckerFactory {
  public:
   typename MockUpdateChecker::Factory GetFactory() {
     return base::BindLambdaForTesting(
-        [&](scoped_refptr<Configurator>,
-            PersistedData*) -> std::unique_ptr<UpdateChecker> {
+        [&](scoped_refptr<Configurator>) -> std::unique_ptr<UpdateChecker> {
           return std::make_unique<MockUpdateChecker>(++num_calls_);
         });
   }
@@ -191,8 +190,7 @@ class MockPingManagerImpl : public PingManager {
   MockPingManagerImpl& operator=(const MockPingManagerImpl&) = delete;
 
   void SendPing(const Component& component,
-                const PersistedData& metadata,
-                Callback callback) override;
+                base::OnceClosure callback) override;
 
   const std::vector<PingData>& ping_data() const;
 
@@ -212,8 +210,7 @@ MockPingManagerImpl::MockPingManagerImpl(scoped_refptr<Configurator> config)
 MockPingManagerImpl::~MockPingManagerImpl() = default;
 
 void MockPingManagerImpl::SendPing(const Component& component,
-                                   const PersistedData& metadata,
-                                   Callback callback) {
+                                   base::OnceClosure callback) {
   PingData ping_data;
   ping_data.id = component.id_;
   ping_data.previous_version = component.previous_version_;
@@ -228,7 +225,7 @@ void MockPingManagerImpl::SendPing(const Component& component,
 
   events_ = component.GetEvents();
 
-  std::move(callback).Run(0, "");
+  std::move(callback).Run();
 }
 
 const std::vector<MockPingManagerImpl::PingData>&
