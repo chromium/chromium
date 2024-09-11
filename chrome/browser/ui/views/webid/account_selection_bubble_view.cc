@@ -1002,6 +1002,7 @@ void AccountSelectionBubbleView::UpdateHeader(
       header_icon_view_->SetVisible(false);
     } else {
       ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
+      header_icon_view_->SetVisible(true);
     }
   }
   if (title.compare(title_) != 0) {

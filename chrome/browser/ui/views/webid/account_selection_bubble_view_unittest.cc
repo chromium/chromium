@@ -55,14 +55,14 @@ constexpr char kAccountSuffix[] = "suffix";
 class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                                        public AccountSelectionViewTestBase {
  public:
-  AccountSelectionBubbleViewTest()
-      : idp_data_(base::MakeRefCounted<content::IdentityProviderData>(
-            kIdpForDisplay,
-            content::IdentityProviderMetadata(),
-            CreateTestClientMetadata(kTermsOfServiceUrl),
-            blink::mojom::RpContext::kSignIn,
-            kDefaultDisclosureFields,
-            /*has_login_status_mismatch=*/false)) {}
+  AccountSelectionBubbleViewTest() {
+    content::IdentityProviderMetadata idp_metadata;
+    idp_metadata.brand_icon_url = GURL(kIdpBrandIconUrl);
+    idp_data_ = base::MakeRefCounted<content::IdentityProviderData>(
+        kIdpForDisplay, idp_metadata, CreateTestClientMetadata(),
+        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false);
+  }
 
  protected:
   void CreateAccountSelectionBubble(bool exclude_title) {
@@ -143,6 +143,13 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         static_cast<views::Label*>(GetViewWithClassName(header, "Label"));
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), expected_title);
+
+    if (expect_idp_brand_icon_in_header) {
+      views::ImageView* idp_brand_icon = static_cast<views::ImageView*>(
+          GetViewWithClassName(header, "BrandIconImageView"));
+      ASSERT_TRUE(idp_brand_icon);
+      EXPECT_TRUE(idp_brand_icon->GetVisible());
+    }
   }
 
   void PerformMultiAccountChecks(views::View* container,
@@ -275,8 +282,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                          bool expect_idp_brand_icon_in_header) {
     CreateAccountSelectionBubble(
         /*exclude_title=*/false);
-    dialog_->ShowFailureDialog(
-        kIdpETLDPlusOne, content::IdentityProviderMetadata());
+    dialog_->ShowFailureDialog(kIdpETLDPlusOne, idp_data_->idp_metadata);
 
     const std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -315,7 +321,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     CreateAccountSelectionBubble(
         /*exclude_title=*/false);
     dialog_->ShowErrorDialog(
-        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+        kIdpETLDPlusOne, idp_data_->idp_metadata,
         content::IdentityCredentialTokenError(error_code, error_url));
 
     const std::vector<raw_ptr<views::View, VectorExperimental>> children =
