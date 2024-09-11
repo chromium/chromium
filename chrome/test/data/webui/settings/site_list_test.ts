@@ -863,7 +863,16 @@ suite('SiteList', function() {
           `To use your ${categoryName} on these sites,` +
               ` give ${variant} access in system settings`);
       assertTrue(!!linkElement);
-      assertEquals(linkElement.innerHTML, `system settings`);
+      // Check that the link covers the right part of the warning.
+      assertEquals('system settings', linkElement.innerHTML);
+      // This is needed for the <a> to look like a link.
+      assertEquals('#', linkElement.getAttribute('href'));
+      // This is needed for accessibility. First letter if the category name is
+      // capitalized.
+      assertEquals(
+          `System Settings: ${
+              categoryName.replace(/^\w/, (c) => c.toUpperCase())}`,
+          linkElement.getAttribute('aria-label'));
 
       linkElement.dispatchEvent(new MouseEvent('click'));
       await browserProxy.whenCalled('openSystemPermissionSettings')

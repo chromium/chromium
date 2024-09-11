@@ -317,9 +317,12 @@ suite('SiteDetailsPermission', function() {
 
   test('info string correct for system block', async function() {
     const origin = 'chrome://test';
-    for (const category
-             of [ContentSettingsTypes.CAMERA, ContentSettingsTypes.MIC,
-                 ContentSettingsTypes.GEOLOCATION]) {
+    const categoryList = [
+      ContentSettingsTypes.CAMERA,
+      ContentSettingsTypes.MIC,
+      ContentSettingsTypes.GEOLOCATION,
+    ];
+    for (const category of categoryList) {
       for (const disabled of [true, false]) {
         testElement.category = category;
         testElement.$.details.hidden = false;
@@ -343,29 +346,41 @@ suite('SiteDetailsPermission', function() {
 
         assertFalse(warningElement.hasAttribute('hidden'));
 
-        let sensor: string|null = null;
-        if (category === ContentSettingsTypes.CAMERA) {
-          sensor = 'camera';
-        }
-        if (category === ContentSettingsTypes.MIC) {
-          sensor = 'microphone';
-        }
-        if (category === ContentSettingsTypes.GEOLOCATION) {
-          sensor = 'location';
-        }
+        const sensor =
+            (() => {
+              switch (category) {
+                case ContentSettingsTypes.CAMERA:
+                  return 'camera';
+                case ContentSettingsTypes.MIC:
+                  return 'microphone';
+                case ContentSettingsTypes.GEOLOCATION:
+                  return 'location';
+                default:
+                  throw new Error(`Unsupported category type: ${category}`);
+              }
+            })() as string;
 
         const variant = warningElement.innerHTML.includes('Chromium') ?
             'Chromium' :
             'Chrome';
 
+        // Check the visible text of the warning.
         assertEquals(
-            `To use your ${sensor}, give ${variant} access in ` +
-                '<a href="#" id="openSystemSettingsLink">system settings</a>',
-            warningElement.innerHTML);
+            `To use your ${sensor}, give ${variant} access in system settings`,
+            warningElement.textContent);
 
         const linkElement = testElement.$.permissionItem.querySelector(
             '#openSystemSettingsLink');
         assertTrue(!!linkElement);
+        // Check that the link covers the right part of the warning.
+        assertEquals('system settings', linkElement.innerHTML);
+        // This is needed for the <a> to look like a link.
+        assertEquals('#', linkElement.getAttribute('href'));
+        // This is needed for accessibility. First letter if the sensor name is
+        // capitalized.
+        assertEquals(
+            `System Settings: ${sensor.replace(/^\w/, (c) => c.toUpperCase())}`,
+            linkElement.getAttribute('aria-label'));
 
         browserProxy.resetResolver('openSystemPermissionSettings');
         linkElement.dispatchEvent(new MouseEvent('click'));
