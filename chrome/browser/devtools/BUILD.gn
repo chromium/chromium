@@ -138,7 +138,10 @@ static_library("devtools") {
   ]
 
   if (!is_android) {
-    public_deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+    public_deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
     deps += [
       "//build:chromeos_buildflags",
       "//chrome:extra_resources",

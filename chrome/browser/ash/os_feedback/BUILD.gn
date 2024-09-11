@@ -30,6 +30,7 @@ static_library("os_feedback") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",

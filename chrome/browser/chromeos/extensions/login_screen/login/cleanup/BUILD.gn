@@ -45,7 +45,10 @@ static_library("cleanup") {
     ]
   }
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+  ]
 
   deps = [
     "//base",

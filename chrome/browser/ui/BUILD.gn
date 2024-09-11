@@ -1075,9 +1075,6 @@ static_library("ui") {
       "browser_finder.h",
       "browser_instant_controller.cc",
       "browser_instant_controller.h",
-      "browser_list.cc",
-      "browser_list.h",
-      "browser_list_observer.h",
       "browser_live_tab_context.cc",
       "browser_live_tab_context.h",
       "browser_location_bar_model_delegate.cc",
@@ -2091,6 +2088,8 @@ static_library("ui") {
     # Non-android public_deps for "ui" target.
     public_deps += [
       "//chrome/browser/task_manager",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
     ]
@@ -2133,6 +2132,8 @@ static_library("ui") {
 
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/signin:impl",
+
+      "//chrome/browser/ui:browser_list_impl",
     ]
 
     if (is_mac) {
@@ -6134,6 +6135,28 @@ source_set("browser_navigator_params_headers") {
     "//url",
   ]
   deps = []
+}
+
+if (!is_android) {
+  source_set("browser_list") {
+    sources = [
+      "browser_list.h",
+      "browser_list_observer.h",
+    ]
+    public_deps = [ "//base" ]
+  }
+
+  source_set("browser_list_impl") {
+    sources = [ "browser_list.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:buildflags",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_list",
+    ]
+  }
 }
 
 # In GYP this is part of test_support_common.

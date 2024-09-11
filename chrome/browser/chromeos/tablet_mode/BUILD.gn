@@ -27,6 +27,7 @@ static_library("tablet_mode") {
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
+    "//chrome/browser/ui:browser_list",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",

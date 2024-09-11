@@ -154,7 +154,10 @@ source_set("sync") {
       "sync_ui_util.cc",
       "sync_ui_util.h",
     ]
-    public_deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+    public_deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
     deps += [
       "//chrome/browser/themes",
       "//chrome/browser/web_applications",

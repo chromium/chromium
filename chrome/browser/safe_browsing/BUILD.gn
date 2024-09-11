@@ -441,6 +441,9 @@ static_library("safe_browsing") {
           "//chromeos/crosapi/cpp:cpp",
         ]
       }
+      if (!is_android) {
+        deps += [ "//chrome/browser/ui:browser_list" ]
+      }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {
         sources += [

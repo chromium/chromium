@@ -119,6 +119,7 @@ source_set("side_panel") {
     "//chrome/browser/companion/core/mojom:mojo_bindings",
     "//chrome/browser/companion/visual_query",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/customize_chrome",

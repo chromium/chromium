@@ -4256,6 +4256,8 @@ static_library("browser") {
       "//chrome/browser/task_manager",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
@@ -4397,6 +4399,7 @@ static_library("browser") {
       "//chrome/browser/picture_in_picture:impl",
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui:browser_list_impl",
     ]
 
     #!is_android

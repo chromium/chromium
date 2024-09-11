@@ -16,6 +16,7 @@ static_library("media_client") {
     "//ash",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ui:browser_list",
     "//media/capture:capture_lib",
     "//media/capture/video/chromeos/mojom:cros_camera",
     "//services/video_capture/public/mojom",

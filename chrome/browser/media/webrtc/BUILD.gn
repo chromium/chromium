@@ -195,6 +195,7 @@ source_set("webrtc") {
       "//extensions/buildflags",
     ]
     deps += [
+      "//chrome/browser/ui:browser_list",
       "//extensions/browser",
       "//extensions/browser/kiosk",
       "//extensions/common",

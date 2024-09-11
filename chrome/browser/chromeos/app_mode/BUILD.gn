@@ -60,6 +60,7 @@ static_library("app_mode") {
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/web_applications",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/power",

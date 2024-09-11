@@ -55,6 +55,7 @@ static_library("ui") {
     "//chrome/browser:primitives",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/login/oobe_quick_start",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/keyboard",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/session_manager",
