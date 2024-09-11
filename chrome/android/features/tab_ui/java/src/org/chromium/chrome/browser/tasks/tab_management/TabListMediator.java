@@ -2112,6 +2112,26 @@ class TabListMediator implements TabListNotificationHandler {
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);
                 String colorDesc = res.getString(colorDescRes);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        && hasCollaboration(tab)) {
+                    model.set(
+                            TabProperties.CONTENT_DESCRIPTION_STRING,
+                            title.isEmpty()
+                                    ? res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_color,
+                                            numOfRelatedTabs,
+                                            numOfRelatedTabs,
+                                            colorDesc)
+                                    : res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                                            numOfRelatedTabs,
+                                            title,
+                                            numOfRelatedTabs,
+                                            colorDesc));
+                    return;
+                }
                 model.set(
                         TabProperties.CONTENT_DESCRIPTION_STRING,
                         title.isEmpty()
@@ -2141,7 +2161,7 @@ class TabListMediator implements TabListNotificationHandler {
                 String title = getLatestTitleForTab(tab, /* useDefault= */ false);
 
                 String descriptionString =
-                        getActionButtonDescriptionString(numOfRelatedTabs, title, tab.getRootId());
+                        getActionButtonDescriptionString(numOfRelatedTabs, title, tab);
                 model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, descriptionString);
                 return;
             }
@@ -2856,8 +2876,7 @@ class TabListMediator implements TabListNotificationHandler {
         tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
     }
 
-    private String getActionButtonDescriptionString(
-            int numOfRelatedTabs, String title, int rootId) {
+    private String getActionButtonDescriptionString(int numOfRelatedTabs, String title, Tab tab) {
         Resources res = mContext.getResources();
         if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             if (title.isEmpty()) {
@@ -2879,13 +2898,21 @@ class TabListMediator implements TabListNotificationHandler {
                     descriptionTitle =
                             TabGroupTitleEditor.getDefaultTitle(mContext, numOfRelatedTabs);
                 }
-                return res.getString(
-                        R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
-                        descriptionTitle);
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        || !hasCollaboration(tab)) {
+                    return res.getString(
+                            R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
+                            descriptionTitle);
+                } else {
+                    return res.getString(
+                            R.string
+                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name,
+                            descriptionTitle);
+                }
             } else {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(rootId);
+                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                 final @StringRes int colorDescRes =
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);
@@ -2907,6 +2934,23 @@ class TabListMediator implements TabListNotificationHandler {
                 }
             }
         }
+    }
+
+    /** Check if the current tab group's tab representation is being shared. */
+    private boolean hasCollaboration(Tab tab) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
+        if (tabModel.isIncognitoBranded()) return false;
+
+        @Nullable TabGroupSyncService tabGroupSyncService = null;
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(tab.getProfile())) {
+            tabGroupSyncService =
+                    TabGroupSyncServiceFactory.getForProfile(tab.getProfile().getOriginalProfile());
+        }
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(tab.getId(), tabModel, tabGroupSyncService);
+        return TabShareUtils.isCollaborationIdValid(collaborationId);
     }
 
     private void setUseShrinkCloseAnimation(int tabId, boolean useShrinkCloseAnimation) {

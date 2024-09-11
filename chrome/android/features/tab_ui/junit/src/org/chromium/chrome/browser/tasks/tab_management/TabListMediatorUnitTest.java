@@ -60,6 +60,7 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -157,6 +158,8 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -196,6 +199,7 @@ import java.util.stream.Collectors;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
 @LooperMode(LooperMode.Mode.LEGACY)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabListMediatorUnitTest {
 
     @Rule public JniMocker mMocker = new JniMocker();
@@ -228,6 +232,8 @@ public class TabListMediatorUnitTest {
     private static final int TAB7_ID = 369;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String GROUP_TITLE = "My Group";
     private static final Token TAB_GROUP_ID = new Token(829L, 283L);
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
@@ -1858,6 +1864,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testShoppingFetcherActiveForForUngroupedTabs() {
         prepareForPriceDrop();
         resetWithRegularTabs(false);
@@ -1872,6 +1879,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testShoppingFetcherInactiveForForGroupedTabs() {
         prepareForPriceDrop();
         resetWithRegularTabs(true);
@@ -1882,6 +1890,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testShoppingFetcherGroupedThenUngrouped() {
         prepareForPriceDrop();
         resetWithRegularTabs(true);
@@ -1900,6 +1909,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testShoppingFetcherUngroupedThenGrouped() {
         prepareForPriceDrop();
         resetWithRegularTabs(false);
@@ -3631,6 +3641,54 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.DATA_SHARING})
+    public void testTabGroupShareExpandDescriptionString() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Setup a tab group with {tab2, tab3}.
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabs.add(mTabModel.getTabAt(i));
+        }
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        createTabGroup(group1, TAB2_ID, TAB_GROUP_ID);
+        setupSyncedGroup(/* isShared= */ true);
+
+        final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
+        final @StringRes int colorDesc =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
+        String emptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_expand_shared_tab_group_with_color,
+                        group1.size(),
+                        group1.size(),
+                        mResources.getString(colorDesc));
+
+        // Check that a base group with no title has the correct content description.
+        mMediator.resetWithListOfTabs(tabs, false);
+        assertThat(
+                mModel.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
+                equalTo(emptyTitleTargetString));
+
+        String nonEmptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_expand_shared_tab_group_with_group_name_with_color,
+                        group1.size(),
+                        CUSTOMIZED_DIALOG_TITLE1,
+                        group1.size(),
+                        mResources.getString(colorDesc));
+        // Check that a customized title provides a different content description.
+        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab2, CUSTOMIZED_DIALOG_TITLE1);
+        assertThat(
+                mModel.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
+                equalTo(nonEmptyTitleTargetString));
+    }
+
+    @Test
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID
@@ -3748,6 +3806,31 @@ public class TabListMediatorUnitTest {
         assertThat(
                 mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
+    public void testActionButtonDescriptionStringGroupOverflowMenu_TabSwitcherSharedGroup() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        createTabGroup(group1, TAB2_ID, TAB_GROUP_ID);
+        setupSyncedGroup(/* isShared= */ true);
+
+        String defaultTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, group1.size());
+        String emptyTitleTargetString =
+                mResources.getString(
+                        R.string.accessibility_open_shared_tab_group_overflow_menu_with_group_name,
+                        defaultTitle);
+
+        // Check that a base group with no title has the correct content description.
+        mMediator.resetWithListOfTabs(group1, false);
+        assertThat(
+                mModel.get(POSITION2).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
+                equalTo(emptyTitleTargetString));
     }
 
     @Test
@@ -4577,6 +4660,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabById(id)).thenReturn(tab);
         when(mIncognitoTabModel.getTabById(id)).thenReturn(tab);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(id)).thenReturn(1);
+        doReturn(mProfile).when(tab).getProfile();
         return tab;
     }
 
@@ -4786,5 +4870,12 @@ public class TabListMediatorUnitTest {
         } else {
             assert false : "Unsupported key type passed to function, add it to #assertUnset";
         }
+    }
+
+    private void setupSyncedGroup(boolean isShared) {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = isShared ? COLLABORATION_ID1 : null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
     }
 }
