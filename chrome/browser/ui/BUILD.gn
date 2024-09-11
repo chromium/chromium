@@ -6186,11 +6186,6 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
-      "exclusive_access/exclusive_access_test.cc",
-      "exclusive_access/exclusive_access_test.h",
-      "exclusive_access/fullscreen_controller_state_test.cc",
-      "exclusive_access/fullscreen_controller_state_test.h",
-      "exclusive_access/fullscreen_controller_state_tests.h",
       "global_error/global_error_waiter.cc",
       "global_error/global_error_waiter.h",
       "global_media_controls/test_helper.cc",
