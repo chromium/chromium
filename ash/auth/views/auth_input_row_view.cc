@@ -264,6 +264,8 @@ void AuthInputRowView::CreateAndConfigureSubmitButton() {
 
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+
+  submit_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
