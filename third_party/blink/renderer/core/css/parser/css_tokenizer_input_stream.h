@@ -19,13 +19,8 @@ class CSSTokenizerInputStream {
   USING_FAST_MALLOC(CSSTokenizerInputStream);
 
  public:
-  explicit CSSTokenizerInputStream(const String& input)
-      : string_length_(input.length()),
-        string_ref_(input.Impl()),
-        string_(input) {}
-
   explicit CSSTokenizerInputStream(StringView input)
-      : string_length_(input.length()), string_ref_(nullptr), string_(input) {}
+      : string_length_(input.length()), string_(input) {}
 
   CSSTokenizerInputStream(const CSSTokenizerInputStream&) = delete;
   CSSTokenizerInputStream& operator=(const CSSTokenizerInputStream&) = delete;
@@ -104,10 +99,6 @@ class CSSTokenizerInputStream {
  private:
   wtf_size_t offset_ = 0;
   const wtf_size_t string_length_;
-  // Purely to hold on to the reference. Must be destroyed after the StringView
-  // (i.e., be higher up in the list of members), or the StringView destructor
-  // may DCHECK as it thinks the reference is dangling.
-  const scoped_refptr<StringImpl> string_ref_;
   StringView string_;
 };
 

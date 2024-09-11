@@ -148,10 +148,8 @@ class CORE_EXPORT CSSParserTokenStream {
     const bool old_unicode_ranges_allowed_;
   };
 
-  explicit CSSParserTokenStream(const String& text, wtf_size_t offset = 0)
+  explicit CSSParserTokenStream(StringView text, wtf_size_t offset = 0)
       : tokenizer_(text, offset), next_(kEOFToken) {}
-  explicit CSSParserTokenStream(StringView text)
-      : tokenizer_(text), next_(kEOFToken) {}
 
   CSSParserTokenStream(CSSParserTokenStream&&) = delete;
   CSSParserTokenStream(const CSSParserTokenStream&) = delete;

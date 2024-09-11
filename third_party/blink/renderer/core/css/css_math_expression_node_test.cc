@@ -336,7 +336,8 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
       ss << ")";
     }
 
-    CSSParserTokenStream stream(String(ss.str().c_str()));
+    std::string str = ss.str();
+    CSSParserTokenStream stream(str.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -344,7 +345,7 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
         kCSSAnchorQueryTypesNone);
 
     if (test_case.expected) {
-      EXPECT_TRUE(res);
+      ASSERT_TRUE(res);
       EXPECT_TRUE(!res->HasPercentage());
     } else {
       EXPECT_FALSE(res);
@@ -365,7 +366,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -437,7 +438,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -547,7 +548,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -570,7 +571,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.input.c_str()));
+    CSSParserTokenStream stream(test_case.input.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
@@ -594,7 +595,7 @@ TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSParserTokenStream stream(String(test_case.c_str()));
+    CSSParserTokenStream stream(test_case.c_str());
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(

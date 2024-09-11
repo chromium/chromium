@@ -22,7 +22,7 @@
 
 namespace blink {
 
-CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
+CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.
   // See: https://drafts.csswg.org/css-syntax/#input-preprocessing
@@ -32,11 +32,6 @@ CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
   // * Do not count white spaces
   // * CSSTokenizerInputStream::NextInputChar() replaces NULLs for replacement
   //   characters
-  input_.Advance(offset);
-}
-
-CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
-    : input_(string) {
   input_.Advance(offset);
 }
 

@@ -20,10 +20,8 @@ class CORE_EXPORT CSSTokenizer {
   STACK_ALLOCATED();
 
  public:
-  // The overload with const String& holds on to a reference to the string.
-  // (Most places, we probably don't need to do that, but fixing that would
-  // require manual inspection.)
-  explicit CSSTokenizer(const String&, wtf_size_t offset = 0);
+  // The StringView must live for at least as long as the CSSTokenizer does
+  // (i.e., don't send it a temporary String or similar).
   explicit CSSTokenizer(StringView, wtf_size_t offset = 0);
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;

@@ -201,7 +201,7 @@ TEST(SizesMathFunctionParserTest, Basic) {
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
-    CSSParserTokenStream stream(StringView(test_cases[i].input));
+    CSSParserTokenStream stream(test_cases[i].input);
     SizesMathFunctionParser calc_parser(stream, media_values);
     bool is_valid = calc_parser.IsValid() && stream.AtEnd();
     SCOPED_TRACE(test_cases[i].input);
@@ -222,7 +222,7 @@ TEST(SizesMathFunctionParserTest, Basic) {
 }
 
 TEST(SizesMathFunctionParserTest, CleansUpWhitespace) {
-  CSSParserTokenStream stream(StringView("calc(1px)    "));
+  CSSParserTokenStream stream("calc(1px)    ");
   SizesMathFunctionParser calc_parser(
       stream, MakeGarbageCollected<MediaValuesCached>());
   EXPECT_TRUE(calc_parser.IsValid());
@@ -230,7 +230,7 @@ TEST(SizesMathFunctionParserTest, CleansUpWhitespace) {
 }
 
 TEST(SizesMathFunctionParserTest, RestoresOnFailure) {
-  CSSParserTokenStream stream(StringView("calc(1px @)"));
+  CSSParserTokenStream stream("calc(1px @)");
   SizesMathFunctionParser calc_parser(
       stream, MakeGarbageCollected<MediaValuesCached>());
   EXPECT_FALSE(calc_parser.IsValid());
@@ -238,7 +238,7 @@ TEST(SizesMathFunctionParserTest, RestoresOnFailure) {
 }
 
 TEST(SizesMathFunctionParserTest, LeavesTrailingComma) {
-  CSSParserTokenStream stream(StringView("calc(1px) , more stuff"));
+  CSSParserTokenStream stream("calc(1px) , more stuff");
   SizesMathFunctionParser calc_parser(
       stream, MakeGarbageCollected<MediaValuesCached>());
   EXPECT_TRUE(calc_parser.IsValid());
@@ -246,7 +246,7 @@ TEST(SizesMathFunctionParserTest, LeavesTrailingComma) {
 }
 
 TEST(SizesMathFunctionParserTest, LeavesTrailingTokens) {
-  CSSParserTokenStream stream(StringView("calc(1px) ! trailing tokens"));
+  CSSParserTokenStream stream("calc(1px) ! trailing tokens");
   SizesMathFunctionParser calc_parser(
       stream, MakeGarbageCollected<MediaValuesCached>());
   EXPECT_TRUE(calc_parser.IsValid());

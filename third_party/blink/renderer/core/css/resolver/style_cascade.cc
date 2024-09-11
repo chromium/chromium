@@ -1584,7 +1584,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
   // Urggg
-  CSSParserTokenStream ret_value_stream(ret_value->CssText());
+  String ret_string = ret_value->CssText();
+  CSSParserTokenStream ret_value_stream(ret_string);
   return ResolveTokensInto(ret_value_stream, resolver, context,
                            FunctionContext{}, out);
 }
@@ -1686,7 +1687,8 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  CSSParserTokenStream arg_value_stream(it->value->CssText());
+  String arg_value = it->value->CssText();
+  CSSParserTokenStream arg_value_stream(arg_value);
   return ResolveTokensInto(arg_value_stream, resolver, context,
                            FunctionContext{}, out);
 }

@@ -125,7 +125,8 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  CSSParserTokenStream stream(ToUnparsedString());
+  String unparsed_string = ToUnparsedString();
+  CSSParserTokenStream stream(unparsed_string);
 
   if (stream.AtEnd()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
