@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/swap_chain_presenter.h"
 
 #include <d3d11_1.h>
@@ -637,21 +632,34 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
 
   size_t dest_stride = mapped_resource.RowPitch;
   DCHECK_GE(dest_stride, static_cast<size_t>(texture_size.width()));
+  // y-plane size.
+  size_t src_size = pixmap_stride * texture_size.height();
+  size_t dest_size = dest_stride * texture_size.height();
+  if (texture_size.height() / 2 > 0) {
+    // uv-plane size. Note that the last row is actual texture width, not
+    // the stride.
+    src_size +=
+        pixmap_stride * (texture_size.height() / 2 - 1) + texture_size.width();
+    dest_size +=
+        dest_stride * (texture_size.height() / 2 - 1) + texture_size.width();
+  }
+  base::span<const uint8_t> src =
+      UNSAFE_TODO(base::span(nv12_pixmap, src_size));
+  // SAFETY: required from Map() call result.
+  base::span<uint8_t> dest = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(mapped_resource.pData), dest_size));
   for (int y = 0; y < texture_size.height(); y++) {
-    const uint8_t* src_row = nv12_pixmap + pixmap_stride * y;
-    uint8_t* dest_row =
-        reinterpret_cast<uint8_t*>(mapped_resource.pData) + dest_stride * y;
-    memcpy(dest_row, src_row, texture_size.width());
+    auto src_row = src.subspan(pixmap_stride * y, texture_size.width());
+    auto dest_row = dest.subspan(dest_stride * y, texture_size.width());
+    dest_row.copy_prefix_from(src_row);
   }
 
-  const uint8_t* uv_src_start =
-      nv12_pixmap + pixmap_stride * texture_size.height();
-  uint8_t* uv_dst_start = reinterpret_cast<uint8_t*>(mapped_resource.pData) +
-                          dest_stride * texture_size.height();
+  auto uv_src = src.subspan(pixmap_stride * texture_size.height());
+  auto uv_dest = dest.subspan(dest_stride * texture_size.height());
   for (int y = 0; y < texture_size.height() / 2; y++) {
-    const uint8_t* src_row = uv_src_start + pixmap_stride * y;
-    uint8_t* dest_row = uv_dst_start + dest_stride * y;
-    memcpy(dest_row, src_row, texture_size.width());
+    auto src_row = uv_src.subspan(pixmap_stride * y, texture_size.width());
+    auto dest_row = uv_dest.subspan(dest_stride * y, texture_size.width());
+    dest_row.copy_prefix_from(src_row);
   }
   context->Unmap(staging_texture_.Get(), 0);
 
@@ -1610,9 +1618,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     staging_texture_.Reset();
     copy_texture_.Reset();
   } else {
-    input_texture = UploadVideoImage(params.overlay_image->size(),
-                                     params.overlay_image->nv12_pixmap(),
-                                     params.overlay_image->pixmap_stride());
+    input_texture = UNSAFE_TODO(UploadVideoImage(
+        params.overlay_image->size(), params.overlay_image->nv12_pixmap(),
+        params.overlay_image->pixmap_stride()));
     input_level = 0;
   }
 
