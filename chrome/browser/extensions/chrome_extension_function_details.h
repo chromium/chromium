@@ -8,8 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
-class Browser;
 class ExtensionFunction;
+
+namespace extensions {
+class WindowController;
+}
 
 // Provides Chrome-specific details to ExtensionFunction
 // implementations.
@@ -27,12 +30,12 @@ class ChromeExtensionFunctionDetails {
 
   ~ChromeExtensionFunctionDetails();
 
-  // Gets the "current" browser, if any.
+  // Gets the "current" WindowController, if any.
   //
-  // Many extension APIs operate relative to the current browser, which is the
-  // browser the calling code is running inside of. For example, popups and tabs
-  // all have a containing browser, but background pages and notification
-  // bubbles do not.
+  // Many extension APIs operate relative to the current window, which is the
+  // browser window the calling code is running inside of. For example, popups
+  // and tabs all have a containing browser, but background pages and
+  // notification bubbles do not.
   //
   // If there is no containing window, the current browser defaults to the
   // foremost one.
@@ -40,14 +43,14 @@ class ChromeExtensionFunctionDetails {
   // Incognito browsers are not considered unless the calling extension has
   // incognito access enabled.
   //
-  // This method can return NULL if there is no matching browser, which can
-  // happen if only incognito windows are open, or early in startup or shutdown
-  // shutdown when there are no active windows.
+  // This method can return NULL if there is no matching browser window, which
+  // can happen if only incognito windows are open, or early in startup or
+  // shutdown shutdown when there are no active windows.
   //
   // TODO(devlin): This method is incredibly non-deterministic (sometimes just
   // returning "any" browser), and almost never the right thing to use. Instead,
   // use ExtensionFunction::GetSenderWebContents(). We should get rid of this.
-  Browser* GetCurrentBrowser() const;
+  extensions::WindowController* GetCurrentWindowController() const;
 
   // Find a UI surface to display any UI (like a permission prompt) for the
   // extension calling this function. This will check, in order of preference,

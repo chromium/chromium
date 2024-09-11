@@ -363,18 +363,21 @@ Browser* ExtensionTabUtil::GetBrowserFromWindowID(
     int window_id,
     std::string* error) {
   if (window_id == extension_misc::kCurrentWindowId) {
-    Browser* result = details.GetCurrentBrowser();
-    if (!result || !result->window()) {
-      if (error)
-        *error = tabs_constants::kNoCurrentWindowError;
-      return nullptr;
+    if (WindowController* window_controller =
+            details.GetCurrentWindowController()) {
+      Browser* result = window_controller->GetBrowser();
+      if (result && result->window()) {
+        return result;
+      }
     }
-    return result;
-  } else {
-    return GetBrowserInProfileWithId(
-        Profile::FromBrowserContext(details.function()->browser_context()),
-        window_id, details.function()->include_incognito_information(), error);
+    if (error) {
+      *error = tabs_constants::kNoCurrentWindowError;
+    }
+    return nullptr;
   }
+  return GetBrowserInProfileWithId(
+      Profile::FromBrowserContext(details.function()->browser_context()),
+      window_id, details.function()->include_incognito_information(), error);
 }
 
 Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
