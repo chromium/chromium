@@ -105,15 +105,13 @@ public class SharedImageTilesCoordinator {
     }
 
     private void extractGroupMemberInfo(GroupData groupData) {
-        // TODO(b/361642045): Call showAvatars here.
-        updateTilesCount(groupData.members.size());
-
         List<String> emails = new ArrayList<>();
         for (GroupMember member : groupData.members) {
             if (member.email != null && !member.email.isEmpty()) {
                 emails.add(member.email);
             }
         }
+        updateTilesCount(emails.size());
 
         // Let the UI delegate draw the icon tiles.
         DataSharingUIDelegate dataSharingUIDelegate = mDataSharingService.getUIDelegate();
