@@ -165918,7 +165918,7 @@
        ]
       ],
       "webkit-line-clamp-047.html": [
-       "2e546c8dc9294b2cca54d4e061c9ede160eb474a",
+       "cb66eb714c510579f16b101010188ca6b22a32ba",
        [
         null,
         [
@@ -165937,6 +165937,19 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-049.html": [
+       "807f83e511061ad98c535ee6dde4470503e9e294",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-049-ref.html",
           "=="
          ]
         ],
@@ -188907,6 +188920,58 @@
        [
         [
          "/css/css-tables/subpixel-table-width-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-cell-percentage-001.html": [
+      "eb9a620b0b47a12c1c959b838a84ee83efd29282",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-cell-percentage-002.html": [
+      "7b7556c1f07402a18e3e2ba0d8ca9b46e566a0f1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-cell-percentage-003.html": [
+      "c8bfa9a2fd075231520e7712f0212cfd1852e8f2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-cell-percentage-004.html": [
+      "a716ed25d97fa228fa9711677dbff19d7004d2ec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -320732,6 +320797,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "616accbe0a70c17b6f53137667f52bbbd1891eb3",
+       []
+      ],
       "display-computed-expected.txt": [
        "2f57da9606a75c5e3704443035db8419dfdad85e",
        []
@@ -337304,7 +337373,11 @@
         []
        ],
        "webkit-line-clamp-047-ref.html": [
-        "83c5ab851c1c48dda7fb608de0bbed502b439b58",
+        "3f1e31ab2224a778f8061084df0a1854c71bdaeb",
+        []
+       ],
+       "webkit-line-clamp-049-ref.html": [
+        "7a3591b5eead803163450acc1cfed4a3e8fd39d1",
         []
        ],
        "webkit-line-clamp-block-in-inline-001-ref.html": [
@@ -367471,7 +367544,7 @@
        []
       ],
       "ba-fledge-util.sub.js": [
-       "1c9f051d9d3aa9b91183ab27cc5a486356587810",
+       "c534a8a6c624dfc88f050d968d72fa0c14b14aea",
        []
       ],
       "ba-public-keys": [
@@ -367564,7 +367637,15 @@
       ]
      },
      "server-response.https.window_1-4-expected.txt": [
-      "b9bbe1aa69c8b78589e0909e21c8f7a42c3e13ed",
+      "b2d8ccff9132560d14a7da31a17c05722328b82a",
+      []
+     ],
+     "server-response.https.window_5-8-expected.txt": [
+      "9c5a0ceb6e8d1e85fc17fe82698b8c8658d31083",
+      []
+     ],
+     "server-response.https.window_9-12-expected.txt": [
+      "32703368c4337abebd67e1d6f27384e947532828",
       []
      ],
      "third_party": {
@@ -410892,7 +410973,7 @@
     },
     "resources": {
      "utils.js": [
-      "e4a1e898598e6190da25fbdfe53b483af844d08c",
+      "c6b6010b3b0c2ea60bb2394b42273427109d9a20",
       []
      ],
      "utils_validation.js": [
@@ -521988,7 +522069,7 @@
      ]
     ],
     "notify-event-transient-user-activation.https.html": [
-     "04be865fe5bce4d9cf640f240da8c852f817f39b",
+     "5e37b1180ad1da5937328e903c51da59d4e4c9d6",
      [
       null,
       {
@@ -545190,7 +545271,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "918dffefedd58dad55be0c009275464b3f97ea19",
+      "1556b5c1f8a7f814643b9b7dabe2d4914fa557ea",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -545226,6 +545307,110 @@
          [
           "variant",
           "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?5-8",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?9-12",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
          ]
         ],
         "timeout": "long"
@@ -697505,6 +697690,225 @@
        }
       ]
      ],
+     "dequantizeLinear.https.any.js": [
+      "2939121c24182e49cccfafa2df26ca2e56fa1356",
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/dequantizeLinear.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API dequantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "div.https.any.js": [
       "69183ee1097b1aacd36f863383fc5b846741e0a4",
       [
@@ -706016,6 +706420,225 @@
          [
           "title",
           "test WebNN API prelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "quantizeLinear.https.any.js": [
+      "acae378d80b42eb9f8e7b648d98dfa78bafe58d4",
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/quantizeLinear.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API quantizeLinear operation"
          ],
          [
           "global",
@@ -721655,6 +722278,195 @@
          [
           "title",
           "validation tests for WebNN API reshape operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "scatterND.https.any.js": [
+      "18fcb40e892eb4e9237f5cb1061fa6ad82e16669",
+      [
+       "webnn/validation_tests/scatterND.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/scatterND.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/scatterND.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/scatterND.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/scatterND.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/scatterND.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API scatterND operation"
          ],
          [
           "global",
@@ -764080,7 +764892,7 @@
          ]
         ],
         "pointer_mouse.py": [
-         "511bda663d99f2f83f74505c39a51024efd92afc",
+         "7077d7bba4678b8825cbe83556f18b4b6db1e0ea",
          [
           null,
           {}
@@ -764117,21 +764929,21 @@
          ]
         ],
         "pointer_pen.py": [
-         "44ac435a21ec2c26d9a02bb22c08c2702820ec8f",
+         "7b68d3de057db102ccaec01282a202721b16af24",
          [
           null,
           {}
          ]
         ],
         "pointer_touch.py": [
-         "6edc7f832026703512869f9015294e0a2425504d",
+         "f036de7c744c1d5bb3376640bdffa9ef5ca79daa",
          [
           null,
           {}
          ]
         ],
         "wheel.py": [
-         "0a1af029b1e92fa1ba94bdb60679edc8b93dd0ba",
+         "3129e9b0e63ca15092f6264ce8eecfef471d0abd",
          [
           null,
           {}
@@ -766473,7 +767285,7 @@
         ]
        ],
        "pointer_mouse.py": [
-        "53ec6d2c13530654ec752f9da913e348a2996d92",
+        "f8683ce45156c7d79c49753eca04c55ffc2b4f16",
         [
          null,
          {}
@@ -766494,14 +767306,14 @@
         ]
        ],
        "pointer_pen.py": [
-        "7c384ca97d8f66bc22b4f77f7fbfc7b1db10cbe3",
+        "bf71a20c4d2ce89ffc40c4338deaefb5a4f41ddd",
         [
          null,
          {}
         ]
        ],
        "pointer_touch.py": [
-        "70ffd68e9ea8f3206886ddeb1dcd06d22ba359d8",
+        "b85b2e6ef38195d26e0e580edf34a141efc19eba",
         [
          null,
          {}
@@ -766531,7 +767343,7 @@
         ]
        ],
        "wheel.py": [
-        "0840327ff902ad146ca26637e9c9ac8d481da3a1",
+        "1c9bf082270429406080baab3373d5ff3f506aed",
         [
          null,
          {}
