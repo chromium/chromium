@@ -70,7 +70,9 @@ enum class ServerCardUnmaskFlowType {
   kRiskBased = 4,
   // Device unlock auth was offered.
   kDeviceUnlock = 5,
-  kMaxValue = kDeviceUnlock,
+  // VCN 3DS auth was offered.
+  kThreeDomainSecure = 6,
+  kMaxValue = kThreeDomainSecure,
 };
 
 void LogServerCardUnmaskAttempt(

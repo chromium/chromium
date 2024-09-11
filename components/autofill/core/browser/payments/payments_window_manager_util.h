@@ -25,7 +25,7 @@ namespace payments {
 // return a PaymentsWindowManager::RedirectCompletionResult as the expected
 // response. Otherwise this function will return the non-success result.
 base::expected<PaymentsWindowManager::RedirectCompletionResult,
-               PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
+               PaymentsWindowManager::Vcn3dsAuthenticationResult>
 ParseUrlForVcn3ds(const GURL& url,
                   const Vcn3dsChallengeOptionMetadata& metadata);
 
@@ -44,7 +44,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
 // Creates the Vcn3dsAuthenticationResponse for the response from the
 // UnmaskCardRequest that was sent during the VCN 3DS authentication.
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
-CreateVcn3dsAuthenticationResponse(
+CreateVcn3dsAuthenticationResponseFromServerResult(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
     CreditCard card);

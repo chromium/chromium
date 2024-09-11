@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -3484,16 +3485,20 @@ TEST_F(
 }
 
 // Test that a success response for a VCN 3DS authentication is handled
-// correctly and notifies the caller with the proper fields set.
+// correctly and notifies the caller with the proper fields set, and the
+// authentication unmasked server card result metric bucket is logged to.
 TEST_F(CreditCardAccessManagerTest,
        VirtualCardUnmasking_3dsResponseReceived_Success) {
   // Set up the test.
+  base::HistogramTester histogram_tester;
   CreditCard card = test::GetVirtualCard();
   credit_card_access_manager().FetchCreditCard(
       &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                             accessor_->GetWeakPtr()));
   payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   response.card = card;
+  response.result =
+      payments::PaymentsWindowManager::Vcn3dsAuthenticationResult::kSuccess;
 
   // Mock the VCN 3DS authentication response.
   test_api(credit_card_access_manager())
@@ -3505,18 +3510,25 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_EQ(accessor_->cvc(), response.card->cvc());
   EXPECT_FALSE(
       test_api(credit_card_access_manager()).is_authentication_in_progress());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Test that a failure response for a VCN 3DS authentication is handled
-// correctly and notifies the caller with the proper fields set.
+// correctly and notifies the caller with the proper fields set, and the virtual
+// card retrieval error server card unmask result metric bucket is logged to.
 TEST_F(CreditCardAccessManagerTest,
-       VirtualCardUnmasking_3dsResponseReceived_Error) {
+       VirtualCardUnmasking_3dsResponseReceived_AuthenticationError) {
   // Set up the test.
+  base::HistogramTester histogram_tester;
   CreditCard card = test::GetVirtualCard();
   credit_card_access_manager().FetchCreditCard(
       &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                             accessor_->GetWeakPtr()));
   payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
+  response.result = payments::PaymentsWindowManager::
+      Vcn3dsAuthenticationResult::kAuthenticationFailed;
 
   // Mock the VCN 3DS authentication response.
   test_api(credit_card_access_manager())
@@ -3526,6 +3538,36 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(
       test_api(credit_card_access_manager()).is_authentication_in_progress());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
+      autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
+}
+
+// Test that the user cancelling a VCN 3DS authentication is handled correctly
+// and notifies the caller with the proper fields set, and the flow cancelled
+// result metric bucket is logged to.
+TEST_F(
+    CreditCardAccessManagerTest,
+    VirtualCardUnmasking_3dsResponseReceived_AuthenticationNotCompletedError) {
+  // Set up the test.
+  base::HistogramTester histogram_tester;
+  CreditCard card = test::GetVirtualCard();
+  credit_card_access_manager().FetchCreditCard(
+      &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                            accessor_->GetWeakPtr()));
+  payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
+  response.result = payments::PaymentsWindowManager::
+      Vcn3dsAuthenticationResult::kAuthenticationNotCompleted;
+
+  // Mock the VCN 3DS authentication response.
+  test_api(credit_card_access_manager())
+      .OnVcn3dsAuthenticationComplete(response);
+
+  // Check that `accessor_` was triggered with the expected error.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

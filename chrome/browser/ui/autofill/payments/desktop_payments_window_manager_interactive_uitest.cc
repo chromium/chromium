@@ -491,6 +491,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+  EXPECT_EQ(
+      response->result,
+      PaymentsWindowManager::Vcn3dsAuthenticationResult::kAuthenticationFailed);
 }
 
 // Tests that the VCN 3DS flow failed during second server call histogram bucket
@@ -560,6 +563,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+  EXPECT_EQ(
+      response->result,
+      PaymentsWindowManager::Vcn3dsAuthenticationResult::kAuthenticationFailed);
   EXPECT_TRUE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
@@ -614,6 +620,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+  EXPECT_EQ(response->result,
+            PaymentsWindowManager::Vcn3dsAuthenticationResult::
+                kAuthenticationNotCompleted);
   EXPECT_FALSE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
@@ -667,6 +676,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+  EXPECT_EQ(response->result,
+            PaymentsWindowManager::Vcn3dsAuthenticationResult::
+                kAuthenticationNotCompleted);
   EXPECT_FALSE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
@@ -703,6 +715,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+  EXPECT_EQ(response->result,
+            PaymentsWindowManager::Vcn3dsAuthenticationResult::
+                kAuthenticationNotCompleted);
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 

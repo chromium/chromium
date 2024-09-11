@@ -284,6 +284,8 @@ chromium-metrics-reviews@google.com.
   <variant name="OtpFallbackFromFido"
       summary="OTP fallback from FIDO authentication"/>
   <variant name="RiskBased" summary="Risk-based authentication"/>
+  <variant name="ThreeDomainSecure"
+      summary="3DS (Three Domain Secure) authentication"/>
   <variant name="UnspecifiedFlowType" summary="No authentication specified"/>
 </variants>
 
