@@ -34,6 +34,9 @@ struct ASH_PUBLIC_EXPORT TabData {
 
 using ContentItem = std::variant<AppData, TabData>;
 
+// Gets the unique identifier for `item`.
+std::string ASH_PUBLIC_EXPORT GetIdentifier(const ContentItem& item);
+
 class ASH_PUBLIC_EXPORT CoralRequest {
  public:
   enum class RequestType {
