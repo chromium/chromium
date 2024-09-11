@@ -7,4 +7,9 @@ import("//build/config/python.gni")
 python_library("av_sync_tests") {
   testonly = true
   pydeps_file = "av_sync_tests.pydeps"
+  data_deps = [
+    "//build/config/fuchsia:deployment_resources",
+    "//content/test:fuchsia_telemetry_test_data",
+    "//fuchsia_web/shell",
+  ]
 }

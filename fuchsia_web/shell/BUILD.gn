@@ -18,6 +18,7 @@ group("shell") {
     "//chrome/test:*",
     "//content/test:*",
     "//fuchsia_web:gn_all",
+    "//fuchsia_web/av_testing:*",
   ]
   deps = [ ":web_engine_shell" ]
 

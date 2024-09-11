@@ -48,9 +48,9 @@ def _get_test_runner(runner_args: argparse.Namespace,
     if runner_args.test_type in ['gpu', 'perf']:
         return TelemetryTestRunner(runner_args.test_type, runner_args.out_dir,
                                    test_args, runner_args.target_id)
-    if runner_args.test_type in ['webpage']:
+    if runner_args.test_type == 'webpage':
         return WebpageTestRunner(runner_args.out_dir, test_args,
-                                 runner_args.target_id)
+                                 runner_args.target_id, runner_args.logs_dir)
     return create_executable_test_runner(runner_args, test_args)
 
 
