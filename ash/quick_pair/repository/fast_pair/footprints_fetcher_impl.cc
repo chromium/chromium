@@ -24,11 +24,11 @@ namespace quick_pair {
 namespace {
 
 const char kUserDevicesUrl[] =
-    "https://nearbydevices-pa.googleapis.com/v1/user/devices"
+    "https://nearbydevices-pa.googleapis.com/v1/userdevices"
     "?key=%s&alt=proto";
 
 const char kUserDeleteDeviceUrl[] =
-    "https://nearbydevices-pa.googleapis.com/v1/user/device/%s"
+    "https://nearbydevices-pa.googleapis.com/v1/userdevices/%s"
     "?key=%s&alt=proto";
 
 const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -61,7 +61,7 @@ const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
 
 std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
   return std::make_unique<OAuthHttpFetcher>(
-      kTrafficAnnotation, GaiaConstants::kCloudPlatformProjectsOAuth2Scope);
+      kTrafficAnnotation, GaiaConstants::kNearbyDevicesOAuth2Scope);
 }
 
 GURL GetUserDevicesUrl() {

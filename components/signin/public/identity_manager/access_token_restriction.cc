@@ -131,7 +131,7 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       GaiaConstants::kDriveReadOnlyOAuth2Scope,
       GaiaConstants::kExperimentsAndConfigsOAuth2Scope,
       GaiaConstants::kGCMGroupServerOAuth2Scope,
-      GaiaConstants::kCloudPlatformProjectsOAuth2Scope,
+      GaiaConstants::kNearbyDevicesOAuth2Scope,
       GaiaConstants::kNearbyShareOAuth2Scope,
       GaiaConstants::kNearbyPresenceOAuth2Scope,
       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
