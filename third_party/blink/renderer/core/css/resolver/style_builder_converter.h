@@ -202,6 +202,8 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static NGGridTrackList ConvertGridTrackSizeList(StyleResolverState&,
                                                   const CSSValue&);
+  static std::optional<Length> ConvertMasonrySlack(const StyleResolverState&,
+                                                   const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
       StyleResolverState&,
       const CSSValue&);

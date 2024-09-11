@@ -489,6 +489,8 @@ bool ConsumeGridTemplateShorthand(bool important,
                                   const CSSValue*& template_columns,
                                   const CSSValue*& template_areas);
 
+CSSValue* ConsumeMasonrySlack(CSSParserTokenStream&, const CSSParserContext&);
+
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream&,
                                      const CSSParserContext&);
 

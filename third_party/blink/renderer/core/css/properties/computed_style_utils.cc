@@ -2218,6 +2218,13 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
   return list;
 }
 
+CSSValue* ComputedStyleUtils::ValueForMasonrySlack(
+    const std::optional<Length>& slack_length,
+    const ComputedStyle& style) {
+  return slack_length ? ZoomAdjustedPixelValueForLength(*slack_length, style)
+                      : CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
 CSSValue* ComputedStyleUtils::ValueForMasonryTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style) {

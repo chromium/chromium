@@ -5986,6 +5986,21 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.MaskType());
 }
 
+const CSSValue* MasonrySlack::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeMasonrySlack(stream, context);
+}
+
+const CSSValue* MasonrySlack::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForMasonrySlack(style.MasonrySlack(), style);
+}
+
 const CSSValue* MasonryTemplateTracks::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

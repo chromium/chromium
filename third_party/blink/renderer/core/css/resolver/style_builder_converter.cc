@@ -1668,6 +1668,18 @@ void StyleBuilderConverter::ConvertGridTrackList(
          computed_grid_track_list.IsSubgriddedAxis());
 }
 
+std::optional<Length> StyleBuilderConverter::ConvertMasonrySlack(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return std::nullopt;
+  }
+
+  return ConvertLength(state, value);
+}
+
 StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
     StyleResolverState& state,
     const CSSValue& value) {

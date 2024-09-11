@@ -3784,6 +3784,21 @@
       invalidate: ["paint"],
     },
     {
+      // TODO(crbug.com/343257585): We might need to alter the spec's grammar to accept
+      // normal | <length-percentage>. With normal, we use `1em` for slack size.
+      name: "masonry-slack",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      default_value: "std::nullopt",
+      type_name: "std::optional<Length>",
+      converter: "ConvertMasonrySlack",
+      typedom_types: ["Length", "Percentage"],
+      keywords: ["normal"],
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
       name: "masonry-template-tracks",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       layout_dependent: true,
