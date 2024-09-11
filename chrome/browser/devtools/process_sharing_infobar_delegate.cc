@@ -70,7 +70,7 @@ std::u16string ProcessSharingInfobarDelegate::GetLinkText() const {
 }
 
 GURL ProcessSharingInfobarDelegate::GetLinkURL() const {
-  return GURL("https://developer.chrome.com/docs/devtools/shared-processes");
+  return GURL("https://developer.chrome.com/blog/process-sharing-experiment");
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
