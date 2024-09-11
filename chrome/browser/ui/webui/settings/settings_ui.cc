@@ -409,14 +409,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       download::IsDownloadBubbleEnabled() &&
           download::IsDownloadBubblePartialViewControlledByPref());
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  html_source->AddBoolean(
-      "biometricAuthenticationForFilling",
-      password_manager_util::
-          ShouldBiometricAuthenticationForFillingToggleBeVisible(
-              g_browser_process->local_state()));
-#endif
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddBoolean(
       "showGetTheMostOutOfChromeSection",

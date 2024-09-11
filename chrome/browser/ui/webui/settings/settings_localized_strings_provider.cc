@@ -1233,12 +1233,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_MANAGE_PASSKEYS_MORE_ACTIONS_LABEL},
 #endif
 #if BUILDFLAG(IS_MAC)
-      {"biometricAuthenticaionForFillingLabel",
-       IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
       {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_MAC},
 #elif BUILDFLAG(IS_WIN)
-      {"biometricAuthenticaionForFillingLabel",
-       IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
       {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
       {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
