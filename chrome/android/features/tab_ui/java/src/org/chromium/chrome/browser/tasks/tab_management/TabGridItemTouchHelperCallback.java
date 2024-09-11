@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
@@ -161,6 +162,17 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 || type == UiType.CUSTOM_MESSAGE;
     }
 
+    boolean hasCollaboration(@Nullable RecyclerView.ViewHolder viewHolder) {
+        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
+            PropertyModel model = simpleViewHolder.model;
+            if (model.get(CARD_TYPE) == TAB) {
+                return TabShareUtils.isCollaborationIdValid(
+                        model.get(TabProperties.COLLABORATION_ID));
+            }
+        }
+        return false;
+    }
+
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         final int dragFlags = isMessageType(viewHolder) ? 0 : mDragFlags;
@@ -186,6 +198,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
+            return false;
+        }
+        // Collaborations cannot be dropped as it would destroy the collaboration.
+        if (hasCollaboration(current)) {
             return false;
         }
         return super.canDropOver(recyclerView, current, target);
@@ -460,14 +476,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             RecyclerView.ViewHolder hoveredViewHolder =
                     mRecyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
 
-            if (hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder
-                    && !hasTabPropertiesModel(hoveredViewHolder)) {
-                mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
-            } else {
+            if (hasTabPropertiesModel(hoveredViewHolder) && !hasCollaboration(viewHolder)) {
                 mModel.updateHoveredTabForMergeToGroup(mHoveredTabIndex, true);
-                if (prev_hovered != mHoveredTabIndex) {
-                    mModel.updateHoveredTabForMergeToGroup(prev_hovered, false);
-                }
+            } else {
+                mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
+            }
+            if (prev_hovered != mHoveredTabIndex) {
+                mModel.updateHoveredTabForMergeToGroup(prev_hovered, false);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
                 && mTabGridDialogHandler != null) {
