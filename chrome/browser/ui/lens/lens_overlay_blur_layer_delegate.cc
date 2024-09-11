@@ -89,6 +89,7 @@ void LensOverlayBlurLayerDelegate::OnDeviceScaleFactorChanged(
 void LensOverlayBlurLayerDelegate::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
   CHECK(widget_host == background_view_host_);
+  render_widget_host_observer_.Reset();
   background_view_host_ = nullptr;
   // If the host view was destroyed, stop updating the background blur.
   screenshot_timer_.Stop();
