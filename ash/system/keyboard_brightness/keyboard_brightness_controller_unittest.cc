@@ -953,6 +953,8 @@ TEST_F(KeyboardBrightnessControllerTest,
                                                            account_id));
 
   // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,
                      std::make_optional<base::Value>(30.0));
   login_data_dispatcher()->NotifyFocusPod(account_id);
@@ -963,6 +965,8 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardBrightnessPercent(30.0);
 
   // Simulate reboot, and log in the third time.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   login_data_dispatcher()->NotifyFocusPod(account_id);
 
   // ALS and brightness should remain the same as last reboot.
@@ -1014,6 +1018,8 @@ TEST_F(KeyboardBrightnessControllerTest,
                                                            account_id));
 
   // Simulate reboot, and log in again.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,
                      std::make_optional<base::Value>(30.0));
   login_data_dispatcher()->NotifyFocusPod(account_id);
@@ -1022,10 +1028,52 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardAmbientLightSensorEnabled(true);
 
   // Simulate reboot, and log in the third time.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   login_data_dispatcher()->NotifyFocusPod(account_id);
 
   // ALS and should remain the same as last reboot.
   ExpectKeyboardAmbientLightSensorEnabled(true);
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       BrightnessSettingsUnchanged_DeviceLocked) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS and keyboard brightness.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Disable ALS using the brightness key.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+
+  // Current status: Als is turned off, and current brightness is
+  // kInitialBrightness.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
+
+  // Simulate device lock and re-login.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Als should not be re-enabled, although it was not previously disabled from
+  // settings app. The brightness percent should still be
+  // kInitialKeyboardBrightness.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
 }
 
 TEST_F(KeyboardBrightnessControllerTest,

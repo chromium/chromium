@@ -287,13 +287,18 @@ void BrightnessControllerChromeos::OnSessionStateChanged(
 
 void BrightnessControllerChromeos::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
+  if (!features::IsBrightnessControlInSettingsEnabled() ||
+      IsInitialBrightnessSetByPolicy()) {
     return;
   }
-  if (IsInitialBrightnessSetByPolicy()) {
-    return;
+
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      session_state == session_manager::SessionState::LOGIN_SECONDARY) {
+    // Restore brightness settings only when device reboots.
+    RestoreBrightnessSettings(account_id);
   }
-  RestoreBrightnessSettings(account_id);
 }
 
 void BrightnessControllerChromeos::RestoreBrightnessSettings(

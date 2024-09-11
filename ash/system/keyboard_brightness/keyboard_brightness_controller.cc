@@ -329,7 +329,15 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
 void KeyboardBrightnessController::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
 
-  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
+  if (!features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    return;
+  }
+
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      session_state == session_manager::SessionState::LOGIN_SECONDARY) {
+    // Restore brightness settings only when device reboots.
     RestoreKeyboardBrightnessSettings(account_id);
   }
 }
