@@ -277,6 +277,20 @@ public abstract class ContentUriUtils {
         assert isContentUri(uriString);
         Uri parsedUri = Uri.parse(uriString);
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        return resolver.delete(parsedUri, null, null) > 0;
+        try {
+            if (DocumentsContract.deleteDocument(resolver, parsedUri)) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "DocumentsContract could not delete %s: %s", uriString, e.getMessage());
+        }
+        try {
+            if (resolver.delete(parsedUri, null, null) > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "ContentResolver could not delete %s: %s", uriString, e.getMessage());
+        }
+        return false;
     }
 }
