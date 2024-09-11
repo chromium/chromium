@@ -55,10 +55,11 @@ std::map<std::u16string, double, std::less<>> CombineSearchTerms(
 }
 
 // Convert a JSON file to a map from search term to emoji weighted by
-// position in keyword / name.
+// position in keyword / name, as well as storing names in `names`.
 void AddDataFromFileToMap(
     const int file_id_in_resources,
-    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>& map) {
+    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>& map,
+    std::map<std::string, std::string, std::less<>>& names) {
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           file_id_in_resources);
@@ -102,37 +103,6 @@ void AddDataFromFileToMap(
               EmojiSearchEntry{.weighting = 1 * search_term.second,
                                .emoji_string = *emoji_string});
         }
-      }
-    }
-  }
-}
-
-// Convert a JSON file to a map of emoji to name.
-void AddNamesFromFileToMap(
-    const int file_id_in_resources,
-    std::map<std::string, std::string, std::less<>>& names) {
-  std::string json_string =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          file_id_in_resources);
-  // Can be empty in certain test environments.
-  if (json_string.empty()) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  // TODO(b/309343774): switch to JSON reading service
-  std::optional<base::Value> json = base::JSONReader::Read(json_string);
-  CHECK(json) << "parse failed for " << file_id_in_resources << ":"
-              << json_string << "EOF";
-  base::Value::List groups = std::move(*json).TakeList();
-  // TODO(b/309343774): Consider using json_value_converter
-  for (auto& group : groups) {
-    for (const auto& emoji : *group.GetDict().FindList("emoji")) {
-      const base::Value::Dict* base = emoji.GetDict().FindDict("base");
-      const std::string* emoji_string = base->FindString("string");
-      CHECK(emoji_string) << "All emoji should have names";
-      const std::string* name = base->FindString("name");
-      if (name) {
         names.emplace(*emoji_string, *name);
       }
     }
@@ -412,29 +382,22 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
   if (std::optional<EmojiLanguageResourceIds> resource_ids =
           GetLanguageResourceIds(*lang);
       resource_ids.has_value()) {
-    AddDataFromFileToMap(resource_ids->emoji_start_resource_id,
-                         new_data.emojis);
+    AddDataFromFileToMap(resource_ids->emoji_start_resource_id, new_data.emojis,
+                         new_data.names);
     AddDataFromFileToMap(resource_ids->emoji_remaining_resource_id,
-                         new_data.emojis);
-    AddDataFromFileToMap(resource_ids->symbols_resource_id, new_data.symbols);
+                         new_data.emojis, new_data.names);
+    AddDataFromFileToMap(resource_ids->symbols_resource_id, new_data.symbols,
+                         new_data.names);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddDataFromFileToMap(resource_ids->emoji_internal_resource_id,
-                         new_data.emojis);
+                         new_data.emojis, new_data.names);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-    AddNamesFromFileToMap(resource_ids->emoji_start_resource_id,
-                          new_data.names);
-    AddNamesFromFileToMap(resource_ids->emoji_remaining_resource_id,
-                          new_data.names);
-    AddNamesFromFileToMap(resource_ids->symbols_resource_id, new_data.names);
 
     if (*lang == EmojiLanguageCode::kEn) {
       // Only English has Emoticons.
       AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
-                           new_data.emoticons);
-      AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
-                            new_data.names);
+                           new_data.emoticons, new_data.names);
     }
   }
 
