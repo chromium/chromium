@@ -98,6 +98,12 @@ class MockIpProtectionAuthClient
                ip_protection::android::AuthAndSignResponseCallback callback),
               (const override));
 
+  MOCK_METHOD(void,
+              GetProxyConfig,
+              (const GetProxyConfigRequest& request,
+               ip_protection::android::GetProxyConfigResponseCallback callback),
+              (const override));
+
   base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

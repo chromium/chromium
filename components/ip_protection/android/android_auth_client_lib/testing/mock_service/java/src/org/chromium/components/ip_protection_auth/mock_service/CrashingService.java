@@ -16,6 +16,7 @@ import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
+import org.chromium.components.ip_protection_auth.common.IIpProtectionGetProxyConfigCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +110,33 @@ public abstract class CrashingService extends Service {
                             Log.i(
                                     TAG,
                                     "got authAndSign request for %s, %d requests left before"
+                                            + " planned crash",
+                                    className,
+                                    mRequestsRemaining);
+                            if (isResponsive()) {
+                                try {
+                                    callback.reportError(
+                                            IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                mNotGarbage.add(callback);
+                            }
+                            maybeCrash();
+                        });
+                // Binder call not strictly guaranteed to return before any UI thread work runs.
+            }
+
+            @Override
+            public synchronized void getProxyConfig(
+                    byte[] bytes, IIpProtectionGetProxyConfigCallback callback) {
+                maybeSynchronous(
+                        () -> {
+                            mRequestsRemaining--;
+                            Log.i(
+                                    TAG,
+                                    "got getProxyConfig request for %s, %d requests left before"
                                             + " planned crash",
                                     className,
                                     mRequestsRemaining);

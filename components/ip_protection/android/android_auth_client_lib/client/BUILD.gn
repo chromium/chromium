@@ -13,10 +13,10 @@ android_library("ip_protection_auth_client_java") {
     "java/src/org/chromium/components/ip_protection_auth/IpProtectionAuthServiceCallback.java",
     "java/src/org/chromium/components/ip_protection_auth/IpProtectionByteArrayCallback.java",
   ]
-  srcjar_deps =
-      [ "//components/ip_protection/android/android_auth_client_lib/cpp:jni_headers" ]
+  srcjar_deps = [ "//components/ip_protection/android/android_auth_client_lib/cpp:jni_headers" ]
   deps = [
     "//base:base_java",
+    "//components/ip_protection:get_proxy_config_proto_java",
     "//components/ip_protection/android/android_auth_client_lib/common/aidl:ip_protection_aidl_java",
     "//components/ip_protection/android/android_auth_client_lib/common/proto:ip_protection_auth_proto_java",
     "//net/third_party/quiche:blind_sign_auth_proto_java",

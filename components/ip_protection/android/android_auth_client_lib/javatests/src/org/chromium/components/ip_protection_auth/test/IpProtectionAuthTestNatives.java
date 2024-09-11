@@ -29,6 +29,8 @@ public final class IpProtectionAuthTestNatives {
 
         void testAuthAndSign();
 
+        void testGetProxyConfig();
+
         void testTransientError();
 
         void testPersistentError();
@@ -78,6 +80,10 @@ public final class IpProtectionAuthTestNatives {
 
     public static void testAuthAndSign() {
         IpProtectionAuthTestNativesJni.get().testAuthAndSign();
+    }
+
+    public static void testGetProxyConfig() {
+        IpProtectionAuthTestNativesJni.get().testGetProxyConfig();
     }
 
     public static void testTransientError() {

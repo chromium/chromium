@@ -76,6 +76,11 @@ public final class IpProtectionAuthTest {
     }
 
     @Test
+    public void nativeGetProxyConfigTest() throws Exception {
+        IpProtectionAuthTestNatives.testGetProxyConfig();
+    }
+
+    @Test
     public void nativeTransientErrorTest() throws Exception {
         IpProtectionAuthTestNatives.testTransientError();
     }

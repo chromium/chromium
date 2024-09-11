@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
@@ -62,6 +63,16 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   // base::BindPostTaskToCurrentDefault).
   void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
                    AuthAndSignResponseCallback callback) const override;
+
+  // Asynchronously send an GetProxyConfigRequest to the server.
+  //
+  // There are no guarantees as to which thread the callback is invoked on. It
+  // could be the main thread, a binder thread, some internal sequence, or even
+  // be called synchronously! It is the responsibility of the caller to repost
+  // to a well-defined sequence as needed (such as via base::BindPostTask or
+  // base::BindPostTaskToCurrentDefault).
+  void GetProxyConfig(const GetProxyConfigRequest& request,
+                      GetProxyConfigResponseCallback callback) const override;
 
   base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() override;
 

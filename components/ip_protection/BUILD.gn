@@ -161,3 +161,12 @@ test("components_ip_protection_unittests") {
 proto_library("get_proxy_config_proto") {
   sources = [ "get_proxy_config.proto" ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("get_proxy_config_proto_java") {
+    sources = [ "get_proxy_config.proto" ]
+    proto_path = "./"
+  }
+}

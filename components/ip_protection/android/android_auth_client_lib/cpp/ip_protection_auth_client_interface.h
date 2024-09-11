@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
@@ -37,6 +38,10 @@ using GetInitialDataResponseCallback = base::OnceCallback<void(
 using AuthAndSignResponseCallback = base::OnceCallback<void(
     base::expected<privacy::ppn::AuthAndSignResponse, AuthRequestError>)>;
 
+// Used to return an GetProxyConfigResponse or error to the user.
+using GetProxyConfigResponseCallback = base::OnceCallback<void(
+    base::expected<GetProxyConfigResponse, AuthRequestError>)>;
+
 // Interface for wrapper around the Java IpProtectionAuthClient that translates
 // native function calls into IPCs to the Android service implementing IP
 // Protection.
@@ -58,6 +63,11 @@ class IpProtectionAuthClientInterface {
   // Asynchronously send an AuthAndSignRequest to the signing server.
   virtual void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
                            AuthAndSignResponseCallback callback) const = 0;
+
+  // Asynchronously send an GetProxyConfigRequest to the server.
+  virtual void GetProxyConfig(
+      const GetProxyConfigRequest& request,
+      GetProxyConfigResponseCallback callback) const = 0;
 
   // Returns a weak pointer to this object.
   virtual base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() = 0;
