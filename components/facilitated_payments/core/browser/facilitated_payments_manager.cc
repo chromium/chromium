@@ -221,6 +221,8 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   // doesn't support it yet.
   if (client_->IsInLandscapeMode() &&
       !base::FeatureList::IsEnabled(kEnablePixPaymentsInLandscapeMode)) {
+    LogPaymentNotOfferedReason(
+        PaymentNotOfferedReason::kLandscapeScreenOrientation);
     Reset();
     return;
   }

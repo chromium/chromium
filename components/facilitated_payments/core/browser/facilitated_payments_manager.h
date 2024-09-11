@@ -238,6 +238,8 @@ class FacilitatedPaymentsManager {
                            HandlesFailureToLazilyInitializeApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
                            PixPayflowBlockedWhenFlagDisabled);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
+                           HistogramForPaymentNotOfferedReason);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.

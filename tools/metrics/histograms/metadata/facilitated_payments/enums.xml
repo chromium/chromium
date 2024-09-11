@@ -28,6 +28,7 @@ reviewer.
   <int value="1" label="Risk data empty"/>
   <int value="2" label="Code validtor failed"/>
   <int value="3" label="Invalid code"/>
+  <int value="4" label="Landscape screen orientation"/>
 </enum>
 
 <enum name="FacilitatedPayments.TransactionResult">

@@ -1686,12 +1686,17 @@ class FacilitatedPaymentsManagerTestInLandscapeMode
     : public FacilitatedPaymentsManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  void SetUp() override {
-    FacilitatedPaymentsManagerTest::SetUp();
-    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(true));
+  FacilitatedPaymentsManagerTestInLandscapeMode() {
     scoped_feature_list_.InitWithFeatureState(kEnablePixPaymentsInLandscapeMode,
                                               GetParam());
   }
+
+  void SetUp() override {
+    FacilitatedPaymentsManagerTest::SetUp();
+    ON_CALL(*client_, IsInLandscapeMode).WillByDefault(testing::Return(true));
+  }
+
+  bool IsPaymentEnabledInLandscapeMode() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1709,11 +1714,28 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
   // Pix payflow) is only done if the `EnablePixPaymentsInLandscapeMode` flag is
   // enabled.
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_))
-      .Times(GetParam() ? 1 : 0);
+      .Times(IsPaymentEnabledInLandscapeMode() ? 1 : 0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/true);
+}
+
+TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
+       HistogramForPaymentNotOfferedReason) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
+
+  // In landscape mode, if the `EnablePixPaymentsInLandscapeMode` flag is
+  // disabled, Pix payment is not offered, and a histogram should be logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kLandscapeScreenOrientation,
+      /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
 }
 
 }  // namespace payments::facilitated
