@@ -190,8 +190,10 @@ bool Encryptor::EncryptString(const std::string& plaintext,
 }
 
 bool Encryptor::DecryptString(const std::string& ciphertext,
-                              std::string* plaintext) const {
-  auto decrypted = DecryptData(base::as_bytes(base::make_span(ciphertext)));
+                              std::string* plaintext,
+                              DecryptFlags* flags) const {
+  auto decrypted =
+      DecryptData(base::as_bytes(base::make_span(ciphertext)), flags);
 
   if (!decrypted.has_value()) {
     return false;
@@ -231,7 +233,12 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
 }
 
 std::optional<std::string> Encryptor::DecryptData(
-    base::span<const uint8_t> data) const {
+    base::span<const uint8_t> data,
+    DecryptFlags* flags) const {
+  if (flags) {
+    flags->should_reencrypt = false;
+  }
+
   if (data.empty()) {
     return std::string();
   }
@@ -246,6 +253,9 @@ std::optional<std::string> Encryptor::DecryptData(
       // The Key does the raw decrypt.
       auto plaintext = key.Decrypt(ciphertext);
       if (plaintext) {
+        if (flags) {
+          flags->should_reencrypt = provider != provider_for_encryption_;
+        }
         return std::string(plaintext->begin(), plaintext->end());
       }
     }
@@ -256,6 +266,33 @@ std::optional<std::string> Encryptor::DecryptData(
   std::string string_data(data.begin(), data.end());
   std::string plaintext;
   if (OSCrypt::DecryptString(string_data, &plaintext)) {
+    // If OSCrypt is using os_crypt_posix.cc and it's passed invalid data to
+    // decrypt, it simply returns the data. This is a quirk of
+    // os_crypt_posix.cc. In this case, it's not really possible to tell whether
+    // or not encryption worked or not, and certainly not advisable to recommend
+    // a re-encryption of this potentially invalid data.
+    // TODO(crbug.com/365712505): Remove this fallback.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+    if (plaintext == string_data) {
+      return plaintext;
+    }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
+    if (!provider_for_encryption_.empty()) {
+      // Subtle: `is_os_crypt_sync_compatible_` is not transferred over mojo
+      // so will always be false in a non-browser process. However, this CHECK
+      // exists for correctness of provider registration so it does not matter
+      // if it never fires in these processes, as it will fire in browser
+      // first.
+      CHECK(!keys_.at(provider_for_encryption_).is_os_crypt_sync_compatible_)
+          << "A provider marked itself as OSCrypt Sync compatible but did not "
+             "decrypt OSCrypt Sync data.";
+      if (flags) {
+        flags->should_reencrypt = true;
+      }
+    }
     return plaintext;
   }
 
@@ -268,9 +305,10 @@ bool Encryptor::EncryptString16(const std::u16string& plaintext,
 }
 
 bool Encryptor::DecryptString16(const std::string& ciphertext,
-                                std::u16string* plaintext) const {
+                                std::u16string* plaintext,
+                                DecryptFlags* flags) const {
   std::string utf8;
-  if (!DecryptString(ciphertext, &utf8)) {
+  if (!DecryptString(ciphertext, &utf8, flags)) {
     return false;
   }
 

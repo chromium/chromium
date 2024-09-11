@@ -33,6 +33,7 @@
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/sync/os_crypt.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -144,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
 }
 
 // These tests verify that the metrics are recorded correctly. The first load of
-// browser in the PRE_ test stores the "Test Key" with app-bound encryption and
+// browser in the PRE_ test stores the "Test Key" with App-Bound encryption and
 // the second stage of the test verifies it can be retrieved successfully.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
   if (!base::FeatureList::IsEnabled(
@@ -288,7 +289,7 @@ class AppBoundEncryptionWinTestWithVariablePolicy
 
   void SetUp() override {
     if (!IsPreTest()) {
-      // Disable app-bound in the second part of the test.
+      // Disable App-Bound in the second part of the test.
       MaybeEnablePolicy(false);
     }
     AppBoundEncryptionWinTestWithPolicyBase::SetUp();
@@ -331,8 +332,12 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestWithVariablePolicy,
   // tested elsewhere.
   const auto previous_data = RetrieveData();
   ASSERT_TRUE(previous_data);
-  const auto plaintext = encryptor.DecryptData(*previous_data);
+  os_crypt_async::Encryptor::DecryptFlags flags;
+  const auto plaintext = encryptor.DecryptData(*previous_data, &flags);
   ASSERT_TRUE(plaintext);
+  // App-Bound is now disabled, so App-Bound encrypted data should be
+  // re-encrypted in order to ensure it's encrypted with the DPAPI key provider.
+  EXPECT_TRUE(flags.should_reencrypt);
   EXPECT_EQ(*plaintext, "app-bound secret");
 }
 
@@ -353,6 +358,42 @@ INSTANTIATE_TEST_SUITE_P(
     AppBoundEncryptionWinTestWithPolicy,
     ::testing::Values(
         /*policy::key::kApplicationBoundEncryptionEnabled=*/std::nullopt));
+
+class AppBoundEncryptionWinTestFeatureMaybeDisabled
+    : public AppBoundEncryptionWinTest,
+      public ::testing::WithParamInterface</*feature enabled*/ bool> {
+ public:
+  AppBoundEncryptionWinTestFeatureMaybeDisabled() {
+    feature_list_.InitWithFeatureState(
+        features::kUseAppBoundEncryptionProviderForEncryption, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestFeatureMaybeDisabled,
+                       ReEncrypt) {
+  std::string ciphertext;
+  ASSERT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
+
+  auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async());
+
+  os_crypt_async::Encryptor::DecryptFlags flags;
+  std::string plaintext;
+  ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+  // With App-Bound enabled, a decryption of an OSCrypt Sync secret should
+  // result in a request to re-encrypt to get full protection, otherwise no
+  // re-encryption should be requested.
+  EXPECT_EQ(flags.should_reencrypt, GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AppBoundEncryptionWinTestFeatureMaybeDisabled,
+                         ::testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "Enabled" : "Disabled";
+                         });
 
 // These tests do not function correctly in component builds because they rely
 // on being able to run a standalone executable child process in various
