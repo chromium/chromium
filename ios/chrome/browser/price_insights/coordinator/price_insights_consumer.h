@@ -34,13 +34,13 @@ enum class PriceBucket;
 // permission settings to enable push notification permissions.
 - (void)presentPushNotificationPermissionAlert;
 
-// Displays a UIAlert in the modulator that indicates to the user that an error
+// Displays a snackbar in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription process.
-- (void)presentStartPriceTrackingErrorAlert;
+- (void)presentStartPriceTrackingErrorSnackbar;
 
-// Displays a UIAlert in the modulator that indicates to the user that an error
+// Displays a snackbar in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription cancellation process.
-- (void)presentStopPriceTrackingErrorAlert;
+- (void)presentStopPriceTrackingErrorSnackbar;
 
 @end
 

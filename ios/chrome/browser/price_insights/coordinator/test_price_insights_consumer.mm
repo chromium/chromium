@@ -30,12 +30,12 @@ enum class PriceBucket;
   self.didPresentPushNotificationPermissionAlertForItem = YES;
 }
 
-- (void)presentStartPriceTrackingErrorAlert {
-  self.didPresentStartPriceTrackingErrorAlertForItem = YES;
+- (void)presentStartPriceTrackingErrorSnackbar {
+  self.didPresentStartPriceTrackingErrorSnackbarForItem = YES;
 }
 
-- (void)presentStopPriceTrackingErrorAlert {
-  self.didPresentStopPriceTrackingErrorAlertForItem = YES;
+- (void)presentStopPriceTrackingErrorSnackbar {
+  self.didPresentStopPriceTrackingErrorSnackbarForItem = YES;
 }
 
 @end

@@ -305,7 +305,8 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
   shopping_service_->SetSubscribeCallbackValue(false);
 
-  price_insights_consumer_.didPresentStartPriceTrackingErrorAlertForItem = NO;
+  price_insights_consumer_.didPresentStartPriceTrackingErrorSnackbarForItem =
+      NO;
   mediator_.priceInsightsConsumer = price_insights_consumer_;
   [mediator_ tryPriceInsightsTrackItem:GetPriceInsightsItem()];
 
@@ -313,7 +314,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
         return price_insights_consumer_
-            .didPresentStartPriceTrackingErrorAlertForItem;
+            .didPresentStartPriceTrackingErrorSnackbarForItem;
       }));
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
@@ -362,7 +363,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   shopping_service_->SetUnsubscribeCallbackValue(false);
   shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
 
-  price_insights_consumer_.didPresentStopPriceTrackingErrorAlertForItem = NO;
+  price_insights_consumer_.didPresentStopPriceTrackingErrorSnackbarForItem = NO;
   mediator_.priceInsightsConsumer = price_insights_consumer_;
   [mediator_ priceInsightsStopTrackingItem:GetPriceInsightsItem()];
 
@@ -370,7 +371,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
         return price_insights_consumer_
-            .didPresentStopPriceTrackingErrorAlertForItem;
+            .didPresentStopPriceTrackingErrorSnackbarForItem;
       }));
 }
 

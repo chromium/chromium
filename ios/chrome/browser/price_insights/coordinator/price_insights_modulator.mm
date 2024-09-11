@@ -201,64 +201,32 @@ NSDate* getNSDateFromString(std::string date) {
   [_alertCoordinator start];
 }
 
-- (void)presentStartPriceTrackingErrorAlert {
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* tryAgainTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
-
+- (void)presentStartPriceTrackingErrorSnackbar {
   __weak PriceInsightsModulator* weakSelf = self;
-  [_alertCoordinator stop];
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:alertTitle
-                         message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:^{
-                                 [weakSelf dismissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator addItemWithTitle:tryAgainTitle
-                               action:^{
-                                 [weakSelf onStartTrackingRetryForItem];
-                               }
-                                style:UIAlertActionStyleDefault];
-  [_alertCoordinator start];
+  [self
+      displaySnackbar:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_SUBSCRIBE_ERROR_ALERT_DESCRIPTION)
+           buttonText:
+               l10n_util::GetNSString(
+                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT)
+               action:^{
+                 [weakSelf onStartTrackingRetryForItem];
+               }];
 }
 
-- (void)presentStopPriceTrackingErrorAlert {
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* tryAgainTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
-
+- (void)presentStopPriceTrackingErrorSnackbar {
   __weak PriceInsightsModulator* weakSelf = self;
-  [_alertCoordinator stop];
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:alertTitle
-                         message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:^{
-                                 [weakSelf dismissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator addItemWithTitle:tryAgainTitle
-                               action:^{
-                                 [weakSelf onStopPriceTrackingRetryForItem];
-                               }
-                                style:UIAlertActionStyleDefault];
-  [_alertCoordinator start];
+  [self
+      displaySnackbar:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_UNSUBSCRIBE_ERROR_ALERT_DESCRIPTION)
+           buttonText:
+               l10n_util::GetNSString(
+                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT)
+               action:^{
+                 [weakSelf onStopPriceTrackingRetryForItem];
+               }];
 }
 
 #pragma mark - private
