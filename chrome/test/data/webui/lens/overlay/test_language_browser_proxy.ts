@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LanguageBrowserProxy} from 'chrome-untrusted://lens/language_browser_proxy.js';
+import type {LanguageBrowserProxy} from 'chrome-untrusted://lens-overlay/language_browser_proxy.js';
 
 /**
  * Test version of the LanguageBrowserProxy used in connecting Lens Overlay to

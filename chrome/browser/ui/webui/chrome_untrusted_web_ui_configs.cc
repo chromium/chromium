@@ -21,7 +21,8 @@
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/ui/lens/lens_untrusted_ui_config.h"
+#include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
+#include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -46,7 +47,10 @@ void RegisterChromeUntrustedWebUIConfigs() {
 #if defined(TOOLKIT_VIEWS)
   map.AddUntrustedWebUIConfig(
       std::make_unique<CompanionSidePanelUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<lens::LensOverlayUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<lens::LensSidePanelUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());

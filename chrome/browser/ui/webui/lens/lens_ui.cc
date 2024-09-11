@@ -25,8 +25,8 @@ LensUI::LensUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   // Set up Content Security Policy (CSP) for chrome-untrusted://lens iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
   // Allow chrome-untrusted://lens page to load as an iframe in the page.
-  std::string frame_src = base::StringPrintf("frame-src %s 'self';",
-                                             chrome::kChromeUILensUntrustedURL);
+  std::string frame_src = base::StringPrintf(
+      "frame-src %s 'self';", chrome::kChromeUILensOverlayUntrustedURL);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, frame_src);
 }

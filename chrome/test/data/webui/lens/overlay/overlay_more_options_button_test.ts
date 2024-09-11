@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/lens_overlay_app.js';
+import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';

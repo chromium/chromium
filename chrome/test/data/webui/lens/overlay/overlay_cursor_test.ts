@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/lens_overlay_app.js';
+import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import type {CursorTooltipElement} from 'chrome-untrusted://lens/cursor_tooltip.js';
-import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import type {CursorTooltipElement} from 'chrome-untrusted://lens-overlay/cursor_tooltip.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
+import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';

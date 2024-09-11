@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/translate_button.js';
+import 'chrome-untrusted://lens-overlay/translate_button.js';
 
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens/language_browser_proxy.js';
-import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {ShimmerControlRequester} from 'chrome-untrusted://lens/selection_utils.js';
-import type {TranslateButtonElement} from 'chrome-untrusted://lens/translate_button.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/language_browser_proxy.js';
+import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {ShimmerControlRequester} from 'chrome-untrusted://lens-overlay/selection_utils.js';
+import type {TranslateButtonElement} from 'chrome-untrusted://lens-overlay/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';

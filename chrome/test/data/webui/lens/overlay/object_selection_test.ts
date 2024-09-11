@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/selection_overlay.js';
+import 'chrome-untrusted://lens-overlay/selection_overlay.js';
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
+import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
