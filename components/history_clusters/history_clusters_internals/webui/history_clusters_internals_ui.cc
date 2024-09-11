@@ -23,8 +23,7 @@ HistoryClustersInternalsUI::HistoryClustersInternalsUI(
       history_service_(history_service) {
   // TODO(crbug.com/354691088): Explicit use of size when making span is unsafe.
   std::move(set_up_data_source_callback)
-      .Run(base::make_span(kHistoryClustersInternalsResources,
-                           kHistoryClustersInternalsResourcesSize),
+      .Run(base::make_span(kHistoryClustersInternalsResources),
            IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
 }
 
