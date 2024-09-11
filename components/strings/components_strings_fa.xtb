@@ -1660,7 +1660,6 @@
 <translation id="4065659219963895623">رستوران‌ها</translation>
 <translation id="4067774859633143413">برای خروج از تمام‌صفحه و مشاهده بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید</translation>
 <translation id="4067947977115446013">افزودن نشانی معتبر</translation>
-<translation id="4069116422999284300">‏عناوین برگه انتخاب‌شده و نشانی‌های وب مورداستفاده به Google ارسال می‌شود</translation>
 <translation id="4072486802667267160">هنگام پردازش سفارش شما خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="4073376909608563327">نمی‌توان از باز کردن قفل دستگاه استفاده کرد</translation>
 <translation id="4073797364926776829">مشاهده کارت</translation>
@@ -2420,7 +2419,6 @@
     با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="549333378215107354">اندازه ۳</translation>
 <translation id="5496804587179176046">کدهای امنیتی را ذخیره کنید، فعلاً هیچ کد امنیتی ذخیره نشده است</translation>
-<translation id="5500138616054402841">‏‫Chrome می‌تواند به شما کمک کند با کنار هم قرار دادن محصولات مشابه آن‌ها را مقایسه کنید</translation>
 <translation id="550365051221576010">تکمیل همه موارد</translation>
 <translation id="5508443345185481044">دوربین عکس‌برداری و فیلم‌برداری</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@
 <translation id="9004367719664099443">‏جلسه VR درحال انجام است</translation>
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
-<translation id="9014413491147864781">درباره جدول‌های مقایسه <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">‏سایت‌هایی که بازدید می‌کنید می‌توانند برای کمک به سنجش عملکرد آگهی‌هایشان، اطلاعاتی از Chrome درخواست کنند. ‫Chrome به سایت‌ها اجازه می‌دهد انواع محدودی از داده را جمع‌آوری کنند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="9018120810758822233">کد امنیتی خود را برای <ph name="CREDIT_CARD" /> وارد کنید</translation>
 <translation id="901834265349196618">ایمیل</translation>

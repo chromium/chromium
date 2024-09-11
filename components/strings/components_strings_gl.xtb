@@ -1660,7 +1660,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4065659219963895623">Restaurantes</translation>
 <translation id="4067774859633143413">Para saír da pantalla completa e ver a descarga, mantén premido |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
-<translation id="4069116422999284300">Os URL e os títulos das pestanas seleccionadas enviaranse a Google</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
 <translation id="4073376909608563327">Non se puido usar o desbloqueo do dispositivo</translation>
 <translation id="4073797364926776829">Ver tarxeta</translation>
@@ -2420,7 +2419,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     Tenta pórte en contacto coa persoa que administra o sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
 <translation id="5496804587179176046">Garda códigos de seguranza. Actualmente non hai ningún gardado</translation>
-<translation id="5500138616054402841">Chrome pode axudarche a comparar produtos similares en paralelo</translation>
 <translation id="550365051221576010">Cubrir todo</translation>
 <translation id="5508443345185481044">Cámaras e videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@ Detalles adicionais:
 <translation id="9004367719664099443">Sesión de RV en curso</translation>
 <translation id="9005998258318286617">Produciuse un erro ao cargar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> sobre as táboas de comparación</translation>
 <translation id="9014705027639070815">Os sitios que visites poderán solicitarlle a Chrome información que lles sirva de axuda para medir o rendemento dos seus anuncios. Chrome permite que os sitios recompilen certo tipo de datos (por exemplo, se fixeches unha compra despois de visitar un sitio).</translation>
 <translation id="9018120810758822233">Indica o código de seguranza de <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">correo electrónico</translation>

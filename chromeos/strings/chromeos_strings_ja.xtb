@@ -160,7 +160,7 @@
 <translation id="1738949837603788263">ゾーン <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">画像を読み込めませんでした。ネットワーク接続を確認するか、画像をもう一度読み込んでみてください。</translation>
 <translation id="1751249301761991853">パーソナライズ</translation>
-<translation id="1751335846119670066">読み取りサポート</translation>
+<translation id="1751335846119670066">文書読解サポート</translation>
 <translation id="1753496554272155572">壁紙のプレビューを終了</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> の編集ボタン。</translation>
 <translation id="1755556344721611131">診断アプリ</translation>
@@ -234,7 +234,7 @@
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2086091080968010660">時刻に基づく変更は正確でない場合があります。設定でシステムの位置情報へのアクセスをオンにしてください。</translation>
 <translation id="2102231663024125441">テキスト編集</translation>
-<translation id="2102648867808308635">このページで Help me read を使用する</translation>
+<translation id="2102648867808308635">このページで文書読解サポートを使用する</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">現在、英語（米国）でのみご利用いただけます</translation>

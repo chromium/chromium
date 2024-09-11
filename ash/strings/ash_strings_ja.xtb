@@ -228,7 +228,7 @@
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
 <translation id="1749109475624620922">ウィンドウ <ph name="WINDOW_TITLE" /> をすべてのデスクに割り当てました</translation>
 <translation id="1750088060796401187">表示できるデスクは最大 <ph name="MAX_DESK_LIMIT" /> 件です。新しいデスクを開くには、デスクを削除してください。</translation>
-<translation id="1751335846119670066">読み取りサポート</translation>
+<translation id="1751335846119670066">文書読解サポート</translation>
 <translation id="1755408179247123630">「選択して読み上げ」をオンにしますか？</translation>
 <translation id="1755556344721611131">診断アプリ</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
@@ -1200,7 +1200,7 @@
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> のプレビュー。アクティブでないデスクです。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
-<translation id="5140105873789567560">文書作成サポートと読み取りサポートを使用するには、18 歳以上である必要があります。</translation>
+<translation id="5140105873789567560">文書作成サポートと文書読解サポートを使用するには、18 歳以上である必要があります。</translation>
 <translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
@@ -1957,12 +1957,12 @@
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
 <translation id="7728657226117099693">CapsLock をオフにする</translation>
 <translation id="7742327441377685481">通知なし</translation>
-<translation id="774736258792760908">文書作成サポートと読み取りサポートをオンにすると、入力したテキストとドキュメントの内容が Google AI サーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
+<translation id="774736258792760908">文書作成サポートと文書読解サポートをオンにすると、入力したテキストとドキュメントの内容が Google AI サーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">すべて表示</translation>
-<translation id="7759183637555564029">文書作成サポートと読み取りサポートは [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="7759183637555564029">文書作成サポートと文書読解サポートは [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
 <translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
@@ -2180,7 +2180,7 @@
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
-<translation id="851660987304951246">読み取りサポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
+<translation id="851660987304951246">文書読解サポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{マイク入力は <ph name="APP_NAME" /> によって制御されています}other{マイク入力は # 個のアプリによって制御されています}}</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>

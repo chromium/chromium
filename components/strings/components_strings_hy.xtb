@@ -1666,7 +1666,6 @@
 <translation id="4065659219963895623">Ռեստորաններ</translation>
 <translation id="4067774859633143413">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Ավելացրեք վավեր հասցե</translation>
-<translation id="4069116422999284300">Ընտրված ներդիրների վերնագրերն ու URL-ներն ուղարկվում են Google-ին</translation>
 <translation id="4072486802667267160">Վճարումը մշակելու ընթացքում սխալ առաջացավ: Նորից փորձեք:</translation>
 <translation id="4073376909608563327">Չհաջողվեց օգտագործել սարքի ապակողպումը</translation>
 <translation id="4073797364926776829">Դիտել քարտը</translation>
@@ -2429,7 +2428,6 @@
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="549333378215107354">Չափ 3</translation>
 <translation id="5496804587179176046">Պահել անվտանգության կոդերը․ այս պահին անվտանգության ոչ մի կոդ պահված չէ</translation>
-<translation id="5500138616054402841">Chrome-ի օգնությամբ այժմ կարող եք կողք կողքի համեմատել նմանատիպ ապրանքները</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
 <translation id="5508443345185481044">Ֆոտոխցիկներ և տեսախցիկներ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4060,7 +4058,7 @@
 <translation id="8483229036294884935">Այս հասցեն կհեռացվի ձեր Google հաշվից, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Վերաբերում է՝</translation>
 <translation id="8490137692873530638">Շեղջիչ 10</translation>
-<translation id="8493948351860045254">Ազատել տարածք</translation>
+<translation id="8493948351860045254">Տարածք ազատել</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />-ը չափից երկար է պատասխանում:</translation>
 <translation id="8502023382441452707">Ծննդյան օրեր և անվանը նվիրված օրեր</translation>
 <translation id="8503559462189395349">Chrome-ի գաղտնաբառեր</translation>
@@ -4315,7 +4313,6 @@
 <translation id="9004367719664099443">VR աշխատաշրջանն ակտիվ է</translation>
 <translation id="9005998258318286617">Չհաջողվեց բեռնել PDF փաստաթուղթը։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> համեմատման աղյուսակների մասին</translation>
 <translation id="9014705027639070815">Կայքերը, որոնք այցելում եք, կարող են տեղեկություններ խնդրել Chrome-ից՝ օգնելու գնահատել իրենց գովազդի արդյունավետությունը։ Chrome-ը կայքերին թույլատրում է հավաքել որոշակի տվյալներ, օրինակ՝ արդյոք դուք գնում եք կատարել կայք այցելելուց հետո։</translation>
 <translation id="9018120810758822233">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի ձեր անվտանգության կոդը</translation>
 <translation id="901834265349196618">էլփոստ</translation>

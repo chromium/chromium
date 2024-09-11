@@ -1661,7 +1661,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4065659219963895623">Restaurantes</translation>
 <translation id="4067774859633143413">Para salir de la pantalla completa y ver la descarga, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
-<translation id="4069116422999284300">Las URLs y los títulos de las pestañas seleccionados se envían a Google</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4073376909608563327">No se pudo usar el desbloqueo del dispositivo</translation>
 <translation id="4073797364926776829">Ver tarjeta</translation>
@@ -2421,7 +2420,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     Intenta contactar al administrador de tu sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
 <translation id="5496804587179176046">Guardar códigos de seguridad; actualmente no hay códigos de seguridad guardados</translation>
-<translation id="5500138616054402841">Chrome puede ayudarte a comparar productos similares en paralelo</translation>
 <translation id="550365051221576010">Completar todo</translation>
 <translation id="5508443345185481044">Cámaras y videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4308,7 +4306,6 @@ Detalles adicionales:
 <translation id="9004367719664099443">La sesión de RV está en curso</translation>
 <translation id="9005998258318286617">No se pudo cargar el documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre las tablas de comparación</translation>
 <translation id="9014705027639070815">Los sitios que visitas pueden solicitar información a Chrome para medir el rendimiento de sus anuncios. Chrome permite que los sitios recopilen tipos limitados de datos, por ejemplo, si realizaste una compra después de visitar un sitio.</translation>
 <translation id="9018120810758822233">Ingresa el código de seguridad de <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">Correo electrónico</translation>

@@ -1660,7 +1660,6 @@
 <translation id="4065659219963895623">음식점</translation>
 <translation id="4067774859633143413">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="4067947977115446013">유효한 주소 추가</translation>
-<translation id="4069116422999284300">선택한 탭 제목 및 URL이 Google로 전송됩니다.</translation>
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4073376909608563327">기기 잠금 해제를 사용할 수 없음</translation>
 <translation id="4073797364926776829">카드 보기</translation>
@@ -2420,7 +2419,6 @@
     시스템 관리자에게 문의하세요.</translation>
 <translation id="549333378215107354">크기 3</translation>
 <translation id="5496804587179176046">보안 코드 저장, 현재 저장된 보안 코드 없음</translation>
-<translation id="5500138616054402841">Chrome을 사용하면 비슷한 제품을 나란히 놓고 비교할 수 있습니다</translation>
 <translation id="550365051221576010">모두 입력</translation>
 <translation id="5508443345185481044">카메라 및 캠코더</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4305,7 +4303,6 @@
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
 <translation id="9008201768610948239">무시</translation>
-<translation id="9014413491147864781">비교표에 관해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">방문하는 사이트에서는 광고 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Chrome에서는 사이트가 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)를 수집하도록 허용합니다.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />의 보안 코드 입력</translation>
 <translation id="901834265349196618">이메일</translation>

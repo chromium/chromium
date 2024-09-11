@@ -1660,7 +1660,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4065659219963895623">Restauranger</translation>
 <translation id="4067774859633143413">Avsluta helskärmsläget och se nedladdningen genom att hålla nere |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Lägg till giltig adress</translation>
-<translation id="4069116422999284300">Valda fliktitlar och webbadresser skickas till Google</translation>
 <translation id="4072486802667267160">Det gick inte att behandla beställningen. Försök igen.</translation>
 <translation id="4073376909608563327">Det gick inte att använda enhetsupplåsning</translation>
 <translation id="4073797364926776829">Visa kort</translation>
@@ -2420,7 +2419,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
     Testa med att kontakta systemadministratören.</translation>
 <translation id="549333378215107354">Storlek 3</translation>
 <translation id="5496804587179176046">Spara säkerhetskoder. Inga säkerhetskoder är sparade just nu.</translation>
-<translation id="5500138616054402841">Chrome kan hjälpa dig att jämföra liknande produkter sida vid sida</translation>
 <translation id="550365051221576010">Fyll i allt</translation>
 <translation id="5508443345185481044">Kameror och videokameror</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4307,7 +4305,6 @@ Mer information:
 <translation id="9004367719664099443">En VR-session pågår</translation>
 <translation id="9005998258318286617">Det gick inte att läsa in PDF-dokumentet.</translation>
 <translation id="9008201768610948239">Ignorera</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om jämförelsetabeller</translation>
 <translation id="9014705027639070815">Webbplatser du besöker kan be Chrome om information för att hjälpa dem att mäta annonsernas resultat. Chrome tillåter att webbplatser samlar in begränsade typer av data, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="9018120810758822233">Ange säkerhetskoden för <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-post</translation>

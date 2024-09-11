@@ -1660,7 +1660,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4065659219963895623">Restaurants</translation>
 <translation id="4067774859633143413">To exit full screen and see download, press and hold |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Add Valid Address</translation>
-<translation id="4069116422999284300">Selected tab titles and URLs using are sent to Google</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
 <translation id="4073376909608563327">Couldn't use device unlock</translation>
 <translation id="4073797364926776829">View card</translation>
@@ -2420,7 +2419,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Try contacting your system administrator.</translation>
 <translation id="549333378215107354">Size 3</translation>
 <translation id="5496804587179176046">Save security codes, no security codes currently saved</translation>
-<translation id="5500138616054402841">Chrome can help you compare similar products side by side</translation>
 <translation id="550365051221576010">Fill everything</translation>
 <translation id="5508443345185481044">Cameras and camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@ Additional details:
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
 <translation id="9008201768610948239">Ignore</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about comparison tables</translation>
 <translation id="9014705027639070815">Sites that you visit can ask Chrome for information to help them measure the performance of their ads. Chrome lets sites collect limited types of data, such as whether you made a purchase after visiting a site.</translation>
 <translation id="9018120810758822233">Enter your security code for <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>

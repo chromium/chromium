@@ -1660,7 +1660,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4065659219963895623">Restavracije</translation>
 <translation id="4067774859633143413">Če želite zapreti celozaslonski način in si ogledati prenos, pridržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajanje veljavnega naslova</translation>
-<translation id="4069116422999284300">Izbrani naslovi zavihkov in URL-ji, ki so uporabljeni, se pošljejo Googlu</translation>
 <translation id="4072486802667267160">Pri obdelavi naročila je prišlo do napake. Poskusite znova.</translation>
 <translation id="4073376909608563327">Odklepanja naprave ni bilo mogoče uporabiti</translation>
 <translation id="4073797364926776829">Ogled kartice</translation>
@@ -2420,7 +2419,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     Poskusite se obrniti na skrbnika sistema.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
 <translation id="5496804587179176046">Shranite varnostne kode, trenutno ni shranjenih varnostnih kod</translation>
-<translation id="5500138616054402841">Chrome vam lahko pomaga vzporedno primerjati podobne izdelke</translation>
 <translation id="550365051221576010">Izpolnitev vsega</translation>
 <translation id="5508443345185481044">Videokamere</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@ Dodatne podrobnosti:
 <translation id="9004367719664099443">Seja VR je v teku</translation>
 <translation id="9005998258318286617">Dokumenta PDF ni bilo mogoče naložiti.</translation>
 <translation id="9008201768610948239">Prezri</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o primerjalnih tabelah</translation>
 <translation id="9014705027639070815">Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome omogoča spletnim mestom zbiranje omejenih vrst podatkov, na primer o tem, ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="9018120810758822233">Vnesite varnostno kodo za kartico <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-pošta</translation>

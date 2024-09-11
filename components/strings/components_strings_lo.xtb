@@ -1660,7 +1660,6 @@
 <translation id="4065659219963895623">ຮ້ານອາຫານ</translation>
 <translation id="4067774859633143413">ເພື່ອອອກຈາກໂໝດເຕັມຈໍ ແລະ ເບິ່ງການດາວໂຫຼດ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້</translation>
 <translation id="4067947977115446013">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
-<translation id="4069116422999284300">ລະບົບຈະສົ່ງຊື່ແຖບທີ່ເລືອກໄວ້ ແລະ URL ທີ່ໃຊ້ໄປໃຫ້ Google</translation>
 <translation id="4072486802667267160">ມີຄວາມຜິດພາດໃນການດຳເນີນຄຳສັ່ງຊື້ຂອງທ່ານ, ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="4073376909608563327">ບໍ່ສາມາດໃຊ້ການປົດລັອກອຸປະກອນໄດ້</translation>
 <translation id="4073797364926776829">ເບິ່ງບັດ</translation>
@@ -2420,7 +2419,6 @@
     ໃຫ້ລອງຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="549333378215107354">ຂະໜາດ 3</translation>
 <translation id="5496804587179176046">ບັນທຶກລະຫັດຄວາມປອດໄພ, ບໍ່ມີລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້ໃນປັດຈຸບັນ</translation>
-<translation id="5500138616054402841">Chrome ສາມາດຊ່ວຍທ່ານປຽບທຽບຜະລິດຕະພັນທີ່ຄ້າຍກັນໄດ້ແບບສະແດງຄູ່ກັນ</translation>
 <translation id="550365051221576010">ຕື່ມຂໍ້ມູນທຸກຢ່າງ</translation>
 <translation id="5508443345185481044">ກ້ອງຖ່າຍຮູບ ແລະ ກ້ອງຖ່າຍວິດີໂອ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@
 <translation id="9004367719664099443">ເຊດຊັນ VR ພວມດຳເນີນຢູ່</translation>
 <translation id="9005998258318286617">ໂຫຼດເອກະສານ PDF ບໍ່ສຳເລັດ.</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບຕາຕະລາງປຽບທຽບ</translation>
 <translation id="9014705027639070815">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງແມ່ນສາມາດຂໍຂໍ້ມູນຈາກ Chrome ເພື່ອຊ່ວຍວັດແທກປະສິດທິພາບຂອງໂຄສະນາ. Chrome ຈະອະນຸຍາດໃຫ້ເວັບໄຊຮວບຮວມຂໍ້ມູນປະເພດທີ່ຈຳກັດ, ເຊັ່ນ: ທ່ານມີການຊື້ເຄື່ອງຫຼັງຈາກເຂົ້າເວັບໄຊໃດໜຶ່ງຫຼືບໍ່.</translation>
 <translation id="9018120810758822233">ປ້ອນລະຫັດຄວາມປອດໄພຂອງທ່ານສຳລັບ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">ອີເມວ</translation>

@@ -1660,7 +1660,6 @@
 <translation id="4065659219963895623">Ресторани</translation>
 <translation id="4067774859633143413">Да бисте изашли из режима целог екрана и прегледали преузимање, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
-<translation id="4069116422999284300">Изабрани наслови картица и URL-ови који се користе шаљу се Google-у</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
 <translation id="4073797364926776829">Прикажи картицу</translation>
@@ -2420,7 +2419,6 @@
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
 <translation id="5496804587179176046">Чувај безбедносне кодове, тренутно нема сачуваних безбедносних кодова</translation>
-<translation id="5500138616054402841">Chrome може да вам помогне да упоредите сличне производе</translation>
 <translation id="550365051221576010">Попуни све</translation>
 <translation id="5508443345185481044">Фото-апарати и камкордери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@
 <translation id="9004367719664099443">ВР сесија је у току</translation>
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о табелама за поређење</translation>
 <translation id="9014705027639070815">Сајтови које посећујете могу да затраже од Chrome-а информације које им помажу да измере учинак огласа. Chrome омогућава сајтовима да прикупљају ограничене типове података, на пример, да ли сте обавили куповину после посете сајту.</translation>
 <translation id="9018120810758822233">Унесите безбедносни кôд за: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имејл</translation>

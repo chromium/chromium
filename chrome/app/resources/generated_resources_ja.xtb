@@ -1069,7 +1069,7 @@
 <translation id="1750172676754093297">セキュリティ キーにフィンガープリントを保存できません</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="1751262127955453661">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを編集できるようになります</translation>
-<translation id="1751335846119670066">読み取りサポート</translation>
+<translation id="1751335846119670066">文書読解サポート</translation>
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="175196451752279553">閉じたタブを開く(&amp;R)</translation>
 <translation id="1753067873202720523">このメッセージが表示されているときは、Chromebook が充電されない可能性があります。</translation>
@@ -9032,7 +9032,7 @@
 <translation id="756876171895853918">アバターをカスタマイズ</translation>
 <translation id="7568790562536448087">更新中:</translation>
 <translation id="7569983096843329377">黒</translation>
-<translation id="7570548610653957960">Help me read</translation>
+<translation id="7570548610653957960">文書読解サポート</translation>
 <translation id="7571643774869182231">更新に必要な空き容量がありません</translation>
 <translation id="7573172247376861652">バッテリー充電</translation>
 <translation id="7573594921350120855">多くのサイトは、ビデオチャットなどの通信機能にビデオカメラを使用します。</translation>

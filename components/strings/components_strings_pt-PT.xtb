@@ -1660,7 +1660,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4065659219963895623">Restaurantes</translation>
 <translation id="4067774859633143413">Para sair do modo de ecrã inteiro e ver a transferência, prima sem soltar |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Adicionar endereço válido</translation>
-<translation id="4069116422999284300">Os URLs e os títulos dos separadores selecionados que usa são enviados para a Google</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar a sua encomenda. Tente novamente.</translation>
 <translation id="4073376909608563327">Não foi possível usar o desbloqueio do dispositivo</translation>
 <translation id="4073797364926776829">Ver cartão</translation>
@@ -2420,7 +2419,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     Experimente contactar o gestor do sistema.</translation>
 <translation id="549333378215107354">Tamanho 3</translation>
 <translation id="5496804587179176046">Guardar códigos de segurança, não existem códigos de segurança guardados atualmente</translation>
-<translation id="5500138616054402841">O Chrome pode ajudar a comparar produtos semelhantes lado a lado</translation>
 <translation id="550365051221576010">Preencher todos os campos</translation>
 <translation id="5508443345185481044">Máquinas fotográficas e câmaras de vídeo</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@ Detalhes adicionais:
 <translation id="9004367719664099443">Sessão de RV em curso</translation>
 <translation id="9005998258318286617">Falha ao carregar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre as tabelas de comparação</translation>
 <translation id="9014705027639070815">Os sites que visitar podem pedir ao Chrome informações para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="9018120810758822233">Introduza o código de segurança do cartão <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>

@@ -1661,7 +1661,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4065659219963895623">Ravintolat</translation>
 <translation id="4067774859633143413">Poistu koko näytön tilasta ja katso lataus painamalla pitkään |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Lisää kelvollinen osoite</translation>
-<translation id="4069116422999284300">Valitut välilehtien nimet ja URL-osoitteet lähetetään Googlelle</translation>
 <translation id="4072486802667267160">Virhe tilausta käsiteltäessä. Yritä uudelleen.</translation>
 <translation id="4073376909608563327">Laitteen lukituksen avaustapaa ei voitu käyttää</translation>
 <translation id="4073797364926776829">Katso kortti</translation>
@@ -2421,7 +2420,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="549333378215107354">Koko 3</translation>
 <translation id="5496804587179176046">Tallenna turvakoodit, ei tällä hetkellä tallennettuja turvakoodeja</translation>
-<translation id="5500138616054402841">Chrome voi auttaa sinua vertaamaan samankaltaisia tuotteita rinnakkain</translation>
 <translation id="550365051221576010">Täytä kaikki</translation>
 <translation id="5508443345185481044">Kamerat ja videokamerat</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4308,7 +4306,6 @@ Lisätietoja:
 <translation id="9004367719664099443">VR-käyttökerta on käynnissä</translation>
 <translation id="9005998258318286617">PDF-asiakirjan lataaminen epäonnistui.</translation>
 <translation id="9008201768610948239">Ohita</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> vertailutaulukoista</translation>
 <translation id="9014705027639070815">Avaamasi sivustot voivat pyytää Chromelta tietoa mainostulosten mittaamiseksi. Chromen avulla sivustot voivat kerätä rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytäsi sivustolla.</translation>
 <translation id="9018120810758822233">Lisää turvakoodi: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">sähköposti</translation>

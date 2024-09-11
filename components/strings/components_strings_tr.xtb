@@ -1660,7 +1660,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4065659219963895623">Restoranlar</translation>
 <translation id="4067774859633143413">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="4067947977115446013">Geçerli Adres Ekleyin</translation>
-<translation id="4069116422999284300">Seçilen sekme başlıkları ve kullanılan URL'ler Google'a gönderilir</translation>
 <translation id="4072486802667267160">Ödemeniz işlenirken bir hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="4073376909608563327">Cihazda kilit açma kullanılamadı</translation>
 <translation id="4073797364926776829">Kartı göster</translation>
@@ -2420,7 +2419,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     Sistem yöneticinize başvurmayı deneyin.</translation>
 <translation id="549333378215107354">Boyut 3</translation>
 <translation id="5496804587179176046">Güvenlik kodlarını kaydedin, şu anda kayıtlı güvenlik kodu yok</translation>
-<translation id="5500138616054402841">Chrome, benzer ürünleri yan yana karşılaştırmanıza yardımcı olabilir</translation>
 <translation id="550365051221576010">Tüm alanları doldur</translation>
 <translation id="5508443345185481044">Fotoğraf Makineleri ve Video Kameralar</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4307,7 +4305,6 @@ Ek ayrıntılar:
 <translation id="9004367719664099443">VR oturumu devam ediyor</translation>
 <translation id="9005998258318286617">PDF dokümanı yüklenemedi.</translation>
 <translation id="9008201768610948239">Yoksay</translation>
-<translation id="9014413491147864781">Karşılaştırma tabloları hakkında <ph name="BEGIN_LINK" />daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">Ziyaret ettiğiniz siteler, reklamlarının performansını ölçmek için Chrome'dan bilgi isteyebilir. Chrome, sitelerin sınırlı türde verileri (ör. bir siteyi ziyaret ettikten sonra satın alma işlemi yapıp yapmadığınız) toplamasına izin verir.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> için güvenlik kodunuzu girin</translation>
 <translation id="901834265349196618">e-posta</translation>

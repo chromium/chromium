@@ -1660,7 +1660,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4065659219963895623">Restorani</translation>
 <translation id="4067774859633143413">Da biste izašli iz režima celog ekrana i pregledali preuzimanje, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajte važeću adresu</translation>
-<translation id="4069116422999284300">Izabrani naslovi kartica i URL-ovi koji se koriste šalju se Google-u</translation>
 <translation id="4072486802667267160">Došlo je do greške pri obradi porudžbine. Probajte ponovo.</translation>
 <translation id="4073376909608563327">Otključavanje uređaja nije uspelo</translation>
 <translation id="4073797364926776829">Prikaži karticu</translation>
@@ -2420,7 +2419,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     Pokušajte da se obratite administratoru sistema.</translation>
 <translation id="549333378215107354">Veličina 3</translation>
 <translation id="5496804587179176046">Čuvaj bezbednosne kodove, trenutno nema sačuvanih bezbednosnih kodova</translation>
-<translation id="5500138616054402841">Chrome može da vam pomogne da uporedite slične proizvode</translation>
 <translation id="550365051221576010">Popuni sve</translation>
 <translation id="5508443345185481044">Foto-aparati i kamkorderi</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@ Dodatni detalji:
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspelo.</translation>
 <translation id="9008201768610948239">Ignoriši</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o tabelama za poređenje</translation>
 <translation id="9014705027639070815">Sajtovi koje posećujete mogu da zatraže od Chrome-a informacije koje im pomažu da izmere učinak oglasa. Chrome omogućava sajtovima da prikupljaju ograničene tipove podataka, na primer, da li ste obavili kupovinu posle posete sajtu.</translation>
 <translation id="9018120810758822233">Unesite bezbednosni kôd za: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">imejl</translation>

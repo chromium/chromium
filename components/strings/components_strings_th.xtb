@@ -1659,7 +1659,6 @@
 <translation id="4065659219963895623">ร้านอาหาร</translation>
 <translation id="4067774859633143413">หากต้องการออกจากโหมดเต็มหน้าจอและดูการดาวน์โหลด ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
 <translation id="4067947977115446013">เพิ่มที่อยู่ที่ถูกต้อง</translation>
-<translation id="4069116422999284300">ระบบจะส่งชื่อแท็บและ URL ที่ใช้ไปให้ Google</translation>
 <translation id="4072486802667267160">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณ โปรดลองอีกครั้ง</translation>
 <translation id="4073376909608563327">ใช้การปลดล็อกอุปกรณ์ไม่ได้</translation>
 <translation id="4073797364926776829">ดูบัตร</translation>
@@ -2419,7 +2418,6 @@
     โปรดลองติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="549333378215107354">ขนาด 3</translation>
 <translation id="5496804587179176046">บันทึกรหัสความปลอดภัย ไม่มีรหัสความปลอดภัยที่บันทึกไว้ในปัจจุบัน</translation>
-<translation id="5500138616054402841">Chrome ช่วยคุณเปรียบเทียบผลิตภัณฑ์ที่คล้ายกันได้แบบแสดงคู่กัน</translation>
 <translation id="550365051221576010">กรอกทุกช่อง</translation>
 <translation id="5508443345185481044">กล้องถ่ายรูปและกล้องวิดีโอ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4306,7 +4304,6 @@
 <translation id="9004367719664099443">เซสชัน VR กำลังทำงาน</translation>
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับตารางเปรียบเทียบ</translation>
 <translation id="9014705027639070815">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยวัดประสิทธิภาพของโฆษณา Chrome ช่วยให้เว็บไซต์รวบรวมข้อมูลบางประเภทได้ เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="9018120810758822233">ป้อนรหัสความปลอดภัยสำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">อีเมล</translation>

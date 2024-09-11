@@ -1657,7 +1657,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4065659219963895623">Éttermek</translation>
 <translation id="4067774859633143413">A teljes képernyős nézetből való kilépéshez és a letöltés megtekintéséhez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Érvényes címet adjon meg</translation>
-<translation id="4069116422999284300">A kiválasztott lapok címei és URL-jei el lesznek küldve a Google-nak</translation>
 <translation id="4072486802667267160">Hiba történt a rendelés feldolgozása közben. Kérjük, próbálja újra.</translation>
 <translation id="4073376909608563327">Nem sikerült az eszköz feloldási módszerének használata</translation>
 <translation id="4073797364926776829">Kártya megtekintése</translation>
@@ -2417,7 +2416,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     Javasoljuk, hogy forduljon a rendszergazdához.</translation>
 <translation id="549333378215107354">Méret: 3</translation>
 <translation id="5496804587179176046">Biztonsági kódok mentése. Jelenleg nincsenek mentve biztonsági kódok.</translation>
-<translation id="5500138616054402841">A Chrome segíthet a hasonló termékek egymás melletti összehasonlításában</translation>
 <translation id="550365051221576010">Minden kitöltése</translation>
 <translation id="5508443345185481044">Fényképezőgépek és kamerák</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -4305,7 +4303,6 @@ További részletek:
 <translation id="9004367719664099443">VR-munkamenet folyamatban</translation>
 <translation id="9005998258318286617">A PDF-dokumentum betöltése sikertelen.</translation>
 <translation id="9008201768610948239">Mellőzés</translation>
-<translation id="9014413491147864781"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> az összehasonlító táblázatokról.</translation>
 <translation id="9014705027639070815">Az Ön által felkeresett webhelyek olyan információkat kérhetnek a Chrome-tól, amelyek segítségével mérhetik a hirdetések teljesítményét. A Chrome lehetővé teszi a webhelyek számára, hogy korlátozott adattípusokat gyűjtsenek (például hogy Ön vásárolt-e egy adott webhely felkeresése után).</translation>
 <translation id="9018120810758822233">Adja meg a(z) <ph name="CREDIT_CARD" /> biztonsági kódját</translation>
 <translation id="901834265349196618">e-mail</translation>
