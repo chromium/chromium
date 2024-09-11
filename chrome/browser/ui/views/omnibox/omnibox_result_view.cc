@@ -189,7 +189,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       std::make_unique<views::FlexLayout>());
   suggestion_and_buttons->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   suggestion_view_ = suggestion_and_buttons->AddChildView(
