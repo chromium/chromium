@@ -72,6 +72,10 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts8To32{
+      OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
+      OperandDataType::kUint32};
+
   static constexpr SupportedDataTypes kUint8To32{OperandDataType::kUint8,
                                                  OperandDataType::kUint32};
 
@@ -104,9 +108,9 @@ ContextProperties ContextImplDml::GetProperties(
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
-       // DequantizeLinear is not implemented.
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
+       /*dequantize_linear_input=*/kInts8To32,
+       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/kFloat16To32Ints32,
@@ -259,9 +263,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
 
-       // QuantizeLinear is not implemented.
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_quantize_linear_operator_desc#tensor-support
+       /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
+       /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
@@ -391,6 +395,10 @@ ContextProperties ContextImplDml::GetProperties(
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
     properties.data_type_limits.div_input = SupportedDataTypes::All();
+    properties.data_type_limits.dequantize_linear_scale =
+        DataTypeConstraint::kFloat16To32;
+    properties.data_type_limits.quantize_linear_input =
+        DataTypeConstraint::kFloat16To32;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_2) {

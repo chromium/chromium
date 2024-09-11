@@ -1743,6 +1743,70 @@ const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
                                           inputs, label);
 }
 
+template <typename DML_OPERATOR_DESC, typename DequantizeOrQuantizeLinearPtr>
+  requires(
+      std::is_same_v<DequantizeOrQuantizeLinearPtr,
+                     mojom::DequantizeLinearPtr> ||
+      std::is_same_v<DequantizeOrQuantizeLinearPtr, mojom::QuantizeLinearPtr>)
+void CreateOperatorNodeForDequantizeOrQuantizeLinear(
+    const ContextProperties& context_properties,
+    const IdToOperandMap& id_to_operand_map,
+    const DequantizeOrQuantizeLinearPtr& operation_ptr,
+    GraphBuilderDml& graph_builder,
+    DML_OPERATOR_TYPE operator_type,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const NodeOutput* scale = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->scale_operand_id);
+  auto scale_tensor_desc = scale->GetTensorDesc();
+
+  const NodeOutput* zero_point = GetNodeOutputForOperand(
+      id_to_node_output_map, operation_ptr->zero_point_operand_id);
+  auto zero_point_tensor_desc = zero_point->GetTensorDesc();
+
+  uint64_t output_id = operation_ptr->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const auto& output_dimensions = output_tensor_desc.GetDimensions();
+  if (scale_tensor_desc.GetDimensions() != output_dimensions) {
+    scale_tensor_desc.BroadcastTo(output_dimensions);
+  }
+  if (zero_point_tensor_desc.GetDimensions() != output_dimensions) {
+    zero_point_tensor_desc.BroadcastTo(output_dimensions);
+  }
+
+  if constexpr (std::is_same_v<DequantizeOrQuantizeLinearPtr,
+                               mojom::DequantizeLinearPtr>) {
+    CHECK(context_properties.data_type_limits.dequantize_linear_input.Has(
+        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.dequantize_linear_scale.Has(
+        DmlDataTypeToOperand(scale_tensor_desc.GetDataType())));
+  } else /* `DequantizeOrQuantizeLinearPtr` is `mojom::QuantizeLinearPtr` */ {
+    CHECK(context_properties.data_type_limits.quantize_linear_input.Has(
+        DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+    CHECK(context_properties.data_type_limits.quantize_linear_zero_point.Has(
+        DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
+  }
+
+  DML_OPERATOR_DESC operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .ScaleTensor = &scale_tensor_desc.GetDMLTensorDesc(),
+      .ZeroPointTensor = &zero_point_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+  const std::string& label = operation_ptr->label;
+  std::array<const NodeOutput*, 3> inputs = {input, scale, zero_point};
+  const OperatorNode* operator_node = graph_builder.CreateOperatorNode(
+      operator_type, &operator_desc, inputs, label);
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      operator_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+}
+
 void CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
@@ -5713,6 +5777,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
             graph_builder, id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kDequantizeLinear: {
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_DEQUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_dequantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_DEQUANTIZE_LINEAR, id_to_node_output_map);
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         CreateOperatorNodeForBinary(
             context_properties, id_to_operand_map, operation.get(),
@@ -5877,6 +5949,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         CreateOperatorNodeForPrelu(context_properties, id_to_operand_map,
                                    operation->get_prelu(), graph_builder,
                                    id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kQuantizeLinear: {
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_QUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_quantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_QUANTIZE_LINEAR, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kReduce: {
