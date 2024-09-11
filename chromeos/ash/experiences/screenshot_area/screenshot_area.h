@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SCREENSHOT_AREA_H_
-#define CHROME_BROWSER_UI_ASH_SCREENSHOT_AREA_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_SCREENSHOT_AREA_SCREENSHOT_AREA_H_
+#define CHROMEOS_ASH_EXPERIENCES_SCREENSHOT_AREA_SCREENSHOT_AREA_H_
 
 #include <optional>
 
@@ -43,4 +43,4 @@ struct ScreenshotArea {
                  std::optional<const gfx::Rect> rect);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SCREENSHOT_AREA_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_SCREENSHOT_AREA_SCREENSHOT_AREA_H_
