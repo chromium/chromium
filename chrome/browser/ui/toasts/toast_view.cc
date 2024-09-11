@@ -106,7 +106,7 @@ void ToastView::Init() {
                                 ToastCloseReason::kActionButton)),
         action_button_text_));
     action_button_->SetEnabledTextColorIds(ui::kColorToastButton);
-    action_button_->SetBgColorIdOverride(ui::kColorToastBackground);
+    action_button_->SetBgColorIdOverride(ui::kColorToastBackgroundProminent);
     action_button_->SetStrokeColorIdOverride(ui::kColorToastButton);
     action_button_->SetPreferredSize(gfx::Size(
         action_button_->GetPreferredSize().width(),
@@ -171,7 +171,7 @@ void ToastView::AnimateIn() {
       GetScaleTransformation(bubble_frame_view->bounds()));
   bubble_frame_view->layer()->SetOpacity(0);
   GetDialogClientView()->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorToastBackground));
+      views::CreateThemedSolidBackground(ui::kColorToastBackgroundProminent));
   GetDialogClientView()->SetPaintToLayer();
   GetDialogClientView()->layer()->SetOpacity(0);
   views::AnimationBuilder()
@@ -226,7 +226,7 @@ gfx::Rect ToastView::GetBubbleBounds() {
 void ToastView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  set_color(color_provider->GetColor(ui::kColorToastBackground));
+  set_color(color_provider->GetColor(ui::kColorToastBackgroundProminent));
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       *icon_, color_provider->GetColor(ui::kColorToastForeground),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
