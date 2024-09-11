@@ -76,4 +76,9 @@ void HelpAppPageHandler::OpenUrlInBrowserAndTriggerInstallDialog(
   }
 }
 
+void HelpAppPageHandler::OpenSettings(
+    help_app::mojom::SettingsComponent component) {
+  help_app_ui_->delegate()->OpenSettings(component);
+}
+
 }  // namespace ash

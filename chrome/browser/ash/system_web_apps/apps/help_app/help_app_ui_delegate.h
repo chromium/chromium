@@ -42,6 +42,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
                          callback) override;
   std::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
       const GURL& url) override;
+  void OpenSettings(help_app::mojom::SettingsComponent component) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.

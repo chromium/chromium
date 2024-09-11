@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
@@ -224,6 +225,20 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
   Navigate(&params);
 
   return std::nullopt;
+}
+
+void ChromeHelpAppUIDelegate::OpenSettings(
+    ash::help_app::mojom::SettingsComponent component) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+
+  switch (component) {
+    case ash::help_app::mojom::SettingsComponent::BLUETOOTH:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+      return;
+  }
+
+  CHECK(false) << "Invalid settings component value provided";
 }
 
 }  // namespace ash

@@ -33,6 +33,7 @@ static_library("help_app") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/help_app_ui:mojo_bindings",
     "//ash/webui/resources:help_app_resources",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
@@ -152,6 +153,7 @@ source_set("unit_tests") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/webui/help_app_ui:mojo_bindings",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
