@@ -38,6 +38,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/load_timing_info.mojom-blink.h"
@@ -694,9 +695,58 @@ void WindowPerformance::ReportEventTimings() {
                  event->GetEventTimingReportingInfo()->presentation_index;
         });
 
-    for (auto it = event_timing_entries_.begin(); it != iter;
-         it = std::next(it)) {
+    auto it = event_timing_entries_.begin();
+    // If the list is empty, early exit.
+    if (it == iter) {
+      continue;
+    }
+
+    bool tracing_enabled;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+    if (tracing_enabled) {
+      TRACE_EVENT_INSTANT(
+          "devtools.timeline", "EventCreation",
+          perfetto::Track::ThreadScoped(this),
+          it->Get()->GetEventTimingReportingInfo()->creation_time,
+          perfetto::Flow::ProcessScoped(presentation_index_to_report));
+      TRACE_EVENT_BEGIN(
+          "devtools.timeline", "EventsInAnimationFrame",
+          perfetto::Track::ThreadScoped(this),
+          it->Get()->GetEventTimingReportingInfo()->processing_start_time,
+          perfetto::Flow::ProcessScoped(presentation_index_to_report));
+    }
+    bool reported_fallback = false;
+    for (; it != iter; it = std::next(it)) {
       ReportEvent(interactive_detector, it->Get(), presentation_timestamp);
+      if (tracing_enabled && !reported_fallback &&
+          it->Get()->GetEventTimingReportingInfo()->fallback_time.has_value()) {
+        TRACE_EVENT_INSTANT(
+            "devtools.timeline", "EventFallbackTime",
+            perfetto::Track::ThreadScoped(this),
+            it->Get()->GetEventTimingReportingInfo()->fallback_time.value(),
+            perfetto::Flow::ProcessScoped(presentation_index_to_report));
+        reported_fallback = true;
+      }
+    }
+    if (tracing_enabled) {
+      PerformanceEventTiming::EventTimingReportingInfo*
+          last_event_reporting_info =
+              std::prev(it)->Get()->GetEventTimingReportingInfo();
+      auto commit_finish_time = last_event_reporting_info->commit_finish_time;
+      if (commit_finish_time.is_null()) {
+        TRACE_EVENT_END("devtools.timeline",
+                        perfetto::Track::ThreadScoped(this),
+                        last_event_reporting_info->processing_end_time);
+      } else {
+        TRACE_EVENT_END("devtools.timeline",
+                        perfetto::Track::ThreadScoped(this),
+                        commit_finish_time);
+        TRACE_EVENT_INSTANT("devtools.timeline", "EventPresentation",
+                            perfetto::Track::ThreadScoped(this),
+                            last_event_reporting_info->presentation_time,
+                            perfetto::TerminatingFlow::ProcessScoped(
+                                presentation_index_to_report));
+      }
     }
     // Remove reported EventData objects.
     event_timing_entries_.erase(event_timing_entries_.begin(), iter);
@@ -820,6 +870,30 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
             entry->GetEventTimingReportingInfo()->presentation_time);
     unsigned hash = WTF::GetHash(entry->name());
     WTF::AddFloatToHash(hash, entry->startTime());
+    auto track_id = perfetto::Track::ThreadScoped(this);
+    auto flow_id = perfetto::Flow::FromPointer(entry);
+    TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", track_id,
+                        entry->GetEventTimingReportingInfo()->creation_time,
+                        flow_id);
+    TRACE_EVENT_INSTANT(
+        "devtools.timeline", "EventEnqueuedToMainThread", track_id,
+        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
+        flow_id);
+
+    TRACE_EVENT_BEGIN(
+        "devtools.timeline", "EventProcessing", track_id,
+        entry->GetEventTimingReportingInfo()->processing_start_time, flow_id,
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_event_timing();
+          entry->SetPerfettoData(DomWindow()->GetFrame(), data,
+                                 GetTimeOriginInternal());
+        });
+    TRACE_EVENT_END("devtools.timeline", track_id,
+                    entry->GetEventTimingReportingInfo()->processing_end_time);
+
+    // TODO(sullivan): Remove these events when DevTools migrates to the above
+    // perfetto events.
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",
         entry->ToTracedValue(DomWindow()->GetFrame()));

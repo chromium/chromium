@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
+namespace perfetto::protos::pbzero {
+class EventTiming;
+}  // namespace perfetto::protos::pbzero
+
 namespace blink {
 
 class Frame;
@@ -106,7 +110,12 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
+  // TODO(sullivan): Remove the deprecated TracedValue when DevTools migrates
+  // to the perfetto events.
   std::unique_ptr<TracedValue> ToTracedValue(Frame* frame) const;
+  void SetPerfettoData(Frame* frame,
+                       perfetto::protos::pbzero::EventTiming* traced_value,
+                       base::TimeTicks time_origin);
 
   // Getters and setters of the EventTimingReportingInfo object.
   EventTimingReportingInfo* GetEventTimingReportingInfo() {

@@ -2062,9 +2062,60 @@ message ChromeLatencyInfo2 {
   optional InputType input_type = 8;
 }
 
+message EventTiming {
+  optional bool cancelable = 1;
+  optional string frame = 2;
+  optional uint32 interaction_id = 3;
+  optional uint32 interaction_offset = 4;
+  optional int64 node_id = 5;
+  optional int64 key_code = 6;
+  optional int32 pointer_id = 7;
+  optional uint64 fallback_time_us = 8;
+  enum EventType {
+    UNDEFINED = 0;
+    AUX_CLICK_EVENT = 1;
+    CLICK_EVENT = 2;
+    CONTEXT_MENU_EVENT = 3;
+    DOUBLE_CLICK_EVENT = 4;
+    MOUSE_DOWN_EVENT = 5;
+    MOUSE_ENTER_EVENT = 6;
+    MOUSE_LEAVE_EVENT = 7;
+    MOUSE_OUT_EVENT = 9;
+    MOUSE_OVER_EVENT = 10;
+    MOUSE_UP_EVENT = 11;
+    POINTER_OVER_EVENT = 12;
+    POINTER_ENTER_EVENT = 13;
+    POINTER_DOWN_EVENT = 14;
+    POINTER_UP_EVENT = 15;
+    POINTER_CANCEL_EVENT = 16;
+    POINTER_OUT_EVENT = 17;
+    POINTER_LEAVE_EVENT = 18;
+    GOT_POINTER_CAPTURE_EVENT = 19;
+    LOST_POINTER_CAPTURE_EVENT = 20;
+    TOUCH_START_EVENT = 21;
+    TOUCH_END_EVENT = 22;
+    TOUCH_CANCEL_EVENT = 23;
+    KEY_DOWN_EVENT = 24;
+    KEY_PRESS_EVENT = 25;
+    KEY_UP_EVENT = 26;
+    BEFORE_INPUT_EVENT = 27;
+    INPUT_EVENT = 28;
+    COMPOSITION_START_EVENT = 29;
+    COMPOSITION_UPDATE_EVENT = 30;
+    COMPOSITION_END_EVENT = 31;
+    DRAG_START_EVENT = 32;
+    DRAG_END_EVENT = 33;
+    DRAG_ENTER_EVENT = 34;
+    DRAG_LEAVE_EVENT = 35;
+    DRAG_OVER_EVENT = 36;
+    DROP_EVENT = 37;
+  }
+  optional EventType type = 9;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1069
+  // Next ID: 1070
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2210,5 +2261,7 @@ message ChromeTrackEvent {
     optional MainFramePipeline main_frame_pipeline = 1067;
 
     optional ChromeLatencyInfo2 chrome_latency_info = 1068;
+
+    optional EventTiming event_timing = 1069;
   }
 }
