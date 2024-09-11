@@ -1849,6 +1849,7 @@
   },
   {
     "prefix": "coop-restrict-properties",
+    "owners": ["clamy@chromium.org", "arichiv@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": ["--enable-features=CoopRestrictProperties"],
