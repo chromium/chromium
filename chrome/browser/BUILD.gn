@@ -3322,6 +3322,7 @@ static_library("browser") {
       "//chrome/browser/translate/android:jni_headers",
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
+      "//chrome/browser/ui/digital_credentials",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",
       "//chrome/common:non_code_constants",
