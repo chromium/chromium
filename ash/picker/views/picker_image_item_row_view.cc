@@ -86,6 +86,9 @@ PickerImageItemRowView::PickerImageItemRowView(
                                   std::move(more_items_accessible_name),
                                   /*is_togglable=*/false,
                                   /*has_border=*/false))
+                              // The kSubmenuArrowChromeRefreshIcon flips
+                              // itself, so don't flip it again.
+                              .SetFlipCanvasOnPaintForRTLUI(false)
                               .CopyAddressTo(&more_items_button_))))
       .BuildChildren();
   GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
