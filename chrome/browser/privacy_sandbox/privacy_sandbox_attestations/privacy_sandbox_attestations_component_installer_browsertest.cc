@@ -11,9 +11,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/with_feature_override.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.h"
@@ -27,43 +27,43 @@
 #include "content/public/test/browser_test.h"
 
 namespace privacy_sandbox {
-class PrivacySandboxAttestationsBrowserTest
+class PrivacySandboxAttestationsBrowserTestBase
     : public MixinBasedInProcessBrowserTest {
  public:
+  PrivacySandboxAttestationsBrowserTestBase() = default;
 
-  void SetUp() override {
-    MixinBasedInProcessBrowserTest::SetUp();
-    ASSERT_TRUE(DeleteInstalledComponent());
-  }
-
-  void TearDown() override {
-    MixinBasedInProcessBrowserTest::TearDown();
-    ASSERT_TRUE(DeleteInstalledComponent());
-  }
+  ~PrivacySandboxAttestationsBrowserTestBase() override = default;
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
 
- protected:
-  using Installer =
-      component_updater::PrivacySandboxAttestationsComponentInstallerPolicy;
-
  private:
-  bool DeleteInstalledComponent() {
-    // Delete the privacy sandbox attestations installation directory.
-    base::FilePath component_updater_dir;
-    base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                           &component_updater_dir);
-
-    return base::DeletePathRecursively(
-        Installer::GetInstalledDirectory(component_updater_dir));
-  }
-
   PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
       &mixin_host_};
 
+  // Override the user component directories that may have the downloaded
+  // attestation file.
+  base::ScopedPathOverride user_dir_override_{
+      component_updater::DIR_COMPONENT_USER};
+
   base::HistogramTester histogram_tester_;
+};
+
+class PrivacySandboxAttestationsBrowserTest
+    : public PrivacySandboxAttestationsBrowserTestBase {
+ public:
+  PrivacySandboxAttestationsBrowserTest() = default;
+
+  ~PrivacySandboxAttestationsBrowserTest() override = default;
+
+ private:
+  // Override the pre-install component directories that may have the
+  // pre-installed attestation file.
+  base::ScopedPathOverride preinstalled_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED};
+  base::ScopedPathOverride preinstalled_alt_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -79,10 +79,10 @@ IN_PROC_BROWSER_TEST_F(
   site_attestation.add_attested_apis(TOPICS);
   (*proto.mutable_site_attestations())[site] = site_attestation;
 
-  // There is a pre-installed attestations component. Choose a version number
-  // that is sure to be higher than the pre-installed one. This makes sure that
-  // the component installer will choose the attestations file in the user-wide
-  // component directory.
+  // There is an existing pre-installed attestations component that is shipped
+  // with Chromium. Choose a version number that is sure to be higher. This
+  // makes sure that the component installer will ignore the shipped
+  // pre-installed attestations component.
   base::Version version("12345.0.0.0");
 
   ASSERT_TRUE(
@@ -121,17 +121,6 @@ IN_PROC_BROWSER_TEST_F(
 // histogram buckets.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                        DifferentHistogramAfterAttestationsFileCheck) {
-  // Allow blocking for file IO.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Override the pre-install component directory and its alternative directory
-  // so that the component update will not find the pre-installed attestations
-  // file.
-  base::ScopedPathOverride preinstalled_dir_override(
-      component_updater::DIR_COMPONENT_PREINSTALLED);
-  base::ScopedPathOverride preinstalled_alt_dir_override(
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT);
-
   std::string site = "https://example.com";
   EXPECT_FALSE(PrivacySandboxSettingsImpl::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
@@ -171,34 +160,30 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
 }
 
 class PrivacySandboxAttestationPreInstallBrowserTest
-    : public PrivacySandboxAttestationsBrowserTest,
+    : public PrivacySandboxAttestationsBrowserTestBase,
       public base::test::WithFeatureOverride {
  public:
   PrivacySandboxAttestationPreInstallBrowserTest()
       : base::test::WithFeatureOverride(
             kPrivacySandboxAttestationsLoadPreInstalledComponent) {}
+
+  ~PrivacySandboxAttestationPreInstallBrowserTest() override = default;
 };
 
 // If there is no attestation list in user directory and feature
 // "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled, the
-// pre-installed version should be used.
+// pre-installed version should be used. This test verifies there is a
+// pre-installed attestation list shipped with Chromium.
 IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
                        PreinstalledAttestationListPresent) {
-  // Allow blocking for file IO.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Override the user-wide component directory to make sure there is no
-  // downloaded attestation list.
-  base::ScopedPathOverride user_dir_override(
-      component_updater::DIR_COMPONENT_USER);
-
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
 
   // Register the privacy sandbox attestations component, which should parse
   // the pre-installed attestations file on disk if feature
-  // "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled.
+  // "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled. This
+  // pre-installed file is shipped with Chromium.
   RegisterPrivacySandboxAttestationsComponent(
       g_browser_process->component_updater());
 
@@ -220,8 +205,12 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
                                          FileSource::kPreInstalled, 1);
   } else {
     // If feature off, the attestation component should not parse the
-    // pre-installed file.
-    run_loop.RunUntilIdle();
+    // pre-installed file. Since there is no downloaded attestation file, the
+    // attestations component ends up with no attestation map.
+    ASSERT_TRUE(base::test::RunUntil([]() {
+      return PrivacySandboxAttestations::GetInstance()
+          ->attestations_file_checked();
+    }));
 
     ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()
                      ->GetVersionForTesting()
