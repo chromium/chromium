@@ -1075,6 +1075,23 @@ BASE_FEATURE(kStrictOriginIsolation,
              "StrictOriginIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether subframe process reuse should be restricted according to
+// resource usage policies. Namely, a process that is already consuming too
+// much memory is not attempted to be reused.
+BASE_FEATURE(kSubframeProcessReuseThresholds,
+             "SubframeProcessReuseThresholds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Specifies the memory threshold for the `kSubframeProcessReuseThresholds`
+// feature, which only allows a process to be reused for another subframe if the
+// process's memory footprint stays below this threshold. Similar to
+// `kProcessPerSiteMainFrameTotalMemoryLimit`, and only provided as a separate
+// knob so that it can be independently controlled in subframe and main frame
+// process reuse experiments.
+constexpr base::FeatureParam<double> kSubframeProcessReuseMemoryThreshold{
+    &kSubframeProcessReuseThresholds, "SubframeProcessReuseMemoryThreshold",
+    2 * 1024 * 1024 * 1024u};
+
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs,

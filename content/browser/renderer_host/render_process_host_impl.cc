@@ -318,6 +318,8 @@ RenderProcessHostFactory* g_render_process_host_factory_ = nullptr;
 const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
 const void* const kProcessPerSiteUmaLoggedKey = &kProcessPerSiteUmaLoggedKey;
+const void* const kSubframeProcessReuseOverLimitUmaLoggedKey =
+    &kSubframeProcessReuseOverLimitUmaLoggedKey;
 
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
@@ -479,7 +481,7 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
   // A few definitions:
   // PMF - the private memory footprint of the memory allocated by the
   //       process excluding any shared memory segments.
-  // size_per_top_level_frame - the estimated size of a top level frame,
+  // size_per_top_level_frame - the estimated size of each top level frame,
   //       assuming each top level frame is around the same size. This
   //       is calculated by dividing the PMF by the number of top level frames
   //       in the process. This algorithm treats any OOPIFs being equally
@@ -498,7 +500,7 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
   //       We should try to keep the private memory less than this value.
   //
   // The algorithm:
-  //    Should Use Same Process = (PMF + estimated_size) < process_memory_limit
+  //    Has Enough Room = (PMF + estimated_size) < process_memory_limit
   uint64_t private_memory_footprint = host->GetPrivateMemoryFootprint();
 
   // Zero indicates we didn't obtain a PMF so we should just deny it, because
@@ -547,16 +549,27 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
                                     SiteInstanceImpl* site_instance,
                                     ProcessReusePolicy process_reuse_policy) {
   if (process_reuse_policy !=
-      ProcessReusePolicy::
-          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
+          ProcessReusePolicy::
+              REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD &&
+      process_reuse_policy !=
+          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME) {
+    return true;
+  }
+
+  if (process_reuse_policy ==
+          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME &&
+      !base::FeatureList::IsEnabled(
+          features::kSubframeProcessReuseThresholds)) {
     return true;
   }
 
   size_t main_frame_count = 0;
+  size_t total_frame_count = 0;
   bool devtools_attached = false;
   host->ForEachRenderFrameHost(
-      [&main_frame_count,
+      [&main_frame_count, &total_frame_count,
        &devtools_attached](RenderFrameHost* render_frame_host) {
+        ++total_frame_count;
         if (static_cast<RenderFrameHostImpl*>(render_frame_host)
                 ->IsOutermostMainFrame()) {
           ++main_frame_count;
@@ -568,24 +581,61 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
         }
       });
 
-  // If a threshold is specified, don't reuse `host` if it already hosts more
-  // main frames (including BFCached and prerendered) than the threshold.
-  size_t main_frame_threshold = base::checked_cast<size_t>(
-      features::kProcessPerSiteMainFrameThreshold.Get());
-  if (main_frame_count >= main_frame_threshold) {
-    return false;
+  if (process_reuse_policy ==
+      ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
+    // If a threshold is specified, don't reuse `host` if it already hosts more
+    // main frames (including BFCached and prerendered) than the threshold.
+    size_t main_frame_threshold = base::checked_cast<size_t>(
+        features::kProcessPerSiteMainFrameThreshold.Get());
+    if (main_frame_count >= main_frame_threshold) {
+      return false;
+    }
+
+    // Don't reuse `host` if DevTools is attached to any frame in that process
+    // since DevTools doesn't work well when a renderer has multiple main
+    // frames.
+    // TODO(crbug.com/40269649): This is just a heuristic and won't work if
+    // DevTools is attached later, and hence this should be eventually removed
+    // and fixed properly in the renderer process.
+    if (devtools_attached) {
+      return false;
+    }
+
+    return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count);
   }
 
-  // Don't reuse `host` if DevTools is attached to any frame in that process
-  // since DevTools doesn't work well when a renderer has multiple main frames.
-  // TODO(crbug.com/40269649): This is just a heuristic and won't work if
-  // DevTools is attached later, and hence this should be eventually removed and
-  // fixed properly in the renderer process.
-  if (devtools_attached) {
-    return false;
+  DCHECK_EQ(process_reuse_policy,
+            ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+
+  // For subframe process reuse, simply check if the `host` has already exceeded
+  // the memory threshold to decide whether it should be reused for a new
+  // subframe. This simple heuristic should suffice if the memory threshold is
+  // already set conservatively (below the threshold that would actually lead to
+  // OOMs), and avoids the complexity of trying to estimate the size of each
+  // main frame and subframe in the process, how many extra same-site frames
+  // would be necessarily added to `host` later if the current frame were
+  // allowed to reuse it (e.g., as its subframes), etc.
+  uint64_t process_memory_limit = base::saturated_cast<uint64_t>(
+      features::kSubframeProcessReuseMemoryThreshold.Get());
+  if (host->GetPrivateMemoryFootprint() < process_memory_limit) {
+    return true;
   }
 
-  return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count);
+  // Record the total number of frames at the time the subframe memory threshold
+  // is exceeded. A process may enter and exit this condition multiple times,
+  // so to avoid over-recording only record this the first time the threshold
+  // is exceeded.
+  if (!host->GetUserData(kSubframeProcessReuseOverLimitUmaLoggedKey)) {
+    base::UmaHistogramCounts1000(
+        "BrowserRenderProcessHost.SubframeProcessReuseThreshold."
+        "TotalFrames",
+        total_frame_count);
+    host->SetUserData(kSubframeProcessReuseOverLimitUmaLoggedKey,
+                      std::make_unique<base::SupportsUserData::Data>());
+  }
+
+  return false;
 }
 
 // The following class is used to track the sites each RenderProcessHost is
