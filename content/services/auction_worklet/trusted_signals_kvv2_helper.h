@@ -35,13 +35,11 @@
 
 namespace auction_worklet {
 
-inline constexpr std::string_view
-    kTrustedSignalsKVv2EncryptionRequestMediaType =
-        "message/ad-auction-trusted-signals-request";
+inline constexpr char kTrustedSignalsKVv2EncryptionRequestMediaType[] =
+    "message/ad-auction-trusted-signals-request";
 
-inline constexpr std::string_view
-    kTrustedSignalsKVv2EncryptionResponseMediaType =
-        "message/ad-auction-trusted-signals-response";
+inline constexpr char kTrustedSignalsKVv2EncryptionResponseMediaType[] =
+    "message/ad-auction-trusted-signals-response";
 
 class CONTENT_EXPORT TrustedSignalsKVv2RequestHelper {
  public:
