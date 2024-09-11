@@ -242,8 +242,12 @@
 - (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
   // Return early if the notification doesn't come from the currently active
   // webstate's tab helper.
-  if (tabHelper != InfobarBadgeTabHelper::GetOrCreateForWebState(
-                       _webStateList->GetActiveWebState())) {
+  raw_ptr<web::WebState> active_web_state = _webStateList->GetActiveWebState();
+  if (!active_web_state || active_web_state->IsBeingDestroyed()) {
+    return;
+  }
+  if (tabHelper !=
+      InfobarBadgeTabHelper::GetOrCreateForWebState(active_web_state)) {
     return;
   }
 
