@@ -3,21 +3,31 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/interactive_test.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 class ToastControllerInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {toast_features::kToastFramework, toast_features::kLinkCopiedToast,
-         toast_features::kImageCopiedToast},
+         toast_features::kImageCopiedToast, toast_features::kReadingListToast},
         {});
     InteractiveBrowserTest::SetUp();
   }
@@ -112,3 +122,30 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptPersistentToast) {
       WaitForShow(toasts::ToastView::kToastViewId),
       CheckShowingToastId(ToastId::kLensOverlay));
 }
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, FocusNextPane) {
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+  views::Widget* toast_widget = nullptr;
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      ShowToast(ToastParams(ToastId::kAddedToReadingList)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      WithView(
+          toasts::ToastView::kToastViewId,
+          [&](toasts::ToastView* toast) { toast_widget = toast->GetWidget(); }),
+      CheckView(toasts::ToastView::kToastViewId,
+                [](toasts::ToastView* toast) {
+                  return !toast->GetFocusManager()->GetFocusedView();
+                }),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   [&]() { return toast_widget->GetNativeView(); }),
+      CheckView(toasts::ToastView::kToastViewId, [](toasts::ToastView* toast) {
+        return toast->GetFocusManager()->GetFocusedView() ==
+               toast->action_button_for_testing();
+      }));
+}
+
+// TODO(crbug.com/358664193): Add tests for focus traversal using tab/shift-tab.

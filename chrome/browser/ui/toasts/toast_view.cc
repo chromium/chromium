@@ -65,6 +65,7 @@ ToastView::~ToastView() = default;
 
 void ToastView::AddActionButton(const std::u16string& action_button_text,
                                 base::RepeatingClosure action_button_callback) {
+  CHECK(!has_action_button_);
   has_action_button_ = true;
   action_button_text_ = action_button_text;
   action_button_callback_ = std::move(action_button_callback);
@@ -113,6 +114,7 @@ void ToastView::Init() {
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
     action_button_->SetStyle(ui::ButtonStyle::kProminent);
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    SetInitiallyFocusedView(action_button_);
   }
 
   if (has_close_button_) {
@@ -125,6 +127,9 @@ void ToastView::Init() {
         ui::kColorToastForeground));
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
+    if (!HasConfiguredInitiallyFocusedView()) {
+      SetInitiallyFocusedView(close_button_);
+    }
   }
 
   // Height of the toast is set implicitly by adding margins depending on the
@@ -142,6 +147,13 @@ void ToastView::Init() {
   set_margins(gfx::Insets::TLBR(
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
+
+  if (has_action_button_ || has_close_button_) {
+    SetFocusTraversesOut(true);
+  } else {
+    set_focus_traversable_from_anchor_view(false);
+    SetCanActivate(false);
+  }
 }
 
 void ToastView::AnimationProgressed(const gfx::Animation* animation) {

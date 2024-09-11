@@ -57,6 +57,9 @@ class ToastController : public views::WidgetObserver,
   void ClosePersistentToast(ToastId id);
 
   // views::WidgetObserver:
+#if BUILDFLAG(IS_MAC)
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+#endif
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // BrowserListObserver::

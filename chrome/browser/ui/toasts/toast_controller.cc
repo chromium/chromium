@@ -25,6 +25,9 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
@@ -97,6 +100,23 @@ void ToastController::ClosePersistentToast(ToastId id) {
     CloseToast(toasts::ToastCloseReason::kFeatureDismiss);
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+void ToastController::OnWidgetActivationChanged(views::Widget* widget,
+                                                bool active) {
+  if (active) {
+    // On Mac, traversing out of the widget into the browser causes the browser
+    // to restore its focus to the wrong place. Thus, when entering the toast
+    // widget, make sure to clear out the browser's native focus. This causes
+    // the toast widget to lose activation, so reactivate it manually.
+    browser_window_interface_->TopContainer()
+        ->GetWidget()
+        ->GetFocusManager()
+        ->ClearNativeFocus();
+    toast_->GetWidget()->Activate();
+  }
+}
+#endif
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   current_ephemeral_params_ = std::nullopt;
@@ -181,8 +201,10 @@ void ToastController::CloseToast(toasts::ToastCloseReason reason) {
 
 void ToastController::CreateToast(const ToastParams& params,
                                   const ToastSpecification* spec) {
+  views::View* anchor_view = browser_window_interface_->TopContainer();
+  CHECK(anchor_view);
   auto toast_view = std::make_unique<toasts::ToastView>(
-      browser_window_interface_->TopContainer(),
+      anchor_view,
       FormatString(spec->body_string_id(),
                    params.body_string_replacement_params_),
       spec->icon(), spec->has_close_button());
@@ -198,6 +220,15 @@ void ToastController::CreateToast(const ToastParams& params,
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
   toast_observer_.Observe(toast_widget);
   toast_widget->SetVisibilityChangedAnimationsEnabled(false);
+  // Set the the focus traversable parent of the toast widget to be the anchor
+  // view, so that when focus leaves the toast, the search for the next
+  // focusable view will start from the right place. However, does not set the
+  // anchor view's focus traversable to be the toast widget, because when focus
+  // leaves the toast widget it will go into the anchor view's focus traversable
+  // if it exists, so doing that would trap focus inside of the toast widget.
+  toast_widget->SetFocusTraversableParent(
+      anchor_view->GetWidget()->GetFocusTraversable());
+  toast_widget->SetFocusTraversableParentView(anchor_view);
   toast_widget->ShowInactive();
   toast_->AnimateIn();
 }

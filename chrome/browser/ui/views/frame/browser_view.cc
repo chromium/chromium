@@ -2671,7 +2671,7 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     for (auto* view : std::initializer_list<views::View*>{
              toolbar_->app_menu_button(), GetLocationBarView(),
              toolbar_button_provider_->GetAvatarToolbarButton(),
-             toolbar_button_provider_->GetDownloadButton()}) {
+             toolbar_button_provider_->GetDownloadButton(), top_container_}) {
       if (view) {
         if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
             dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
