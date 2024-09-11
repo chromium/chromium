@@ -47,6 +47,10 @@ auto-tab-groups-failure:not([shown]) {
              slideOut 250ms var(--standard-curve) forwards;
 }
 
+.auto-tab-groups-header {
+  padding-bottom: 16px;
+}
+
 #body {
   margin: var(--mwb-list-item-horizontal-margin);
 }

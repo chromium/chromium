@@ -11,6 +11,12 @@ export function getHtml(this: AutoTabGroupsPageElement) {
   return html`<!--_html_template_start_-->
 <div id="contents">
   <div id="body">
+    <div id="header"
+        class="auto-tab-groups-header"
+        aria-live="polite"
+        aria-relevant="all">
+      ${this.getTitle_()}
+    </div>
     <auto-tab-groups-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
         model-strategy="${this.modelStrategy_}"

@@ -9,31 +9,23 @@ import type {AutoTabGroupsInProgressElement} from './auto_tab_groups_in_progress
 export function getHtml(this: AutoTabGroupsInProgressElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="auto-tab-groups-container">
-  <div id="header"
-      class="auto-tab-groups-header"
-      aria-live="polite"
-      aria-relevant="all">
-    ${this.getTitle()}
-  </div>
-  <div id="loading-container">
-    <cr-loading-gradient>
-        <svg width="100%" height="191">
-          <clipPath>
-            <rect x="0" y="0" width="100%" height="35" rx="8"></rect>
-            <rect x="0" y="55" width="40" height="40" rx="8"></rect>
-            <rect x="56" y="57" width="116" height="16" rx="4"></rect>
-            <rect x="56" y="105" width="116" height="16" rx="4"></rect>
-            <rect x="56" y="153" width="116" height="16" rx="4"></rect>
-            <rect x="56" y="79" width="76" height="14" rx="4"></rect>
-            <rect x="56" y="127" width="76" height="14" rx="4"></rect>
-            <rect x="56" y="175" width="76" height="14" rx="4"></rect>
-            <rect x="0" y="103" width="40" height="40" rx="8"></rect>
-            <rect x="0" y="151" width="40" height="40" rx="8"></rect>
-          </clipPath>
-        </svg>
-      </cr-loading-gradient>
-    </div>
+<div id="loading-container">
+  <cr-loading-gradient>
+      <svg width="100%" height="191">
+        <clipPath>
+          <rect x="0" y="0" width="100%" height="35" rx="8"></rect>
+          <rect x="0" y="55" width="40" height="40" rx="8"></rect>
+          <rect x="56" y="57" width="116" height="16" rx="4"></rect>
+          <rect x="56" y="105" width="116" height="16" rx="4"></rect>
+          <rect x="56" y="153" width="116" height="16" rx="4"></rect>
+          <rect x="56" y="79" width="76" height="14" rx="4"></rect>
+          <rect x="56" y="127" width="76" height="14" rx="4"></rect>
+          <rect x="56" y="175" width="76" height="14" rx="4"></rect>
+          <rect x="0" y="103" width="40" height="40" rx="8"></rect>
+          <rect x="0" y="151" width="40" height="40" rx="8"></rect>
+        </clipPath>
+      </svg>
+    </cr-loading-gradient>
   </div>
 </div>
 <!--_html_template_end_-->`;

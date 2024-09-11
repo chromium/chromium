@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
-import '../strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './auto_tab_groups_in_progress.css.js';
@@ -29,10 +27,6 @@ export class AutoTabGroupsInProgressElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  getTitle(): string {
-    return loadTimeData.getString('inProgressTitle');
   }
 }
 

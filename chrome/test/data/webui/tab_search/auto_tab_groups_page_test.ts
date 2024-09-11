@@ -7,7 +7,7 @@ import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, CrInputElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, createTab} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
@@ -447,10 +447,11 @@ suite('AutoTabGroupsPageTest', () => {
     const successString = 'success';
     loadTimeData.overrideValues({
       successMissingActiveTabTitle: errorString,
-      successTitle: successString,
+      successTitleSingle: successString,
     });
-    await autoTabGroupsResultsSetup();
-    autoTabGroupsResults.session = createSession({
+    await autoTabGroupsPageSetup();
+    const session = createSession({
+      state: TabOrganizationState.kSuccess,
       activeTabId: 4,
       organizations: [{
         organizationId: 1,
@@ -466,9 +467,12 @@ suite('AutoTabGroupsPageTest', () => {
         ],
       }],
     });
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        session);
     await microtasksFinished();
 
-    const header = autoTabGroupsResults.$.header;
+    const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
+    assertTrue(!!header);
     assertEquals(errorString, header.textContent!.trim());
   });
 
@@ -477,10 +481,11 @@ suite('AutoTabGroupsPageTest', () => {
     const successString = 'success';
     loadTimeData.overrideValues({
       successMissingActiveTabTitle: errorString,
-      successTitle: successString,
+      successTitleSingle: successString,
     });
-    await autoTabGroupsResultsSetup();
-    autoTabGroupsResults.session = createSession({
+    await autoTabGroupsPageSetup();
+    const session = createSession({
+      state: TabOrganizationState.kSuccess,
       activeTabId: 2,
       organizations: [{
         organizationId: 1,
@@ -496,77 +501,12 @@ suite('AutoTabGroupsPageTest', () => {
         ],
       }],
     });
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        session);
     await microtasksFinished();
 
-    const header = autoTabGroupsResults.$.header;
+    const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
+    assertTrue(!!header);
     assertEquals(successString, header.textContent!.trim());
-  });
-
-  test('Announces not started header on state change', async () => {
-    const notStartedHeader = 'Not Started';
-    loadTimeData.overrideValues({
-      notStartedTitleFRE: notStartedHeader,
-    });
-    const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
-    await autoTabGroupsPageSetup();
-
-    const announcement = await announcementPromise;
-    assertTrue(!!announcement);
-    assertTrue(announcement.detail.messages.includes(notStartedHeader));
-  });
-
-  test('Announces in progress header on state change', async () => {
-    const inProgressHeader = 'In Progress';
-    loadTimeData.overrideValues({
-      inProgressTitle: inProgressHeader,
-    });
-    await autoTabGroupsPageSetup();
-
-    const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
-    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kInProgress}));
-
-    const announcement = await announcementPromise;
-    assertTrue(!!announcement);
-    assertTrue(announcement.detail.messages.includes(inProgressHeader));
-  });
-
-  test('Announces results header on state change', async () => {
-    const resultsHeader = 'Results';
-    loadTimeData.overrideValues({
-      successTitleSingle: resultsHeader,
-    });
-    await autoTabGroupsPageSetup();
-
-    const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
-    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
-
-    const announcement = await announcementPromise;
-    assertTrue(!!announcement);
-    assertTrue(announcement.detail.messages.includes(resultsHeader));
-  });
-
-  test('Announces failure header on state change', async () => {
-    const failureHeader = 'Failure';
-    loadTimeData.overrideValues({
-      failureTitleGeneric: failureHeader,
-    });
-    await autoTabGroupsPageSetup();
-
-    const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
-    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({
-          state: TabOrganizationState.kFailure,
-          error: TabOrganizationError.kGeneric,
-        }));
-
-    const announcement = await announcementPromise;
-    assertTrue(!!announcement);
-    assertTrue(announcement.detail.messages.includes(failureHeader));
   });
 });

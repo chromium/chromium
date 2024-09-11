@@ -9,7 +9,6 @@ import './auto_tab_groups_in_progress.js';
 import './auto_tab_groups_not_started.js';
 import './auto_tab_groups_results.js';
 
-import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -194,33 +193,17 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     if (!changedState) {
       return;
     }
-    const announcer = getAnnouncerInstance();
-    switch (state) {
-      case TabOrganizationState.kInitializing:
-        break;
-      case TabOrganizationState.kNotStarted:
-        announcer.announce(this.$.notStarted.getTitle());
-        break;
-      case TabOrganizationState.kInProgress:
-        announcer.announce(this.$.inProgress.getTitle());
-        // Ensure the loading state appears for a sufficient amount of time, so
-        // as to not appear jumpy if the request completes quickly.
-        this.futureState_ = TabOrganizationState.kInProgress;
-        setTimeout(() => this.applyFutureState_(), MIN_LOADING_ANIMATION_MS);
-        break;
-      case TabOrganizationState.kSuccess:
-        announcer.announce(this.$.results.getTitle());
-        // Wait until the new state is visible after the transition to focus on
-        // the new UI.
-        this.$.results.addEventListener('animationend', () => {
-          this.$.results.focusInput();
-        }, {once: true});
-        break;
-      case TabOrganizationState.kFailure:
-        announcer.announce(this.$.failure.getTitle(this.getSessionError_()));
-        break;
-      default:
-        assertNotReached('Invalid tab organization state');
+    if (state === TabOrganizationState.kInProgress) {
+      // Ensure the loading state appears for a sufficient amount of time, so
+      // as to not appear jumpy if the request completes quickly.
+      this.futureState_ = TabOrganizationState.kInProgress;
+      setTimeout(() => this.applyFutureState_(), MIN_LOADING_ANIMATION_MS);
+    } else if (state === TabOrganizationState.kSuccess) {
+      // Wait until the new state is visible after the transition to focus on
+      // the new UI.
+      this.$.results.addEventListener('animationend', () => {
+        this.$.results.focusInput();
+      }, {once: true});
     }
     if (wasInitializing) {
       this.apiProxy_.notifyOrganizationUiReadyToShow();
@@ -337,6 +320,84 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   protected getSessionError_(): TabOrganizationError {
     return this.session_?.error || TabOrganizationError.kNone;
+  }
+
+  private getOrganizations_(): TabOrganization[] {
+    if (!this.session_) {
+      return [];
+    }
+    if (this.multiTabOrganization_) {
+      return this.session_.organizations;
+    } else {
+      return this.session_.organizations.slice(0, 1);
+    }
+  }
+
+  private missingActiveTab_(): boolean {
+    if (!this.session_) {
+      return false;
+    }
+
+    const id = this.session_.activeTabId;
+    if (id === -1) {
+      return false;
+    }
+    let foundTab = false;
+    this.getOrganizations_().forEach(organization => {
+      organization.tabs.forEach((tab) => {
+        if (tab.tabId === id) {
+          foundTab = true;
+        }
+      });
+    });
+    if (foundTab) {
+      return false;
+    }
+    return true;
+  }
+
+  protected getTitle_(): string {
+    switch (this.state_) {
+      case TabOrganizationState.kInitializing:
+        return '';
+      case TabOrganizationState.kNotStarted:
+        return loadTimeData.getString(
+            this.showFRE_ ? 'notStartedTitleFRE' : 'notStartedTitle');
+      case TabOrganizationState.kInProgress:
+        return loadTimeData.getString('inProgressTitle');
+      case TabOrganizationState.kSuccess:
+        return this.getSuccessTitle_();
+      case TabOrganizationState.kFailure:
+        return this.getFailureTitle_();
+      default:
+        assertNotReached('Invalid tab organization state');
+    }
+  }
+
+  private getSuccessTitle_(): string {
+    if (this.missingActiveTab_()) {
+      return loadTimeData.getString('successMissingActiveTabTitle');
+    } else if (this.multiTabOrganization_) {
+      if (this.getOrganizations_().length > 1) {
+        return loadTimeData.getStringF(
+            'successTitleMulti', this.getOrganizations_().length);
+      } else {
+        return loadTimeData.getString('successTitleSingle');
+      }
+    } else {
+      return loadTimeData.getString('successTitle');
+    }
+  }
+
+  private getFailureTitle_(): string {
+    switch (this.getSessionError_()) {
+      case TabOrganizationError.kGrouping:
+        return loadTimeData.getString('failureTitleGrouping');
+      case TabOrganizationError.kGeneric:
+        return loadTimeData.getString('failureTitleGeneric');
+      default:
+        return '';
+    }
   }
 }
 
