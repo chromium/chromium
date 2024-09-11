@@ -22,6 +22,7 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraIconButton} from '../components/cra/cra-icon-button.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
@@ -146,7 +147,7 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly exportDialog = createRef<ExportDialog>();
 
-  private readonly startRecordingButton = createRef<HTMLButtonElement>();
+  private readonly startRecordingButton = createRef<CraIconButton>();
 
   private readonly recordingFileList = createRef<RecordingFileList>();
 
@@ -191,7 +192,7 @@ export class MainPage extends ReactiveLitElement {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
 
-  get startRecordingButtonForTest(): HTMLButtonElement {
+  get startRecordingButtonForTest(): CraIconButton {
     return assertExists(this.startRecordingButton.value);
   }
 

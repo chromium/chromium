@@ -242,8 +242,9 @@ const UI_COMPONENTS = {
     app().playbackPageForTest.summarizationViewForTest.summaryContainerForTest,
   startRecordingButton: () => app().mainPage.startRecordingButtonForTest,
   stopRecordingButton: () => app().recordPageForTest.stopRecordingButtonForTest,
-  toggleSummaryButton: () =>
-    app()
-      .playbackPageForTest.summarizationViewForTest.toggleSummaryButtonForTest,
+  // TODO: b/355374546 - Add back the toggleSummary UI component.
+  // Currently tast side doesn't use the toggleSummaryButton component, and
+  // directly selects the inner cros-icon-button in cros-accordion-item, but we
+  // might only want to expose the cros-accordion-item and click on it.
 };
 type ComponentKey = keyof typeof UI_COMPONENTS;

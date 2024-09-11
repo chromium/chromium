@@ -26,6 +26,7 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraButton} from '../components/cra/cra-button.js';
 import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
@@ -364,7 +365,7 @@ export class RecordPage extends ReactiveLitElement {
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
-  private readonly stopRecordingButton = createRef<HTMLButtonElement>();
+  private readonly stopRecordingButton = createRef<CraButton>();
 
   private wakeLock: WakeLockSentinel|null = null;
 
@@ -376,7 +377,7 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly recordingControlQueue = new AsyncJobQueue('enqueue');
 
-  get stopRecordingButtonForTest(): HTMLButtonElement {
+  get stopRecordingButtonForTest(): CraButton {
     return assertExists(this.stopRecordingButton.value);
   }
 

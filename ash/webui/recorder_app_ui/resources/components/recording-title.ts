@@ -34,6 +34,7 @@ import {RecordingMetadata} from '../core/recording_data_manager.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 
+import {CraIconButton} from './cra/cra-icon-button.js';
 import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
 
 /**
@@ -109,7 +110,7 @@ export class RecordingTitle extends ReactiveLitElement {
 
   private readonly renameContainer = createRef<HTMLDivElement>();
 
-  private readonly suggestTitleButton = createRef<HTMLButtonElement>();
+  private readonly suggestTitleButton = createRef<CraIconButton>();
 
   private readonly recordingTitleSuggestion =
     createRef<RecordingTitleSuggestion>();
@@ -118,7 +119,7 @@ export class RecordingTitle extends ReactiveLitElement {
     return assertExists(this.renameContainer.value);
   }
 
-  get suggestTitleButtonForTest(): HTMLButtonElement {
+  get suggestTitleButtonForTest(): CraIconButton {
     return assertExists(this.suggestTitleButton.value);
   }
 

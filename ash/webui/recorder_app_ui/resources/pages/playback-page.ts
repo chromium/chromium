@@ -33,6 +33,7 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraIconButton} from '../components/cra/cra-icon-button.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
@@ -372,11 +373,11 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly floatingVolume = createRef<HTMLElement>();
 
-  private readonly backButton = createRef<HTMLButtonElement>();
+  private readonly backButton = createRef<CraIconButton>();
 
-  private readonly playPauseButton = createRef<HTMLButtonElement>();
+  private readonly playPauseButton = createRef<CraIconButton>();
 
-  private readonly transcriptionButtonRef = createRef<HTMLButtonElement>();
+  private readonly transcriptionButtonRef = createRef<CraIconButton>();
 
   private readonly recordingTitle = createRef<RecordingTitle>();
 
@@ -420,16 +421,16 @@ export class PlaybackPage extends ReactiveLitElement {
   // TODO(pihsun): ScopedEffect without the async part?
   private autoOpenTranscription: Dispose|null = null;
 
-  get pauseButtonForTest(): HTMLButtonElement {
+  get pauseButtonForTest(): CraIconButton {
     assert(this.audioPlayer.playing.value, 'The playback is already paused');
     return assertExists(this.playPauseButton.value);
   }
 
-  get backButtonForTest(): HTMLButtonElement {
+  get backButtonForTest(): CraIconButton {
     return assertExists(this.backButton.value);
   }
 
-  get transcriptionToggleButtonForTest(): HTMLButtonElement {
+  get transcriptionToggleButtonForTest(): CraIconButton {
     return assertExists(this.transcriptionButtonRef.value);
   }
 

@@ -178,13 +178,7 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
-  private readonly toggleSummaryButton = createRef<HTMLButtonElement>();
-
   private readonly summaryContainer = createRef<HTMLDivElement>();
-
-  get toggleSummaryButtonForTest(): HTMLButtonElement {
-    return assertExists(this.toggleSummaryButton.value);
-  }
 
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
