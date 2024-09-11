@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+<style>
+  .container {
+    width: 300px;
+    height: 150px;
+  }
+
+  .fallback {
+    background-color: green;
+    width: fit-content;
+  }
+</style>
+
+<body>
+</body>
+
+<script>
+  const WRITING_MODES = [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl",
+    "sideways-lr",
+    "sideways-rl"
+  ];
+  WRITING_MODES.forEach((mode, index) => {
+    const container = document.createElement("div")
+    container.classList.add("container");
+
+    const element = document.createElement("div");
+    element.classList.add("fallback");
+    element.style.writingMode = mode;
+    element.innerText = mode;
+
+    container.appendChild(element);
+    document.body.appendChild(container);
+  });
+</script>

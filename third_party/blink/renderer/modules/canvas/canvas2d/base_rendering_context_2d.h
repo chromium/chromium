@@ -250,7 +250,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void placeElement(Element* element,
                     double x,
                     double y,
-                    ExceptionState& exception_state) {}
+                    ExceptionState& exception_state);
   void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,

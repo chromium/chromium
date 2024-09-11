@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() with explicit width and height</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="match" href="placeElement-explicit-width-height-ref.html">
+  <style>
+    .fallback {
+      will-change: transform;
+      background-color: green;
+      width: 150px;
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div class="fallback" id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+  ctx.placeElement(document.getElementById("fallback"), 0, 0);
+</script>

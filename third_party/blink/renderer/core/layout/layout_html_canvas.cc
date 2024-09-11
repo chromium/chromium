@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/html_canvas_painter.h"
@@ -105,6 +106,19 @@ void LayoutHTMLCanvas::WillBeDestroyed() {
   NOT_DESTROYED();
   LayoutReplaced::WillBeDestroyed();
   To<HTMLCanvasElement>(GetNode())->LayoutObjectDestroyed();
+}
+
+void LayoutHTMLCanvas::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutReplaced::Trace(visitor);
+}
+
+bool LayoutHTMLCanvas::IsChildAllowed(LayoutObject* child,
+                                      const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  return IsA<Element>(GetNode()) && !child->IsText() &&
+         To<HTMLCanvasElement>(GetNode())->HasPlacedElements() &&
+         RuntimeEnabledFeatures::CanvasPlaceElementEnabled();
 }
 
 }  // namespace blink

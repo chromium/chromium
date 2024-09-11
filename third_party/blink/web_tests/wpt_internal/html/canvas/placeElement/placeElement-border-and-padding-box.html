@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() is placed properly relative to padding and border</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="match" href="placeElement-border-and-padding-box-ref.html">
+  <style>
+    .fallback {
+      will-change: transform;
+      background-color: green;
+      width: 100px;
+      height: 50px;
+      padding: 10px;
+      border: 5px dotted blue;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div class="fallback" id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+    const ctx = document.querySelector("canvas").getContext("2d");
+    ctx.placeElement(document.getElementById("fallback"), 0, 0);
+</script>

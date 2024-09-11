@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Canvas fallback content is not drawn to the screen</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="match" href="canvas-fallback-content-is-not-drawn-ref.html">
+  <style>
+    #fallback {
+      /*
+        will-change: transform creates a stacking context for the element
+        so it might be rendered if UAs aren't careful
+      */
+      will-change: transform;
+      background-color: pink;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="fallback">You should not see this fallback content</div>
+  </canvas>
+</body>
+
+</html>

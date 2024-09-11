@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
@@ -130,6 +132,13 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (!paint_layer_.IsSelfPaintingLayer() &&
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
+
+  if (auto* node = DynamicTo<Element>(object.GetNode())) {
+    if (node->IsInCanvasSubtree() && !DynamicTo<HTMLCanvasElement>(node)) {
+      // This prevents canvas fallback content from being rendered.
+      return kFullyPainted;
+    }
+  }
 
   std::optional<CheckAncestorPositionVisibilityScope>
       check_position_visibility_scope;

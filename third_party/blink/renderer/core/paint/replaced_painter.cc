@@ -165,8 +165,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (local_paint_info.phase != PaintPhase::kForeground &&
       local_paint_info.phase != PaintPhase::kSelectionDragImage &&
-      !layout_replaced_.CanHaveChildren())
+      (!layout_replaced_.CanHaveChildren() || layout_replaced_.IsCanvas())) {
     return;
+  }
 
   if (local_paint_info.phase == PaintPhase::kSelectionDragImage &&
       !layout_replaced_.IsSelected())

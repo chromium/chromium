@@ -2338,6 +2338,22 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       CanvasPerformanceMonitor::DrawType::kImage);
 }
 
+// TODO(b/349835587): This is just a stub for now.
+void BaseRenderingContext2D::placeElement(Element* element,
+                                          double x,
+                                          double y,
+                                          ExceptionState& exception_state) {
+  HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
+  if (!element->IsDescendantOf(canvas)) {
+    exception_state.ThrowTypeError(
+        "Only elements that are part of the canvas fallback content subtree "
+        "(i.e. children of the <canvas> element) can be used with "
+        "placeElement().");
+  }
+
+  canvas->SetHasPlacedElements();
+}
+
 bool BaseRenderingContext2D::RectContainsTransformedRect(
     const gfx::RectF& rect,
     const SkIRect& transformed_rect) const {

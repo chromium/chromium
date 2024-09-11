@@ -30,6 +30,11 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
     return true;
   }
 
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() &&
+      Parent()->IsCanvas()) {
+    return true;
+  }
+
   if (RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
     if (StyleRef().IsContainerForSizeContainerQueries()) {
       return true;

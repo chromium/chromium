@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Layout Fallback Content for canvas2D</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <meta name="assert" content="In order for canvas.placeElement() to work, fallback content must be laid out." />
+  <style>
+    #fallback {
+      will-change: transform;
+      width: 100px;
+      height: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="fallback"></div>
+  </canvas>
+  <p>
+    The empty canvas above contains a div with explicit height and width.
+    This test verifies that that div is laid out.
+  </p>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+
+  // placeElement() triggers some layout, verify that it works after the page
+  // has already been laid out.
+  setTimeout(() => {
+    const fallbackElement = document.getElementById("fallback");
+    // This call triggers the layout for the fallback content.
+    ctx.placeElement(fallbackElement, 0, 0);
+
+    const rect = fallbackElement.getBoundingClientRect();
+    test(function (t) {
+      assert_equals(100, rect.width);
+      assert_equals(50, rect.height);
+    }, "Verify that the dimensions of the fallback div are correct.");
+  }, 0);
+
+</script>
+
+</html>

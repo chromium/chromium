@@ -256,6 +256,21 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 # Some additional bugs that are caused by painting problems are also within this section.
 
 
+# --- canvasRenderingContext.placeElement() implementation: g-issues.chromium.org/issues/349835587
+
+wpt_internal/html/canvas/placeElement/placeElement-border-and-padding-box.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-transform.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-x-y.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-explicit-width-height.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-float-left.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-position-absolute.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-width-auto.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-writingMode.html [ Failure ]
+wpt_internal/html/canvas/placeElement/placeElement-draw-atomically.html [ Failure ]
+
+# --- END canvasRenderingContext.placeElement() implementation
+
 # --- Skia roll test suppressions
 
 crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]

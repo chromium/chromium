@@ -282,6 +282,10 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void UpdateSuspendOffscreenCanvasAnimation();
 
+  void SetHasPlacedElements();
+
+  bool HasPlacedElements() const { return has_placed_elements_; }
+
   // Gets the settings of this Html Canvas Element. If there is a frame, it will
   // return the settings from the frame. If it is a frameless element it will
   // try to fetch the global dom window and get the settings from there.
@@ -421,6 +425,10 @@ class CORE_EXPORT HTMLCanvasElement final
   mutable intptr_t externally_allocated_memory_;
 
   scoped_refptr<StaticBitmapImage> transparent_image_;
+
+  // When the underlying context uses placeElement() layout needs to be run on
+  // the fallback content.
+  bool has_placed_elements_ = false;
 };
 
 }  // namespace blink

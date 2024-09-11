@@ -1930,4 +1930,14 @@ bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
 }
 
+void HTMLCanvasElement::SetHasPlacedElements() {
+  // If this is the first time placeElement() is called, its possible that the
+  // canvas contains fallback content that has been ignored and needs to be
+  // laid out.
+  if (!has_placed_elements_) {
+    has_placed_elements_ = true;
+    SetForceReattachLayoutTree();
+  }
+}
+
 }  // namespace blink
