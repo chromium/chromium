@@ -65,8 +65,9 @@ class SettingsOverriddenDialogViewUnitTest : public TestWithBrowserView {
     auto controller = std::make_unique<TestDialogController>(state);
     EXPECT_FALSE(state->shown);
 
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         kExtensionSettingsOverridenDialogName);
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        kExtensionSettingsOverriddenDialogName);
     extensions::ShowSettingsOverriddenDialog(std::move(controller),
                                              browser_view()->browser());
     views::Widget* dialog = waiter.WaitIfNeededAndGet();
