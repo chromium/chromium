@@ -439,6 +439,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kJsModulesSharedWorkers},
           {WebFeature::kCssDisplayPropertyMultipleValues,
            WebDXFeature::kTwoValueDisplay},
+          {WebFeature::kTwoValuedOverflow, WebDXFeature::kOverflowShorthand},
       }};
 
   return *kMap;

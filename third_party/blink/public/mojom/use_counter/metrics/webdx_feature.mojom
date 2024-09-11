@@ -167,6 +167,7 @@ enum WebDXFeature {
   kJsModulesSharedWorkers = 109,
   kJsModulesWorkers = 110,
   kTwoValueDisplay = 111,
+  kOverflowShorthand = 112,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -34256,6 +34256,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="109" label="JsModulesSharedWorkers"/>
   <int value="110" label="JsModulesWorkers"/>
   <int value="111" label="TwoValueDisplay"/>
+  <int value="112" label="OverflowShorthand"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
