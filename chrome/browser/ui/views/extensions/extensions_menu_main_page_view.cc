@@ -546,10 +546,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   const gfx::Insets dialog_insets =
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
 
-  // Views that need configuration after construction (e.g access size after a
-  // separate view is constructed).
-  views::Label* subheader_title;
-
   views::Builder<ExtensionsMenuMainPageView>(this)
       // Last item is a hover button, so we need to account for the extra
       // vertical spacing. We cannot add horizontal margins at this level
@@ -562,21 +558,33 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               dialog_insets.top(), 0,
               dialog_insets.bottom() - hover_button_vertical_spacing, 0)))
       .AddChildren(
-          // Title.
-          views::Builder<views::Label>()
-              .CopyAddressTo(&subheader_title)
-              .SetText(l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
-              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-              .SetTextStyle(views::style::STYLE_HEADLINE_4)
-              .SetEnabledColorId(kColorExtensionsMenuText)
+          // Header.
+          views::Builder<views::FlexLayoutView>()
               .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(0, dialog_insets.left())),
+                           gfx::Insets::VH(0, dialog_insets.left()))
+              .AddChildren(
+                  // Title.
+                  views::Builder<views::Label>()
+                      .SetText(
+                          l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                      .SetTextStyle(views::style::STYLE_HEADLINE_4)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   stretch_specification),
+                  // Close button.
+                  views::Builder<views::Button>(
+                      views::BubbleFrameView::CreateCloseButton(
+                          base::BindRepeating(
+                              &ExtensionsMenuHandler::CloseBubble,
+                              base::Unretained(menu_handler_))))),
           // Site settings.
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(0, dialog_insets.left()))
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets::VH(vertical_spacing, dialog_insets.left()))
               .AddChildren(
                   views::Builder<views::Label>()
                       .CopyAddressTo(&site_settings_label_)
