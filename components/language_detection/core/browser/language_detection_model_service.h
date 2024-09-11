@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
-#define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
+#ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_BROWSER_LANGUAGE_DETECTION_MODEL_SERVICE_H_
+#define COMPONENTS_LANGUAGE_DETECTION_CORE_BROWSER_LANGUAGE_DETECTION_MODEL_SERVICE_H_
 
 #include <memory>
 #include <optional>
@@ -23,24 +23,24 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
-namespace translate {
+namespace language_detection {
 
-// Service that manages models required to support translation in the browser.
-// Currently, the service should only be used in the browser as it relies on
-// the Optimization Guide.
-// TODO(crbug.com/40225076): TranslateModelService should own
+// Service that manages models required to support language detection in the
+// browser. Currently, the service should only be used in the browser as it
+// relies on the Optimization Guide.
+// TODO(crbug.com/40225076): LanguageDetectionModelService should own
 // LanguageDetectionModel.
-class TranslateModelService
+class LanguageDetectionModelService
     : public KeyedService,
       public optimization_guide::OptimizationTargetModelObserver {
  public:
   using GetModelCallback = base::OnceCallback<void(base::File)>;
   using NotifyModelAvailableCallback = base::OnceCallback<void(bool)>;
 
-  TranslateModelService(
+  LanguageDetectionModelService(
       optimization_guide::OptimizationGuideModelProvider* opt_guide,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
-  ~TranslateModelService() override;
+  ~LanguageDetectionModelService() override;
 
   // KeyedService implementation:
   void Shutdown() override;
@@ -96,9 +96,9 @@ class TranslateModelService
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<TranslateModelService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LanguageDetectionModelService> weak_ptr_factory_{this};
 };
 
-}  //  namespace translate
+}  //  namespace language_detection
 
-#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
+#endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_BROWSER_LANGUAGE_DETECTION_MODEL_SERVICE_H_

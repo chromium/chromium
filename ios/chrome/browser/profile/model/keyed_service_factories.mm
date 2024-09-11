@@ -63,6 +63,8 @@
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
@@ -141,8 +143,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
-#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -266,7 +266,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
   JavaScriptConsoleFeatureFactory::GetInstance();
-  LanguageDetectionModelServiceFactory::GetInstance();
+  LanguageDetectionModelLoaderServiceIOSFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
   ListFamilyMembersServiceFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
@@ -307,7 +307,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   TailoredSecurityServiceFactory::GetInstance();
   TextClassifierModelServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
-  TranslateModelServiceFactory::GetInstance();
+  LanguageDetectionModelServiceFactory::GetInstance();
   TrustedVaultClientBackendFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
   UnitConversionServiceFactory::GetInstance();

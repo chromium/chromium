@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TRANSLATE_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_TRANSLATE_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_LANGUAGE_DETECTION_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_LANGUAGE_DETECTION_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_
 
 #import <memory>
 
@@ -11,18 +11,14 @@
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-namespace translate {
+namespace language_detection {
 class LanguageDetectionModelService;
-}  // namespace translate
+}
 
-// This is a workaround for crbug/1324530 on iOS where it is mandatory to have
-// LanguageDetectionModel scoped by BrowserState.
-// TODO(crbug.com/40225076): remove this class once TranslateModelService does
-// this.
 class LanguageDetectionModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static translate::LanguageDetectionModelService* GetForBrowserState(
+  static language_detection::LanguageDetectionModelService* GetForBrowserState(
       ChromeBrowserState* browser_state);
   static LanguageDetectionModelServiceFactory* GetInstance();
 
@@ -44,4 +40,4 @@ class LanguageDetectionModelServiceFactory
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_LANGUAGE_DETECTION_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_

@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -43,7 +43,7 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
     : web_state_(web_state),
       translate_driver_(
           web_state,
-          LanguageDetectionModelServiceFactory::GetForBrowserState(
+          LanguageDetectionModelLoaderServiceIOSFactory::GetForBrowserState(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))),
       translate_manager_(std::make_unique<translate::TranslateManager>(

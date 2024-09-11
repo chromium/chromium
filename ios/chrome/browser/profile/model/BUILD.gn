@@ -165,6 +165,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/language_detection/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",

@@ -1,0 +1,21 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("browser") {
+  sources = [
+    "language_detection_model_loader_service_ios.h",
+    "language_detection_model_loader_service_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/language_detection/core:language_detection",
+    "//components/language_detection/core/browser:language_detection_model_service",
+    "//components/translate/core/language_detection",
+  ]
+}

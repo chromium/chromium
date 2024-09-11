@@ -117,6 +117,7 @@ include_rules = [
   "+components/sync_user_events",
   "+components/tab_groups",
   "+components/translate",
+  "+components/language_detection/core/browser",
   "+components/ui_metrics",
   "+components/ukm",
   "+components/undo",

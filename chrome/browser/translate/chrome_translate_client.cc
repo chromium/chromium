@@ -19,9 +19,9 @@
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
+#include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/translate/translate_bubble_factory.h"
@@ -33,6 +33,7 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language_detection/content/browser/content_language_detection_driver.h"
+#include "components/language_detection/core/browser/language_detection_model_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/language_state.h"
@@ -42,7 +43,6 @@
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
-#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_util.h"
@@ -113,7 +113,7 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
               web_contents->GetBrowserContext()))),
       language_detection_driver_(
           new language_detection::ContentLanguageDetectionDriver(
-              TranslateModelServiceFactory::GetForProfile(
+              LanguageDetectionModelServiceFactory::GetForProfile(
                   Profile::FromBrowserContext(
                       web_contents->GetBrowserContext())))),
       translate_manager_(new translate::TranslateManager(

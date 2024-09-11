@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/content_settings/model",
+  "+ios/chrome/browser/language_detection/model",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prefs/model",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 
 #import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
@@ -11,9 +11,9 @@
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/language_detection/core/browser/language_detection_model_service.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_service.h"
-#import "components/translate/core/browser/translate_model_service.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -21,29 +21,31 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-TranslateModelServiceFactory* TranslateModelServiceFactory::GetInstance() {
-  static base::NoDestructor<TranslateModelServiceFactory> instance;
+LanguageDetectionModelServiceFactory*
+LanguageDetectionModelServiceFactory::GetInstance() {
+  static base::NoDestructor<LanguageDetectionModelServiceFactory> instance;
   return instance.get();
 }
 
 // static
-translate::TranslateModelService*
-TranslateModelServiceFactory::GetForBrowserState(ChromeBrowserState* state) {
-  return static_cast<translate::TranslateModelService*>(
+language_detection::LanguageDetectionModelService*
+LanguageDetectionModelServiceFactory::GetForBrowserState(
+    ChromeBrowserState* state) {
+  return static_cast<language_detection::LanguageDetectionModelService*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
 
-TranslateModelServiceFactory::TranslateModelServiceFactory()
+LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "TranslateModelService",
+          "LanguageDetectionModelService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
-TranslateModelServiceFactory::~TranslateModelServiceFactory() {}
+LanguageDetectionModelServiceFactory::~LanguageDetectionModelServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-TranslateModelServiceFactory::BuildServiceInstanceFor(
+LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled() ||
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
@@ -59,13 +61,13 @@ TranslateModelServiceFactory::BuildServiceInstanceFor(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    return std::make_unique<translate::TranslateModelService>(
+    return std::make_unique<language_detection::LanguageDetectionModelService>(
         opt_guide, background_task_runner);
   }
   return nullptr;
 }
 
-web::BrowserState* TranslateModelServiceFactory::GetBrowserStateToUse(
+web::BrowserState* LanguageDetectionModelServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
 }

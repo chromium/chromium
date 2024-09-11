@@ -22,13 +22,16 @@ namespace language {
 class UrlLanguageHistogram;
 }  // namespace language
 
+namespace language_detection {
+class LanguageDetectionModelLoaderServiceIOS;
+}  // namespace language_detection
+
 namespace web {
 class WebState;
 }
 
 namespace translate {
 
-class LanguageDetectionModelService;
 class TranslateManager;
 
 // Content implementation of TranslateDriver.
@@ -38,9 +41,9 @@ class IOSTranslateDriver
       public web::WebStateObserver,
       public language::IOSLanguageDetectionTabHelper::Observer {
  public:
-  IOSTranslateDriver(
-      web::WebState* web_state,
-      LanguageDetectionModelService* language_detection_model_service);
+  IOSTranslateDriver(web::WebState* web_state,
+                     language_detection::LanguageDetectionModelLoaderServiceIOS*
+                         language_detection_model_service);
 
   IOSTranslateDriver(const IOSTranslateDriver&) = delete;
   IOSTranslateDriver& operator=(const IOSTranslateDriver&) = delete;
@@ -129,8 +132,8 @@ class IOSTranslateDriver
   base::WeakPtr<TranslateManager> translate_manager_;
   std::unique_ptr<TranslateController> translate_controller_;
 
-  raw_ptr<LanguageDetectionModelService> language_detection_model_service_ =
-      nullptr;
+  raw_ptr<language_detection::LanguageDetectionModelLoaderServiceIOS>
+      language_detection_model_service_ = nullptr;
 
   // An ever-increasing sequence number of the current page, used to match up
   // translation requests with responses.

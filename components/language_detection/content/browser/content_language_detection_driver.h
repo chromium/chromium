@@ -13,18 +13,16 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace translate {
-class TranslateModelService;
-}  // namespace translate
-
 namespace language_detection {
+
+class LanguageDetectionModelService;
 
 // Content implementation of LanguageDetectionDriver.
 class ContentLanguageDetectionDriver
     : public mojom::ContentLanguageDetectionDriver {
  public:
   explicit ContentLanguageDetectionDriver(
-      translate::TranslateModelService* translate_model_service);
+      LanguageDetectionModelService* language_detection_model_service);
 
   ContentLanguageDetectionDriver(const ContentLanguageDetectionDriver&) =
       delete;
@@ -59,7 +57,8 @@ class ContentLanguageDetectionDriver
 
   // The service that provides the model files needed for translate. Not owned
   // but guaranteed to outlive `this`.
-  const raw_ptr<translate::TranslateModelService> translate_model_service_;
+  const raw_ptr<LanguageDetectionModelService>
+      language_detection_model_service_;
 
   base::WeakPtrFactory<ContentLanguageDetectionDriver> weak_pointer_factory_{
       this};

@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "components/translate/core/browser/translate_model_service.h"
+#include "components/language_detection/core/browser/language_detection_model_service.h"
 
 namespace language_detection {
 
 ContentLanguageDetectionDriver::ContentLanguageDetectionDriver(
-    translate::TranslateModelService* translate_model_service)
-    : translate_model_service_(translate_model_service) {}
+    LanguageDetectionModelService* language_detection_model_service)
+    : language_detection_model_service_(language_detection_model_service) {}
 
 ContentLanguageDetectionDriver::~ContentLanguageDetectionDriver() = default;
 
@@ -23,7 +23,7 @@ void ContentLanguageDetectionDriver::AddReceiver(
 
 void ContentLanguageDetectionDriver::GetLanguageDetectionModel(
     GetLanguageDetectionModelCallback callback) {
-  if (!translate_model_service_) {
+  if (!language_detection_model_service_) {
     std::move(callback).Run(base::File());
     return;
   }
@@ -32,10 +32,12 @@ void ContentLanguageDetectionDriver::GetLanguageDetectionModel(
   // the model file and callback lifetimes are carefully managed so they
   // are not freed without be handled on the appropriate thread, particularly
   // for the model file.
-  if (!translate_model_service_->IsModelAvailable()) {
-    translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
-        &ContentLanguageDetectionDriver::OnLanguageModelFileAvailabilityChanged,
-        weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+  if (!language_detection_model_service_->IsModelAvailable()) {
+    language_detection_model_service_->NotifyOnModelFileAvailable(
+        base::BindOnce(&ContentLanguageDetectionDriver::
+                           OnLanguageModelFileAvailabilityChanged,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       std::move(callback)));
     return;
   }
 
@@ -50,7 +52,7 @@ void ContentLanguageDetectionDriver::OnLanguageModelFileAvailabilityChanged(
     return;
   }
   std::move(callback).Run(
-      translate_model_service_->GetLanguageDetectionModelFile());
+      language_detection_model_service_->GetLanguageDetectionModelFile());
 }
 
 }  // namespace language_detection

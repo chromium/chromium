@@ -13,7 +13,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/language_detection/content/common:common",
-    "//components/translate/core/browser:translate_model_service",
+    "//components/language_detection/core/browser:language_detection_model_service",
     "//mojo/public/cpp/bindings:bindings",
   ]
 }

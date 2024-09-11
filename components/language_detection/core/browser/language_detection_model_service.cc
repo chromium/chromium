@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/core/browser/translate_model_service.h"
+#include "components/language_detection/core/browser/language_detection_model_service.h"
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -18,8 +18,9 @@ namespace {
 
 // Load the model file at the provided file path.
 base::File LoadModelFile(const base::FilePath& model_file_path) {
-  if (!base::PathExists(model_file_path))
+  if (!base::PathExists(model_file_path)) {
     return base::File();
+  }
 
   return base::File(model_file_path,
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -27,8 +28,9 @@ base::File LoadModelFile(const base::FilePath& model_file_path) {
 
 // Close the provided model file.
 void CloseModelFile(base::File model_file) {
-  if (!model_file.IsValid())
+  if (!model_file.IsValid()) {
     return;
+  }
   model_file.Close();
 }
 
@@ -49,14 +51,14 @@ class ScopedModelLoadingResultRecorder {
 };
 
 // The maximum number of pending model requests allowed to be kept
-// by the TranslateModelService.
+// by the LanguageDetectionModelService.
 constexpr int kMaxPendingRequestsAllowed = 100;
 
 }  // namespace
 
-namespace translate {
+namespace language_detection {
 
-TranslateModelService::TranslateModelService(
+LanguageDetectionModelService::LanguageDetectionModelService(
     optimization_guide::OptimizationGuideModelProvider* opt_guide,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
@@ -65,7 +67,7 @@ TranslateModelService::TranslateModelService(
       /*model_metadata=*/std::nullopt, this);
 }
 
-TranslateModelService::~TranslateModelService() {
+LanguageDetectionModelService::~LanguageDetectionModelService() {
   opt_guide_->RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, this);
   // Clear any pending requests, no model file is acceptable as shutdown is
@@ -73,7 +75,7 @@ TranslateModelService::~TranslateModelService() {
   NotifyModelUpdatesAndClear(false);
 }
 
-void TranslateModelService::Shutdown() {
+void LanguageDetectionModelService::Shutdown() {
   // This and the optimization guide are keyed services, currently optimization
   // guide is a BrowserContextKeyedService, it will be cleaned first so removing
   // the observer should not be performed.
@@ -83,7 +85,7 @@ void TranslateModelService::Shutdown() {
   NotifyModelUpdatesAndClear(false);
 }
 
-void TranslateModelService::UnloadModelFile() {
+void LanguageDetectionModelService::UnloadModelFile() {
   if (language_detection_model_file_) {
     // If the model file is already loaded, it should be closed on a
     // background thread.
@@ -93,7 +95,7 @@ void TranslateModelService::UnloadModelFile() {
   }
 }
 
-void TranslateModelService::NotifyModelUpdatesAndClear(
+void LanguageDetectionModelService::NotifyModelUpdatesAndClear(
     bool is_model_available) {
   for (auto& pending_request : pending_model_requests_) {
     std::move(pending_request).Run(is_model_available);
@@ -101,7 +103,7 @@ void TranslateModelService::NotifyModelUpdatesAndClear(
   pending_model_requests_.clear();
 }
 
-void TranslateModelService::OnModelUpdated(
+void LanguageDetectionModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -116,15 +118,16 @@ void TranslateModelService::OnModelUpdated(
   }
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
-      base::BindOnce(&TranslateModelService::OnModelFileLoaded,
+      base::BindOnce(&LanguageDetectionModelService::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TranslateModelService::OnModelFileLoaded(base::File model_file) {
+void LanguageDetectionModelService::OnModelFileLoaded(base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScopedModelLoadingResultRecorder result_recorder;
-  if (!model_file.IsValid())
+  if (!model_file.IsValid()) {
     return;
+  }
 
   UnloadModelFile();
   language_detection_model_file_ = std::move(model_file);
@@ -132,7 +135,7 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
   NotifyModelUpdatesAndClear(true);
 }
 
-base::File TranslateModelService::GetLanguageDetectionModelFile() {
+base::File LanguageDetectionModelService::GetLanguageDetectionModelFile() {
   DCHECK(IsModelAvailable());
   if (!language_detection_model_file_) {
     return base::File();
@@ -142,7 +145,7 @@ base::File TranslateModelService::GetLanguageDetectionModelFile() {
   return language_detection_model_file_->Duplicate();
 }
 
-void TranslateModelService::NotifyOnModelFileAvailable(
+void LanguageDetectionModelService::NotifyOnModelFileAvailable(
     NotifyModelAvailableCallback callback) {
   DCHECK(!IsModelAvailable());
   if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
@@ -151,4 +154,4 @@ void TranslateModelService::NotifyOnModelFileAvailable(
   }
   std::move(callback).Run(false);
 }
-}  // namespace translate
+}  // namespace language_detection

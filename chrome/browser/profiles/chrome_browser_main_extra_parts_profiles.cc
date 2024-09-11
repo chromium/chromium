@@ -86,6 +86,7 @@
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
+#include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -202,7 +203,6 @@
 #include "chrome/browser/tpcd/support/origin_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
-#include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
@@ -941,6 +941,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   JumpListFactory::GetInstance();
 #endif
   KAnonymityServiceFactory::GetInstance();
+  LanguageDetectionModelServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
@@ -1314,7 +1315,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   TrackingProtectionOnboardingFactory::GetInstance();
   TrackingProtectionSettingsFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
-  TranslateModelServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TriggeredProfileResetterFactory::GetInstance();
 #endif

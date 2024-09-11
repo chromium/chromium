@@ -47,7 +47,7 @@ WebViewTranslateClient::WebViewTranslateClient(
     language::AcceptLanguagesService* accept_languages)
     : pref_service_(pref_service),
       translate_driver_(web_state,
-                        /*translate_model_service=*/nullptr),
+                        /*language_detection_model_service=*/nullptr),
       translate_manager_(this, translate_ranker, language_model),
       accept_languages_(accept_languages) {
   DCHECK(pref_service_);
