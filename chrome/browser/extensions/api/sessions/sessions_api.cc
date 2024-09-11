@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/session_id.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -40,6 +39,7 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -183,8 +183,8 @@ api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
     const sessions::tab_restore::Group& group) {
   DCHECK(!group.tabs.empty());
 
-  return tab_groups_util::CreateTabGroupObject(group.group_id,
-                                               group.visual_data);
+  return ExtensionTabUtil::CreateTabGroupObject(group.group_id,
+                                                group.visual_data);
 }
 
 api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(

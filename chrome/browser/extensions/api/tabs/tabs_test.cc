@@ -34,7 +34,6 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -754,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryTabGroups) {
   function->set_extension(ExtensionBuilder("Test").Build().get());
   constexpr char kFormatQueryArgs[] = R"([{"groupId":%d}])";
   const std::string args = base::StringPrintf(
-      kFormatQueryArgs, tab_groups_util::GetGroupId(group_id));
+      kFormatQueryArgs, ExtensionTabUtil::GetGroupId(group_id));
   base::Value::List result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           function.get(), args, browser()->profile())));

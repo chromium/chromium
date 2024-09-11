@@ -16,10 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -46,7 +44,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
 
 namespace extensions {
@@ -243,7 +240,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_TRUE(group_info.is_dict());
-  EXPECT_EQ(tab_groups_util::GetGroupId(group1),
+  EXPECT_EQ(ExtensionTabUtil::GetGroupId(group1),
             *group_info.GetDict().FindInt("id"));
 }
 
@@ -280,7 +277,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_EQ(base::Value::Type::DICT, group_info.type());
-  EXPECT_EQ(tab_groups_util::GetGroupId(group3),
+  EXPECT_EQ(ExtensionTabUtil::GetGroupId(group3),
             *group_info.GetDict().FindInt("id"));
 }
 
@@ -298,7 +295,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsGetSuccess) {
   tab_groups::TabGroupVisualData visual_data(
       u"Title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsGetFunction to get the group object.
   constexpr char kFormatArgs[] = R"([%d])";
@@ -320,9 +317,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsGetError) {
   function->set_extension(extension);
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[0]", profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(ErrorUtils::FormatErrorMessage(
-                tab_groups_constants::kGroupNotFoundError, "0"),
-            error);
+  EXPECT_EQ("No group with id: 0.", error);
 }
 
 // Test that updating group metadata works as expected.
@@ -339,7 +334,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSuccess) {
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsUpdateFunction to update the title and color.
   auto function = base::MakeRefCounted<TabGroupsUpdateFunction>();
@@ -369,9 +364,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateError) {
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[0, {}]", profile(),
       api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(ErrorUtils::FormatErrorMessage(
-                tab_groups_constants::kGroupNotFoundError, "0"),
-            error);
+  EXPECT_EQ("No group with id: 0.", error);
 }
 
 // Test that tabGroups.update() passes on a saved group.
@@ -394,7 +387,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
   saved_service->SetIsInitializedForTesting(true);
   saved_service->AddGroup(
       tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
   ASSERT_TRUE(saved_service->GetGroup(group));
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
@@ -425,7 +418,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveRight) {
 
   // Create a group with multiple tabs.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 2.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -460,7 +453,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAdjacentGroupRight) {
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
   tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
 
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 3.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -498,7 +491,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveGroupCannotMoveToTheMiddleOfAGroup) {
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2});
   tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
 
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 3.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -531,7 +524,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveLeft) {
 
   // Create a group with multiple tabs.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 0.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -563,7 +556,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
 
   // Create a group with multiple tabs.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Create a new window and add a few tabs.
   auto window2 = std::make_unique<TestBrowserWindow>();
@@ -632,7 +625,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveToPinnedError) {
 
   // Create a group with an unpinned tab.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the group to index 1 and expect an error.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -641,8 +634,9 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveToPinnedError) {
   const std::string args = base::StringPrintf(kFormatArgs, group_id);
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(tab_groups_constants::kCannotMoveGroupIntoMiddleOfPinnedTabsError,
-            error);
+  EXPECT_EQ(
+      "Cannot move the group to an index that is in the middle of pinned tabs.",
+      error);
 }
 
 // Test that a group cannot be moved into the middle of another group.
@@ -656,7 +650,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveToOtherGroupError) {
   // Create two tab groups, one with multiple tabs and the other to move.
   tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the second group to index 1 and expect an error.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -665,8 +659,10 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveToOtherGroupError) {
   const std::string args = base::StringPrintf(kFormatArgs, group_id);
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(tab_groups_constants::kCannotMoveGroupIntoMiddleOfOtherGroupError,
-            error);
+  EXPECT_EQ(
+      "Cannot move the group to an index that is in the middle of another "
+      "group.",
+      error);
 }
 
 TEST_F(TabGroupsApiUnitTest, TabGroupsOnCreated) {
@@ -736,7 +732,7 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-  int group_id = tab_groups_util::GetGroupId(
+  int group_id = ExtensionTabUtil::GetGroupId(
       browser()->tab_strip_model()->AddToNewGroup({0}));
   const std::string args =
       base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);

@@ -21,7 +21,6 @@
 #include "base/test/values_test_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -1063,7 +1062,7 @@ TEST_F(TabsApiUnitTest, TabsGroupParamsError) {
 
   // Add a tab to a group to have an existing group ID.
   tab_groups::TabGroupId group = GetTabStripModel()->AddToNewGroup({1});
-  int group_id = tab_groups_util::GetGroupId(group);
+  int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Attempt to specify both createProperties and groupId.
   auto function = base::MakeRefCounted<TabsGroupFunction>();
@@ -1126,7 +1125,7 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
 
   tab_groups::TabGroupId group2 =
       browser2->tab_strip_model()->AddToNewGroup({1});
-  int group_id2 = tab_groups_util::GetGroupId(group2);
+  int group_id2 = ExtensionTabUtil::GetGroupId(group2);
 
   // Use the TabsGroupFunction to group tabs 0, 2, and 4 from the original
   // browser into the same group as the one in browser2.

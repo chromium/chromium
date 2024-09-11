@@ -41,8 +41,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -1258,7 +1256,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
             continue;
         } else if (!group.has_value()) {
           continue;
-        } else if (tab_groups_util::GetGroupId(group.value()) !=
+        } else if (ExtensionTabUtil::GetGroupId(group.value()) !=
                    group_id.value()) {
           continue;
         }
@@ -2023,7 +2021,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       return RespondNow(Error(tabs_constants::kGroupParamsError));
 
     group_id = *params->options.group_id;
-    if (!tab_groups_util::GetGroupById(
+    if (!ExtensionTabUtil::GetGroupById(
             group_id, browser_context(), include_incognito_information(),
             &target_browser, &group, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
@@ -2109,7 +2107,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   }
   if (group.is_empty()) {
     group = tab_strip->AddToNewGroup(tab_indices);
-    group_id = tab_groups_util::GetGroupId(group);
+    group_id = ExtensionTabUtil::GetGroupId(group);
   } else {
     tab_strip->AddToExistingGroup(tab_indices, group);
   }

@@ -23,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
