@@ -421,6 +421,12 @@ static_library("ui") {
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_attributes_impl",
+    "//chrome/browser/profiles:profile_statistics",
+    "//chrome/browser/profiles:profile_statistics_impl",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiling_host",
     "//chrome/browser/resources:dev_ui_resources",
     "//chrome/browser/resources:resources",
@@ -750,6 +756,8 @@ static_library("ui") {
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/search_engine_choice:impl",
+    "//chrome/browser/profiles:profile_attributes_impl",
+    "//chrome/browser/profiles:profile_util_impl",
   ]
 
   if (enable_vr && is_win) {

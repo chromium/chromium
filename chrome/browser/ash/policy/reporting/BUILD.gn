@@ -68,6 +68,7 @@ static_library("reporting") {
     "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/disks",

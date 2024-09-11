@@ -780,6 +780,8 @@ source_set("extensions") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/feedback",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engine_choice",
