@@ -64,12 +64,12 @@
       sub-label="$i18n{autosigninDescription}"
       pref="{{prefs.credentials_enable_autosignin}}">
   </pref-toggle-button>
-  <if expr="is_win or is_macosx">
+  <if expr="is_win or is_macosx or is_chromeos">
     <template is="dom-if"
         if="[[isBiometricAuthenticationForFillingToggleVisible_]]">
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
-          label="$i18n{biometricAuthenticaionForFillingLabel}"
-          sub-label="$i18n{biometricAuthenticaionForFillingSublabel}"
+          label="$i18n{biometricAuthenticationForFillingLabel}"
+          sub-label="$i18n{biometricAuthenticationForFillingSubLabel}"
           pref="{{prefs.password_manager.biometric_authentication_filling}}"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
