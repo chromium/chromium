@@ -986,6 +986,13 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/exported/web_form_control_element.cc'],
+        'allowed': [
+            'base::i18n::LEFT_TO_RIGHT',
+            'base::i18n::RIGHT_TO_LEFT',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/exported/web_view_impl.cc'],
         'allowed': [
             'base::TaskAnnotator',

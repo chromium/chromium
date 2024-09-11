@@ -307,24 +307,25 @@ unsigned WebFormControlElement::SelectionEnd() const {
   return 0;
 }
 
-WebString WebFormControlElement::AlignmentForFormData() const {
+WebFormControlElement::Alignment WebFormControlElement::AlignmentForFormData()
+    const {
   if (const ComputedStyle* style =
           ConstUnwrap<HTMLFormControlElement>()->GetComputedStyle()) {
     if (style->GetTextAlign() == ETextAlign::kRight)
-      return WebString::FromUTF8("right");
+      return Alignment::kRight;
     if (style->GetTextAlign() == ETextAlign::kLeft)
-      return WebString::FromUTF8("left");
+      return Alignment::kLeft;
   }
-  return WebString();
+  return Alignment::kNotSet;
 }
 
-WebString WebFormControlElement::DirectionForFormData() const {
+base::i18n::TextDirection WebFormControlElement::DirectionForFormData() const {
   if (const ComputedStyle* style =
           ConstUnwrap<HTMLFormControlElement>()->GetComputedStyle()) {
-    return style->IsLeftToRightDirection() ? WebString::FromUTF8("ltr")
-                                           : WebString::FromUTF8("rtl");
+    return style->IsLeftToRightDirection() ? base::i18n::LEFT_TO_RIGHT
+                                           : base::i18n::RIGHT_TO_LEFT;
   }
-  return WebString::FromUTF8("ltr");
+  return base::i18n::LEFT_TO_RIGHT;
 }
 
 WebFormElement WebFormControlElement::Form() const {

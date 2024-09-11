@@ -2328,15 +2328,14 @@ base::i18n::TextDirection GetTextDirectionForElement(
     const WebFormControlElement& element) {
   // Use 'text-align: left|right' if set or 'direction' otherwise.
   // See https://crbug.com/482339
-  base::i18n::TextDirection direction = element.DirectionForFormData() == "rtl"
-                                            ? base::i18n::RIGHT_TO_LEFT
-                                            : base::i18n::LEFT_TO_RIGHT;
-  if (element.AlignmentForFormData() == "left") {
-    direction = base::i18n::LEFT_TO_RIGHT;
-  } else if (element.AlignmentForFormData() == "right") {
-    direction = base::i18n::RIGHT_TO_LEFT;
+  switch (element.AlignmentForFormData()) {
+    case WebFormControlElement::Alignment::kLeft:
+      return base::i18n::LEFT_TO_RIGHT;
+    case WebFormControlElement::Alignment::kRight:
+      return base::i18n::RIGHT_TO_LEFT;
+    case WebFormControlElement::Alignment::kNotSet:
+      return element.DirectionForFormData();
   }
-  return direction;
 }
 
 std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
