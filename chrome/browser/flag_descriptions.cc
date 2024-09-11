@@ -99,11 +99,6 @@ const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
 const char kAuxiliarySearchDonationDescription[] =
     "If enabled, override Auxiliary Search donation cap.";
 
-const char kAuxiliarySearchThridPartyName[] =
-    "Auxiliary Search for third party";
-const char kAuxiliarySearchThridPartyDescription[] =
-    "If enabled, allow Auxiliary Search for selected third parties.";
-
 const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";

@@ -6280,11 +6280,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAuxiliarySearchDonationVariations,
                                     "AuxiliarySearchDonation")},
 
-    {"auxiliary-search-third-party",
-     flag_descriptions::kAuxiliarySearchThridPartyName,
-     flag_descriptions::kAuxiliarySearchThridPartyDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAuxiliarySearchThirdParty)},
-
     {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},

@@ -947,11 +947,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "auxiliary-search-third-party",
-    "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "avif-gainmap-hdr-images",
     "owners": [ "maryla@google.com", "avif-eng@google.com" ],
     "expiry_milestone": 140

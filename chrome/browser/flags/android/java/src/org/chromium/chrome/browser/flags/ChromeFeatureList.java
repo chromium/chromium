@@ -221,7 +221,6 @@ public abstract class ChromeFeatureList {
             "AutofillVirtualViewStructureAndroid";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
-    public static final String AUXILIARY_SEARCH_THIRD_PARTY = "AuxiliarySearchThirdParty";
     public static final String AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING =
             "AvoidSelectedTabFocusOnLayoutDoneShowing";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
@@ -556,8 +555,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false);
-    public static final CachedFlag sAuxiliarySearchThirdParty =
-            newCachedFlag(AUXILIARY_SEARCH_THIRD_PARTY, false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
     public static final CachedFlag sAndroidGoogleSansText =
@@ -749,7 +746,6 @@ public abstract class ChromeFeatureList {
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
-                    sAuxiliarySearchThirdParty,
                     sBackGestureActivityTabProvider,
                     sBackGestureMoveToBackDuringStartup,
                     sBackGestureRefactorAndroid,

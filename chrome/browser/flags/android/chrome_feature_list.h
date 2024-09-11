@@ -36,7 +36,6 @@ BASE_DECLARE_FEATURE(kAppSpecificHistory);
 BASE_DECLARE_FEATURE(kTinkerTankBottomSheet);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
-BASE_DECLARE_FEATURE(kAuxiliarySearchThirdParty);
 BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);
 BASE_DECLARE_FEATURE(kBackGestureActivityTabProvider);
 BASE_DECLARE_FEATURE(kBackGestureMoveToBackDuringStartup);
