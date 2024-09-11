@@ -197,13 +197,13 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
 
-static base::TimeTicks ToTimeOrigin(LocalDOMWindow* window) {
+base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
   return loader->GetTiming().ReferenceMonotonicTime();
 }
 
 WindowPerformance::WindowPerformance(LocalDOMWindow* window)
-    : Performance(ToTimeOrigin(window),
+    : Performance(GetTimeOrigin(window),
                   window->CrossOriginIsolatedCapability(),
                   window->GetTaskRunner(TaskType::kPerformanceTimeline),
                   window),
@@ -814,7 +814,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 
   if (tracing_enabled) {
     base::TimeTicks unsafe_start_time =
-        GetTimeOriginInternal() + base::Milliseconds(entry->startTime());
+        entry->GetEventTimingReportingInfo()->creation_time;
     base::TimeTicks unsafe_end_time =
         entry->GetEventTimingReportingInfo()->fallback_time.value_or(
             entry->GetEventTimingReportingInfo()->presentation_time);

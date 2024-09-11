@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -141,10 +142,11 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
     Frame* frame) const {
   auto traced_value = std::make_unique<TracedValue>();
   traced_value->SetString("type", name());
-  traced_value->SetInteger("timeStamp", startTime());
-  traced_value->SetInteger("processingStart", processingStart());
-  traced_value->SetInteger("processingEnd", processingEnd());
-  traced_value->SetInteger("duration", duration());
+  // Recalculate this as the stored duration value is rounded.
+  traced_value->SetDouble("duration", (reporting_info_.fallback_time.value_or(
+                                           reporting_info_.presentation_time) -
+                                       reporting_info_.creation_time)
+                                          .InMillisecondsF());
   traced_value->SetBoolean("cancelable", cancelable());
   // If int overflows occurs, the static_cast may not work correctly.
   traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
@@ -153,6 +155,29 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
   traced_value->SetInteger(
       "nodeId", target_ ? target_->GetDomNodeId() : kInvalidDOMNodeId);
   traced_value->SetString("frame", GetFrameIdForTracing(frame));
+  if (!source() || !source()->IsLocalDOMWindow()) {
+    // Only report timing data if there is a valid source window to base the
+    // origin time on.
+    return traced_value;
+  }
+  base::TimeTicks origin_time =
+      WindowPerformance::GetTimeOrigin(To<LocalDOMWindow>(source()));
+  traced_value->SetDouble(
+      "timeStamp",
+      (reporting_info_.creation_time - origin_time).InMillisecondsF());
+  traced_value->SetDouble(
+      "processingStart",
+      (reporting_info_.processing_start_time - origin_time).InMillisecondsF());
+  traced_value->SetDouble(
+      "processingEnd",
+      (reporting_info_.processing_end_time - origin_time).InMillisecondsF());
+  traced_value->SetDouble(
+      "enqueuedToMainThreadTime",
+      (reporting_info_.enqueued_to_main_thread_time - origin_time)
+          .InMillisecondsF());
+  traced_value->SetDouble(
+      "commitFinishTime",
+      (reporting_info_.commit_finish_time - origin_time).InMillisecondsF());
   return traced_value;
 }
 

@@ -72,6 +72,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   explicit WindowPerformance(LocalDOMWindow*);
   ~WindowPerformance() override;
 
+  static base::TimeTicks GetTimeOrigin(LocalDOMWindow* window);
+
   ExecutionContext* GetExecutionContext() const override;
 
   PerformanceTiming* timing() const override;
