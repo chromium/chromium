@@ -44,7 +44,9 @@ SensitiveContentManager::SensitiveContentManager(
     content::WebContents* web_contents,
     SensitiveContentClient* client)
     : client_(CHECK_DEREF(client)) {
-  autofill_managers_observation_.Observe(web_contents);
+  autofill_managers_observation_.Observe(
+      web_contents, autofill::ScopedAutofillManagersObservation::
+                        InitializationPolicy::kObservePreexistingManagers);
 }
 
 SensitiveContentManager::~SensitiveContentManager() = default;
