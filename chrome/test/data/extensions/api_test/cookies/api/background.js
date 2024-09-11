@@ -819,19 +819,70 @@ chrome.test.runTests([
     // unpartitioned cookie being set.
     let emptyKey = structuredClone(TEST_PARTITIONED_COOKIE);
     emptyKey.partitionKey = {};
-    chrome.cookies.set(TEST_UNPARTITIONED_COOKIE, pass(function(cookie) {
+    emptyKey.value = 'emptyValue';
+    chrome.cookies.set(emptyKey, pass(function(cookie) {
                          chrome.test.assertEq(
                              cookie.value,
-                             TEST_UNPARTITIONED_COOKIE.value,
+                             emptyKey.value,
                          );
                          chrome.test.assertEq(
                              cookie.partitionKey,
                              TEST_UNPARTITIONED_COOKIE.partitionKey);
-                         chrome.cookies.remove({
-                           name: TEST_UNPARTITIONED_COOKIE.name,
-                           url: TEST_UNPARTITIONED_COOKIE.url
-                         });
+                         chrome.cookies.remove(
+                             {name: emptyKey.name, url: emptyKey.url});
                        }));
+
+    // Confirm that setting a cookie with an no `hasCrossSiteAncestor` but a
+    // `url` and `toplevel` site that are third party results in the value being
+    // correctly populated by the browser.
+    const thirdPartyAncestor = structuredClone(TEST_PARTITIONED_COOKIE);
+    thirdPartyAncestor.partitionKey = {
+      topLevelSite: TEST_PARTITIONED_COOKIE.partitionKey.topLevelSite
+    };
+    thirdPartyAncestor.value = 'thirdPartyAncestor';
+    thirdPartyAncestor.partitionKey = {topLevelSite: 'https://notcookies.com'};
+    chrome.cookies.set(
+        thirdPartyAncestor, pass(function(cookie) {
+          chrome.test.assertEq(
+              cookie.value,
+              thirdPartyAncestor.value,
+          );
+          const expectedKey = {
+            topLevelSite: thirdPartyAncestor.partitionKey.topLevelSite,
+            hasCrossSiteAncestor: true
+          };
+          chrome.test.assertEq(cookie.partitionKey, expectedKey);
+          chrome.cookies.remove({
+            name: thirdPartyAncestor.name,
+            url: thirdPartyAncestor.url,
+            partitionKey: expectedKey
+          });
+        }));
+
+    // Confirm that setting a cookie with an no `hasCrossSiteAncestor` but a
+    // `url` and `toplevel` site that are first party results in the value being
+    // correctly populated by the browser.
+    const firstPartyAncestor =
+        structuredClone(TEST_FIRST_PARTY_PARTITIONED_COOKIE);
+    firstPartyAncestor.value = 'firstPartyAncestor';
+    chrome.cookies.set(
+        firstPartyAncestor, pass(function(cookie) {
+          chrome.test.assertEq(
+              cookie.value,
+              firstPartyAncestor.value,
+          );
+          const expectedKey = {
+            topLevelSite: firstPartyAncestor.partitionKey.topLevelSite,
+            hasCrossSiteAncestor: false
+          };
+          chrome.test.assertEq(cookie.partitionKey, expectedKey);
+          chrome.cookies.remove({
+            name: firstPartyAncestor.name,
+            url: firstPartyAncestor.url,
+            partitionKey: expectedKey
+          });
+        }));
+
   },
   function getAllPartitionedCookies() {
     removeTestCookies();

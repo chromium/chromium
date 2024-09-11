@@ -481,17 +481,34 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  if (!cookies_helpers::ValidateCrossSiteAncestor(
-          parsed_args_->details.url, parsed_args_->details.partition_key,
-          &error)) {
+  // cookies.set api allows for an partitionKey with a `top_level_site` present
+  // but no value for `has_cross_site_ancestor`. If that is the case, the
+  // browser will calculate the value for `has_cross_site_ancestor`.
+  std::optional<extensions::api::cookies::CookiePartitionKey> api_partition_key;
+  if (parsed_args_->details.partition_key.has_value()) {
+    api_partition_key = parsed_args_->details.partition_key->Clone();
+    if (!api_partition_key->has_cross_site_ancestor.has_value() &&
+        api_partition_key->top_level_site.has_value()) {
+      base::expected<bool, std::string> cross_site_ancestor =
+          cookies_helpers::CalculateHasCrossSiteAncestor(
+              parsed_args_->details.url, api_partition_key);
+      if (!cross_site_ancestor.has_value()) {
+        return RespondNow(Error(std::move(cross_site_ancestor.error())));
+      }
+      api_partition_key->has_cross_site_ancestor = cross_site_ancestor.value();
+    }
+  }
+
+  if (!cookies_helpers::ValidateCrossSiteAncestor(parsed_args_->details.url,
+                                                  api_partition_key, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
-      partition_key = cookies_helpers::ToNetCookiePartitionKey(
-          parsed_args_->details.partition_key);
-  if (!partition_key.has_value()) {
-    return RespondNow(Error(std::move(partition_key.error())));
+      net_partition_key =
+          cookies_helpers::ToNetCookiePartitionKey(api_partition_key);
+  if (!net_partition_key.has_value()) {
+    return RespondNow(Error(std::move(net_partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -541,7 +558,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           parsed_args_->details.http_only.value_or(false),       //
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
-          partition_key.value(),                                 //
+          net_partition_key.value(),                             //
           /*status=*/nullptr));
   if (!cc) {
     // Return error through callbacks so that the proper error message
@@ -566,7 +583,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
+      net::CookiePartitionKeyCollection::FromOptional(
+          net_partition_key.value()),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
