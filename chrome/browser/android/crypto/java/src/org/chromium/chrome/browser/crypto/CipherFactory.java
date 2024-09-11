@@ -90,8 +90,12 @@ public class CipherFactory {
         return LazyHolder.sInstance;
     }
 
+    /** Constructor. Should only be called by {@link BaseCustomTabActivity}. */
+    public CipherFactory() {}
+
     /**
      * Creates a secure Cipher for encrypting data.
+     *
      * @param opmode One of Cipher.{ENCRYPT,DECRYPT}_MODE.
      * @return A Cipher, or null if it is not possible to instantiate one.
      */
@@ -196,6 +200,4 @@ public class CipherFactory {
 
         return false;
     }
-
-    private CipherFactory() {}
 }

@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNa
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.KeyEvent;
 
@@ -91,6 +92,8 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
  */
 public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTabActivityComponent> {
     protected static Integer sOverrideCoreCountForTesting;
+
+    private final CipherFactory mCipherFactory = new CipherFactory();
 
     protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -306,14 +309,14 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
                                 new DefaultBrowserProviderImpl(),
-                                CipherFactory.getInstance())
+                                mCipherFactory)
                         : new BaseCustomTabActivityModule(
                                 mIntentDataProvider,
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
                                 new DefaultBrowserProviderImpl(),
-                                CipherFactory.getInstance());
+                                mCipherFactory);
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
                         .createBaseCustomTabActivityComponent(commonsModule, baseCustomTabsModule);
@@ -823,5 +826,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             return false;
         }
         return mLastPipMode == PictureInPictureMode.MINIMIZED_CUSTOM_TAB;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mCipherFactory.saveToBundle(outState);
     }
 }

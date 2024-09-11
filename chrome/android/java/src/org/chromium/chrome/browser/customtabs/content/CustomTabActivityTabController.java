@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -117,6 +118,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ActivityWindowAndroid mWindowAndroid;
     private final TabModelInitializer mTabModelInitializer;
+    private final CipherFactory mCipherFactory;
 
     @Nullable private final CustomTabsSessionToken mSession;
     private final Intent mIntent;
@@ -144,7 +146,8 @@ public class CustomTabActivityTabController implements InflationObserver {
             Lazy<AsyncTabParamsManager> asyncTabParamsManager,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             ActivityWindowAndroid windowAndroid,
-            TabModelInitializer tabModelInitializer) {
+            TabModelInitializer tabModelInitializer,
+            CipherFactory cipherFactory) {
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
@@ -166,6 +169,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mWindowAndroid = windowAndroid;
         mTabModelInitializer = tabModelInitializer;
+        mCipherFactory = cipherFactory;
 
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();
@@ -360,7 +364,11 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     private @Nullable Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
         if (mSavedInstanceStateSupplier.get() == null) return null;
-        tabModelOrchestrator.loadState(true, null);
+
+        boolean hadCipherData = mCipherFactory.restoreFromBundle(mSavedInstanceStateSupplier.get());
+        if (!hadCipherData && mIntentDataProvider.isOffTheRecord()) return null;
+
+        tabModelOrchestrator.loadState(/* ignoreIncognitoFiles= */ false, null);
         tabModelOrchestrator.restoreTabs(true);
         Tab tab = tabModelOrchestrator.getTabModelSelector().getCurrentTab();
         if (tab != null) {

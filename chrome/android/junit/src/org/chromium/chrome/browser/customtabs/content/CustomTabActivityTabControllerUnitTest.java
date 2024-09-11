@@ -105,6 +105,28 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
+    public void usesRestoredTab_IfOffTheRecord_IfAvailable() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        env.saveTab(savedTab);
+        when(env.cipherFactory.restoreFromBundle(any())).thenReturn(true);
+        env.reachNativeInit(mTabController);
+        assertEquals(savedTab, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
+    }
+
+    @Test
+    public void doesntUseRestoredTab_IfOffTheRecord_NoCipherKey() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        env.saveTab(savedTab);
+        when(env.cipherFactory.restoreFromBundle(any())).thenReturn(false);
+        env.reachNativeInit(mTabController);
+        assertEquals(env.tabFromFactory, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.DEFAULT, env.tabProvider.getInitialTabCreationMode());
+    }
+
+    @Test
     public void doesntCreateNewTab_IfRestored() {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
