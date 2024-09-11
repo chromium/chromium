@@ -419,6 +419,10 @@ bool LayoutTheme::IsControlStyled(ControlPart part,
     case kProgressBarPart:
       return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
+    case kMeterPart:
+      return RuntimeEnabledFeatures::MeterDevolveAppearanceEnabled() &&
+             (builder.HasAuthorBackground() || builder.HasAuthorBorder());
+
     case kMenulistPart:
     case kSearchFieldPart:
     case kTextAreaPart:
