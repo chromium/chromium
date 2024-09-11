@@ -9,6 +9,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -16,6 +17,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -178,6 +180,15 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
     return false;
   }
   return (*cache_).FindFieldByGlobalId(field.global_id());
+}
+
+bool AutofillPredictionImprovementsManager::IsFormEligible(
+    const autofill::FormStructure& form) {
+  if (!IsFormEligibleByFieldCriteria(form)) {
+    return false;
+  }
+
+  return ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
 bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(

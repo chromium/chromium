@@ -14,6 +14,7 @@ namespace autofill {
 
 class FormData;
 class FormFieldData;
+class FormStructure;
 
 // The interface for communication from //components/autofill to
 // //components/autofill/autofill_prediction_improvements.
@@ -35,6 +36,9 @@ class AutofillPredictionImprovementsDelegate {
       std::vector<Suggestion>& address_suggestions,
       const FormFieldData& field,
       bool should_add_trigger_suggestion) = 0;
+
+  // Returns whether `form` is eligible for the improved prediction experience.
+  virtual bool IsFormEligible(const FormStructure& form) = 0;
 
   // Returns `true` if the corresponding feature is enabled and optimization can
   // be applied.

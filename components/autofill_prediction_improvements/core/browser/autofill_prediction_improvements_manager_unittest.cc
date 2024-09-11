@@ -7,6 +7,8 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -410,5 +412,43 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                   SuggestionType::kPredictionImprovementsLoadingState)));
 }
 
+TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
+       IsFormEligible_EmptyForm) {
+  feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
+                                              {{"skip_allowlist", "true"}});
+
+  autofill::FormData form_data;
+  autofill::FormStructure form(form_data);
+  autofill::FormStructureTestApi form_test_api(form);
+
+  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+
+  EXPECT_FALSE(manager.IsFormEligible(form));
+}
+
+TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
+       IsFormEligible_EligibleForm) {
+  feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
+                                              {{"skip_allowlist", "true"}});
+
+  autofill::FormData form_data;
+  autofill::FormStructure form(form_data);
+  autofill::FormStructureTestApi form_test_api(form);
+
+  autofill::AutofillField& prediction_improvement_field =
+      form_test_api.PushField();
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  prediction_improvement_field.set_heuristic_type(
+      autofill::HeuristicSource::kPredictionImprovementRegexes,
+      autofill::IMPROVED_PREDICTION);
+#else
+  prediction_improvement_field.set_heuristic_type(
+      autofill::HeuristicSource::kLegacyRegexes, autofill::IMPROVED_PREDICTION);
+#endif
+
+  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+
+  EXPECT_TRUE(manager.IsFormEligible(form));
+}
 }  // namespace
 }  // namespace autofill_prediction_improvements

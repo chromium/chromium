@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
 
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -32,6 +33,10 @@ class MockAutofillPredictionImprovementsDelegate
   MOCK_METHOD(void,
               UserFeedbackReceived,
               (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
+              (override));
+  MOCK_METHOD(bool,
+              IsFormEligible,
+              (const autofill::FormStructure& form),
               (override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
   MOCK_METHOD(void,

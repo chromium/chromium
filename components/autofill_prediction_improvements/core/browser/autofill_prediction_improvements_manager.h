@@ -17,6 +17,10 @@ namespace optimization_guide {
 class OptimizationGuideDecider;
 }
 
+namespace autofill {
+class FormStructure;
+}  // namespace autofill
+
 namespace autofill_prediction_improvements {
 
 // The class for embedder-independent, tab-specific
@@ -38,6 +42,7 @@ class AutofillPredictionImprovementsManager
       std::vector<autofill::Suggestion>& address_suggestions,
       const autofill::FormFieldData& field,
       bool should_add_trigger_suggestion) override;
+  bool IsFormEligible(const autofill::FormStructure& form) override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
   void UserFeedbackReceived(
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)
