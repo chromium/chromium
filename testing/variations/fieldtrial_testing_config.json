@@ -22651,24 +22651,6 @@
             ]
         }
     ],
-    "SuppressToolbarCaptures": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "SuppressionBlockFullscreen_20231004",
-                    "params": {
-                        "block_for_fullscreen": "true"
-                    },
-                    "enable_features": [
-                        "SuppressToolbarCaptures"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuppressToolbarCapturesAtGestureEndStudy": [
         {
             "platforms": [
@@ -22676,25 +22658,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_BothSuppressToolbarCaptures",
                     "enable_features": [
                         "EnableGestureBeginEndTypes",
-                        "SuppressToolbarCapturesAtGestureEnd"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "EnableGestureBeginEndTypes",
-                        "SuppressToolbarCapturesAtGestureEnd"
-                    ]
-                },
-                {
-                    "name": "Enabled_GestureBeginEndTypes",
-                    "enable_features": [
-                        "EnableGestureBeginEndTypes"
-                    ],
-                    "disable_features": [
+                        "SuppressToolbarCaptures",
                         "SuppressToolbarCapturesAtGestureEnd"
                     ]
                 }
