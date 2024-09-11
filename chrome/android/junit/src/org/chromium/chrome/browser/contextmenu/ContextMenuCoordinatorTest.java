@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 
@@ -205,6 +208,62 @@ public class ContextMenuCoordinatorTest {
         assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        // "Save link as"  and "save image" should be enabled.
+        assertTrue(itemList.get(4).model.get(ENABLED));
+        assertTrue(itemList.get(8).model.get(ENABLED));
+    }
+
+    @Test
+    public void testGetItemListWithDownloadBlockedByPolicy() {
+        final ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        ContextMenuDataMediaType.IMAGE,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        /* additionalNavigationParams= */ null);
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
+        // Link items
+        ModelList groupOne = new ModelList();
+        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
+        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(createListItem(Item.SAVE_LINK_AS, false));
+        groupOne.add(createShareListItem(Item.SHARE_LINK));
+        rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
+        // Image Items
+        ModelList groupTwo = new ModelList();
+        groupTwo.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
+        groupTwo.add(createListItem(Item.SAVE_IMAGE, false));
+        groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
+        rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
+
+        mCoordinator.initializeHeaderCoordinatorForTesting(
+                mActivity, params, mProfile, mNativeDelegate);
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
+
+        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
+        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        // "Save link as"  and "save image" should be disabled.
+        assertFalse(itemList.get(4).model.get(ENABLED));
+        assertFalse(itemList.get(8).model.get(ENABLED));
     }
 
     @Test
@@ -452,9 +511,14 @@ public class ContextMenuCoordinatorTest {
     }
 
     private ListItem createListItem(@Item int item) {
+        return createListItem(item, /* enabled= */ true);
+    }
+
+    private ListItem createListItem(@Item int item, boolean enabled) {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(ENABLED, enabled)
                         .with(
                                 TEXT,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
@@ -466,6 +530,7 @@ public class ContextMenuCoordinatorTest {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(ENABLED, true)
                         .with(
                                 TEXT,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))

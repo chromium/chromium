@@ -2101,6 +2101,11 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
   return ShouldOpenPdfInlineInternal(profile_->IsOffTheRecord());
 }
+
+bool ChromeDownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
+  return download_prefs_->download_restriction() ==
+         DownloadPrefs::DownloadRestriction::ALL_FILES;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

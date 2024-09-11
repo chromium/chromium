@@ -250,6 +250,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
                                         "chrome/test/data/android/UiCapture/dots.png")));
         return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                 .with(ContextMenuItemWithIconButtonProperties.TEXT, title)
+                .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                 .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
                 .build();
     }

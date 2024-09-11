@@ -85,13 +85,15 @@ public class DownloadUtils {
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
+    private static Boolean sIsDownloadRestrictedByPolicyForTesting;
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
+     *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
      * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
-     * opened in incognito mode. If null, download page will be opened in normal profile.
+     *     opened in incognito mode. If null, download page will be opened in normal profile.
      * @param source The source where the user action is coming from.
      * @return Whether the UI was shown.
      */
@@ -691,7 +693,26 @@ public class DownloadUtils {
     }
 
     /**
+     * Returns whether download is restricted by policy.
+     *
+     * @param profile Profile to be checked.
+     * @return True if download is restricted, or false otherwise.
+     */
+    public static boolean isDownloadRestrictedByPolicy(Profile profile) {
+        if (sIsDownloadRestrictedByPolicyForTesting != null) {
+            return sIsDownloadRestrictedByPolicyForTesting;
+        }
+        return DownloadUtilsJni.get().isDownloadRestrictedByPolicy(profile);
+    }
+
+    public static void setIsDownloadRestrictedByPolicyForTesting(
+            Boolean isDownloadRestrictedByPolicy) {
+        sIsDownloadRestrictedByPolicyForTesting = isDownloadRestrictedByPolicy;
+    }
+
+    /**
      * Helper method to get the text to be displayed for duplicate download.
+     *
      * @param template Message template.
      * @param fileName Name of the file.
      * @param addSizeStringIfAvailable Whether size string should be added to the dialog text.
@@ -736,5 +757,7 @@ public class DownloadUtils {
         int getResumeMode(
                 @JniType("std::string") String url,
                 @FailState @JniType("offline_items_collection::FailState") int failState);
+
+        boolean isDownloadRestrictedByPolicy(@JniType("Profile*") Profile profile);
     }
 }

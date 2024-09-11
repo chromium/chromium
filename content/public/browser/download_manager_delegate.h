@@ -245,6 +245,9 @@ class CONTENT_EXPORT DownloadManagerDelegate {
 
   // Whether to open pdf inline.
   virtual bool ShouldOpenPdfInline();
+
+  // Whether download is restricted by policy.
+  virtual bool IsDownloadRestrictedByPolicy();
 #endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();

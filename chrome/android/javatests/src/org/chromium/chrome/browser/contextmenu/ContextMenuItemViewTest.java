@@ -61,6 +61,7 @@ public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
                             new PropertyModel.Builder(
                                             ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                                     .with(ContextMenuItemWithIconButtonProperties.TEXT, "")
+                                    .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                                     .with(
                                             ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE,
                                             null)

@@ -158,6 +158,7 @@ class ChromeDownloadManagerDelegate
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp(download::DownloadItem* item) override;
   bool ShouldOpenPdfInline() override;
+  bool IsDownloadRestrictedByPolicy() override;
 #else
   void AttachExtraInfo(download::DownloadItem* item) override;
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -152,6 +152,10 @@ bool DownloadManagerDelegate::IsFromExternalApp(download::DownloadItem* item) {
 bool DownloadManagerDelegate::ShouldOpenPdfInline() {
   return false;
 }
+
+bool DownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
