@@ -109,8 +109,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
                                     base::TimeTicks /*idleDeadline*/);
   void Hibernate();
 
-  void ResetResourceProvider();
-
   CanvasHibernationHandler hibernation_handler_;
 
   std::unique_ptr<Logger> logger_;

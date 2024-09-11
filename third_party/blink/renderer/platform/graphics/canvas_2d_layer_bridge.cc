@@ -81,11 +81,6 @@ void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {
   resource_host_ = host;
 }
 
-void Canvas2DLayerBridge::ResetResourceProvider() {
-  if (resource_host_)
-    resource_host_->ReplaceResourceProvider(nullptr);
-}
-
 // static
 void Canvas2DLayerBridge::HibernateOrLogFailure(
     base::WeakPtr<Canvas2DLayerBridge> bridge,
@@ -151,7 +146,7 @@ void Canvas2DLayerBridge::Hibernate() {
       std::move(sw_image),
       resource_host_->ResourceProvider()->ReleaseRecorder());
 
-  ResetResourceProvider();
+  resource_host_->ReplaceResourceProvider(nullptr);
   resource_host_->ClearLayerTexture();
 
   // shouldBeDirectComposited() may have changed.
