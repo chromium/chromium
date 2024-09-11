@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import {
+  MIN_WORD_LENGTH,
+} from '../../core/on_device_model/ai_feature_constants.js';
+import {
   Model,
   ModelLoader as ModelLoaderBase,
   ModelResponse,
@@ -15,7 +18,7 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
-import {shorten} from '../../core/utils/utils.js';
+import {getWordCount, shorten} from '../../core/utils/utils.js';
 
 import {
   FormatFeature,
@@ -54,6 +57,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
     // TODO(pihsun): Handle disconnection error
   }
 
+  // TODO(hsuanling): Have a loadAndExecute method so that input check can be
+  // done before loading models.
   abstract execute(content: string): Promise<ModelResponse<T>>;
 
   private executeRaw(text: string): Promise<string> {
@@ -159,6 +164,12 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
 export class SummaryModel extends OnDeviceModel<string> {
   override async execute(content: string): Promise<ModelResponse<string>> {
+    if (getWordCount(content) < MIN_WORD_LENGTH) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+      };
+    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
@@ -179,6 +190,12 @@ export class SummaryModel extends OnDeviceModel<string> {
 
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   override async execute(content: string): Promise<ModelResponse<string[]>> {
+    if (getWordCount(content) < MIN_WORD_LENGTH) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+      };
+    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,

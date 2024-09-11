@@ -154,6 +154,7 @@ export class RecordingTitle extends ReactiveLitElement {
     if (this.transcription.value === null) {
       return null;
     }
+
     // TODO(pihsun): Have a specific format for transcription to be used as
     // model input.
     const text = this.transcription.value.toPlainText();

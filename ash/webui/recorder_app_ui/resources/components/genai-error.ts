@@ -13,6 +13,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {MIN_WORD_LENGTH} from '../core/on_device_model/ai_feature_constants.js';
 import {ModelResponseError} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';
@@ -26,6 +27,7 @@ export class GenaiError extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     :host {
       align-items: center;
+      text-align: center;
       display: flex;
       flex-flow: column;
       font: var(--cros-button-1-font);
@@ -54,6 +56,15 @@ export class GenaiError extends ReactiveLitElement {
         imageName = 'genai_error_general';
         message = i18n.genAiErrorGeneralLabel;
         break;
+
+      case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
+        imageName = 'genai_error_general';
+        // TODO(hsuanling): update this with i18n string.
+        message = `For now, a transcript fewer than ${
+          MIN_WORD_LENGTH} words is not supported`;
+        break;
+      }
+
       case ModelResponseError.UNSAFE: {
         imageName = 'genai_error_unsafe';
         const resultType = assertExists(this.resultType);

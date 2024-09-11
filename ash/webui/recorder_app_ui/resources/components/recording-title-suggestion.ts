@@ -15,6 +15,7 @@ import {
   css,
   html,
   map,
+  nothing,
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -47,20 +48,17 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       /* To have the border-radius applied to content. */
       overflow: hidden;
       z-index: 30;
+
+      & > cra-icon-button {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+      }
     }
 
     #header {
-      align-items: flex-end;
-      display: flex;
-      flex-flow: row;
       font: var(--cros-title-1-font);
-      justify-content: space-between;
-      padding: 4px 4px 0 16px;
-      position: relative;
-
-      & > cra-icon-button {
-        margin: 0;
-      }
+      padding: 16px 8px 0 16px;
     }
 
     #loading {
@@ -203,20 +201,29 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     }
   }
 
+  private renderHeader(): RenderResult {
+    if (this.suggestedTitles?.value?.kind === 'error') {
+      return nothing;
+    }
+    return html`
+    <div id="header">
+      ${i18n.titleSuggestionHeader}
+    </div>
+    `;
+  }
+
   override render(): RenderResult {
     return html`
-      <div id="header">
-        <span>${i18n.titleSuggestionHeader}</span>
-        <cra-icon-button
-          buttonstyle="floating"
-          size="small"
-          shape="circle"
-          @click=${this.onCloseClick}
-          aria-label=${i18n.closeDialogButtonTooltip}
-        >
-          <cra-icon slot="icon" name="close"></cra-icon>
-        </cra-icon-button>
-      </div>
+      ${this.renderHeader()}
+      <cra-icon-button
+        buttonstyle="floating"
+        size="small"
+        shape="circle"
+        @click=${this.onCloseClick}
+        aria-label=${i18n.closeDialogButtonTooltip}
+      >
+        <cra-icon slot="icon" name="close"></cra-icon>
+      </cra-icon-button>
       ${this.renderContent()}
     `;
   }

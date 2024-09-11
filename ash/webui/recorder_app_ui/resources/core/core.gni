@@ -11,6 +11,7 @@ core_files = [
   "lit/context.ts",
   "microphone_manager.ts",
   "on_device_model/types.ts",
+  "on_device_model/ai_feature_constants.ts",
   "platform_handler.ts",
   "reactive/lit.ts",
   "reactive/local_storage.ts",

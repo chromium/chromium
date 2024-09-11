@@ -24,7 +24,9 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import {
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
@@ -200,6 +202,7 @@ export class SummarizationView extends ReactiveLitElement {
   private async requestSummary() {
     this.summaryRequested.value = true;
     this.summaryOpened.value = true;
+
     const text = this.transcription?.toPlainText() ?? '';
     const model = await this.platformHandler.summaryModelLoader.load();
     try {

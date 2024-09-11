@@ -29,6 +29,10 @@ export enum ModelResponseError {
   // General error.
   GENERAL = 'GENERAL',
 
+  // The transcription word count is less than the minimum length.
+  UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT =
+    'UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT',
+
   // Filtered by T&S on the request or response string.
   UNSAFE = 'UNSAFE',
 }
