@@ -308,7 +308,7 @@ bool BrowserTabStripModelDelegate::IsForWebApp() {
 }
 
 void BrowserTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {
-  chrome::CopyURL(web_contents);
+  chrome::CopyURL(browser_, web_contents);
 }
 
 void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {

@@ -2125,9 +2125,19 @@ bool IsDebuggerAttachedToCurrentTab(Browser* browser) {
                   : false;
 }
 
-void CopyURL(content::WebContents* web_contents) {
+void CopyURL(Browser* browser, content::WebContents* web_contents) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
+    ToastController* const toast_controller =
+        browser->GetFeatures().toast_controller();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+    }
+  }
+#endif
 }
 
 bool CanCopyUrl(const Browser* browser) {

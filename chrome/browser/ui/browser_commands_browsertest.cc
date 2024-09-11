@@ -50,6 +50,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             features::kTabOrganization,
             toast_features::kToastFramework,
             toast_features::kReadingListToast,
+            toast_features::kLinkCopiedToast,
         },
         {});
   }
@@ -438,6 +439,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
       [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
   EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CopyingUrlOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_COPY_URL);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
 }  // namespace chrome

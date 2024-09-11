@@ -1002,7 +1002,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     // Hosted App commands
     case IDC_COPY_URL:
-      CopyURL(browser_->tab_strip_model()->GetActiveWebContents());
+      CopyURL(browser_, browser_->tab_strip_model()->GetActiveWebContents());
       break;
     case IDC_OPEN_IN_CHROME:
       OpenInChrome(browser_);

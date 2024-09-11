@@ -458,6 +458,7 @@ void BrowserActions::InitializeBrowserActions() {
                 [](Browser* browser, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
                   chrome::CopyURL(
+                      browser,
                       browser->tab_strip_model()->GetActiveWebContents());
                 },
                 base::Unretained(browser)),
