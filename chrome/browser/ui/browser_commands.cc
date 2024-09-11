@@ -1486,6 +1486,13 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
       browser->bookmark_bar_state());
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kReadingListToast)) {
+    // Don't show the reading list toast if the side panel is visible.
+    std::optional<SidePanelEntry::Id> id =
+        browser->GetFeatures().side_panel_ui()->GetCurrentEntryId();
+    if (id.has_value() && id.value() == SidePanelEntryId::kReadingList) {
+      return true;
+    }
+
     ToastController* const toast_controller =
         browser->GetFeatures().toast_controller();
     if (toast_controller) {
