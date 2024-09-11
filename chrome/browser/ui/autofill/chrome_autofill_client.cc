@@ -128,6 +128,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
+#include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
@@ -549,7 +550,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
     bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  save_update_address_profile_flow_manager_.OfferSave(
+  save_update_address_profile_flow_manager_->OfferSave(
       web_contents(), profile, original_profile, is_migration_to_account,
       std::move(callback));
 #else
@@ -812,6 +813,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   GetStrikeDatabase();
 
 #if BUILDFLAG(IS_ANDROID)
+  save_update_address_profile_flow_manager_ =
+      std::make_unique<SaveUpdateAddressProfileFlowManager>();
   fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
 #endif
 }

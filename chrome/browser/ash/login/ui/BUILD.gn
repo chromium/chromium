@@ -112,6 +112,7 @@ static_library("ui") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/content_settings",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",

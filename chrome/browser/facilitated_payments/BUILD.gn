@@ -16,6 +16,7 @@ static_library("facilitated_payments") {
     "//chrome/browser/autofill",
     "//chrome/browser/facilitated_payments/ui/android",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",

@@ -222,6 +222,7 @@ source_set("policy_specific_browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/policy/core/common",

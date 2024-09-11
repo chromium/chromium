@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
@@ -27,6 +26,7 @@ class WebContents;
 }  // namespace content
 
 class Profile;
+class PasswordAccessLossWarningBridge;
 
 namespace autofill {
 

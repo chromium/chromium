@@ -1804,6 +1804,7 @@ static_library("browser") {
   # Any circular includes must depend on the target
   # "browser_public_dependencies".
   allow_circular_includes_from = [
+    "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
     "//chrome/browser/ui/bluetooth:impl",
@@ -1972,6 +1973,8 @@ static_library("browser") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
     "//chrome/browser/ui/blocked_content",

@@ -30,6 +30,7 @@ static_library("safe_browsing") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/browser_sync",

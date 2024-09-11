@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
-#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
@@ -36,13 +35,19 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
+// //c/b/ui/autofill/ can depend directly on it. Now, forward declare the
+// SaveUpdateAddressProfileFlowManager.
+class SaveUpdateAddressProfileFlowManager;
+#endif
 
 class AutofillOptimizationGuide;
 class FormFieldData;
@@ -228,7 +233,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
-  SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
+  std::unique_ptr<SaveUpdateAddressProfileFlowManager>
+      save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
