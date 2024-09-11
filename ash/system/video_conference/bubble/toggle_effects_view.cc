@@ -12,6 +12,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
@@ -242,15 +243,32 @@ ToggleEffectsButton::ToggleEffectsButton(
   if (container_id.has_value()) {
     SetID(container_id.value());
   }
+
+  VideoConferenceTrayController::Get()->GetEffectsManager().AddObserver(this);
 }
 
-ToggleEffectsButton::~ToggleEffectsButton() = default;
+ToggleEffectsButton::~ToggleEffectsButton() {
+  VideoConferenceTrayController::Get()->GetEffectsManager().RemoveObserver(
+      this);
+}
+
+void ToggleEffectsButton::OnEffectChanged(VcEffectId effect_id, bool is_on) {
+  if (effect_id != effect_id_ || is_on == toggled_) {
+    return;
+  }
+
+  toggled_ = is_on;
+  UpdateColorsAndBackground();
+  UpdateTooltip();
+}
 
 void ToggleEffectsButton::OnButtonClicked(const ui::Event& event) {
-  callback_.Run(event);
-
   // Sets the toggled state.
   toggled_ = !toggled_;
+
+  // Run `callback_` after `toggled_` is updated to avoid duplicated work with
+  // OnCameraEffectChange().
+  callback_.Run(event);
 
   base::UmaHistogramBoolean(
       video_conference_utils::GetEffectHistogramNameForClick(effect_id_),
@@ -260,12 +278,7 @@ void ToggleEffectsButton::OnButtonClicked(const ui::Event& event) {
       !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
   UpdateColorsAndBackground();
-  SetTooltipText(l10n_util::GetStringFUTF16(
-      VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
-      l10n_util::GetStringUTF16(accessible_name_id_),
-      l10n_util::GetStringUTF16(
-          toggled_ ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
-                   : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
+  UpdateTooltip();
 }
 
 void ToggleEffectsButton::UpdateColorsAndBackground() {
@@ -281,6 +294,15 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *vector_icon_, foreground_color_id, kIconSize));
   label_->SetEnabledColorId(foreground_color_id);
+}
+
+void ToggleEffectsButton::UpdateTooltip() {
+  SetTooltipText(l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+      l10n_util::GetStringUTF16(accessible_name_id_),
+      l10n_util::GetStringUTF16(
+          toggled_ ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
+                   : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
 }
 
 BEGIN_METADATA(ToggleEffectsButton);

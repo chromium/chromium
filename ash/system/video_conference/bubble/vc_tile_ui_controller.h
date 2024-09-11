@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
@@ -27,7 +28,9 @@ namespace video_conference {
 // `ash::VcEffectsDelegate`.
 //
 // Note: This class is only used when `VcDlcUi` is enabled.
-class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
+class ASH_EXPORT VcTileUiController
+    : public DlcserviceClient::Observer,
+      public VideoConferenceTrayEffectsManager::Observer {
  public:
   explicit VcTileUiController(const VcHostedEffect* effect);
   VcTileUiController(const VcTileUiController&) = delete;
@@ -87,6 +90,9 @@ class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
 
   // DlcserviceClient::Observer:
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
+
+  // VideoConferenceTrayEffectsManager::Observer:
+  void OnEffectChanged(VcEffectId effect_id, bool is_on) override;
 
   // Called when the `FeatureTile` associated with this controller is pressed.
   void OnPressed(const ui::Event& event);

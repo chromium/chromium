@@ -151,6 +151,14 @@ void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
   }
 }
 
+void VideoConferenceTrayEffectsManager::NotifyEffectChanged(
+    VcEffectId effect_id,
+    bool is_on) {
+  for (auto& observer : observers_) {
+    observer.OnEffectChanged(effect_id, is_on);
+  }
+}
+
 void VideoConferenceTrayEffectsManager::RecordInitialStates() {
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     delegate->RecordInitialStates();

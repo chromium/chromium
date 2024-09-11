@@ -405,13 +405,8 @@ void CameraEffectsController::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
 
-  // If the Studio Look feature is available, the portrait relighting and face
-  // retouch prefs are used to determine which effects are applied. Enable both
-  // of them by default. Otherwise, disable both of them.
-  registry->RegisterBooleanPref(prefs::kPortraitRelighting,
-                                features::IsVcStudioLookEnabled());
-  registry->RegisterBooleanPref(prefs::kFaceRetouch,
-                                features::IsVcStudioLookEnabled());
+  registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
+  registry->RegisterBooleanPref(prefs::kFaceRetouch, false);
 
   // If the Studio Look feature is available, disable Studio Look by default.
   // Otherwise, set it to always true to apply effects based on the portrait
@@ -716,9 +711,10 @@ void CameraEffectsController::OnEffectControlActivated(
         // Make sure that `studio_look_enabled` is set to true. Otherwise, this
         // will override the value of `relight_enabled`.
         new_effects->studio_look_enabled = true;
+      } else {
+        new_effects->studio_look_enabled =
+            new_effects->relight_enabled || new_effects->retouch_enabled;
       }
-      // TODO(b/354069928): Toggle off the Studio Look button when both
-      // relighting and retouch are disabled.
       break;
     }
     case VcEffectId::kFaceRetouch: {
@@ -728,22 +724,17 @@ void CameraEffectsController::OnEffectControlActivated(
         // Make sure that `studio_look_enabled` is set to true. Otherwise, this
         // will override the value of `retouch_enabled`.
         new_effects->studio_look_enabled = true;
+      } else {
+        new_effects->studio_look_enabled =
+            new_effects->relight_enabled || new_effects->retouch_enabled;
       }
-      // TODO(b/354069928): Toggle off the Studio Look button when both
-      // relighting and retouch are disabled.
       break;
     }
     case VcEffectId::kStudioLook: {
       new_effects->studio_look_enabled =
           state.value_or(!new_effects->studio_look_enabled);
-      if (new_effects->studio_look_enabled && !new_effects->relight_enabled &&
-          !new_effects->retouch_enabled) {
-        // When Studio Look is toggled enabled but portrait relighting and face
-        // retouch are currently both disabled, the portrait relighting and face
-        // retouch prefs are updated to be enabled.
-        new_effects->relight_enabled = true;
-        new_effects->retouch_enabled = true;
-      }
+      new_effects->relight_enabled = new_effects->studio_look_enabled;
+      new_effects->retouch_enabled = new_effects->studio_look_enabled;
       break;
     }
     case VcEffectId::kCameraFraming: {
@@ -755,6 +746,14 @@ void CameraEffectsController::OnEffectControlActivated(
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
       NOTREACHED();
+  }
+
+  if (new_effects->studio_look_enabled !=
+      current_effects_->studio_look_enabled) {
+    VideoConferenceTrayController::Get()
+        ->GetEffectsManager()
+        .NotifyEffectChanged(VcEffectId::kStudioLook,
+                             new_effects->studio_look_enabled);
   }
 
   SetCameraEffects(std::move(new_effects), /*is_initialization*/ false,
