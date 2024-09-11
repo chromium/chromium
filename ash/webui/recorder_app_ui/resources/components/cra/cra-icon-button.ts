@@ -76,15 +76,21 @@ export class CraIconButton extends IconButton {
     );
   }
 
+  get innerButtonElement(): HTMLElement|null {
+    // Since the md-icon-button doesn't call focus to underlying button (unlike
+    // md-button), we need to do that by ourselves.
+    return this.buttonElement?.shadowRoot?.getElementById('button') ?? null;
+  }
+
   override focus(): void {
     // Need to manually delegate the focus() call to the inner button,
     // otherwise the :focus-visible state won't be correct and the focus ring
     // would always be shown.
-    this.buttonElement?.focus();
+    this.innerButtonElement?.focus();
   }
 
   override blur(): void {
-    this.buttonElement?.blur();
+    this.innerButtonElement?.blur();
   }
 }
 

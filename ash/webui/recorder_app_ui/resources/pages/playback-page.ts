@@ -442,6 +442,16 @@ export class PlaybackPage extends ReactiveLitElement {
     return assertExists(this.summarizationView.value);
   }
 
+  override firstUpdated(): void {
+    const backButton = assertExists(this.backButton.value);
+    // TODO(pihsun): Autofocus / "default focus" management is reused at
+    // multiple places, somehow consolidate the logic and have a derivative for
+    // that?
+    backButton.updateComplete.then(() => {
+      backButton.focus();
+    });
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
     if (this.autoOpenTranscription === null) {
