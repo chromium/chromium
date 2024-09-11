@@ -916,5 +916,23 @@
       Skip
     </message>
 
+    <!-- Batch Upload Desktop -->
+    <!-- TODO(b/365954368): All batch upload strings to be finalized and translated. -->
+    <message translateable="false" name="IDS_BATCH_UPLOAD_TITLE" desc="">
+      Save data to account
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SUBTITLE" desc="">
+      <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
+      N items are saved only to this device. To use them on your other devices, save them in your Google Account.
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="">
+      Passwords
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="">
+      Addresses
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="">
+      Save in account
+    </message>
   </if>
 </grit-part>
