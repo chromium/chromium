@@ -63,6 +63,8 @@ static_library("search") {
     "search_provider.h",
     "search_session_metrics_manager.cc",
     "search_session_metrics_manager.h",
+    "sparky_event_rewriter.cc",
+    "sparky_event_rewriter.h",
     "types.cc",
     "types.h",
   ]
@@ -105,6 +107,7 @@ static_library("search") {
     "//chromeos/ash/services/federated/public/cpp",
     "//chromeos/ash/services/federated/public/mojom",
     "//chromeos/components/libsegmentation:buildflags",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
     "//components/drive",
@@ -118,6 +121,7 @@ static_library("search") {
     "//mojo/public/cpp/bindings",
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/events",
     "//ui/events/ash",
     "//url",
 

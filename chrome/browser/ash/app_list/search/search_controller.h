@@ -48,6 +48,7 @@ class SearchMetricsManager;
 class SearchSessionMetricsManager;
 class SearchProvider;
 class SearchEngine;
+class SparkyEventRewriter;
 
 // Long queries will be truncated down to this length.
 constexpr int kMaxAllowedQueryLength = 500;
@@ -234,6 +235,7 @@ class SearchController {
   std::unique_ptr<SearchEngine> search_engine_;
 
   std::unique_ptr<SearchFileScanner> search_file_scanner_;
+  std::unique_ptr<SparkyEventRewriter> sparky_event_rewriter_;
 
   const raw_ptr<AppListModelUpdater> model_updater_;
   const raw_ptr<AppListControllerDelegate> list_controller_;

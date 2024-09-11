@@ -54,7 +54,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
   void OpenMahiPanel(int64_t display_id,
-                     const gfx::Rect& mahi_menu_bounds) override {}
+                     const gfx::Rect& mahi_menu_bounds) override;
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
   bool AllowRepeatingAnswers() override;

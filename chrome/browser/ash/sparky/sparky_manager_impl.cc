@@ -146,18 +146,16 @@ void SparkyManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      ui_controller_.OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.has_value()
-              ? context_menu_request->mahi_menu_bounds.value()
-              : gfx::Rect());
+      OpenMahiPanel(context_menu_request->display_id,
+                    context_menu_request->mahi_menu_bounds.has_value()
+                        ? context_menu_request->mahi_menu_bounds.value()
+                        : gfx::Rect());
       return;
     case MahiContextMenuActionType::kQA:
-      ui_controller_.OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.has_value()
-              ? context_menu_request->mahi_menu_bounds.value()
-              : gfx::Rect());
+      OpenMahiPanel(context_menu_request->display_id,
+                    context_menu_request->mahi_menu_bounds.has_value()
+                        ? context_menu_request->mahi_menu_bounds.value()
+                        : gfx::Rect());
 
       // Ask question.
       if (!context_menu_request->question) {
@@ -176,6 +174,18 @@ void SparkyManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kNone:
       return;
   }
+}
+
+void SparkyManagerImpl::OpenFeedbackDialog() {}
+
+void SparkyManagerImpl::OpenMahiPanel(int64_t display_id,
+                                      const gfx::Rect& mahi_menu_bounds) {
+  // When receiving a new open panel request, we treat it as a new session and
+  // clear the previous conversations.
+  std::vector<manta::DialogTurn> empty;
+  dialog_turns_.swap(empty);
+
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
 }
 
 bool SparkyManagerImpl::IsEnabled() {
@@ -328,7 +338,5 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
 bool SparkyManagerImpl::AllowRepeatingAnswers() {
   return true;
 }
-
-void SparkyManagerImpl::OpenFeedbackDialog() {}
 
 }  // namespace ash
