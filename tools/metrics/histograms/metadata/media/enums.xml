@@ -935,17 +935,6 @@ chromium-metrics-reviews@google.com.
   <int value="2146164868" label="v410"/>
 </enum>
 
-<!-- LINT.IfChange(FileDialogOpenStateEnum) -->
-
-<enum name="FileDialogOpenState">
-  <int value="0" label="File dialog open with picture-in-picture"/>
-  <int value="1" label="File dialog open without picture-in-picture"/>
-  <int value="2" label="Picture-in-picture open with file dialog"/>
-  <int value="3" label="Picture-in-picture open without file dialog"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/picture_in_picture_window_manager.h:FileDialogOpenState) -->
-
 <enum name="GenericEnum">
   <summary>Generic enums where the label is just the raw number</summary>
   <int value="0" label="Enum placerholder. See crbug/1179826"/>

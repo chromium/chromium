@@ -191,11 +191,6 @@ class PictureInPictureWindowManager {
   // window.
   PictureInPictureOcclusionTracker* GetOcclusionTracker();
 
-  // Used for `Media.PictureInPicture.FileDialogOpenState` to determine when
-  // file dialogs and picture-in-picture windows are simultaneously open.
-  void OnFileDialogOpened();
-  void OnFileDialogClosed();
-
   // Returns true if a file dialog opened by `owner_web_contents` should create
   // a `ScopedDisallowPictureInPicture` to block picture-in-picture.
   bool ShouldFileDialogBlockPictureInPicture(
@@ -230,30 +225,6 @@ class PictureInPictureWindowManager {
   class VideoWebContentsObserver;
 #if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(FileDialogOpenState)
-  enum class FileDialogOpenState {
-    // A file dialog was opened while a picture-in-picture window was already
-    // open.
-    kFileDialogOpenWithPictureInPicture = 0,
-
-    // A file dialog was opened while no picture-in-picture windows were open.
-    kFileDialogOpenWithoutPictureInPicture = 1,
-
-    // A picture-in-picture window was opened while a file dialog was already
-    // open.
-    kPictureInPictureOpenWithFileDialog = 2,
-
-    // A picture-in-picture window was opened while no file dialogs were already
-    // open.
-    kPictureInPictureOpenWithoutFileDialog = 3,
-
-    kMaxValue = kPictureInPictureOpenWithoutFileDialog,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:FileDialogOpenStateEnum)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -305,10 +276,6 @@ class PictureInPictureWindowManager {
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display);
 
-  // Records whether file dialogs and picture-in-picture windows are open at the
-  // same time.
-  void RecordFileDialogOpenMetric(FileDialogOpenState state);
-
   // Records whether a new or existing picture-in-picture window was closed due
   // to an existing ScopedDisallowPictureInPicture.
   void RecordPictureInPictureDisallowed(PictureInPictureDisallowedType type);
@@ -325,10 +292,6 @@ class PictureInPictureWindowManager {
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
-
-  // The number of currently open file dialogs. Used for the
-  // `Media.PictureInPicture.FileDialogOpenState` metric.
-  uint32_t number_of_open_file_dialogs_ = 0;
 
   // The number of `ScopedDisallowPictureInPicture` objects currently in
   // existence. If at least one exists, then picture-in-picture windows will be

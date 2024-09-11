@@ -4791,17 +4791,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.PictureInPicture.FileDialogOpenState"
-    enum="FileDialogOpenState" expires_after="2025-03-02">
-  <owner>steimel@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    Records whether or not a file dialog and picture-in-picture window are open
-    at the same time. Recorded when either a file dialog or picture-in-picture
-    window are opened.
-  </summary>
-</histogram>
-
 <histogram name="Media.PipelineStatus.AudioVideo.{VideoCodec}.{Pipeline}"
     enum="PipelineStatus" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

@@ -127,11 +127,6 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
   pip_window_controller_->Show();
 
 #if !BUILDFLAG(IS_ANDROID)
-  RecordFileDialogOpenMetric(
-      number_of_open_file_dialogs_ > 0
-          ? FileDialogOpenState::kPictureInPictureOpenWithFileDialog
-          : FileDialogOpenState::kPictureInPictureOpenWithoutFileDialog);
-
   if (number_of_existing_scoped_disallow_picture_in_pictures_ > 0) {
     // Don't exit picture-in-picture synchronously since exiting in the middle
     // of opening leaves us in a bad state.
@@ -435,11 +430,6 @@ void PictureInPictureWindowManager::CreateWindowInternal(
   pip_window_controller_ = video_pip_window_controller;
 
 #if !BUILDFLAG(IS_ANDROID)
-  RecordFileDialogOpenMetric(
-      number_of_open_file_dialogs_ > 0
-          ? FileDialogOpenState::kPictureInPictureOpenWithFileDialog
-          : FileDialogOpenState::kPictureInPictureOpenWithoutFileDialog);
-
   if (number_of_existing_scoped_disallow_picture_in_pictures_ > 0) {
     // Don't exit picture-in-picture synchronously since exiting in the middle
     // of opening leaves us in a bad state.
@@ -541,19 +531,6 @@ void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
   }
 }
 
-void PictureInPictureWindowManager::OnFileDialogOpened() {
-  number_of_open_file_dialogs_++;
-  RecordFileDialogOpenMetric(
-      pip_window_controller_
-          ? FileDialogOpenState::kFileDialogOpenWithPictureInPicture
-          : FileDialogOpenState::kFileDialogOpenWithoutPictureInPicture);
-}
-
-void PictureInPictureWindowManager::OnFileDialogClosed() {
-  CHECK_NE(number_of_open_file_dialogs_, 0u);
-  number_of_open_file_dialogs_--;
-}
-
 bool PictureInPictureWindowManager::ShouldFileDialogBlockPictureInPicture(
     content::WebContents* owner_web_contents) {
   if (!base::FeatureList::IsEnabled(media::kFileDialogsBlockPictureInPicture)) {
@@ -632,12 +609,6 @@ void PictureInPictureWindowManager::
         "Media.DocumentPictureInPicture.RequestedSizeToScreenRatio",
         recorded_percent);
   }
-}
-
-void PictureInPictureWindowManager::RecordFileDialogOpenMetric(
-    FileDialogOpenState state) {
-  base::UmaHistogramEnumeration("Media.PictureInPicture.FileDialogOpenState",
-                                state);
 }
 
 void PictureInPictureWindowManager::RecordPictureInPictureDisallowed(
