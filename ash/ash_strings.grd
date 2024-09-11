@@ -5239,6 +5239,12 @@ No devices connected.
       <message name="IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME" desc="The accessibility text for the authentication password textfield.">
         Password
       </message>
+      <message name="IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_SHOW" desc="Text to be spoken when the focus is set to the display pin button (in Show state) on login screen and in-session auth dialog.">
+        Show PIN
+      </message>
+      <message name="IDS_ASH_AUTH_DISPLAY_PIN_BUTTON_ACCESSIBLE_NAME_HIDE" desc="Text to be spoken when the focus is set to the display pin button (in Hide state) on login screen and in-session auth dialog.">
+        Hide PIN
+      </message>
 
       <!-- Fast Pair strings -->
       <message name="IDS_FAST_PAIR_CONNECTION_ERROR_TITLE" desc="Notification title shown when a there is a Fast Pair connection error.">
