@@ -23,6 +23,7 @@ LensOverlayRequestIdGenerator::~LensOverlayRequestIdGenerator() = default;
 void LensOverlayRequestIdGenerator::ResetRequestId() {
   uuid_ = base::RandUint64();
   sequence_id_ = 1;
+  image_sequence_id_ = 0;
   CreateNewAnalyticsId();
 }
 
@@ -32,15 +33,17 @@ void LensOverlayRequestIdGenerator::CreateNewAnalyticsId() {
   analytics_id_ = std::string(bytes.begin(), bytes.end());
 }
 
+void LensOverlayRequestIdGenerator::IncrementImageSequenceId() {
+  image_sequence_id_++;
+}
+
 std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayRequestIdGenerator::GetNextRequestId() {
   auto request_id = std::make_unique<lens::LensOverlayRequestId>();
   request_id->set_uuid(uuid_);
   request_id->set_sequence_id(sequence_id_);
   request_id->set_analytics_id(analytics_id_);
-  // The server expects the image sequence id to be set, even though
-  // it will never change.
-  request_id->set_image_sequence_id(1);
+  request_id->set_image_sequence_id(image_sequence_id_);
 
   // Increment the sequence id for the next request.
   sequence_id_++;

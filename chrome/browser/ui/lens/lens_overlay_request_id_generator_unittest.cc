@@ -66,4 +66,23 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
             decoded_analytics_id);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       IncrementImageSequenceId_incrementsImageSequence) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 0);
+  request_id_generator.IncrementImageSequenceId();
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 1);
+  request_id_generator.IncrementImageSequenceId();
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 2);
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_hasImageSequenceZero) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 0);
+  request_id_generator.IncrementImageSequenceId();
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 1);
+  request_id_generator.ResetRequestId();
+  ASSERT_EQ(request_id_generator.GetNextRequestId()->image_sequence_id(), 0);
+}
+
 }  // namespace lens

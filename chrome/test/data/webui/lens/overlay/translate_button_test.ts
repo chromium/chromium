@@ -82,8 +82,8 @@ suite('OverlayTranslateButton', function() {
     // Language picker should now be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.languagePicker));
 
-    // Clicking again should toggle the language picker but not send another
-    // request.
+    // Clicking again should toggle the language picker and send a end
+    // translate mode request.
     const unfocusRegionEventPromise =
         eventToPromise('unfocus-region', document.body);
     overlayTranslateButtonElement.$.translateDisableButton.click();
@@ -95,6 +95,9 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('issueEndTranslateModeRequest'));
     assertEquals(
         1,
         metrics.count(
