@@ -53,7 +53,6 @@ struct PasswordGenerationUIData;
 
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupView;
-class PrefService;
 
 // This class controls a PasswordGenerationPopupView. It is responsible for
 // determining the location of the popup, handling keypress events while the
@@ -85,8 +84,7 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame,
-      PrefService* pref_service);
+      content::RenderFrameHost* frame);
 
   PasswordGenerationPopupControllerImpl(
       const PasswordGenerationPopupControllerImpl&) = delete;
@@ -149,8 +147,7 @@ class PasswordGenerationPopupControllerImpl
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
-      content::RenderFrameHost* frame,
-      PrefService* pref_service);
+      content::RenderFrameHost* frame);
 
  private:
   class KeyPressRegistrator;
@@ -208,9 +205,6 @@ class PasswordGenerationPopupControllerImpl
 
   // May be NULL.
   const raw_ptr<PasswordGenerationPopupObserver> observer_;
-
-  // Contains information about user prefs.
-  const raw_ptr<PrefService> pref_service_;
 
   // Signature of the form for which password generation is triggered.
   const autofill::FormSignature form_signature_;

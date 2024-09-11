@@ -1079,6 +1079,12 @@ constexpr char kAccumulatedUsagePref[] =
     "demo_mode_resources_remover.accumulated_device_usage_s";
 #endif
 
+// Deprecated 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kPasswordGenerationNudgePasswordDismissCount[] =
+    "password_generation_nudge_password_dismiss_count";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1506,6 +1512,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
   registry->RegisterStringPref(kSyncPasswordHash, std::string());
   registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
+
+// Deprecated 09/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kPasswordGenerationNudgePasswordDismissCount,
+                                0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2828,6 +2840,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kContentSettingsWindowLastTabIndex);
   profile_prefs->ClearPref(kSyncPasswordHash);
   profile_prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
+
+// Added 09/2024
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kPasswordGenerationNudgePasswordDismissCount);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

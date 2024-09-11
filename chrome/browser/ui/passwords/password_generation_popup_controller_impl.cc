@@ -33,8 +33,6 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
@@ -57,14 +55,7 @@ using autofill::password_generation::PasswordGenerationType;
 #if !BUILDFLAG(IS_ANDROID)
 using password_manager::features::kPasswordGenerationExperimentVariationParam;
 using password_manager::features::PasswordGenerationVariation;
-using password_manager::prefs::kPasswordGenerationNudgePasswordDismissCount;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-namespace {
-#if !BUILDFLAG(IS_ANDROID)
-constexpr int kMaxAllowedAmountOfNudgePasswordPopupRejections = 4;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}  // namespace
 
 // Handles registration for key events with RenderFrameHost.
 class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
@@ -110,8 +101,7 @@ PasswordGenerationPopupControllerImpl::GetOrCreate(
     const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
     PasswordGenerationPopupObserver* observer,
     content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
-    PrefService* pref_service) {
+    content::RenderFrameHost* frame) {
   if (previous.get() && previous->element_bounds() == bounds &&
       previous->web_contents() == web_contents &&
       previous->driver_.get() == driver.get() &&
@@ -124,8 +114,8 @@ PasswordGenerationPopupControllerImpl::GetOrCreate(
   }
 
   PasswordGenerationPopupControllerImpl* controller =
-      new PasswordGenerationPopupControllerImpl(
-          bounds, ui_data, driver, observer, web_contents, frame, pref_service);
+      new PasswordGenerationPopupControllerImpl(bounds, ui_data, driver,
+                                                observer, web_contents, frame);
   return controller->GetWeakPtr();
 }
 
@@ -135,14 +125,12 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
     const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
     PasswordGenerationPopupObserver* observer,
     content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
-    PrefService* pref_service)
+    content::RenderFrameHost* frame)
     : content::WebContentsObserver(web_contents),
       view_(nullptr),
       form_data_(ui_data.form_data),
       driver_(driver),
       observer_(observer),
-      pref_service_(pref_service),
       form_signature_(autofill::CalculateFormSignature(form_data_)),
       field_signature_(autofill::CalculateFieldSignatureByNameAndType(
           ui_data.generation_element,
@@ -255,14 +243,6 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
   if (state_ != kOfferGeneration) {
     return;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (kPasswordGenerationExperimentVariationParam.Get() ==
-          PasswordGenerationVariation::kNudgePassword &&
-      pref_service_) {
-    pref_service_->SetInteger(kPasswordGenerationNudgePasswordDismissCount, 0);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this = GetWeakPtr();
   if (driver_) {
@@ -378,16 +358,6 @@ void PasswordGenerationPopupControllerImpl::OnZoomChanged(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void PasswordGenerationPopupControllerImpl::Hide(SuggestionHidingReason) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (ShouldShowNudgePassword()) {
-    pref_service_->SetInteger(
-        kPasswordGenerationNudgePasswordDismissCount,
-        pref_service_->GetInteger(
-            kPasswordGenerationNudgePasswordDismissCount) +
-            1);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   HideImpl();
 }
 
@@ -426,11 +396,7 @@ std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
 bool PasswordGenerationPopupControllerImpl::ShouldShowNudgePassword() const {
   return state_ == kOfferGeneration &&
          kPasswordGenerationExperimentVariationParam.Get() ==
-             PasswordGenerationVariation::kNudgePassword &&
-         pref_service_ &&
-         pref_service_->GetInteger(
-             kPasswordGenerationNudgePasswordDismissCount) <
-             kMaxAllowedAmountOfNudgePasswordPopupRejections;
+             PasswordGenerationVariation::kNudgePassword;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

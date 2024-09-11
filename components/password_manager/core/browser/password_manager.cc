@@ -403,8 +403,6 @@ void PasswordManager::RegisterProfilePrefs(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)  ||
         // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-  registry->RegisterIntegerPref(
-      prefs::kPasswordGenerationNudgePasswordDismissCount, 0);
   registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
   registry->RegisterBooleanPref(
       prefs::kAutofillableCredentialsProfileStoreLoginDatabase, false);

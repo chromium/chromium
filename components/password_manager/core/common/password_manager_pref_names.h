@@ -303,12 +303,6 @@ inline constexpr char kBiometricAuthenticationBeforeFilling[] =
         // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// How many times in a row the password generation popup in `kNudgePassword`
-// experiment was dismissed by the user. The counter resets when the user
-// accepts password generation.
-inline constexpr char kPasswordGenerationNudgePasswordDismissCount[] =
-    "password_generation_nudge_password_dismiss_count";
-
 // A list of available promo cards with related information which are displayed
 // in the Password Manager UI.
 inline constexpr char kPasswordManagerPromoCardsList[] =
