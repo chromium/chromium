@@ -3940,10 +3940,10 @@ static_library("ui") {
   # limited to the same set of platforms.
   if (is_win || is_mac || is_linux || is_chromeos_ash) {
     sources += [
-      "device_signals_consent/consent_requester.h",
       "views/device_signals_consent/consent_dialog_coordinator.cc",
       "views/device_signals_consent/consent_dialog_coordinator.h",
     ]
+    deps += [ "//chrome/browser/ui/device_signals_consent" ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -6267,14 +6267,6 @@ static_library("test_support") {
       "//services/metrics/public/mojom",
     ]
     public_deps += [ "//chrome/browser/ui/exclusive_access" ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
-    sources += [
-      "device_signals_consent/mock_consent_requester.cc",
-      "device_signals_consent/mock_consent_requester.h",
-    ]
-    deps += [ "//components/device_signals/core/browser" ]
   }
 
   if (enable_extensions) {
