@@ -18,10 +18,6 @@ namespace {
 
 // Load the model file at the provided file path.
 base::File LoadModelFile(const base::FilePath& model_file_path) {
-  if (!base::PathExists(model_file_path)) {
-    return base::File();
-  }
-
   return base::File(model_file_path,
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
