@@ -101,12 +101,6 @@ CameraEffectsController* GetCameraEffectsController() {
   return Shell::Get()->camera_effects_controller();
 }
 
-bool IsVcBackgroundAllowedByEnterprise() {
-  auto* controller = Shell::Get()->session_controller();
-  return std::get<1>(
-      controller->IsEligibleForSeaPen(controller->GetActiveAccountId()));
-}
-
 // Returns a gradient lottie animation defined in the resource file for the
 // `Create with AI` button.
 std::unique_ptr<lottie::Animation> GetGradientAnimation(
@@ -463,7 +457,7 @@ SetCameraBackgroundView::SetCameraBackgroundView(
   SetID(BubbleViewID::kSetCameraBackgroundView);
   SetVisible(
       GetCameraEffectsController()->GetCameraEffects()->replace_enabled &&
-      IsVcBackgroundAllowedByEnterprise());
+      GetCameraEffectsController()->IsVcBackgroundAllowedByEnterprise());
 
   // `SetCameraBackgroundView` has 2+ children, we want to stack them
   // vertically.

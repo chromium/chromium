@@ -192,7 +192,7 @@ void BubbleView::AddedToWidget() {
         std::make_unique<SetValueEffectsView>(controller_));
   }
 
-  if (GetCameraEffectsController()->is_eligible_for_background_replace()) {
+  if (GetCameraEffectsController()->IsEligibleForBackgroundReplace()) {
     set_camera_background_view_ = scroll_contents_view->AddChildView(
         std::make_unique<SetCameraBackgroundView>(this, controller_.get()));
   }

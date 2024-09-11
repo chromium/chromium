@@ -159,6 +159,12 @@ void VideoConferenceTrayEffectsManager::NotifyEffectChanged(
   }
 }
 
+void VideoConferenceTrayEffectsManager::NotifyVideoConferenceBubbleOpened() {
+  for (auto& observer : observers_) {
+    observer.OnVideoConferenceBubbleOpened();
+  }
+}
+
 void VideoConferenceTrayEffectsManager::RecordInitialStates() {
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     delegate->RecordInitialStates();

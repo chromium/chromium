@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -492,6 +493,10 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   }
 
   VideoConferenceTrayController::Get()->CloseAllVcNudges();
+
+  VideoConferenceTrayController::Get()
+      ->GetEffectsManager()
+      .NotifyVideoConferenceBubbleOpened();
 
   // If we are already in the process of getting the media apps, we don't need
   // to get it again.

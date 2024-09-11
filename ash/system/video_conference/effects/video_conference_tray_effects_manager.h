@@ -47,6 +47,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
     // Called when an effect changes. Currently, only observes
     // `kStudioLook` effect.
     virtual void OnEffectChanged(VcEffectId effect_id, bool is_on) {}
+
+    // Called when the video conference bubble is opened.
+    virtual void OnVideoConferenceBubbleOpened() {}
   };
 
   // Adds/removes `VideoConferenceTrayEffectsManager::Observer`.
@@ -98,6 +101,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
 
   // Notifies all observers about effect state changed.
   void NotifyEffectChanged(VcEffectId effect_id, bool is_on);
+
+  // Notifies all observers about the video conference bubble opened.
+  void NotifyVideoConferenceBubbleOpened();
 
   // Records the current state of all effects to metrics.
   void RecordInitialStates();

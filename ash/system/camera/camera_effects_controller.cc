@@ -453,6 +453,8 @@ CameraEffectsController::CameraEffectsController()
       media::CameraHalDispatcherImpl::GetInstance());
 
   Shell::Get()->autozoom_controller()->AddObserver(this);
+
+  VideoConferenceTrayController::Get()->GetEffectsManager().AddObserver(this);
 }
 
 CameraEffectsController::~CameraEffectsController() {
@@ -586,16 +588,38 @@ void CameraEffectsController::GetBackgroundImageInfo(
       std::move(callback));
 }
 
+bool CameraEffectsController::IsEligibleForBackgroundReplace() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  if (!session_controller) {
+    return false;
+  }
+
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  return features::IsVcBackgroundReplaceEnabled() &&
+         std::get<0>(Shell::Get()->session_controller()->IsEligibleForSeaPen(
+             account_id));
+}
+
+bool CameraEffectsController::IsVcBackgroundAllowedByEnterprise() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  if (!session_controller) {
+    return false;
+  }
+
+  AccountId account_id = session_controller->GetActiveAccountId();
+  return std::get<1>(session_controller->IsEligibleForSeaPen(account_id));
+}
+
 // Set the `camera_background_img_dir_` when the `account_id` becomes active.
 void CameraEffectsController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
-  is_eligible_for_background_replace_ =
-      features::IsVcBackgroundReplaceEnabled() &&
-      std::get<0>(
-          Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id));
+  is_eligible_for_background_replace_ = IsEligibleForBackgroundReplace();
 
-  is_background_replace_disabled_by_enterprise_ = !std::get<1>(
-      Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id));
+  is_background_replace_disabled_by_enterprise_ =
+      !IsVcBackgroundAllowedByEnterprise();
 
   const base::FilePath profile_path =
       Shell::Get()->session_controller()->GetProfilePath(account_id);
@@ -803,6 +827,35 @@ void CameraEffectsController::OnCameraEffectChanged(
     SetEffectsConfigToPref(new_effects.Clone());
     current_effects_ = new_effects.Clone();
   }
+}
+
+void CameraEffectsController::OnVideoConferenceBubbleOpened() {
+  const bool is_eligible = IsEligibleForBackgroundReplace();
+  const bool is_enterprise_disabled = !IsVcBackgroundAllowedByEnterprise();
+
+  // If the updated eligible state is false, no further action required.
+  if (!is_eligible) {
+    return;
+  }
+
+  // If the background replace is already eligibled but no changes in enterprise
+  // enabled state, no further action required.
+  if (is_eligible_for_background_replace_ &&
+      is_enterprise_disabled == is_background_replace_disabled_by_enterprise_) {
+    return;
+  }
+
+  // If background blur effect not yet added, do nothing.
+  if (!GetEffectById(VcEffectId::kBackgroundBlur)) {
+    return;
+  }
+
+  // Update Background Blur effect if background replace eligible state changes
+  // from false -> true or enterprise enabled state changes.
+  is_eligible_for_background_replace_ = true;
+  is_background_replace_disabled_by_enterprise_ = is_enterprise_disabled;
+  RemoveEffect(VcEffectId::kBackgroundBlur);
+  AddBackgroundBlurEffect();
 }
 
 void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
@@ -1044,52 +1097,7 @@ void CameraEffectsController::InitializeEffectControls() {
     return;
   }
 
-  // If background blur UI controls are present, construct the effect and its
-  // states.
-  if (IsEffectControlAvailable(cros::mojom::CameraEffect::kBackgroundBlur)) {
-    auto effect = std::make_unique<VcHostedEffect>(
-        /*type=*/VcEffectType::kSetValue,
-        /*get_state_callback=*/
-        base::BindRepeating(&CameraEffectsController::GetEffectState,
-                            base::Unretained(this),
-                            VcEffectId::kBackgroundBlur),
-        /*effect_id=*/VcEffectId::kBackgroundBlur);
-    effect->set_label_text(l10n_util::GetStringUTF16(
-        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME));
-    effect->set_effects_delegate(this);
-    AddBackgroundBlurStateToEffect(
-        effect.get(), kVideoConferenceBackgroundBlurOffIcon,
-        /*state_value=*/BackgroundBlurPrefValue::kOff,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF,
-        video_conference::BubbleViewID::kBackgroundBlurOffButton,
-        /*is_disabled_by_enterprise=*/false);
-    AddBackgroundBlurStateToEffect(
-        effect.get(), kVideoConferenceBackgroundBlurLightIcon,
-        /*state_value=*/BackgroundBlurPrefValue::kLight,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT,
-        video_conference::BubbleViewID::kBackgroundBlurLightButton,
-        /*is_disabled_by_enterprise=*/false);
-    AddBackgroundBlurStateToEffect(
-        effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
-        /*state_value=*/BackgroundBlurPrefValue::kMaximum,
-        /*string_id=*/
-        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL,
-        video_conference::BubbleViewID::kBackgroundBlurFullButton,
-        /*is_disabled_by_enterprise=*/false);
-
-    if (is_eligible_for_background_replace_) {
-      AddBackgroundBlurStateToEffect(
-          effect.get(), kAiImageIcon,
-          /*state_value=*/BackgroundBlurPrefValue::kImage,
-          /*string_id=*/
-          IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE,
-          video_conference::BubbleViewID::kBackgroundBlurImageButton,
-          /*is_disabled_by_enterprise=*/
-          is_background_replace_disabled_by_enterprise_);
-    }
-    effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
-    AddEffect(std::move(effect));
-  }
+  AddBackgroundBlurEffect();
 
   // If portrait relight UI controls are present, construct the effect and its
   // state. If the Studio Look feature is available, the same UI control is used
@@ -1144,6 +1152,55 @@ void CameraEffectsController::InitializeEffectControls() {
     VideoConferenceTrayController::Get()->GetEffectsManager().RegisterDelegate(
         this);
   }
+}
+
+void CameraEffectsController::AddBackgroundBlurEffect() {
+  if (!IsEffectControlAvailable(cros::mojom::CameraEffect::kBackgroundBlur)) {
+    return;
+  }
+  // If background blur UI controls are present, construct the effect and its
+  // states.
+  auto effect = std::make_unique<VcHostedEffect>(
+      /*type=*/VcEffectType::kSetValue,
+      /*get_state_callback=*/
+      base::BindRepeating(&CameraEffectsController::GetEffectState,
+                          base::Unretained(this), VcEffectId::kBackgroundBlur),
+      /*effect_id=*/VcEffectId::kBackgroundBlur);
+  effect->set_label_text(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME));
+  effect->set_effects_delegate(this);
+  AddBackgroundBlurStateToEffect(
+      effect.get(), kVideoConferenceBackgroundBlurOffIcon,
+      /*state_value=*/BackgroundBlurPrefValue::kOff,
+      /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF,
+      video_conference::BubbleViewID::kBackgroundBlurOffButton,
+      /*is_disabled_by_enterprise=*/false);
+  AddBackgroundBlurStateToEffect(
+      effect.get(), kVideoConferenceBackgroundBlurLightIcon,
+      /*state_value=*/BackgroundBlurPrefValue::kLight,
+      /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT,
+      video_conference::BubbleViewID::kBackgroundBlurLightButton,
+      /*is_disabled_by_enterprise=*/false);
+  AddBackgroundBlurStateToEffect(
+      effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
+      /*state_value=*/BackgroundBlurPrefValue::kMaximum,
+      /*string_id=*/
+      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL,
+      video_conference::BubbleViewID::kBackgroundBlurFullButton,
+      /*is_disabled_by_enterprise=*/false);
+
+  if (is_eligible_for_background_replace_) {
+    AddBackgroundBlurStateToEffect(
+        effect.get(), kAiImageIcon,
+        /*state_value=*/BackgroundBlurPrefValue::kImage,
+        /*string_id=*/
+        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE,
+        video_conference::BubbleViewID::kBackgroundBlurImageButton,
+        /*is_disabled_by_enterprise=*/
+        is_background_replace_disabled_by_enterprise_);
+  }
+  effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
+  AddEffect(std::move(effect));
 }
 
 void CameraEffectsController::AddBackgroundBlurStateToEffect(
