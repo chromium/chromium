@@ -23,7 +23,7 @@ ClipboardItem* ClipboardItem::Create(
     ExceptionState& exception_state) {
   // Check that incoming dictionary isn't empty. If it is, it's possible that
   // Javascript bindings implicitly converted an Object (like a
-  // ScriptPromiseUntyped) into {}, an empty dictionary.
+  // ScriptPromise<Blob>) into {}, an empty dictionary.
   if (!representations.size()) {
     exception_state.ThrowTypeError("Empty dictionary argument");
     return nullptr;
@@ -40,7 +40,11 @@ ClipboardItem::ClipboardItem(
     if (web_custom_format.empty()) {
       // Any arbitrary type can be added to ClipboardItem, but there may not be
       // any read/write support for that type.
-      representations_.push_back(representation);
+      // TODO(caseq,japhet): we can't pass typed promises from bindings yet, but
+      // when we can, the type cast below should go away.
+      representations_.emplace_back(
+          representation.first,
+          static_cast<const ScriptPromise<Blob>&>(representation.second));
     } else {
       // Types with "web " prefix are special, so we do some level of MIME type
       // parsing here to get a valid web custom format type.
@@ -49,11 +53,14 @@ ClipboardItem::ClipboardItem(
       // e.g. "web text/html" is a web custom MIME type & "text/html" is a
       // well-known MIME type. Removing the "web " prefix makes it hard to
       // differentiate between the two.
+      // TODO(caseq,japhet): we can't pass typed promises from bindings yet, but
+      // when we can, the type cast below should go away.
       String web_custom_format_string =
           String::Format("%s%s", ui::kWebClipboardFormatPrefix,
                          web_custom_format.Utf8().c_str());
-      representations_.emplace_back(web_custom_format_string,
-                                    representation.second);
+      representations_.emplace_back(
+          web_custom_format_string,
+          static_cast<const ScriptPromise<Blob>&>(representation.second));
       custom_format_types_.push_back(web_custom_format_string);
     }
   }
@@ -68,7 +75,7 @@ Vector<String> ClipboardItem::types() const {
   return types;
 }
 
-ScriptPromiseUntyped ClipboardItem::getType(
+ScriptPromise<Blob> ClipboardItem::getType(
     ScriptState* script_state,
     const String& type,
     ExceptionState& exception_state) const {
@@ -79,7 +86,7 @@ ScriptPromiseUntyped ClipboardItem::getType(
 
   exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
                                     "The type was not found");
-  return ScriptPromiseUntyped();
+  return ScriptPromise<Blob>();
 }
 
 // static

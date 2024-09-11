@@ -239,6 +239,13 @@ struct VectorTraits<blink::ScriptPromiseUntyped>
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
 };
 
+template <typename T>
+struct VectorTraits<blink::ScriptPromise<T>>
+    : VectorTraitsBase<blink::ScriptPromise<T>> {
+  STATIC_ONLY(VectorTraits);
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_H_
