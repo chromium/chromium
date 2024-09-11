@@ -43,6 +43,14 @@ VideoDecoderConfig::VideoDecoderConfig(VideoCodec codec,
 VideoDecoderConfig::VideoDecoderConfig(const VideoDecoderConfig& other) =
     default;
 
+VideoDecoderConfig::VideoDecoderConfig(VideoDecoderConfig&& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(
+    const VideoDecoderConfig& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(VideoDecoderConfig&& other) =
+    default;
+
 VideoDecoderConfig::~VideoDecoderConfig() = default;
 
 void VideoDecoderConfig::Initialize(VideoCodec codec,

@@ -24,8 +24,12 @@ struct NotificationData {
   struct Button {
     Button();
     Button(const Button& other);
-    bool operator==(const Button& other) const;
+    Button(Button&& other);
+    Button& operator=(const Button& other);
+    Button& operator=(Button&& other);
     ~Button();
+
+    bool operator==(const Button& other) const;
 
     // The text associated with the button.
     std::u16string text;
@@ -38,10 +42,15 @@ struct NotificationData {
   };
 
   using CustomData = std::map<std::string, std::string>;
+
   NotificationData();
   NotificationData(const NotificationData& other);
-  bool operator==(const NotificationData& other) const;
+  NotificationData(NotificationData&& other);
+  NotificationData& operator=(const NotificationData& other);
+  NotificationData& operator=(NotificationData&& other);
   ~NotificationData();
+
+  bool operator==(const NotificationData& other) const;
 
   // The title of the notification.
   std::u16string title;

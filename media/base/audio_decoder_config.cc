@@ -25,6 +25,14 @@ AudioDecoderConfig::AudioDecoderConfig(AudioCodec codec,
 AudioDecoderConfig::AudioDecoderConfig(const AudioDecoderConfig& other) =
     default;
 
+AudioDecoderConfig::AudioDecoderConfig(AudioDecoderConfig&& other) = default;
+
+AudioDecoderConfig& AudioDecoderConfig::operator=(
+    const AudioDecoderConfig& other) = default;
+
+AudioDecoderConfig& AudioDecoderConfig::operator=(AudioDecoderConfig&& other) =
+    default;
+
 void AudioDecoderConfig::Initialize(AudioCodec codec,
                                     SampleFormat sample_format,
                                     ChannelLayout channel_layout,

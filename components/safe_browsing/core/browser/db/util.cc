@@ -13,7 +13,14 @@ ThreatMetadata::ThreatMetadata()
 
 ThreatMetadata::ThreatMetadata(const ThreatMetadata& other) = default;
 
-ThreatMetadata::~ThreatMetadata() {}
+ThreatMetadata::ThreatMetadata(ThreatMetadata&& other) = default;
+
+ThreatMetadata& ThreatMetadata::operator=(const ThreatMetadata& other) =
+    default;
+
+ThreatMetadata& ThreatMetadata::operator=(ThreatMetadata&& other) = default;
+
+ThreatMetadata::~ThreatMetadata() = default;
 
 bool ThreatMetadata::operator==(const ThreatMetadata& other) const {
   return threat_pattern_type == other.threat_pattern_type &&

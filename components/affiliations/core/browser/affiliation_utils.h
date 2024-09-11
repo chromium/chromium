@@ -87,7 +87,9 @@ class FacetURI {
 
   // As a light-weight std::string wrapper, allow copy and assign.
   FacetURI(const FacetURI&) = default;
+  FacetURI(FacetURI&&) = default;
   FacetURI& operator=(const FacetURI&) = default;
+  FacetURI& operator=(FacetURI&&) = default;
 
   friend std::weak_ordering operator<=>(const FacetURI& lhs,
                                         const FacetURI& rhs) {

@@ -211,9 +211,13 @@ ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
 
-ProxyConfig::~ProxyConfig() = default;
+ProxyConfig::ProxyConfig(ProxyConfig&& config) = default;
 
 ProxyConfig& ProxyConfig::operator=(const ProxyConfig& config) = default;
+
+ProxyConfig& ProxyConfig::operator=(ProxyConfig&& config) = default;
+
+ProxyConfig::~ProxyConfig() = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
   return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&

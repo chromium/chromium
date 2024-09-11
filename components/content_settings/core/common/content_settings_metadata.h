@@ -28,8 +28,10 @@ class RuleMetaData {
  public:
   RuleMetaData();
   RuleMetaData(const RuleMetaData& other);
-
+  RuleMetaData(RuleMetaData&& other);
   RuleMetaData& operator=(const RuleMetaData& other);
+  RuleMetaData& operator=(RuleMetaData&& other);
+
   bool operator==(const RuleMetaData& other) const;
 
   base::Time last_modified() const { return last_modified_; }

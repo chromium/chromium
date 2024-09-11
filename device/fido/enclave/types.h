@@ -27,8 +27,11 @@ namespace device::enclave {
 // connect to an enclave.
 struct COMPONENT_EXPORT(DEVICE_FIDO) EnclaveIdentity {
   EnclaveIdentity();
-  ~EnclaveIdentity();
   EnclaveIdentity(const EnclaveIdentity&);
+  EnclaveIdentity(EnclaveIdentity&&);
+  EnclaveIdentity& operator=(const EnclaveIdentity&);
+  EnclaveIdentity& operator=(EnclaveIdentity&&);
+  ~EnclaveIdentity();
 
   GURL url;
   std::array<uint8_t, kP256X962Length> public_key;

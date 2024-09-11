@@ -27,6 +27,18 @@ RemoteHostContactedSignal::RemoteHostContactedSignal(
       protocol_(protocol),
       contact_initiator_(contact_initiator) {}
 
+RemoteHostContactedSignal::RemoteHostContactedSignal(
+    const RemoteHostContactedSignal& other) = default;
+
+RemoteHostContactedSignal::RemoteHostContactedSignal(
+    RemoteHostContactedSignal&& other) = default;
+
+RemoteHostContactedSignal& RemoteHostContactedSignal::operator=(
+    const RemoteHostContactedSignal& other) = default;
+
+RemoteHostContactedSignal& RemoteHostContactedSignal::operator=(
+    RemoteHostContactedSignal&& other) = default;
+
 RemoteHostContactedSignal::~RemoteHostContactedSignal() = default;
 
 std::string RemoteHostContactedSignal::GetUniqueRemoteHostContactedId() const {

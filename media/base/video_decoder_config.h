@@ -46,7 +46,11 @@ class MEDIA_EXPORT VideoDecoderConfig {
                      const gfx::Size& natural_size,
                      const std::vector<uint8_t>& extra_data,
                      EncryptionScheme encryption_scheme);
+
   VideoDecoderConfig(const VideoDecoderConfig& other);
+  VideoDecoderConfig(VideoDecoderConfig&& other);
+  VideoDecoderConfig& operator=(const VideoDecoderConfig& other);
+  VideoDecoderConfig& operator=(VideoDecoderConfig&& other);
 
   ~VideoDecoderConfig();
 

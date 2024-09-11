@@ -22,8 +22,12 @@ class SignedWebBundleSignatureInfoBase {
 
   SignedWebBundleSignatureInfoBase(const SignedWebBundleSignatureInfoBase&) =
       default;
+  SignedWebBundleSignatureInfoBase(SignedWebBundleSignatureInfoBase&&) =
+      default;
   SignedWebBundleSignatureInfoBase& operator=(
       const SignedWebBundleSignatureInfoBase&) = default;
+  SignedWebBundleSignatureInfoBase& operator=(
+      SignedWebBundleSignatureInfoBase&&) = default;
 
   ~SignedWebBundleSignatureInfoBase() = default;
 
@@ -46,8 +50,12 @@ struct SignedWebBundleSignatureInfoUnknown {
 
   SignedWebBundleSignatureInfoUnknown(
       const SignedWebBundleSignatureInfoUnknown&) = default;
+  SignedWebBundleSignatureInfoUnknown(SignedWebBundleSignatureInfoUnknown&&) =
+      default;
   SignedWebBundleSignatureInfoUnknown& operator=(
       const SignedWebBundleSignatureInfoUnknown&) = default;
+  SignedWebBundleSignatureInfoUnknown& operator=(
+      SignedWebBundleSignatureInfoUnknown&&) = default;
 
   ~SignedWebBundleSignatureInfoUnknown() = default;
 
@@ -77,8 +85,11 @@ class SignedWebBundleSignatureStackEntry {
       SignedWebBundleSignatureInfo signature_info);
 
   SignedWebBundleSignatureStackEntry(const SignedWebBundleSignatureStackEntry&);
+  SignedWebBundleSignatureStackEntry(SignedWebBundleSignatureStackEntry&&);
   SignedWebBundleSignatureStackEntry& operator=(
       const SignedWebBundleSignatureStackEntry&);
+  SignedWebBundleSignatureStackEntry& operator=(
+      SignedWebBundleSignatureStackEntry&&);
 
   ~SignedWebBundleSignatureStackEntry();
 

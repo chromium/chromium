@@ -74,9 +74,11 @@ using ImageFetchId = base::IdTypeU32<class ImageFetchIdClass>;
 
 struct NetworkResponseInfo {
   NetworkResponseInfo();
-  ~NetworkResponseInfo();
   NetworkResponseInfo(const NetworkResponseInfo&);
+  NetworkResponseInfo(NetworkResponseInfo&&);
   NetworkResponseInfo& operator=(const NetworkResponseInfo&);
+  NetworkResponseInfo& operator=(NetworkResponseInfo&&);
+  ~NetworkResponseInfo();
 
   // A union of net::Error (if the request failed) and the http
   // status code(if the request succeeded in reaching the server).

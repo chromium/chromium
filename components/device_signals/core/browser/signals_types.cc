@@ -123,11 +123,15 @@ AgentSignalsResponse& AgentSignalsResponse::operator=(
 AgentSignalsResponse::~AgentSignalsResponse() = default;
 
 SignalsAggregationRequest::SignalsAggregationRequest() = default;
+
 SignalsAggregationRequest::SignalsAggregationRequest(
     const SignalsAggregationRequest&) = default;
 
+SignalsAggregationRequest::SignalsAggregationRequest(
+    SignalsAggregationRequest&&) = default;
+
 SignalsAggregationRequest& SignalsAggregationRequest::operator=(
-    const SignalsAggregationRequest&) = default;
+    SignalsAggregationRequest&&) = default;
 
 SignalsAggregationRequest::~SignalsAggregationRequest() = default;
 
@@ -139,11 +143,18 @@ bool SignalsAggregationRequest::operator==(
 }
 
 SignalsAggregationResponse::SignalsAggregationResponse() = default;
+
 SignalsAggregationResponse::SignalsAggregationResponse(
     const SignalsAggregationResponse&) = default;
 
+SignalsAggregationResponse::SignalsAggregationResponse(
+    SignalsAggregationResponse&&) = default;
+
 SignalsAggregationResponse& SignalsAggregationResponse::operator=(
     const SignalsAggregationResponse&) = default;
+
+SignalsAggregationResponse& SignalsAggregationResponse::operator=(
+    SignalsAggregationResponse&&) = default;
 
 SignalsAggregationResponse::~SignalsAggregationResponse() = default;
 

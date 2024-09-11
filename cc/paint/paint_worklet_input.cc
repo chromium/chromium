@@ -18,6 +18,14 @@ PaintWorkletInput::PropertyKey::PropertyKey(
 
 PaintWorkletInput::PropertyKey::PropertyKey(const PropertyKey& other) = default;
 
+PaintWorkletInput::PropertyKey::PropertyKey(PropertyKey&& other) = default;
+
+PaintWorkletInput::PropertyKey& PaintWorkletInput::PropertyKey::operator=(
+    const PropertyKey& other) = default;
+
+PaintWorkletInput::PropertyKey& PaintWorkletInput::PropertyKey::operator=(
+    PropertyKey&& other) = default;
+
 PaintWorkletInput::PropertyKey::~PropertyKey() = default;
 
 bool PaintWorkletInput::PropertyKey::operator==(

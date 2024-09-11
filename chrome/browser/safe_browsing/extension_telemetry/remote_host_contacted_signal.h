@@ -26,6 +26,12 @@ class RemoteHostContactedSignal : public ExtensionSignal {
                             const GURL& host_url,
                             RemoteHostInfo::ProtocolType protocol,
                             RemoteHostInfo::ContactInitiator contact_initiator);
+
+  RemoteHostContactedSignal(const RemoteHostContactedSignal&);
+  RemoteHostContactedSignal(RemoteHostContactedSignal&&);
+  RemoteHostContactedSignal& operator=(const RemoteHostContactedSignal&);
+  RemoteHostContactedSignal& operator=(RemoteHostContactedSignal&&);
+
   ~RemoteHostContactedSignal() override;
 
   // ExtensionSignal:

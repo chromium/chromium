@@ -155,8 +155,10 @@ class NET_EXPORT ProxyConfig {
 
   ProxyConfig();
   ProxyConfig(const ProxyConfig& config);
-  ~ProxyConfig();
+  ProxyConfig(ProxyConfig&& config);
   ProxyConfig& operator=(const ProxyConfig& config);
+  ProxyConfig& operator=(ProxyConfig&& config);
+  ~ProxyConfig();
 
   // Returns true if the given config is equivalent to this config.
   bool Equals(const ProxyConfig& other) const;

@@ -28,6 +28,12 @@ class Ed25519Signature {
 
   static Ed25519Signature Create(base::span<const uint8_t, kLength> bytes);
 
+  explicit Ed25519Signature(mojo::DefaultConstruct::Tag) {}
+  Ed25519Signature(const Ed25519Signature&) = default;
+  Ed25519Signature(Ed25519Signature&&) = default;
+  Ed25519Signature& operator=(const Ed25519Signature&) = default;
+  Ed25519Signature& operator=(Ed25519Signature&&) = default;
+
   bool operator==(const Ed25519Signature& other) const;
   bool operator!=(const Ed25519Signature& other) const;
 
@@ -35,8 +41,6 @@ class Ed25519Signature {
                             const Ed25519PublicKey& public_key) const;
 
   const std::array<uint8_t, kLength>& bytes() const { return *bytes_; }
-
-  explicit Ed25519Signature(mojo::DefaultConstruct::Tag) {}
 
  private:
   FRIEND_TEST_ALL_PREFIXES(StructTraitsTest, Ed25519Signature);

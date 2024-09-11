@@ -49,6 +49,9 @@ class CC_PAINT_EXPORT PaintWorkletInput
     PropertyKey(const std::string& custom_property_name, ElementId element_id);
     PropertyKey(NativePropertyType native_property_type, ElementId element_id);
     PropertyKey(const PropertyKey&);
+    PropertyKey(PropertyKey&&);
+    PropertyKey& operator=(PropertyKey&&);
+    PropertyKey& operator=(const PropertyKey&);
     ~PropertyKey();
 
     bool operator==(const PropertyKey& other) const;

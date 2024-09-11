@@ -45,10 +45,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
   NotificationItem(const std::u16string& title,
                    const std::u16string& message,
                    ui::ImageModel icon = ui::ImageModel());
-  NotificationItem(const NotificationItem& other);
+
   NotificationItem();
-  ~NotificationItem();
+  NotificationItem(const NotificationItem& other);
+  NotificationItem(NotificationItem&& other);
   NotificationItem& operator=(const NotificationItem& other);
+  NotificationItem& operator=(NotificationItem&& other);
+  ~NotificationItem();
 
   const std::u16string& title() const { return title_; }
   const std::u16string& message() const { return message_; }
@@ -89,10 +92,12 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   explicit ButtonInfo(const std::u16string& title);
   ButtonInfo(const gfx::VectorIcon* vector_icon,
              const std::u16string& accessible_name);
-  ButtonInfo(const ButtonInfo& other);
   ButtonInfo();
-  ~ButtonInfo();
+  ButtonInfo(const ButtonInfo& other);
+  ButtonInfo(ButtonInfo&& other);
   ButtonInfo& operator=(const ButtonInfo& other);
+  ButtonInfo& operator=(ButtonInfo&& other);
+  ~ButtonInfo();
 
   // Title that should be displayed on the notification button.
   std::u16string title;
@@ -322,7 +327,9 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // identical for both the Notification instances.
   Notification(const Notification& other);
 
+  Notification(Notification&& other);
   Notification& operator=(const Notification& other);
+  Notification& operator=(Notification&& other);
 
   virtual ~Notification();
 

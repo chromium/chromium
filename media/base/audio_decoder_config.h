@@ -34,6 +34,9 @@ class MEDIA_EXPORT AudioDecoderConfig {
                      EncryptionScheme encryption_scheme);
 
   AudioDecoderConfig(const AudioDecoderConfig& other);
+  AudioDecoderConfig(AudioDecoderConfig&& other);
+  AudioDecoderConfig& operator=(const AudioDecoderConfig& other);
+  AudioDecoderConfig& operator=(AudioDecoderConfig&& other);
 
   ~AudioDecoderConfig();
 

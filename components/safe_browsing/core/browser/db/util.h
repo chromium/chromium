@@ -49,6 +49,9 @@ using SubresourceFilterMatch =
 struct ThreatMetadata {
   ThreatMetadata();
   ThreatMetadata(const ThreatMetadata& other);
+  ThreatMetadata(ThreatMetadata&& other);
+  ThreatMetadata& operator=(const ThreatMetadata& other);
+  ThreatMetadata& operator=(ThreatMetadata&& other);
   ~ThreatMetadata();
 
   bool operator==(const ThreatMetadata& other) const;
