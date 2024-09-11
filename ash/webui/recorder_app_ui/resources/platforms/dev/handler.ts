@@ -51,6 +51,7 @@ import {
 import {sleep} from '../../core/utils/utils.js';
 
 import {ErrorView} from './error-view.js';
+import {EventsSender} from './metrics.js';
 import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
 import {strings} from './strings.js';
 
@@ -360,6 +361,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   override titleSuggestionModelLoader = new ModelLoaderDev(
     new TitleSuggestionModelDev(),
   );
+
+  override eventsSender = new EventsSender();
 
   override installSoda(): void {
     console.log('SODA installation requested');

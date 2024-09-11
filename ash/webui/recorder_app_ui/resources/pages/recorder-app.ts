@@ -15,8 +15,11 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {usePlatformHandler} from '../core/lit/context.js';
+import {ModelState} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {currentRoute} from '../core/state/route.js';
+import {settings} from '../core/state/settings.js';
 import {assertExists} from '../core/utils/assert.js';
 
 import {MainPage} from './main-page.js';
@@ -45,7 +48,13 @@ export class RecorderApp extends ReactiveLitElement {
 
   private readonly recordPage = createRef<RecordPage>();
 
+  private readonly platformHandler = usePlatformHandler();
+
   get mainPage(): MainPage {
+    return assertExists(this.mainPageRef.value);
+  }
+
+  get mainPageForTest(): MainPage {
     return assertExists(this.mainPageRef.value);
   }
 
@@ -59,6 +68,25 @@ export class RecorderApp extends ReactiveLitElement {
 
   private render404() {
     return 'Not found';
+  }
+
+  override firstUpdated(): void {
+    const summaryState = this.platformHandler.summaryModelLoader.state;
+    const titleState = this.platformHandler.titleSuggestionModelLoader.state;
+    const sodaState = this.platformHandler.sodaState;
+
+    function isAvailable(state: ModelState) {
+      return state.kind !== 'unavailable' && state.kind !== 'error';
+    }
+
+    this.platformHandler.eventsSender.sendStartSessionEvent({
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      summaryAvailable: isAvailable(summaryState.value),
+      summaryEnableState: settings.value.summaryEnabled,
+      titleSuggestionAvailable: isAvailable(titleState.value),
+      transcriptionAvailable: isAvailable(sodaState.value),
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+    });
   }
 
   override render(): RenderResult {

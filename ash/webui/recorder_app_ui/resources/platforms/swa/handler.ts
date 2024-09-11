@@ -27,6 +27,7 @@ import {SodaSession} from '../../core/soda/types.js';
 import {assertInstanceof} from '../../core/utils/assert.js';
 import {parseTopFrameInfo} from '../../core/utils/errors.js';
 
+import {EventsSender} from './metrics.js';
 import {
   mojoModelStateToModelState,
   SummaryModelLoader,
@@ -65,6 +66,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override readonly canCaptureSystemAudioWithLoopback = signal(false);
+
+  override readonly eventsSender = new EventsSender();
 
   constructor() {
     super();

@@ -1275,6 +1275,29 @@
     <variant value="11">LOCAL_FILE</variant>
     <variant value="12">DRIVE_FILE</variant>
   </enum>
+
+  <enum name="RecorderAppSpeakerLabelEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppSummaryEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED</variant>
+    <variant value="2">UNKNOWN</variant>
+    <variant value="3">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -2665,6 +2688,28 @@
     <metric name="Success" type="int">
       <summary>
         Boolean indicating whether the account transfer was successful.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.StartSession">
+    <summary>
+      Event recorded when the app is successfully initialized and ready for user
+      to start the session.
+    </summary>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature.
+      </summary>
+    </metric>
+    <metric name="SummaryEnableState" type="RecorderAppSummaryEnableState">
+      <summary>
+        Enable state of the summary feature.
+      </summary>
+    </metric>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature.
       </summary>
     </metric>
   </event>

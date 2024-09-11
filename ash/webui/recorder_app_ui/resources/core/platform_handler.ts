@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventsSender} from './events_sender.js';
 import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
@@ -139,4 +140,9 @@ export abstract class PlatformHandler {
    * to support easier development we still use a signal here.
    */
   abstract readonly canCaptureSystemAudioWithLoopback: ReadonlySignal<boolean>;
+
+  /*
+   * Events sender to collect events of interest.
+   */
+  abstract readonly eventsSender: EventsSender;
 }

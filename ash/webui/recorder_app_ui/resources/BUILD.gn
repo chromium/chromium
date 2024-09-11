@@ -94,6 +94,7 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",

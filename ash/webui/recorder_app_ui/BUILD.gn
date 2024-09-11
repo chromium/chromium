@@ -21,6 +21,7 @@ static_library("recorder_app_ui") {
   deps = [
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/metrics:structured_metrics_service_wrapper",
     "//ash/webui/recorder_app_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//chromeos/ash/components/audio:audio",

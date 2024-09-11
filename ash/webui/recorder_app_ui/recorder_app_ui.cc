@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
@@ -187,6 +188,13 @@ void RecorderAppUI::BindInterface(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   page_receivers_.Add(this, std::move(receiver));
+}
+
+void RecorderAppUI::BindInterface(
+    mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
+  structured_metrics_service_wrapper_ =
+      std::make_unique<ash::StructuredMetricsServiceWrapper>();
+  structured_metrics_service_wrapper_->BindReceiver(std::move(receiver));
 }
 
 void RecorderAppUI::EnsureOnDeviceModelService() {

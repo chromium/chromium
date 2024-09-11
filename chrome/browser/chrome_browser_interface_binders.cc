@@ -400,6 +400,7 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"  // nogncheck
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
@@ -1890,7 +1891,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry.ForWebUI<ash::RecorderAppUI>()
       .Add<ash::recorder_app::mojom::PageHandler>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<crosapi::mojom::StructuredMetricsService>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
