@@ -565,8 +565,7 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
         ProfilePicker::SwitchToReauth(
             profile,
             base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
-                           weak_factory_.GetWeakPtr(), profile->GetPath(),
-                           base::UTF16ToUTF8(entry->GetUserName())));
+                           weak_factory_.GetWeakPtr(), profile->GetPath()));
       } else {
         ProfilePickerForceSigninDialog::ShowReauthDialog(
             profile, base::UTF16ToUTF8(entry->GetUserName()));
@@ -579,9 +578,9 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       // signed in with an email address matched RestrictSigninToPattern policy
       // already.
       if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-        DisplayForceSigninErrorDialog(/*profile_path=*/base::FilePath(),
-                                      /*email=*/std::string(),
-                                      ReauthUIError::kNotAllowed);
+        DisplayForceSigninErrorDialog(
+            /*profile_path=*/base::FilePath(),
+            ForceSigninUIError::ReauthNotAllowed());
       } else {
         LoginUIServiceFactory::GetForProfile(profile)
             ->SetProfileBlockingErrorMessage();
@@ -612,11 +611,10 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
 
 void ProfilePickerHandler::DisplayForceSigninErrorDialog(
     const base::FilePath& profile_path,
-    const std::string& email,
-    ReauthUIError error) {
+    const ForceSigninUIError& error) {
   AllowJavascript();
 
-  const auto& [title, body] = GetReauthUIErrorMessages(error, email);
+  const auto& [title, body] = error.GetErrorTexts();
   FireWebUIListener("display-force-signin-error-dialog", base::Value(title),
                     base::Value(body),
                     base::Value(profile_path.AsUTF16Unsafe()));

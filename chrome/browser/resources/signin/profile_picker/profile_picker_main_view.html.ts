@@ -51,8 +51,9 @@ export function getHtml(this: ProfilePickerMainViewElement) {
 </div>
 
 <cr-dialog id="forceSigninErrorDialog">
-  <div slot="title" class="key-text">${this.forceSigninErrorDialogTitle_}</div>
-  <div slot="body" class="warning-message">
+  <div slot="title" id="dialog-title" class="key-text">
+    ${this.forceSigninErrorDialogTitle_}</div>
+  <div slot="body" id="dialog-body" class="warning-message">
     ${this.forceSigninErrorDialogBody_}
   </div>
   <div slot="button-container" class="button-container">

@@ -52,17 +52,18 @@ GURL GetReauthURL(const std::string& email_to_reauth, GURL continue_url) {
                    {.email = email_to_reauth, .continue_url = continue_url});
 }
 
-ReauthUIError ComputeReauthUIError(ProfilePickerReauthResult result) {
+ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,
+                                        const std::string& reauth_email) {
   switch (result) {
     case ProfilePickerReauthResult::kSuccess:
     case ProfilePickerReauthResult::kSuccessTokenAlreadyValid:
-      return ReauthUIError::kNone;
+      return ForceSigninUIError::ErrorNone();
     case ProfilePickerReauthResult::kErrorUsedNewEmail:
     case ProfilePickerReauthResult::kErrorUsedOtherSignedInEmail:
-      return ReauthUIError::kWrongAccount;
+      return ForceSigninUIError::ReauthWrongAccount(reauth_email);
     case ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck:
     case ProfilePickerReauthResult::kTimeoutSigninError:
-      return ReauthUIError::kTimeout;
+      return ForceSigninUIError::ReauthTimeout();
   }
 }
 
@@ -73,7 +74,8 @@ ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
     Profile* profile,
     const std::string& gaia_id_to_reauth,
     const std::string& email_to_reauth,
-    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed)
+    base::OnceCallback<void(bool, const ForceSigninUIError&)>
+        on_reauth_completed)
     : host_(*host),
       profile_(*profile),
       identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
@@ -263,6 +265,6 @@ void ProfilePickerDiceReauthProvider::Finish(bool success,
   // Hide the toolbar in case it was visible after showing the reauth page.
   host_->SetNativeToolbarVisible(false);
 
-  ReauthUIError error = ComputeReauthUIError(result);
+  ForceSigninUIError error = ComputeReauthUIError(result, email_to_reauth_);
   std::move(on_reauth_completed_).Run(success, error);
 }

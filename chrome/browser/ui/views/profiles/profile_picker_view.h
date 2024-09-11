@@ -36,6 +36,7 @@ class ProfileManagementFlowController;
 class ProfilePickerFlowController;
 class Browser;
 class ProfilePickerFeaturePromoController;
+class ForceSigninUIError;
 
 namespace content {
 struct ContextMenuParams;
@@ -239,7 +240,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `on_error_callback`.
   void SwitchToReauth(
       Profile* profile,
-      base::OnceCallback<void(ReauthUIError)> on_error_callback);
+      base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

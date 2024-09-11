@@ -13,6 +13,8 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -874,6 +876,43 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
   }
 
   bool IsForceSigninErrorDialogShown() {
+    CheckMainProfilePickerUrlOpened();
+    return content::EvalJs(web_contents(),
+                           // Check the `open` field
+                           base::StrCat({kForceSigninErrorDialogPath, ".open"}))
+        .ExtractBool();
+  }
+
+  std::u16string GetForceSigninErrorDialogTitleText() {
+    CheckMainProfilePickerUrlOpened();
+    return std::u16string(base::TrimWhitespace(
+        base::UTF8ToUTF16(
+            content::EvalJs(
+                web_contents(),
+                // Get the title text content of the dialog.
+                base::StrCat({kForceSigninErrorDialogPath,
+                              ".querySelector(\'#dialog-title\').textContent"}))
+                .ExtractString()),
+        base::TRIM_ALL));
+  }
+
+  std::u16string GetForceSigninErrorDialogBodyText() {
+    CheckMainProfilePickerUrlOpened();
+    return std::u16string(base::TrimWhitespace(
+        base::UTF8ToUTF16(
+            content::EvalJs(
+                web_contents(),
+                // Get the body text content of the dialog.
+                base::StrCat({kForceSigninErrorDialogPath,
+                              ".querySelector(\'#dialog-body\').textContent"}))
+                .ExtractString()),
+        base::TRIM_ALL));
+  }
+
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
+ private:
+  void CheckMainProfilePickerUrlOpened() {
     // Make sure the profile picker is opened, with the main profile picker view
     // (where the dialog can be shown), and the page is fully loaded.
     EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -881,21 +920,14 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
     EXPECT_EQ(web_contents()->GetURL().GetWithEmptyPath(),
               main_profile_picker_url);
     WaitForLoadStop(main_profile_picker_url);
-
-    return content::EvalJs(
-               web_contents(),
-               // Get down to the `forceSigninErrorDialog` cr-dialog node and
-               // check the `open` field.
-               "document.body.getElementsByTagName('profile-picker-app')[0]."
-               "shadowRoot.getElementById('mainView').shadowRoot."
-               "getElementById(\""
-               "forceSigninErrorDialog\").open")
-        .ExtractBool();
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  // 'forceSigninErrorDialog' cr-dialog node.
+  static constexpr char kForceSigninErrorDialogPath[] =
+      "document.body.getElementsByTagName('profile-picker-app')[0]."
+      "shadowRoot.getElementById('mainView').shadowRoot."
+      "getElementById(\'forceSigninErrorDialog\')";
 
- private:
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_;
   base::HistogramTester histogram_tester_;
 };
@@ -1103,6 +1135,11 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_TRUE(IsForceSigninErrorDialogShown());
+  // Check error dialog content.
+  ForceSigninUIError::UiTexts errors =
+      ForceSigninUIError::ReauthWrongAccount(email).GetErrorTexts();
+  EXPECT_EQ(GetForceSigninErrorDialogTitleText(), errors.first);
+  EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
   histogram_tester()->ExpectUniqueSample(
@@ -1313,6 +1350,11 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
   EXPECT_EQ(initial_browser_count, BrowserList::GetInstance()->size());
   // Error dialog is shown on top of the ProfilePicker.
   EXPECT_TRUE(IsForceSigninErrorDialogShown());
+  // Check error dialog content.
+  ForceSigninUIError::UiTexts errors =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+  EXPECT_EQ(GetForceSigninErrorDialogTitleText(), errors.first);
+  EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
   // Profile is still locked.
   EXPECT_TRUE(existing_entry->IsSigninRequired());
 }
