@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/gfx/range/range.h"
 
 namespace tab_groups {
@@ -146,19 +145,7 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
           tab, group.saved_tabs()[i - tab_range.start()].saved_tab_guid());
     }
 
-    std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-    std::transform(
-        tab_guid_mapping.begin(), tab_guid_mapping.end(),
-        std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-        [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-          // Transform the TabModel* to WebContents*
-          content::WebContents* web_contents = pair.first->contents();
-
-          // Return a pair with the transformed key and the same UUID value
-          return std::make_pair(web_contents, pair.second);
-        });
-
-    listener_->ConnectToLocalTabGroup(group, std::move(contents_guid_mapping));
+    listener_->ConnectToLocalTabGroup(group, std::move(tab_guid_mapping));
   } else {
     listener_->UpdateLocalGroupFromSync(group_id);
   }
@@ -256,20 +243,7 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   const std::optional<SavedTabGroup> saved_group2 =
       service_->GetGroup(saved_group.saved_guid());
 
-  // TODO (later in chain) Remove.
-  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-  std::transform(
-      tab_guid_mapping.begin(), tab_guid_mapping.end(),
-      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-        // Transform the TabModel* to WebContents*
-        content::WebContents* web_contents = pair.first->contents();
-
-        // Return a pair with the transformed key and the same UUID value
-        return std::make_pair(web_contents, pair.second);
-      });
-
-  listener_->ConnectToLocalTabGroup(*saved_group2, contents_guid_mapping);
+  listener_->ConnectToLocalTabGroup(*saved_group2, tab_guid_mapping);
   return tab_group_id;
 }
 }  // namespace tab_groups

@@ -61,7 +61,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // corresponding local group.
   void ConnectToLocalTabGroup(
       const SavedTabGroup& saved_tab_group,
-      std::map<content::WebContents*, base::Uuid> web_contents_map);
+      std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping);
 
   // Stop updating the saved group corresponding to the local group with id
   // `tab_group_id` when the local group changes.

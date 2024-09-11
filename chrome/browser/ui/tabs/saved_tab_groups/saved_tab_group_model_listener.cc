@@ -70,20 +70,8 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
       group_and_tab_guid_mapping.second;
   service_->AddGroup(std::move(copy_group));
 
-  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-  std::transform(
-      tab_guid_mapping.begin(), tab_guid_mapping.end(),
-      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-        // Transform the TabModel* to WebContents*
-        content::WebContents* web_contents = pair.first->contents();
-
-        // Return a pair with the transformed key and the same UUID value
-        return std::make_pair(web_contents, pair.second);
-      });
-
   std::optional<SavedTabGroup> group = service_->GetGroup(group_id);
-  ConnectToLocalTabGroup(group.value(), std::move(contents_guid_mapping));
+  ConnectToLocalTabGroup(group.value(), tab_guid_mapping);
 }
 
 void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
@@ -250,20 +238,32 @@ bool SavedTabGroupModelListener::IsTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
-    std::map<content::WebContents*, base::Uuid> web_contents_map) {
+    std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping) {
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 
-  // `web_contents_map` should have one entry per tab in the local group. This
+  // `tab_guid_mapping` should have one entry per tab in the local group. This
   // may not equal the saved group's size, if the saved group contains invalid
   // URLs.
   const size_t local_group_size =
       SavedTabGroupUtils::GetTabGroupWithId(local_group_id)->tab_count();
-  CHECK_EQ(local_group_size, web_contents_map.size());
+  CHECK_EQ(local_group_size, tab_guid_mapping.size());
+
+  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
+  std::transform(
+      tab_guid_mapping.begin(), tab_guid_mapping.end(),
+      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
+      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
+        // Transform the TabModel* to WebContents*
+        content::WebContents* web_contents = pair.first->contents();
+
+        // Return a pair with the transformed key and the same UUID value
+        return std::make_pair(web_contents, pair.second);
+      });
 
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
       local_group_id, local_group_id, saved_tab_group.saved_guid(), service_,
-      web_contents_map);
+      contents_guid_mapping);
   CHECK(success);
 }
 
