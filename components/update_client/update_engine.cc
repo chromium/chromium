@@ -406,7 +406,10 @@ void UpdateEngine::HandleComponentComplete(
     update_context->next_update_delay = component->GetUpdateDuration();
     queue.pop();
     if (!component->events().empty()) {
-      ping_manager_->SendPing(*component, std::move(callback));
+      CHECK(component->crx_component());
+      ping_manager_->SendPing(component->session_id(),
+                              *component->crx_component(),
+                              component->GetEvents(), std::move(callback));
       return;
     }
   }

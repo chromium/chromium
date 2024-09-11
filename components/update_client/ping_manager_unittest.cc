@@ -128,6 +128,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test eventresult="1" is sent for successful updates.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
+    component.crx_component_->app_id = "abc";
     component.crx_component_->version = base::Version("1.0");
     component.crx_component_->ap = "ap1";
     component.crx_component_->brand = "BRND";
@@ -141,7 +142,8 @@ TEST_P(PingManagerTest, SendPing) {
     config_->GetPersistedData()->SetCohortHint("abc", "ch1");
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -204,6 +206,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test eventresult="0" is sent for failed updates.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
+    component.crx_component_->app_id = "abc";
     component.crx_component_->version = base::Version("1.0");
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
@@ -212,7 +215,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -238,6 +242,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test the error values and the fingerprints.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
+    component.crx_component_->app_id = "abc";
     component.crx_component_->version = base::Version("1.0");
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
@@ -255,7 +260,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -289,6 +295,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test an invalid |next_version| is not serialized.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
+    component.crx_component_->app_id = "abc";
     component.crx_component_->version = base::Version("1.0");
     component.state_ =
         std::make_unique<Component::StateUpdateError>(&component);
@@ -297,7 +304,8 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -322,11 +330,13 @@ TEST_P(PingManagerTest, SendPing) {
     // are serialized correctly under <event...> for uninstall.
     Component component(*update_context, "abc");
     CrxComponent crx_component;
+    crx_component.app_id = "abc";
     crx_component.version = base::Version("1.2.3.4");
     component.PingOnly(crx_component, {.event_type = 4, .result = 1});
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -355,9 +365,11 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
       Component component(*update_context, "abc");
       component.crx_component_ = CrxComponent();
+      component.crx_component_->app_id = "abc";
       component.previous_version_ = base::Version("1.0");
       component.AppendEvent(component.MakeEventUpdateComplete());
-      ping_manager_->SendPing(component, MakePingCallback());
+      ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                              component.GetEvents(), MakePingCallback());
 
       RunThreads();
 
@@ -375,6 +387,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test `app_command_id`.
     Component component(*update_context, "abc");
     CrxComponent crx_component;
+    crx_component.app_id = "abc";
     crx_component.version = base::Version("1.2.3.4");
     component.PingOnly(
         crx_component,
@@ -387,7 +400,8 @@ TEST_P(PingManagerTest, SendPing) {
         });
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -428,6 +442,7 @@ TEST_P(PingManagerTest, RequiresEncryption) {
   {
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
+    component.crx_component_->app_id = "abc";
     component.crx_component_->version = base::Version("1.0");
     component.crx_component_->ap = "ap1";
     component.crx_component_->brand = "BRND";
@@ -443,7 +458,8 @@ TEST_P(PingManagerTest, RequiresEncryption) {
     config_->GetPersistedData()->SetCohortHint("abc", "ch1");
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
+                            component.GetEvents(), MakePingCallback());
     RunThreads();
 
     // Should not send

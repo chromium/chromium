@@ -8,11 +8,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 
 namespace update_client {
 
 class Configurator;
-class Component;
+struct CrxComponent;
 
 class PingManager : public base::RefCountedThreadSafe<PingManager> {
  public:
@@ -21,12 +22,13 @@ class PingManager : public base::RefCountedThreadSafe<PingManager> {
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
-  // Sends a ping for the |item|. |callback| is invoked after the ping is sent
-  // or an error has occured. The ping itself is not persisted and it will
+  // Sends a ping for `component`. `callback` is invoked after the ping is sent
+  // or an error has occurred. The ping itself is not persisted and it will
   // be discarded if it has not been sent for any reason.
-  // |error| is 0 if the ping was sent successfully, otherwise |error| contains
-  // a value with no particular meaning for the caller.
-  virtual void SendPing(const Component& component, base::OnceClosure callback);
+  virtual void SendPing(const std::string& session_id,
+                        const CrxComponent& component,
+                        std::vector<base::Value::Dict> events,
+                        base::OnceClosure callback);
 
  protected:
   virtual ~PingManager();

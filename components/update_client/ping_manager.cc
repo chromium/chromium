@@ -16,13 +16,13 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/request_sender.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
@@ -35,20 +35,20 @@ PingManager::~PingManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PingManager::SendPing(const Component& component,
+void PingManager::SendPing(const std::string& session_id,
+                           const CrxComponent& component,
+                           std::vector<base::Value::Dict> events,
                            base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (component.events().empty()) {
+  if (events.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback)));
     return;
   }
 
-  CHECK(component.crx_component());
-
   auto urls(config_->PingUrl());
-  if (component.crx_component()->requires_network_encryption) {
+  if (component.requires_network_encryption) {
     RemoveUnsecureUrls(&urls);
   }
 
@@ -61,26 +61,21 @@ void PingManager::SendPing(const Component& component,
   const PersistedData& metadata = *config_->GetPersistedData();
   std::vector<protocol_request::App> apps;
   apps.push_back(MakeProtocolApp(
-      component.id(), component.crx_component()->version,
-      component.crx_component()->ap, component.crx_component()->brand,
-      config_->GetLang(), metadata.GetInstallDate(component.id()),
-      component.crx_component()->install_source,
-      component.crx_component()->install_location,
-      component.crx_component()->fingerprint,
-      component.crx_component()->installer_attributes,
-      metadata.GetCohort(component.id()),
-      metadata.GetCohortHint(component.id()),
-      metadata.GetCohortName(component.id()),
-      component.crx_component()->channel,
-      component.crx_component()->disabled_reasons,
-      std::nullopt /* update check */, {} /* data */, std::nullopt /* ping */,
-      component.GetEvents()));
+      component.app_id, component.version, component.ap, component.brand,
+      config_->GetLang(), metadata.GetInstallDate(component.app_id),
+      component.install_source, component.install_location,
+      component.fingerprint, component.installer_attributes,
+      metadata.GetCohort(component.app_id),
+      metadata.GetCohortHint(component.app_id),
+      metadata.GetCohortName(component.app_id), component.channel,
+      component.disabled_reasons, std::nullopt /* update check */,
+      {} /* data */, std::nullopt /* ping */, std::move(events)));
   base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory())
       ->Send(
           urls, {},
           config_->GetProtocolHandlerFactory()->CreateSerializer()->Serialize(
               MakeProtocolRequest(
-                  !config_->IsPerUserInstall(), component.session_id(),
+                  !config_->IsPerUserInstall(), session_id,
                   config_->GetProdId(),
                   config_->GetBrowserVersion().GetString(),
                   config_->GetChannel(), config_->GetOSLongName(),
