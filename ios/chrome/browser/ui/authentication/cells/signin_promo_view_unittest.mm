@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -71,8 +72,7 @@ TEST_F(SigninPromoViewTest, AccessibilityLabel) {
   view.textLabel.text = promoText;
   NSString* expectedAccessibilityLabel =
       [NSString stringWithFormat:@"%@ %@", promoText, primaryButtonTitle];
-  EXPECT_TRUE(
-      [view.accessibilityLabel isEqualToString:expectedAccessibilityLabel]);
+  EXPECT_NSEQ(view.accessibilityLabel, expectedAccessibilityLabel);
 }
 
 // Tests that signin is created on non-compact layout and that setting compact

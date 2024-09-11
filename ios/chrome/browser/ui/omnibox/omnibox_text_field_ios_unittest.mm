@@ -159,7 +159,7 @@ TEST_F(OmniboxTextFieldIOSTest, CopyInPreedit) {
   EXPECT_TRUE([textfield_ canPerformAction:@selector(copy:) withSender:nil]);
   [delegateMock onCopy];
   [textfield_ copy:nil];
-  EXPECT_TRUE([textfield_.text isEqualToString:testString]);
+  EXPECT_NSEQ(textfield_.text, testString);
   [delegateMock verify];
 }
 
@@ -173,7 +173,7 @@ TEST_F(OmniboxTextFieldIOSTest, CutInPreedit) {
   EXPECT_TRUE([textfield_ canPerformAction:@selector(cut:) withSender:nil]);
   [delegateMock onCopy];
   [textfield_ cut:nil];
-  EXPECT_TRUE([textfield_.text isEqualToString:@""]);
+  EXPECT_NSEQ(textfield_.text, @"");
   [delegateMock verify];
 }
 

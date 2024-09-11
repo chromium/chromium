@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 class FollowUtilTest : public PlatformTest {
@@ -77,10 +78,8 @@ TEST_F(FollowUtilTest, TestStoreFollowIPHDisplayEvent) {
   NSArray<NSDictionary*>* updatedArray =
       [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
   EXPECT_EQ(2, (int)updatedArray.count);
-  EXPECT_TRUE([[updatedArray[0] objectForKey:kFollowIPHHost]
-      isEqualToString:@"ghi.com"]);
-  EXPECT_TRUE([[updatedArray[1] objectForKey:kFollowIPHHost]
-      isEqualToString:@"now.com"]);
+  EXPECT_NSEQ([updatedArray[0] objectForKey:kFollowIPHHost], @"ghi.com");
+  EXPECT_NSEQ([updatedArray[1] objectForKey:kFollowIPHHost], @"now.com");
 }
 
 // Tests removing the last follow IPH display event.
@@ -93,8 +92,6 @@ TEST_F(FollowUtilTest, TestRemoveLastFollowIPHDisplayEvent) {
   NSArray<NSDictionary*>* updatedArray =
       [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
   EXPECT_EQ(2, (int)updatedArray.count);
-  EXPECT_TRUE([[updatedArray[0] objectForKey:kFollowIPHHost]
-      isEqualToString:@"abc.com"]);
-  EXPECT_TRUE([[updatedArray[1] objectForKey:kFollowIPHHost]
-      isEqualToString:@"def.com"]);
+  EXPECT_NSEQ([updatedArray[0] objectForKey:kFollowIPHHost], @"abc.com");
+  EXPECT_NSEQ([updatedArray[1] objectForKey:kFollowIPHHost], @"def.com");
 }

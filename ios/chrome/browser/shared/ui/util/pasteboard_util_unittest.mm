@@ -61,10 +61,9 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
       [text_as_data isEqualToData:[UIPasteboard.generalPasteboard
                                       dataForPasteboardType:plainTextType
                                                   inItemSet:secondIndex][0]]);
-  EXPECT_TRUE([test_text
-      isEqualToString:[UIPasteboard.generalPasteboard
-                          valuesForPasteboardType:UTTypeText.identifier
-                                        inItemSet:secondIndex][0]]);
+  EXPECT_NSEQ(test_text, [UIPasteboard.generalPasteboard
+                             valuesForPasteboardType:UTTypeText.identifier
+                                           inItemSet:secondIndex][0]);
 }
 
 // Tests that clearing the pasteboard does remove pasteboard items.

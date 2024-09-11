@@ -947,14 +947,13 @@ TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];
     if (command.action == @selector(keyCommand_find)) {
-      EXPECT_TRUE([command.discoverabilityTitle
-          isEqualToString:l10n_util::GetNSStringWithFixup(
-                              IDS_IOS_KEYBOARD_FIND_IN_PAGE)]);
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE));
     }
     if (command.action == @selector(keyCommand_select1)) {
-      EXPECT_TRUE([command.discoverabilityTitle
-          isEqualToString:l10n_util::GetNSStringWithFixup(
-                              IDS_IOS_KEYBOARD_FIRST_TAB)]);
+      EXPECT_NSEQ(command.discoverabilityTitle,
+                  l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB));
     }
   }
 }

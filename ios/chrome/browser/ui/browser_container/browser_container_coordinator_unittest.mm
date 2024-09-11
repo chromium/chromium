@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -110,14 +111,13 @@ TEST_F(BrowserContainerCoordinatorTest,
 
   // First action should be the OK button.
   UIAlertAction* ok_action = alert_controller.actions[0];
-  EXPECT_TRUE(
-      [l10n_util::GetNSString(IDS_APP_OK) isEqualToString:ok_action.title]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_APP_OK), ok_action.title);
   EXPECT_EQ(UIAlertActionStyleCancel, ok_action.style);
 
   // Second action should the Share button.
   UIAlertAction* share_action = alert_controller.actions[1];
-  EXPECT_TRUE([l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL)
-      isEqualToString:share_action.title]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL),
+              share_action.title);
   EXPECT_EQ(UIAlertActionStyleDefault, share_action.style);
   [coordinator stop];
 }

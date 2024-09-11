@@ -15,6 +15,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -84,7 +85,7 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentDesktop) {
 
   NSString* requestMobileString =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_REQUEST_MOBILE_SITE);
-  EXPECT_TRUE([requestMobileString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(requestMobileString, activity.activityTitle);
 
   [activity performActivity];
 
@@ -109,7 +110,7 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentMobile) {
 
   NSString* requestDesktopString =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_REQUEST_DESKTOP_SITE);
-  EXPECT_TRUE([requestDesktopString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(requestDesktopString, activity.activityTitle);
 
   [activity performActivity];
 

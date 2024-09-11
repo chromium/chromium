@@ -7,6 +7,7 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -113,9 +114,9 @@ TEST_F(TabGridToolbarsViewControllersTest, ValidateCommand_find) {
   for (UIKeyCommand* command in top_toolbar_.keyCommands) {
     [top_toolbar_ validateCommand:command];
     if (command.action == @selector(keyCommand_find)) {
-      EXPECT_TRUE([command.discoverabilityTitle
-          isEqualToString:l10n_util::GetNSStringWithFixup(
-                              IDS_IOS_KEYBOARD_SEARCH_TABS)]);
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS));
     }
   }
 }

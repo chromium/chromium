@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -146,11 +147,9 @@ TEST_F(CopyActivityTest, ExecuteActivityURLAndAdditionalText) {
 
   // The first pasteboard item has both a URL and string representation of the
   // test URL.
-  EXPECT_TRUE(
-      [GetURLString() isEqualToString:UIPasteboard.generalPasteboard.string]);
+  EXPECT_NSEQ(GetURLString(), UIPasteboard.generalPasteboard.string);
   EXPECT_TRUE([GetExpectedURL() isEqual:UIPasteboard.generalPasteboard.URL]);
 
   // The second pasteboard item has the additional text stored as string.
-  EXPECT_TRUE([kTestAdditionaText
-      isEqualToString:UIPasteboard.generalPasteboard.strings[1]]);
+  EXPECT_NSEQ(kTestAdditionaText, UIPasteboard.generalPasteboard.strings[1]);
 }

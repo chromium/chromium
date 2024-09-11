@@ -60,8 +60,7 @@ TEST_F(PostRestoreSignInViewControllerTest, uiStrings) {
     expectedDisclaimer = @"You were signed out as part of your iPhone reset. "
                          @"Tap continue below to sign in.";
   }
-  EXPECT_TRUE(
-      [view_controller_.disclaimerText isEqualToString:expectedDisclaimer]);
+  EXPECT_NSEQ(view_controller_.disclaimerText, expectedDisclaimer);
 }
 
 TEST_F(PostRestoreSignInViewControllerTest, uiStringsWithoutName) {

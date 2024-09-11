@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -116,32 +117,31 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       GetHeaderItemFromSection<TableViewTextHeaderFooterItem>(
           controller(), SectionIdentifierTrackedItems);
 
-  EXPECT_TRUE([tableHeadingText
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE)]);
+  EXPECT_NSEQ(
+      tableHeadingText,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE));
   EXPECT_FALSE([controller().tableViewModel
       hasItemForItemType:ItemTypeListItem
        sectionIdentifier:SectionIdentifierTrackableItemsOnCurrentSite]);
-  EXPECT_TRUE([trackableHeaderItem.text
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER)]);
-  EXPECT_TRUE([trackableHeaderItem.subtitle
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST)]);
+  EXPECT_NSEQ(
+      trackableHeaderItem.text,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER));
+  EXPECT_NSEQ(
+      trackableHeaderItem.subtitle,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST));
   EXPECT_FALSE([controller().tableViewModel
       hasItemForItemType:ItemTypeListItem
        sectionIdentifier:SectionIdentifierTrackedItems]);
-  EXPECT_TRUE([trackedHeaderItem.text
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKED_SECTION_HEADER)]);
-  EXPECT_TRUE([trackedHeaderItem.subtitle
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKING_EMPTY_LIST)]);
+  EXPECT_NSEQ(
+      trackedHeaderItem.text,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKED_SECTION_HEADER));
+  EXPECT_NSEQ(trackedHeaderItem.subtitle,
+              l10n_util::GetNSString(
+                  IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKING_EMPTY_LIST));
 }
 
 // Simulates that a trackable item exists and is properly displayed.
@@ -163,7 +163,7 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       hasItemForItemType:ItemTypeListItem
        sectionIdentifier:SectionIdentifierTrackableItemsOnCurrentSite]);
   EXPECT_EQ(items.count, 1u);
-  EXPECT_TRUE([items[0].title isEqualToString:item.title]);
+  EXPECT_NSEQ(items[0].title, item.title);
 }
 
 // Simulates that a tracked item exists and is displayed
@@ -183,7 +183,7 @@ TEST_F(PriceNotificationsTableViewControllerTest, DisplayUsersTrackedItems) {
       hasItemForItemType:ItemTypeListItem
        sectionIdentifier:SectionIdentifierTrackedItems]);
   EXPECT_EQ(items.count, 1u);
-  EXPECT_TRUE([items[0].title isEqualToString:item.title]);
+  EXPECT_NSEQ(items[0].title, item.title);
 }
 
 // Simulates that a tracked item exists and is displayed when the user is
@@ -209,10 +209,10 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       hasItemForItemType:ItemTypeListItem
        sectionIdentifier:SectionIdentifierTrackedItems]);
   EXPECT_EQ(items.count, 1u);
-  EXPECT_TRUE([trackableHeaderItem.subtitle
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED)]);
+  EXPECT_NSEQ(
+      trackableHeaderItem.subtitle,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED));
 }
 
 // Simulates that a trackable item exists, has been selected to be tracked,
@@ -246,10 +246,10 @@ TEST_F(PriceNotificationsTableViewControllerTest,
   EXPECT_EQ(trackedItemCountBeforeStartTracking, 0u);
   EXPECT_EQ(trackableItemCountAfterStartTracking, 0u);
   EXPECT_EQ(trackedItemCountAfterStartTracking, 1u);
-  EXPECT_TRUE([trackableHeaderItem.subtitle
-      isEqualToString:
-          l10n_util::GetNSString(
-              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM)]);
+  EXPECT_NSEQ(
+      trackableHeaderItem.subtitle,
+      l10n_util::GetNSString(
+          IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM));
 }
 
 // Simulates the user tapping on a tracked item and being redirected to

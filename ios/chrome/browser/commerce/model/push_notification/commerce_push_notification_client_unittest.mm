@@ -44,6 +44,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -347,14 +348,11 @@ TEST_F(CommercePushNotificationClientTest, TestActionableNotifications) {
   EXPECT_EQ(1u, [actionable_notifications count]);
   UNNotificationCategory* notification_category = actionable_notifications[0];
   EXPECT_EQ(2u, [notification_category.actions count]);
-  EXPECT_TRUE([notification_category.actions[0].identifier
-      isEqualToString:kVisitSiteActionId]);
-  EXPECT_TRUE(
-      [notification_category.actions[0].title isEqualToString:kVisitSiteTitle]);
-  EXPECT_TRUE([notification_category.actions[1].identifier
-      isEqualToString:kUntrackPriceActionId]);
-  EXPECT_TRUE([notification_category.actions[1].title
-      isEqualToString:kUntrackPriceTitle]);
+  EXPECT_NSEQ(notification_category.actions[0].identifier, kVisitSiteActionId);
+  EXPECT_NSEQ(notification_category.actions[0].title, kVisitSiteTitle);
+  EXPECT_NSEQ(notification_category.actions[1].identifier,
+              kUntrackPriceActionId);
+  EXPECT_NSEQ(notification_category.actions[1].title, kUntrackPriceTitle);
 }
 
 TEST_F(CommercePushNotificationClientTest, TestUntrackPrice) {

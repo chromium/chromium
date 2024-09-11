@@ -51,8 +51,7 @@ TEST_F(ScopedBlockSwizzlerTest, SwizzlingInstanceMethod) {
   target.value = kSwizzledInstanceValue;
 
   EXPECT_NSEQ(kOriginalInstanceValue, [target instanceMethodToSwizzle]);
-  EXPECT_FALSE([[target instanceMethodToSwizzle]
-      isEqualToString:kSwizzledInstanceValue]);
+  EXPECT_NSNE([target instanceMethodToSwizzle], kSwizzledInstanceValue);
 
   {
     id block = ^NSString*(id self) {
