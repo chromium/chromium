@@ -399,6 +399,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="DaemonError">
+  <int value="0" label="OK"/>
   <int value="132" label="SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
