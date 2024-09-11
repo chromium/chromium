@@ -74,7 +74,7 @@ StatusOr<Record> ProduceRecord(std::string dm_token,
                                std::optional<SourceInfo> source_info,
                                ReportQueue::RecordProducer record_producer) {
   // Generate record data.
-  const auto record_result = std::move(record_producer).Run();
+  auto record_result = std::move(record_producer).Run();
   if (!record_result.has_value()) {
     return base::unexpected(record_result.error());
   }

@@ -69,8 +69,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayFragment {
   LargeBlobArrayFragment(const LargeBlobArrayFragment&) = delete;
   LargeBlobArrayFragment& operator=(const LargeBlobArrayFragment&) = delete;
   LargeBlobArrayFragment(LargeBlobArrayFragment&&);
-  const std::vector<uint8_t> bytes;
-  const size_t offset;
+
+  std::vector<uint8_t> bytes;
+  size_t offset;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

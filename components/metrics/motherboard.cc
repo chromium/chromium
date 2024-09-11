@@ -171,7 +171,7 @@ MotherboardDetails ReadMotherboardDetails() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 Motherboard::Motherboard() {
-  const auto details = ReadMotherboardDetails();
+  auto details = ReadMotherboardDetails();
   manufacturer_ = std::move(details.manufacturer),
   model_ = std::move(details.model),
   bios_manufacturer_ = std::move(details.bios_manufacturer),

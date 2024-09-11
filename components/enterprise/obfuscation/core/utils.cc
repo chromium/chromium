@@ -181,11 +181,11 @@ GetHeaderData(const std::vector<uint8_t>& header) {
   base::span<const uint8_t> salt = base::span(header).subspan(1, kSaltSize);
 
   // Extract nonce_prefix.
-  const std::vector<uint8_t> nonce_prefix(header.begin() + 1 + kSaltSize,
-                                          header.end());
+  std::vector<uint8_t> nonce_prefix(header.begin() + 1 + kSaltSize,
+                                    header.end());
 
   // Generate file-specific key.
-  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+  std::vector<uint8_t> derived_key = crypto::HkdfSha256(
       GetSymmetricKey(), salt, base::span<uint8_t>(), kKeySize);
 
   return base::ok(std::pair(std::move(derived_key), std::move(nonce_prefix)));

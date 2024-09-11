@@ -76,7 +76,7 @@ namespace {
 void CreateAndAddCidrBlock(
     const std::string& cidr_block,
     std::vector<URLMatcherCidrBlockFilter::CidrBlock>& blocks) {
-  const auto& block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
+  auto block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
   ASSERT_TRUE(block.has_value());
   blocks.push_back(std::move(*block));
 }

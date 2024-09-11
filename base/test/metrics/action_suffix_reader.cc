@@ -115,7 +115,7 @@ std::vector<ActionSuffixEntryMap> ReadActionSuffixesForActionImpl(
     if (node_name == "action-suffix") {
       // Try to step into the node.
       if (reader.Read()) {
-        const auto suffixes =
+        auto suffixes =
             ParseActionSuffixesFromActionsXml(affected_action, reader);
         if (suffixes) {
           result.emplace_back(std::move(*suffixes));

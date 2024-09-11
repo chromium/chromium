@@ -53,9 +53,10 @@ bool LargeBlob::operator==(const LargeBlob& other) const {
          other.original_size == original_size;
 }
 
-LargeBlobArrayFragment::LargeBlobArrayFragment(const std::vector<uint8_t> bytes,
-                                               const size_t offset)
+LargeBlobArrayFragment::LargeBlobArrayFragment(std::vector<uint8_t> bytes,
+                                               size_t offset)
     : bytes(std::move(bytes)), offset(offset) {}
+
 LargeBlobArrayFragment::~LargeBlobArrayFragment() = default;
 LargeBlobArrayFragment::LargeBlobArrayFragment(LargeBlobArrayFragment&&) =
     default;
