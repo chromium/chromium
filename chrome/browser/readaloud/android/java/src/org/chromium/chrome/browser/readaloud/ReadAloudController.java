@@ -1033,7 +1033,7 @@ public class ReadAloudController
      * highlighting.
      */
     public boolean timepointsSupported(Tab tab) {
-        if (isAvailable() && !GURL.isEmptyOrInvalid(tab.getUrl())) {
+        if (!GURL.isEmptyOrInvalid(tab.getUrl())) {
             int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
             if (sReadabilityInfoMap.get(urlHash) == null) {
                 return false;
