@@ -209,6 +209,7 @@ crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ Re
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
 crbug.com/338574390 [ mac intel asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/338574390 [ mac intel asan ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
