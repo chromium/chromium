@@ -1159,6 +1159,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   histogram_tester()->ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kServiceCrash, 0);
 }
 
 // Creating multiple profiles isn't supported easily on ash and android.
