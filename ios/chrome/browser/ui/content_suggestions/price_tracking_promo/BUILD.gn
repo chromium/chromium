@@ -38,14 +38,18 @@ source_set("price_tracking_promo_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "price_tracking_promo_mediator+testing.h",
+    "price_tracking_promo_mediator_unittest.mm",
     "price_tracking_promo_view+testing.h",
     "price_tracking_promo_view_unittest.mm",
   ]
   deps = [
     ":price_tracking_promo",
-    "//ios/chrome/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

@@ -64,4 +64,14 @@
   // TODO(crbug.com/361107641) implement opt in flow C
 }
 
+#pragma mark - Testing category methods
+
+- (commerce::ShoppingService*)shoppingServiceForTesting {
+  return self->_shoppingService;
+}
+
+- (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting {
+  return self->_priceTrackingPromoItem;
+}
+
 @end
