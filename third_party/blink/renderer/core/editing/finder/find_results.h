@@ -68,6 +68,7 @@ class CORE_EXPORT FindResults {
   FindResults(const FindBuffer& find_buffer,
               TextSearcherICU* text_searcher,
               const Vector<UChar>& buffer,
+              const Vector<Vector<UChar>>* extra_buffers,
               const String& search_text,
               const FindOptions options);
 
@@ -85,6 +86,7 @@ class CORE_EXPORT FindResults {
   String search_text_;
   const FindBuffer* find_buffer_;
   TextSearcherICU* text_searcher_;
+  Vector<std::unique_ptr<TextSearcherICU>> extra_searchers_;
   bool empty_result_ = false;
 };
 

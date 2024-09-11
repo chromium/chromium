@@ -24,8 +24,6 @@ struct CORE_EXPORT MatchResultICU {
 };
 
 class CORE_EXPORT TextSearcherICU {
-  DISALLOW_NEW();
-
  public:
   enum ConstructLocalTag { kConstructLocal };
 

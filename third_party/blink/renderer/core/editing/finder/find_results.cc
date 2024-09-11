@@ -13,6 +13,7 @@ FindResults::FindResults() {
 FindResults::FindResults(const FindBuffer& find_buffer,
                          TextSearcherICU* text_searcher,
                          const Vector<UChar>& buffer,
+                         const Vector<Vector<UChar>>* extra_buffers,
                          const String& search_text,
                          const FindOptions options) {
   // We need to own the |search_text| because |text_searcher_| only has a
@@ -23,6 +24,18 @@ FindResults::FindResults(const FindBuffer& find_buffer,
   text_searcher_->SetPattern(search_text_, options);
   text_searcher_->SetText(base::span(buffer));
   text_searcher_->SetOffset(0);
+  if (!RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
+    DCHECK(!extra_buffers || extra_buffers->empty());
+  } else if (extra_buffers) {
+    extra_searchers_.reserve(extra_buffers->size());
+    for (const auto& text : *extra_buffers) {
+      extra_searchers_.push_back(
+          std::make_unique<TextSearcherICU>(TextSearcherICU::kConstructLocal));
+      auto& searcher = extra_searchers_.back();
+      searcher->SetPattern(search_text_, options);
+      searcher->SetText(base::span(text));
+    }
+  }
 }
 
 FindResults::Iterator FindResults::begin() const {
@@ -30,6 +43,9 @@ FindResults::Iterator FindResults::begin() const {
     return end();
   }
   text_searcher_->SetOffset(0);
+  for (auto& searcher : extra_searchers_) {
+    searcher->SetOffset(0);
+  }
   return Iterator(*find_buffer_, text_searcher_);
 }
 
