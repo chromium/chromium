@@ -42,7 +42,6 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
     private ModelList mModelList;
     private View mContentView;
     private RecyclerView mRecyclerView;
-
     private CommerceBottomSheetContentCoordinator mCoordinator;
 
     private PropertyModel createPropertyModel(int type, boolean hasTitle) {

@@ -28,7 +28,10 @@ public class CommerceBottomSheetContentMediatorUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mModelList = new ModelList();
-        mMediator = new CommerceBottomSheetContentMediator(mModelList);
+    }
+
+    private void setupMediator(int expectedContentCount) {
+        mMediator = new CommerceBottomSheetContentMediator(mModelList, expectedContentCount);
     }
 
     private PropertyModel createPropertyModel(int type) {
@@ -42,11 +45,13 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testOnContentReady_assertOnInvalidPropertyModel() {
+        setupMediator(1);
         mMediator.onContentReady(new PropertyModel());
     }
 
     @Test
     public void testOnContentReady_firstPropertyModel() {
+        setupMediator(1);
         mMediator.onContentReady(createPropertyModel(0));
 
         assertEquals(1, mModelList.size());
@@ -54,6 +59,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test
     public void testOnContentReady_MultiPropertyModels() {
+        setupMediator(3);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(1);
         PropertyModel model2 = createPropertyModel(2);
@@ -70,6 +76,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testOnContentReady_assertOnSameType() {
+        setupMediator(1);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(0);
 

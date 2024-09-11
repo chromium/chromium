@@ -4,21 +4,32 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 
-public class CommerceBottomSheetContentMediator implements CommerceBottomSheetContentListener {
+public class CommerceBottomSheetContentMediator {
     private final ModelList mModelList;
+    private int mContentReadyCount;
+    private final int mExpectedContentCount;
 
-    public CommerceBottomSheetContentMediator(ModelList modelList) {
+    public CommerceBottomSheetContentMediator(ModelList modelList, int expectedContentCount) {
         mModelList = modelList;
+        mExpectedContentCount = expectedContentCount;
     }
 
-    @Override
-    public void onContentReady(PropertyModel model) {
+    public void onContentReady(@Nullable PropertyModel model) {
+        mContentReadyCount++;
+
+        if (model == null) {
+            requestToShowBottomSheetIfReady();
+            return;
+        }
+
         assert isValidPropertyModel(model)
                 : "Miss required property in PropertyModel from"
                         + " CommerceBottomSheetContentProperties.";
@@ -35,10 +46,25 @@ public class CommerceBottomSheetContentMediator implements CommerceBottomSheetCo
         }
 
         mModelList.add(index, new ListItem(0, model));
+        requestToShowBottomSheetIfReady();
+    }
+
+    public void timeOut() {
+        showBottomSheet();
     }
 
     private boolean isValidPropertyModel(PropertyModel model) {
         return model.getAllProperties()
                 .containsAll(Arrays.asList(CommerceBottomSheetContentProperties.ALL_KEYS));
+    }
+
+    private void requestToShowBottomSheetIfReady() {
+        if (mContentReadyCount < mExpectedContentCount) return;
+        showBottomSheet();
+    }
+
+    private void showBottomSheet() {
+        // TODO(b/362359865): create BottomSheetContent and request to show with the
+        // BottomSheetController.
     }
 }
