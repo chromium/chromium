@@ -188,18 +188,14 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                             R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_first_title);
                     message.setText(R.string.blocking_choice_dialog_first_message);
-                    button.setText(
-                            mView.getContext()
-                                    .getString(R.string.blocking_choice_dialog_first_button));
+                    button.setText(mView.getContext().getString(R.string.next));
                 }
                 case DialogType.CHOICE_CONFIRM -> {
                     illustration.setBackgroundResource(
                             R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_second_title);
                     message.setText(R.string.blocking_choice_dialog_second_message);
-                    button.setText(
-                            mView.getContext()
-                                    .getString(R.string.blocking_choice_dialog_second_button));
+                    button.setText(mView.getContext().getString(R.string.done));
                 }
                 case DialogType.UNKNOWN -> throw new IllegalStateException();
             }

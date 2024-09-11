@@ -483,24 +483,18 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
-      <!-- Blocking choice dialog strings. TODO(b/355054464): replace with final versions -->
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="" translateable="false">
-        To continue, update your Android settings
+      <!-- Blocking choice dialog strings. -->
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="This string is the heading of a dialog that prompts the user to select the search engine and web browser that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This dialog appears when the user opens Chrome after they’ve ignored the Android notification to choose their default apps. This string is before the “Based on a law in your region, you need to choose your browser and search engine” string. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Choose your default apps
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="" translateable="false">
-        Based on a law in your region, your need to finish selecting your device\u2019s default apps
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="This is the body text of a dialog that explains why users are being prompted to choose a search engine and browser. This dialog appears when the user opens Chrome after they’ve ignored the Android notification to choose their default apps. The headline for this dialog is “Choose your default apps”. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Based on a law in your region, you need to choose your browser and search engine
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_BUTTON" desc="" translateable="false">
-        Next
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="This string is the heading of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. This dialog appears after the user finishes the flow to choose their default apps. This string is before the “The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.” string. The user can tap “Done” to close the dialog and continue to use Chrome (regardless of whether it was chosen as the default browser).">
+        Choices saved
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="" translateable="false">
-        You're all set!
-      </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="" translateable="false">
-        If you have selected another browser it will be downloaded in the background
-      </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_BUTTON" desc="" translateable="false">
-        Got it
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="This is the body text of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. It’s possible that the user has chosen a default app that wasn’t previously on their device: if so, that app is now being downloaded in the background. This dialog appears after the user finishes the flow to choose their default apps; now, the user can continue to use Chrome (regardless of whether it was chosen as the default browser). The headline for this dialog is “Choices saved”. The user can tap “Done” to close the dialog and continue to use Chrome (regardless of whether it was chosen as the default browser).">
+        The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.
       </message>
 
       <!-- Autofill and Payments preferences -->

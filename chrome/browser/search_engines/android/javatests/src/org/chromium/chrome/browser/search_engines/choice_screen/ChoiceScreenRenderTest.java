@@ -14,6 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -30,7 +32,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.search_engines.R;
@@ -72,7 +73,7 @@ public class ChoiceScreenRenderTest {
                         SearchEngineChoiceService.setInstanceForTests(
                                 new SearchEngineChoiceService(
                                         new FakeSearchEngineCountryDelegate(
-                                                /* enableLogging= */ false))));
+                                                /* enableLogging= */ true))));
     }
 
     @Test
@@ -86,24 +87,15 @@ public class ChoiceScreenRenderTest {
 
     @Test
     @LargeTest
-    public void testFirstChoiceScreenBlockingDialogButton() {
+    @Feature("RenderTest")
+    public void testSecondChoiceScreenBlockingDialog() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(this::showDialog);
 
         onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
 
-        onView(withText(R.string.blocking_choice_dialog_second_title))
+        onViewWaiting(withText(R.string.blocking_choice_dialog_second_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @DisabledTest(message = "b/355054464: UI is not final yet.")
-    public void testSecondChoiceScreenDialog() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
-
-        onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
 
         mRenderTestRule.render(getDialogView(), "second_choice_screen_dialog");
     }
