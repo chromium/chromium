@@ -158,7 +158,7 @@ class CORE_EXPORT PerformanceMonitor final
   unsigned user_callback_depth_ = 0;
   const void* user_callback_;
 
-  base::TimeDelta thresholds_[kAfterLast];
+  std::array<base::TimeDelta, kAfterLast> thresholds_;
 
   Member<LocalFrame> local_root_;
   Member<ExecutionContext> task_execution_context_;
