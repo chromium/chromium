@@ -161,13 +161,7 @@ public class SideSlideLayout extends ViewGroup {
         // The absolute offset has to take into account that the circle starts at an offset
         mTotalDragDistance = RAW_SWIPE_LIMIT_DP * getResources().getDisplayMetrics().density;
 
-        mAnimateToStartPosition.setAnimationListener(
-                new EmptyAnimationListener() {
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        reset();
-                    }
-                });
+        prepareAnimateToStartPosition();
     }
 
     /** Set the listener to be notified when the navigation is triggered. */
@@ -274,24 +268,36 @@ public class SideSlideLayout extends ViewGroup {
     }
 
     /**
-     * Start the pull effect. If the effect is disabled or a navigation animation
-     * is currently active, the request will be ignored.
+     * Start the pull effect. If the effect is disabled or a navigation animation is currently
+     * active, the request will be ignored.
+     *
      * @return whether a new pull sequence has started.
      */
     public boolean start() {
         if (!isEnabled() || mNavigating || mListener == null) return false;
+
+        // Stop animation triggered by previous slide.
+        if (mAnimateToStartPosition.hasStarted()) {
+            mAnimateToStartPosition.setAnimationListener(null);
+            mArrowView.clearAnimation();
+            mAnimateToStartPosition.cancel();
+            mAnimateToStartPosition.reset();
+        }
+
         mTotalMotion = 0;
         mMaxOverscroll = 0.f;
         mIsBeingDragged = true;
         mWillNavigate = false;
         initializeOffset();
+        prepareAnimateToStartPosition();
         mArrowView.setFaded(false, false);
         return true;
     }
 
     /**
-     * Apply a pull impulse to the effect. If the effect is disabled or has yet
-     * to start, the pull will be ignored.
+     * Apply a pull impulse to the effect. If the effect is disabled or has yet to start, the pull
+     * will be ignored.
+     *
      * @param offset Updated total pull offset.
      */
     public void pull(float offset) {
@@ -363,11 +369,22 @@ public class SideSlideLayout extends ViewGroup {
         mCurrentTargetOffset = mArrowView.getLeft();
     }
 
+    private void prepareAnimateToStartPosition() {
+        mAnimateToStartPosition.setAnimationListener(
+                new EmptyAnimationListener() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        reset();
+                    }
+                });
+    }
+
     /**
-     * Release the active pull. If no pull has started, the release will be ignored.
-     * If the pull was sufficiently large, the navigation sequence will be initiated.
-     * @param allowNav whether to allow a sufficiently large pull to trigger
-     *                     the navigation action and animation sequence.
+     * Release the active pull. If no pull has started, the release will be ignored. If the pull was
+     * sufficiently large, the navigation sequence will be initiated.
+     *
+     * @param allowNav whether to allow a sufficiently large pull to trigger the navigation action
+     *     and animation sequence.
      */
     public void release(boolean allowNav) {
         if (!mIsBeingDragged) return;
