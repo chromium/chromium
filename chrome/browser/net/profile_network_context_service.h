@@ -15,10 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
+#include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -230,6 +232,9 @@ class ProfileNetworkContextService
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
       client_cert_store_factory_;
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  base::SequenceBound<net::ServerCertificateDatabase> server_cert_database_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_H_

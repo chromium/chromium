@@ -101,6 +101,11 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kChangePictureVideoMode);
 // TODO(crbug.com/40928765) Remove this flag when UI is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2);
+// Enable the Certificate Management UI v2 write features.
+//
+// TODO(crbug.com/40928765) Remove this flag when UI is complete.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kEnableCertManagementUIV2Write);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)

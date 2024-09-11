@@ -141,6 +141,10 @@ BASE_FEATURE(kEnableCertManagementUIV2,
              "EnableCertManagementUIV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCertManagementUIV2Write,
+             "EnableCertManagementUIV2Write",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables "usm" service in the list of user services returned by
 // userInfo Gaia message.

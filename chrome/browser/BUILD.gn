@@ -8244,6 +8244,13 @@ static_library("browser") {
     configs += [ "//build/config/linux/nss" ]
   }
 
+  if (chrome_root_store_cert_management_ui) {
+    sources += [
+      "net/server_certificate_database.cc",
+      "net/server_certificate_database.h",
+    ]
+  }
+
   if (use_udev) {
     deps += [ "//device/udev_linux" ]
   }
