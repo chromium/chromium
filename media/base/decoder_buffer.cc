@@ -12,6 +12,24 @@
 
 namespace media {
 
+namespace {
+
+template <class T>
+class ExternalSharedMemoryAdapter : public DecoderBuffer::ExternalMemory {
+ public:
+  explicit ExternalSharedMemoryAdapter(T mapping)
+      : mapping_(std::move(mapping)) {}
+
+  const base::span<const uint8_t> Span() const override {
+    return mapping_.template GetMemoryAsSpan<const uint8_t>();
+  }
+
+ private:
+  T mapping_;
+};
+
+}  // namespace
+
 DecoderBuffer::DecoderBuffer(size_t size)
     : data_(base::HeapArray<uint8_t>::Uninit(size)), size_(size) {}
 
@@ -20,18 +38,6 @@ DecoderBuffer::DecoderBuffer(base::span<const uint8_t> data)
 
 DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data)
     : data_(std::move(data)), size_(data_.size()) {}
-
-DecoderBuffer::DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping,
-                             size_t size)
-    : size_(size),
-      read_only_mapping_(std::make_unique<base::ReadOnlySharedMemoryMapping>(
-          std::move(mapping))) {}
-
-DecoderBuffer::DecoderBuffer(base::WritableSharedMemoryMapping mapping,
-                             size_t size)
-    : size_(size),
-      writable_mapping_(std::make_unique<base::WritableSharedMemoryMapping>(
-          std::move(mapping))) {}
 
 DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
     : size_(external_memory->Span().size()),
@@ -68,7 +74,11 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
   if (!mapping.IsValid()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
+
+  return FromExternalMemory(
+      std::make_unique<
+          ExternalSharedMemoryAdapter<base::WritableSharedMemoryMapping>>(
+          std::move(mapping)));
 }
 
 // static
@@ -83,7 +93,11 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
   if (!mapping.IsValid()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
+
+  return FromExternalMemory(
+      std::make_unique<
+          ExternalSharedMemoryAdapter<base::ReadOnlySharedMemoryMapping>>(
+          std::move(mapping)));
 }
 
 // static
@@ -123,12 +137,6 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
 
 base::span<const uint8_t> DecoderBuffer::AsSpan() const {
   DCHECK(!end_of_stream());
-  if (read_only_mapping_ && read_only_mapping_->IsValid()) {
-    return read_only_mapping_->GetMemoryAsSpan<const uint8_t>().first(size_);
-  }
-  if (writable_mapping_ && writable_mapping_->IsValid()) {
-    return writable_mapping_->GetMemoryAsSpan<const uint8_t>().first(size_);
-  }
   if (external_memory_) {
     return external_memory_->Span().first(size_);
   }

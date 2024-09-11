@@ -153,12 +153,6 @@ class MEDIA_EXPORT DecoderBuffer
   // TODO(crbug.com/365814210): Remove in favor of AsSpan().
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
-    if (read_only_mapping_ && read_only_mapping_->IsValid()) {
-      return read_only_mapping_->GetMemoryAs<const uint8_t>();
-    }
-    if (writable_mapping_ && writable_mapping_->IsValid()) {
-      return writable_mapping_->GetMemoryAs<const uint8_t>();
-    }
     if (external_memory_)
       return external_memory_->Span().data();
     return data_.data();
@@ -177,8 +171,6 @@ class MEDIA_EXPORT DecoderBuffer
   // TODO(crbug.com/41383992): Remove writable_data().
   uint8_t* writable_data() const {
     DCHECK(!end_of_stream());
-    DCHECK(!read_only_mapping_);
-    DCHECK(!writable_mapping_);
     DCHECK(!external_memory_);
     return const_cast<uint8_t*>(data_.data());
   }
@@ -270,10 +262,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   explicit DecoderBuffer(base::HeapArray<uint8_t> data);
 
-  DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping, size_t size);
-
-  DecoderBuffer(base::WritableSharedMemoryMapping mapping, size_t size);
-
   explicit DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory);
 
   explicit DecoderBuffer(DecoderBufferType decoder_buffer_type);
@@ -308,12 +296,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Structured side data.
   std::unique_ptr<DecoderBufferSideData> side_data_;
-
-  // Encoded data, if it is stored in a read-only shared memory mapping.
-  const std::unique_ptr<base::ReadOnlySharedMemoryMapping> read_only_mapping_;
-
-  // Encoded data, if it is stored in a writable shared memory mapping.
-  const std::unique_ptr<base::WritableSharedMemoryMapping> writable_mapping_;
 
   const std::unique_ptr<ExternalMemory> external_memory_;
 
