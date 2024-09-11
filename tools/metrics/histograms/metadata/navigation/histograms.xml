@@ -74,6 +74,36 @@ chromium-metrics-reviews@google.com.
   <variant name="SameSite"/>
 </variants>
 
+<variants name="TracedMethod">
+  <variant name="AgentSchedulingGroupHost.RemoveRoute"
+      summary="AgentSchedulingGroupHost::RemoveRoute()"/>
+  <variant name="DocumentAssociatedDataDestructor"
+      summary="DocumentAssociatedData destructor"/>
+  <variant name="Frame.SwapImpl" summary="Frame::SwapImpl()"/>
+  <variant name="LocalFrame.DetachImpl.Remove"
+      summary="LocalFrame::DetachImpl() for removal"/>
+  <variant name="LocalFrame.DetachImpl.Swap"
+      summary="LocalFrame::DetachImpl() for swapping"/>
+  <variant name="LocalFrame.SwapIn" summary="LocalFrame::SwapIn()"/>
+  <variant name="PendingDeletionCheckCompletedOnSubtree"
+      summary="RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree()"/>
+  <variant name="RenderFrameHostImpl.DeleteRenderFrame"
+      summary="RenderFrameHostImpl::DeleteRenderFrame()"/>
+  <variant name="ResetChildren" summary="RenderFrameHostImpl::ResetChildren()"/>
+  <variant name="StartPendingDeletionOnSubtree.Detach"
+      summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
+               detaching"/>
+  <variant name="StartPendingDeletionOnSubtree.Loop.Detach"
+      summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
+               swapping, children looping part"/>
+  <variant name="StartPendingDeletionOnSubtree.Loop.SwappedOut"
+      summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
+               detaching, children looping part"/>
+  <variant name="StartPendingDeletionOnSubtree.SwappedOut"
+      summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
+               swapping"/>
+</variants>
+
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-07-07">
@@ -2221,6 +2251,16 @@ chromium-metrics-reviews@google.com.
     had already reached both the commit and swap RFH stages.
   </summary>
   <token key="Stage" variants="NavigationStage"/>
+</histogram>
+
+<histogram name="Navigation.{TracedMethod}" units="ms"
+    expires_after="2025-02-23">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes to run {TracedMethod}. Recorded everytime {TracedMethod}
+    is triggered.
+  </summary>
 </histogram>
 
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"

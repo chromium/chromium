@@ -672,6 +672,12 @@ bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
+  TRACE_EVENT1("navigation", "LocalFrame::DetachImpl", "detach_type",
+               static_cast<int>(type));
+  std::string_view histogram_suffix =
+      (type == FrameDetachType::kRemove) ? "Remove" : "Swap";
+  base::ScopedUmaHistogramTimer histogram_timer(
+      base::StrCat({"Navigation.LocalFrame.DetachImpl.", histogram_suffix}));
   absl::Cleanup check_post_condition = [this] {
     // This method must shutdown objects associated with it (such as
     // the `PerformanceMonitor` for local roots).
@@ -3016,6 +3022,8 @@ LocalFrame* LocalFrame::GetPreviousLocalFrameForLocalSwap() {
 }
 
 bool LocalFrame::SwapIn() {
+  TRACE_EVENT0("navigation", "LocalFrame::SwapIn");
+  base::ScopedUmaHistogramTimer histogram_timer("Navigation.LocalFrame.SwapIn");
   DCHECK(IsProvisional());
   WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
   // Swap in `this`, which is a provisional frame to an existing frame.

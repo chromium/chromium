@@ -51,6 +51,9 @@ DocumentAssociatedData::DocumentAssociatedData(
 }
 
 DocumentAssociatedData::~DocumentAssociatedData() {
+  TRACE_EVENT0("navigation", "DocumentAssociatedData::~DocumentAssociatedData");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.DocumentAssociatedDataDestructor");
   decltype(services_) services;
   std::swap(services_, services);
   for (auto& service : services) {

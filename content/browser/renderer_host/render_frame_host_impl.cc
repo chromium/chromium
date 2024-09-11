@@ -3826,6 +3826,8 @@ void RenderFrameHostImpl::DeleteRenderFrame(
               [&](perfetto::EventContext ctx) {
                 WriteRenderFrameImplDeletion(ctx, this, intent);
               });
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderFrameHostImpl.DeleteRenderFrame");
   if (IsPendingDeletion())
     return;
 
@@ -5024,6 +5026,9 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
 }
 
 void RenderFrameHostImpl::ResetChildren() {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::ResetChildren",
+              ChromeTrackEvent::kRenderFrameHost, this);
+  base::ScopedUmaHistogramTimer histogram_timer("Navigation.ResetChildren");
   // Remove child nodes from the tree, then delete them. This destruction
   // operation will notify observers. See https://crbug.com/612450 for
   // explanation why we don't just call the std::vector::clear method.
@@ -10877,6 +10882,15 @@ void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(
 
 void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     RenderFrameHostImpl::PendingDeletionReason pending_deletion_reason) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostImpl::StartPendingDeletionOnSubtree",
+              ChromeTrackEvent::kRenderFrameHost, this);
+  std::string_view histogram_suffix =
+      (pending_deletion_reason == PendingDeletionReason::kFrameDetach)
+          ? "Detach"
+          : "SwappedOut";
+  base::ScopedUmaHistogramTimer histogram_timer(base::StrCat(
+      {"Navigation.StartPendingDeletionOnSubtree.", histogram_suffix}));
   DCHECK(IsPendingDeletion());
 
   if (pending_deletion_reason == PendingDeletionReason::kFrameDetach ||
@@ -10910,6 +10924,8 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     subframe->ResetAllNavigationsForFrameDetach();
   }
 
+  base::ScopedUmaHistogramTimer histogram_timer_loop(base::StrCat(
+      {"Navigation.StartPendingDeletionOnSubtree.Loop", histogram_suffix}));
   for (std::unique_ptr<FrameTreeNode>& child_frame : children_) {
     for (FrameTreeNode* node : frame_tree()->SubtreeNodes(child_frame.get())) {
       RenderFrameHostImpl* child = node->current_frame_host();
@@ -10956,6 +10972,12 @@ void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
 }
 
 void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree",
+              ChromeTrackEvent::kRenderFrameHost, this);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.PendingDeletionCheckCompletedOnSubtree");
+
   if (children_.empty()) {
     PendingDeletionCheckCompleted();  // This might delete |this|.
     // DO NOT add code after this.
