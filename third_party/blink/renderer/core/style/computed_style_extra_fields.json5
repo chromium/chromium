@@ -240,7 +240,7 @@
     {
       name: "PseudoElementStyles",
       field_template: "primitive",
-      field_size: 17,
+      field_size: 18,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,

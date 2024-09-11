@@ -1111,6 +1111,12 @@
       status: "experimental",
     },
     {
+      // For ::column pseudo element for fragment styling.
+      // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
+      name: "CSSPseudoColumn",
+      status: "experimental",
+    },
+    {
       // Enables the :open and :closed pseudo-selectors.
       // https://chromestatus.com/feature/5085419215781888
       name: "CSSPseudoOpenClosed",

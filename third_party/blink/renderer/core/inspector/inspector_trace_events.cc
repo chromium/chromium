@@ -367,6 +367,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoScrollMarkerGroup)
     DEFINE_STRING_MAPPING(PseudoScrollNextButton)
     DEFINE_STRING_MAPPING(PseudoScrollPrevButton)
+    DEFINE_STRING_MAPPING(PseudoColumn)
     DEFINE_STRING_MAPPING(PseudoWindowInactive)
     DEFINE_STRING_MAPPING(PseudoCornerPresent)
     DEFINE_STRING_MAPPING(PseudoDecrement)

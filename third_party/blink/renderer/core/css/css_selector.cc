@@ -336,6 +336,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollNextButton;
     case kPseudoScrollPrevButton:
       return kPseudoIdScrollPrevButton;
+    case kPseudoColumn:
+      return kPseudoIdColumn;
     case kPseudoScrollbarButton:
       return kPseudoIdScrollbarButton;
     case kPseudoScrollbarCorner:
@@ -559,6 +561,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
     {"closed", CSSSelector::kPseudoClosed},
+    {"column", CSSSelector::kPseudoColumn},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
     {"current", CSSSelector::kPseudoCurrent},
@@ -740,6 +743,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoColumn &&
+      !RuntimeEnabledFeatures::CSSPseudoColumnEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if ((match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed) &&
       !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
@@ -850,6 +858,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollMarkerGroup:
     case kPseudoScrollNextButton:
     case kPseudoScrollPrevButton:
+    case kPseudoColumn:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonText:
     case kPseudoPicker:
@@ -1589,6 +1598,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
     case kPseudoScrollNextButton:
+    case kPseudoColumn:
     case kPseudoScrollPrevButton:
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
