@@ -18,6 +18,8 @@ class Config {
     this.bufferSize = -1;
     /** @type {boolean} */
     this.useMouseAcceleration = false;
+    /** @type {boolean} */
+    this.useVelocityThreshold = false;
     /** @type {?Map<string, number>} */
     this.speeds = null;
     /** @type {number} */
@@ -64,11 +66,15 @@ class Config {
     return this;
   }
 
-  /**
-   * @return {!Config}
-   */
+  /** @return {!Config} */
   withMouseAcceleration() {
     this.useMouseAcceleration = true;
+    return this;
+  }
+
+  /** @return {!Config} */
+  withVelocityThreshold() {
+    this.useVelocityThreshold = true;
     return this;
   }
 
@@ -86,6 +92,7 @@ class Config {
 
   /**
    * @param {number} repeatDelayMs
+   * @return {!Config}
    */
   withRepeatDelayMs(repeatDelayMs) {
     this.repeatDelayMs = repeatDelayMs;
@@ -94,6 +101,7 @@ class Config {
 
   /**
    * @param {boolean} cursorControlEnabled
+   * @return {!Config}
    */
   withCursorControlEnabled(cursorControlEnabled) {
     this.cursorControlEnabled = cursorControlEnabled;
@@ -102,6 +110,7 @@ class Config {
 
   /**
    * @param {boolean} actionsEnabled
+   * @return {!Config}
    */
   withActionsEnabled(actionsEnabled) {
     this.actionsEnabled = actionsEnabled;
@@ -242,18 +251,18 @@ FaceGazeTestBase = class extends E2ETestBase {
   async startFacegazeWithConfigAndForeheadLocation_(
       config, forehead_x, forehead_y) {
     await this.configureFaceGaze(config);
-
     // No matter the starting location, the cursor position won't change
     // initially, and upcoming forehead locations will be computed relative to
     // this.
     const result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
         forehead_x, forehead_y);
     this.processFaceLandmarkerResult(result);
-    if (config.cursorControlEnabled) {
+    if (config.cursorControlEnabled && !config.useVelocityThreshold) {
       this.assertLatestCursorPosition(config.mouseLocation);
     } else {
       assertEquals(
-          null, this.mockAccessibilityPrivate.getLatestCursorPosition());
+          null, this.mockAccessibilityPrivate.getLatestCursorPosition(),
+          'Expected cursor position to be null');
     }
   }
 
@@ -299,6 +308,9 @@ FaceGazeTestBase = class extends E2ETestBase {
     if (config.repeatDelayMs > 0) {
       faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
     }
+
+    faceGaze.mouseController_.setVelocityThresholdForTesting(
+        config.useVelocityThreshold);
 
     await this.setPref(
         MouseController.PREF_CURSOR_USE_ACCELERATION,
@@ -374,8 +386,12 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @param {!{x: number, y: number}} expected */
   assertLatestCursorPosition(expected) {
     const actual = this.mockAccessibilityPrivate.getLatestCursorPosition();
-    assertEquals(expected.x, actual.x);
-    assertEquals(expected.y, actual.y);
+    assertEquals(
+        expected.x, actual.x,
+        'Failed to assert latest cursor position x value');
+    assertEquals(
+        expected.y, actual.y,
+        'Failed to assert latest cursor position y value');
   }
 
   /** @param {number} num */

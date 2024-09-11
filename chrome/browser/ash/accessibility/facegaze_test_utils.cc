@@ -152,6 +152,7 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
   cursor_location_ = gfx::Point(600, 400);
   buffer_size_ = 1;
   use_cursor_acceleration_ = false;
+  use_velocity_threshold_ = false;
   dialog_accepted_ = true;
 
   return *this;
@@ -207,6 +208,12 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorSpeeds(
 FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureRepeatDelayMs(
     int delay) {
   gesture_repeat_delay_ms_ = delay;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithVelocityThreshold(
+    bool use_threshold) {
+  use_velocity_threshold_ = use_threshold;
   return *this;
 }
 
@@ -409,6 +416,7 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   // Set required configuration properties.
   SetBufferSize(config.buffer_size());
   SetCursorAcceleration(config.use_cursor_acceleration());
+  SetVelocityThreshold(config.use_velocity_threshold());
 
   // By default the cursor is placed at the center of the screen. To
   // initialize FaceGaze, move the cursor somewhere, then move it to the
@@ -451,6 +459,14 @@ void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
   GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
                          use_acceleration);
   GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::SetVelocityThreshold(bool use_threshold) {
+  // TODO(b/309121742): Update this to set the pref value after a pref for
+  // velocity threshold has been added.
+  std::string true_script = "faceGazeTestSupport.setVelocityThreshold(true);";
+  std::string false_script = "faceGazeTestSupport.setVelocityThreshold(false);";
+  ExecuteAccessibilityCommonScript(use_threshold ? true_script : false_script);
 }
 
 void FaceGazeTestUtils::SetGesturesToMacros(

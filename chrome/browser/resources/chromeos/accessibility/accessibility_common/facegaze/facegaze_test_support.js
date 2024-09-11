@@ -66,6 +66,12 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
+  /** @param {boolean} useThreshold */
+  setVelocityThreshold(useThreshold) {
+    this.getMouseController_().setVelocityThresholdForTesting(useThreshold);
+    this.notifyCcTests_();
+  }
+
   /** Instantiates the FaceLandmarker. */
   async createFaceLandmarker() {
     const webCamFaceLandmarker = this.getWebCamFaceLandmarker_();

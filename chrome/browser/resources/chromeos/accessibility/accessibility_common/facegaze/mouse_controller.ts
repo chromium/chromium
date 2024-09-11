@@ -45,6 +45,8 @@ export class MouseController {
   private spdLeft_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
+  private velocityThreshold_ = 0;
+  private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
   private buffer_: ScreenPoint[] = [];
@@ -87,6 +89,7 @@ export class MouseController {
     this.scrollModeController_ = new ScrollModeController();
 
     this.calcSmoothKernel_();
+    this.calcVelocityThreshold_();
     this.landmarkWeights_ = new Map();
     // TODO(b:309121742): This should be a fixed list of weights depending on
     // what works best from experimentation.
@@ -153,9 +156,7 @@ export class MouseController {
     this.landmarkWeights_ = weights;
   }
 
-  /**
-   * Update the current location of the tracked face landmark.
-   */
+  /** Update the current location of the tracked face landmark. */
   onFaceLandmarkerResult(result: FaceLandmarkerResult): void {
     if (this.paused_ || !this.screenBounds_ || !result.faceLandmarks ||
         !result.faceLandmarks[0]) {
@@ -240,16 +241,26 @@ export class MouseController {
       // start-up.
       this.previousSmoothedLocation_ = smoothed;
     }
+
     const velocityX = smoothed.x - this.previousSmoothedLocation_.x;
     const velocityY = smoothed.y - this.previousSmoothedLocation_.y;
     const scaledVel = this.asymmetryScale_({x: velocityX, y: velocityY});
     this.previousSmoothedLocation_ = smoothed;
-
     if (this.useMouseAcceleration_) {
       scaledVel.x *= this.applySigmoidAcceleration_(scaledVel.x);
       scaledVel.y *= this.applySigmoidAcceleration_(scaledVel.y);
     }
 
+    if (!this.exceedsVelocityThreshold_(scaledVel.x) &&
+        !this.exceedsVelocityThreshold_(scaledVel.y)) {
+      // The velocity threshold wasn't exceeded, so we shouldn't update the
+      // mouse location. We do this to avoid unintended jitteriness of the
+      // mouse.
+      return;
+    }
+
+    scaledVel.x = this.applyVelocityThreshold_(scaledVel.x);
+    scaledVel.y = this.applyVelocityThreshold_(scaledVel.y);
     // The mouse location is the previous location plus the velocity.
     const newX = this.mouseLocation_.x + scaledVel.x;
     const newY = this.mouseLocation_.y + scaledVel.y;
@@ -598,21 +609,25 @@ export class MouseController {
         case MouseController.PREF_SPD_UP:
           if (pref.value) {
             this.spdUp_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_DOWN:
           if (pref.value) {
             this.spdDown_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_LEFT:
           if (pref.value) {
             this.spdLeft_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_SPD_RIGHT:
           if (pref.value) {
             this.spdRight_ = pref.value;
+            this.calcVelocityThreshold_();
           }
           break;
         case MouseController.PREF_CURSOR_SMOOTHING:
@@ -633,6 +648,39 @@ export class MouseController {
           return;
       }
     });
+  }
+
+  private calcVelocityThreshold_(): void {
+    // Threshold is a function of speed. Threshold increases as speed increases
+    // because it's easier to move the mouse accidentally at high mouse speeds.
+    const averageSpeed =
+        (this.spdUp_ + this.spdDown_ + this.spdLeft_ + this.spdRight_) / 4;
+    this.velocityThreshold_ = averageSpeed * 0.3;
+  }
+
+  private exceedsVelocityThreshold_(velocity: number): boolean {
+    if (!this.useVelocityThreshold_) {
+      return true;
+    }
+
+    return Math.abs(velocity) > this.velocityThreshold_;
+  }
+
+  private applyVelocityThreshold_(velocity: number): number {
+    if (!this.useVelocityThreshold_) {
+      return velocity;
+    }
+
+    if (Math.abs(velocity) < this.velocityThreshold_) {
+      return 0;
+    }
+
+    return (velocity > 0) ? velocity - this.velocityThreshold_ :
+                            velocity + this.velocityThreshold_;
+  }
+
+  setVelocityThresholdForTesting(useThreshold: boolean): void {
+    this.useVelocityThreshold_ = useThreshold;
   }
 }
 
