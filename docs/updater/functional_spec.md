@@ -977,13 +977,13 @@ A client can `CoCreateInstance` the `PolicyStatusUserClass` or the
 `PolicyStatusSystemClass` to get the corresponding policy status object and
 query it via the `IPolicyStatus4` methods.
 
-#### Enterprise policies ADMX files (Windows, Google-branded builds only)
+#### Enterprise policies ADM/ADMX files (Windows, Google-branded builds only)
 
-ADMX files for enterprise policies are generated with each build in
+ADM/ADMX files for enterprise policies are generated with each build in
 `GoogleUpdateAdmx.zip` and `GoogleCloudManagementAdmx.zip` for enterprise
 customers.
 
-These ADMX files are generated using the scripts in
+These ADM/ADMX files are generated using the scripts in
 [chrome/updater/enterprise/win/google/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/enterprise/win/google/).
 
 #### Deploying enterprise applications via updater policy
