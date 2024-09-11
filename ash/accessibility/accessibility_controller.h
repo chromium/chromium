@@ -62,6 +62,7 @@ enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
 class DisableTrackpadEventRewriter;
+enum class DisableTrackpadMode;
 class FilterKeysEventRewriter;
 class FlashScreenController;
 class FloatingAccessibilityController;
@@ -355,6 +356,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
   void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
+  DisableTrackpadMode GetDisableTrackpadMode();
   void SetFilterKeysEventRewriter(FilterKeysEventRewriter* rewriter);
   bool IsPointScanEnabled();
 

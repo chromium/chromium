@@ -2899,6 +2899,11 @@ void AccessibilityController::UpdateDisableTrackpadFromPrefs() {
       static_cast<int>(DisableTrackpadMode::kNever));
 }
 
+DisableTrackpadMode AccessibilityController::GetDisableTrackpadMode() {
+  return static_cast<DisableTrackpadMode>(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+}
+
 void AccessibilityController::UpdateColorCorrectionFromPrefs() {
   DCHECK(active_user_prefs_);
 

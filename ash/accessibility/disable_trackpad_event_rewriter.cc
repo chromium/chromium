@@ -5,14 +5,73 @@
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/event.h"
 
 namespace ash {
 
 namespace {
-bool IsFromInternalTrackpad(const ui::Event& event) {
-  // TODO(b/354176487): Implement checking for internal trackpad.
-  return true;
+
+bool IsExternalDevice(const ui::InputDevice& device) {
+  return device.type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH ||
+         device.type == ui::InputDeviceType::INPUT_DEVICE_USB;
+}
+
+bool IsExternalMouseOrTrackpadConnected() {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  InputDeviceSettingsControllerImpl* input_device_settings_controller =
+      Shell::Get()->input_device_settings_controller();
+
+  // Check for external touchpads.
+  for (const auto& touchpad : device_data_manager->GetTouchpadDevices()) {
+    const mojom::Touchpad* found_device =
+        input_device_settings_controller->GetTouchpad(touchpad.id);
+
+    if (found_device != nullptr && IsExternalDevice(touchpad)) {
+      return true;
+    }
+  }
+
+  // Check for external mice.
+  for (const auto& mouse : device_data_manager->GetMouseDevices()) {
+    const mojom::Mouse* found_device =
+        input_device_settings_controller->GetMouse(mouse.id);
+
+    if (found_device != nullptr && IsExternalDevice(mouse)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+int GetInternalTrackpadDeviceId() {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  InputDeviceSettingsControllerImpl* input_device_settings_controller =
+      Shell::Get()->input_device_settings_controller();
+
+  for (const auto& touchpad : device_data_manager->GetTouchpadDevices()) {
+    const mojom::Touchpad* found_device =
+        input_device_settings_controller->GetTouchpad(touchpad.id);
+
+    if (found_device != nullptr &&
+        touchpad.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+      return touchpad.id;
+    }
+  }
+
+  return ui::InputDevice::kInvalidId;
+}
+
+bool IsFromInternalTrackpad(const ui::MouseEvent* event) {
+  return event->source_device_id() == GetInternalTrackpadDeviceId();
 }
 }  // namespace
 
@@ -45,11 +104,37 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::RewriteEvent(
     HandleKeyEvent(event.AsKeyEvent());
   }
 
-  if (event.IsMouseEvent() && IsFromInternalTrackpad(event)) {
-    return DiscardEvent(continuation);
+  if (event.IsMouseEvent()) {
+    return HandleMouseEvent(event.AsMouseEvent(), continuation);
   }
 
   return SendEvent(continuation, &event);
+}
+
+ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseEvent(
+    const ui::MouseEvent* event,
+    const Continuation continuation) {
+  DisableTrackpadMode disable_trackpad_mode =
+      Shell::Get()->accessibility_controller()->GetDisableTrackpadMode();
+  bool is_internal_trackpad_event = IsFromInternalTrackpad(event);
+  bool is_external_device_connected = IsExternalMouseOrTrackpadConnected();
+
+  switch (disable_trackpad_mode) {
+    case DisableTrackpadMode::kNever:
+      return SendEvent(continuation, event);
+
+    case DisableTrackpadMode::kAlways:
+      if (is_internal_trackpad_event) {
+        return DiscardEvent(continuation);
+      }
+      return SendEvent(continuation, event);
+
+    case DisableTrackpadMode::kOnExternalMouseConnected:
+      if (is_internal_trackpad_event && is_external_device_connected) {
+        return DiscardEvent(continuation);
+      }
+      return SendEvent(continuation, event);
+  }
 }
 
 void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
@@ -68,5 +153,4 @@ void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
     control_press_count_ = 0;
   }
 }
-
 }  // namespace ash
