@@ -35,6 +35,7 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -549,6 +550,10 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
     return base::unexpected(absl::monostate());
   }
   return scopes_data;
+}
+
+void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
+  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
 }
 
 }  // namespace content

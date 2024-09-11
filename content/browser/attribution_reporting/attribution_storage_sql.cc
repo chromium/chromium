@@ -237,10 +237,6 @@ int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
   return file_size;
 }
 
-void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
-  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
-}
-
 }  // namespace
 
 struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {

@@ -6,8 +6,11 @@
 
 #include <stdint.h>
 
+#include <limits>
+#include <map>
 #include <set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -16,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -52,29 +56,6 @@ bool IsAttribution(RateLimitTable::Scope scope) {
 
   NOTREACHED();
 }
-
-struct DestinationLimitRecord {
-  std::string serialized_destination;
-  base::Time time;
-  int64_t priority;
-  StoredSource::Id source_id;
-
-  bool operator>(const DestinationLimitRecord& other) const {
-    if (priority > other.priority) {
-      return true;
-    }
-    if (priority < other.priority) {
-      return false;
-    }
-    if (time > other.time) {
-      return true;
-    }
-    if (time < other.time) {
-      return false;
-    }
-    return serialized_destination > other.serialized_destination;
-  }
-};
 
 }  // namespace
 
@@ -368,12 +349,120 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
   return RateLimitResult::kAllowed;
 }
 
+namespace {
+
+struct DestinationAttribute {
+  int64_t priority = std::numeric_limits<int64_t>::min();
+  base::Time time = base::Time::Min();
+
+  bool operator<(const DestinationAttribute& other) const {
+    return std::tie(priority, time) < std::tie(other.priority, other.time);
+  }
+};
+
+struct DestinationData {
+  DestinationAttribute attribute;
+  std::vector<StoredSource::Id> sources;
+
+  DestinationData() = default;
+
+  DestinationData(const DestinationData&) = delete;
+  DestinationData& operator=(const DestinationData&) = delete;
+
+  DestinationData(DestinationData&&) = default;
+  DestinationData& operator=(DestinationData&&) = default;
+
+  void Assign(std::vector<StoredSource::Id>& source_ids) && {
+    if (source_ids.empty()) {
+      source_ids = std::move(sources);
+    } else {
+      source_ids.insert(source_ids.end(), sources.begin(), sources.end());
+    }
+  }
+};
+
+using DestinationDataMap = std::map<std::string, DestinationData>;
+
+void AddDestination(DestinationDataMap& destination_datas,
+                    std::string destination,
+                    StoredSource::Id source_id,
+                    DestinationAttribute attribute) {
+  auto [destination_data, _] =
+      destination_datas.try_emplace(std::move(destination), DestinationData());
+  destination_data->second.attribute =
+      std::max(attribute, destination_data->second.attribute);
+  destination_data->second.sources.push_back(source_id);
+}
+
+// Returns source IDs of the unselected destinations.
+std::vector<StoredSource::Id> SelectDestinations(
+    DestinationDataMap destination_datas,
+    size_t destinations_allowed) {
+  if (destination_datas.size() <= destinations_allowed) {
+    return {};
+  }
+
+  // Currently the limit on production is 100 and the maximum size of
+  // `destination_datas` is 100 + 3 (max destinations per source) = 103,
+  // therefore it's more efficient to find the bottom destinations than the top
+  // and delete the selected destinations.
+  size_t to_select = destination_datas.size() - destinations_allowed;
+
+  const auto cmp = [](const DestinationDataMap::node_type& a,
+                      const DestinationDataMap::node_type& b) {
+    return std::tie(a.mapped().attribute, a.key()) <
+           std::tie(b.mapped().attribute, b.key());
+  };
+
+  std::vector<DestinationDataMap::node_type> selected;
+  selected.reserve(to_select);
+
+  while (!destination_datas.empty() && selected.size() < to_select) {
+    selected.emplace_back(destination_datas.extract(destination_datas.begin()));
+  }
+
+  base::ranges::make_heap(selected, cmp);
+
+  while (!destination_datas.empty()) {
+    auto destination = destination_datas.extract(destination_datas.begin());
+
+    if (cmp(destination, selected.front())) {
+      base::ranges::pop_heap(selected, cmp);
+      std::swap(selected.back(), destination);
+      base::ranges::push_heap(selected, cmp);
+    }
+  }
+
+  std::vector<StoredSource::Id> source_ids;
+
+  for (auto& destination : selected) {
+    std::move(destination.mapped()).Assign(source_ids);
+  }
+
+  DeduplicateSourceIds(source_ids);
+
+  return source_ids;
+}
+
+}  // namespace
+
 base::expected<std::vector<StoredSource::Id>, RateLimitTable::Error>
 RateLimitTable::GetSourcesToDeactivateForDestinationLimit(
     sql::Database* db,
     const StorableSource& source,
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DestinationDataMap destination_datas;
+
+  for (const auto& destination :
+       source.registration().destination_set.destinations()) {
+    AddDestination(
+        destination_datas, destination.Serialize(),
+        StoredSource::Id(kUnsetRecordId),
+        DestinationAttribute(source.registration().destination_limit_priority,
+                             source_time));
+  }
 
   // Check the number of unique destinations covered by all source registrations
   // whose [source_time, source_expiry_or_attribution_time] intersect with the
@@ -387,17 +476,6 @@ RateLimitTable::GetSourcesToDeactivateForDestinationLimit(
       1, net::SchemefulSite(common_info.reporting_origin()).Serialize());
   statement.BindTime(2, source_time);
 
-  const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingSite();
-  DCHECK_GT(limit, 0);
-
-  std::vector<DestinationLimitRecord> records;
-  for (const auto& destination :
-       source.registration().destination_set.destinations()) {
-    records.emplace_back(destination.Serialize(), source_time,
-                         source.registration().destination_limit_priority,
-                         StoredSource::Id(kUnsetRecordId));
-  }
-
   while (statement.Step()) {
     const int64_t source_id = statement.ColumnInt64(3);
     // `source_id` should not be unset.
@@ -407,33 +485,20 @@ RateLimitTable::GetSourcesToDeactivateForDestinationLimit(
     if (source_id == kUnsetRecordId) {
       return base::unexpected(Error());
     }
-    records.emplace_back(/*serialized_destination=*/statement.ColumnString(0),
-                         /*time=*/statement.ColumnTime(1),
-                         /*priority=*/statement.ColumnInt64(2),
-                         StoredSource::Id(source_id));
+    AddDestination(destination_datas, /*destination=*/statement.ColumnString(0),
+                   StoredSource::Id(source_id),
+                   DestinationAttribute(/*priority=*/statement.ColumnInt64(2),
+                                        /*time=*/statement.ColumnTime(1)));
   }
 
   if (!statement.Succeeded()) {
     return base::unexpected(Error());
   }
 
-  base::ranges::sort(records, base::ranges::greater());
+  const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingSite();
+  DCHECK_GT(limit, 0);
 
-  base::flat_set<net::SchemefulSite> destination_sites;
-  std::vector<StoredSource::Id> source_ids_to_deactivate;
-
-  for (const DestinationLimitRecord& record : records) {
-    net::SchemefulSite destination =
-        net::SchemefulSite::Deserialize(record.serialized_destination);
-    if (destination_sites.size() < static_cast<size_t>(limit)) {
-      destination_sites.emplace(std::move(destination));
-    } else if (!destination_sites.contains(destination)) {
-      source_ids_to_deactivate.push_back(record.source_id);
-    }
-  }
-
-  return base::flat_set<StoredSource::Id>(std::move(source_ids_to_deactivate))
-      .extract();
+  return SelectDestinations(std::move(destination_datas), limit);
 }
 
 bool RateLimitTable::DeactivateSourcesForDestinationLimit(
