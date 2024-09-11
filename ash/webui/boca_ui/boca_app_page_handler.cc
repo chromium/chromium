@@ -10,10 +10,12 @@
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
@@ -125,6 +127,66 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
   session_client_impl_->CreateSession(std::move(request));
   NotifyLocalConfigUpdate(std::move(config));
+}
+
+void BocaAppHandler::GetSession(GetSessionCallback callback) {
+  auto get_session_request = std::make_unique<GetSessionRequest>(
+      session_client_impl_->sender(), user_identity_.GetGaiaId(),
+      base::BindOnce(
+          [](GetSessionCallback callback,
+             base::expected<std::unique_ptr<::boca::Session>,
+                            google_apis::ApiErrorCode> result) {
+            // TODO(b/358476060):Potentially parse error code to UI;
+            if (!result.has_value()) {
+              std::move(callback).Run(nullptr);
+              return;
+            }
+            auto session = std::move(result.value());
+            std::vector<mojom::IdentityPtr> students;
+            for (auto student : GetStudentGroupsSafe(session.get())) {
+              students.push_back(mojom::Identity::New(
+                  student.gaia_id(), student.full_name(), student.email()));
+            }
+
+            auto caption_config = mojom::CaptionConfig::New();
+            if (GetSessionConfigSafe(session.get()).has_captions_config()) {
+              auto session_caption_config =
+                  GetSessionConfigSafe(session.get()).captions_config();
+              caption_config->caption_enabled =
+                  session_caption_config.captions_enabled();
+              caption_config->transcription_enabled =
+                  session_caption_config.translations_enabled();
+            }
+
+            mojom::OnTaskConfigPtr on_task_config;
+            if (GetSessionConfigSafe(session.get()).has_on_task_config()) {
+              auto session_on_task_config =
+                  GetSessionConfigSafe(session.get()).on_task_config();
+              std::vector<mojom::ControlledTabPtr> tabs;
+              for (auto tab :
+                   session_on_task_config.active_bundle().content_configs()) {
+                tabs.push_back(mojom::ControlledTab::New(
+                    mojom::TabInfo::New(tab.title(), GURL(tab.url()),
+                                        tab.favicon_url()),
+                    mojom::NavigationType(
+                        tab.locked_navigation_options().navigation_type())));
+              }
+              on_task_config = mojom::OnTaskConfig::New(
+                  session_on_task_config.active_bundle().locked(),
+                  std::move(tabs));
+            }
+
+            auto config = mojom::Config::New(
+                // Nanos are not used throughout session lifecycle so it's
+                // safe to only parse seconds.
+                base::Seconds(session->duration().seconds()),
+                std::move(students), std::move(on_task_config),
+                std::move(caption_config));
+
+            std::move(callback).Run(std::move(config));
+          },
+          std::move(callback)));
+  session_client_impl_->GetSession(std::move(get_session_request));
 }
 
 void BocaAppHandler::NotifyLocalConfigUpdate(mojom::ConfigPtr config) {

@@ -92,7 +92,7 @@ interface PageHandler {
   // non-increasing order for most recent tab's last
   // access timestamp
   GetWindowsTabsList() => (array<Window> window_list);
-    // Fetch a list of courses for the current teacher.
+  // Fetch a list of courses for the current teacher.
   ListCourses() => (array<Course> courses);
   // Requested by the Boca SWA to fetch a list of students for a given
   // course. Must be called on a course_id received from the most recent
@@ -100,6 +100,8 @@ interface PageHandler {
   ListStudents(string course_id) => (array<Identity> students);
   // Create a session with `config`.
   CreateSession(Config config) => (bool success);
+  // Retrieves the current session.
+  GetSession() => (Config config);
 };
 
 // Implemented by renderer process

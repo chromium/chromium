@@ -42,6 +42,7 @@ class BocaAppHandler : public mojom::PageHandler {
                     ListStudentsCallback callback) override;
   void CreateSession(mojom::ConfigPtr config,
                      CreateSessionCallback callback) override;
+  void GetSession(GetSessionCallback callback) override;
 
   void NotifyLocalConfigUpdate(mojom::ConfigPtr config);
 

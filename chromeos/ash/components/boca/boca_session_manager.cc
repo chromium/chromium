@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -23,35 +24,6 @@
 #include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
-namespace {
-
-::boca::SessionConfig GetSessionConfigSafe(::boca::Session* session) {
-  if (!session) {
-    return ::boca::SessionConfig();
-  }
-  if (session->student_group_configs().empty()) {
-    return ::boca::SessionConfig();
-  }
-  auto it = session->student_group_configs().find(kMainStudentGroupName);
-  if (it == session->student_group_configs().end()) {
-    return ::boca::SessionConfig();
-  }
-  return it->second;
-}
-
-google::protobuf::RepeatedPtrField<::boca::UserIdentity> GetStudentGroupsSafe(
-    ::boca::Session* session) {
-  if (!session || session->roster().student_groups().empty()) {
-    return google::protobuf::RepeatedPtrField<::boca::UserIdentity>();
-  }
-  return session->roster().student_groups()[0].students();
-}
-
-::boca::Roster GetRosterSafe(::boca::Session* session) {
-  return session ? session->roster() : ::boca::Roster();
-}
-
-}  // namespace
 
 BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
                                        AccountId account_id)

@@ -30,8 +30,10 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
   GetSessionRequest(const GetSessionRequest&) = delete;
   GetSessionRequest& operator=(const GetSessionRequest&) = delete;
   ~GetSessionRequest() override;
+
   // For testing.
   void OverrideURLForTesting(std::string url);
+  Callback callback() { return std::move(callback_); }
 
  protected:
   // UrlFetchRequestBase:

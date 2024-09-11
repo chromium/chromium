@@ -14,6 +14,8 @@ static_library("boca") {
     "boca_role_util.h",
     "boca_session_manager.cc",
     "boca_session_manager.h",
+    "boca_session_util.cc",
+    "boca_session_util.h",
   ]
   deps = [
     "//ash",
@@ -31,7 +33,10 @@ static_library("boca") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "boca_session_manager_unittest.cc" ]
+  sources = [
+    "boca_session_manager_unittest.cc",
+    "boca_session_util_unittest.cc",
+  ]
 
   deps = [
     ":boca",
