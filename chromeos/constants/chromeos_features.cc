@@ -177,6 +177,9 @@ BASE_FEATURE(kFeatureManagementMahi,
 BASE_FEATURE(kMahiSendingUrl,
              "MahiSendingUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether to enable Mahi for managed users.
+BASE_FEATURE(kMahiManaged, "MahiManaged", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the sparky feature.
@@ -467,6 +470,14 @@ bool IsMahiEnabled() {
 bool IsMahiSendingUrl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(kMahiSendingUrl);
+#else
+  return false;
+#endif
+}
+
+bool IsMahiManagedEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kMahiManaged);
 #else
   return false;
 #endif

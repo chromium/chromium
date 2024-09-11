@@ -13692,6 +13692,16 @@
                     ]
                 },
                 {
+                    "name": "ManagedDisabled",
+                    "enable_features": [
+                        "Mahi",
+                        "MediaAppPdfMahi"
+                    ],
+                    "disable_features": [
+                        "MahiManaged"
+                    ]
+                },
+                {
                     "name": "Disabled",
                     "disable_features": [
                         "Mahi",

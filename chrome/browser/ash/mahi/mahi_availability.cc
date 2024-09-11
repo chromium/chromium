@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -37,6 +38,12 @@ bool CanUseMahiService() {
 
     Profile* profile = ProfileManager::GetActiveUserProfile();
     if (!profile) {
+      return false;
+    }
+
+    // Controls for managed users.
+    if (profile->GetProfilePolicyConnector()->IsManaged() &&
+        !chromeos::features::IsMahiManagedEnabled()) {
       return false;
     }
 

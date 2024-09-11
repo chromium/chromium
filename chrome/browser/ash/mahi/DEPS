@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/history/history_service_factory.h",
   "+chrome/browser/manta",
+  "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/chrome_pages.h",
