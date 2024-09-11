@@ -214,15 +214,19 @@ class Cache::BarrierCallbackForPutResponse final
   }
 
   void FailedResponse() {
-    resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNetworkError,
-        method_name_ + " encountered a network error");
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(
+          DOMExceptionCode::kNetworkError,
+          method_name_ + " encountered a network error");
+    }
     Stop();
   }
 
   void AbortedResponse() {
-    resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                      method_name_ + " was aborted");
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                        method_name_ + " was aborted");
+    }
     Stop();
   }
 
