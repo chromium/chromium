@@ -28,6 +28,17 @@ class RenderTextHarfBuzz;
 
 namespace internal {
 
+// Font fallback mechanism used to Shape runs (see ShapeRuns(...)).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ShapeRunFallback {
+  FAILED = 0,
+  NO_FALLBACK = 1,
+  FALLBACK = 2,
+  FALLBACKS = 3,
+  kMaxValue = FALLBACKS
+};
+
 struct GFX_EXPORT TextRunHarfBuzz {
   // Construct the run with |template_font| since determining the details of a
   // default-constructed gfx::Font is expensive, but it will always be replaced.
@@ -328,6 +339,14 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // pass.
   bool IsValidDisplayRange(Range display_range);
 
+  // Store the fallback font mechanism used for shaping (see ShapeRuns(...)).
+  void RecordShapeRunsFallback(internal::ShapeRunFallback fallback);
+
+  // Record the fallback font mechanism used for shaping to UMA (see
+  // ShapeRuns(...)). This is done separately from RecordShapeRunsFallback, as
+  // multiple passes may be involved and we only want to log the final pass.
+  void EmitShapeRunsFallback();
+
   // RenderText:
   internal::TextRunList* GetRunList() override;
   const internal::TextRunList* GetRunList() const override;
@@ -351,6 +370,9 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
 
   // The process application locale used to configure text rendering.
   std::string locale_;
+
+  // The fallback result of the most recent call to ShapeRuns.
+  std::optional<internal::ShapeRunFallback> last_shape_run_metric_;
 };
 
 }  // namespace gfx
