@@ -8,8 +8,12 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
@@ -226,6 +230,35 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             isIncognito,
                             true));
         }
+
+        setListViewHeightBasedOnChildren();
+    }
+
+    /**
+     * Calculates and sets the total height of the action menu ListView to prevent the ListView from
+     * collapsing when nested inside a parent ScrollView.
+     */
+    public void setListViewHeightBasedOnChildren() {
+        assert mContentView != null : "Menu view should not be null";
+
+        ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
+        listView.setScrollContainer(false);
+
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + listView.getPaddingTop() + listView.getPaddingBottom();
+        listView.setLayoutParams(params);
     }
 
     @Override
