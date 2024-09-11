@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">ওয়াই-ফাই চালু করা আছে</translation>
 <translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, টগল করার বোতাম, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, পজ করা হয়েছে</translation>
@@ -1960,7 +1961,6 @@
 <translation id="7727952505535211425">একটি নতুন ট্যাবে অ্যাড্রেস বারে ওয়েবসাইটটি খুলুন</translation>
 <translation id="7728657226117099693">Caps Lock বন্ধ করুন</translation>
 <translation id="7742327441377685481">কোনও বিজ্ঞপ্তি নেই</translation>
-<translation id="774736258792760908">আপনি 'আমাকে লিখতে সাহায্য করো' ও 'আমাকে পড়তে সাহায্য করো' ফিচার চালু করলে, আপনার লেখা টেক্সট ও ডকুমেন্টের কন্টেন্ট Google AI-এর সার্ভারে পাঠানো হবে যা লেখার সাজেশন দেখাতে, সারসংক্ষেপ তৈরি করতে, প্রশ্নের উত্তর দিতে ও প্রোডাক্টের উন্নতি করতে ব্যবহার করা হবে এবং এগুলি <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী করা হয়। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।</translation>
 <translation id="7748275671948949022">শেল্ফের 'লঞ্চার' বোতাম হাইলাইট করুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2287,6 @@
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
 <translation id="888982883502837004">আপনার ডিভাইসের জন্য ফার্মওয়্যার আপডেট উপলভ্য। পর্যালোচনা এবং আপডেটের জন্য ক্লিক করুন।</translation>
-<translation id="8893479486525393799">Studio মাইক্রোফোন</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাবে মুছে ফেলা হবে</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ আছে (প্রায় <ph name="TIME_LEFT" />)। ডিভাইসটি চার্জে বসান।</translation>
 <translation id="88986195241502842">পৃষ্ঠায় নীচের দিকে যান</translation>
@@ -2302,6 +2301,7 @@
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" হল ইনপুট অডিও এবং "<ph name="OUTPUT_DEVICE_NAME" />" হল আউটপুট অডিও। পরিবর্তন করতে 'সেটিংস' মেনু দেখুন।</translation>
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>
+<translation id="8945508919180478719">স্টুডিও-স্টাইলের মাইক</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> চেক বক্সে টিকচিহ্ন দেওয়া নেই।</translation>
 <translation id="8949925099261528566">কানেক্ট করা আছে, ইন্টারনেট নেই</translation>
 <translation id="8951539504029375108">শুধুমাত্র অনুমোদিত Thunderbolt ডিভাইসে আপনার Chromebook ব্যবহার করা যাবে</translation>

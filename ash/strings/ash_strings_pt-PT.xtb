@@ -374,6 +374,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Ative/desative o Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efeitos de aspeto</translation>
 <translation id="236574664504281623">Enviado de <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Não é possível iniciar sessão no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicações</translation>
@@ -734,6 +735,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3600061223661453002">Desativado</translation>
 <translation id="3604801046548457007">Foi criado o espaço de trabalho <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Visualização em braille ligada.</translation>
+<translation id="3612634595000403645">Preferências dos efeitos de aspeto</translation>
 <translation id="3615926715408477684">A ativação dos dados móveis ativa o Bluetooth</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3616883743181209306">O menu foi movido para o canto superior direito do ecrã.</translation>
@@ -894,6 +896,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4146671046252289537">Mover para o fim da próxima palavra</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4150201353443180367">Visualização</translation>
+<translation id="4151054805501931758">Retoque do retrato</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />).
 Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</translation>
 <translation id="4160919062868802509">Várias origens de áudio detetadas</translation>
@@ -1960,7 +1963,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7727952505535211425">Abrir o Website na barra de endereço num novo separador</translation>
 <translation id="7728657226117099693">Desativar a tecla Caps Lock</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
-<translation id="774736258792760908">Quando ativa as funcionalidades Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido e o conteúdo do documento são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1969,6 +1971,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7773536009433685931">Ativar Wi-Fi em alternativa</translation>
+<translation id="77747521138552256">Demasiadas tentativas de introdução do PIN. Aguarde <ph name="TIME_LEFT" /> e tente introduzir o PIN novamente ou introduza a palavra-passe para iniciar sessão imediatamente.</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7781829728241885113">Ontem</translation>
@@ -2287,7 +2290,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Ecrã alargado</translation>
 <translation id="888982883502837004">Estão disponíveis atualizações de firmware para o seu dispositivo. Clique para rever e atualizar.</translation>
-<translation id="8893479486525393799">Microfone de estúdio</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> será eliminado permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />). Ligue o dispositivo à alimentação.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
@@ -2302,6 +2304,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>
 <translation id="8939855324412367560">A entrada de áudio é "<ph name="INPUT_DEVICE_NAME" />" e a saída de áudio é "<ph name="OUTPUT_DEVICE_NAME" />". Aceda às Definições para fazer alterações.</translation>
 <translation id="8940956008527784070">Bateria fraca (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Caixa de verificação não selecionada.</translation>
 <translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
 <translation id="8951539504029375108">Apenas os dispositivos Thunderbolt aprovados são compatíveis com o seu Chromebook</translation>

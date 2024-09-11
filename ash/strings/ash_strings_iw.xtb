@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2360398059912971776">סוללה</translation>
 <translation id="2361210043495191221">‏החלפת המצב של ה-Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">אפקטים למראה</translation>
 <translation id="236574664504281623">נשלחה מ-<ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">‏לא ניתן להיכנס אל ה-Chromebook</translation>
 <translation id="2367972762794486313">הצגת אפליקציות</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">כבוי</translation>
 <translation id="3604801046548457007">שולחן העבודה <ph name="DESK_TITILE" /> נוצר</translation>
 <translation id="3606978283550408104">צג ברייל מחובר</translation>
+<translation id="3612634595000403645">העדפות של אפקטים למראה</translation>
 <translation id="3615926715408477684">‏כשמפעילים את חבילת הגלישה, מופעל גם Bluetooth</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3616883743181209306">התפריט הועבר לפינה השמאלית העליונה של המסך.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">עבור לסוף המילה הבאה</translation>
 <translation id="4146833061457621061">השמעת מוזיקה</translation>
 <translation id="4150201353443180367">תצוגה</translation>
+<translation id="4151054805501931758">שיפור תמונת הדיוקן</translation>
 <translation id="4156293514828496577">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" /> (בערך <ph name="TIME_LEFT" />).
 חלק מהתכונות מוגבלות כדי להאריך את חיי הסוללה.</translation>
 <translation id="4160919062868802509">זוהו מספר מקורות אודיו</translation>
@@ -1962,7 +1965,6 @@
 <translation id="7727952505535211425">פתיחת האתר שרשום בסרגל הכתובות בכרטיסייה חדשה</translation>
 <translation id="7728657226117099693">‏השבתת Caps Lock</translation>
 <translation id="7742327441377685481">אין התראות</translation>
-<translation id="774736258792760908">‏כשמפעילים את התכונות 'עזרה בכתיבה' ו'עזרה בקריאה', הטקסט שהוזן והתוכן של המסמך נשלחים לשרתי ה-AI מבית Google כדי ליצור הצעות לכתיבה, ליצור סיכומים, לענות על שאלות ולשפר את המוצר, בכפוף ל<ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="7748275671948949022">הדגשת הלחצן של מרכז האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1971,6 +1973,7 @@
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
 <translation id="7773536009433685931">‏הפעלת Wi-Fi במקום זאת</translation>
+<translation id="77747521138552256">היו יותר מדי ניסיונות להזנת קוד האימות. צריך לחכות <ph name="TIME_LEFT" /> ולנסות שוב להזין את קוד האימות, או להזין סיסמה כדי להיכנס מיד.</translation>
 <translation id="7780094051999721182">קיצורי הדרך</translation>
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7781829728241885113">אתמול</translation>
@@ -2289,7 +2292,6 @@
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8878886163241303700">מסך מתרחב</translation>
 <translation id="888982883502837004">יש עדכוני קושחה למכשיר שלך. צריך ללחוץ כדי לבדוק ולעדכן.</translation>
-<translation id="8893479486525393799">מיקרופון של אולפן</translation>
 <translation id="8896630965521842259">התבנית <ph name="DESK_TEMPLATE_NAME" /> תימחק באופן סופי</translation>
 <translation id="889790758758811533">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" /> (בערך <ph name="TIME_LEFT" />). צריך לחבר את המכשיר למקור חשמל.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2304,6 +2306,7 @@
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8939855324412367560">מקור קלט האודיו הוא '<ph name="INPUT_DEVICE_NAME" />' ומקור פלט האודיו הוא '<ph name="OUTPUT_DEVICE_NAME" />'. אפשר לשנות את זה בהגדרות.</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>
+<translation id="8945508919180478719">מיקרופון בסגנון אולפן</translation>
 <translation id="894774083269346314">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> לא מסומנת.</translation>
 <translation id="8949925099261528566">יש חיבור, אין אינטרנט</translation>
 <translation id="8951539504029375108">‏רק מכשירי Thunderbolt מאושרים תואמים ל-Chromebook</translation>

@@ -1960,7 +1960,6 @@
 <translation id="7727952505535211425">새 탭의 주소 표시줄에서 웹사이트 열기</translation>
 <translation id="7728657226117099693">Caps Lock 사용 중지</translation>
 <translation id="7742327441377685481">알림 없음</translation>
-<translation id="774736258792760908">글쓰기 도우미 기능과 읽기 도우미 기능을 사용 설정하면 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안을 생성하고, 요약을 생성하고, 질문에 답변하고, 제품을 개선하기 위해 입력 텍스트 및 문서 콘텐츠가 Google AI 서버로 전송됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="7748275671948949022">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
 <translation id="8878886163241303700">화면 확대</translation>
 <translation id="888982883502837004">이용할 수 있는 기기 펌웨어 업데이트가 있습니다. 클릭하여 확인한 후 업데이트하세요.</translation>
-<translation id="8893479486525393799">스튜디오 마이크</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 템플릿이 완전히 삭제됩니다.</translation>
 <translation id="889790758758811533">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />). 기기를 전원에 연결합니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>
@@ -2302,6 +2300,7 @@
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8939855324412367560">입력 오디오와 출력 오디오가 각각 "<ph name="INPUT_DEVICE_NAME" />" 및 "<ph name="OUTPUT_DEVICE_NAME" />"입니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="8940956008527784070">배터리 부족(<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">스튜디오 스타일 마이크</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 체크박스 선택되지 않음</translation>
 <translation id="8949925099261528566">연결됨, 인터넷 사용 불가</translation>
 <translation id="8951539504029375108">승인된 Thunderbolt 기기만 Chromebook과 호환됩니다.</translation>

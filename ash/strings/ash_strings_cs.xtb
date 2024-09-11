@@ -917,6 +917,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4209973997261364186">Wi-Fi je zapnuta</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4212472694152630271">Přepnout na PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, přepínač, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalovaná aplikace, pozastaveno</translation>
@@ -1958,7 +1959,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7727952505535211425">Otevřít web v adresním řádku na nové kartě</translation>
 <translation id="7728657226117099693">Vypnout Caps Lock</translation>
 <translation id="7742327441377685481">Žádná oznámení</translation>
-<translation id="774736258792760908">Když zapnete funkce Pomoz mi psát a Pomoz mi číst, vstupní text a obsah dokumentu se odesílají na servery Google AI k vygenerování návrhů a shrnutí, zodpovězení otázek a zlepšování služby. Platí <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="7748275671948949022">Zvýraznit tlačítko Spouštěče na poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2284,7 +2284,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
 <translation id="888982883502837004">Pro zařízení jsou k dispozici aktualizace firmwaru. Kliknutím je můžete zobrazit a provést aktualizaci.</translation>
-<translation id="8893479486525393799">Studiový mikrofon</translation>
 <translation id="8896630965521842259">Šablona <ph name="DESK_TEMPLATE_NAME" /> bude trvale smazána</translation>
 <translation id="889790758758811533">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />). Připojte zařízení k napájení.</translation>
 <translation id="88986195241502842">O stránku dolů</translation>
@@ -2299,6 +2298,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="8939855324412367560">Vstupní zvukové zařízení je <ph name="INPUT_DEVICE_NAME" /> a výstupní zvukové zařízení je <ph name="OUTPUT_DEVICE_NAME" />. Můžete je změnit v nastavení.</translation>
 <translation id="8940956008527784070">Slabá baterie (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studiový mikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Zaškrtávací políčko není zaškrtnuto.</translation>
 <translation id="8949925099261528566">Připojeno, není k dispozici internet</translation>
 <translation id="8951539504029375108">S Chromebookem jsou kompatibilní pouze schválená zařízení Thunderbolt</translation>

@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1444443021901415601">Itinatala ng Chrome ang mga kinaiinteresang paksa batay sa iyong kamakailang history ng pag-browse</translation>
 <translation id="2252052615723281030">Kapag naka-sign in ka sa Chrome, nakakatulong ang setting na ito na panatilihing pribado ang IP address mo. Kung pinaghihinalaan ng Chrome na posibleng tina-track ka ng isang site, puwedeng ipadala ang ilan sa trapiko mo sa pamamagitan ng mga server ng privacy.</translation>
+<translation id="2793385791865768072">Itinatala ng Chromium ang mga kinaiinteresang paksa batay sa iyong kamakailang history ng pag-browse</translation>
 <translation id="33479675708419823">Kapag naka-sign in ka sa Chrome, nakakatulong ang setting na ito na panatilihing pribado ang IP address mo. Kung pinaghihinalaan ng Chrome na posibleng tina-track ka ng isang site, puwedeng ipadala ang ilan sa trapiko mo sa pamamagitan ng mga server ng privacy. Matuto pa tungkol sa kung <ph name="LINK_BEGIN" />paano gumagana ang proteksyon sa IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Matuto pa tungkol sa pag-hide ng IP address mo</translation>
+<translation id="4041687306270459969">Awtomatikong made-delete ang mga paksa ng ad na mahigit 4 na linggo na. Kabilang sa mga paksa ang mga bagay na tulad ng Sports, Damit, at higit pa</translation>
+<translation id="4177501066905053472">Mga paksa ng ad</translation>
 <translation id="4301151630239508244">Isa lang ang mga paksa ng ad sa maraming bagay na puwedeng gamitin ng site para mag-personalize ng mga ad. Kahit na walang paksa ng ad, puwede pa ring magpakita ng mga ad sa iyo ang mga site pero posibleng hindi gaanong naka-personalize ang mga ito para sa iyo. Matuto pa tungkol sa <ph name="BEGIN_LINK_1" />pamamahala ng iyong privacy sa ad<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Puwede mong makita ang mga paksa ng ad mo sa mga setting ng Chromium at puwede mong i-block ang mga ayaw mong i-share sa mga site</translation>
 <translation id="4598427486995631491">I-hide ang iyong IP address</translation>
+<translation id="4692439979815346597">Puwede mong makita ang mga paksa ng ad mo sa mga setting ng Chrome at puwede mong i-block ang mga ayaw mong i-share sa mga site</translation>
+<translation id="5413586988657235240">Puwedeng humingi ang mga site na binibisita mo ng mga paksa sa Chromium para magpakita sa iyo ng mga kaugnay na ad habang pinoprotektahan ang history ng pag-browse at pagkakakilanlan mo</translation>
+<translation id="6186536480878693792">Puwedeng humingi ang mga site na binibisita mo ng mga paksa sa Chrome para magpakita sa iyo ng mga kaugnay na ad habang pinoprotektahan ang history ng pag-browse at pagkakakilanlan mo</translation>
 <translation id="6371812158043974664">Kapag naka-sign in ka sa Chromium, nakakatulong ang setting na ito na panatilihing pribado ang IP address mo. Kung pinaghihinalaan ng Chromium na posibleng tina-track ka ng isang site, puwedeng ipadala ang ilan sa trapiko mo sa pamamagitan ng mga server ng privacy. Matuto pa tungkol sa kung <ph name="LINK_BEGIN" />paano gumagana ang proteksyon sa IP<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261">Matutunan kung <ph name="BEGIN_LINK" />paano gumagana ang proteksyon sa IP<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Suriin ang setting ng mga paksa ng ad mo</translation>
 </translationbundle>

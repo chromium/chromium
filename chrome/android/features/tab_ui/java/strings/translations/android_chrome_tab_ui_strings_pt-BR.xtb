@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4590027107044272416">Agora você pode abrir uma nova guia aqui</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fechar 1 guia inativa?}one{Fechar <ph name="TAB_COUNT_MANY" /> guia inativa?}other{Fechar <ph name="TAB_COUNT_MANY" /> guias inativas?}}</translation>
-<translation id="4648718555153979859">Suas guias são agrupadas aqui</translation>
 <translation id="4686942373615810936">Criado agora</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fechar após 1 dia}one{Fechar após <ph name="DAY_COUNT_MANY" /> dia}other{Fechar após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>

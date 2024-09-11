@@ -1960,7 +1960,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7727952505535211425">Website in Adressleiste auf neuem Tab öffnen</translation>
 <translation id="7728657226117099693">Feststelltaste deaktivieren</translation>
 <translation id="7742327441377685481">Keine Benachrichtigungen</translation>
-<translation id="774736258792760908">Wenn du „Formuliere für mich“ und „Leseübersicht“ aktivierst, werden der eingegebene Text und der Dokumentinhalt an Google AI-Server gesendet, um gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> Vorschläge für Formulierungen zu generieren, Zusammenfassungen zu erstellen, Fragen zu beantworten und das Produkt zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="7748275671948949022">Launcher-Schaltfläche in der Ablage hervorheben</translation>
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
 <translation id="888982883502837004">Für dein Gerät sind Firmwareupdates verfügbar. Zum Prüfen und Herunterladen klicke hier.</translation>
-<translation id="8893479486525393799">Studiomikrofon</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ wird endgültig gelöscht</translation>
 <translation id="889790758758811533">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> % (noch ungefähr <ph name="TIME_LEFT" />). Schließ dein Gerät an eine Steckdose an.</translation>
 <translation id="88986195241502842">Bildlauf nach unten</translation>
@@ -2302,6 +2300,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8939855324412367560">Die Audioeingabe ist „<ph name="INPUT_DEVICE_NAME" />“ und die Audioausgabe ist „<ph name="OUTPUT_DEVICE_NAME" />“. Du kannst dies in den Einstellungen ändern.</translation>
 <translation id="8940956008527784070">Niedriger Akkustand (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="894774083269346314">Kästchen für „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“ ist nicht aktiviert.</translation>
 <translation id="8949925099261528566">Verbunden, kein Internet</translation>
 <translation id="8951539504029375108">Nur zugelassene Thunderbolt-Geräte sind mit Chromebook kompatibel</translation>

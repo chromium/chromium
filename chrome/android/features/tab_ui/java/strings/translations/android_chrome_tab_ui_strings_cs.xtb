@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Zrušit seskupení</translation>
 <translation id="4590027107044272416">Tady teď můžete otevřít novou kartu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zavřít 1 neaktivní kartu?}few{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivní karty?}many{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivní karty?}other{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivních karet?}}</translation>
-<translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
 <translation id="4686942373615810936">Vytvořeno právě teď</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavřít po 1 dni}few{Zavřít po <ph name="DAY_COUNT_MANY" /> dnech}many{Zavřít po <ph name="DAY_COUNT_MANY" /> dne}other{Zavřít po <ph name="DAY_COUNT_MANY" /> dnech}}</translation>
 <translation id="4777866634702576038">Smazat skupinu karet?</translation>

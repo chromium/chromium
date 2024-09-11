@@ -917,6 +917,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4209973997261364186">Le Wi-Fi est activé</translation>
 <translation id="4212246570487010370">Poursuivre la navigation</translation>
 <translation id="4212472694152630271">Authentification par code</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, bouton d'activation, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Paramètres de VPN</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
@@ -1960,7 +1961,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7727952505535211425">Ouvrir dans un nouvel onglet le site indiqué dans la barre d'adresse</translation>
 <translation id="7728657226117099693">Désactiver le verrouillage des majuscules</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
-<translation id="774736258792760908">Lorsque vous activez M'aider à écrire et M'aider à lire, le texte saisi et le contenu du document sont envoyés aux serveurs d'IA de Google pour générer des suggestions de texte et des résumés, répondre aux questions et améliorer le produit, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="7748275671948949022">Mettre en surbrillance le bouton du lanceur d'applications sur l'étagère</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les consulter et les appliquer.</translation>
-<translation id="8893479486525393799">Micro de studio</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="889790758758811533">Il reste <ph name="PERCENTAGE" /> % de batterie (environ <ph name="TIME_LEFT" />). Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="88986195241502842">Accéder à la page suivante</translation>

@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Відео з веб-камери</translation>
 <translation id="1676557873873341166">Записується відео</translation>
 <translation id="1684279041537802716">Акцентний колір</translation>
+<translation id="1697278726914783200">Записати</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
 <translation id="1708602061922134366">Синій від Google</translation>
@@ -167,6 +168,7 @@
 <translation id="1753496554272155572">Закрити попередній перегляд фонового малюнка</translation>
 <translation id="1754578112426924640">Кнопка "Редагувати" для комбінації клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Додаток Діагностика</translation>
+<translation id="1756681705074952506">Метод введення</translation>
 <translation id="175763766237925754">Добрий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
@@ -514,6 +516,7 @@
 <translation id="3661106764436337772">Пишіть швидше й упевненіше</translation>
 <translation id="3662461537616691585">бордового й темно-бордового</translation>
 <translation id="3668449597372804501">Фоновий малюнок "Плин хмар"</translation>
+<translation id="3668570675727296296">Налаштування мови</translation>
 <translation id="3675132884790542448">свині</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
@@ -521,6 +524,7 @@
 <translation id="3715651196924935218">Закрити плаваюче вікно</translation>
 <translation id="3716250181321371108">Створити елемент керування</translation>
 <translation id="3716830479327464973">Якщо ви надасте дозвіл, Диктофон аналізуватиме ваші аудіозаписи, щоб:</translation>
+<translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
@@ -579,6 +583,7 @@
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="4050208988451295487">Варіанти:</translation>
+<translation id="405181879009056822">Налаштування ChromeOS</translation>
 <translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4059839844193047929">Якщо залишити цю сторінку, поточний запис завершиться</translation>
 <translation id="4063039537646912479">світло-синій</translation>
@@ -689,6 +694,7 @@
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4594021849294327751">Створити текстову версію</translation>
+<translation id="4602266091140407479">Мікрофон</translation>
 <translation id="4607282946861182308">Не вдалося створити зображення за цим запитом. Спробуйте інший.</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
@@ -825,6 +831,7 @@
 <translation id="5292579816060236070">Фоновий малюнок "Схід сонця"</translation>
 <translation id="5294769550414936029">версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
+<translation id="5302048478445481009">Мова</translation>
 <translation id="5303837385540978511">Ексклюзивний фоновий малюнок для <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">Стандарт EvDo</translation>
 <translation id="5315873049536339193">Ідентифікаційна інформація</translation>
@@ -991,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Створено <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Ємність акумулятора зменшується внаслідок використання</translation>
+<translation id="6189987971574353264">Відтворити</translation>
 <translation id="6191293864534840972">Неправильні сервери імен</translation>
 <translation id="6196607555925437199">Повторно створити</translation>
 <translation id="6205145102504628069">Плин хмар</translation>
@@ -1119,6 +1127,7 @@
 <translation id="6761537227090937007">Створення зображення у високій роздільній здатності…</translation>
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
+<translation id="6786747875388722282">Розширення</translation>
 <translation id="6791471867139427246">колір підсвічування клавіатури</translation>
 <translation id="6796229976413584781">Комбінацію клавіш видалено</translation>
 <translation id="6798678288485555829">Навігація текстом</translation>
@@ -1282,6 +1291,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорний екран USB</translation>
 <translation id="757747079855995705">каменю</translation>
+<translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Змініть положення за допомогою клавіш миші або стрілок.</translation>
 <translation id="7618774594543487847">Нейтральні кольори</translation>
@@ -1355,6 +1365,7 @@
 <translation id="7971535376154084247">Загальні налаштування</translation>
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
+<translation id="7982789257301363584">Мережа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Додаток <ph name="APP_NAME_1" /> запущено автоматично}one{# додаток запущено автоматично}few{# додатки запущено автоматично}many{# додатків запущено автоматично}other{# додатка запущено автоматично}}</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="8004582292198964060">Переглядач</translation>
@@ -1441,6 +1452,7 @@
 <translation id="8424039430705546751">униз</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8431300646573772016">Нові функції ОС Chrome</translation>
+<translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="843568408673868420">Інтернет-з’єднання</translation>
 <translation id="844521431886043384">DNS не налаштовано</translation>
 <translation id="8456200178779628126">Використовуйте ШІ від Google, щоб отримати допомогу із читанням і створенням текстів</translation>
@@ -1503,6 +1515,7 @@
 <translation id="879568662008399081">Можливо, для цієї мережі використовується адаптивний портал</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8798441408945964110">Назва постачальника</translation>
+<translation id="8808828119384186784">Налаштування Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
 <translation id="8820457400746201697">Перемістіть синю точку дотику до дії. Щоб налаштувати, виберіть пов’язану клавішу.</translation>

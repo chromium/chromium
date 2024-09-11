@@ -917,6 +917,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4209973997261364186">wifi är aktiverat</translation>
 <translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4212472694152630271">Byt till pinkod</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, på/av-knapp, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
@@ -1959,7 +1960,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
 <translation id="7728657226117099693">Inaktivera Caps Lock</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
-<translation id="774736258792760908">När du aktiverar Hjälp mig skriva och Hjälp mig läsa skickas textinput och dokumentinnehåll till Googles AI-servrar för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
 <translation id="888982883502837004">Det finns firmware-uppdateringar för enheten. Klicka här om du vill granska dem och uppdatera.</translation>
-<translation id="8893479486525393799">Studiomikrofon</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> raderas permanent</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />). Anslut enheten till en strömkälla.</translation>
 <translation id="88986195241502842">Nedåt en sida</translation>
@@ -2301,6 +2300,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
 <translation id="8939855324412367560">Ljudingången är <ph name="INPUT_DEVICE_NAME" /> och ljudutgången är <ph name="OUTPUT_DEVICE_NAME" />. Du kan ändra detta i inställningarna.</translation>
 <translation id="8940956008527784070">Låg batterinivå (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> kryssruta ej markerad.</translation>
 <translation id="8949925099261528566">Ansluten, inget internet</translation>
 <translation id="8951539504029375108">Endast godkända Thunderbolt-enheter är kompatibla med din Chromebook</translation>

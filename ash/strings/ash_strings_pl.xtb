@@ -374,6 +374,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Przełącz Wi-Fi. <ph name="STATE" /></translation>
+<translation id="2364710166605611987">Efekty wyglądu</translation>
 <translation id="236574664504281623">Wysłane z: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nie mogę zalogować się na Chromebooku</translation>
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
@@ -734,6 +735,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3600061223661453002">Wył.</translation>
 <translation id="3604801046548457007">Utworzono biurko <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Podłączono monitor brajlowski.</translation>
+<translation id="3612634595000403645">Ustawienia efektów wyglądu</translation>
 <translation id="3615926715408477684">Wraz z mobilną transmisją danych zostanie włączony Bluetooth</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3616883743181209306">Menu zostało przeniesione w prawy górny róg ekranu.</translation>
@@ -894,6 +896,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4146671046252289537">Przejdź na koniec następnego słowa</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
+<translation id="4151054805501931758">Retusz portretowy</translation>
 <translation id="4156293514828496577">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />).
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="4160919062868802509">Wykryto wiele źródeł dźwięku</translation>
@@ -1959,7 +1962,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
 <translation id="7728657226117099693">Wyłącz Caps Lock</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
-<translation id="774736258792760908">Gdy włączysz funkcje Pomóż mi w pisaniu i Pomóż mi w czytaniu, wpisany tekst i zawartość dokumentu będą wysyłane na serwery AI od Google w celu generowania propozycji tekstu, tworzenia podsumowań, odpowiadania na pytania i ulepszania usługi zgodnie z <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1968,6 +1970,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
 <translation id="7773536009433685931">W zamian włącz Wi-Fi</translation>
+<translation id="77747521138552256">Zbyt wiele prób podania kodu PIN. Zaczekaj <ph name="TIME_LEFT" /> i ponownie wpisz kod PIN. Jeśli wolisz zalogować się od razu, wpisz hasło.</translation>
 <translation id="7780094051999721182">skróty</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
@@ -2286,7 +2289,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8878886163241303700">Rozszerzony ekran</translation>
 <translation id="888982883502837004">Dostępne są aktualizacje oprogramowania układowego urządzenia. Kliknij, aby je zobaczyć i zainstalować.</translation>
-<translation id="8893479486525393799">Mikrofon studyjny</translation>
 <translation id="8896630965521842259">Sablon <ph name="DESK_TEMPLATE_NAME" /> zostanie trwale usunięty</translation>
 <translation id="889790758758811533">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />). Podłącz urządzenie do zasilania.</translation>
 <translation id="88986195241502842">Strona w dół</translation>
@@ -2301,6 +2303,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
 <translation id="8939855324412367560">Wejście audio to „<ph name="INPUT_DEVICE_NAME" />”, a wyjście audio to „<ph name="OUTPUT_DEVICE_NAME" />”. Aby to zmienić, otwórz Ustawienia.</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Mikrofon studyjny</translation>
 <translation id="894774083269346314">Niezaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Połączono, brak internetu</translation>
 <translation id="8951539504029375108">Chromebook obsługuje tylko zatwierdzone urządzenia Thunderbolt</translation>

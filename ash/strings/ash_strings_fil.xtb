@@ -917,6 +917,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4209973997261364186">Naka-on ang Wi-Fi</translation>
 <translation id="4212246570487010370">Magpatuloy sa pag-browse</translation>
 <translation id="4212472694152630271">Lumipat sa PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, toggle button, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Mga setting ng VPN</translation>
 <translation id="4217571870635786043">Pagdidikta</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Naka-install na App, Naka-pause</translation>
@@ -1958,7 +1959,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7727952505535211425">Buksan ang website sa address bar sa bagong tab</translation>
 <translation id="7728657226117099693">I-off ang Caps Lock</translation>
 <translation id="7742327441377685481">Walang notification</translation>
-<translation id="774736258792760908">Kapag in-on mo ang Tulungan akong magsulat at Tulungan akong magbasa, ipapadala ang text ng input at content ng dokumento sa mga server ng Google AI para bumuo ng mga suhestyon sa pagsusulat, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2284,7 +2284,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>
 <translation id="888982883502837004">May mga available na update sa firmware para sa iyong device. I-click para suriin at i-update.</translation>
-<translation id="8893479486525393799">Pang-studio na mikropono</translation>
 <translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% na lang ang baterya (humigit-kumulang <ph name="TIME_LEFT" />). Isaksak ang iyong device.</translation>
 <translation id="88986195241502842">Pababa sa pahina</translation>
@@ -2299,6 +2298,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8939855324412367560">Ang input audio ay "<ph name="INPUT_DEVICE_NAME" />" at ang output audio ay "<ph name="OUTPUT_DEVICE_NAME" />." Pumunta sa Mga Setting para baguhin.</translation>
 <translation id="8940956008527784070">Mahina na ang baterya (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studio-style na mikropono</translation>
 <translation id="894774083269346314">Hindi nilagyan ng check ang Check box para sa <ph name="EMAIL" /> ni <ph name="PROFILE_NAME" />.</translation>
 <translation id="8949925099261528566">Nakakonekta, walang internet</translation>
 <translation id="8951539504029375108">Ang mga aprubadong Thunderbolt device lang ang compatible sa iyong Chromebook</translation>

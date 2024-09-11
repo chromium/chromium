@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">කණ්ඩායම් නොකරන්න</translation>
 <translation id="4590027107044272416">ඔබට දැන් මෙහි නව පටිත්තක් විවෘත කළ හැක</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 අක්‍රිය පටිත්තක් වසන්න ද?}one{අක්‍රිය පටිති <ph name="TAB_COUNT_MANY" />ක් වසන්න ද?}other{අක්‍රිය පටිති <ph name="TAB_COUNT_MANY" />ක් වසන්න ද?}}</translation>
-<translation id="4648718555153979859">ඔබේ පටිති මෙහි එකට කණ්ඩායම් කෙරේ</translation>
 <translation id="4686942373615810936">මේ දැන් තනන ලදි</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{දින 1කට පසු වසා දමන්න}one{දින <ph name="DAY_COUNT_MANY" />කට පසු වසා දමන්න}other{දින <ph name="DAY_COUNT_MANY" />කට පසු වසා දමන්න}}</translation>
 <translation id="4777866634702576038">පටිති සමූහය මකන්නද?</translation>

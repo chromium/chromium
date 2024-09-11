@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Έξοδος από προεπισκόπηση ταπετσαρίας</translation>
 <translation id="1754578112426924640">Κουμπί επεξεργασίας για <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Εφαρμογή Διαγνωστικά στοιχεία</translation>
+<translation id="1756681705074952506">Μέθοδος εισόδου</translation>
 <translation id="175763766237925754">Καλό (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
 <translation id="3662461537616691585">μπορντό και καστανοκόκκινο</translation>
 <translation id="3668449597372804501">Ταπετσαρία Κίνηση των σύννεφων</translation>
+<translation id="3668570675727296296">Ρυθμίσεις γλώσσας</translation>
 <translation id="3675132884790542448">χοίροι</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Έξοδος από κινούμενο</translation>
 <translation id="3716250181321371108">Δημιουργία στοιχείου ελέγχου</translation>
 <translation id="3716830479327464973">Όταν επιτρέψετε αυτή την ενέργεια, η Εγγραφή θα αναλύει τις εγγραφές ήχου σας, προκειμένου:</translation>
+<translation id="3719826155360621982">Αρχική σελίδα</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="404928562651467259">ΠΡΟΕΙΔΟΠΟΙΗΣΗ</translation>
 <translation id="4050208988451295487">Μερικές επιλογές:</translation>
+<translation id="405181879009056822">Ρυθμίσεις ChromeOS</translation>
 <translation id="4054683689023980771">Λήψη εικόνας</translation>
 <translation id="4059839844193047929">Αν αποχωρήσετε από αυτή τη σελίδα, η τρέχουσα εγγραφή σας θα τερματιστεί</translation>
 <translation id="4063039537646912479">γαλάζιο</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Ταπετσαρία Ανατολή ηλίου</translation>
 <translation id="5294769550414936029">έκδοση <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Μετακίνηση παραθύρου στο γραφείο</translation>
+<translation id="5302048478445481009">Γλώσσα</translation>
 <translation id="5303837385540978511">Αποκλειστική ταπετσαρία για <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Ταυτότητα</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Δημιουργία εικόνας υψηλής ανάλυσης…</translation>
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>
+<translation id="6786747875388722282">Επεκτάσεις</translation>
 <translation id="6791471867139427246">ανοιχτό χρώμα πληκτρολογίου</translation>
 <translation id="6796229976413584781">Η συντόμευση διαγράφηκε</translation>
 <translation id="6798678288485555829">Πλοήγηση σε κείμενο</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="757747079855995705">πέτρα</translation>
+<translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Επανατοποθετήστε χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">Γενικοί έλεγχοι</translation>
 <translation id="7977800524392185497">Για να συμμετάσχετε σε ένα δίκτυο <ph name="NETWORK_NAME" />, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
+<translation id="7982789257301363584">Δίκτυο</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME_1" /> ξεκίνησε αυτόματα}other{# εφαρμογές ξεκίνησαν αυτόματα}}</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">κάτω</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>
+<translation id="8433186206711564395">Ρυθμίσεις δικτύου</translation>
 <translation id="843568408673868420">Συνδεσιμότητα στο διαδίκτυο</translation>
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>
 <translation id="8456200178779628126">Χρησιμοποιήστε το Google AI για να λάβετε βοήθεια με την ανάγνωση και τη γραφή</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">Αυτό το δίκτυο μπορεί να έχει πύλη υποδοχής</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
+<translation id="8808828119384186784">Ρυθμίσεις του Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ταπετσαρία</translation>
 <translation id="8820457400746201697">Μετακινήστε το μπλε σημείο επαφής σε μια ενέργεια. Επιλέξτε το συσχετισμένο πλήκτρο για προσαρμογή.</translation>

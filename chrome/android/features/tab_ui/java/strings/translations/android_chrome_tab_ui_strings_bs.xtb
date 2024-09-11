@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Razgrupiši</translation>
 <translation id="4590027107044272416">Ovdje sada možete otvoriti novu karticu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zatvoriti 1 neaktivnu karticu?}one{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnu karticu?}few{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivne kartice?}other{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnih kartica?}}</translation>
-<translation id="4648718555153979859">Vaše kartice su grupisane ovdje</translation>
 <translation id="4686942373615810936">Kreirano je upravo sada</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zatvori nakon 1 dana}one{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}few{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}other{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}}</translation>
 <translation id="4777866634702576038">Izbrisati grupu kartica?</translation>

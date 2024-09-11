@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">사이트에서 자바스크립트를 실행하도록 허용(권장)</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344522958567249764">광고 개인 정보 보호 관리</translation>
+<translation id="5373874281522292782">탭 그룹이 저장되었습니다</translation>
 <translation id="5389626883706033615">사이트에서 나에 관해 저장된 정보 사용을 요청하지 못하도록 차단</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
 <translation id="6709432001666529933">사이트에서 내 손을 추적하도록 허용하기 전에 확인(권장)</translation>
 <translation id="6722828510648505498">ID 서비스의 로그인 메시지를 차단합니다.</translation>
+<translation id="6729704574271585059">생성한 그룹은 탭 그룹 섹션에 저장되며 기기 전반에서 업데이트됩니다.</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
 <translation id="6766622839693428701">닫으려면 아래로 스와이프하세요.</translation>

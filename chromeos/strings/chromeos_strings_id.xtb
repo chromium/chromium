@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Keluar dari pratinjau wallpaper</translation>
 <translation id="1754578112426924640">Tombol edit untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikasi Diagnostik</translation>
+<translation id="1756681705074952506">Metode masukan</translation>
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Tulis lebih cepat dan lebih percaya diri</translation>
 <translation id="3662461537616691585">burgundi dan marun</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
+<translation id="3668570675727296296">Setelan bahasa</translation>
 <translation id="3675132884790542448">babi</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Keluar dari status mengambang</translation>
 <translation id="3716250181321371108">Buat kontrol</translation>
 <translation id="3716830479327464973">Jika Anda mengizinkannya, Perekam Suara akan menganalisis rekaman audio Anda untuk:</translation>
+<translation id="3719826155360621982">Beranda</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Lagu berikutnya</translation>
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="4050208988451295487">Beberapa opsi:</translation>
+<translation id="405181879009056822">Setelan ChromeOS</translation>
 <translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4059839844193047929">Keluar dari halaman ini akan mengakhiri perekaman saat ini</translation>
 <translation id="4063039537646912479">biru muda</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Wallpaper Matahari terbit</translation>
 <translation id="5294769550414936029">versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Pindahkan jendela ke desktop</translation>
+<translation id="5302048478445481009">Bahasa</translation>
 <translation id="5303837385540978511">Wallpaper eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">identitas</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Membuat gambar beresolusi tinggi…</translation>
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
+<translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
 <translation id="6796229976413584781">Pintasan dihapus</translation>
 <translation id="6798678288485555829">Navigasi teks</translation>
@@ -1282,6 +1288,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Layar sentuh USB</translation>
 <translation id="757747079855995705">batu</translation>
+<translation id="7590883480672980941">Setelan masukan</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7613724632293948900">Ubah posisi dengan tombol mouse atau panah.</translation>
 <translation id="7618774594543487847">Netral</translation>
@@ -1355,6 +1362,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7971535376154084247">Kontrol umum</translation>
 <translation id="7977800524392185497">Untuk bergabung ke jaringan <ph name="NETWORK_NAME" />, buka Setelan</translation>
 <translation id="7978412674231730200">Kunci pribadi</translation>
+<translation id="7982789257301363584">Jaringan</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" dimulai secara otomatis}other{# aplikasi dimulai secara otomatis}}</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1449,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8424039430705546751">ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8431300646573772016">Yang baru di ChromeOS</translation>
+<translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="843568408673868420">Konektivitas Internet</translation>
 <translation id="844521431886043384">DNS tidak disiapkan</translation>
 <translation id="8456200178779628126">Gunakan AI Google untuk mendapatkan bantuan membaca dan menulis</translation>
@@ -1503,6 +1512,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
+<translation id="8808828119384186784">Setelan Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8820457400746201697">Pindahkan titik sentuh biru ke tindakan. Pilih tombol terkait untuk disesuaikan.</translation>

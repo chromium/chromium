@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">वॉलपेपर पूर्वावलोकनामधून बाहेर पडा</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> साठी संपादित करा बटण.</translation>
 <translation id="1755556344721611131">निदान करण्यासाठी अ‍ॅप</translation>
+<translation id="1756681705074952506">इनपुट पद्धत</translation>
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3662461537616691585">बर्गंडी आणि मरून</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वॉलपेपर</translation>
+<translation id="3668570675727296296">भाषा सेटिंग्ज</translation>
 <translation id="3675132884790542448">डुकरे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">फ्लोटमधून बाहेर पडा</translation>
 <translation id="3716250181321371108">नियंत्रण तयार करा</translation>
 <translation id="3716830479327464973">तुम्ही याला अनुमती दिल्यावर, पुढील गोष्टींसाठी Recorder तुमच्या ऑडिओ रेकॉर्डिंगचे विश्लेषण करेल:</translation>
+<translation id="3719826155360621982">होम पेज</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="4050208988451295487">काही पर्याय:</translation>
+<translation id="405181879009056822">ChromeOS सेटिंग्ज</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड करत आहे</translation>
 <translation id="4059839844193047929">हे पेज सोडल्याने तुमचे सद्य रेकॉर्डिंग संपेल</translation>
 <translation id="4063039537646912479">फिकट निळे</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">सनराइझ वॉलपेपर</translation>
 <translation id="5294769550414936029">आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">विंडो या डेस्कवर हलवा</translation>
+<translation id="5302048478445481009">भाषा</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> चा विशेष वॉलपेपर</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ओळख</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">हाय-रिझोल्यूशन इमेज तयार करत आहे…</translation>
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
+<translation id="6786747875388722282">विस्तार</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
 <translation id="6796229976413584781">शॉर्टकट हटवला आहे</translation>
 <translation id="6798678288485555829">मजकुरासंबंधी नेव्हिगेशन</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
 <translation id="757747079855995705">दगड</translation>
+<translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7613724632293948900">माउस आणि अ‍ॅरो की वापरून स्थिती पुन्हा बदला.</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">साधारण नियंत्रणे</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमध्ये सामील होण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
+<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" आपोआप सुरू केले गेले होते}other{# ॲप्स आपोआप सुरू केली गेली होती}}</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">खाली</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8431300646573772016">ChromeOS मध्ये नवीन</translation>
+<translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
 <translation id="844521431886043384">DNS सेट केलेली नाही</translation>
 <translation id="8456200178779628126">वाचन आणि लेखन यामध्ये मदत मिळवण्यासाठी Google AI वापरा</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">या नेटवर्कवर कॅप्टिव्ह पोर्टल असू शकते</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8798441408945964110">प्रदात्याचे नाव</translation>
+<translation id="8808828119384186784">Chrome सेटिंग्ज</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8820457400746201697">निळा टच पॉइंट कृतीवर हलवा. कस्टमाइझ करण्यासाठी सहयोगी की निवडा.</translation>

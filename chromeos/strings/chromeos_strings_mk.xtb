@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Преглед на тапет за излез</translation>
 <translation id="1754578112426924640">Копче за изменување за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Апликација за дијагностика</translation>
+<translation id="1756681705074952506">Метод на внесување</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Пишувајте побрзо и со повеќе самодеоверба</translation>
 <translation id="3662461537616691585">темноцрвена и темнокафеава</translation>
 <translation id="3668449597372804501">Тапет Cloud Flow</translation>
+<translation id="3668570675727296296">Поставки за јазик</translation>
 <translation id="3675132884790542448">свињи</translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Излези од лебдечкиот прозорец</translation>
 <translation id="3716250181321371108">Создајте контрола</translation>
 <translation id="3716830479327464973">Кога ќе го дозволите ова, „Диктафон“ ќе ги анализира вашите аудиоснимки:</translation>
+<translation id="3719826155360621982">Почетна страница</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
 <translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Следна песна</translation>
 <translation id="404928562651467259">ПРЕДУПРЕДУВАЊЕ</translation>
 <translation id="4050208988451295487">Неколку опции:</translation>
+<translation id="405181879009056822">Поставки за ChromeOS</translation>
 <translation id="4054683689023980771">Сликата се презема</translation>
 <translation id="4059839844193047929">Ако ја напуштите страницава, тековното снимање ќе заврши</translation>
 <translation id="4063039537646912479">светлосина</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Тапет Sunrise</translation>
 <translation id="5294769550414936029">верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Премести прозорец на работна површина</translation>
+<translation id="5302048478445481009">Јазик</translation>
 <translation id="5303837385540978511">Тапет ексклузивен за <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентитет</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Се создава слика со висока резолуција…</translation>
 <translation id="6766275201586212568">Неуспешни одредувања со DNS</translation>
 <translation id="6768237774506518020">Висока стапка на неуспех на одредување со DNS</translation>
+<translation id="6786747875388722282">Наставки</translation>
 <translation id="6791471867139427246">боја на светло на тастатурата</translation>
 <translation id="6796229976413584781">Кратенката е избришана</translation>
 <translation id="6798678288485555829">Навигација низ текстот</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Допирен екран со USB</translation>
 <translation id="757747079855995705">камен</translation>
+<translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Променете ја позицијата со глувчето или копчињата со стрелки.</translation>
 <translation id="7618774594543487847">Неутрална</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">Општи контроли</translation>
 <translation id="7977800524392185497">За да се придружите на мрежата <ph name="NETWORK_NAME" />, одете во „Поставки“</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
+<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ се стартуваше автоматски}one{# апликација се стартуваа автоматски}other{# апликации се стартуваа автоматски}}</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">долу</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8431300646573772016">Што е ново во Chrome OS</translation>
+<translation id="8433186206711564395">Мрежни поставки</translation>
 <translation id="843568408673868420">Поврзливост на интернет</translation>
 <translation id="844521431886043384">DNS не е поставен</translation>
 <translation id="8456200178779628126">Користете ја Google AI за да добивате помош при читање и пишување</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">Мрежава можеби има портал за проверка</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8798441408945964110">Име на оператор</translation>
+<translation id="8808828119384186784">Поставки за Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8820457400746201697">Преместете ја сината точка на допир на дејство. Изберете го поврзаниот клуч за да приспособите.</translation>

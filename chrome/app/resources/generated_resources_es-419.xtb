@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idiomas</translation>
 <translation id="1050693411695664090">Mala</translation>
-<translation id="1053776357096024725">Mejora el sonido de tu micrófono integrado con varios efectos</translation>
 <translation id="1054048317165655285">Completa la configuración en tu teléfono</translation>
 <translation id="1054153489933238809">Abrir imagen original en una pestaña nueva</translation>
 <translation id="1054187194995068149">Hola. Esto es una vista previa</translation>
@@ -241,7 +240,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1166457390969131095">Usar y guardar contraseñas y llaves de acceso de tu Cuenta de Google</translation>
 <translation id="1166583374608765787">Revisar actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
-<translation id="1167262726334064738">Prueba una contraseña nueva</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente de IA <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
@@ -274,7 +272,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1183237619868651138">No se puede instalar <ph name="EXTERNAL_CRX_FILE" /> en la memoria caché local.</translation>
 <translation id="1184037892196730210">No es posible transmitir la pantalla.</translation>
 <translation id="1185924365081634987">También puedes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para solucionar este error de red.</translation>
-<translation id="1187692277738768150">Cuando uses y guardes esta contraseña:</translation>
 <translation id="1187722533808055681">Reactivaciones</translation>
 <translation id="1188807932851744811">No se cargó el registro.</translation>
 <translation id="1190086046506744802">Muy separado</translation>
@@ -290,7 +287,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1195558154361252544">Las notificaciones se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="1197088940767939838">Naranja</translation>
-<translation id="1197185198920566650">Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="11978075283960463">Datos almacenados en la app: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Herramientas de texto a voz para personas con visión reducida</translation>
 <translation id="119944043368869598">Borrar todo</translation>
@@ -1622,7 +1618,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2143089736086572103">Visible para algunos contactos</translation>
 <translation id="2143765403545170146">Siempre mostrar la barra de herramientas en pantalla completa</translation>
 <translation id="2143778271340628265">Configuración manual de proxy</translation>
-<translation id="2143808295261240440">Usa la contraseña recomendada</translation>
 <translation id="2143915448548023856">Configuración de visualización</translation>
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desarrollo de apps para Android en Linux</translation>
@@ -1791,7 +1786,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2266957463645820432">IPP por USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268182915828370037">¿Quieres desactivar la sincronización de archivos?</translation>
-<translation id="2269895253281481171">Recibirás una notificación si alguna vez se encuentra en riesgo</translation>
 <translation id="2270450558902169558">Intercambiar datos con cualquier dispositivo del dominio <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />La instalación <ph name="BEGIN_BOLD" />borrará todo el disco duro<ph name="END_BOLD" />. Asegúrate de que los datos tengan una copia de seguridad.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Una vez que comienza la instalación, no puede cancelarse.<ph name="END_PARAGRAPH2" /></translation>
@@ -3167,7 +3161,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3247649647204519958">Aquí podrás ver y administrar los permisos de las extensiones del sitio en el que te encuentras</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: Error de red</translation>
 <translation id="3248902735035392926">La seguridad es importante. Ahora, tómate un momento para <ph name="BEGIN_LINK" />revisar tus extensiones<ph name="END_LINK" /></translation>
-<translation id="3249323165366527554">Podrás registrarte y acceder más rápido si tu contraseña se guarda automáticamente en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="3251119461199395237">Sincronización de archivos</translation>
 <translation id="3251714896659475029">Permite que <ph name="SUPERVISED_USER_NAME" /> acceda a Asistente de Google con "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;No forma parte de un certificado&gt;</translation>
@@ -5481,7 +5474,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4925320384394644410">Aquí aparecerán tus puertos</translation>
 <translation id="49265687513387605">No es posible transmitir la pantalla. Verifica si confirmaste el mensaje para comenzar a compartir la pantalla.</translation>
 <translation id="4927753642311223124">No hay ningún elemento que mostrar.</translation>
-<translation id="4928629450964837566">Usa una contraseña más segura</translation>
 <translation id="4929120497462893830">Se copió el hash en el portapapeles</translation>
 <translation id="4929386379796360314">Destinos de impresión</translation>
 <translation id="4930406318748549391">Posición del panel lateral</translation>
@@ -5584,7 +5576,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5015344424288992913">Resolviendo proxy...</translation>
 <translation id="5016305686459575361">Si conectas tu teléfono, podrás hacer lo siguiente:</translation>
 <translation id="5016491575926936899">Puedes enviar mensajes de texto desde tu computadora, compartir tu conexión a Internet, responder a conversaciones desde las notificaciones y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="5016983299133677671">Prueba una contraseña nueva</translation>
 <translation id="5017250179386090956">Descargando los archivos de anotaciones de nodos principales</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir el sitio web de la extensión</translation>
@@ -5774,7 +5765,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5147097165869384760">¿Buscas la página del sistema del SO? Visita <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomendación</translation>
 <translation id="5147516217412920887">Sigue las instrucciones que se muestran en tu teléfono para verificar el código</translation>
-<translation id="5147992672778369947">Usa la contraseña recomendada</translation>
 <translation id="5148285448107770349">La contraseña debe tener como mínimo 8 caracteres</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma</translation>
 <translation id="5150254825601720210">Nombre del servidor SSL para el certificado de Microsoft</translation>
@@ -6133,7 +6123,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5414836363063783498">Verificando…</translation>
 <translation id="5415328625985164836">Este es un programa de versión beta. Ahora puedes usar Steam para jugar en tu Chromebook.</translation>
 <translation id="5417312524372586921">Temas del navegador</translation>
-<translation id="5417353542809767994">Usa rápidamente una contraseña segura</translation>
 <translation id="541737483547792035">Ampliar pantalla</translation>
 <translation id="541822678830750798">Solicitud para leer y modificar este sitio</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -6288,7 +6277,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5517304475148761050">Esta app necesita acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5519900055135507385">Protege aún más esta cuenta con una contraseña segura. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">¿Esta es la página principal que esperabas ver?</translation>
 <translation id="5522156646677899028">Esta extensión contiene una vulnerabilidad de seguridad grave.</translation>
 <translation id="5522378895674097188">Puedes revisar tu historial de búsqueda y la configuración en <ph name="BEGIN_LINK" />Mi actividad<ph name="END_LINK" /> en los siguientes casos:
@@ -6628,7 +6616,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Enviar comandos a <ph name="EXTENSION_NAME" /></translation>
-<translation id="5782040878821624922">Está disponible en cualquier dispositivo</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784291589716625675">Cambiar el idioma de la app</translation>
@@ -6658,7 +6645,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="579915268381781820">Se quitó la llave de seguridad.</translation>
 <translation id="5799478978078236781">Obtén sugerencias, ofertas y actualizaciones relacionadas con <ph name="DEVICE_TYPE" />, y comparte tus comentarios.</translation>
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
-<translation id="5799971219262397777">Restablece la configuración de tu dispositivo ChromeOS a la configuración predeterminada segura.</translation>
 <translation id="5800020978570554460">El archivo de destino se truncó o eliminó desde la última descarga.</translation>
 <translation id="5800290746557538611">Habilitar Hotspot instantáneo</translation>
 <translation id="5800351251499368110">Cierra la búsqueda en el panel lateral. La búsqueda está abierta en el panel lateral.</translation>
@@ -7644,7 +7630,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6538036594527795020">Cambia el idioma de <ph name="APP" />. El idioma actual es <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">No se pudo detectar el código</translation>
 <translation id="653920215766444089">Buscando dispositivos apuntadores</translation>
-<translation id="6539674013849300372">Aumenta tu protección en línea con una contraseña segura. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Reanudando…</translation>
 <translation id="6540174167103635041">Instalar la app</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Solo debes habilitar esta opción si sabes lo que estás haciendo o si alguien te lo solicitó, ya que la recopilación de datos puede reducir el rendimiento.</translation>
@@ -9467,7 +9452,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7851720427268294554">Analizador de IPP</translation>
 <translation id="78526636422538552">La opción para agregar más Cuentas de Google está inhabilitada</translation>
 <translation id="7853747251428735">&amp;Más herramientas</translation>
-<translation id="7853999103056713222">Usa una contraseña más segura</translation>
 <translation id="7855678561139483478">Mueve la pestaña a una ventana nueva</translation>
 <translation id="7857004848504343806">Tu computadora cuenta con un módulo de seguridad que se usa para implementar varias funciones clave de seguridad en ChromeOS Flex. Para obtener más información, visita el Centro de ayuda de Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugerencias de texto</translation>
@@ -9808,7 +9792,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8086610718778464681">No se pudo crear la copia de seguridad de apps y archivos de Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Este archivo está encriptado. Pídele al propietario que lo desencripte.}other{Algunos de estos archivos están encriptados. Pídele al propietario que los desencripte.}}</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
-<translation id="8089547136368562137">Recibe la mejor protección de Google</translation>
 <translation id="8090234456044969073">Leer una lista de los sitios web que visitas con más frecuencia</translation>
 <translation id="8090513782447872344">Puedes volver en cualquier momento para echar un vistazo</translation>
 <translation id="8090579562279016251">Reduce el rendimiento, pero hace que V8 sea más resistente a los ataques</translation>
@@ -10143,7 +10126,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
-<translation id="8327538105740918488">Si quieres, puedes cambiar esta contraseña más adelante. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Configuración de contenido y permisos</translation>
 <translation id="8328228852664998535">Si continúas, se borrarán de forma permanente tus contraseñas, llaves de acceso y otros datos de <ph name="BRAND" />. No se borrarán las cuentas que hayas creado para sitios ni apps.</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>
@@ -10406,7 +10388,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518942514525208851">Ocultar lenguaje obsceno</translation>
 <translation id="8519895319663397036">No se pudieron importar las contraseñas. El tamaño del archivo debe ser menor a 150 KB.</translation>
-<translation id="851991974800416566">Usa rápidamente una contraseña segura</translation>
 <translation id="8523493869875972733">Conservar cambios</translation>
 <translation id="8523849605371521713">Agregada por la política</translation>
 <translation id="8524594273111932386">Búsqueda + flecha hacia abajo</translation>
@@ -10937,7 +10918,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8890529496706615641">No se pudo cambiar el nombre del perfil. Vuelve a intentarlo o comunícate con tu proveedor para solicitarle asistencia técnica.</translation>
 <translation id="8892168913673237979">¡Listo!</translation>
 <translation id="8892246501904593980">Ver todos tus favoritos en Favoritos y Listas</translation>
-<translation id="8893479486525393799">Micrófono de estudio</translation>
 <translation id="8893801527741465188">Se completó la desinstalación</translation>
 <translation id="8893928184421379330">Lo sentimos, no se reconoció el dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>
@@ -11107,7 +11087,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9011262023858991985">Transmitiendo esta pestaña</translation>
 <translation id="9011393886518328654">Notas de la versión</translation>
 <translation id="9012122671773859802">Mover la pantalla continuamente mientras se mueve el mouse</translation>
-<translation id="9012157139067635194">Limpieza</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
 <translation id="9013037634206938463">Se necesitan <ph name="INSTALL_SIZE" /> de espacio libre para instalar Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="9014206344398081366">Instructivo de ChromeVox</translation>

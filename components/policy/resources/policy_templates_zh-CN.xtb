@@ -3335,6 +3335,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540846231645422635">停用设备网络接口报告功能</translation>
 <translation id="3540935459049973317">各应用的使用时限</translation>
+<translation id="3546260240984542017">保留所有 MIME 类型的空白</translation>
 <translation id="3546271546272655966">可能会使用“<ph name="DBSC_FEATURE_NAME" />”，具体取决于功能发布流程。</translation>
 <translation id="3547954654003013442">代理设置</translation>
 <translation id="3548064438634502368">关闭浏览器</translation>
@@ -6778,27 +6779,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策已启用或未设置，用户便可安装并运行 Chrome for Testing。
 
       如果此政策已停用，用户将无法运行 Chrome for Testing。用户仍然可以安装 Chrome for Testing，但无法在已停用此政策的个人资料中运行该版本。</translation>
-<translation id="6258646807927528870">配置一系列数据控制规则，防止数据泄露。
-
-      每个规则均包含以下内容：
-      - 触发该规则的条件字段。只有当某项用户操作与其 <ph name="DATA_CONTROLS_SOURCES" />、<ph name="DATA_CONTROLS_DESTINATIONS" />、<ph name="DATA_CONTROLS_AND" />、<ph name="DATA_CONTROLS_OR" /> 和 <ph name="DATA_CONTROLS_NOT" /> 字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
-      - 要应用的限制条件列表。可能只有<ph name="DATA_CONTROLS_SOURCES" />或<ph name="DATA_CONTROLS_DESTINATIONS" />条件可用，具体取决于限制。
-
-      您可通过添加规则来实现以下目的：
-      - 控制在来源和目的地之间共享的剪贴板数据。
-      - 根据来源标签页控制屏蔽屏幕截图。
-
-      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
-      限制级别可设为 BLOCK、WARN 或 REPORT。
-      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
-      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。
-      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
-
-      注意：
-      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
-      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
-
-      如果未设置此政策，系统将不会应用任何限制。</translation>
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">报告机器标识信息</translation>
 <translation id="6264247808139384018">如果此政策已启用或未设置，使用密码验证身份的用户便可以锁定屏幕。
@@ -8065,6 +8045,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 此政策不会影响使用无障碍功能 API 的第三方密码管理工具。</translation>
 <translation id="7114169791477667553">停用默认搜索服务提供商</translation>
+<translation id="7115684775550072082">仅保留文本和 XML MIME 类型的空白</translation>
 <translation id="7121046543122812054">此政策已被弃用，请考虑改用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />。
 
       用于允许用户登录 <ph name="PRODUCT_NAME" />。
@@ -8387,6 +8368,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7358359585412734876">启用 <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">仅限用户</translation>
 <translation id="736486789939370545">允许安装外部扩展程序</translation>
+<translation id="7364975417585163622">对于<ph name="DATA_URL_SCHEME" />网址中的空白，可通过此政策选择暂时不更改 Chrome 的处理方式。在之前，只有当顶级媒体类型为<ph name="TEXT_MEDIA_TYPE" />或包含媒体类型字符串 <ph name="XML" /> 时，空白才会保留。
+现在，无论媒体类型如何，所有数据网址都将保留空白。
+
+如果此政策未设置或设为 True，系统会启用新行为。
+
+如果此政策设为 False，系统会启用旧行为。</translation>
 <translation id="7366948865469126526">停用快速解答单位换算功能</translation>
 <translation id="7367734504783638685">第三方 SSO 提供商和 Chrome 设备之间的密码同步</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
@@ -10425,6 +10412,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9015759770696099204">F11/F12 设置已停用</translation>
 <translation id="9015952763003753868">使 <ph name="CORS" /> 预检请求中的 <ph name="ACAM_HEADER_NAME" /> 匹配合乎规范</translation>
 <translation id="9020630127193895800">键盘背光颜色：靛蓝色</translation>
+<translation id="9025912013525357598">保留所有媒体类型的 DataURL 空白</translation>
 <translation id="9026905189580734497">此政策用于控制 <ph name="PRODUCT_OS_NAME" /> 的“帮我读”功能的设置。
 
 0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。

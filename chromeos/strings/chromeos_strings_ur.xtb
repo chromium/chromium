@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">وال پیپر کے پیش منظر سے باہر نکلیں</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> کیلئے ترمیم کریں بٹن۔</translation>
 <translation id="1755556344721611131">تشخیصات کی ایپ</translation>
+<translation id="1756681705074952506">اندراج کا طریقہ</translation>
 <translation id="175763766237925754">اچھا (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">تیزی سے اور زیادہ اعتماد کے ساتھ لکھیں</translation>
 <translation id="3662461537616691585">برگنڈی اور میرون</translation>
 <translation id="3668449597372804501">کلاؤڈ فلو وال پیپر</translation>
+<translation id="3668570675727296296">زبان کی ترتیبات</translation>
 <translation id="3675132884790542448">سور</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">فلوٹ سے باہر نکلیں</translation>
 <translation id="3716250181321371108">کنٹرول تخلیق کریں</translation>
 <translation id="3716830479327464973">آپ کے اس کی اجازت دینے پر، ریکارڈر آپ کی آڈیو ریکارڈنگ کا تجزیہ کرے گا:</translation>
+<translation id="3719826155360621982">ہوم صفحہ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">اگلا ٹریک</translation>
 <translation id="404928562651467259">وارننگ</translation>
 <translation id="4050208988451295487">چند اختیارات:</translation>
+<translation id="405181879009056822">‏ChromeOS کی ترتیبات</translation>
 <translation id="4054683689023980771">تصویرڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4059839844193047929">اس صفحہ کو چھوڑنے سے آپ کی موجودہ ریکارڈنگ ختم ہو جائے گی</translation>
 <translation id="4063039537646912479">ہلکا نیلا</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">سن رائز وال پیپر</translation>
 <translation id="5294769550414936029">‏ورژن ‎<ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ونڈو کو ڈیسک میں منتقل کریں</translation>
+<translation id="5302048478445481009">زبان</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> خاص وال پیپر</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">شناخت</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">اعلی ریزولیوشن والی تصویر تخلیق کی جا رہی ہے…</translation>
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
+<translation id="6786747875388722282">توسیعات</translation>
 <translation id="6791471867139427246">کی بورڈ کا ہلکا رنگ</translation>
 <translation id="6796229976413584781">شارٹ کٹ حذف کیا گیا</translation>
 <translation id="6798678288485555829">ٹیکسٹ نیویگیشن</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏USB ٹچ اسکرین</translation>
 <translation id="757747079855995705">پتھر</translation>
+<translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7613724632293948900">ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ پوزیشن تبدیل کریں۔</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">عام کنٹرولز</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" خودکار طور پر شروع ہو گئی}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="8004582292198964060">براؤزر</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">نیچے</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8431300646573772016">‏ChromeOS میں نیا کیا ہے</translation>
+<translation id="8433186206711564395">نیٹ ورک کی ترتیبات</translation>
 <translation id="843568408673868420">انٹرنیٹ کنیکٹویٹی</translation>
 <translation id="844521431886043384">‏DNS سیٹ اپ نہیں ہے</translation>
 <translation id="8456200178779628126">‏پڑھنے اور لکھنے میں مدد حاصل کرنے کے لیے Google AI کا استعمال کریں</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">اس نیٹ ورک میں ایک کیپٹو پورٹل ہو سکتا ہے</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8798441408945964110">فراہم کنندہ کا نام</translation>
+<translation id="8808828119384186784">‏Chrome کی ترتیبات</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">وال پیپر</translation>
 <translation id="8820457400746201697">نیلے ٹچ پوائنٹ کو کارروائی پر منتقل کریں۔ حسب ضرورت بنانے کے لیے متعلقہ کلید کو منتخب کریں۔</translation>

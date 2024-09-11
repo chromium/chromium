@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Avslutt forhåndsvisning av bakgrunn</translation>
 <translation id="1754578112426924640">Endreknapp for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
+<translation id="1756681705074952506">Inndatametode</translation>
 <translation id="175763766237925754">God (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
 <translation id="3662461537616691585">burgunderrød og rødbrun</translation>
 <translation id="3668449597372804501">Bakgrunn: Skyflyt</translation>
+<translation id="3668570675727296296">Språkinnstillinger</translation>
 <translation id="3675132884790542448">griser</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Avslutt flytende tilstand</translation>
 <translation id="3716250181321371108">Opprett kontroll</translation>
 <translation id="3716830479327464973">Når du tillater dette, analyserer Lydopptaker lydopptakene dine for å</translation>
+<translation id="3719826155360621982">Startside</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4050208988451295487">Noen alternativer:</translation>
+<translation id="405181879009056822">ChromeOS-innstillinger</translation>
 <translation id="4054683689023980771">Laster ned bildet</translation>
 <translation id="4059839844193047929">Hvis du forlater denne siden, avsluttes det nåværende opptaket</translation>
 <translation id="4063039537646912479">lyseblå</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Bakgrunn: Soloppgang</translation>
 <translation id="5294769550414936029">versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flytt vindu til skrivebord</translation>
+<translation id="5302048478445481009">Språk</translation>
 <translation id="5303837385540978511">Bakgrunn kun for <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Oppretter bilde med høy oppløsning …</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
+<translation id="6786747875388722282">Utvidelser</translation>
 <translation id="6791471867139427246">farge på tastaturlys</translation>
 <translation id="6796229976413584781">Hurtigtasten er slettet</translation>
 <translation id="6798678288485555829">Tekstnavigasjon</translation>
@@ -1282,6 +1288,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>
 <translation id="757747079855995705">stein</translation>
+<translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
 <translation id="7613724632293948900">Juster med muse- eller piltastene.</translation>
 <translation id="7618774594543487847">Nøytral</translation>
@@ -1355,6 +1362,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7971535376154084247">Generelle kontroller</translation>
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
+<translation id="7982789257301363584">Nettverk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8004582292198964060">Nettleser</translation>
@@ -1441,6 +1449,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8424039430705546751">ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
+<translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="843568408673868420">Internettilkobling</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
 <translation id="8456200178779628126">Bruk AI-løsninger fra Google for å få hjelp med å lese og skrive</translation>
@@ -1503,6 +1512,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverandørnavn</translation>
+<translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>
 <translation id="8820457400746201697">Flytt det blå berøringspunktet til en handling. Velg den tilknyttede nøkkelen for å tilpasse.</translation>

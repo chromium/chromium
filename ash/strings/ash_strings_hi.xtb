@@ -1961,7 +1961,6 @@
 <translation id="7727952505535211425">वेबसाइट को नए टैब के पता बार में खोलें</translation>
 <translation id="7728657226117099693">Caps Lock बंद करें</translation>
 <translation id="7742327441377685481">कोई सूचना नहीं है</translation>
-<translation id="774736258792760908">'लिखने में मेरी मदद करो' और 'पढ़ने में मेरी मदद करो' सुविधा चालू करने पर, डाले गए टेक्स्ट और दस्तावेज़ में मौजूद कॉन्टेंट को Google के एआई सर्वर के पास भेजा जाता है. इससे सर्वर, लिखने से जुड़े सुझाव और खास जानकारी जनरेट करता है. साथ ही, सवालों के जवाब देता है और प्रॉडक्ट बेहतर बनाता है. इस प्रोसेस पर <ph name="LINK_TO_SERVICE_TERMS" /> लागू होती हैं. इनपुट में किसी भी तरह की निजी, संवेदनशील या गोपनीय जानकारी शामिल न करें.</translation>
 <translation id="7748275671948949022">शेल्फ़ पर लॉन्चर बटन हाइलाइट करें</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2288,7 +2287,6 @@
 <translation id="8877788021141246043">रिमाइंडर लगाओ</translation>
 <translation id="8878886163241303700">स्क्रीन का विस्तार करना</translation>
 <translation id="888982883502837004">आपके डिवाइस के लिए, फ़र्मवेयर के अपडेट उपलब्ध हैं. अपडेट देखने और उन्हें इंस्टॉल करने के लिए क्लिक करें.</translation>
-<translation id="8893479486525393799">स्टूडियो माइक</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> को हमेशा के लिए मिटा दिया जाएगा</translation>
 <translation id="889790758758811533">बैटरी <ph name="PERCENTAGE" />% बची है (करीब <ph name="TIME_LEFT" />). अपने डिवाइस को चार्ज करें.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2303,6 +2301,7 @@
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट ऑडियो "<ph name="INPUT_DEVICE_NAME" />" है और आउटपुट ऑडियो "<ph name="OUTPUT_DEVICE_NAME" />" है. इन्हें बदलने के लिए सेटिंग पर जाएं.</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">स्टूडियो की स्टाइल वाला माइक</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> चेक बॉक्स पर सही का निशान नहीं लगाया गया.</translation>
 <translation id="8949925099261528566">कनेक्ट हो गया, लेकिन इंटरनेट नहीं है</translation>
 <translation id="8951539504029375108">आपके Chromebook के साथ सिर्फ़ वे Thunderbolt डिवाइस काम कर सकते हैं जिन्हें अनुमति मिली है</translation>

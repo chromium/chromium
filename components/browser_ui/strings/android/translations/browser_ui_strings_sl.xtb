@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5344522958567249764">Upravljanje zasebnosti pri oglaševanju</translation>
+<translation id="5373874281522292782">Skupine zavihkov so shranjene</translation>
 <translation id="5389626883706033615">Spletnim mestom je preprečeno, da bi od vas zahtevala uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6709432001666529933">Vprašaj, preden se spletnim mestom dovoli sledenje potezam z dlanmi (priporočljivo)</translation>
 <translation id="6722828510648505498">Blokiranje poskusov prijav storitev za identiteto.</translation>
+<translation id="6729704574271585059">Skupine, ki ste jih ustvarili, so shranjene v razdelku skupine zavihkov in se posodabljajo v vseh napravah</translation>
 <translation id="6746124502594467657">Premakni dol</translation>
 <translation id="6749077623962119521">Želite ponastaviti dovoljenja?</translation>
 <translation id="6766622839693428701">Povlecite navzdol, da zaprete.</translation>

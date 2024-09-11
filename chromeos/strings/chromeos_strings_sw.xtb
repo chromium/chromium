@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Funga onyesho la kukagua mandhari</translation>
 <translation id="1754578112426924640">Kitufe cha kubadilisha cha <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Programu ya uchunguzi</translation>
+<translation id="1756681705074952506">Mbinu ya uingizaji</translation>
 <translation id="175763766237925754">Thabiti (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Andika haraka na kwa kujiamini zaidi</translation>
 <translation id="3662461537616691585">nyekundu iliyokolea na rangi ya damu ya mzee</translation>
 <translation id="3668449597372804501">Mandhari kulingana na mwelekeo wa mawingu</translation>
+<translation id="3668570675727296296">Mipangilio ya lugha</translation>
 <translation id="3675132884790542448">nguruwe</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Inapakia...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Funga hali ya kuelea</translation>
 <translation id="3716250181321371108">Tayarisha kidhibiti</translation>
 <translation id="3716830479327464973">Utakaporuhusu mipangilio hii, Kinasa sauti kitachanganua rekodi zako za sauti ili:</translation>
+<translation id="3719826155360621982">Ukurasa wa Mwanzo</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (Maoni <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Haujaunganishwa</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="404928562651467259">ONYO</translation>
 <translation id="4050208988451295487">Chaguo chache:</translation>
+<translation id="405181879009056822">Mipangilio ya ChromeOS</translation>
 <translation id="4054683689023980771">Inapakua picha</translation>
 <translation id="4059839844193047929">Kuondoka kwenye ukurasa huu kutakomesha rekodi yako ya sasa</translation>
 <translation id="4063039537646912479">rangi ya samawati isiyokolea</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Mandhari ya macheo</translation>
 <translation id="5294769550414936029">toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Hamishia dirisha kwenye eneokazi</translation>
+<translation id="5302048478445481009">Lugha</translation>
 <translation id="5303837385540978511">Mandhari ya kipekee ya <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Kitambulisho</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Inatayarisha picha ya ubora wa juu…</translation>
 <translation id="6766275201586212568">Usuluhishaji wa DNS haukufaulu</translation>
 <translation id="6768237774506518020">Kiwango cha juu cha usuluhishaji wa DNS usiofaulu</translation>
+<translation id="6786747875388722282">Viendelezi</translation>
 <translation id="6791471867139427246">rangi ya mwangaza wa kibodi</translation>
 <translation id="6796229976413584781">Njia ya mkato imefutwa</translation>
 <translation id="6798678288485555829">Usogezaji kwenye maandishi</translation>
@@ -1282,6 +1288,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrini ya kugusa yenye USB</translation>
 <translation id="757747079855995705">jiwe</translation>
+<translation id="7590883480672980941">Mipangilio ya kuweka data</translation>
 <translation id="7595982850646262331">Zimesalia <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Badilisha nafasi ukitumia kipanya au vitufe vya vishale.</translation>
 <translation id="7618774594543487847">Wastani</translation>
@@ -1355,6 +1362,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="7971535376154084247">Vidhibiti vya jumla</translation>
 <translation id="7977800524392185497">Ili ujiunge kwenye mtandao wa <ph name="NETWORK_NAME" />, nenda kwenye Mipangilio</translation>
 <translation id="7978412674231730200">Ufunguo binafsi</translation>
+<translation id="7982789257301363584">Mtandao</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ilianzishwa kiotomatiki}other{Programu # zilianzishwa kiotomatiki}}</translation>
 <translation id="7994702968232966508">Mbinu ya EAP</translation>
 <translation id="8004582292198964060">Kivinjari</translation>
@@ -1441,6 +1449,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8424039430705546751">chini</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8431300646573772016">Mapya katika ChromeOS</translation>
+<translation id="8433186206711564395">Mipangilio ya mtandao</translation>
 <translation id="843568408673868420">Muunganisho wa Intaneti</translation>
 <translation id="844521431886043384">Mipangilio ya DNS haijawekwa</translation>
 <translation id="8456200178779628126">Tumia Google AI ili kupata usaidizi wa kusoma na kuandika</translation>
@@ -1503,6 +1512,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="879568662008399081">Huenda mtandao huu una ukurasa wa mwanzo</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8798441408945964110">Jina la mtoa huduma</translation>
+<translation id="8808828119384186784">Mipangilio ya Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Mandhari</translation>
 <translation id="8820457400746201697">Sogeza sehemu ya kugusa ya samawati hadi kwenye kitendo. Chagua kitufe kinachohusiana ili kuweka mapendeleo.</translation>

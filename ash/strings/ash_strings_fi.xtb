@@ -917,6 +917,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4209973997261364186">Wi-Fi on päällä</translation>
 <translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4212472694152630271">Vaihda PIN-koodiin</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, päälle/pois-painike, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, asennettu sovellus, keskeytetty</translation>
@@ -1959,7 +1960,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7727952505535211425">Avaa verkkosivusto osoitepalkista uudelle välilehdelle</translation>
 <translation id="7728657226117099693">Laita Caps Lock pois päältä</translation>
 <translation id="7742327441377685481">Ei ilmoituksia</translation>
-<translation id="774736258792760908">Kun laitat Apua kirjoittamiseen‑ ja Apua lukemiseen ‑ominaisuudet päälle, syöttöteksti ja asiakirjasisältö lähetetään Googlen tekoälypalvelimille, jotta ne voivat luoda kirjoitusehdotuksia ja yhteenvetoja, vastata kysymyksiin ja parantaa tuotetta <ph name="LINK_TO_SERVICE_TERMS" /> mukaan. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="7748275671948949022">Korosta käynnistysohjelmapainike hyllyssä</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2285,7 +2285,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
 <translation id="8878886163241303700">Laajennettu näyttö</translation>
 <translation id="888982883502837004">Laitteellesi on saatavilla laiteohjelmiston päivityksiä. Katso ja päivitä klikkaamalla.</translation>
-<translation id="8893479486525393799">Studiomikrofoni</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> poistetaan pysyvästi</translation>
 <translation id="889790758758811533">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />). Yhdistä laite virtalähteeseen.</translation>
 <translation id="88986195241502842">Sivu alas</translation>
@@ -2300,6 +2299,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8939855324412367560">Äänitulo on "<ph name="INPUT_DEVICE_NAME" />" ja äänentoisto on "<ph name="OUTPUT_DEVICE_NAME" />". Muuta sitä asetuksista.</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studiotyylinen mikrofoni</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), valintaruutua ei valittu.</translation>
 <translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
 <translation id="8951539504029375108">Vain hyväksytyt Thunderbolt-laitteet ovat yhteensopivia Chromebookin kanssa</translation>

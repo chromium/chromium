@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2360398059912971776">ბატარეა</translation>
 <translation id="2361210043495191221">Wi-Fi-ს გადართვა. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">იერსახის ეფექტები</translation>
 <translation id="236574664504281623">გამოგზავნილია <ph name="SESSION_NAME" />-დან</translation>
 <translation id="2367186422933365202">თქვენს Chromebook-ში შესვლა ვერ მოხერხდა</translation>
 <translation id="2367972762794486313">პროგრამების ჩვენება</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">გამორთვა</translation>
 <translation id="3604801046548457007">სამუშაო მაგიდა <ph name="DESK_TITILE" /> შექმნილია</translation>
 <translation id="3606978283550408104">ბრაილის დისპლეი შეერთებულია.</translation>
+<translation id="3612634595000403645">იერსახის ეფექტების უპირატესი პარამეტრები</translation>
 <translation id="3615926715408477684">მობილური ინტერნეტის ჩართვის შემთხვევაში, ჩაირთვება Bluetooth</translation>
 <translation id="3616113530831147358">აუდიო</translation>
 <translation id="3616883743181209306">მენიუ გადატანილია ეკრანის ზედა მარჯვენა კუთხეში.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">მომდევნო სიტყვის ბოლოში გადასვლა</translation>
 <translation id="4146833061457621061">მუსიკის დაკვრა</translation>
 <translation id="4150201353443180367">ჩვენება</translation>
+<translation id="4151054805501931758">პორტრეტის რეტუში</translation>
 <translation id="4156293514828496577">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />).
 ზოგიერთი ფუნქცია შეზღუდულია, ბატარეის მუშაობის ხანგრძლივობა რომ გაიზარდოს.</translation>
 <translation id="4160919062868802509">აღმოჩენილია რამდენიმე აუდიო წყარო</translation>
@@ -917,6 +920,7 @@
 <translation id="4209973997261364186">Wi-Fi ჩართულია</translation>
 <translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
 <translation id="4212472694152630271">PIN-კოდზე გადართვა</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, გადართვის ღილაკი, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
 <translation id="4217571870635786043">კარნახი</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, დაინსტალირებული აპი, დაპაუზებული</translation>
@@ -1959,7 +1963,6 @@
 <translation id="7727952505535211425">მისამართთა ზოლში მითითებული ვებსაიტის გახსნა ახალ ჩანართში</translation>
 <translation id="7728657226117099693">Caps Lock-ის გამორთვა</translation>
 <translation id="7742327441377685481">შეტყობინებები არ არის</translation>
-<translation id="774736258792760908">როცა ტექსტის შემქმნელი და წაკითხვაში დახმარება ჩართულია, შეტანილი ტექსტი და დოკუმენტის კონტენტი ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რათა დაგენერირდეს ტექსტური შეთავაზებები, შეჯამებები, კითხვებზე პასუხები და გაუმჯობესდეს პროდუქტი, <ph name="LINK_TO_SERVICE_TERMS" />-ის შესაბამისად. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="7748275671948949022">გამშვების ღილაკის გამოყოფა თაროზე</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1968,6 +1971,7 @@
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7769299611924763557">თქვენი GIF მალე იქნება მზად</translation>
 <translation id="7773536009433685931">სანაცვლოდ გამოირთოს Wi-Fi</translation>
+<translation id="77747521138552256">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა. მოითმინეთ <ph name="TIME_LEFT" /> და ხელახლა ცადეთ PIN, ან შეიყვანეთ პაროლი, რომ მყისიერად შეხვიდეთ სისტემაში.</translation>
 <translation id="7780094051999721182">მალსახმობები</translation>
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>
 <translation id="7781829728241885113">გუშინ</translation>
@@ -2286,7 +2290,6 @@
 <translation id="8877788021141246043">შეხსენების დაყენება</translation>
 <translation id="8878886163241303700">ეკრანის გაშლა</translation>
 <translation id="888982883502837004">თქვენი მოწყობილობისთვის ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები. დააწკაპუნეთ გადასახედად და გასაახლებლად.</translation>
-<translation id="8893479486525393799">სტუდიური მიკროფონი</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ სამუდამოდ წაიშლება</translation>
 <translation id="889790758758811533">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />). მიაერთეთ თქვენი მოწყობილობა ელკვების წყაროს.</translation>
 <translation id="88986195241502842">ერთი გვერდით ქვემოთ</translation>
@@ -2301,6 +2304,7 @@
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8939855324412367560">შემავალი აუდიოა „<ph name="INPUT_DEVICE_NAME" />“, ხოლო გამომავალი — „<ph name="OUTPUT_DEVICE_NAME" />“. შესაცვლელად გადადით პარამეტრებში.</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">სტუდიური სტილის მიკროფონი</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> მოსანიშნი ველი მოუნიშნავია.</translation>
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8951539504029375108">თქვენს Chromebook-თან თავსებადია მხოლოდ დადასტურებული Thunderbolt მოწყობილობები</translation>

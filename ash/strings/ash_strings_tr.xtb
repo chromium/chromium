@@ -917,6 +917,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4209973997261364186">Kablosuz özelliği açık</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4212472694152630271">PIN'e geç</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, açma/kapatma düğmesi, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN Ayarları</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Yüklü Uygulama, Duraklatıldı</translation>
@@ -1959,7 +1960,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7727952505535211425">Adres çubuğundaki web sitesini yeni bir sekmede aç</translation>
 <translation id="7728657226117099693">Caps Lock'u kapat</translation>
 <translation id="7742327441377685481">Bildirim yok</translation>
-<translation id="774736258792760908">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini etkinleştirdiğinizde girilen metin ve belge içeriği, <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca yazma önerileri oluşturmak, özet üretmek, soruları yanıtlamak ve ürünü geliştirmek için Google Yapay Zeka sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="7748275671948949022">Raftaki başlatıcı düğmesini vurgular</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
 <translation id="888982883502837004">Donanım yazılımı güncellemeleri cihazınızda kullanılabilir. İnceleyip güncellemek için tıklayın.</translation>
-<translation id="8893479486525393799">Stüdyo mikrofonu</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> kalıcı olarak silinecek</translation>
 <translation id="889790758758811533">%<ph name="PERCENTAGE" /> pil kaldı (yaklaşık <ph name="TIME_LEFT" />). Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="88986195241502842">Bir sayfa aşağı gider</translation>

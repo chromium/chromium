@@ -918,6 +918,7 @@
 <translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
 <translation id="4212246570487010370">Продолжете да прелистувате</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, копче за вклучување/исклучување, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
@@ -1960,7 +1961,6 @@
 <translation id="7727952505535211425">Го отвора веб-сајтот во лентата за адреси во нова картичка</translation>
 <translation id="7728657226117099693">Исклучете Caps Lock</translation>
 <translation id="7742327441377685481">Нема известувања</translation>
-<translation id="774736258792760908">Кога ќе ги вклучите „Помош при пишување“ и „Помош при читање“, влезниот текст и содржините на документите се испраќаат до серверите на Google AI за да се генерираат предлози за пишување, да се генерираат резимеа, да се одговараат прашања и да се подобрува производот, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="7748275671948949022">Нагласете го копчето за стартерот на полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2287,6 @@
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
-<translation id="8893479486525393799">Студиски микрофон</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />). Приклучете го уредот во струја.</translation>
 <translation id="88986195241502842">Страница подолу</translation>

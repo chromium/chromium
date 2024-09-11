@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Το Wi-Fi είναι ενεργοποιημένο</translation>
 <translation id="4212246570487010370">Συνέχεια περιήγησης</translation>
 <translation id="4212472694152630271">Αλλαγή σε PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, κουμπί διακόπτη, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Ρυθμίσεις VPN</translation>
 <translation id="4217571870635786043">Υπαγόρευση</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή, Τέθηκε σε παύση</translation>
@@ -1959,7 +1960,6 @@
 <translation id="7727952505535211425">Άνοιγμα του ιστοτόπου στη γραμμή διευθύνσεων σε νέα καρτέλα</translation>
 <translation id="7728657226117099693">Απενεργοποίηση Caps Lock</translation>
 <translation id="7742327441377685481">Δεν υπάρχουν ειδοποιήσεις</translation>
-<translation id="774736258792760908">Όταν ενεργοποιείτε τη λειτουργία Βοήθησέ με να γράψω και Βοήθησέ με να διαβάσω, το κείμενο εισαγωγής και το περιεχόμενο του εγγράφου αποστέλλονται στους διακομιστές Google AI για τη δημιουργία προτάσεων συγγραφής, τη δημιουργία περιλήψεων, την απάντηση σε ερωτήσεις και τη βελτίωση του προϊόντος, σύμφωνα με τους <ph name="LINK_TO_SERVICE_TERMS" />. Μην συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.</translation>
 <translation id="7748275671948949022">Επισήμανση κουμπιού της Λειτουργίας εκκίνησης εφαρμογών στο ράφι</translation>
 <translation id="7749443890790263709">Συμπληρώθηκε ο μέγιστος αριθμός γραφείων.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
 <translation id="888982883502837004">Διατίθενται ενημερώσεις υλικολογισμικού για τη συσκευή σας. Κάντε κλικ για έλεγχο και ενημέρωση.</translation>
-<translation id="8893479486525393799">Μικρόφωνο στούντιο</translation>
 <translation id="8896630965521842259">Το <ph name="DESK_TEMPLATE_NAME" /> θα διαγραφεί οριστικά.</translation>
 <translation id="889790758758811533">Απομένει <ph name="PERCENTAGE" />% μπαταρία (περίπου <ph name="TIME_LEFT" />). Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2301,6 +2300,7 @@
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
 <translation id="8939855324412367560">Ο ήχος εισόδου είναι <ph name="INPUT_DEVICE_NAME" /> και ο ήχος εξόδου είναι <ph name="OUTPUT_DEVICE_NAME" />. Μεταβείτε στις Ρυθμίσεις για αλλαγή.</translation>
 <translation id="8940956008527784070">Χαμηλή στάθμη μπαταρίας (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Μικρόφωνο τύπου στούντιο</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Δεν επιλέχθηκε το πλαίσιο ελέγχου.</translation>
 <translation id="8949925099261528566">Συνδέθηκε, χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="8951539504029375108">Μόνο εγκεκριμένες συσκευές Thunderbolt είναι συμβατές με το Chromebook σας.</translation>

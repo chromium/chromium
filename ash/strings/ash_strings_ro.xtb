@@ -1960,7 +1960,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7727952505535211425">Deschide site-ul în bara de adrese într-o filă nouă</translation>
 <translation id="7728657226117099693">Dezactivează Caps Lock</translation>
 <translation id="7742327441377685481">Nicio notificare</translation>
-<translation id="774736258792760908">Când activezi funcția Ajută-mă să scriu și Ajută-mă să citesc, textul introdus și conținutul documentului se trimit la serverele Google AI pentru a genera sugestii de scriere sau rezumate, a răspunde la întrebări și a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="7748275671948949022">Evidențiază butonul Lansator de pe raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8878886163241303700">Ecran extins</translation>
 <translation id="888982883502837004">Sunt disponibile actualizări de firmware pentru dispozitivul tău. Dă clic pentru a examina și actualiza.</translation>
-<translation id="8893479486525393799">Microfon de studio</translation>
 <translation id="8896630965521842259">Șablonul <ph name="DESK_TEMPLATE_NAME" /> va fi șters definitiv</translation>
 <translation id="889790758758811533">Baterie rămasă: <ph name="PERCENTAGE" /> % (aproximativ <ph name="TIME_LEFT" />). Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="88986195241502842">O pagină mai jos</translation>
@@ -2302,6 +2300,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
 <translation id="8939855324412367560">Intrarea audio provine de la <ph name="INPUT_DEVICE_NAME" />, iar conținutul se redă pe <ph name="OUTPUT_DEVICE_NAME" />. Accesează Setările pentru a le modifica.</translation>
 <translation id="8940956008527784070">Baterie slabă (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Microfon de studio</translation>
 <translation id="894774083269346314">Caseta de selectare <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> nebifată.</translation>
 <translation id="8949925099261528566">Conectat, fără internet</translation>
 <translation id="8951539504029375108">Numai dispozitivele Thunderbolt aprobate sunt compatibile cu Chromebookul</translation>

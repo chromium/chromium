@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2360398059912971776">బ్యాటరీ</translation>
 <translation id="2361210043495191221">Wi-Fiని టోగుల్ చేయండి. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">కనిపించే తీరు ప్రభావాలు</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> నుండి పంపబడింది</translation>
 <translation id="2367186422933365202">మీ Chromebookకు సైన్ ఇన్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2367972762794486313">యాప్‌లను చూపు</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">ఆఫ్ చేయండి</translation>
 <translation id="3604801046548457007">"<ph name="DESK_TITILE" />" డెస్క్ క్రియేట్ చేయబడింది</translation>
 <translation id="3606978283550408104">బ్రెయిలీ డిస్‌ప్లే కనెక్ట్ చేయబడింది.</translation>
+<translation id="3612634595000403645">కనిపించే తీరుకు సంబంధించిన ప్రభావాల ప్రాధాన్యతలు</translation>
 <translation id="3615926715408477684">మొబైల్ డేటాను ఎనేబుల్ చేస్తే బ్లూటూత్ ఎనేబుల్ అవుతుంది</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
 <translation id="3616883743181209306">స్క్రీన్‌లో పైన కుడి వైపు మూలకు మెనూ తరలించబడింది.</translation>
@@ -895,6 +897,7 @@
 <translation id="4146671046252289537">తర్వాతి పదం ముగింపునకు తరలించు</translation>
 <translation id="4146833061457621061">సంగీతాన్ని ప్లే చేయి</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
+<translation id="4151054805501931758">పోర్ట్రెయిట్ టచ్-అప్</translation>
 <translation id="4156293514828496577">బ్యాటరీ <ph name="PERCENTAGE" />% మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది).
 కొన్ని ఫీచర్‌లు బ్యాటరీ లైఫ్‌ను పొడిగించడానికి పరిమితం చేయబడ్డాయి.</translation>
 <translation id="4160919062868802509">పలు ఆడియో సోర్స్‌లు గుర్తించబడ్డాయి</translation>
@@ -918,6 +921,7 @@
 <translation id="4209973997261364186">Wi-Fi ఆన్ చేయబడింది</translation>
 <translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4212472694152630271">పిన్‌కి స్విచ్ చేయి</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, టోగుల్ బటన్, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
 <translation id="4217571870635786043">డిక్టేషన్</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, పాజ్ చేయబడింది</translation>
@@ -1960,7 +1964,6 @@
 <translation id="7727952505535211425">వెబ్‌సైట్‌ను కొత్త ట్యాబ్‌లోని అడ్రస్ బార్‌లో తెరవండి</translation>
 <translation id="7728657226117099693">Caps Lockను ఆఫ్ చేయండి</translation>
 <translation id="7742327441377685481">నోటిఫికేషన్‌లు లేవు</translation>
-<translation id="774736258792760908">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను ఆన్ చేసినప్పుడు, <ph name="LINK_TO_SERVICE_TERMS" />‌కు లోబడి, రాత సూచనలను, సారాంశాలను జెనరేట్ చేయడానికి, ప్రశ్నలకు సమాధానమివ్వడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ఇన్‌పుట్ టెక్స్ట్, డాక్యుమెంట్ కంటెంట్ Google AI సర్వర్‌లకు పంపబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.</translation>
 <translation id="7748275671948949022">షెల్ఫ్‌లో లాంచర్ బటన్‌ను హైలైట్ చేయండి</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1969,6 +1972,7 @@
 <translation id="7768784765476638775">వినడానికి ఎంచుకోండి</translation>
 <translation id="7769299611924763557">మీ GIF త్వరలో సిద్ధంగా ఉంటుంది</translation>
 <translation id="7773536009433685931">బదులుగా Wi-Fiని ఆన్ చేయండి</translation>
+<translation id="77747521138552256">చాలా ఎక్కువ సార్లు PINను ఎంటర్ చేసే ప్రయత్నం చేశారు. <ph name="TIME_LEFT" /> సమయం వేచి ఉండి, PINను మళ్లీ ఎంటర్ చేయడానికి ట్రై చేయండి లేదా వెంటనే సైన్ ఇన్ చేయడానికి పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="7780094051999721182">షార్ట్‌కట్‌లు</translation>
 <translation id="7780159184141939021">స్క్రీన్‌ను తిప్పండి</translation>
 <translation id="7781829728241885113">నిన్న</translation>
@@ -2287,7 +2291,6 @@
 <translation id="8877788021141246043">రిమైండర్‌ సెట్ చేయి</translation>
 <translation id="8878886163241303700">స్క్రీన్ విస్తరించబడుతోంది</translation>
 <translation id="888982883502837004">మీ పరికరం కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి. రివ్యూ చేసి, అప్‌డేట్ చేయడానికి క్లిక్ చేయండి.</translation>
-<translation id="8893479486525393799">స్టూడియో మైక్</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> శాశ్వతంగా తొలగించబడుతుంది</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది). మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="88986195241502842">దిగువ పేజీకి వెళుతుంది</translation>
@@ -2302,6 +2305,7 @@
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8939855324412367560">ఇన్‌పుట్ ఆడియో "<ph name="INPUT_DEVICE_NAME" />", అవుట్‌పుట్ ఆడియో "<ph name="OUTPUT_DEVICE_NAME" />". మార్చడానికి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">స్టూడియో-స్టయిల్ మైక్</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> చెక్‌బాక్స్ ఎంచుకోబడలేదు</translation>
 <translation id="8949925099261528566">కనెక్ట్ చేయబడింది, ఇంటర్నెట్ లేదు</translation>
 <translation id="8951539504029375108">ఆమోదించబడిన Thunderbolt పరికరాలు మాత్రమే మీ Chromebookతో అనుకూలంగా ఉంటాయి</translation>

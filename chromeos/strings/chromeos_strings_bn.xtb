@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">ওয়ালপেপার প্রিভিউ থেকে বেরিয়ে আসুন</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />-এর জন্য এডিট বোতাম।</translation>
 <translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
+<translation id="1756681705074952506">ইনপুট পদ্ধতি</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">আরও দ্রুত ও বেশি আত্মবিশ্বাসের সাথে লিখুন</translation>
 <translation id="3662461537616691585">বার্গান্ডি ও মেরুন</translation>
 <translation id="3668449597372804501">ক্লাউড ফ্লো ওয়ালপেপার</translation>
+<translation id="3668570675727296296">ভাষা সেটিংস</translation>
 <translation id="3675132884790542448">শূকর</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">ফ্লোট স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="3716250181321371108">কন্ট্রোল তৈরি করুন</translation>
 <translation id="3716830479327464973">আপনি অনুমতি দিলে, রেকর্ডার এগুলির জন্য রেকর্ডার আপনার অডিও রেকর্ডিং বিশ্লেষণ করবে:</translation>
+<translation id="3719826155360621982">হোমপেজ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="404928562651467259">সতর্কতা</translation>
 <translation id="4050208988451295487">কয়েকটি বিকল্প:</translation>
+<translation id="405181879009056822">ChromeOS সেটিংস</translation>
 <translation id="4054683689023980771">ছবি ডাউনলোড করা হচ্ছে</translation>
 <translation id="4059839844193047929">এই পৃষ্ঠা ছেড়ে বেরিয়ে এলে আপনার বর্তমান রেকর্ডিং বন্ধ হয়ে যাবে</translation>
 <translation id="4063039537646912479">হালকা নীল</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">সানরাইজ ওয়ালপেপার</translation>
 <translation id="5294769550414936029">ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">উইন্ডোকে ডেস্কে সরিয়ে নিয়ে যান</translation>
+<translation id="5302048478445481009">ভাষা</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ ওয়ালপেপার</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">পরিচয়</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">হাই রেজোলিউশন ছবি তৈরি করা হচ্ছে…</translation>
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
+<translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
 <translation id="6796229976413584781">শর্টকার্ট মুছে ফেলা হয়েছে</translation>
 <translation id="6798678288485555829">টেক্সট নেভিগেশন</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ইউএসবি টাচস্ক্রিন</translation>
 <translation id="757747079855995705">পাথর</translation>
+<translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7613724632293948900">মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে অন্য জায়গায় সরান।</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">সাধারণ কন্ট্রোল</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" অটোমেটিক চালু হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু হয়েছে}}</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">নিচে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>
+<translation id="8433186206711564395">নেটওয়ার্ক সেটিংস</translation>
 <translation id="843568408673868420">ইন্টারনেট কানেক্টিভিটি</translation>
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>
 <translation id="8456200178779628126">পড়তে ও লিখতে Google AI-এর থেকে সহায়তা নিন</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">এই নেটওয়ার্কে খুব সম্ভবত ক্যাপটিভ পোর্টাল আছে</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8798441408945964110">পরিষেবা প্রদানকারীর নাম</translation>
+<translation id="8808828119384186784">Chrome সেটিংস</translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="8818152010000655963">ওয়ালপেপার</translation>
 <translation id="8820457400746201697">কোনও অ্যাকশন পারফর্ম করতে নীল রঙের টাচ পয়েন্ট সরান। কাস্টমাইজ করতে, অ্যাসোসিয়েট 'কী' বেছে নিন।</translation>

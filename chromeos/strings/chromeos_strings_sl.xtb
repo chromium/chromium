@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Zapiranje predogleda zaslonskega ozadja</translation>
 <translation id="1754578112426924640">Gumb za urejanje za <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacija za diagnostiko</translation>
+<translation id="1756681705074952506">Način vnosa</translation>
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Pišite hitreje in z več samozavesti</translation>
 <translation id="3662461537616691585">bordo in kostanjevo rdeča</translation>
 <translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
+<translation id="3668570675727296296">Jezikovne nastavitve</translation>
 <translation id="3675132884790542448">prašiči</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Zapusti plavajoči gumb</translation>
 <translation id="3716250181321371108">Ustvari upravljanje</translation>
 <translation id="3716830479327464973">Če to dovolite, bo Snemalnik analiziral vaše zvočne posnetke za:</translation>
+<translation id="3719826155360621982">Domača stran</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Naslednja skladba</translation>
 <translation id="404928562651467259">OPOZORILO</translation>
 <translation id="4050208988451295487">Nekaj možnosti:</translation>
+<translation id="405181879009056822">Nastavitve sistema ChromeOS</translation>
 <translation id="4054683689023980771">Prenašanje slike</translation>
 <translation id="4059839844193047929">Če zapustite to stran, se bo trenutni posnetek končal</translation>
 <translation id="4063039537646912479">svetlo modre</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Ozadje s sončnim vzhodom</translation>
 <translation id="5294769550414936029">različica <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premik okna na namizje</translation>
+<translation id="5302048478445481009">Jezik</translation>
 <translation id="5303837385540978511">Ekskluzivno zaslonsko ozadje za <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteta</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Ustvarjanje slike visoke ločljivosti …</translation>
 <translation id="6766275201586212568">Neuspele razrešitve DNS</translation>
 <translation id="6768237774506518020">Visoko število napak pri razreševanju DNS</translation>
+<translation id="6786747875388722282">Razširitve</translation>
 <translation id="6791471867139427246">barva svetlobe tipkovnice</translation>
 <translation id="6796229976413584781">Bližnjica je izbrisana</translation>
 <translation id="6798678288485555829">Premikanje po besedilu</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Zaslon na dotik USB</translation>
 <translation id="757747079855995705">kamen</translation>
+<translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Prestavljanje z miško ali puščičnimi tipkami.</translation>
 <translation id="7618774594543487847">Nevtralna</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">Splošni kontrolniki</translation>
 <translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
+<translation id="7982789257301363584">Omrežje</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija »<ph name="APP_NAME_1" />« se je zagnala samodejno}one{# aplikacija se je zagnala samodejno}two{# aplikaciji sta se zagnali samodejno}few{# aplikacije so se zagnale samodejno}other{# aplikacij se je zagnalo samodejno}}</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">dol</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8431300646573772016">Novosti v Chromu OS</translation>
+<translation id="8433186206711564395">Omrežne nastavitve</translation>
 <translation id="843568408673868420">Internetna povezava</translation>
 <translation id="844521431886043384">DNS ni nastavljen.</translation>
 <translation id="8456200178779628126">Uporabite Googlovo umetno inteligenco za pomoč pri branju in pisanju</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8798441408945964110">Ime ponudnika</translation>
+<translation id="8808828119384186784">Chromove nastavitve</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8820457400746201697">Premaknite modro točko stika k dejanju. Izberite povezano tipko za prilagajanje.</translation>

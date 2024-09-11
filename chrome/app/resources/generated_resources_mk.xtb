@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1049795001945932310">&amp;Поставки за јазик</translation>
 <translation id="1050693411695664090">Слабо</translation>
-<translation id="1053776357096024725">Подобрете го звукот на вградениот микрофон со различни ефекти</translation>
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
 <translation id="1054187194995068149">Здраво. Ова е преглед</translation>
@@ -241,7 +240,6 @@
 <translation id="1166457390969131095">Користете и зачувувајте ги лозинките и криптографските клучеви од сметката на Google</translation>
 <translation id="1166583374608765787">Прегледајте го ажурирањето на името</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> припаѓа на работната површина <ph name="DESK_TITLE" /></translation>
-<translation id="1167262726334064738">Испробајте нова лозинка</translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Неодамнешна AI-тема: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Автоматски променете го јазикот за да се совпаѓа со избраните содржини</translation>
@@ -274,7 +272,6 @@
 <translation id="1183237619868651138">Не може да ја инсталира датотеката <ph name="EXTERNAL_CRX_FILE" /> во локалниот кеш.</translation>
 <translation id="1184037892196730210">Не може да се емитува екранот</translation>
 <translation id="1185924365081634987">Исто така, може да се обидете да <ph name="GUEST_SIGNIN_LINK_START" />прелистувате како гостин<ph name="GUEST_SIGNIN_LINK_END" /> за да ја поправите оваа грешка на мрежата.</translation>
-<translation id="1187692277738768150">Кога ќе ја користите и зачувате лозинкава:</translation>
 <translation id="1187722533808055681">Неактивни будења</translation>
 <translation id="1188807932851744811">Дневникот не се постави.</translation>
 <translation id="1190086046506744802">Многу пространо</translation>
@@ -291,7 +288,6 @@
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1195558154361252544">Известувањата се автоматски блокирани за сите сајтови, освен за оние за коишто сте ги дозволиле</translation>
 <translation id="1197088940767939838">Портокалова</translation>
-<translation id="1197185198920566650">Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="11978075283960463">Податоци зачувани во апликација: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Алатки за говор при слаб вид</translation>
 <translation id="119944043368869598">Избриши ги сите</translation>
@@ -1636,7 +1632,6 @@
 <translation id="2143089736086572103">Видливо за некои контакти</translation>
 <translation id="2143765403545170146">Секогаш прикажувај го алатникот при цел екран</translation>
 <translation id="2143778271340628265">Рачна конфигурација на прокси</translation>
-<translation id="2143808295261240440">Користете ја препорачаната лозинка</translation>
 <translation id="2143915448548023856">Поставки на екранот</translation>
 <translation id="2144536955299248197">Прегледувач на сертификатот: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Развој на апликации на Android за Linux</translation>
@@ -1808,7 +1803,6 @@
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2268182915828370037">Да се исклучи синхронизацијата на датотеките?</translation>
-<translation id="2269895253281481171">Ќе добиете известување ако некогаш постои ризик</translation>
 <translation id="2270450558902169558">Разменете податоци со кој било уред во доменот <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Инсталацијата <ph name="BEGIN_BOLD" />ќе го избрише целиот хард диск<ph name="END_BOLD" />. Уверете се дека имате направено бекап на вашите податоци.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Откако ќе започне, инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
@@ -3184,7 +3178,6 @@
 <translation id="3247649647204519958">Одовде, може да ги гледате и да управувате со дозволите на екстензиите за сајтот што сте го отвориле</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - мрежна грешка</translation>
 <translation id="3248902735035392926">Безбедноста е значајна. Одвојте малку време и <ph name="BEGIN_LINK" />проверите ги екстензиите сега<ph name="END_LINK" /></translation>
-<translation id="3249323165366527554">Регистрирајте се и најавувајте се побрзо кога лозинката е автоматски зачувана во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="3251119461199395237">Синхронизација на датотеки</translation>
 <translation id="3251714896659475029">Дозволете <ph name="SUPERVISED_USER_NAME" /> да пристапува до „Помошникот на Google“ со „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Не е дел од сертификатот&gt;</translation>
@@ -5498,7 +5491,6 @@
 <translation id="4925320384394644410">Вашите порти ќе се појават тука</translation>
 <translation id="49265687513387605">Не може да се емитува екранот. Проверете дали сте го потврдиле известувањето да започнете со споделување на екранот.</translation>
 <translation id="4927753642311223124">Овде нема што да се види, продолжи.</translation>
-<translation id="4928629450964837566">Користете побезбедна лозинка</translation>
 <translation id="4929120497462893830">Хаш-вредноста е копирана во привремената меморија</translation>
 <translation id="4929386379796360314">Дестинации за печатење</translation>
 <translation id="4930406318748549391">Положба на страничната табла</translation>
@@ -5601,7 +5593,6 @@
 <translation id="5015344424288992913">Разрешување прокси...</translation>
 <translation id="5016305686459575361">Ако го поврзете телефонот, може да ги правите следниве работи:</translation>
 <translation id="5016491575926936899">Може да испраќате пораки од компјутерот, да ја споделувате интернет-врската, да одговарате на известувањата од разговорите, да го отклучувате вашиот <ph name="DEVICE_TYPE" /> со телефонот.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
-<translation id="5016983299133677671">Испробајте нова лозинка</translation>
 <translation id="5017250179386090956">Се преземаат датотеките со прибелешки за главниот нод</translation>
 <translation id="5017529052065664584">Изминатите 15 минути</translation>
 <translation id="5018207570537526145">Отвори веб-сајт со екстензии</translation>
@@ -5791,7 +5782,6 @@
 <translation id="5147097165869384760">Барате системска страница на OS? Одете на <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Препорака</translation>
 <translation id="5147516217412920887">Следете ги упатствата на телефонот за да го потврдите кодот</translation>
-<translation id="5147992672778369947">Користете ја препорачаната лозинка</translation>
 <translation id="5148285448107770349">Лозинката мора содржи најмалку 8 знаци</translation>
 <translation id="5149602533174716626">Копирај видеокадар</translation>
 <translation id="5150254825601720210">Име на Netscape-сертификат за SSL-сервер</translation>
@@ -6150,7 +6140,6 @@
 <translation id="5414836363063783498">Се проверува…</translation>
 <translation id="5415328625985164836">Ова е бета-програма. Сега може да ја користите Steam за да играте некои игри на вашиот Chromebook.</translation>
 <translation id="5417312524372586921">Теми на прелистувачот</translation>
-<translation id="5417353542809767994">Брзо искористете силна лозинка</translation>
 <translation id="541737483547792035">Зголеми го екранот</translation>
 <translation id="541822678830750798">Се бара пристап за читање и променување на сајтов</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -6305,7 +6294,6 @@
 <translation id="5517304475148761050">Апликацијава бара пристап до Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5519900055135507385">Заштитете ја сметкава дополнително со силна лозинка. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Дали е ова почетната страница што ја очекувавте?</translation>
 <translation id="5522156646677899028">Наставката содржи сериозни слаби страни на безбедноста.</translation>
 <translation id="5522378895674097188">Историјата и поставките за пребарување може да ги прегледате во <ph name="BEGIN_LINK" />Моја активност<ph name="END_LINK" />:
@@ -6645,7 +6633,6 @@
 <translation id="5780973441651030252">Приоритет на процес</translation>
 <translation id="5781092003150880845">Синхронизирај како <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Испратете наредби до <ph name="EXTENSION_NAME" /></translation>
-<translation id="5782040878821624922">Достапно на секој уред</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5784291589716625675">Променување на јазикот на апликацијата</translation>
@@ -6675,7 +6662,6 @@
 <translation id="579915268381781820">Вашиот безбедносен клуч е отстранет.</translation>
 <translation id="5799478978078236781">Добивајте совети, понуди и новости за <ph name="DEVICE_TYPE" /> и споделувајте повратни информации.</translation>
 <translation id="5799508265798272974">Виртуелен уред на Linux: <ph name="LINUX_VM_NAME" /></translation>
-<translation id="5799971219262397777">Ресетирање на поставките на уредот со ChromeOS на безбедните стандардни поставки.</translation>
 <translation id="5800020978570554460">Целната датотека е отсечена или отстранета од последното преземање.</translation>
 <translation id="5800290746557538611">Овозможете ја инстант точката на пристап</translation>
 <translation id="5800351251499368110">Затворете го пребарувањето на страничната табла. Пребарувањето е отворено на страничната табла.</translation>
@@ -7661,7 +7647,6 @@
 <translation id="6538036594527795020">Променете го јазикот на <ph name="APP" />. Тековниот јазик е <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Грешка при откривањето на кодот</translation>
 <translation id="653920215766444089">Се пребарува покажувач</translation>
-<translation id="6539674013849300372">Бидете побезбедни онлајн со силна лозинка. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Се продолжува…</translation>
 <translation id="6540174167103635041">Инсталирајте ја апликацијата</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> овозможете само ако знаете што правите или ако ви рекле да го направите тоа, затоа што собирањето податоци може да го намали учинокот.</translation>
@@ -9485,7 +9470,6 @@
 <translation id="7851720427268294554">IPP-анализатор</translation>
 <translation id="78526636422538552">Додавањето повеќе сметки на Google е оневозможено</translation>
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
-<translation id="7853999103056713222">Користете побезбедна лозинка</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
 <translation id="7857004848504343806">Вашиот компјутер содржи заштитен модул што се користи за имплементирање многу важни безбедносни функции во ChromeOS Flex. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
@@ -9825,7 +9809,6 @@
 <translation id="8086610718778464681">Не може да се направи бекап на апликациите и датотеките на Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Датотекава е шифрирана. Побарајте од сопственикот да ја дешифрира.}one{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}other{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}}</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
-<translation id="8089547136368562137">Заштитено со најдобрите технологии на Google</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
 <translation id="8090513782447872344">Може да се вратите во секое време за да погледнете повторно</translation>
 <translation id="8090579562279016251">Ја намалува изведбата, но прави V8 да биде поотпорен на напади</translation>
@@ -10163,7 +10146,6 @@
 <translation id="8325413836429495820">Не им е дозволено да ја гледаат привремената меморија</translation>
 <translation id="8326478304147373412">PKCS #7, ланец на сертификат</translation>
 <translation id="8327386430364625757">Математички фонт</translation>
-<translation id="8327538105740918488">Секогаш може да ја промените лозинкава подоцна. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дозволи и поставки за содржини</translation>
 <translation id="8328228852664998535">Ако продолжите, вашите лозинки, криптографски клучеви и други податоци ќе се избришат трајно од <ph name="BRAND" />. Сметките што сте ги создале за сајтови или апликации нема да се избришат.</translation>
 <translation id="8328777765163860529">Затвори ги сите</translation>
@@ -10426,7 +10408,6 @@
 <translation id="8517759303731677493">Изменете…</translation>
 <translation id="8518942514525208851">Скриј ги вулгарностите</translation>
 <translation id="8519895319663397036">Не може да се увезат лозинките. Големината на датотеката треба да биде помала од 150 KB.</translation>
-<translation id="851991974800416566">Брзо искористете силна лозинка</translation>
 <translation id="8523493869875972733">Откажи</translation>
 <translation id="8523849605371521713">Додадено од правилото</translation>
 <translation id="8524594273111932386">search + стрелка надолу</translation>
@@ -10958,7 +10939,6 @@
 <translation id="8890529496706615641">Профилот не можеше да се преименува. Обидете се повторно или побарајте техничка поддршка од вашиот оператор.</translation>
 <translation id="8892168913673237979">Сè е подготвено.</translation>
 <translation id="8892246501904593980">Погледнете ги сите ваши обележувачи во „Обележувачи“ и „Списоци“</translation>
-<translation id="8893479486525393799">Студиски микрофон</translation>
 <translation id="8893801527741465188">Деинсталирањето е завршено</translation>
 <translation id="8893928184421379330">Уредот <ph name="DEVICE_LABEL" /> не може да се препознае.</translation>
 <translation id="8894761918470382415">Заштита за пристап до податоците од периферни уреди</translation>
@@ -11128,7 +11108,6 @@
 <translation id="9011262023858991985">Се емитува картичкава</translation>
 <translation id="9011393886518328654">Белешки за верзијата</translation>
 <translation id="9012122671773859802">Движи го екранот континуирано кога се движи глувчето</translation>
-<translation id="9012157139067635194">Целосно бришење</translation>
 <translation id="9012585441087414258">Штити од сајтови, преземања и екстензии за коишто се знае дека се опасни. Ако конкретна страница направи нешто сомнително, URL-адресите и делови од содржините на страницата се испраќаат до „Безбедно прелистување со Google“.</translation>
 <translation id="9013037634206938463">Потребни се <ph name="INSTALL_SIZE" /> слободен простор за инсталирање на Linux. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="9014206344398081366">Упатство за ChromeVox</translation>

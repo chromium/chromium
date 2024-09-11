@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">အုပ်စု ဖွဲ့မထားပါ</translation>
 <translation id="4590027107044272416">ဤနေရာတွင် တဘ်အသစ် ဖွင့်နိုင်ပါပြီ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{မသုံးသောတဘ် ၁ ခုကို ပိတ်မလား။}other{မသုံးသောတဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်မလား။}}</translation>
-<translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက် ပိတ်ပါ}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက် ပိတ်ပါ}}</translation>
 <translation id="4777866634702576038">တဘ်အုပ်စုကို ဖျက်မလား။</translation>

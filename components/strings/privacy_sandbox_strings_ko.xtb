@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1444443021901415601">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 기록합니다.</translation>
 <translation id="2252052615723281030">Chrome에 로그인된 상태라면 이 설정이 IP 주소를 비공개로 보호하는 데 도움을 줍니다. Chrome에서 특정 사이트가 나를 추적하고 있다고 의심하는 경우 일부 트래픽이 개인 정보 보호 서버를 통해 전송될 수 있습니다.</translation>
+<translation id="2793385791865768072">Chromium에서는 내 최근 방문 기록을 기반으로 관심 주제를 기록합니다.</translation>
 <translation id="33479675708419823">Chrome에 로그인된 상태라면 이 설정이 IP 주소를 비공개로 보호하는 데 도움을 줍니다. Chrome에서 특정 사이트가 나를 추적하고 있다고 의심하는 경우 일부 트래픽이 비공개 서버를 통해 전송될 수 있습니다. <ph name="LINK_BEGIN" />IP 보호 작동 방식<ph name="LINK_END" />에 관해 자세히 알아보기</translation>
 <translation id="3529311220178827364">IP 주소 숨기기에 관해 자세히 알아보기</translation>
+<translation id="4041687306270459969">4주가 지난 광고 주제는 자동으로 삭제됩니다. 주제에는 스포츠, 의류 등이 포함됩니다.</translation>
+<translation id="4177501066905053472">광고 주제</translation>
 <translation id="4301151630239508244">광고 주제는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 광고 주제가 없어도 사이트에서는 광고를 계속 표시할 수는 있지만, 사용자의 관심을 덜 끌 수도 있습니다. <ph name="BEGIN_LINK_1" />광고 개인 정보 보호 관리<ph name="END_LINK_1" />에 관해 자세히 알아보세요.</translation>
+<translation id="453692855554576066">Chromium 설정에서 광고 주제를 확인하고, 사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다.</translation>
 <translation id="4598427486995631491">IP 주소 숨기기</translation>
+<translation id="4692439979815346597">Chrome 설정에서 광고 주제를 확인하고, 사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다.</translation>
+<translation id="5413586988657235240">방문하는 사이트에서는 내 방문 기록과 신원을 보호하면서 관련성 있는 광고를 표시하기 위해 Chromium에 주제를 요청할 수 있습니다.</translation>
+<translation id="6186536480878693792">방문하는 사이트에서는 내 방문 기록과 신원을 보호하면서 관련성 있는 광고를 표시하기 위해 Chrome에 주제를 요청할 수 있습니다.</translation>
 <translation id="6371812158043974664">Chromium에 로그인된 상태라면 이 설정이 IP 주소를 비공개로 보호하는 데 도움을 줍니다. Chromium에서 특정 사이트가 나를 추적하고 있다고 의심하는 경우 일부 트래픽이 비공개 서버를 통해 전송될 수 있습니다. <ph name="LINK_BEGIN" />IP 보호 작동 방식<ph name="LINK_END" />에 관해 자세히 알아보기</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP 보호 작동 원리<ph name="END_LINK" /> 알아보기</translation>
+<translation id="7475768947023614021">광고 주제 설정 검토하기</translation>
 </translationbundle>

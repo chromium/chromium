@@ -412,6 +412,7 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
       Os padrões de URL não podem entrar em conflito com <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="1309259005392595570">Desativar o contrato de chave pós-quântico para TLS</translation>
 <translation id="1309465583050255779">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> especificará o nome do provedor de pesquisa padrão.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> não for definida, o nome do host especificado pelo URL de pesquisa será usado.</translation>
@@ -5072,6 +5073,7 @@ Esta política mapeia um ID de extensão ou um URL de atualização apenas para 
 Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4737832614429402441">Usar o valor padrão para o contrato de chave pós-quântico para TLS</translation>
 <translation id="4739596156184678950">Permitir que arquivos sejam salvos diretamente no <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringir modo de impressão de gráficos de segundo plano</translation>
 <translation id="4745232963710538589">Ativar extensão de insights para relatar métricas de uso</translation>
@@ -6909,6 +6911,21 @@ Esta política não tem efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENABLE
 Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de bloqueio não vai ser mostrado, independente do valor definido na <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">O "Navegação segura" está ativo no modo avançado. Esse modo oferece maior segurança, mas requer o compartilhamento de mais informações de navegação com o Google.</translation>
 <translation id="6135552820180449830">Crosh (com suporte desde a versão 99)</translation>
+<translation id="6136179371737299503">Esta política no dispositivo define se o <ph name="PRODUCT_OS_NAME" /> vai oferecer um algoritmo de contrato de chave pós-quântico em TLS. Em versões futuras, o algoritmo será o ML-KEM, um padrão pós-quântico do NIST. Inicialmente, o algoritmo era o Kyber, uma iteração de rascunho anterior do padrão. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
+
+Se esta política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário será protegido contra computadores quânticos ao se comunicar com servidores compatíveis.
+
+Se esta política for desativada, o <ph name="PRODUCT_OS_NAME" /> não vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário ficará desprotegido contra computadores quânticos.
+
+Se esta política não for definida, o <ph name="PRODUCT_OS_NAME" /> vai seguir o processo de lançamento padrão para oferecer um contrato de chave pós-quântico.
+
+A oferta do Kyber é compatível com versões anteriores. Os servidores TLS atuais e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
+
+No entanto, os dispositivos que não implementam corretamente a TLS poderão não funcionar corretamente quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção caso encontrem esse problema.
+
+Esta política é uma medida temporária e será removida após a versão 141 do <ph name="PRODUCT_OS_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas forem resolvidos.
+
+Se esta política e a PostQuantumKeyAgreementEnabled estiverem definidas, esta terá prioridade.</translation>
 <translation id="6138636318340561140">Verifica em tempo real o status dos URLs no "Navegação segura"</translation>
 <translation id="6141402445226505817">Sempre usar detecção de fuso horário aproximada</translation>
 <translation id="6141944295566709543">Permitir que os usuários reproduzam mídia quando o dispositivo estiver bloqueado</translation>
@@ -7074,27 +7091,6 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
       Se esta política for ativada ou deixada sem definição, os usuários poderão instalar e executar o Chrome for Testing.
 
       Se for desativada, os usuários não terão permissão para executar o Chrome for Testing. Os usuários ainda poderão instalar o Chrome for Testing, mas ele não será executado nos perfis em que a política estiver desativada.</translation>
-<translation id="6258646807927528870">Configura uma lista de regras de controle de dados para evitar vazamentos.
-
-      Cada regra consiste no seguinte:
-      - Campos de condição que acionam essa regra. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Para subcampos da lista, precisa haver correspondência de apenas uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
-      - Uma lista de restrições a serem aplicadas. Dependendo da restrição, apenas as condições <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> podem estar disponíveis.
-
-      As regras podem ser aplicadas para controlar:
-      - Dados na área de transferência compartilhados entre as origens e os destinos.
-      - O bloqueio de capturas de tela com base nas guias de origem.
-
-      Se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> for definida como "true" (verdadeira), as regras acionadas serão informadas ao administrador.
-      O nível de restrição pode ser definido como "BLOCK", "WARN" ou "REPORT" (bloquear, alertar ou informar).
-      - Se a restrição for definida como BLOCK, a ação não vai ser autorizada.
-      - Se a restrição for definida como WARN, o usuário receberá um aviso e poderá escolher entre continuar ou cancelar a ação.
-      - Se a restrição for definida como "REPORT", a ação do usuário não será interrompida, mas um relatório será enviado se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> estiver ativada.
-
-      Observações:
-      - Formate os padrões de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Para regras de prevenção contra vazamento de dados específicas do <ph name="PRODUCT_OS_NAME" />, consulte também a política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Se a política for deixada sem definição, nenhuma restrição será aplicada.</translation>
 <translation id="6258658183356534534">Controlar o recurso de atualização do User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Reportar informações de identificação da máquina</translation>
 <translation id="6264247808139384018">Se a política for ativada ou não for definida, os usuários que autenticam com uma senha poderão bloquear a tela.
@@ -10428,6 +10424,19 @@ mais lentamente.
 Esta política pode ser substituída por padrões de URL específicos usando as políticas <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> e <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Se ela for deixada sem definição, as otimizações do JavaScript serão ativadas.</translation>
+<translation id="8670585636650044874">Esta política define se o <ph name="PRODUCT_NAME" /> vai oferecer um algoritmo de contrato de chave pós-quântico na TLS. Em versões futuras, o algoritmo será o ML-KEM, um padrão pós-quântico do NIST. Inicialmente, o algoritmo era o Kyber, uma iteração de rascunho anterior do padrão. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
+
+Se esta política for ativada, o <ph name="PRODUCT_NAME" /> vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário será protegido contra computadores quânticos ao se comunicar com servidores compatíveis.
+
+Se esta política for desativada, o <ph name="PRODUCT_NAME" /> não vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário ficará desprotegido contra computadores quânticos.
+
+Se esta política não for definida, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão para oferecer um contrato de chave pós-quântico.
+
+A oferta de um contrato de chave pós-quântico é compatível com versões anteriores. Os servidores TLS atuais e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
+
+No entanto, os dispositivos que não implementam corretamente a TLS poderão não funcionar corretamente quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção caso encontrem esse problema.
+
+Esta política é uma medida temporária e será removida após a versão 141 do <ph name="PRODUCT_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas forem resolvidos.</translation>
 <translation id="8671119576957984818">Ativar hub de compartilhamento da área de trabalho</translation>
 <translation id="8671193325113134911">Ativar a verificação rigorosa de tipo MIME para scripts de worker</translation>
 <translation id="8671303329680827168">Essa política foi descontinuada. Use a <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>

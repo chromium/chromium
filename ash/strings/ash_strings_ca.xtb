@@ -1960,7 +1960,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7727952505535211425">Obre el lloc web a la barra d'adreces en una pestanya nova</translation>
 <translation id="7728657226117099693">Desactiva el bloqueig de majúscules</translation>
 <translation id="7742327441377685481">Cap notificació</translation>
-<translation id="774736258792760908">En activar Ajuda'm a escriure i Ajuda'm a llegir, el text d'entrada i el contingut del document s'envien als servidors de la IA de Google per generar suggeriments d'escriptura i resums, respondre a preguntes i millorar el producte de conformitat amb les <ph name="LINK_TO_SERVICE_TERMS" />. No hi incloguis informació personal, sensible ni confidencial.</translation>
 <translation id="7748275671948949022">Marca el botó del menú d'aplicacions al prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
 <translation id="888982883502837004">Hi ha actualitzacions de microprogramari disponibles per al teu dispositiu. Fes clic per consultar-les i actualitzar.</translation>
-<translation id="8893479486525393799">Micròfon d'estudi</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se suprimirà permanentment</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de bateria (aproximadament <ph name="TIME_LEFT" />). Connecta el dispositiu a l'alimentació.</translation>
 <translation id="88986195241502842">Av Pàg</translation>
@@ -2302,6 +2300,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8939855324412367560">L'àudio d'entrada és "<ph name="INPUT_DEVICE_NAME" />" i el de sortida, "<ph name="OUTPUT_DEVICE_NAME" />". Per canviar-ho, ves a Configuració.</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Micròfon d'estudi</translation>
 <translation id="894774083269346314">No s'ha marcat la casella de selecció de <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Connectat, sense Internet</translation>
 <translation id="8951539504029375108">Només els dispositius Thunderbolt aprovats són compatibles amb el teu Chromebook</translation>

@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
 <translation id="1207734034680156868">ההצעות מבוססות על התיאור שלך</translation>
 <translation id="121090498480012229">הפעלה או השהיה של המדיה</translation>
+<translation id="1216675364136048456">סגירה</translation>
 <translation id="1223498995510244364">סיכום</translation>
 <translation id="123124571410524056">פורטל חשוד</translation>
 <translation id="1232610416724362657">מפל</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1591562245178063882">החודש</translation>
 <translation id="1593528591614229756">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">הסתרת התמליל</translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1651925268237749928">בחרת אלבום משותף. אנשים אחרים יכולים להוסיף או לשנות תמונות. יכול להיות שתמונות שלא נמצאות כרגע באלבום יוגדרו כטפט שלך.</translation>
+<translation id="1661512400125589646">השהיה</translation>
 <translation id="1661865805917886535">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף למדיניות הפרטיות (<ph name="PRIVACYPOLICYURL" />) ולתנאים ולהגבלות (<ph name="TERMSOFSERVICEURL" />) שלנו. כדי לבקש שינויים בתוכן, צריך לעבור למרכז העזרה בנושאים משפטיים (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
@@ -167,10 +170,12 @@
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
 <translation id="1754578112426924640">לחצן לעריכת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
+<translation id="1756681705074952506">שיטת קלט</translation>
 <translation id="175763766237925754">טוב (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298">‫<ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">תמליל</translation>
 <translation id="1765169783255151332">מעבר מהיר בין מקשים</translation>
 <translation id="1768959921651994223">סוג אימות</translation>
 <translation id="1776228893584526149">גוון הטפט</translation>
@@ -215,6 +220,7 @@
 <translation id="1954818433534793392">בניין</translation>
 <translation id="1962550982027027473">‏נדרש APN כברירת מחדל</translation>
 <translation id="1967860190218310525">‏יצירת APN חדש</translation>
+<translation id="1967917622327567355">הצגת התמליל</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">מסורתי</translation>
 <translation id="1977994649430373166">‏תמונת הפרופיל ב-Google</translation>
@@ -258,6 +264,7 @@
 <translation id="2180197493692062006">משהו השתבש. צריך לנסות לפתוח את האפליקציה מחדש.</translation>
 <translation id="2189104374785738357">‏עריכת פרטי ה-APN</translation>
 <translation id="2195732836444333448">יש עומס גדול מהרגיל. אפשר לנסות שוב בעוד כמה דקות.</translation>
+<translation id="2197185031095816179">איפוס הגדרות האבטחה יכול לעזור להסיר חלונות קופצים לא רצויים, לתקן בעיות ברשת ולטפל בבעיות בלתי צפויות אחרות.</translation>
 <translation id="2201758491318984023">אופניים</translation>
 <translation id="2203272733515928691">מעיין חם</translation>
 <translation id="2203642483788377106">צוק</translation>
@@ -514,6 +521,7 @@
 <translation id="3661106764436337772">לכתוב מהר יותר ועם יותר ביטחון</translation>
 <translation id="3662461537616691585">בורדו וחום ערמוני</translation>
 <translation id="3668449597372804501">הטפט של תנועת העננים</translation>
+<translation id="3668570675727296296">הגדרות שפה</translation>
 <translation id="3675132884790542448">חזירים</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
@@ -521,6 +529,7 @@
 <translation id="3715651196924935218">יציאה ממצב צף</translation>
 <translation id="3716250181321371108">יצירת אמצעי בקרה</translation>
 <translation id="3716830479327464973">אם בחרת לאשר, מכשיר ההקלטה ינתח את הקלטות האודיו כדי:</translation>
+<translation id="3719826155360621982">דף הבית</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
@@ -534,6 +543,7 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
+<translation id="3836587210832263413">חשוב להפעיל רק תוספים מהימנים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">מקלדת כהה</translation>
@@ -579,6 +589,7 @@
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="404928562651467259">אזהרה</translation>
 <translation id="4050208988451295487">יש כמה אפשרויות:</translation>
+<translation id="405181879009056822">‏הגדרות ChromeOS</translation>
 <translation id="4054683689023980771">התמונה בתהליך הורדה</translation>
 <translation id="4059839844193047929">יציאה מהדף הזה תסיים את ההקלטה הנוכחית</translation>
 <translation id="4063039537646912479">בצבע כחול בהיר</translation>
@@ -593,6 +604,7 @@
 <translation id="4111761024568264522">‏לוח מגע של USB</translation>
 <translation id="4113067922640381334">יש לך עכשיו גישה ל<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />טפטים<ph name="END_LINK_WALLPAPER_SUBPAGE" /> חדשים</translation>
 <translation id="4117637339509843559">מצב כהה</translation>
+<translation id="4126551873361000548">חזרה של 10 שניות אחורה</translation>
 <translation id="4130035430755296270">כשמציבים את העכבר מעל אפשרויות הפריסה אפשר לראות עוד אפשרויות</translation>
 <translation id="4130750466177569591">מקובל עליי</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
@@ -622,6 +634,7 @@
 <translation id="4251839292699800785">משרד אופנתי</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
 <translation id="4266143281602681663">חוטי סריגה</translation>
+<translation id="4269815121975886860">העדפות ההפעלה</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
 <translation id="4275663329226226506">מדיה</translation>
 <translation id="4278766082079064416">נעשה שימוש במקש קיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. צריך לערוך או להסיר אותו כדי לפתור את ההתנגשות.</translation>
@@ -673,6 +686,7 @@
 <translation id="4507392511610824664">הגברת הבהירות</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4513946894732546136">משוב</translation>
+<translation id="4516323842122524821">עוצמת הקול</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>
@@ -756,6 +770,7 @@
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">מנהרת עצים</translation>
+<translation id="4965661459364092269">האיפוס של הגדרות האבטחה הושלם</translation>
 <translation id="4965703485264574128">כדי לקבל תוצאה מקורבת, צריך להכפיל את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">פיצול</translation>
 <translation id="4972592110715526173">שינוי מצב</translation>
@@ -776,6 +791,7 @@
 <translation id="5049856988445523908">‏כרטיס ה-SIM נעול (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">שם הקבוצה</translation>
 <translation id="5051044138948155788">זהו הדף היחיד. פעולה זו תעביר אותך אל מסך ההתחלה של הסריקה.</translation>
+<translation id="5053233795640754917">השהיה</translation>
 <translation id="5078711626843651677">תבניות הקול נשמרות באופן זמני במכשיר עד להשלמת ההוספה של התוויות לזיהוי הדוברים. אפשר להשבית את זה ב'הגדרות' בכל שלב.</translation>
 <translation id="5078983345702708852">עתידני</translation>
 <translation id="5087864757604726239">הקודם</translation>
@@ -783,6 +799,7 @@
 <translation id="5089810972385038852">מדינה</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /> ולהכניס אותו שוב</translation>
+<translation id="5095864667399748231">השתקה או ביטול ההשתקה</translation>
 <translation id="5099354524039520280">למעלה</translation>
 <translation id="5107243100836678918">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">נרדפות:</translation>
@@ -816,6 +833,7 @@
 <translation id="5252456968953390977">נדידה</translation>
 <translation id="5254600740122644523">מדף ספרים בסגנון <ph name="SIMPLE_STYLE" /> בחדר בעיצוב <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">הפעלה של מצב בהיר</translation>
+<translation id="5261479807286543505">הגדרות ההפעלה</translation>
 <translation id="5264277876637023664">‏הפעלת בדיקה של יחידת העיבוד המרכזית (CPU)</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">‏ה-APN מושבת.</translation>
@@ -825,6 +843,7 @@
 <translation id="5292579816060236070">טפט הזריחה</translation>
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
+<translation id="5302048478445481009">שפה</translation>
 <translation id="5303837385540978511">טפט בלעדי ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
 <translation id="5315873049536339193">זהות</translation>
@@ -927,6 +946,7 @@
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5893975327266416093">צריך להקיש על מקש במקלדת כדי להקצות</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
+<translation id="5896602941605730551">הפעלה</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
 <translation id="5904994456462260490">‏הוספת APN חדש</translation>
@@ -1119,12 +1139,14 @@
 <translation id="6761537227090937007">המערכת יוצרת תמונה ברזולוציה גבוהה…</translation>
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
+<translation id="6786747875388722282">תוספים</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6831043979455480757">תרגום</translation>
+<translation id="6846843854964504403">איפוס הגדרות האבטחה</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
 <translation id="6862416241246624313">המשוב נשלח</translation>
 <translation id="6866732840889595464">חיננית</translation>
@@ -1282,6 +1304,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="757747079855995705">אבן</translation>
+<translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">שינוי המיקום באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7618774594543487847">ניטרלי</translation>
@@ -1308,9 +1331,11 @@
 <translation id="7746357909584236306">ניתנת לעריכה</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
 <translation id="7752963721013053477">מעלות השחר עד לרדת החושך – בלעדי</translation>
+<translation id="7760571082554155847">הגדרות דף הבית</translation>
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
+<translation id="7774759755755950354">חזרה</translation>
 <translation id="7778717409420828014">‏המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7784116172884276937">‏לא הוגדרו שרתי DNS</translation>
@@ -1348,6 +1373,7 @@
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943235353293548836">‏מרווח keepalive קבוע</translation>
 <translation id="7943516765291457328">‏כדי לסרוק נקודות לשיתוף אינטרנט בקרבת מקום, צריך להפעיל Bluetooth</translation>
+<translation id="7944482598620888754">תוכן האתר</translation>
 <translation id="7944562637040950644">הפעלה או כיבוי של התאורה האחורית של המקלדת</translation>
 <translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
@@ -1355,6 +1381,7 @@
 <translation id="7971535376154084247">אמצעי בקרה כלליים</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
+<translation id="7982789257301363584">רשת</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה באופן אוטומטי}one{‫# אפליקציות הופעלו באופן אוטומטי}two{‫# אפליקציות הופעלו באופן אוטומטי}other{‫# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
 <translation id="8004582292198964060">דפדפן</translation>
@@ -1383,6 +1410,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
+<translation id="8135609423982943441">‏ה-Chromebook שלך אופס להגדרות ברירת מחדל בטוחות. אפשר לשנות זאת בכל שלב ב'הגדרות'.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
@@ -1400,6 +1428,7 @@
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8227488649450500937">אפשר לנסות אחת מההנחיות האלה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
+<translation id="8236972776513018241">תמליל</translation>
 <translation id="8238771987802558562">‏בחירת APN</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
 <translation id="8250926778281121244">חלודה</translation>
@@ -1412,6 +1441,7 @@
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
+<translation id="8308787307410010965">הגדרות תוכן האתר</translation>
 <translation id="8312330582793120272">הפעלת המדיה</translation>
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8320910311642849813">יער</translation>
@@ -1441,6 +1471,7 @@
 <translation id="8424039430705546751">למטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
+<translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>
 <translation id="8456200178779628126">‏אפשר להשתמש ב-AI מבית Google כדי לקבל עזרה בקריאה וכתיבה</translation>
@@ -1501,8 +1532,10 @@
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
+<translation id="8797082062139985406">‏יצירת שם באמצעות AI מבית Google</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8798441408945964110">שם ספק</translation>
+<translation id="8808828119384186784">‏ההגדרות של Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8820457400746201697">מעבירים את נקודת המגע הכחולה לפעולה. להתאמה אישית, בוחרים את המקש המשויך.</translation>
@@ -1520,6 +1553,7 @@
 <translation id="8864415976656252616">אין הצעות לתוכן. להצגת תוכן עזרה מוביל.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
+<translation id="8878117140814294155">השתקה או ביטול ההשתקה של המיקרופון</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8882789155418924367">ינשופים</translation>
 <translation id="8892443466059986410">ביטול העריכה של קיצור הדרך</translation>
@@ -1608,6 +1642,8 @@
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="95718197892796296">חימר</translation>
+<translation id="959792926760890141">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.
+          מנוע החיפוש שמשמש כברירת מחדל יתאפס, אבל הכרטיסיות, הקבצים, קובצי ה-Cookie וההיסטוריה לא ישתנו.</translation>
 <translation id="960719561871045870">קוד ספק</translation>
 <translation id="965918541715156800">צהוב וכחול-ירקרק</translation>
 <translation id="966787709310836684">תפריט</translation>

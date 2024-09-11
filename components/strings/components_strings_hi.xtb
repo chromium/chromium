@@ -61,7 +61,6 @@
 <translation id="1099928364755383720">अपने-आप 'पिक्चर में पिक्चर' मोड में जाने की सेटिंग</translation>
 <translation id="1100782917270858593">'Chrome इतिहास' में आपकी गतिविधि फिर से शुरू करने का बटन, अपनी गतिविधि फिर से शुरू करने के लिए, Enter दबाएं. इससे आपको 'Chrome इतिहास' में आपके काम की गतिविधि दिखेगी</translation>
 <translation id="1101672080107056897">गड़बड़ी पर कार्रवाई</translation>
-<translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1104409666019087579">कुछ ज़रूरी फ़ील्ड खाली हैं. सेव करने से पहले इन्हें भरें.</translation>
 <translation id="1104860668737945357">'पासवर्ड मैनेज करें' बटन, Chrome की सेटिंग में पासवर्ड देखने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -215,7 +214,6 @@
 <translation id="1359836962251219822">किचन और डाइनिंग</translation>
 <translation id="1360955481084547712">निजी रूप से ब्राउज़ करने के लिए एक नई गुप्त विंडो खोलें</translation>
 <translation id="1363028406613469049">ट्रैक</translation>
-<translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> में पेजों का अनुवाद करने की सुविधा न दें</translation>
 <translation id="1364822246244961190">यह नीति ब्लॉक की हुई है. इसका मान नज़रअंदाज कर दिया जाएगा.</translation>
 <translation id="1368318639262510626">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, स्पेस दबाएं.</translation>
 <translation id="1374468813861204354">सुझाव</translation>
@@ -385,7 +383,6 @@
 <translation id="1664389769577564606">फ़्लेक्सो फ़ोटोपॉलीमर</translation>
 <translation id="166624440456221306">तुलना के लिए दी गई टेबल मिटाएं</translation>
 <translation id="1668071460721346172">ईमेल पाएं</translation>
-<translation id="1671391448414634642">अब से <ph name="SOURCE_LANGUAGE" /> भाषा के पेज का अनुवाद <ph name="TARGET_LANGUAGE" /> भाषा में किया जाएगा.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">शॉर्ट एज फ़र्स्ट</translation>
 <translation id="168693727862418163">इस नीति का मान अपनी स्कीमा के हिसाब से काम नहीं कर सका और इसे अनदेखा किया जाएगा.</translation>
@@ -586,7 +583,6 @@
 <translation id="2045871135676061132">निजी तौर पर इस्तेमाल होने वाला लिफ़ाफ़ा</translation>
 <translation id="2046951263634619614">किताबों के खुदरा दुकानदार</translation>
 <translation id="2048261947532620704">पेज का अनुवाद किया जा रहा है</translation>
-<translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषा के पेजों का अनुवाद नहीं किया जाएगा.</translation>
 <translation id="2056658168519009885">आपको दिखने वाले विज्ञापनों को आपके हिसाब से बनाने के लिए साइटें, Chrome से जानकारी मांग सकती हैं.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 इंच</translation>
@@ -1906,7 +1902,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यह फ़ॉर्म सुरक्षित नहीं है. ऑटोमैटिक भरने की सुविधा बंद कर दी गई है.</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
-<translation id="4482953324121162758">इस साइट का अनुवाद नहीं किया जाएगा.</translation>
 <translation id="448363931695049633">पिज़्ज़ेरिया</translation>
 <translation id="4489023393592172404">काकू 4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="4490717597759821841">ए7</translation>
@@ -2192,7 +2187,6 @@
 <translation id="5024171724744627792">कार्ड की जानकारी सेव होने पर तेज़ी से पेमेंट किया जा सकता है. यह जानकारी आपके Google खाते में एन्क्रिप्ट (सुरक्षित) की जाती है.</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" के रूट प्रमाणपत्र की ज़रूरत है लेकिन वह इंस्टॉल नहीं है. यह समस्या ठीक करने के लिए आपके आईटी व्यवस्थापक को "<ph name="SOFTWARE_NAME" />" के कॉन्फ़िगरेशन से जुड़े निर्देशों पर नज़र डालनी चाहिए. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">Google अनुवाद के बारे में</translation>
 <translation id="5034930251282078640">क्या इसे तुलना करने के लिए जोड़ना है?</translation>
 <translation id="503498442187459473"><ph name="HOST" /> आपके कैमरा और माइक्रोफ़ोन का उपयोग करना चाहता है</translation>
 <translation id="5035135400558156732">बागबानी</translation>
@@ -2275,7 +2269,6 @@
 <translation id="5172758083709347301">मशीन</translation>
 <translation id="5177076414499237632">इस पेज के सोर्स और विषय के बारे में जानें</translation>
 <translation id="5179490652562926740">पेमेंट की पुष्टि करने की सेटिंग सेव की गईं</translation>
-<translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> में नहीं है? इस गड़बड़ी की रिपोर्ट करें</translation>
 <translation id="5180662470511508940">कीबोर्ड लॉक इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5187079891181379721">कॉर्पोरेट इवेंट</translation>
 <translation id="5190072300954988691">कैमरा और माइक्रोफ़ोन को ऐक्सेस करने की अनुमति नहीं है</translation>
@@ -2410,7 +2403,6 @@
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
-<translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
 <translation id="5456428544444655325">कभी न दिखाएं</translation>
@@ -3246,7 +3238,6 @@
 <translation id="6987806006823772670">एन्वेलप (कोटेड)</translation>
 <translation id="6989256887001961296">इस कॉन्टेंट को ब्लॉक कर दिया गया है.</translation>
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>
-<translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="6997288673234694149">बेसबॉल और सॉफ़्टबॉल इक्विपमेंट</translation>
 <translation id="6999480632062519056">फ़िटनेस से जुड़े निर्देश और पर्सनल ट्रेनिंग</translation>
 <translation id="7003278537452757231">दरी और कालीन</translation>
@@ -3349,7 +3340,6 @@
 <translation id="7181261019481237103">गुप्त विंडो खोलें</translation>
 <translation id="7182878459783632708">कोई नीति सेट नहीं की गई है</translation>
 <translation id="7184379626380324540">घर का सामान</translation>
-<translation id="7186367841673660872">इस पेज का <ph name="ORIGINAL_LANGUAGE" />से<ph name="LANGUAGE_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="7186833457841277072">एन्वेलप (इंकजेट)</translation>
 <translation id="7186840261985974511">#12 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="718872491229180389">चीयरलीडिंग</translation>
@@ -3448,7 +3438,6 @@
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">हॉस्पिटैलिटी इंडस्ट्री</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रण</translation>
-<translation id="7378627244592794276">नहीं</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7380398842872229465">10 x 15 इंच</translation>
 <translation id="7388380253839603603">गैस की कीमत और वाहन में फ़्यूल डलवाना</translation>
@@ -3593,7 +3582,6 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> से कम</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> फ़िलहाल इस अनुरोध का प्रबंधन नहीं कर सकता है.</translation>
 <translation id="7599089013883397081">डाउनलोड करने का समय खत्म हो गया</translation>
-<translation id="7600965453749440009">कभी भी <ph name="LANGUAGE" /> का अनुवाद न करें</translation>
 <translation id="7605377493722372900">मुमकिन है कि आपने जिस साइट पर विज़िट किया है वहां हमलावर आपसे धोखे से नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करवा दें. ये सॉफ़्टवेयर आपके पासवर्ड, फ़ोटो, मैसेज या क्रेडिट कार्ड नंबर जैसी जानकारी चोरी कर सकते हैं या उसे मिटा सकते हैं.</translation>
 <translation id="7608583484192556132">आपको दिखने वाला विज्ञापन आपकी दिलचस्पी के मुताबिक है या नहीं, यह कई चीज़ों के आधार पर तय होता है. इसमें यह सेटिंग, <ph name="BEGIN_LINK_1" />साइट की ओर से सुझाए गए विज्ञापन<ph name="END_LINK_1" />, और आपकी <ph name="BEGIN_LINK_2" />कुकी सेटिंग<ph name="END_LINK_2" /> शामिल है. साथ ही, यह इस बात पर भी निर्भर होता है कि आप जिस साइट पर हैं वह लोगों की दिलचस्पी के मुताबिक विज्ञापन दिखाती है या नहीं. <ph name="BEGIN_LINK_3" />विज्ञापनों के लिए अपनी निजता को मैनेज करने<ph name="END_LINK_3" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> मान सीमा से बाहर है.</translation>
@@ -3749,6 +3737,7 @@
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888575728750733395">प्रिंट रेंडरिंग इंटेंट</translation>
+<translation id="7890748547282909375">स्क्रीनशॉट सेव करने के लिए, Microsoft OneDrive में साइन इन करें</translation>
 <translation id="7894280532028510793">अगर स्पेलिंग सही है, तो <ph name="BEGIN_LINK" />Network Diagnostics ऐप्लिकेशन चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="7905064834449738336">अगर कोई पासवर्ड इस्तेमाल किया जाता है, तो Chromium आपको चेतावनी देता है कि पासवर्ड ऑनलाइन पब्लिश हो चुका है. ऐसा करते समय, आपके पासवर्ड और उपयोगकर्ता नाम को एन्क्रिप्ट (सुरक्षित) किया जाता है, ताकि कोई उन्हें देख न सके, यहां तक कि Google भी नहीं.</translation>
@@ -3826,7 +3815,6 @@
 <translation id="8028960012888758725">जॉब के बाद ट्रिम करें</translation>
 <translation id="8030729864112325446">वोकेशनल ट्रेनिंग और शिक्षा जारी रखना</translation>
 <translation id="8032546467100845887">ट्रांसपेरेंसी</translation>
-<translation id="8034522405403831421">यह पेज <ph name="SOURCE_LANGUAGE" /> में है. इसका <ph name="TARGET_LANGUAGE" /> में अनुवाद करें?</translation>
 <translation id="8035152190676905274">पेन</translation>
 <translation id="8037117624646282037">हाल ही में डिवाइस किसने इस्तेमाल किया है</translation>
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
@@ -3956,7 +3944,6 @@
 <translation id="8270173610195068258">अपराध और न्याय</translation>
 <translation id="8270242299912238708">PDF दस्तावेज़</translation>
 <translation id="8272426682713568063">क्रेडिट कार्ड</translation>
-<translation id="8275952078857499577">इस साइट का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8277900682056760511">पैसे चुकाने की हैंडलर शीट खुली है</translation>
 <translation id="827820107214076967">लॉग रीफ़्रेश करें</translation>
 <translation id="8278544367771164040">व्यावसायिक क़र्ज़</translation>
@@ -4343,7 +4330,6 @@
 <translation id="9018120810758822233">अपने <ph name="CREDIT_CARD" /> का सुरक्षा कोड डालें</translation>
 <translation id="901834265349196618">ईमेल</translation>
 <translation id="90196294733273307">क्रेडिट कार्ड की जानकारी वाला डायलॉग बॉक्स दिखाया गया</translation>
-<translation id="9020542370529661692">इस पेज का <ph name="TARGET_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="9020742383383852663">ए8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="9023536760430404133">वाहनों के व्हील और टायर</translation>
@@ -4389,7 +4375,6 @@
 <translation id="9090993752571911635">इंटरनेट सेवा देने वाली कंपनियां (आईएसपी)</translation>
 <translation id="9093723786115107672">नाइटवियर</translation>
 <translation id="9094544726794842788">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं</translation>
-<translation id="9095388113577226029">और भाषाएं...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="9101450247048146228">कैमरा इस्तेमाल करना और उसे मूव करना (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे 1</translation>
@@ -4410,7 +4395,6 @@
 <translation id="9133861214150761123">अकाउंटिंग और ऑडिटिंग</translation>
 <translation id="9133985615769429248">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास स्क्रीन लॉक इस्तेमाल करने का विकल्प है, ताकि जब भी आप सेव किया गया पासवर्ड डालें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, वर्चुअल कार्ड</translation>
-<translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9138037198177304356">सूचनाएं भेजने की अनुमति है</translation>
 <translation id="9139318394846604261">खरीदारी</translation>
 <translation id="9141013498910525015">पते प्रबंधित करें</translation>

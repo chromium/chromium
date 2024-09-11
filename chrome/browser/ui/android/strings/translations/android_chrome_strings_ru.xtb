@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">Войти в Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
+<translation id="3302615849591357577">Восстановить группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.</translation>
 <translation id="3303414029551471755">Скачать?</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3305130791745726624">Отправить на устройства</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="4834250788637067901">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
 <translation id="4835385943915508971">Запрошенный ресурс недоступен в Chrome</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Восстановить группу из <ph name="TAB_COUNT_ONE" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}one{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}few{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}many{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}other{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}}</translation>
 <translation id="4837753911714442426">Открыть параметры печати страницы</translation>
 <translation id="4842092870884894799">Открыто всплывающее окно создания пароля</translation>
 <translation id="4844633725025837809">В целях повышения безопасности шифруйте пароли на устройстве, прежде чем они будут сохраняться в Google Менеджере паролей.</translation>
@@ -849,6 +851,7 @@
 <translation id="5016205925109358554">С засечками</translation>
 <translation id="5017529052065664584">Последние 15 минут</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка: <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> вкладка: <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> вкладок: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="504456571576643789">Важная информация</translation>
@@ -1068,6 +1071,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6130303040046284160">Свернуть вкладку</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="6137022273846704445">Язык приложения <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
@@ -1171,6 +1175,7 @@
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6565959834589222080">Использовать сеть Wi-Fi, когда она доступна</translation>
 <translation id="6569373978618239158">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="SITE_NAME" />". Сайты, на которые вы подписаны, сохранены в вашем аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
+<translation id="6570116402456758630">Общая информация о странице</translation>
 <translation id="6573096386450695060">Разрешать всегда</translation>
 <translation id="6573431926118603307">Здесь появятся вкладки, открытые в Chrome на других устройствах.</translation>
 <translation id="6583199322650523874">Добавить страницу в закладки</translation>
@@ -1180,6 +1185,7 @@
 <translation id="6593061639179217415">Версия для ПК</translation>
 <translation id="6594347733515723558">Опции сортировки/показа</translation>
 <translation id="6595046016124923392">Изображения передаются в Google, чтобы сгенерировать их описание.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Восстановить группу из <ph name="TAB_COUNT_ONE" /> вкладки и открыть ее в фоновом режиме.}one{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки и открыть ее в фоновом режиме.}few{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок и открыть ее в фоновом режиме.}many{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок и открыть ее в фоновом режиме.}other{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки и открыть ее в фоновом режиме.}}</translation>
 <translation id="6604931690954120417">Если вы вошли в Chrome, сохраненные пароли будут добавляться в ваш аккаунт Google. Отключить эту функцию можно в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6621391692573306628">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chrome.</translation>
@@ -1204,6 +1210,7 @@
 <translation id="6674571176963658787">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="6676927815633975364">Вы выполните вход на этом сайте и в Chrome</translation>
 <translation id="6684809838922667136">Сделайте браузер Chrome лучше</translation>
+<translation id="6704048624334633734">Экспорт и удаление паролей</translation>
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
@@ -1665,6 +1672,7 @@
 <translation id="864544049772947936">Управлять окнами (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Настройте Chrome так, как вам удобно</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Загрузка заблокирована вашей организацией.}one{# загрузка заблокирована вашей организацией.}few{# загрузки заблокированы вашей организацией.}many{# загрузок заблокированы вашей организацией.}other{# загрузки заблокировано вашей организацией.}}</translation>
 <translation id="8672883760227492369">Некоторые пароли на этом устройстве скоро перестанут работать. Перенесите их в Google Менеджер паролей.</translation>
 <translation id="8676276370198826499">Зарегистрируйтесь на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Подтверждение входа</translation>

@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">වෝල්පේපර පෙරදසුනෙන් පිටවන්න</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> සඳහා බොත්තම සංස්කරණය කරන්න.</translation>
 <translation id="1755556344721611131">Diagnostics යෙදුම</translation>
+<translation id="1756681705074952506">ආදාන ක්‍රමය</translation>
 <translation id="175763766237925754">හොඳයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">වේගයෙන් සහ වැඩි විශ්වාසයකින් ලියන්න</translation>
 <translation id="3662461537616691585">බර්ගණ්ඩි රතු සහ මැරූන්</translation>
 <translation id="3668449597372804501">වලාකුළු ප්‍රවාහ වෝල්පේපරය</translation>
+<translation id="3668570675727296296">භාෂා සැකසුම්</translation>
 <translation id="3675132884790542448">ඌරෝ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> පරීක්ෂණය</translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">පාවීමෙන් පිටවීම</translation>
 <translation id="3716250181321371108">පාලනය තනන්න</translation>
 <translation id="3716830479327464973">ඔබ මෙයට ඉඩ දුන් විට, රෙකෝඩරය ඔබේ ශ්‍රව්‍ය පටිගත කිරීම් විශ්ලේෂණය කරනු ඇත:</translation>
+<translation id="3719826155360621982">මුල්පිටුව</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">ඊළඟ ඛණ්ඩය</translation>
 <translation id="404928562651467259">අවවාදයයි</translation>
 <translation id="4050208988451295487">විකල්ප කිහිපයක්:</translation>
+<translation id="405181879009056822">ChromeOS සැකසීම්</translation>
 <translation id="4054683689023980771">රූපය බාගනිමින්</translation>
 <translation id="4059839844193047929">මෙම පිටුව හැර යාම ඔබේ වත්මන් පටිගත කිරීම අවසන් කරයි</translation>
 <translation id="4063039537646912479">ලා නිල්</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">හිරු නැඟීමේ වෝල්පේපරය</translation>
 <translation id="5294769550414936029">අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">කවුළුව ඩෙස්ක් වෙත ගෙන යන්න</translation>
+<translation id="5302048478445481009">භාෂාව</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> සුවිශේෂී වෝල්පේපරය</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">අනන්‍යතාවය</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">අධි විභේදන රූප නිර්මාණ කෙරේ…</translation>
 <translation id="6766275201586212568">අසාර්ථක වූ DNS විභේදන</translation>
 <translation id="6768237774506518020">ඉහළ DNS විභේදන අසාර්ථක වීම් අනුපාතය</translation>
+<translation id="6786747875388722282">දිගු</translation>
 <translation id="6791471867139427246">යතුරුපුවරුවේ ආලෝක වර්ණය</translation>
 <translation id="6796229976413584781">කෙටිමඟ මැකුවා</translation>
 <translation id="6798678288485555829">පෙළ සංචාලනය</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ස්පර්ශ තිරය</translation>
 <translation id="757747079855995705">ගල</translation>
+<translation id="7590883480672980941">ආදාන සැකසීම්</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ඉතිරිය</translation>
 <translation id="7613724632293948900">මූසිකය හෝ ඊතල යතුරු සමග නැවත ස්ථානගත කිරීම.</translation>
 <translation id="7618774594543487847">උදාසීන</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">පොදු පාලන</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ජාලයකට එක් වීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="7978412674231730200">පුද්ගලික යතුර</translation>
+<translation id="7982789257301363584">ජාලය</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ස්වයංක්‍රීයව ආරම්භ කරන ලදි}one{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}other{යෙදුම් #ක් ස්වයංක්‍රීයව ආරම්භ කරන ලදි}}</translation>
 <translation id="7994702968232966508">EAP ආකාරය</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">පහළ</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
 <translation id="8431300646573772016">ChromeOS හි අලුත් දේවල්</translation>
+<translation id="8433186206711564395">ජාල සැකසීම්</translation>
 <translation id="843568408673868420">අන්තර්ජාල සබැඳුම</translation>
 <translation id="844521431886043384">DNS පිහිටුවා නැත</translation>
 <translation id="8456200178779628126">කියවීමට සහ ලිවීමට උදවු ලබා ගැනීමට Google AI භාවිතා කරන්න</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">මෙම ජාලයට පිවිසුම් දොරටුවක් තිබිය හැකිය</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8798441408945964110">සපයන්නාගේ නම</translation>
+<translation id="8808828119384186784">Chrome සැකසීම්</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">වෝල්පේපරය</translation>
 <translation id="8820457400746201697">නිල් ස්පර්ශ ලක්ෂ්‍යය ක්‍රියාවකට ගෙන යන්න. අභිරුචිකරණය කිරීමට ආශ්‍රිත යතුර තෝරන්න.</translation>

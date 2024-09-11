@@ -61,7 +61,6 @@
 <translation id="1099928364755383720">រូបក្នុងរូប​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1100782917270858593">ប៊ូតុង "បន្តការស្វែងរកអ្នក" ចុច Enter ដើម្បីបន្តការស្វែងរក​របស់អ្នក និងមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុងប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="1101672080107056897">សកម្មភាព​មានបញ្ហា</translation>
-<translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="1104409666019087579">កន្លែងត្រូវបំពេញមួយចំនួនគឺទទេ។ សូមបំពេញកន្លែងទាំងនេះ មុនពេលរក្សាទុក។</translation>
 <translation id="1104860668737945357">ប៊ូតុង "គ្រប់គ្រងពាក្យសម្ងាត់", បើកដំណើរការ ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -216,7 +215,6 @@
 <translation id="1359836962251219822">គ្រឿងផ្ទះបាយ និង​បន្ទប់ទទួលទាន​អាហារ</translation>
 <translation id="1360955481084547712">បើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករក​ជាលក្ខណៈឯកជន</translation>
 <translation id="1363028406613469049">សំឡេង</translation>
-<translation id="1363819917331173092">មិនផ្ដល់ការបកប្រែទំព័រ​ជាភាសា<ph name="SOURCE_LANGUAGE" />ទេ</translation>
 <translation id="1364822246244961190">គោលការណ៍​នេះ​ត្រូវបាន​ទប់ស្កាត់ ហើយតម្លៃរបស់វានឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="1368318639262510626">ហ្គេមដាយណូស័រ។ ដាយណូស័រមានរូបរាងព្រាលគេចពីដើមដំបងយក្ស និងសត្វបក្សីយក្ស ខណៈពេលរត់កាត់វាលរហោស្ថាន។ នៅពេលអ្នកស្ដាប់​ឮសញ្ញាជាសំឡេង សូមចុចដកឃ្លា ដើម្បីលោតរំលងឧបសគ្គ។</translation>
 <translation id="1374468813861204354">ការផ្តល់យោបល់</translation>
@@ -386,7 +384,6 @@
 <translation id="1664389769577564606">ប៉ូលីមែរសំយោគ Flexo</translation>
 <translation id="166624440456221306">លុបតារាងប្រៀបធៀប</translation>
 <translation id="1668071460721346172">ទទួល​អ៊ីមែល</translation>
-<translation id="1671391448414634642">ទំព័រជា <ph name="SOURCE_LANGUAGE" /> នឹងត្រូវបាន​បកប្រែទៅជា <ph name="TARGET_LANGUAGE" /> ចាប់ពី​ពេលនេះតទៅ។</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">គែមខ្លី​មុនគេ</translation>
 <translation id="168693727862418163">តម្លៃគោលការណ៍នេះមិនត្រូវនឹងគំនូស​តាងរបស់វាទេ ហើយនឹងមិនត្រូវបានអើពើទេ។</translation>
@@ -587,7 +584,6 @@
 <translation id="2045871135676061132">ស្រោមសំបុត្រផ្ទាល់ខ្លួន</translation>
 <translation id="2046951263634619614">អ្នក​លក់សៀវភៅរាយ​</translation>
 <translation id="2048261947532620704">កំពុងបកប្រែទំព័រ</translation>
-<translation id="2053111141626950936">ទំព័រជា <ph name="LANGUAGE" /> នឹងមិនត្រូវ​បានបកប្រែទេ។</translation>
 <translation id="2056658168519009885">គេហទំព័រ​អាច​ស្នើសុំ​​ព័ត៌មានពី Chrome ​ដើម្បី​ជួយកំណត់​កា​រផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ឱ្យ​មានលក្ខណៈ​ផ្ទាល់ខ្លួន។</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
@@ -1914,7 +1910,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />។ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ទម្រង់នេះ​មិនមានសុវត្ថិភាពទេ។ មុខងារបំពេញស្វ័យប្រវត្តិ​ត្រូវបានបិទ។</translation>
 <translation id="4477350412780666475">សំនៀង​បន្ទាប់</translation>
-<translation id="4482953324121162758">គេហទំព័រនេះ​នឹង​មិនត្រូវ​បានបកប្រែទេ។</translation>
 <translation id="448363931695049633">ហាង​ភីហ្សា</translation>
 <translation id="4489023393592172404">ស្រោមសំបុត្រ Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -2203,7 +2198,6 @@
 <translation id="5024171724744627792">បង់​ប្រាក់​លឿនជាងមុន នៅពេលកាតរបស់អ្នកត្រូវបានរក្សាទុក។ ព័ត៌មានលម្អិតអំពីកាតត្រូវបានអ៊ីនគ្រីបនៅក្នុងគណនី Google របស់អ្នក។</translation>
 <translation id="5030338702439866405">ចេញដោយ</translation>
 <translation id="503069730517007720">តម្រូវឱ្យមានវិញ្ញាបនបត្រគោលសម្រាប់ "<ph name="SOFTWARE_NAME" />" ប៉ុន្តែមិនចាំបាច់ដំឡើងទេ។ អ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកគួរតែមើលការណែនាំអំពីការកំណត់រចនាសម្ព័ន្ធសម្រាប់ "<ph name="SOFTWARE_NAME" />" ដើម្បីដោះស្រាយបញ្ហានេះ។ <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">អំពី Google បកប្រែ</translation>
 <translation id="5034930251282078640">បញ្ចូលទៅក្នុងការប្រៀបធៀបឬ?</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ចង់ប្រើកាមេរ៉ា និងមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="5035135400558156732">ការថែសួន​ច្បារ</translation>
@@ -2286,7 +2280,6 @@
 <translation id="5172758083709347301">ម៉ាស៊ីន</translation>
 <translation id="5177076414499237632">ស្វែងយល់​អំពី​ប្រភព និង​ប្រធានបទ​របស់ទំព័រ​នេះ</translation>
 <translation id="5179490652562926740">បានរក្សាទុក​ការកំណត់​នៃការផ្ទៀងផ្ទាត់​ការបង់ប្រាក់</translation>
-<translation id="5179510805599951267">មិនមែនជា <ph name="ORIGINAL_LANGUAGE" /> ទេ? រាយការណ៍កំហុសឆ្គងនេះ</translation>
 <translation id="5180662470511508940">មិនអនុញ្ញាតឱ្យចាក់សោក្ដារចុចទេ</translation>
 <translation id="5187079891181379721">ព្រឹត្តិការណ៍​ក្រុមហ៊ុន</translation>
 <translation id="5190072300954988691">មិនអនុញ្ញាតឱ្យប្រើកាមេរ៉ា និងមីក្រូហ្វូនទេ</translation>
@@ -2422,7 +2415,6 @@
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ផ្ងារឡើងតាមលំដាប់លំដោយ​បញ្ច្រាស</translation>
 <translation id="5447235695608032700">អនុញ្ញាត​ឱ្យ <ph name="SITE" /> ប្រើ​ព័ត៌មាន​ដែល​ពួកគេ​បាន​រក្សាទុក​អំពី​អ្នក</translation>
-<translation id="5447765697759493033">ទំព័រ​នេះ​នឹង​មិនត្រូវ​បានបកប្រែទេ</translation>
 <translation id="5452270690849572955">រកមិនឃើញទំព័រ <ph name="HOST_NAME" /> នេះទេ</translation>
 <translation id="5455374756549232013">តែមពេលវេលាគោលការណ៍មិនល្អ</translation>
 <translation id="5456428544444655325">កុំ​បង្ហាញឱ្យសោះ</translation>
@@ -3258,7 +3250,6 @@
 <translation id="6987806006823772670">ស្រោមសំបុត្រ (ស្រោប)</translation>
 <translation id="6989256887001961296">ខ្លឹមសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​។</translation>
 <translation id="6989763994942163495">បង្ហាញការកំណត់កម្រិតខ្ពស់...</translation>
-<translation id="6996312675313362352">បកប្រែ <ph name="ORIGINAL_LANGUAGE" /> ជានិច្ច</translation>
 <translation id="6997288673234694149">បរិក្ខារ​កីឡា​បេស្បល និងសុហ្វបល</translation>
 <translation id="6999480632062519056">ការណែនាំ​អំពីការហាត់​ប្រាណ និង​ការហ្វឹកហាត់​ផ្ទាល់​ខ្លួន</translation>
 <translation id="7003278537452757231">កម្រាល និង​ព្រំ</translation>
@@ -3360,7 +3351,6 @@
 <translation id="7181261019481237103">បើក​ផ្ទាំងឯកជន</translation>
 <translation id="7182878459783632708">គ្មានគោលការណ៍ត្រូវបានកំណត់ទេ</translation>
 <translation id="7184379626380324540">គ្រឿងសង្ហារិម​ផ្ទះ</translation>
-<translation id="7186367841673660872">ទំព័រនេះត្រូវបានបកប្រែពី<ph name="ORIGINAL_LANGUAGE" />ទៅ<ph name="LANGUAGE_LANGUAGE" /></translation>
 <translation id="7186833457841277072">ស្រោមសំបុត្រ (Inkjet)</translation>
 <translation id="7186840261985974511">ស្រោមសំបុត្រ #12</translation>
 <translation id="718872491229180389">សកម្មភាព​លើកទឹកចិត្ត​ផ្នែកកីឡា</translation>
@@ -3459,7 +3449,6 @@
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">វិស័យ​បដិសណ្ឋារកិច្ច</translation>
 <translation id="7378594059915113390">ការគ្រប់គ្រង​មេឌៀ</translation>
-<translation id="7378627244592794276">ទេ</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7388380253839603603">តម្លៃប្រេងឥន្ធនៈ និងការចាក់ឥន្ធនៈយានជំនិះ</translation>
@@ -3605,7 +3594,6 @@
 <translation id="7598391785903975535">តិចជាង <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> មិនអាចដោះស្រាយសំណើនេះនៅពេលនេះបានទេ</translation>
 <translation id="7599089013883397081">ការទាញយក​អស់ម៉ោងហើយ</translation>
-<translation id="7600965453749440009">មិនបកប្រែភាសា <ph name="LANGUAGE" /> ទៀតឡើយ</translation>
 <translation id="7605377493722372900">អ្នកវាយប្រហារ​នៅលើ​គេហទំព័រ​ដែលអ្នកកំពុង​ព្យាយាមចូលមើល អាចដំឡើង​កម្មវិធី​គ្រោះថ្នាក់​ដែលលួច ឬលុបអ្វីៗ ដូចជា​ពាក្យសម្ងាត់ រូបថត សារ ឬ​លេខកាតឥណទាន​របស់អ្នក​ជាដើម។</translation>
 <translation id="7608583484192556132">ថាតើការផ្សាយពាណិជ្ជកម្មដែលអ្នកមើលឃើញមានលក្ខណៈផ្ទាល់ខ្លួនឬអត់អាចអាស្រ័យលើអ្វីៗជាច្រើន រួមទាំងការកំណត់នេះ <ph name="BEGIN_LINK_1" />ការ​ផ្សាយពាណិជ្ជកម្ម​ដែលណែនាំ​ដោយ​គេហទំព័រ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />ការកំណត់ខូគី<ph name="END_LINK_2" />របស់អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់។ ស្វែងយល់បន្ថែមអំពី<ph name="BEGIN_LINK_3" />ការគ្រប់គ្រងឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្មរបស់អ្នក<ph name="END_LINK_3" />។</translation>
 <translation id="7610193165460212391">តម្លៃនៅក្រៅចន្លោះ <ph name="VALUE" />។</translation>
@@ -3761,6 +3749,7 @@
 <translation id="7887683347370398519">ពិនិត្យលេខកូដ CVC ហើយព្យាយាមម្តងទៀត</translation>
 <translation id="7887885240995164102">ចូលមុខងារ​រូបក្នុងរូប</translation>
 <translation id="7888575728750733395">ចេតនានៃ​ការបំប្លែង​ការបោះពុម្ព</translation>
+<translation id="7890748547282909375">សូម​ចូលគណនី Microsoft OneDrive ដើម្បី​រក្សាទុក​រូបថត​អេក្រង់</translation>
 <translation id="7894280532028510793">ប្រសិនបើ​អក្ខរាវិរុទ្ធគឺត្រឹមត្រូវ <ph name="BEGIN_LINK" />សូមសាកល្បង​ដំណើរការ​ការវិភាគបណ្ដាញ<ph name="END_LINK" />។</translation>
 <translation id="7901831439558593470">ស្រោមសំបុត្រ 7 x 9 អ៊ីង</translation>
 <translation id="7905064834449738336">នៅ​ពេល​អ្នក​ប្រើពាក្យ​សម្ងាត់ Chromium ប្រាប់​អ្នក​ឱ្យ​ប្រុងប្រយ័ត្ន ប្រសិន​បើ​ពាក្យសម្ងាត់នោះ​ត្រូវបានបោះផ្សាយ​លើ​អ៊ីនធឺណិត។ នៅពេល​ធ្វើដូច្នេះ ឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់​របស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប ដើម្បី​កុំឱ្យអ្នកដទៃ រួមទាំង Google អាច​អានបាន។</translation>
@@ -3839,7 +3828,6 @@
 <translation id="8028960012888758725">តម្រឹម​បន្ទាប់ពី​ធ្វើរួច</translation>
 <translation id="8030729864112325446">ការអប់រំបន្ត និង​វិជ្ជាជីវៈ</translation>
 <translation id="8032546467100845887">ភាពថ្លា</translation>
-<translation id="8034522405403831421">ទំព័រនេះនៅក្នុង <ph name="SOURCE_LANGUAGE" />. បកប្រែវាទៅ <ph name="TARGET_LANGUAGE" />?</translation>
 <translation id="8035152190676905274">ប៊ិក</translation>
 <translation id="8035264638816032066">ចំណងជើង​ផ្ទាំង និង URL ទំព័រ​ដែលអ្នក​បញ្ចូល​ទៅក្នុង​តារាង​ត្រូវបាន​បញ្ជូនទៅ Google</translation>
 <translation id="8037117624646282037">អ្នកដែលបានប្រើ​ឧបករណ៍​នាពេលថ្មីៗនេះ</translation>
@@ -3970,7 +3958,6 @@
 <translation id="8270173610195068258">ឧក្រិដ្ឋកម្ម និងយុត្តិធម៌</translation>
 <translation id="8270242299912238708">ឯកសារ PDF</translation>
 <translation id="8272426682713568063">កាតឥណទាន</translation>
-<translation id="8275952078857499577">មិនផ្ដល់ការបកប្រែគេហទំព័រនេះទេ</translation>
 <translation id="8277900682056760511">សន្លឹកកម្មវិធីគ្រប់គ្រង​ការបង់ប្រាក់បានបើក</translation>
 <translation id="827820107214076967">ផ្ទុកកំណត់ហេតុឡើងវិញ</translation>
 <translation id="8278544367771164040">កម្ចី​ពាណិជ្ជកម្ម</translation>
@@ -4036,6 +4023,7 @@
 <translation id="8381674639488873545">ការគិតថ្លៃទាំងនេះ​អាច​ជាការគិតថ្លៃមួយលើក ឬបន្តបន្ទាប់ ហើយអាច​នឹងមិន​ច្បាស់លាស់នោះទេ។ <ph name="BEGIN_LINK" />បង្ហាញចុះ​មិនអីទេ<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">អេក្រង់​ពេញស្វ័យប្រវត្តិ</translation>
 <translation id="838307841291975086">រថយន្ត​ប្រភេទ Station Wagon</translation>
+<translation id="8388286357548915205">ប្រើ​សម្រាប់​ភ្ញៀវ​ទាំងអស់</translation>
 <translation id="8389532092404711541">ជា​ធម្មតា <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">យាន​ជំនិះ​កម្លាំងខ្លាំង និង​កែច្នៃ</translation>
 <translation id="8390725133630534698">ការចែករំលែកពី <ph name="ORIGIN_NAME" /> ទៅ <ph name="VM_NAME" /> ត្រូវបានទប់ស្កាត់ដោយគោលការណ៍របស់អ្នកគ្រប់គ្រង</translation>
@@ -4358,7 +4346,6 @@
 <translation id="9018120810758822233">បញ្ចូល​លេខកូដសុវត្ថិភាព​របស់អ្នក​សម្រាប់ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">អ៊ីម៉ែល</translation>
 <translation id="90196294733273307">ប្រអប់ដែលមានព័ត៌មានលម្អិតអំពីកាតឥណទានត្រូវបានបង្ហាញ</translation>
-<translation id="9020542370529661692">គេហទំព័រនេះត្រូវបានបកប្រែទៅ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច tab រួចចុច Enter ដើម្បីចែករំលែកផ្ទាំងនេះដោយចែករំលែកតំណ, បង្កើតកូដ QR, បញ្ជូន និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="9023536760430404133">កង់ និង​សម្បក​កង់​យានយន្ត</translation>
@@ -4404,7 +4391,6 @@
 <translation id="9090993752571911635">ក្រុមហ៊ុន​ផ្ដល់សេវាកម្ម​អ៊ីនធឺណិត (ISP)</translation>
 <translation id="9093723786115107672">សម្លៀក​បំពាក់គេង</translation>
 <translation id="9094544726794842788">"ឱ្យមេដៃ​ចុះ" បើកទម្រង់បែបបទសម្រាប់ការដាក់បញ្ជូនមតិកែលម្អលម្អិតទាក់ទងនឹងមូលហេតុដែលអ្នកមិនចូលចិត្តលទ្ធផលទាំងនេះ</translation>
-<translation id="9095388113577226029">ភាសា​ច្រើន​ទៀត...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "tab" រួចចុច "Enter" ដើម្បីកំណត់ Chrome ជាកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើមរបស់ប្រព័ន្ធនៅក្នុងការកំណត់ iOS</translation>
 <translation id="9101450247048146228">ការផ្លាស់ទី និង​ការប្រើប្រាស់​កាមេរ៉ា (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ទម្រទី 1</translation>
@@ -4425,7 +4411,6 @@
 <translation id="9133861214150761123">គណនេយ្យ និងសវនកម្ម</translation>
 <translation id="9133985615769429248">ប្រសិនបើ​អ្នក​ចែករំលែក​ឧបករណ៍​នេះ​ជាមួយ​អ្នក​ផ្សេងទៀត អ្នក​អាច​ប្រើការ​ចាក់សោ​អេក្រង់របស់​អ្នក​ ដើម្បី​ផ្ទៀងផ្ទាត់​ថា​ជា​អ្នករាល់ពេល​ដែល​អ្នក​ប្រើ​​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, កាតនិម្មិត</translation>
-<translation id="9137013805542155359">បង្ហាញប្រភពដើម</translation>
 <translation id="9138037198177304356">បានអនុញ្ញាតឱ្យមានការជូនដំណឹង</translation>
 <translation id="9139318394846604261">ទិញទំនិញ</translation>
 <translation id="9141013498910525015">គ្រប់គ្រង​អាសយដ្ឋាន</translation>

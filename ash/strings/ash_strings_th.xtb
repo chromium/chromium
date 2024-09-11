@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2360398059912971776">แบตเตอรี่</translation>
 <translation id="2361210043495191221">เปิด/ปิด Wi-Fi <ph name="STATE" /></translation>
+<translation id="2364710166605611987">เอฟเฟกต์ลักษณะที่ปรากฏ</translation>
 <translation id="236574664504281623">ส่งจาก <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">ลงชื่อเข้าใช้ Chromebook ไม่ได้</translation>
 <translation id="2367972762794486313">แสดงแอป</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">ปิด</translation>
 <translation id="3604801046548457007">สร้างเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
 <translation id="3606978283550408104">เชื่อมต่ออุปกรณ์แสดงผลอักษรเบรลล์แล้ว</translation>
+<translation id="3612634595000403645">ค่ากำหนดเอฟเฟกต์ลักษณะที่ปรากฏ</translation>
 <translation id="3615926715408477684">การเปิดใช้อินเทอร์เน็ตมือถือจะเปิดใช้บลูทูธ</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3616883743181209306">เมนูได้ย้ายไปอยู่ที่มุมขวาบนของหน้าจอ</translation>
@@ -890,6 +892,7 @@
 <translation id="4146671046252289537">ย้ายไปยังจุดสิ้นสุดของคำถัดไป</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
+<translation id="4151054805501931758">ปรับแต่งภาพบุคคล</translation>
 <translation id="4156293514828496577">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="4160919062868802509">ตรวจพบแหล่งที่มาของเสียงหลายแหล่ง</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
@@ -1955,7 +1958,6 @@
 <translation id="7727952505535211425">เปิดเว็บไซต์ในแถบที่อยู่ในแท็บใหม่</translation>
 <translation id="7728657226117099693">ปิด Caps Lock</translation>
 <translation id="7742327441377685481">ไม่มีการแจ้งเตือน</translation>
-<translation id="774736258792760908">เมื่อเปิดฟีเจอร์ช่วยฉันเขียนและช่วยฉันอ่าน ระบบจะส่งข้อความที่ป้อนและเนื้อหาเอกสารไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างคำแนะนำในการเขียน สร้างข้อมูลสรุป ตอบคำถาม และปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="LINK_TO_SERVICE_TERMS" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="7748275671948949022">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1964,6 +1966,7 @@
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
 <translation id="7773536009433685931">เปิด Wi-Fi แทน</translation>
+<translation id="77747521138552256">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองใช้ PIN อีกครั้ง หรือป้อนรหัสผ่านเพื่อลงชื่อเข้าใช้ทันที</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
@@ -2282,7 +2285,6 @@
 <translation id="8877788021141246043">ตั้งการช่วยเตือน</translation>
 <translation id="8878886163241303700">กำลังขยายหน้าจอ</translation>
 <translation id="888982883502837004">มีการอัปเดตเฟิร์มแวร์พร้อมใช้งานกับอุปกรณ์ คลิกเพื่อตรวจสอบและอัปเดต</translation>
-<translation id="8893479486525393799">ไมค์สตูดิโอ</translation>
 <translation id="8896630965521842259">ระบบจะลบ <ph name="DESK_TEMPLATE_NAME" /> ออกอย่างถาวร</translation>
 <translation id="889790758758811533">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
@@ -2297,6 +2299,7 @@
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8939855324412367560">เสียงอินพุตคือ "<ph name="INPUT_DEVICE_NAME" />" และเสียงเอาต์พุตคือ "<ph name="OUTPUT_DEVICE_NAME" />" โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="8940956008527784070">แบตเตอรี่ต่ำ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ไมค์สไตล์สตูดิโอ</translation>
 <translation id="894774083269346314">ไม่ได้เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /></translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8951539504029375108">เฉพาะอุปกรณ์ Thunderbolt ที่ได้รับอนุมัติเท่านั้นที่เข้ากันได้กับ Chromebook ของคุณ</translation>

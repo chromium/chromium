@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
+<translation id="5373874281522292782">Your tab groups are saved</translation>
 <translation id="5389626883706033615">Sites are blocked from asking you to use info they've saved about you</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Active downloads</translation>
 <translation id="6709432001666529933">Ask before allowing sites to track your hands (recommended)</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
+<translation id="6729704574271585059">The groups that you've created are saved in the tab group section and update across your devices</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
 <translation id="6766622839693428701">Swipe down to close.</translation>

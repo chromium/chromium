@@ -171,6 +171,7 @@
 <translation id="1753496554272155572">ອອກຈາກຕົວຢ່າງຮູບພື້ນຫຼັງ</translation>
 <translation id="1754578112426924640">ແກ້ໄຂປຸ່ມສຳລັບ <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
+<translation id="1756681705074952506">ວິ​ທີ​ການ​ປ້ອນຂໍ້ມູນ</translation>
 <translation id="175763766237925754">ດີ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -520,6 +521,7 @@
 <translation id="3661106764436337772">ຂຽນໄດ້ໄວຂຶ້ນ ແລະ ມີຄວາມໝັ້ນໃຈຫຼາຍຂຶ້ນ</translation>
 <translation id="3662461537616691585">ສີເບີກັນດີ ແລະ ສີນ້ຳຕານແດງ</translation>
 <translation id="3668449597372804501">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງເມກ</translation>
+<translation id="3668570675727296296">ການ​ຕັ້ງຄ່າ​ພາ​ສາ</translation>
 <translation id="3675132884790542448">ໝູ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
@@ -527,6 +529,7 @@
 <translation id="3715651196924935218">ອອກຈາກໂໝດລອຍ</translation>
 <translation id="3716250181321371108">ສ້າງການຄວບຄຸມ</translation>
 <translation id="3716830479327464973">ເມື່ອທ່ານອະນຸຍາດ, ຕົວບັນທຶກຈະວິເຄາະການບັນທຶກສຽງຂອງທ່ານເພື່ອເຮັດສິ່ງຕໍ່ໄປນີ້:</translation>
+<translation id="3719826155360621982">ຫນ້າ​ຫຼັກ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
 <translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
@@ -585,6 +588,7 @@
 <translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="404928562651467259">ຄໍາເຕືອນ</translation>
 <translation id="4050208988451295487">ຕົວເລືອກບາງສ່ວນມີດັ່ງນີ້:</translation>
+<translation id="405181879009056822">ການຕັ້ງຄ່າ ChromeOS</translation>
 <translation id="4054683689023980771">ກຳລັງດາວໂຫຼດຮູບ</translation>
 <translation id="4059839844193047929">ການອອກຈາກໜ້ານີ້ຈະເປັນການສິ້ນສຸດການບັນທຶກປັດຈຸບັນຂອງທ່ານ</translation>
 <translation id="4063039537646912479">ຟ້າອ່ອນ</translation>
@@ -836,6 +840,7 @@
 <translation id="5292579816060236070">ຮູບພື້ນຫຼັງຕາເວັນຂຶ້ນ</translation>
 <translation id="5294769550414936029">ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
+<translation id="5302048478445481009">ພາ​ສາ</translation>
 <translation id="5303837385540978511">ຮູບພື້ນຫຼັງແບບພິເສດຈາກ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
@@ -1132,6 +1137,7 @@
 <translation id="6761537227090937007">ກຳລັງສ້າງຮູບຄວາມລະອຽດສູງ…</translation>
 <translation id="6766275201586212568">ຄວາມລະອຽດ DNS ບໍ່ສຳເລັດ</translation>
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
+<translation id="6786747875388722282">ສ່ວນຂະຫຍາຍ</translation>
 <translation id="6791471867139427246">ສີຂອງແສງຈາກແປ້ນພິມ</translation>
 <translation id="6796229976413584781">ລຶບທາງລັດແລ້ວ</translation>
 <translation id="6798678288485555829">ການນຳທາງຂໍ້ຄວາມ</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ໜ້າຈໍສຳຜັດ USB</translation>
 <translation id="757747079855995705">ຫິນ</translation>
+<translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">ປ່ຽນຕຳແໜ່ງດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
@@ -1370,6 +1377,7 @@
 <translation id="7971535376154084247">ການຄວບຄຸມທົ່ວໄປ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
+<translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{ເລີ່ມ "<ph name="APP_NAME_1" />" ອັດຕະໂນມັດແລ້ວ}other{ເລີ່ມ # ອັດຕະໂນມັດແລ້ວ}}</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
@@ -1457,6 +1465,7 @@
 <translation id="8424039430705546751">ລົງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
+<translation id="8433186206711564395">ການຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="843568408673868420">ການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="844521431886043384">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
 <translation id="8456200178779628126">ໃຊ້ Google AI ເພື່ອຮັບຄວາມຊ່ວຍເຫຼືອໃນການອ່ານ ແລະ ຂຽນ</translation>
@@ -1520,6 +1529,7 @@
 <translation id="8797082062139985406">ສ້າງຊື່ໂດຍໃຊ້ Google AI</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8798441408945964110">ຊື່ຜູ້ໃຫ້ບໍລິການ</translation>
+<translation id="8808828119384186784">ການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8814190375133053267">Wi​-Fi</translation>
 <translation id="8818152010000655963">ພາບພື້ນຫຼັງ</translation>
 <translation id="8820457400746201697">ຍ້າຍຈຸດສຳຜັດສີຟ້າໄປໃສ່ຄຳສັ່ງ. ເລືອກປຸ່ມທີ່ກ່ຽວຂ້ອງເພື່ອປັບແຕ່ງ.</translation>

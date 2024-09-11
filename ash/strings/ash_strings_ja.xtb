@@ -229,7 +229,7 @@
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
 <translation id="1749109475624620922">ウィンドウ <ph name="WINDOW_TITLE" /> をすべてのデスクに割り当てました</translation>
 <translation id="1750088060796401187">表示できるデスクは最大 <ph name="MAX_DESK_LIMIT" /> 件です。新しいデスクを開くには、デスクを削除してください。</translation>
-<translation id="1751335846119670066">読み取りサポート</translation>
+<translation id="1751335846119670066">文書読解サポート</translation>
 <translation id="1755408179247123630">「選択して読み上げ」をオンにしますか？</translation>
 <translation id="1755556344721611131">診断アプリ</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
@@ -1204,7 +1204,7 @@
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> のプレビュー。アクティブでないデスクです。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
-<translation id="5140105873789567560">文書作成サポートと読み取りサポートを使用するには、18 歳以上である必要があります。</translation>
+<translation id="5140105873789567560">文書作成サポートと文書読解サポートを使用するには、18 歳以上である必要があります。</translation>
 <translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
@@ -1961,12 +1961,11 @@
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
 <translation id="7728657226117099693">CapsLock をオフにする</translation>
 <translation id="7742327441377685481">通知なし</translation>
-<translation id="774736258792760908">文書作成サポートと読み取りサポートをオンにすると、入力したテキストとドキュメントの内容が Google AI サーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">すべて表示</translation>
-<translation id="7759183637555564029">文書作成サポートと読み取りサポートは [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
+<translation id="7759183637555564029">文書作成サポートと文書読解サポートは [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
 <translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
@@ -2183,7 +2182,7 @@
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
-<translation id="851660987304951246">読み取りサポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
+<translation id="851660987304951246">文書読解サポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{マイク入力は <ph name="APP_NAME" /> によって制御されています}other{マイク入力は # 個のアプリによって制御されています}}</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8878886163241303700">画面を拡張しています</translation>
 <translation id="888982883502837004">デバイスで利用可能なファームウェアのアップデートがあります。確認して更新するにはクリックしてください。</translation>
-<translation id="8893479486525393799">スタジオマイク</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」を完全に削除します</translation>
 <translation id="889790758758811533">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。デバイスを電源に接続してください。</translation>
 <translation id="88986195241502842">ページ内を下に移動</translation>
@@ -2302,6 +2300,7 @@
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8939855324412367560">入力オーディオは "<ph name="INPUT_DEVICE_NAME" />"、出力オーディオは "<ph name="OUTPUT_DEVICE_NAME" />" です。変更するには [設定] に移動してください。</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>
+<translation id="8945508919180478719">スタジオ式マイク</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> チェックボックスはオフです。</translation>
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
 <translation id="8951539504029375108">お使いの Chromebook に対応しているのは承認済みの Thunderbolt デバイスのみです</translation>

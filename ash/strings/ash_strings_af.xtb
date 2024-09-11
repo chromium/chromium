@@ -918,6 +918,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4209973997261364186">Wi-fi is aangeskakel</translation>
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4212472694152630271">Skakel oor na PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, wisselknoppie, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
 <translation id="4217571870635786043">Diktee</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />; geïnstalleerde program; onderbreek</translation>
@@ -1960,7 +1961,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7727952505535211425">Maak die webwerf in die adresbalk in ’n nuwe oortjie oop</translation>
 <translation id="7728657226117099693">Skakel Caps Lock af</translation>
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
-<translation id="774736258792760908">Wanneer jy Help My Skryf en Help My Lees aanskakel, word die invoerteks en dokumentinhoud na Google AI-bedieners toe gestuur om skryfvoorstelle te genereer, opsommings te genereer, vrae te beantwoord, en die produk te verbeter, onderworpe aan <ph name="LINK_TO_SERVICE_TERMS" />. Moenie enigiets insluit wat persoonlik, sensitief of vertroulik is nie.</translation>
 <translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2287,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8877788021141246043">Stel 'n onthounota</translation>
 <translation id="8878886163241303700">Brei skerm uit</translation>
 <translation id="888982883502837004">Fermwareopdaterings is vir jou toestel beskikbaar. Klik om na te gaan en op te dateer.</translation>
-<translation id="8893479486525393799">Ateljeemikrofoon</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sal permanent uitgevee word</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% batterykrag oor (ongeveer <ph name="TIME_LEFT" />). Koppel jou toestel aan krag.</translation>
 <translation id="88986195241502842">Bladsy af</translation>

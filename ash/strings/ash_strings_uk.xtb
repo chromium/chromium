@@ -1960,7 +1960,6 @@
 <translation id="7727952505535211425">Відкрити веб-сайт в адресному рядку на новій вкладці</translation>
 <translation id="7728657226117099693">Вимкнути Caps Lock</translation>
 <translation id="7742327441377685481">Немає сповіщень</translation>
-<translation id="774736258792760908">Коли ви вмикаєте функції "Допомога з текстом" і "Допомога із читанням", введений текст та вміст документа надсилається на сервери ШІ від Google, щоб генерувати пропозиції, підсумовувати контент і відповідати на запитання відповідно до <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="7749958366403230681">Клавіша ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
 <translation id="8878886163241303700">Розширення екрана</translation>
 <translation id="888982883502837004">Для вашого пристрою доступні оновлення мікропрограми. Натисніть, щоб переглянути й оновити.</translation>
-<translation id="8893479486525393799">Студійний мікрофон</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> буде видалено назавжди</translation>
 <translation id="889790758758811533">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />). Підключіть пристрій до джерела живлення.</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>
@@ -2302,6 +2300,7 @@
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8939855324412367560">Для введення аудіо використовується <ph name="INPUT_DEVICE_NAME" />, а для виведення – <ph name="OUTPUT_DEVICE_NAME" />. Щоб внести зміни, перейдіть у налаштування.</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Студійний мікрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), прапорець не поставлено.</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8951539504029375108">З вашим Chromebook сумісні лише схвалені пристрої Thunderbolt</translation>

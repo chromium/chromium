@@ -1961,7 +1961,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7727952505535211425">Abre o sitio web na barra de enderezos nunha pestana nova</translation>
 <translation id="7728657226117099693">Desactivar bloqueo de maiúsculas</translation>
 <translation id="7742327441377685481">Non hai notificacións</translation>
-<translation id="774736258792760908">Cando activas Axúdame a escribir ou Axúdame a ler, o texto de entrada e o contido do documento envíanse aos servidores da IA de Google para xerar suxestións de escritura e resumos, responder preguntas e mellorar o produto, suxeito ás <ph name="LINK_TO_SERVICE_TERMS" />. Non inclúas información persoal nin confidencial.</translation>
 <translation id="7748275671948949022">Destacar botón do menú de aplicacións no andel</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2288,7 +2287,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando a pantalla</translation>
 <translation id="888982883502837004">Hai actualizacións de firmware dispoñibles para o teu dispositivo. Fai clic para revisalas e instalalas.</translation>
-<translation id="8893479486525393799">Micrófono de estudio</translation>
 <translation id="8896630965521842259">Eliminarase <ph name="DESK_TEMPLATE_NAME" /> de forma permanente</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />. Conecta o dispositivo á corrente.</translation>
 <translation id="88986195241502842">Avanzar páxina</translation>
@@ -2303,6 +2301,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="8939855324412367560">O dispositivo de entrada de audio é <ph name="INPUT_DEVICE_NAME" /> e o de saída, <ph name="OUTPUT_DEVICE_NAME" />. Vai a Configuración para cambialos.</translation>
 <translation id="8940956008527784070">Batería baixa (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Micrófono de estudio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" />, caixa de verificación non marcada.</translation>
 <translation id="8949925099261528566">Con conexión, sen Internet</translation>
 <translation id="8951539504029375108">Só son compatibles co teu Chromebook os dispositivos Thunderbolt homologados</translation>

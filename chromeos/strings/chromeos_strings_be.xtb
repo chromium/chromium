@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Выйсці з рэжыму перадпрагляду шпалер</translation>
 <translation id="1754578112426924640">Кнопка "Змяніць" для спалучэння клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Праграма для дыягностыкі</translation>
+<translation id="1756681705074952506">Метад уводу</translation>
 <translation id="175763766237925754">Добры (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3662461537616691585">бардовы і цёмна-бардовы</translation>
 <translation id="3668449597372804501">Шпалеры "Рух аблокаў"</translation>
+<translation id="3668570675727296296">Налады мовы</translation>
 <translation id="3675132884790542448">свінні</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (праверка)</translation>
 <translation id="370665806235115550">Загрузка…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Выйсці з плаваючага рэжыму</translation>
 <translation id="3716250181321371108">Стварыць элемент кіравання</translation>
 <translation id="3716830479327464973">Калі вы дасце гэты дазвол, Дыктафон будзе аналізаваць аўдыязапісы, каб выконваць наступныя дзеянні:</translation>
+<translation id="3719826155360621982">Галоўная старонка</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="404928562651467259">ПАПЯРЭДЖАННЕ</translation>
 <translation id="4050208988451295487">Некалькі варыянтаў:</translation>
+<translation id="405181879009056822">Налады ChromeOS</translation>
 <translation id="4054683689023980771">Спампоўваецца відарыс</translation>
 <translation id="4059839844193047929">Пры выхадзе з гэтай старонкі бягучы запіс будзе завершаны</translation>
 <translation id="4063039537646912479">светла-сіні</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Шпалеры "Усход сонца"</translation>
 <translation id="5294769550414936029">версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Перамясціць акно на працоўны стол</translation>
+<translation id="5302048478445481009">Мова</translation>
 <translation id="5303837385540978511">Эксклюзіўныя шпалеры <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Ідэнтыфікатар</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Ідзе стварэнне відарыса з высокай раздзяляльнасцю…</translation>
 <translation id="6766275201586212568">Збой супастаўленняў імён DNS</translation>
 <translation id="6768237774506518020">Высокі працэнт збояў супастаўленняў імён DNS</translation>
+<translation id="6786747875388722282">Пашырэнні</translation>
 <translation id="6791471867139427246">колер падсветкі клавіятуры</translation>
 <translation id="6796229976413584781">Спалучэнне клавіш выдалена</translation>
 <translation id="6798678288485555829">Навігацыя па тэксце</translation>
@@ -1280,6 +1286,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сэнсарны экран з USB</translation>
 <translation id="757747079855995705">камень</translation>
+<translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Для перамяшчэння выкарыстоўвайце мыш або клавішы са стрэлкамі.</translation>
 <translation id="7618774594543487847">Нейтральны</translation>
@@ -1353,6 +1360,7 @@
 <translation id="7971535376154084247">Агульныя налады</translation>
 <translation id="7977800524392185497">Каб падключыцца да сеткі <ph name="NETWORK_NAME" />, перайдзіце ў Налады</translation>
 <translation id="7978412674231730200">Закрыты ключ</translation>
+<translation id="7982789257301363584">Сетка</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Праграма "<ph name="APP_NAME_1" />" запушчана аўтаматычна}one{# праграма запушчана аўтаматычна}few{# праграмы запушчаны аўтаматычна}many{# праграм запушчаны аўтаматычна}other{# праграмы запушчаны аўтаматычна}}</translation>
 <translation id="7994702968232966508">Метад EAP</translation>
 <translation id="8004582292198964060">Браўзер</translation>
@@ -1439,6 +1447,7 @@
 <translation id="8424039430705546751">уніз</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8431300646573772016">Што новага ў Chrome OS</translation>
+<translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="843568408673868420">Падключэнне да інтэрнэту</translation>
 <translation id="844521431886043384">DNS не наладжаны</translation>
 <translation id="8456200178779628126">Выкарыстоўвайце штучны інтэлект ад Google для дапамогі ў чытанні і напісанні тэкстаў</translation>
@@ -1501,6 +1510,7 @@
 <translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8798441408945964110">Назва пастаўшчыка</translation>
+<translation id="8808828119384186784">Налады Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Шпалеры</translation>
 <translation id="8820457400746201697">Каб выканаць дзеянне, перамясціце сінюю кропку дотыку. Для наладжвання выберыце звязаную клавішу.</translation>

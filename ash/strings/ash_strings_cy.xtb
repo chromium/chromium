@@ -1960,7 +1960,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7727952505535211425">Agor y wefan yn y bar cyfeiriad mewn tab newydd</translation>
 <translation id="7728657226117099693">Diffodd clo CAPS</translation>
 <translation id="7742327441377685481">Dim hysbysiadau</translation>
-<translation id="774736258792760908">Pan fyddwch yn troi Helpu fi i ysgrifennu a Helpu fi i ddarllen ymlaen, anfonir y testun mewnbwn a chynnwys y ddogfen at weinyddion Google AI i gynhyrchu awgrymiadau ysgrifennu, cynhyrchu crynodebau, ateb cwestiynau, a gwella'r cynnyrch, yn amodol ar <ph name="LINK_TO_SERVICE_TERMS" />. Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.</translation>
 <translation id="7748275671948949022">Amlygu'r botwm Lansiwr ar y silff</translation>
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8877788021141246043">Gosod nodyn atgoffa</translation>
 <translation id="8878886163241303700">Wrthi'n estyn y sgrîn</translation>
 <translation id="888982883502837004">Mae diweddariadau cadarnwedd ar gael ar gyfer eich dyfais. Cliciwch i adolygu a diweddaru.</translation>
-<translation id="8893479486525393799">Meic stiwdio</translation>
 <translation id="8896630965521842259">Bydd <ph name="DESK_TEMPLATE_NAME" /> yn cael ei ddileu'n barhaol</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% o fatri ar ôl (tua <ph name="TIME_LEFT" />). Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="88986195241502842">I lawr y dudalen</translation>
@@ -2302,6 +2300,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>
 <translation id="8939855324412367560">Sain mewnbwn yw "<ph name="INPUT_DEVICE_NAME" />" a sain allbwn yw "<ph name="OUTPUT_DEVICE_NAME" />". Ewch i'r Gosodiadau i newid.</translation>
 <translation id="8940956008527784070">Mae'r batri'n isel (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Meic arddull stiwdio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Nid yw'r blwch ticio wedi'i dicio.</translation>
 <translation id="8949925099261528566">Cysylltwyd, dim rhyngrwyd</translation>
 <translation id="8951539504029375108">Dim ond dyfeisiau Thunderbolt cymeradwy sy'n gydnaws â'ch Chromebook</translation>

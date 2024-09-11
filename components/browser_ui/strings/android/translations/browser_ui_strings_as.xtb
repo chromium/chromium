@@ -19,7 +19,7 @@
 <translation id="1343356790768851700">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে</translation>
 <translation id="1369915414381695676">ছাইট <ph name="SITE_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="1371239764779356792">এটা ছাইটক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিবলৈ দিয়ক</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1384959399684842514">ডাইনল’ড পজ কৰা হৈছে</translation>
 <translation id="1415402041810619267">URL চুটি কৰা হ’ল</translation>
 <translation id="1448064542941920355">জুম কমাওক</translation>
@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">JavaScript চলাবলৈ ছাইটক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
+<translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
 <translation id="5389626883706033615">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">সক্রিয় ডাউনল’ডসমূহ</translation>
 <translation id="6709432001666529933">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ দিয়াৰ আগতে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="6722828510648505498">পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট অৱৰোধ কৰক।</translation>
+<translation id="6729704574271585059">আপুনি সৃষ্টি কৰা গোটসমূহ টেবৰ গোটৰ শাখাত ছেভ কৰা হৈছে আৰু সেইসমূহ আপোনাৰ সমগ্ৰ ডিভাইচত আপডে’ট হয়</translation>
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="6766622839693428701">বন্ধ কৰিবলৈ তললৈ ছোৱাইপ কৰক।</translation>

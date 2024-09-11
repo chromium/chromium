@@ -849,6 +849,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">최근 15분</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개 - <ph name="URL_LIST" />}other{탭 <ph name="TAB_COUNT_MANY" />개 - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
@@ -1068,6 +1069,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />세부정보 더보기<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6130303040046284160">탭 최소화</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />의 언어</translation>
 <translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140912465461743537">국가/지역</translation>
@@ -1171,6 +1173,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="656065428026159829">더보기</translation>
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>
 <translation id="6569373978618239158">이제 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
+<translation id="6570116402456758630">페이지 요약</translation>
 <translation id="6573096386450695060">항상 허용</translation>
 <translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="6583199322650523874">현재 페이지 북마크</translation>

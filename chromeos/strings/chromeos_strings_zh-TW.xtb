@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">結束桌布預覽</translation>
 <translation id="1754578112426924640">「<ph name="ACCELERATOR_INFO" />」的編輯按鈕。</translation>
 <translation id="1755556344721611131">執行診斷的應用程式</translation>
+<translation id="1756681705074952506">輸入法</translation>
 <translation id="175763766237925754">良好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">自信地快速編寫</translation>
 <translation id="3662461537616691585">勃艮第酒紅和暗紅色</translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
+<translation id="3668570675727296296">語言設定</translation>
 <translation id="3675132884790542448">豬</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">結束浮動模式</translation>
 <translation id="3716250181321371108">建立控制項</translation>
 <translation id="3716830479327464973">如果你允許，錄音工具將分析你的音訊錄音，以便：</translation>
+<translation id="3719826155360621982">首頁</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 則評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="404928562651467259">警告</translation>
 <translation id="4050208988451295487">參考選項：</translation>
+<translation id="405181879009056822">ChromeOS 設定</translation>
 <translation id="4054683689023980771">正在下載圖片</translation>
 <translation id="4059839844193047929">如果離開這個頁面，系統就會停止錄音</translation>
 <translation id="4063039537646912479">淺藍</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">日出桌布</translation>
 <translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">將視窗移至桌面</translation>
+<translation id="5302048478445481009">語言</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 專屬桌布</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身分</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">正在建立高解析度圖片…</translation>
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">高 DNS 解析失敗率</translation>
+<translation id="6786747875388722282">擴充功能</translation>
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
 <translation id="6796229976413584781">已刪除捷徑</translation>
 <translation id="6798678288485555829">文字導覽</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 觸控螢幕</translation>
 <translation id="757747079855995705">石頭</translation>
+<translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7595982850646262331">還剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">使用滑鼠或方向鍵調整位置。</translation>
 <translation id="7618774594543487847">中間色</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">一般控制項</translation>
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網路，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">秘密金鑰</translation>
+<translation id="7982789257301363584">網路</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{「<ph name="APP_NAME_1" />」已自動啟動}other{# 個應用程式已自動啟動}}</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">向下鍵</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8431300646573772016">Chrome OS 新功能</translation>
+<translation id="8433186206711564395">網路設定</translation>
 <translation id="843568408673868420">網際網路連線</translation>
 <translation id="844521431886043384">未設定 DNS</translation>
 <translation id="8456200178779628126">運用 Google AI 閱讀及撰寫內容</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">這個網站可能有網頁認證入口</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">提供者名稱</translation>
+<translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8820457400746201697">將藍色觸控點移至所需動作，選取關聯的按鍵即可自訂。</translation>

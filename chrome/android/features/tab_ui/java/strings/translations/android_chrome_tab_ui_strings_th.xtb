@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
 <translation id="4590027107044272416">ตอนนี้คุณเปิดแท็บใหม่ได้ที่นี่</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{ปิด 1 แท็บที่ไม่ได้ใช้งานไหม}other{ปิด <ph name="TAB_COUNT_MANY" /> แท็บที่ไม่ได้ใช้งานไหม}}</translation>
-<translation id="4648718555153979859">แท็บของคุณมีการจัดกลุ่มเข้าด้วยกันที่นี่</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ปิดหลังจาก 1 วัน}other{ปิดหลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
 <translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>

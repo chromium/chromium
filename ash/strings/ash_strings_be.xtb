@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
 <translation id="4212246570487010370">Працягвайце прагляд</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, кнопка пераключэння, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Налады VPN</translation>
 <translation id="4217571870635786043">Галасавы ўвод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
@@ -1959,7 +1960,6 @@
 <translation id="7727952505535211425">Адкрыць вэб-сайт з адраснага радка ў новай укладцы</translation>
 <translation id="7728657226117099693">Выключыць Caps Lock</translation>
 <translation id="7742327441377685481">Апавяшчэнняў няма</translation>
-<translation id="774736258792760908">Калі вы ўключаеце функцыі "Дапамога з напісаннем" і "Дапамога з чытаннем", уведзены тэкст і змест дакумента адпраўляюцца на серверы штучнага інтэлекту ад Google. <ph name="LINK_TO_SERVICE_TERMS" /> рэгулююць, як на аснове гэтых даных ствараюцца прапановы, падсумаванні тэкстаў і адказы на пытанні, а таксама выконваецца паляпшэнне прадукту. Пры выкарыстанні гэтых функцый не ўключайце ў тэксты асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="7748275671948949022">Вылучыць кнопку Панэлі запуску на панэлі доступу</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@
 <translation id="8877788021141246043">Задайце напамін</translation>
 <translation id="8878886163241303700">Экран пашыраецца</translation>
 <translation id="888982883502837004">Для вашай прылады даступныя абнаўленні ўбудаванага праграмнага забеспячэння. Націсніце, каб паглядзець і ўсталяваць іх.</translation>
-<translation id="8893479486525393799">Студыйны мікрафон</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будзе выдалены назаўсёды</translation>
 <translation id="889790758758811533">Засталося <ph name="PERCENTAGE" />% зараду акумулятара (прыкладна на <ph name="TIME_LEFT" />). Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="88986195241502842">Page Down</translation>

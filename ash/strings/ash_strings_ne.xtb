@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360398059912971776">ब्याट्री</translation>
 <translation id="2361210043495191221">Wi-Fi टगल गर्नुहोस्। <ph name="STATE" />।</translation>
+<translation id="2364710166605611987">स्वरूपसम्बन्धी इफेक्टहरू</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> बाट पठाइएको</translation>
 <translation id="2367186422933365202">तपाईंको Chromebook मा साइन इन गर्न सकिएन</translation>
 <translation id="2367972762794486313">एप्स देखाउनुहोस्</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">अफ गर्नुहोस्</translation>
 <translation id="3604801046548457007">डेस्क <ph name="DESK_TITILE" /> सिर्जना गरियो</translation>
 <translation id="3606978283550408104">ब्रेल प्रदर्शन जडित छ।</translation>
+<translation id="3612634595000403645">स्वरूपसम्बन्धी इफेक्टहरूका प्राथमिकताहरू</translation>
 <translation id="3615926715408477684">तपाईंले मोबाइल डेटा अन गर्नुभयो भने ब्लुटुथ अन हुने छ</translation>
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3616883743181209306">मेनु सारेर स्क्रिनको सिरानको दायाँ कुनामा लगियो।</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">अर्को शब्दको अन्त्यमा जानुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
+<translation id="4151054805501931758">पोर्ट्रेट टच-अप</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित गरिएका छन्।</translation>
 <translation id="4160919062868802509">एकभन्दा बढी अडियो स्रोतहरू पत्ता लागेका छन्</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7728657226117099693">क्याप्स लक अफ गर्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
-<translation id="774736258792760908">तपाईंले "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अन गर्दा लेखनसम्बन्धी सुझाव दिने, सारांश बनाउने, प्रश्नहरूको जवाफ दिने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि इन्पुट टेक्स्ट र डकुमेन्टमा भएको सामग्री <ph name="LINK_TO_SERVICE_TERMS" /> बमोजिम Google AI का सर्भरहरूमा पठाइन्छन्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी नहाल्नुहोस्।</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
@@ -1969,6 +1971,7 @@
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
 <translation id="7773536009433685931">बरु Wi-Fi अन गर्नुहोस्</translation>
+<translation id="77747521138552256">धेरै पटक PIN हाल्ने प्रयास गरियो। <ph name="TIME_LEFT" /> प्रतीक्षा गर्नुहोस् र फेरि PIN हाली हेर्नुहोस् वा तुरुन्तै साइन इन गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7781829728241885113">हिजो</translation>
@@ -2287,7 +2290,6 @@
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="8878886163241303700">स्क्रिनलाई विस्तार गर्दै</translation>
 <translation id="888982883502837004">तपाईंको डिभाइसका हकमा फर्मवेयरसम्बन्धी अपडेटहरू उपलब्ध छन्। तपाईं समीक्षा हेर्न र अपडेट प्राप्त गर्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
-<translation id="8893479486525393799">स्टुडियो माइक</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> सदाका लागि मेटाइने छ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>
@@ -2302,6 +2304,7 @@
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट अडियो "<ph name="INPUT_DEVICE_NAME" />" हो र आउटपुट अडियो "<ph name="OUTPUT_DEVICE_NAME" />" हो। परिवर्तन गर्न "सेटिङ" मा जानुहोस्।</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">स्टुडियो शैलीको माइक</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छैन।</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>

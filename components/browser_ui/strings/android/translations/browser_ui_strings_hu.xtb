@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Engedélyezze a webhelyek számára a JavaScript futtatását (ajánlott)</translation>
 <translation id="534295439873310000">NFC-eszközök</translation>
 <translation id="5344522958567249764">A hirdetésekhez kapcsolódó adatvédelem kezelése</translation>
+<translation id="5373874281522292782">A lapcsoportjait menti a rendszer</translation>
 <translation id="5389626883706033615">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
 <translation id="5403592356182871684">Nevek</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Aktív letöltések</translation>
 <translation id="6709432001666529933">Rákérdezés, mielőtt engedélyezi a webhelyek számára a kézmozgás nyomon követését (ajánlott)</translation>
 <translation id="6722828510648505498">Letilthatja az identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
+<translation id="6729704574271585059">Az Ön által létrehozott csoportok a lapcsoportok szakaszban vannak elmentve, és az összes eszközén frissülnek</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
 <translation id="6766622839693428701">A bezáráshoz csúsztasson lefelé.</translation>

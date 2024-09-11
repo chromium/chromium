@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Тұсқағазды алдын ала көру режимінен шығу</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> бойынша өзгерту түймесі.</translation>
 <translation id="1755556344721611131">Diagnostics қолданбасы</translation>
+<translation id="1756681705074952506">Енгізу әдісі</translation>
 <translation id="175763766237925754">Жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Жылдам әрі сенімділікпен жазыңыз</translation>
 <translation id="3662461537616691585">қою қызыл және қошқыл қызыл</translation>
 <translation id="3668449597372804501">Бұлттар қозғалысы бейнеленген тұсқағаз</translation>
+<translation id="3668570675727296296">Тіл параметрлері</translation>
 <translation id="3675132884790542448">шошқалар</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Қалқыма күйден шығу</translation>
 <translation id="3716250181321371108">Басқару элементін жасау</translation>
 <translation id="3716830479327464973">Бұған рұқсат берсеңіз, диктофон келесі әрекеттерді орындау үшін аудиожазбаларды талдайды:</translation>
+<translation id="3719826155360621982">Негізгі бет</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> пікір)</translation>
 <translation id="3748026146096797577">Қосылмаған</translation>
 <translation id="3749289110408117711">Файл атауы</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
 <translation id="404928562651467259">ЕСКЕРТУ</translation>
 <translation id="4050208988451295487">Бірнеше опция:</translation>
+<translation id="405181879009056822">ChromeOS параметрлері</translation>
 <translation id="4054683689023980771">Сурет жүктеп алынуда</translation>
 <translation id="4059839844193047929">Бұл беттен шықсаңыз, қазіргі жазбаңыз аяқталады.</translation>
 <translation id="4063039537646912479">ашық көк</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Күннің атуы бейнеленген тұсқағаз</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
+<translation id="5302048478445481009">Тіл</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> эксклюзивті тұсқағазы</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификация мәліметі</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Ажыратымдылығы жоғары сурет жасалып жатыр…</translation>
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
 <translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары.</translation>
+<translation id="6786747875388722282">Кеңейтімдер</translation>
 <translation id="6791471867139427246">пернетақта жарығының түсі</translation>
 <translation id="6796229976413584781">Пернелер тіркесімі жойылды</translation>
 <translation id="6798678288485555829">Мәтін навигациясы</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсорлық экраны</translation>
 <translation id="757747079855995705">тас</translation>
+<translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
 <translation id="7613724632293948900">Тінтуір немесе бағыт пернелері көмегімен орнын өзгертіңіз.</translation>
 <translation id="7618774594543487847">Бейтарап</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">Жалпы басқару элементтері</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> желісіне қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
 <translation id="7978412674231730200">Жеке кілт</translation>
+<translation id="7982789257301363584">Желі</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" автоматты түрде іске қосылды}other{# қолданба автоматты түрде іске қосылды}}</translation>
 <translation id="7994702968232966508">EAP әдісі</translation>
 <translation id="8004582292198964060">Браузер</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">төмен</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8431300646573772016">ChromeOS жаңалықтары</translation>
+<translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="843568408673868420">Интернет байланысы</translation>
 <translation id="844521431886043384">DNS реттелмеген.</translation>
 <translation id="8456200178779628126">Оқуға және жазуға көмек алу үшін Google AI пайдаланыңыз</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8798441408945964110">Провайдер аты</translation>
+<translation id="8808828119384186784">Chrome параметрлері</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тұсқағаз</translation>
 <translation id="8820457400746201697">Көк сенсорлық нүктені әрекетке жылжытыңыз. Бейімдеу үшін байланысты кілтті таңдаңыз.</translation>

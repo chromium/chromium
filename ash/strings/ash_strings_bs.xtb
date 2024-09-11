@@ -374,6 +374,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360398059912971776">baterija</translation>
 <translation id="2361210043495191221">Uključite/isključite WiFi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efekti izgleda</translation>
 <translation id="236574664504281623">Poslano s uređaja <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nije se moguće prijaviti na Chromebook</translation>
 <translation id="2367972762794486313">Prikaži aplikacije</translation>
@@ -734,6 +735,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3600061223661453002">Isključeno</translation>
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je kreirana</translation>
 <translation id="3606978283550408104">Brailleov ekran je povezan.</translation>
+<translation id="3612634595000403645">Preferencije za efekte izgleda</translation>
 <translation id="3615926715408477684">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3616883743181209306">Meni je pomjeren u gornji desni ugao ekrana.</translation>
@@ -894,6 +896,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4146671046252289537">Premjesti na kraj sljedeće riječi</translation>
 <translation id="4146833061457621061">Pokreni muziku</translation>
 <translation id="4150201353443180367">Ekran</translation>
+<translation id="4151054805501931758">Uređivanje portreta</translation>
 <translation id="4156293514828496577">Preostalo je <ph name="PERCENTAGE" />% baterije (otprilike <ph name="TIME_LEFT" />).
 Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translation>
 <translation id="4160919062868802509">Otkriveno je više izvora zvuka</translation>
@@ -1960,7 +1963,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7727952505535211425">Otvaranje web lokacije u traci za adresu u novoj kartici</translation>
 <translation id="7728657226117099693">Isključi Caps Lock</translation>
 <translation id="7742327441377685481">Nema obavještenja</translation>
-<translation id="774736258792760908">Kada uključite Pomoć u pisanju i Pomoć u čitanju, sadržaj unesenog teksta i dokumenta se šalje na servere Google AI-ja radi generiranja prijedloga za pisanje i sažetaka, odgovaranja na pitanja i poboljšanja proizvoda podložno <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte uključivati ništa što je lične, osjetljive ili povjerljive prirode.</translation>
 <translation id="7748275671948949022">Istaknite dugme Pokretača na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1969,6 +1971,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>
+<translation id="77747521138552256">Pokušali ste unijeti PIN previše puta. Pričekajte <ph name="TIME_LEFT" /> i pokušajte ponovo unijeti PIN ili unesite zaporku da biste se odmah prijavili.</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7781829728241885113">Jučer</translation>
@@ -2287,7 +2290,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8877788021141246043">Postavite podsjetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>
 <translation id="888982883502837004">Ažuriranja firmvera su dostupna za vaš uređaj. Kliknite da pregledate i ažurirate.</translation>
-<translation id="8893479486525393799">Studijski mikrofon</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> će se trajno izbrisati</translation>
 <translation id="889790758758811533">Preostalo je <ph name="PERCENTAGE" />% baterije (otprilike <ph name="TIME_LEFT" />). Povežite uređaj s napajanjem.</translation>
 <translation id="88986195241502842">Tipka Page Down</translation>
@@ -2302,6 +2304,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8938800817013097409">USB-C uređaj (desni priključak na stražnjoj strani)</translation>
 <translation id="8939855324412367560">Ulazni izvor zvuka je "<ph name="INPUT_DEVICE_NAME" />", a izlazni "<ph name="OUTPUT_DEVICE_NAME" />". Idite u Postavke da promijenite.</translation>
 <translation id="8940956008527784070">Baterija je slaba (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studijski mikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, polje za potvrdu nije označeno.</translation>
 <translation id="8949925099261528566">Povezano, nema internetske veze</translation>
 <translation id="8951539504029375108">Samo su odobreni Thunderbolt uređaji kompatibilni s vašim Chromebookom</translation>

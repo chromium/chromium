@@ -374,6 +374,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360398059912971776">akumuliatorius</translation>
 <translation id="2361210043495191221">Perjungti „Wi-Fi“. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Išvaizdos efektai</translation>
 <translation id="236574664504281623">Išsiųsta iš <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nepavyksta prisijungti prie „Chromebook“</translation>
 <translation id="2367972762794486313">Rodyti programas</translation>
@@ -734,6 +735,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3600061223661453002">Išjungta</translation>
 <translation id="3604801046548457007">Sukurtas darbalaukis „<ph name="DESK_TITILE" />“</translation>
 <translation id="3606978283550408104">Brailio ekranas prijungtas.</translation>
+<translation id="3612634595000403645">Išvaizdos efektų nuostatos</translation>
 <translation id="3615926715408477684">Įgalinus mobiliojo ryšio duomenis bus įgalintas „Bluetooth“</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3616883743181209306">Meniu perkeltas į viršutinį dešinįjį ekrano kampą.</translation>
@@ -894,6 +896,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4146671046252289537">Perkelti žymeklį į kito žodžio pabaigą</translation>
 <translation id="4146833061457621061">„Play music“ (Leisk muziką)</translation>
 <translation id="4150201353443180367">Pateiktis</translation>
+<translation id="4151054805501931758">Portreto retušavimas</translation>
 <translation id="4156293514828496577">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />).
 Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veikimo laiką.</translation>
 <translation id="4160919062868802509">Aptikti keli garso šaltiniai</translation>
@@ -1960,7 +1963,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7727952505535211425">Atidaryti svetainę adreso juostoje naujame skirtuke</translation>
 <translation id="7728657226117099693">Išjungti didžiąsias raides</translation>
 <translation id="7742327441377685481">Nėra pranešimų</translation>
-<translation id="774736258792760908">Kai įjungiate funkcijas „Pagalba rašant“ ir „Pagalba skaitant“, įvesties tekstas ir dokumento turinys siunčiami į „Google“ DI serverius, kad būtų generuojami rašymo pasiūlymai, suvestinės, atsakoma į klausimus ir tobulinamas produktas, vadovaujantis <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="7748275671948949022">Paryškinti Paleidimo priemonės mygtuką lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1969,6 +1971,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7769299611924763557">GIF elementas bus netrukus paruoštas</translation>
 <translation id="7773536009433685931">Vietoj to įjungti „Wi-Fi“</translation>
+<translation id="77747521138552256">Per daug bandymų įvesti PIN kodą. Palaukite <ph name="TIME_LEFT" /> ir bandykite įvesti PIN kodą dar kartą arba įveskite slaptažodį, kad galėtumėte prisijungti iš karto.</translation>
 <translation id="7780094051999721182">sparčiųjų klavišų</translation>
 <translation id="7780159184141939021">Ekrano pasukimas</translation>
 <translation id="7781829728241885113">Vakar</translation>
@@ -2287,7 +2290,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8877788021141246043">„Set a reminder“ (Nustatyk priminimą)</translation>
 <translation id="8878886163241303700">Išplečiamas ekranas</translation>
 <translation id="888982883502837004">Pasiekiami jūsų įrenginio programinės aparatinės įrangos naujiniai. Spustelėkite, kad peržiūrėtumėte ir atnaujintumėte.</translation>
-<translation id="8893479486525393799">Studijos mikrofonas</translation>
 <translation id="8896630965521842259">Šablonas „<ph name="DESK_TEMPLATE_NAME" />“ bus visam laikui ištrintas.</translation>
 <translation id="889790758758811533">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />). Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="88986195241502842">Puslapiu žemyn</translation>
@@ -2302,6 +2304,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8939855324412367560">Įvesties garso įrašas yra „<ph name="INPUT_DEVICE_NAME" />“, o išvesties garsas – „<ph name="OUTPUT_DEVICE_NAME" />“. Eikite į skiltį „Nustatymai“ ir pakeiskite.</translation>
 <translation id="8940956008527784070">Akumuliatorius senka (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studijos stiliaus mikrofonas</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, žymimasis laukelis nepažymėtas.</translation>
 <translation id="8949925099261528566">Prisijungta, nėra interneto</translation>
 <translation id="8951539504029375108">Tik patvirtinti „Thunderbolt“ įrenginiai suderinami su jūsų „Chromebook“</translation>

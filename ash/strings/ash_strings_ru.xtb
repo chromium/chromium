@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Включить или отключить Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Коррекция внешности</translation>
 <translation id="236574664504281623">Отправлено с <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Не удалось войти в аккаунт на устройстве Chromebook.</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">Отключено</translation>
 <translation id="3604801046548457007">Создан рабочий стол "<ph name="DESK_TITILE" />".</translation>
 <translation id="3606978283550408104">Брайлевский дисплей подключен</translation>
+<translation id="3612634595000403645">Настройки коррекции внешности</translation>
 <translation id="3615926715408477684">Вместе с мобильным интернетом включится Bluetooth.</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Меню перемещено в правый верхний угол экрана.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">Переместить в конец следующего слова</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
 <translation id="4150201353443180367">Экран</translation>
+<translation id="4151054805501931758">Ретушь лица</translation>
 <translation id="4156293514828496577">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />.
 Чтобы увеличить это время, использование некоторых функций было ограничено.</translation>
 <translation id="4160919062868802509">Обнаружено несколько источников звука</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
 <translation id="7728657226117099693">Отключить Caps Lock</translation>
 <translation id="7742327441377685481">Уведомлений нет.</translation>
-<translation id="774736258792760908">Когда генератор текстов и функция Help me read включены, введенный текст и содержимое документа отправляется на серверы ИИ от Google. Там эти данные используются для генерации ответов на вопросы, кратких пересказов и подсказок по написанию текстов, а также для улучшения продукта в соответствии с <ph name="LINK_TO_SERVICE_TERMS" />. Не указывайте персональные и конфиденциальные данные.</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749958366403230681">Клавиша ExpressKey 4</translation>
@@ -1969,6 +1971,7 @@
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
 <translation id="7773536009433685931">Включить Wi-Fi</translation>
+<translation id="77747521138552256">Слишком много попыток ввода PIN-кода. Попробуйте снова через <ph name="TIME_LEFT" /> или используйте пароль, чтобы войти сразу.</translation>
 <translation id="7780094051999721182">ярлыки</translation>
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7781829728241885113">Вчера</translation>
@@ -2287,7 +2290,6 @@
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
 <translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
-<translation id="8893479486525393799">Студийный микрофон</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="889790758758811533">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />. Подключите устройство к источнику питания.</translation>
 <translation id="88986195241502842">На страницу вниз</translation>
@@ -2302,6 +2304,7 @@
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8939855324412367560">Устройство ввода – "<ph name="INPUT_DEVICE_NAME" />", устройство вывода – "<ph name="OUTPUT_DEVICE_NAME" />". Изменить их можно в настройках.</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Студийный микрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок не установлен.</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>

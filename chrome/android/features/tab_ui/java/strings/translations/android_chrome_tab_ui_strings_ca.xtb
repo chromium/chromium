@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="4590027107044272416">Ara pots obrir una pestanya nova aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vols tancar 1 pestanya inactiva?}other{Vols tancar <ph name="TAB_COUNT_MANY" /> pestanyes inactives?}}</translation>
-<translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
 <translation id="4686942373615810936">Creat ara mateix</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Tanca al cap d'1 dia}other{Tanca al cap de <ph name="DAY_COUNT_MANY" /> dies}}</translation>
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>

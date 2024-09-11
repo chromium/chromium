@@ -3413,6 +3413,7 @@ Se questo criterio viene configurato, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Disattiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
+<translation id="3546260240984542017">Mantieni gli spazi vuoti per tutti i tipi MIME</translation>
 <translation id="3546271546272655966">È possibile utilizzare <ph name="DBSC_FEATURE_NAME" />, a seconda del processo di implementazione della funzionalità.</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
 <translation id="3548064438634502368">Chiudi i browser</translation>
@@ -6931,27 +6932,6 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
       Se il criterio viene attivato o se non viene configurato, gli utenti possono installare ed eseguire Chrome for Testing.
 
       Se viene disattivato, gli utenti non possono eseguire Chrome for Testing. Gli utenti potranno comunque installare Chrome for Testing, ma non verrà eseguito con i profili per cui questo criterio è disattivato.</translation>
-<translation id="6258646807927528870">Consente di configurare un elenco di regole di controllo dei dati per prevenire le fughe di dati.
-
-      Ciascuna regola prevede quanto segue:
-      - Campi delle condizioni per attivarla. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nei relativi campi <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
-      - Un elenco di limitazioni da applicare. A seconda della limitazione, potrebbero essere disponibili solo le condizioni <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
-
-      È possibile aggiungere regole per:
-      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
-      - Controllare il blocco degli screenshot in base alle schede di origine.
-
-      Se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostato su True, le regole attivate vengono segnalate all'amministratore.
-      Il livello di limitazione può essere impostato su BLOCK, WARN o REPORT.
-      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
-      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
-      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivo.
-
-      Note:
-      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche il criterio <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Se il criterio non viene configurato, non verranno applicate limitazioni.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
@@ -8262,6 +8242,7 @@ il gestore delle password integrato.
 Questo criterio non influisce sui gestori delle password di terze parti che utilizzano
 API di accessibilità.</translation>
 <translation id="7114169791477667553">Disattiva il provider di ricerca predefinito</translation>
+<translation id="7115684775550072082">Mantieni solo gli spazi vuoti per i tipi MIME di testo e XML</translation>
 <translation id="7121046543122812054">Questo criterio è deprecato. Potresti usare il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Consente all'utente di accedere a <ph name="PRODUCT_NAME" />.
@@ -8587,6 +8568,13 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="7358359585412734876">Attiva <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo utente</translation>
 <translation id="736486789939370545">Consenti l'installazione di estensioni esterne</translation>
+<translation id="7364975417585163622">Questo criterio consente di disattivare temporaneamente le modifiche al modo in cui Chrome gestisce gli spazi vuoti negli URL <ph name="DATA_URL_SCHEME" />.
+In precedenza, gli spazi vuoti venivano mantenuti solo se il tipo di media di livello superiore era <ph name="TEXT_MEDIA_TYPE" /> o conteneva la stringa del tipo di media <ph name="XML" />.
+Ora gli spazi vuoti verranno mantenuti in tutti gli URL dei dati, indipendentemente dal tipo di media.
+
+Se questo criterio non viene configurato o se viene impostato su True, viene attivato il nuovo comportamento.
+
+Se questo criterio viene impostato su False, viene attivato il comportamento precedente.</translation>
 <translation id="7366948865469126526">Disattiva conversione unità di Risposte rapide</translation>
 <translation id="7367734504783638685">Sincronizzazione delle password tra fornitori di servizi SSO di terze parti e dispositivi Chrome</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
@@ -10667,6 +10655,7 @@ A differenza di altri, quando impostato a livello di profilo, questo criterio ha
 <translation id="9015759770696099204">Le impostazioni F11/F12 sono disabilitate</translation>
 <translation id="9015952763003753868">Fai in modo che <ph name="ACAM_HEADER_NAME" /> abbia una corrispondenza in <ph name="CORS" /> per la conformità alle specifiche preflight</translation>
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
+<translation id="9025912013525357598">Conservazione degli spazi vuoti DataURL per tutti i tipi di media</translation>
 <translation id="9026905189580734497">Questo criterio consente di controllare le impostazioni della funzionalità Aiutami a leggere per <ph name="PRODUCT_OS_NAME" />.
 
 0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.

@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
 <translation id="1754578112426924640">I-edit ang button para sa <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostics app</translation>
+<translation id="1756681705074952506">Pamamaraan ng pag-input</translation>
 <translation id="175763766237925754">Mabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Magsulat nang mas mabilis at mas may kumpiyansa</translation>
 <translation id="3662461537616691585">burgundy at maroon</translation>
 <translation id="3668449597372804501">Wallpaper na paggalaw ng ulap</translation>
+<translation id="3668570675727296296">Mga setting ng wika</translation>
 <translation id="3675132884790542448">mga baboy</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Lumabas sa naka-float</translation>
 <translation id="3716250181321371108">Gumawa ng kontrol</translation>
 <translation id="3716830479327464973">Kapag pinayagan mo ito, susuriin ng Recorder ang iyong mga recording ng audio para:</translation>
+<translation id="3719826155360621982">Homepage</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
 <translation id="3749289110408117711">File name</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="404928562651467259">BABALA</translation>
 <translation id="4050208988451295487">Ilang opsyon:</translation>
+<translation id="405181879009056822">Mga Setting ng ChromeOS</translation>
 <translation id="4054683689023980771">Dina-download ang larawan</translation>
 <translation id="4059839844193047929">Kapag umalis sa page na ito, tatapusin ang kasalukuyan mong pag-record</translation>
 <translation id="4063039537646912479">light blue</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Wallpaper na pagsikat ng araw</translation>
 <translation id="5294769550414936029">bersyon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Ilipat sa desk ang window</translation>
+<translation id="5302048478445481009">Wika</translation>
 <translation id="5303837385540978511">Wallpaper na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Pagkatao</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Gumagawa ng larawang may mataas na resolution…</translation>
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
+<translation id="6786747875388722282">Mga Extension</translation>
 <translation id="6791471867139427246">kulay ng liwanag ng keyboard</translation>
 <translation id="6796229976413584781">Na-delete ang shortcut</translation>
 <translation id="6798678288485555829">Pag-navigate sa text</translation>
@@ -1282,6 +1288,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
 <translation id="757747079855995705">bato</translation>
+<translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
 <translation id="7613724632293948900">Baguhin ang posisyon gamit ang mouse o mga arrow key.</translation>
 <translation id="7618774594543487847">Neutral</translation>
@@ -1355,6 +1362,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7971535376154084247">Mga pangkalahatang kontrol</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
+<translation id="7982789257301363584">Network</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang "<ph name="APP_NAME_1" />"}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1449,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8424039430705546751">pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8431300646573772016">Ano'ng bago sa ChromeOS</translation>
+<translation id="8433186206711564395">Mga setting ng network</translation>
 <translation id="843568408673868420">Koneksyon sa Internet</translation>
 <translation id="844521431886043384">Hindi naka-set up ang DNS</translation>
 <translation id="8456200178779628126">Gamitin ang Google AI para makakuha ng tulong sa pagbabasa at pagsusulat</translation>
@@ -1503,6 +1512,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Pangalan ng provider</translation>
+<translation id="8808828119384186784">Mga Setting ng Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8820457400746201697">Ilipat ang asul na touch point sa isang pagkilos. Piliin ang nauugnay na key para mag-customize.</translation>

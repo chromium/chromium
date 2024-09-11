@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4590027107044272416">你現可在此開啟新分頁</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要關閉 1 個閒置分頁嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置分頁嗎？}}</translation>
-<translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4686942373615810936">剛才建立</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>

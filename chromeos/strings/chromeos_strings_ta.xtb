@@ -80,7 +80,7 @@
 <translation id="1367951781824006909">ஃபைலைத் தேர்வுசெய்க</translation>
 <translation id="1371650399987522809">Google AI உருவாக்கிய வால்பேப்பருக்கான கருத்து</translation>
 <translation id="1374385338586507108">வரையறை</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">தேடுக</translation>
 <translation id="1387854245479784695">அனைத்துக் கோர்களுக்குமானது</translation>
 <translation id="1393206549145430405">கோட்டை</translation>
 <translation id="1394661041439318933">சாதனத்தின் கேஸ் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">வால்பேப்பர் மாதிரிக்காட்சியில் இருந்து வெளியேறும்</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> ஐத் திருத்துவதற்கான பட்டன்.</translation>
 <translation id="1755556344721611131">கண்டறிதல் ஆப்ஸ்</translation>
+<translation id="1756681705074952506">உள்ளீட்டு முறை</translation>
 <translation id="175763766237925754">நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">விரைவாகவும் கூடுதல் நம்பிக்கையுடனும் எழுதுங்கள்</translation>
 <translation id="3662461537616691585">பர்கண்டி மற்றும் கருஞ்சிவப்பு</translation>
 <translation id="3668449597372804501">கிளவுடு ஃப்ளோ வால்பேப்பர்</translation>
+<translation id="3668570675727296296">மொழி அமைப்புகள்</translation>
 <translation id="3675132884790542448">பன்றிகள்</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">மிதக்கும் நிலையிலிருந்து வெளியேறு</translation>
 <translation id="3716250181321371108">கட்டுப்பாட்டை உருவாக்கு</translation>
 <translation id="3716830479327464973">இதை அனுமதித்தால், இவற்றுக்காக உங்கள் ஆடியோ ரெக்கார்டிங்குகளை ரெக்கார்டர் பகுப்பாய்வு செய்யும்:</translation>
+<translation id="3719826155360621982">முகப்புப் பக்கம்</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
 <translation id="3749289110408117711">ஃபைல் பெயர்</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
 <translation id="404928562651467259">எச்சரிக்கை</translation>
 <translation id="4050208988451295487">சில விருப்பங்கள்:</translation>
+<translation id="405181879009056822">ChromeOS அமைப்புகள்</translation>
 <translation id="4054683689023980771">படத்தைப் பதிவிறக்குகிறது</translation>
 <translation id="4059839844193047929">இந்தப் பக்கத்தை விட்டு வெளியேறினால் தற்போதைய ரெக்கார்டிங் நிறுத்தப்படும்</translation>
 <translation id="4063039537646912479">வெளிர் நீலம்</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">சன்ரைஸ் வால்பேப்பர்</translation>
 <translation id="5294769550414936029">பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">சாளரத்தை டெஸ்கிற்கு நகர்த்து</translation>
+<translation id="5302048478445481009">மொழி</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> பிரத்தியேக வால்பேப்பர்</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">அடையாளம்</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">உயர் தெளிவுத்திறன் படத்தை உருவாக்குகிறது…</translation>
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
+<translation id="6786747875388722282">நீட்டிப்புகள்</translation>
 <translation id="6791471867139427246">கீபோர்டு லைட் கலர்</translation>
 <translation id="6796229976413584781">ஷார்ட்கட் நீக்கப்பட்டது</translation>
 <translation id="6798678288485555829">வார்த்தை வழிசெலுத்தல்</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
 <translation id="757747079855995705">கல்</translation>
+<translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7613724632293948900">மவுஸ் அல்லது அம்புக்குறி பட்டன்கள் மூலம் இடமாற்று.</translation>
 <translation id="7618774594543487847">நியூட்ரல்</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">பொதுவான கட்டுப்பாடுகள்</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
+<translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ஆப்ஸ் தானாகத் தொடங்கப்பட்டது}other{# ஆப்ஸ் தானாகத் தொடங்கப்பட்டன}}</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="8004582292198964060">உலாவி</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">கீழ்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8431300646573772016">ChromeOSஸில் புதியவை</translation>
+<translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="843568408673868420">இணைய இணைப்பு</translation>
 <translation id="844521431886043384">DNS அமைக்கப்படவில்லை</translation>
 <translation id="8456200178779628126">படிக்கவும் எழுதவும் உதவியைப் பெற Google AIயைப் பயன்படுத்துங்கள்</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">இந்த நெட்வொர்க்கில் கேப்டிவ் போர்டல் இருக்கலாம்</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8798441408945964110">வழங்குநர் பெயர்</translation>
+<translation id="8808828119384186784">Chrome அமைப்புகள்</translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8820457400746201697">நீல வண்ண டச் பாயிண்ட்டை ஒரு செயலுக்கு நகர்த்தவும். பிரத்தியேகமாக்க, தொடர்புடைய பட்டனைத் தேர்ந்தெடுக்கவும்.</translation>

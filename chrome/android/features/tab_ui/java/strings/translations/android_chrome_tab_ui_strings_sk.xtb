@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
 <translation id="4590027107044272416">Tu môžete teraz otvoriť novú kartu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chcete zavrieť 1 neaktívnu kartu?}few{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívne karty?}many{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}other{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívnych kariet?}}</translation>
-<translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavrieť po 1 dni}few{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}many{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňa}other{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>
 <translation id="4777866634702576038">Chcete odstrániť skupinu kariet?</translation>

@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Ieși din previzualizarea imaginii de fundal</translation>
 <translation id="1754578112426924640">Buton de editare pentru <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplicația Diagnosticare</translation>
+<translation id="1756681705074952506">Metodă de introducere</translation>
 <translation id="175763766237925754">Bună (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Scrie mai rapid și cu mai multă încredere</translation>
 <translation id="3662461537616691585">vișiniu și grena</translation>
 <translation id="3668449597372804501">Imagine de fundal Cloud Flow</translation>
+<translation id="3668570675727296296">Setări de limbă</translation>
 <translation id="3675132884790542448">porci</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Ieși din modul suprapus</translation>
 <translation id="3716250181321371108">Creează o comandă</translation>
 <translation id="3716830479327464973">Când acorzi această permisiune, Recorder îți va analiza înregistrările audio în următoarele scopuri.</translation>
+<translation id="3719826155360621982">Pagina de pornire</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3748026146096797577">Neconectat</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="404928562651467259">AVERTISMENT</translation>
 <translation id="4050208988451295487">Câteva opțiuni:</translation>
+<translation id="405181879009056822">Setările ChromeOS</translation>
 <translation id="4054683689023980771">Se descarcă imaginea</translation>
 <translation id="4059839844193047929">Dacă părăsești această pagină, înregistrarea actuală se va încheia</translation>
 <translation id="4063039537646912479">albastru deschis</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Imagine de fundal cu răsărit</translation>
 <translation id="5294769550414936029">versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mută fereastra pe desktop</translation>
+<translation id="5302048478445481009">Limbă</translation>
 <translation id="5303837385540978511">Imagine de fundal exclusivă pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitate</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Se creează imaginea de înaltă rezoluție…</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
+<translation id="6786747875388722282">Extensii</translation>
 <translation id="6791471867139427246">culoarea iluminării tastaturii</translation>
 <translation id="6796229976413584781">Comanda rapidă a fost ștearsă</translation>
 <translation id="6798678288485555829">Navigare în text</translation>
@@ -1282,6 +1288,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecran tactil USB</translation>
 <translation id="757747079855995705">piatră</translation>
+<translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Repoziționează folosind mouse-ul sau tastele săgeată.</translation>
 <translation id="7618774594543487847">Neutru</translation>
@@ -1355,6 +1362,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7971535376154084247">Comenzi generale</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
+<translation id="7982789257301363584">Rețea</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a pornit automat}few{# aplicații au pornit automat}other{# de aplicații au pornit automat}}</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1449,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8424039430705546751">jos</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8431300646573772016">Noutăți în SO Chrome</translation>
+<translation id="8433186206711564395">Setări de rețea</translation>
 <translation id="843568408673868420">Conexiune la internet</translation>
 <translation id="844521431886043384">Sistemul DNS nu este configurat</translation>
 <translation id="8456200178779628126">Folosește Google AI pentru ajutor la citire și scriere</translation>
@@ -1503,6 +1512,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="879568662008399081">Această rețea poate să aibă un portal captiv</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8798441408945964110">Numele furnizorului</translation>
+<translation id="8808828119384186784">Setări Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imaginea de fundal</translation>
 <translation id="8820457400746201697">Mută punctul de contact albastru pe o acțiune. Selectează tasta asociată pentru personalizare.</translation>

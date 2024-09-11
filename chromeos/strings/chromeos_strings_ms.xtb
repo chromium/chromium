@@ -171,6 +171,7 @@
 <translation id="1753496554272155572">Keluar pratonton kertas dinding</translation>
 <translation id="1754578112426924640">Edit butang untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Apl diagnostik</translation>
+<translation id="1756681705074952506">Kaedah input</translation>
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Kesilapan telah berlaku. Cuba buka semula apl.</translation>
 <translation id="2189104374785738357">Edit butiran APN</translation>
 <translation id="2195732836444333448">Kapasiti terhad pada masa ini. Sila kembali sebentar lagi.</translation>
+<translation id="2197185031095816179">Penetapan semula keselamatan boleh mengalih keluar tetingkap timbul yang tidak dikehendaki, membetulkan masalah rangkaian dan menangani masalah lain yang tidak dijangka.</translation>
 <translation id="2201758491318984023">basikal</translation>
 <translation id="2203272733515928691">mata air panas</translation>
 <translation id="2203642483788377106">cenuram</translation>
@@ -520,6 +522,7 @@
 <translation id="3661106764436337772">Menulis dengan lebih cepat dan yakin</translation>
 <translation id="3662461537616691585">merah tua dan merah manggis</translation>
 <translation id="3668449597372804501">Hiasan latar aliran awan</translation>
+<translation id="3668570675727296296">Tetapan bahasa</translation>
 <translation id="3675132884790542448">khinzir</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
@@ -527,6 +530,7 @@
 <translation id="3715651196924935218">Keluar daripada tetingkap terapung</translation>
 <translation id="3716250181321371108">Buat kawalan</translation>
 <translation id="3716830479327464973">Apabila anda membenarkan perkara ini, Recorder akan menganalisis rakaman audio anda untuk:</translation>
+<translation id="3719826155360621982">Halaman utama</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
@@ -540,6 +544,7 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
+<translation id="3836587210832263413">Hidupkan sambungan yang anda percayai sahaja</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="3848280697030027394">menggelapkan papan kekunci</translation>
@@ -585,6 +590,7 @@
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="404928562651467259">AMARAN</translation>
 <translation id="4050208988451295487">Beberapa pilihan:</translation>
+<translation id="405181879009056822">Tetapan ChromeOS</translation>
 <translation id="4054683689023980771">Memuat turun imej</translation>
 <translation id="4059839844193047929">Tindakan meninggalkan halaman ini akan menamatkan rakaman semasa anda</translation>
 <translation id="4063039537646912479">biru cerah</translation>
@@ -629,6 +635,7 @@
 <translation id="4251839292699800785">Pejabat yang bergaya</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
 <translation id="4266143281602681663">yan</translation>
+<translation id="4269815121975886860">Pilihan permulaan</translation>
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Edit atau alih keluar untuk menyelesaikan konflik.</translation>
@@ -765,6 +772,7 @@
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="4950314376641394653">Perisian tegar <ph name="DEVICE_NAME" /> telah dikemas kini kepada versi <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">terowong pokok</translation>
+<translation id="4965661459364092269">Penetapan semula keselamatan telah selesai</translation>
 <translation id="4965703485264574128">Untuk mendapatkan jawapan anggaran, darabkan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pertukaran mod</translation>
@@ -827,6 +835,7 @@
 <translation id="5252456968953390977">Perayauan</translation>
 <translation id="5254600740122644523">Rak buku <ph name="SIMPLE_STYLE" /> di dalam bilik <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Dayakan mod warna cerah</translation>
+<translation id="5261479807286543505">Tetapan permulaan</translation>
 <translation id="5264277876637023664">Jalankan Ujian CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN telah dilumpuhkan.</translation>
@@ -836,6 +845,7 @@
 <translation id="5292579816060236070">Hiasan latar matahari terbenam</translation>
 <translation id="5294769550414936029">versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Alihkan tetingkap ke meja</translation>
+<translation id="5302048478445481009">Bahasa</translation>
 <translation id="5303837385540978511">Hiasan latar eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiti</translation>
@@ -1132,12 +1142,14 @@
 <translation id="6761537227090937007">Membuat imej peleraian tinggi…</translation>
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
+<translation id="6786747875388722282">Pelanjutan</translation>
 <translation id="6791471867139427246">warna cerah papan kekunci</translation>
 <translation id="6796229976413584781">Pintasan telah dipadamkan</translation>
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
 <translation id="6831043979455480757">Terjemah</translation>
+<translation id="6846843854964504403">Penetapan semula keselamatan</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
 <translation id="6862416241246624313">Maklum balas diserahkan</translation>
 <translation id="6866732840889595464">bunga daisi</translation>
@@ -1295,6 +1307,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrin sentuh USB</translation>
 <translation id="757747079855995705">batu</translation>
+<translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7613724632293948900">Ubah kedudukan dengan tetikus atau kekunci anak panah.</translation>
 <translation id="7618774594543487847">Neutral</translation>
@@ -1321,6 +1334,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7746357909584236306">boleh diedit</translation>
 <translation id="7747039790905080783">Kunci prakongsi</translation>
 <translation id="7752963721013053477">Fajar hingga senja - eksklusif</translation>
+<translation id="7760571082554155847">Tetapan halaman utama</translation>
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>
 <translation id="7763470514545477072">Padanan akhiran domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
@@ -1362,6 +1376,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Selang pengekal berterusan</translation>
 <translation id="7943516765291457328">Hidupkan Bluetooth untuk mengimbas tempat liputan berdekatan</translation>
+<translation id="7944482598620888754">Kandungan laman</translation>
 <translation id="7944562637040950644">togol lampu latar papan kekunci</translation>
 <translation id="7953669802889559161">Masukan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
@@ -1369,6 +1384,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7971535376154084247">Kawalan umum</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
+<translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" telah dimulakan secara automatik}other{# apl dimulakan secara automatik}}</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
@@ -1397,6 +1413,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
+<translation id="8135609423982943441">Chromebook anda ditetapkan semula kepada lalai selamat. Anda boleh melaraskan perubahan ini pada bila-bila masa dalam Tetapan.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alat pembangun</translation>
@@ -1427,6 +1444,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8291967909914612644">Negara pembekal tempatan</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8302368968391049045">Tembok Api HTTPS</translation>
+<translation id="8308787307410010965">Tetapan kandungan laman</translation>
 <translation id="8312330582793120272">mainkan media</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
 <translation id="8320910311642849813">hutan</translation>
@@ -1456,6 +1474,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8424039430705546751">ke bawah</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8431300646573772016">Item Baharu Chrome OS</translation>
+<translation id="8433186206711564395">Tetapan rangkaian</translation>
 <translation id="843568408673868420">Sambungan Internet</translation>
 <translation id="844521431886043384">DNS tidak disediakan</translation>
 <translation id="8456200178779628126">Gunakan Google AI untuk mendapatkan bantuan berkaitan pembacaan dan penulisan</translation>
@@ -1519,6 +1538,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8797082062139985406">Buat nama menggunakan Google AI</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
+<translation id="8808828119384186784">Tetapan Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8820457400746201697">Gerakkan titik sentuh biru kepada tindakan. Pilih kekunci yang berkaitan untuk disesuaikan.</translation>
@@ -1625,6 +1645,8 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="951780398843003443">Bandingkan suara sepanjang rakaman supaya transkrip menggambarkan perkara yang setiap penutur katakan dan masa penutur berkata</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
+<translation id="959792926760890141">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
+          Enjin carian lalai anda akan ditetapkan semula tetapi tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kod operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

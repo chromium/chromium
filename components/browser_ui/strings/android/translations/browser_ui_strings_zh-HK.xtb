@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
+<translation id="5373874281522292782">已儲存分頁群組</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">正在下載的項目</translation>
 <translation id="6709432001666529933">允許網站追蹤手部動作前先詢問你 (建議)</translation>
 <translation id="6722828510648505498">封鎖來自身分服務的登入提示。</translation>
+<translation id="6729704574271585059">你建立的群組儲存在分頁群組部分，並會跨裝置更新</translation>
 <translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下掃就可以閂咗佢。</translation>

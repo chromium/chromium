@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />의 수정 버튼입니다.</translation>
 <translation id="1755556344721611131">진단 앱</translation>
+<translation id="1756681705074952506">입력 방법</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3662461537616691585">버건디색 및 적갈색</translation>
 <translation id="3668449597372804501">구름 흐름 배경화면</translation>
+<translation id="3668570675727296296">언어 설정</translation>
 <translation id="3675132884790542448">돼지</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">플로팅 종료</translation>
 <translation id="3716250181321371108">컨트롤 만들기</translation>
 <translation id="3716830479327464973">허용하면 다음을 위해 녹음기가 오디오 녹음 파일을 분석합니다.</translation>
+<translation id="3719826155360621982">홈페이지</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
 <translation id="4050208988451295487">몇 가지 옵션:</translation>
+<translation id="405181879009056822">ChromeOS 설정</translation>
 <translation id="4054683689023980771">이미지 다운로드 중</translation>
 <translation id="4059839844193047929">이 페이지를 나가면 현재 녹음이 종료됩니다.</translation>
 <translation id="4063039537646912479">하늘색</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">일출 배경화면</translation>
 <translation id="5294769550414936029">버전 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">창을 데스크로 이동</translation>
+<translation id="5302048478445481009">언어</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 전용 배경화면</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">주소</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">고해상도 이미지 생성 중…</translation>
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
+<translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6791471867139427246">키보드 조명 색상</translation>
 <translation id="6796229976413584781">단축키가 삭제됨</translation>
 <translation id="6798678288485555829">텍스트 탐색</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 터치스크린</translation>
 <translation id="757747079855995705">석조</translation>
+<translation id="7590883480672980941">입력 설정</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>
 <translation id="7613724632293948900">마우스 또는 화살표 키를 사용하여 재배치합니다.</translation>
 <translation id="7618774594543487847">중성 색상</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">일반 컨트롤</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
+<translation id="7982789257301363584">네트워크</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="8004582292198964060">브라우저</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">아래</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8431300646573772016">ChromeOS의 새로운 기능</translation>
+<translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="843568408673868420">인터넷 연결</translation>
 <translation id="844521431886043384">DNS가 설정되어 있지 않습니다.</translation>
 <translation id="8456200178779628126">Google AI의 도움을 받아 글을 읽고 작성하기</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">네트워크에 종속 포털이 있을 수 있습니다.</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8798441408945964110">공급자 이름</translation>
+<translation id="8808828119384186784">Chrome 설정</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>
 <translation id="8820457400746201697">파란색 터치 포인트를 작업으로 이동합니다. 연결된 키를 선택하여 맞춤설정합니다.</translation>

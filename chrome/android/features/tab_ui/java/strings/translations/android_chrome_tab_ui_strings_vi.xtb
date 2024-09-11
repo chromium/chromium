@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Tách nhóm</translation>
 <translation id="4590027107044272416">Hiện bạn có thể mở một thẻ mới tại đây</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Đóng 1 thẻ không hoạt động?}other{Đóng <ph name="TAB_COUNT_MANY" /> thẻ không hoạt động?}}</translation>
-<translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
 <translation id="4686942373615810936">Vừa tạo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sẽ đóng sau 1 ngày}other{Sẽ đóng sau <ph name="DAY_COUNT_MANY" /> ngày}}</translation>
 <translation id="4777866634702576038">Bạn muốn xoá nhóm thẻ?</translation>

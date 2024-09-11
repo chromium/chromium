@@ -1956,7 +1956,6 @@
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
 <translation id="7728657226117099693">關閉 Caps Lock</translation>
 <translation id="7742327441377685481">沒有任何通知</translation>
-<translation id="774736258792760908">開啟「幫我寫」和「幫我讀」功能後，系統會將你輸入的文字和文件內容傳送到 Google AI 伺服器，據以產生撰寫建議、產生摘要、回答問題及提升產品品質。我們在使用這類資料時會遵守《<ph name="LINK_TO_SERVICE_TERMS" />》的規定。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="7748275671948949022">醒目顯示檔案櫃中的啟動鍵</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2282,7 +2281,6 @@
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
-<translation id="8893479486525393799">錄音室麥克風</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 將永久刪除</translation>
 <translation id="889790758758811533">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
 <translation id="88986195241502842">Page Down 鍵</translation>
@@ -2297,6 +2295,7 @@
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
 <translation id="8939855324412367560">音訊輸入裝置為「<ph name="INPUT_DEVICE_NAME" />」，音訊輸出裝置為「<ph name="OUTPUT_DEVICE_NAME" />」。如要變更，請前往「設定」。</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">錄音室級麥克風</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 的核取方塊未勾選。</translation>
 <translation id="8949925099261528566">已連線，但沒有網際網路</translation>
 <translation id="8951539504029375108">只有得到認證的 Thunderbolt 裝置能夠與 Chromebook 相容</translation>

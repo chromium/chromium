@@ -1960,7 +1960,6 @@
 <translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در برگه جدید</translation>
 <translation id="7728657226117099693">خاموش کردن «قفل تبدیل»</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
-<translation id="774736258792760908">‏وقتی «کمک گرفتن در نوشتن» و «کمک گرفتن در خواندن» را روشن می‌کنید، نوشتار ورودی و محتوای سند برای تولید پیشنهادهای نوشتن، تولید خلاصه، پاسخ به سؤالات، و بهبود محصول، منوط به رعایت <ph name="LINK_TO_SERVICE_TERMS" />، به سرورهای هوش مصنوعی Google ارسال می‌شود. اطلاعات شخصی، حساس، یا محرمانه را وارد نکنید.</translation>
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2285,6 @@
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8878886163241303700">صفحه گسترش یافته است</translation>
 <translation id="888982883502837004">به‌روزرسانی‌های سفت‌افزار برای دستگاهتان دردسترس است. برای مرور و به‌روزرسانی، کلیک کنید.</translation>
-<translation id="8893479486525393799">میکروفون استودیویی</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> برای همیشه حذف می‌شود</translation>
 <translation id="889790758758811533">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />). دستگاه را به برق وصل کنید.</translation>
 <translation id="88986195241502842">صفحه پایین</translation>
@@ -2301,6 +2299,7 @@
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="8939855324412367560">صدای ورودی «<ph name="INPUT_DEVICE_NAME" />» و صدای خروجی «<ph name="OUTPUT_DEVICE_NAME" />» است. برای تغییر به «تنظیمات» بروید.</translation>
 <translation id="8940956008527784070">باتری ضعیف است (<ph name="PERCENTAGE" />٪)</translation>
+<translation id="8945508919180478719">میکروفون استودیویی</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> چارگوش انتخاب علامت ندارد.</translation>
 <translation id="8949925099261528566">متصل، بدون اینترنت</translation>
 <translation id="8951539504029375108">‏فقط دستگاه‌های Thunderbolt تأییدشده با Chromebook شما سازگار هستند</translation>

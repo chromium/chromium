@@ -1960,7 +1960,6 @@
 <translation id="7727952505535211425">လိပ်စာဘားရှိ ဝဘ်ဆိုက်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="7728657226117099693">စာလုံးကြီး ပိတ်ရန်</translation>
 <translation id="7742327441377685481">အကြောင်းကြားချက် မရှိပါ</translation>
-<translation id="774736258792760908">‘ကူရေးပေးပါ’ နှင့် ‘ကူဖတ်ပေးပါ’ တို့ကို ဖွင့်ထားသောအခါ အရေးအသား အကြံပြုချက်များ၊ အနှစ်ချုပ်များ ထုတ်လုပ်ပေးရန်၊ မေးခွန်းများ ဖြေရန်နှင့် ထုတ်ကုန် ပိုကောင်းစေရန်အတွက် ထည့်သွင်းသည့်စာသားနှင့် မှတ်တမ်းအကြောင်းအရာတို့ကို <ph name="LINK_TO_SERVICE_TERMS" /> နှင့်အညီ Google AI ဆာဗာများသို့ပို့သည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။</translation>
 <translation id="7748275671948949022">စင်ပေါ်တွင် Launcher ခလုတ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="7749958366403230681">ExpressKey ၄</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="888982883502837004">သင့်စက်အတွက် ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ။ ဝင်ကြည့်၍ အပ်ဒိတ်လုပ်ရန် နှိပ်ပါ။</translation>
-<translation id="8893479486525393799">စတူဒီယို မိုက်</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ကို အပြီးဖျက်လိုက်ပါမည်</translation>
 <translation id="889790758758811533">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 စက်ကို အားသွင်းပါ။</translation>
@@ -2303,6 +2301,7 @@
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>
 <translation id="8939855324412367560">အသံဝင်မည့် ကိရိယာသည် “<ph name="INPUT_DEVICE_NAME" />” ဖြစ်ပြီး အသံထွက်မည့် ကိရိယာသည် “<ph name="OUTPUT_DEVICE_NAME" />” ဖြစ်သည်။ ပြောင်းရန် ဆက်တင်များသို့ သွားပါ။</translation>
 <translation id="8940956008527784070">ဓာတ်ခဲအားနည်း (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">စတူဒီယိုပုံစံမိုက်</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> အကွက်ကို အမှတ်ခြစ်မထားပါ။</translation>
 <translation id="8949925099261528566">ချိတ်ဆက်ထားသည်၊ အင်တာနက်မရှိပါ</translation>
 <translation id="8951539504029375108">အတည်ပြုထားသော Thunderbolt ကိရိယာများကိုသာ သင်၏ Chromebook ဖြင့် တွဲသုံးနိုင်သည်</translation>

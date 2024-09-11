@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Permite site-urilor să ruleze JavaScript (recomandat)</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
 <translation id="5344522958567249764">Gestionează confidențialitatea anunțurilor</translation>
+<translation id="5373874281522292782">Grupurile de file se salvează</translation>
 <translation id="5389626883706033615">Site-urile nu au permisiunea de a-ți solicita să folosească informațiile pe care le salvează despre tine</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ încă 1)}few{(+ încă #)}other{(+ încă #)}}</translation>
 <translation id="5403592356182871684">Nume</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Descărcări active</translation>
 <translation id="6709432001666529933">Întreabă înainte de a permite site-urilor să-ți urmărească mâinile (recomandat)</translation>
 <translation id="6722828510648505498">Blochează solicitările de conectare de la serviciile de identitate.</translation>
+<translation id="6729704574271585059">Grupurile pe care le-ai creat se salvează în secțiunea Grup de file și se actualizează pe toate dispozitivele</translation>
 <translation id="6746124502594467657">Mutați în jos</translation>
 <translation id="6749077623962119521">Resetezi permisiunile?</translation>
 <translation id="6766622839693428701">Glisează în jos pentru a închide.</translation>

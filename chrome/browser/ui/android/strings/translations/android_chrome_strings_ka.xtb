@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="3293181007446299124">თქვენი დათვალიერების ისტორია კონფიდენციალურად ინახება თქვენივე მოწყობილობაზე, ხოლო ანგარიშები დაყოვნებით იგზავნება, თქვენი ვინაობის დაცვის მიზნით</translation>
+<translation id="3302615849591357577">ჩანართების ჯგუფის „<ph name="TITLE_OF_GROUP" />“ <ph name="COLOR_NAME" /> ფერის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.</translation>
 <translation id="3303414029551471755">გაგრძელდეს შინაარსის ჩამოტვირთვა?</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3305130791745726624">მოწყობილობებზე გაგზავნა</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია</translation>
 <translation id="4834250788637067901">გადახდის მეთოდები, შემოთავაზებები და მისამართები Google Pay-დან</translation>
 <translation id="4835385943915508971">Chrome-ს მოთხოვნილ რესურსზე წვდომა არ აქვს.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_ONE" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}other{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_MANY" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}}</translation>
 <translation id="4837753911714442426">გვერდის ბეჭდვის ვარიანტების გახსნა</translation>
 <translation id="4842092870884894799">პაროლების გენერირების კონტექსტური ფანჯრის ჩვენება</translation>
 <translation id="4844633725025837809">დამატებითი უსაფრთხოებისთვის, Google-ის პაროლების მმართველში შენახვამდე, დაშიფრეთ პაროლები თქვენს მოწყობილობაზე</translation>
@@ -1180,6 +1182,7 @@
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
 <translation id="6594347733515723558">დალაგება / ვარიანტები</translation>
 <translation id="6595046016124923392">სურათები გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{ჩანართების ჯგუფის <ph name="TAB_COUNT_ONE" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}other{ჩანართების ჯგუფის <ph name="TAB_COUNT_MANY" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}}</translation>
 <translation id="6604931690954120417">როცა Chrome-ში ხართ შესული, თქვენ მიერ შენახული პაროლები Google ანგარიშში გადაინაცვლებს. ამ ფუნქციის გამოსართავად <ph name="BEGIN_LINK" />გადადით პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">უსაფრთხოების გაუმჯობესება თქვენთვის და ვების ყველა მომხმარებლისთვის.</translation>
 <translation id="6621391692573306628">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით Chrome-ში ორივე მოწყობილობიდან</translation>
@@ -1204,6 +1207,7 @@
 <translation id="6674571176963658787">სინქრონიზაციის დასაწყებად შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
 <translation id="6676927815633975364">შედით ამ საიტსა და Chrome-ში</translation>
 <translation id="6684809838922667136">გააუმჯობესეთ Chrome</translation>
+<translation id="6704048624334633734">პაროლების ექსპორტი და წაშლა</translation>
 <translation id="670498945988402717">შემოწმდა გუშინ</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="671481426037969117">თქვენი <ph name="FQDN" />-ის ტაიმერი ამოიწურა. ხვალ ის ხელახლა დაიწყება.</translation>
@@ -1665,6 +1669,7 @@
 <translation id="864544049772947936">ფანჯრების მართვა (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">გამოიყენეთ Chrome თქვენებურად</translation>
 <translation id="8664979001105139458">ამ სახელის მქონე ფაილი უკვე არსებობს</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{დაბლოკილია თქვენი ორგანიზაციის მიერ}other{# დაბლოკილია თქვენი ორგანიზაციის მიერ}}</translation>
 <translation id="8672883760227492369">ამ მოწყობილობაში შენახული რამდენიმე პაროლი მალე შეწყვეტს მოქმედებას. ამ პაროლების გადატანა შეგიძლიათ Google პაროლების მმართველში.</translation>
 <translation id="8676276370198826499">დარეგისტრირდით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="8676789164135894283">დადასტურება შესვლისთვის</translation>

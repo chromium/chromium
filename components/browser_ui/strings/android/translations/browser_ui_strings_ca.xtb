@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Permet que els llocs web executin JavaScript (opció recomanada)</translation>
 <translation id="534295439873310000">Dispositius amb NFC</translation>
 <translation id="5344522958567249764">Gestiona la privadesa d'anuncis</translation>
+<translation id="5373874281522292782">Els teus grups de pestanyes es desen</translation>
 <translation id="5389626883706033615">Els llocs web no poden demanar-te si poden utilitzar la informació que han desat sobre tu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Baixades actives</translation>
 <translation id="6709432001666529933">Pregunta abans de permetre que els llocs web facin un seguiment de les teves mans (opció recomanada)</translation>
 <translation id="6722828510648505498">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
+<translation id="6729704574271585059">Els grups que has creat es desen a la secció de grups de pestanyes i s'actualitzen en tots els teus dispositius</translation>
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6766622839693428701">Llisca cap avall per tancar el full.</translation>

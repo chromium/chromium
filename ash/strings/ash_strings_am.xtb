@@ -1961,7 +1961,6 @@
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7728657226117099693">Caps Lock አጥፋ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
-<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google ሰው ሠራሽ አስተውሎት አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2288,7 +2287,6 @@
 <translation id="8877788021141246043">አስታዋሽ አዘጋጅ</translation>
 <translation id="8878886163241303700">ማያ ገፅ በማስቀጠል ላይ</translation>
 <translation id="888982883502837004">የፊርምዌር ዝማኔዎች ለመሣሪያዎ ይገኛሉ። ለመገምገም እና ለማዘመን ጠቅ ያድርጉ።</translation>
-<translation id="8893479486525393799">ስቱዲዮ ማይክሮፎን</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> እስከመጨረሻው ይሰረዛል</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ባትሪ ይቀራል (<ph name="TIME_LEFT" /> አካባቢ)።
 መሣሪያዎን ከኃይል ጋር ያገናኙ።</translation>
@@ -2304,6 +2302,7 @@
 <translation id="8938800817013097409">USB-C መሣሪያ (የቀኝ ወደብ ከኋላ በኩል)</translation>
 <translation id="8939855324412367560">የግብዓት ኦዲዮው «<ph name="INPUT_DEVICE_NAME" />» ነው እና የውፅዓት ኦዲዮው «<ph name="OUTPUT_DEVICE_NAME" />» ነው። ለመቀየር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="8940956008527784070">ባትሪ ዝቅተኛ ነው (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">የስቱዲዮ-ቅጥ ማይክሮፎን</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> አመልካች ሳጥኑ ላይ ምልክት አልተደረገም።</translation>
 <translation id="8949925099261528566">ተገናኝቷል፣ ምንም በይነመረብ የለም</translation>
 <translation id="8951539504029375108">ከእርስዎ Chromebook ጋር የጸደቁ Thunderbolt መሣሪያዎች ብቻ ተስማሚ ናቸው</translation>

@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">取消分組</translation>
 <translation id="4590027107044272416">現在點選這個按鈕可開啟新分頁</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要關閉 1 個閒置分頁嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置分頁嗎？}}</translation>
-<translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
 <translation id="4686942373615810936">剛剛建立</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>

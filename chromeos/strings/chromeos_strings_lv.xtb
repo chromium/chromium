@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Aizvērt fona tapetes priekšskatījumu</translation>
 <translation id="1754578112426924640">Rediģēšanas poga īsinājumtaustiņam <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostikas lietotne</translation>
+<translation id="1756681705074952506">Ievades metode</translation>
 <translation id="175763766237925754">Labs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> — <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Rakstiet ātrāk un ar lielāku pārliecību</translation>
 <translation id="3662461537616691585">bordo un sarkanbrūna</translation>
 <translation id="3668449597372804501">Fona tapete Peldošie mākoņi</translation>
+<translation id="3668570675727296296">Valodas iestatījumi</translation>
 <translation id="3675132884790542448">cūkas</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Iziet no peldošā režīma</translation>
 <translation id="3716250181321371108">Izveidot vadīklu</translation>
 <translation id="3716830479327464973">Ja to atļausiet, lietotnē Ierakstītājs tiks analizēti jūsu audio ieraksti, lai:</translation>
+<translation id="3719826155360621982">Sākumlapa</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
 <translation id="404928562651467259">BRĪDINĀJUMS</translation>
 <translation id="4050208988451295487">Dažas iespējas:</translation>
+<translation id="405181879009056822">ChromeOS iestatījumi</translation>
 <translation id="4054683689023980771">Notiek attēla lejupielāde…</translation>
 <translation id="4059839844193047929">Aizverot šo lapu, tiks pārtraukta pašreizējā ierakstīšana.</translation>
 <translation id="4063039537646912479">gaiši zilā</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Fona tapete Saullēkts</translation>
 <translation id="5294769550414936029">versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Pārvietot logu uz darbvietu</translation>
+<translation id="5302048478445481009">Valoda</translation>
 <translation id="5303837385540978511">Tikai ierīcē <ph name="PRODUCT_NAME" /> pieejama fona tapete</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identitāte</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Notiek augstas izšķirtspējas attēla izveide…</translation>
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
+<translation id="6786747875388722282">Paplašinājumi</translation>
 <translation id="6791471867139427246">tastatūras apgaismojuma krāsa</translation>
 <translation id="6796229976413584781">Īsinājumtaustiņš ir izdzēsts</translation>
 <translation id="6798678288485555829">Navigācija tekstā</translation>
@@ -1278,6 +1284,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB skārienekrāns</translation>
 <translation id="757747079855995705">akmens</translation>
+<translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Mainiet izvietojumu, izmantojot peli vai bultiņas.</translation>
 <translation id="7618774594543487847">Neitrāls</translation>
@@ -1351,6 +1358,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7971535376154084247">Vispārīgas vadīklas</translation>
 <translation id="7977800524392185497">Lai izveidotu savienojumu ar <ph name="NETWORK_NAME" /> tīklu, pārejiet uz iestatījumiem.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
+<translation id="7982789257301363584">Tīkls</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Lietotne <ph name="APP_NAME_1" /> tika palaista automātiski}zero{# lietotnes tika palaistas automātiski}one{# lietotne tika palaista automātiski}other{# lietotnes tika palaistas automātiski}}</translation>
 <translation id="7994702968232966508">EAP metode</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
@@ -1437,6 +1445,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8424039430705546751">uz leju</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8431300646573772016">Chrome OS jaunumi</translation>
+<translation id="8433186206711564395">Tīkla iestatījumi</translation>
 <translation id="843568408673868420">Interneta savienojamība</translation>
 <translation id="844521431886043384">DNS nav iestatīts</translation>
 <translation id="8456200178779628126">Izmantojiet Google MI, lai saņemtu palīdzību lasīšanā un rakstīšanā</translation>
@@ -1499,6 +1508,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="879568662008399081">Iespējams, tīklam ir caurlaides lapa</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
+<translation id="8808828119384186784">Chrome iestatījumi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fona tapete</translation>
 <translation id="8820457400746201697">Pārvietojiet zilo skārienpunktu uz kādu darbību. Atlasiet saistīto taustiņu, ko vēlaties pielāgot.</translation>

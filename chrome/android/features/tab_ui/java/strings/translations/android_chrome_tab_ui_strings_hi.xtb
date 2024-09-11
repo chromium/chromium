@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
 <translation id="4590027107044272416">यहां से एक नया टैब खोला जा सकता है</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{क्या आपको 1 इनऐक्टिव टैब बंद करना है?}one{क्या आपको <ph name="TAB_COUNT_MANY" /> इनऐक्टिव टैब बंद करना है?}other{क्या आपको <ph name="TAB_COUNT_MANY" /> इनऐक्टिव टैब बंद करने हैं?}}</translation>
-<translation id="4648718555153979859">यहां पर आपके टैब एक ग्रुप में रखे जाते हैं</translation>
 <translation id="4686942373615810936">अभी-अभी बनाया गया</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 दिन बाद बंद हो जाएंगे}one{<ph name="DAY_COUNT_MANY" /> दिन बाद बंद हो जाएंगे}other{<ph name="DAY_COUNT_MANY" /> दिनों बाद बंद हो जाएंगे}}</translation>
 <translation id="4777866634702576038">टैब ग्रुप मिटाना है?</translation>

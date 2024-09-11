@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Anna kaikkien sivustojen käyttää JavaScriptiä (suositus).</translation>
 <translation id="534295439873310000">NFC-laitteet</translation>
 <translation id="5344522958567249764">Muuta mainosyksityisyysasetuksia</translation>
+<translation id="5373874281522292782">Välilehtiryhmät on tallennettu</translation>
 <translation id="5389626883706033615">Sivustoja estetään pyytämästä lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Aktiiviset lataukset</translation>
 <translation id="6709432001666529933">Kysy, saavatko sivustot seurata käsiäsi (suositus)</translation>
 <translation id="6722828510648505498">Estä henkilöllisyyspalveluiden sisäänkirjautumiskehotteet.</translation>
+<translation id="6729704574271585059">Luomasi ryhmät tallennetaan välilehtiryhmäosioon ja ne päivittyvät kaikilla laitteillasi</translation>
 <translation id="6746124502594467657">Siirrä alas</translation>
 <translation id="6749077623962119521">Nollataanko luvat?</translation>
 <translation id="6766622839693428701">Sulje pyyhkäisemällä alas.</translation>

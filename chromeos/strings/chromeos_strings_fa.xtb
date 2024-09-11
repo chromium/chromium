@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">جارزن ویدیویی وب‌بین</translation>
 <translation id="1676557873873341166">فیلم‌برداری</translation>
 <translation id="1684279041537802716">رنگ برجسته‌سازی</translation>
+<translation id="1697278726914783200">ضبط کردن</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1708602061922134366">‏آبی Google</translation>
@@ -167,6 +168,7 @@
 <translation id="1753496554272155572">خروج از پیش‌نمای کاغذدیواری</translation>
 <translation id="1754578112426924640">ویرایش دکمه <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">برنامه عیب‌یابی</translation>
+<translation id="1756681705074952506">روش ورودی</translation>
 <translation id="175763766237925754">خوب (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +516,7 @@
 <translation id="3661106764436337772">سریع‌تر و با قاطعیت بیشتر بنویسید</translation>
 <translation id="3662461537616691585">شرابی و زرشکی</translation>
 <translation id="3668449597372804501">کاغذدیواری جریان ابر</translation>
+<translation id="3668570675727296296">تنظیمات زبان</translation>
 <translation id="3675132884790542448">خوک</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
@@ -521,6 +524,7 @@
 <translation id="3715651196924935218">خروج از حالت شناور</translation>
 <translation id="3716250181321371108">ایجاد کنترل</translation>
 <translation id="3716830479327464973">وقتی این اجازه را می‌دهید، «ضبط‌صوت» صداهای ضبط‌شده را برای موارد زیر تجزیه‌وتحلیل می‌کند:</translation>
+<translation id="3719826155360621982">صفحه اصلی</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
@@ -579,6 +583,7 @@
 <translation id="4046123991198612571">آهنگ بعدی</translation>
 <translation id="404928562651467259">اخطار</translation>
 <translation id="4050208988451295487">چند گزینه:</translation>
+<translation id="405181879009056822">‏تنظیمات ChromeOS</translation>
 <translation id="4054683689023980771">درحال بارگیری تصویر</translation>
 <translation id="4059839844193047929">با خارج شدن از این صفحه، ضبط فعلی به‌پایان می‌رسد</translation>
 <translation id="4063039537646912479">آبی روشن</translation>
@@ -689,6 +694,7 @@
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4594021849294327751">ایجاد ترانویسی</translation>
+<translation id="4602266091140407479">میکروفون</translation>
 <translation id="4607282946861182308">نمی‌توان تصویری از این مورد ایجاد کرد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
@@ -825,6 +831,7 @@
 <translation id="5292579816060236070">کاغذدیواری طلوع آفتاب</translation>
 <translation id="5294769550414936029">نسخه <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
+<translation id="5302048478445481009">زبان</translation>
 <translation id="5303837385540978511">کاغذدیواری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">هویت</translation>
@@ -991,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">ظرفیت باتری با استفاده کاهش می‌یابد</translation>
+<translation id="6189987971574353264">پخش کردن</translation>
 <translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
 <translation id="6196607555925437199">ایجاد مجدد</translation>
 <translation id="6205145102504628069">جریان ابر</translation>
@@ -1119,6 +1127,7 @@
 <translation id="6761537227090937007">درحال ایجاد تصویر با وضوح بالا…</translation>
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
+<translation id="6786747875388722282">افزونه‌ها</translation>
 <translation id="6791471867139427246">رنگ نور صفحه‌کلید</translation>
 <translation id="6796229976413584781">میان‌بر حذف شد</translation>
 <translation id="6798678288485555829">پیمایش نوشتار</translation>
@@ -1282,6 +1291,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏صفحه لمسی USB</translation>
 <translation id="757747079855995705">سنگ</translation>
+<translation id="7590883480672980941">تنظیمات ورودی</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
 <translation id="7613724632293948900">موقعیت را با موشواره یا کلیدهای جهت‌نما تغییر دهید.</translation>
 <translation id="7618774594543487847">خنثی</translation>
@@ -1355,6 +1365,7 @@
 <translation id="7971535376154084247">کنترل‌های عمومی</translation>
 <translation id="7977800524392185497">برای پیوستن به <ph name="NETWORK_NAME" />، به «تنظیمات» بروید</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
+<translation id="7982789257301363584">شبکه</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» به‌طور خودکار اجرا شد}one{# برنامه به‌طور خودکار اجرا شد}other{# برنامه به‌طور خودکار اجرا شد}}</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -1441,6 +1452,7 @@
 <translation id="8424039430705546751">پایین</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8431300646573772016">‏ویژگی‌های جدید ChromeOS</translation>
+<translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="843568408673868420">اتصال اینترنت</translation>
 <translation id="844521431886043384">ساناد تنظیم نشده است</translation>
 <translation id="8456200178779628126">‏برای کمک گرفتن در خواندن و نوشتن، از هوش مصنوعی Google استفاده کنید</translation>
@@ -1503,6 +1515,7 @@
 <translation id="879568662008399081">ممکن است این شبکه درگاه مهمان داشته باشد</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8798441408945964110">نام ارائه‌دهنده</translation>
+<translation id="8808828119384186784">‏تنظیمات Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8820457400746201697">نقطه لمسی آبی را به کنش موردنظر انتقال دهید. کلید مرتبط را برای سفارشی‌سازی انتخاب کنید.</translation>

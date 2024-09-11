@@ -1959,7 +1959,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7727952505535211425">Ouvrir le site Web dans la barre d'adresse dans un nouvel onglet</translation>
 <translation id="7728657226117099693">Désactiver le verrouillage des majuscules</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
-<translation id="774736258792760908">Lorsque vous activez l'Aide à la rédaction et l'Aide à la lecture, le texte saisi et le contenu du document sont envoyés aux serveurs de l'IA de Google pour générer des suggestions de rédaction, générer des résumés, répondre aux questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="7748275671948949022">Mettre en évidence le bouton du lanceur sur l'étagère</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2285,7 +2284,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les passer en revue et lancer la mise à jour.</translation>
-<translation id="8893479486525393799">Micro de studio</translation>
 <translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="889790758758811533">Il reste <ph name="PERCENTAGE" /> % de pile (environ <ph name="TIME_LEFT" />). Branchez votre appareil à une source d'alimentation.</translation>
 <translation id="88986195241502842">Page suivante</translation>
@@ -2300,6 +2298,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>
 <translation id="8939855324412367560">L'audio d'entrée est « <ph name="INPUT_DEVICE_NAME" /> » et l'audio de sortie est « <ph name="OUTPUT_DEVICE_NAME" /> ». Accédez aux paramètres pour effectuer des modifications.</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Micro de type studio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, case non cochée.</translation>
 <translation id="8949925099261528566">Connecté, aucun accès Internet</translation>
 <translation id="8951539504029375108">Seuls les appareils Thunderbolt approuvés sont compatibles avec votre Chromebook</translation>

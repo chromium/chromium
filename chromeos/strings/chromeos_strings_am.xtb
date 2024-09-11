@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">ከልጣፍ ቅድመ-ዕይታ ይውጡ</translation>
 <translation id="1754578112426924640">ለ<ph name="ACCELERATOR_INFO" /> የአርትዕ አዝራር።</translation>
 <translation id="1755556344721611131">የምርመራ መተግበሪያ</translation>
+<translation id="1756681705074952506">የግቤት ስልት</translation>
 <translation id="175763766237925754">ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">በፍጥነት እና በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="3662461537616691585">በርገንዲ እና ማሩን</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
+<translation id="3668570675727296296">የቋንቋ ቅንብሮች</translation>
 <translation id="3675132884790542448">አሳማዎች</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="370665806235115550">በመጫን ላይ…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">ከተንሳፋፊ ውጣ</translation>
 <translation id="3716250181321371108">መቆጣጠሪያን ፍጠር</translation>
 <translation id="3716830479327464973">ይህን ሲፈቅዱ መቅጃ ለሚከተሉት የእርስዎን የኦዲዮ ቀረጻዎች ይተነትናል፦</translation>
+<translation id="3719826155360621982">መነሻ ገፅ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="404928562651467259">ማስጠንቀቂያ</translation>
 <translation id="4050208988451295487">ጥቂት አማራጮች፦</translation>
+<translation id="405181879009056822">የChromeOS ቅንብሮች</translation>
 <translation id="4054683689023980771">ምስልን በማውረድ ላይ</translation>
 <translation id="4059839844193047929">ከዚህ ገፅ መውጣት የአሁን ቅጂዎን ያጠናቅቃል</translation>
 <translation id="4063039537646912479">ፈካ ያለ ሰማያዊ</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">የፀሐይ መውጣት ልጣፍ</translation>
 <translation id="5294769550414936029">ስሪት <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">መስኮትን ወደ ዴስክ ውሰድ</translation>
+<translation id="5302048478445481009">ቋንቋ</translation>
 <translation id="5303837385540978511">የ<ph name="PRODUCT_NAME" /> ለሚመለከተው የተወሰነ ልጣፍ</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ማንነት</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">ከፍተኛ ጥራት ያለው ምስል በመፍጠር ላይ…</translation>
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
+<translation id="6786747875388722282">ቅጥያዎች</translation>
 <translation id="6791471867139427246">የቁልፍ ሰሌዳ ብርሃን ቀለም</translation>
 <translation id="6796229976413584781">አቋራጭ ተሰርዟል</translation>
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">የዩኤስቢ መነካት የሚችል ማያ</translation>
 <translation id="757747079855995705">ድንጋይ</translation>
+<translation id="7590883480672980941">የግቤት ቅንብሮች</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
 <translation id="7613724632293948900">በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">አጠቃላይ መቆጣጠሪያዎች</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> አውታረ መረብን ለመቀላቀል ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="7978412674231730200">የግል ቁልፍ</translation>
+<translation id="7982789257301363584">አውታረ መረብ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» በራስ-ሰር ተጀምሯል}one{# መተግበሪያ በራስ-ሰር ተጀምሯል}other{# መተግበሪያዎች በራስ-ሰር ተጀምረዋል}}</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">ታች</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8431300646573772016">በChromeOS ምን አዲስ ነገር አለ</translation>
+<translation id="8433186206711564395">የአውታረ መረብ ቅንብሮች</translation>
 <translation id="843568408673868420">የበይነመረብ ተገናኝነት</translation>
 <translation id="844521431886043384">ዲኤንኤስ አልተዋቀረም</translation>
 <translation id="8456200178779628126">ለማንበብ እና ለመጻፍ እገዛን ለማግኘት Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">ይህ አውታረ መረብ ተያዥ መግቢያ ሊኖረው ይችላል</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8798441408945964110">የአቅራቢ ስም</translation>
+<translation id="8808828119384186784">የChrome ቅንብሮች</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ልጣፍ</translation>
 <translation id="8820457400746201697">ሰማያዊውን የመንኪያ ነጥብ ወደ ተግባር ይውሰዱት። ለማበጀት የተያያዘውን ቁልፍ ይምረጡ።</translation>

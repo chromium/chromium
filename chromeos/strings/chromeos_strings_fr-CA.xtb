@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Quitter l'aperçu des fonds d'écran</translation>
 <translation id="1754578112426924640">Bouton Modifier pour <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Application de diagnostics</translation>
+<translation id="1756681705074952506">Méthode d'entrée</translation>
 <translation id="175763766237925754">Bon (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
 <translation id="3662461537616691585">bourgogne et marron</translation>
 <translation id="3668449597372804501">Fond d'écran Cloud Flow</translation>
+<translation id="3668570675727296296">Paramètres linguistiques</translation>
 <translation id="3675132884790542448">porcs</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Quitter le mode superposé</translation>
 <translation id="3716250181321371108">Créer une commande</translation>
 <translation id="3716830479327464973">Lorsque vous autorisez cette fonctionnalité, l'Enregistreur analyse vos enregistrements audio pour ce qui suit :</translation>
+<translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Chanson suivante</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="4050208988451295487">Quelques options :</translation>
+<translation id="405181879009056822">Paramètres ChromeOS</translation>
 <translation id="4054683689023980771">Téléchargement de l'image en cours</translation>
 <translation id="4059839844193047929">Le fait de quitter cette page mettra fin à votre enregistrement en cours</translation>
 <translation id="4063039537646912479">bleu clair</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Fond d'écran Aurore</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Déplacer la fenêtre vers le bureau</translation>
+<translation id="5302048478445481009">Langue</translation>
 <translation id="5303837385540978511">Fond d'écran exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identité</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Création d'une image haute résolution en cours…</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
+<translation id="6786747875388722282">Extensions</translation>
 <translation id="6791471867139427246">couleur de l'éclairage du clavier</translation>
 <translation id="6796229976413584781">Raccourci supprimé</translation>
 <translation id="6798678288485555829">Navigation dans le texte</translation>
@@ -1282,6 +1288,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
 <translation id="757747079855995705">pierre</translation>
+<translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Repositionnez avec la souris ou les touches fléchées.</translation>
 <translation id="7618774594543487847">Neutre</translation>
@@ -1355,6 +1362,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour vous connecter à un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7982789257301363584">Réseau</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{« <ph name="APP_NAME_1" /> » a démarré automatiquement}one{# application a démarré automatiquement}other{# applications ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="8004582292198964060">Navigateur</translation>
@@ -1441,6 +1449,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8424039430705546751">bas</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
+<translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">Le DNS n'est pas configuré</translation>
 <translation id="8456200178779628126">Utiliser l'IA de Google pour obtenir de l'aide pour lire et écrire</translation>
@@ -1503,6 +1512,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
+<translation id="8808828119384186784">Paramètres Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8820457400746201697">Déplacez le point de contact bleu vers une action. Sélectionnez la touche associée à personnaliser.</translation>

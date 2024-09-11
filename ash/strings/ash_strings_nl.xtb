@@ -1960,7 +1960,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
 <translation id="7728657226117099693">Caps Lock uitzetten</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
-<translation id="774736258792760908">Als je Help me met schrijven en Help me met lezen aanzet, wordt de ingevoerde tekst en de documentcontent naar de servers van de AI van Google gestuurd om schrijfsuggesties te genereren, samenvattingen te maken, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8877788021141246043">Stel een herinnering in</translation>
 <translation id="8878886163241303700">Uitgebreid scherm</translation>
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
-<translation id="8893479486525393799">Studiomicrofoon</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
 <translation id="889790758758811533">Nog <ph name="PERCENTAGE" />% batterijlading (ongeveer <ph name="TIME_LEFT" />). Sluit je apparaat aan op een voeding.</translation>
 <translation id="88986195241502842">Page Down</translation>
@@ -2302,6 +2300,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8939855324412367560">De invoeraudio is <ph name="INPUT_DEVICE_NAME" /> en de uitvoeraudio is <ph name="OUTPUT_DEVICE_NAME" />. Ga naar Instellingen voor wijzigingen.</translation>
 <translation id="8940956008527784070">Batterij is bijna leeg (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studiomicrofoon</translation>
 <translation id="894774083269346314">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> niet aangevinkt.</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8951539504029375108">Alleen goedgekeurde Thunderbolt-apparaten werken met je Chromebook</translation>

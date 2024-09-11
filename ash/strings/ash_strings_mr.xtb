@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">वाय-फाय सुरू केले आहे</translation>
 <translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
 <translation id="4212472694152630271">पिन वर स्विच करा</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, टॉगल बटण, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN सेटिंग्ज</translation>
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
@@ -1959,7 +1960,6 @@
 <translation id="7727952505535211425">वेबसाइट नवीन टॅबमधील अ‍ॅड्रेस बारमध्ये उघडा</translation>
 <translation id="7728657226117099693">कॅप्स लॉक बंद करा</translation>
 <translation id="7742327441377685481">सूचना नाहीत</translation>
-<translation id="774736258792760908">तुम्ही लिहिण्यात मला मदत करा आणि वाचायला मला मदत करा हे सुरू करता, तेव्हा इनपुट मजकूर व दस्तऐवज आशय हा Google AI सर्व्हरकडे लेखनासाठी सूचना, सारांश जनरेट करण्याकरिता, प्रश्नांची उत्तरे देण्याकरिता आणि उत्पादनामध्ये सुधारणा करण्याकरिता पाठवला जातो, तो<ph name="LINK_TO_SERVICE_TERMS" /> च्या अधीन आहे. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट करू नका.</translation>
 <translation id="7748275671948949022">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
@@ -2286,7 +2286,6 @@
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
 <translation id="8878886163241303700">स्क्रीन विस्तृत करत आहे</translation>
 <translation id="888982883502837004">तुमच्या डिव्हाइससाठी फर्मवेअरसंबंधित अपडेट उपलब्ध आहेत. पुनरावलोकन आणि अपडेट करण्यासाठी क्लिक करा.</translation>
-<translation id="8893479486525393799">स्टुडिओ माइक</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> कायमचे हटवले जाईल</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे (सुमारे <ph name="TIME_LEFT" />). तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
 <translation id="88986195241502842">पेज डाउन</translation>
@@ -2301,6 +2300,7 @@
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" हा इनपुट ऑडिओ आहे आणि "<ph name="OUTPUT_DEVICE_NAME" />" हा आउटपुट ऑडिओ आहे. बदलण्यासाठी सेटिंग्ज वर जा.</translation>
 <translation id="8940956008527784070">बॅटरी कमी झाली (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">स्टुडिओ शैलीचा माइक</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> चेक बॉक्स निवडलेला नाही.</translation>
 <translation id="8949925099261528566">कनेक्‍ट केले, इंटरनेट नाही</translation>
 <translation id="8951539504029375108">तुमच्या Chromebook सह फक्त मंजुरी दिलेली थंडरबोल्ट डिव्हाइस कंपॅटिबल आहेत</translation>

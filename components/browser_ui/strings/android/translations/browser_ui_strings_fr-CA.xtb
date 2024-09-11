@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Autoriser les sites à exécuter JavaScript (recommandé)</translation>
 <translation id="534295439873310000">Appareils CCP</translation>
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
+<translation id="5373874281522292782">Vos groupes d'onglets sont enregistrés</translation>
 <translation id="5389626883706033615">Les sites ne sont pas autorisés à vous demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Téléchargements actifs</translation>
 <translation id="6709432001666529933">Demander une autorisation avant de permettre aux sites de suivre vos mains (recommandé)</translation>
 <translation id="6722828510648505498">Bloquez les invites de connexion provenant de services de vérification d'identité.</translation>
+<translation id="6729704574271585059">Les groupes que vous avez créés sont enregistrés dans la section des groupes d'onglets et mis à jour sur vos appareils</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations?</translation>
 <translation id="6766622839693428701">Glissez le doigt vers le bas pour fermer.</translation>

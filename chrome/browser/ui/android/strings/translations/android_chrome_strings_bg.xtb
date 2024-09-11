@@ -849,6 +849,7 @@
 <translation id="5016205925109358554">Серифен</translation>
 <translation id="5017529052065664584">Последните 15 минути</translation>
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> раздела – <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="504456571576643789">Имайте предвид следното</translation>
@@ -1068,6 +1069,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Още подробности<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6130303040046284160">Намаляване на раздела</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="6137022273846704445">Езикът на <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Тук можете да промените настройките си за сайта</translation>
 <translation id="6140912465461743537">Държава/регион</translation>
@@ -1171,6 +1173,7 @@
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>
 <translation id="6569373978618239158">Когато отворите нов раздел, вече ще виждате материали от <ph name="SITE_NAME" />. Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
+<translation id="6570116402456758630">Обобщение на страницата</translation>
 <translation id="6573096386450695060">Разрешаване винаги</translation>
 <translation id="6573431926118603307">Тук ще се показват разделите, които сте отворили в Chrome на другите си устройства.</translation>
 <translation id="6583199322650523874">Запазване на отметка към текущата страница</translation>

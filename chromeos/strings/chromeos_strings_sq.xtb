@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Dil nga pamja paraprake e imazhit të sfondit</translation>
 <translation id="1754578112426924640">Butoni i modifikimit për <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacioni i diagnostikimit</translation>
+<translation id="1756681705074952506">Metoda e hyrjes</translation>
 <translation id="175763766237925754">I mirë (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Shkruaj më shpejt dhe me më shumë vetëbesim</translation>
 <translation id="3662461537616691585">burgundi dhe gështenjë</translation>
 <translation id="3668449597372804501">Imazhi i sfondit për rrjedhën e reve</translation>
+<translation id="3668570675727296296">Cilësimet e gjuhës</translation>
 <translation id="3675132884790542448">derra</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Dil nga pluskimi</translation>
 <translation id="3716250181321371108">Krijo një kontroll</translation>
 <translation id="3716830479327464973">Kur e lejon këtë, "Regjistruesi" do të analizojë regjistrimet e tua audio që:</translation>
+<translation id="3719826155360621982">Faqja bazë</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="404928562651467259">PARALAJMËRIM</translation>
 <translation id="4050208988451295487">Disa opsione:</translation>
+<translation id="405181879009056822">Cilësimet e ChromeOS</translation>
 <translation id="4054683689023980771">Imazhi po shkarkohet</translation>
 <translation id="4059839844193047929">Largimi nga kjo faqe do të përfundojë regjistrimin tënd aktual</translation>
 <translation id="4063039537646912479">e kaltër e çelur</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Imazhi i sfondit për lindjen e diellit</translation>
 <translation id="5294769550414936029">versioni <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Zhvendose dritaren te tavolina e punës</translation>
+<translation id="5302048478445481009">Gjuha</translation>
 <translation id="5303837385540978511">Imazhi ekskluziv i sfondit për <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteti</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Imazhi me rezolucion të lartë po krijohet…</translation>
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
+<translation id="6786747875388722282">Shtesat</translation>
 <translation id="6791471867139427246">ngjyra e dritës së tastierës</translation>
 <translation id="6796229976413584781">Shkurtoja u fshi</translation>
 <translation id="6798678288485555829">Navigimi në tekst</translation>
@@ -1282,6 +1288,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="757747079855995705">gur</translation>
+<translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7613724632293948900">Ndrysho pozicionin me anë të miut ose tasteve të shigjetave.</translation>
 <translation id="7618774594543487847">Neutrale</translation>
@@ -1355,6 +1362,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7971535376154084247">Kontrollet e përgjithshme</translation>
 <translation id="7977800524392185497">Për t'iu bashkuar një rrjeti <ph name="NETWORK_NAME" />, shko te "Cilësimet"</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
+<translation id="7982789257301363584">Rrjeti</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
@@ -1441,6 +1449,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8424039430705546751">poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8431300646573772016">Të rejat me ChromeOS</translation>
+<translation id="8433186206711564395">Cilësimet e rrjetit</translation>
 <translation id="843568408673868420">Lidhshmëria e internetit</translation>
 <translation id="844521431886043384">DNS-ja nuk është konfiguruar</translation>
 <translation id="8456200178779628126">Përdor IA-në e Google për të marrë ndihmë për të lexuarit dhe të shkruarit</translation>
@@ -1503,6 +1512,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="879568662008399081">Ky rrjet mund të ketë një portal izolues</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8798441408945964110">Emri i ofruesit</translation>
+<translation id="8808828119384186784">Cilësimet e Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
 <translation id="8820457400746201697">Zhvendos pikën blu të prekjes te një veprim. Zgjidh tastin përkatës për ta personalizuar.</translation>

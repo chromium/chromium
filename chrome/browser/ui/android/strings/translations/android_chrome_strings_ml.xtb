@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="3293181007446299124">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്വകാര്യമായി സൂക്ഷിക്കുകയും നിങ്ങളുടെ ഐഡന്റിറ്റി സംരക്ഷിക്കാനായി റിപ്പോർട്ടുകൾ വൈകി അയയ്ക്കുകയും ചെയ്യുന്നു.</translation>
+<translation id="3302615849591357577"><ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3305130791745726624">ഉപകരണത്തിലേക്ക് അയയ്ക്കുക</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക</translation>
 <translation id="4834250788637067901">Google Pay ഉപയോഗിക്കുന്ന പേയ്മെന്റ് രീതികളും ഓഫറുകളും വിലാസങ്ങളും</translation>
 <translation id="4835385943915508971">അഭ്യർത്ഥിച്ച ഉറവിടത്തിലേക്ക് Chrome-ന് ആക്‌സസ് ഇല്ല.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}}</translation>
 <translation id="4837753911714442426">പേജ് പ്രിന്റ് ചെയ്യുന്നതിനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുക</translation>
 <translation id="4842092870884894799">പാസ്‌വേഡ് സൃഷ്ടിക്കൽ പോപ്പ് അപ്പ് കാണിക്കുന്നു</translation>
 <translation id="4844633725025837809">അധിക സുരക്ഷയ്ക്ക്, Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
@@ -849,6 +851,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">കഴിഞ്ഞ 15 മിനിറ്റ്</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ് - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
 <translation id="504456571576643789">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
@@ -1068,6 +1071,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6130303040046284160">ടാബ് ചെറുതാക്കുക</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> എന്നതിന്റെ ഭാഷ</translation>
 <translation id="6138832295072039549">നിങ്ങളുടെ സൈറ്റ് ക്രമീകരണം ഇവിടെ മാറ്റുക</translation>
 <translation id="6140912465461743537">രാജ്യം/പ്രദേശം</translation>
@@ -1171,6 +1175,7 @@
 <translation id="656065428026159829">കൂടുതൽ കാണുക</translation>
 <translation id="6565959834589222080">ലഭ്യമാകുമ്പോൾ വൈഫൈ ഉപയോഗിക്കും</translation>
 <translation id="6569373978618239158">പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ നിങ്ങൾക്ക് ഇപ്പോൾ <ph name="SITE_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ കാണാം. നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
+<translation id="6570116402456758630">പേജ് സംഗ്രഹം</translation>
 <translation id="6573096386450695060">എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6573431926118603307">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലെ Chrome-ൽ തുറന്ന ടാബുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="6583199322650523874">നിലവിലെ പേജ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
@@ -1180,6 +1185,7 @@
 <translation id="6593061639179217415">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ്</translation>
 <translation id="6594347733515723558">ഓപ്ഷനുകൾ അടുക്കുക, കാണുക</translation>
 <translation id="6595046016124923392">നിങ്ങൾ‌ക്കായി വിവരണങ്ങൾ മെച്ചപ്പെടുത്തുന്നതിന് ചിത്രങ്ങൾ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}other{<ph name="TAB_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}}</translation>
 <translation id="6604931690954120417">Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ നിങ്ങൾ സംരക്ഷിക്കുന്ന പാസ്‍വേഡുകൾ നിങ്ങളുടെ Google Account-ലേക്ക് പോകും. ഇത് ഓഫാക്കാൻ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക് പോകുക<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">നിങ്ങൾക്കും വെബിലെ എല്ലാവർക്കും സുരക്ഷ മെച്ചപ്പെടുത്തുന്നു.</translation>
 <translation id="6621391692573306628">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിലെയും Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -1204,6 +1210,7 @@
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676927815633975364">ഈ സൈറ്റിലും Chrome-ലും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6684809838922667136">Chrome മെച്ചപ്പെടുത്തുക</translation>
+<translation id="6704048624334633734">പാസ്‌വേഡുകൾ എക്‌സ്പോർട്ട് ചെയ്യുക, ഇല്ലാതാക്കുക</translation>
 <translation id="670498945988402717">ഇന്നലെ പരിശോധിച്ചു</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="671481426037969117">നിങ്ങളുടെ <ph name="FQDN" /> ടൈമർ അവസാനിച്ചു. ഇത് നാളെ വീണ്ടും ആരംഭിക്കും.</translation>
@@ -1665,6 +1672,7 @@
 <translation id="864544049772947936">വിൻഡോകൾ മാനേജ് ചെയ്യുക (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">നിങ്ങൾക്ക് ഇഷ്ടമുള്ള രീതിയിൽ Chrome ഉപയോഗിക്കുക</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}other{നിങ്ങളുടെ സ്ഥാപനം # എണ്ണം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="8672883760227492369">ഈ ഉപകരണത്തിൽ ചില പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. നിങ്ങൾക്ക് ഈ പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് നീക്കാനാകും.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈനപ്പ് ചെയ്യുക</translation>
 <translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>

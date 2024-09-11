@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4590027107044272416">Та одоо энд шинэ таб нээх боломжтой</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Идэвхгүй 1 табыг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> табыг хаах уу?}}</translation>
-<translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 хоногийн дараа хаах}other{<ph name="DAY_COUNT_MANY" /> хоногийн дараа хаах}}</translation>
 <translation id="4777866634702576038">Табын бүлгийг устгах уу?</translation>

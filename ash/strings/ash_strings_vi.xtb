@@ -1960,7 +1960,6 @@ Mới cài đặt</translation>
 <translation id="7727952505535211425">Mở trang web trên thanh địa chỉ trong thẻ mới</translation>
 <translation id="7728657226117099693">Tắt Caps Lock</translation>
 <translation id="7742327441377685481">Không có thông báo</translation>
-<translation id="774736258792760908">Khi bạn bật tính năng Giúp tôi viết và Giúp tôi đọc, hệ thống sẽ gửi văn bản bạn nhập và nội dung tài liệu đến các máy chủ AI của Google để tạo ra gợi ý viết, tóm tắt, trả lời câu hỏi và cải thiện sản phẩm theo <ph name="LINK_TO_SERVICE_TERMS" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.</translation>
 <translation id="7748275671948949022">Đánh dấu nút Trình chạy trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Mới cài đặt</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8878886163241303700">Mở rộng màn hình</translation>
 <translation id="888982883502837004">Bạn có thể tải bản cập nhật chương trình cơ sở xuống thiết bị của mình. Nhấp để xem lại và cập nhật.</translation>
-<translation id="8893479486525393799">Micrô phòng thu</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sẽ bị xoá vĩnh viễn</translation>
 <translation id="889790758758811533">Còn <ph name="PERCENTAGE" />% pin (khoảng <ph name="TIME_LEFT" />). Hãy sạc thiết bị.</translation>
 <translation id="88986195241502842">Trang dưới</translation>
@@ -2302,6 +2300,7 @@ Mới cài đặt</translation>
 <translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>
 <translation id="8939855324412367560">Âm thanh đầu vào là "<ph name="INPUT_DEVICE_NAME" />" và âm thanh đầu ra là "<ph name="OUTPUT_DEVICE_NAME" />". Chuyển đến phần Cài đặt để thay đổi.</translation>
 <translation id="8940956008527784070">Pin yếu (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Micrô kiểu phòng thu</translation>
 <translation id="894774083269346314">Chưa đánh dấu hộp kiểm <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Đã kết nối, không có Internet</translation>
 <translation id="8951539504029375108">Chỉ các thiết bị Thunderbolt được phê duyệt mới tương thích với Chromebook của bạn</translation>

@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Grubu Çöz</translation>
 <translation id="4590027107044272416">Buradan yeni bir sekme açabilirsiniz</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Etkin Olmayan 1 sekme kapatılsın mı?}other{Etkin olmayan <ph name="TAB_COUNT_MANY" /> sekme kapatılsın mı?}}</translation>
-<translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
 <translation id="4777866634702576038">Sekme grubu silinsin mi?</translation>

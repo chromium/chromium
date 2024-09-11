@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
 <translation id="1754578112426924640">Knop Bewerken voor <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
+<translation id="1756681705074952506">Invoermethode</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Schrijf sneller en met meer vertrouwen</translation>
 <translation id="3662461537616691585">bordeauxrood en kastanjebruin</translation>
 <translation id="3668449597372804501">Achtergrond Wolkenstroom</translation>
+<translation id="3668570675727296296">Taalinstellingen</translation>
 <translation id="3675132884790542448">varkens</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Zwevend sluiten</translation>
 <translation id="3716250181321371108">Bedieningselement maken</translation>
 <translation id="3716830479327464973">Als je dit toestaat, analyseert Recorder je audio-opnamen om het volgende te doen:</translation>
+<translation id="3719826155360621982">Homepage</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="4050208988451295487">Een paar opties:</translation>
+<translation id="405181879009056822">ChromeOS-instellingen</translation>
 <translation id="4054683689023980771">Afbeelding downloaden</translation>
 <translation id="4059839844193047929">Als je deze pagina verlaat, wordt je huidige opname beëindigd</translation>
 <translation id="4063039537646912479">lichtblauw</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Achtergrond Zonsopkomst</translation>
 <translation id="5294769550414936029">versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Venster verplaatsen naar bureau</translation>
+<translation id="5302048478445481009">Taal</translation>
 <translation id="5303837385540978511">Exclusieve <ph name="PRODUCT_NAME" />-achtergrond</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteit</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Afbeelding met hoge resolutie maken…</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
+<translation id="6786747875388722282">Extensies</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
 <translation id="6796229976413584781">Sneltoets verwijderd</translation>
 <translation id="6798678288485555829">Tekstnavigatie</translation>
@@ -1282,6 +1288,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="757747079855995705">steen</translation>
+<translation id="7590883480672980941">Invoerinstellingen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Verplaats met de muis of pijltoetsen.</translation>
 <translation id="7618774594543487847">Neutraal</translation>
@@ -1355,6 +1362,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7971535376154084247">Algemene bedieningselementen</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
+<translation id="7982789257301363584">Netwerk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is automatisch gestart}other{# apps zijn automatisch gestart}}</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1449,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8424039430705546751">omlaag</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8431300646573772016">Nieuw bij Chrome OS</translation>
+<translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="843568408673868420">Internetverbinding</translation>
 <translation id="844521431886043384">DNS is niet ingesteld</translation>
 <translation id="8456200178779628126">AI van Google gebruiken voor hulp bij lezen en schrijven</translation>
@@ -1503,6 +1512,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="879568662008399081">Dit netwerk heeft misschien een captive portal</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8798441408945964110">Naam provider</translation>
+<translation id="8808828119384186784">Chrome-instellingen</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
 <translation id="8820457400746201697">Verplaats het blauwe aanraakpunt naar een actie. Selecteer de bijbehorende sleutel om aan te passen.</translation>

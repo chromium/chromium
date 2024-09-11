@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2360398059912971776">батерија</translation>
 <translation id="2361210043495191221">Укључи или искључи WiFi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Ефекти изгледа</translation>
 <translation id="236574664504281623">Послато је са: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Не можете да се пријавите на Chromebook</translation>
 <translation id="2367972762794486313">Прикажите апликације</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">Искључено</translation>
 <translation id="3604801046548457007">Радна површина <ph name="DESK_TITILE" /> је направљена</translation>
 <translation id="3606978283550408104">Повезан је екран са Брајевом азбуком.</translation>
+<translation id="3612634595000403645">Подешавања ефеката изглед</translation>
 <translation id="3615926715408477684">Ако омогућите мобилне податке, омогућавате Bluetooth</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Мени је премештен у горњи десни угао екрана.</translation>
@@ -895,6 +897,7 @@
 <translation id="4146671046252289537">Преместите иза следеће речи</translation>
 <translation id="4146833061457621061">Пусти музику</translation>
 <translation id="4150201353443180367">Екран</translation>
+<translation id="4151054805501931758">Дотеривање портрета</translation>
 <translation id="4156293514828496577">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />).
 Неке функције су ограничене да би се продужило трајање батерије.</translation>
 <translation id="4160919062868802509">Откривено је више извора звука</translation>
@@ -1962,7 +1965,6 @@
 <translation id="7727952505535211425">Отвори веб-сајт из траке за адресу на новој картици</translation>
 <translation id="7728657226117099693">Искључи велика слова</translation>
 <translation id="7742327441377685481">Нема обавештења</translation>
-<translation id="774736258792760908">Када укључите Помоћ при писању и Помоћ при читању, текст уноса и садржај документа се шаљу серверима Google вештачке интелигенције да би се генерисали предлози за писање и резимеи, давали одговори на питања и побољшао производ, у складу са <ph name="LINK_TO_SERVICE_TERMS" />. Немојте да наводите никакве личне, осетљиве или поверљиве информације.</translation>
 <translation id="7748275671948949022">Истакни дугме покретача на полици</translation>
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1971,6 +1973,7 @@
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7769299611924763557">GIF ће ускоро бити спреман</translation>
 <translation id="7773536009433685931">Укључи WiFi</translation>
+<translation id="77747521138552256">Превише покушаја уноса PIN-а. Сачекајте <ph name="TIME_LEFT" /> и пробајте поново са PIN-ом или унесите лозинку да бисте се одмах пријавили.</translation>
 <translation id="7780094051999721182">пречице</translation>
 <translation id="7780159184141939021">Ротирајте екран</translation>
 <translation id="7781829728241885113">Јуче</translation>
@@ -2289,7 +2292,6 @@
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>
 <translation id="888982883502837004">Доступна су ажурирања фирмвера за уређај. Кликните да бисте их прегледали и ажурирали.</translation>
-<translation id="8893479486525393799">Студијски микрофон</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> ће бити трајно избрисан</translation>
 <translation id="889790758758811533">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />). Повежите уређај на напајање.</translation>
 <translation id="88986195241502842">Страница надоле</translation>
@@ -2304,6 +2306,7 @@
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>
 <translation id="8939855324412367560">Аудио улаз је <ph name="INPUT_DEVICE_NAME" />, а аудио излаз је <ph name="OUTPUT_DEVICE_NAME" />. Идите у Подешавања да бисте то променили.</translation>
 <translation id="8940956008527784070">Батерија је скоро празна (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Микрофон у студијском стилу</translation>
 <translation id="894774083269346314">Избор није потврђен у пољу за потврду <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Веза је успостављена, нема интернета</translation>
 <translation id="8951539504029375108">Само одобрени Thunderbolt уређаји су компатибилни са вашим Chromebook-ом</translation>

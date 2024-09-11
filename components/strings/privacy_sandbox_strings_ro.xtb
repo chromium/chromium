@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1444443021901415601">Chrome reține subiectele de interes pe baza istoricului tău de navigare recent</translation>
 <translation id="2252052615723281030">Dacă te-ai conectat la Chrome, această setare îți menține adresa IP privată. Dacă Chrome suspectează că un site te urmărește, o parte din trafic poate fi trimis prin serverele de confidențialitate.</translation>
+<translation id="2793385791865768072">Chromium reține subiectele de interes pe baza istoricului tău de navigare recent</translation>
 <translation id="33479675708419823">Dacă te-ai conectat la Chrome, această setare îți menține adresa IP privată. Dacă Chrome suspectează că un site te urmărește, o parte din trafic poate fi trimis prin serverele de confidențialitate. Află mai multe despre <ph name="LINK_BEGIN" />cum funcționează protecția IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Află mai multe despre ascunderea adresei IP</translation>
+<translation id="4041687306270459969">Subiectele anunțurilor mai vechi de patru săptămâni se șterg automat. Subiectele includ Sport, Îmbrăcăminte și altele</translation>
+<translation id="4177501066905053472">Subiectele anunțurilor</translation>
 <translation id="4301151630239508244">Subiectele anunțurilor reprezintă doar unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a personaliza anunțurile. Chiar și fără subiecte ale anunțurilor, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre <ph name="BEGIN_LINK_1" />gestionarea confidențialității anunțurilor<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Poți să vezi subiectele anunțurilor în setările Chromium și să le blochezi pe cele care nu vrei să fie trimise site-urilor</translation>
 <translation id="4598427486995631491">Ascunde-ți adresa IP</translation>
+<translation id="4692439979815346597">Poți să vezi subiectele anunțurilor în setările Chrome și să le blochezi pe cele care nu vrei să fie trimise site-urilor</translation>
+<translation id="5413586988657235240">Site-urile pe care le accesezi pot solicita subiecte de la Chromium pentru a-ți afișa anunțuri relevante, protejându-ți istoricul de navigare și identitatea</translation>
+<translation id="6186536480878693792">Site-urile pe care le accesezi pot solicita subiecte de la Chrome pentru a-ți afișa anunțuri relevante, protejându-ți istoricul de navigare și identitatea</translation>
 <translation id="6371812158043974664">Dacă te-ai conectat la Chromium, această setare îți menține adresa IP privată. Dacă Chromium suspectează că un site te urmărește, o parte din trafic poate fi trimis prin serverele de confidențialitate. Află mai multe despre <ph name="LINK_BEGIN" />cum funcționează protecția IP<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261">Află <ph name="BEGIN_LINK" />cum funcționează Protecția IP<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Examinează setarea pentru subiectele anunțurilor</translation>
 </translationbundle>

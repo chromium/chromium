@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Saír da vista previa do fondo de pantalla</translation>
 <translation id="1754578112426924640">Botón para editar de <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplicación Diagnósticos</translation>
+<translation id="1756681705074952506">Método de introdución de texto</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
 <translation id="3662461537616691585">vermello escuro e granate</translation>
 <translation id="3668449597372804501">Fondo de pantalla Fluxo das nubes</translation>
+<translation id="3668570675727296296">Configuración de idioma</translation>
 <translation id="3675132884790542448">porcos</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Saír do estado flotante</translation>
 <translation id="3716250181321371108">Crea un control</translation>
 <translation id="3716830479327464973">Se aceptas, a gravadora analizará as gravacións de audio para:</translation>
+<translation id="3719826155360621982">Páxina de inicio</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
 <translation id="4050208988451295487">Unhas cantas opcións:</translation>
+<translation id="405181879009056822">Configuración de ChromeOS</translation>
 <translation id="4054683689023980771">Descargando imaxe</translation>
 <translation id="4059839844193047929">Se deixas desta páxina, rematará a gravación actual</translation>
 <translation id="4063039537646912479">azul clara</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Fondo de pantalla Amencer</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover ventá a escritorio</translation>
+<translation id="5302048478445481009">Idioma</translation>
 <translation id="5303837385540978511">Fondo de pantalla exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDO</translation>
 <translation id="5315873049536339193">Identidade</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Creando imaxe de alta resolución…</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
+<translation id="6786747875388722282">Extensións</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
 <translation id="6796229976413584781">Atallo eliminado</translation>
 <translation id="6798678288485555829">Navegación polo texto</translation>
@@ -1282,6 +1288,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión por USB</translation>
 <translation id="757747079855995705">pedra</translation>
+<translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Cambia a posición co rato ou as teclas de frecha.</translation>
 <translation id="7618774594543487847">Neutra</translation>
@@ -1355,6 +1362,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7971535376154084247">Controis xerais</translation>
 <translation id="7977800524392185497">Para unirte a unha rede <ph name="NETWORK_NAME" />, vai a Configuración</translation>
 <translation id="7978412674231730200">Clave privada</translation>
+<translation id="7982789257301363584">Rede</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> arrancou automaticamente}other{# aplicacións arrancaron automaticamente}}</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1441,6 +1449,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8424039430705546751">abaixo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8431300646573772016">Novidades de Chrome OS</translation>
+<translation id="8433186206711564395">Configuración de rede</translation>
 <translation id="843568408673868420">Conectividade de Internet</translation>
 <translation id="844521431886043384">O DNS non está configurado</translation>
 <translation id="8456200178779628126">Usa a IA de Google para obter axuda ao ler e escribir</translation>
@@ -1503,6 +1512,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="879568662008399081">Esta rede pode ter un portal cativo</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
+<translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8820457400746201697">Move o punto táctil azul a unha acción. Selecciona a tecla asociada para personalizala.</translation>

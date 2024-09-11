@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Wi-Fi'ды өчүрүү/күйгүзүү. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Көрүнүштүн эффекттери</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> дарегинен жөнөтүлгөн</translation>
 <translation id="2367186422933365202">Chromebook'ка кирген жоксуз</translation>
 <translation id="2367972762794486313">Колдонмолорду көрсөтүү</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">Өчүк</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> иш тактасы түзүлдү</translation>
 <translation id="3606978283550408104">Брайль дисплеи туташты.</translation>
+<translation id="3612634595000403645">Көрүнүштүн эффекттеринин параметрлери</translation>
 <translation id="3615926715408477684">Мобилдик трафик иштетилсе, Bluetooth да иштетилет</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Меню экрандын жогорку оң бурчуна жылдырылды.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">Кийинки сөздүн аягына жылуу</translation>
 <translation id="4146833061457621061">Музыканы ойнотуу</translation>
 <translation id="4150201353443180367">Көрсөтүү</translation>
+<translation id="4151054805501931758">Портретти ретуштоо</translation>
 <translation id="4156293514828496577">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />).
 Батареяны көбүрөөк убакытка жеткирүү үчүн айрым функциялар чектелди.</translation>
 <translation id="4160919062868802509">Бир нече аудио булак табылды</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7727952505535211425">Вебсайтты жаңы өтмөктөгү дарек тилкесинде ачуу</translation>
 <translation id="7728657226117099693">Caps Lock'ту өчүрүү</translation>
 <translation id="7742327441377685481">Билдирмелер жок</translation>
-<translation id="774736258792760908">Текст жазгыч жана Окуганга жардам бер функцияларын колдонгонуңузда киргизилген текст жана документтин контенти жазуу боюнча сунуштарды көрсөтүү, кыскача маалыматты түзүү, суроолого жооп берүү жана кызматты жакшыртуу үчүн <ph name="LINK_TO_SERVICE_TERMS" /> ылайык Google'дун жасалма интеллектинин серверлерине жөнөтүлөт. Жеке же купуя нерселерди кошпоңуз.</translation>
 <translation id="7748275671948949022">Текчедеги Жүргүзгүч баскычын бөлүп көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1969,6 +1971,7 @@
 <translation id="7768784765476638775">Басып туруп угуу</translation>
 <translation id="7769299611924763557">GIF файлыңыз бир аздан кийин даяр болот</translation>
 <translation id="7773536009433685931">Анын ордуна WiFi'ды күйгүзүңүз</translation>
+<translation id="77747521138552256">PIN код өтө көп жолу киргизилди. <ph name="TIME_LEFT" /> күтүп, PIN кодду кайра терип көрүңүз же дароо кирүү үчүн сырсөздү териңиз.</translation>
 <translation id="7780094051999721182">ыкчам баскычтар</translation>
 <translation id="7780159184141939021">Экранды буруу</translation>
 <translation id="7781829728241885113">Кечээ</translation>
@@ -2287,7 +2290,6 @@
 <translation id="8877788021141246043">Эстеткич коюу</translation>
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
 <translation id="888982883502837004">Түзмөгүңүздө орнотулган программаны жаңыртууга болот. Жаңыртууну көрүү үчүн басыңыз.</translation>
-<translation id="8893479486525393799">Cтудия микрофону</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> биротоло өчүрүлөт</translation>
 <translation id="889790758758811533">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />). Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="88986195241502842">Ылдый барактоо</translation>
@@ -2302,6 +2304,7 @@
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8939855324412367560">Киргизүүчү түзмөк – "<ph name="INPUT_DEVICE_NAME" />", ал эми чыгаруучу түзмөк – "<ph name="OUTPUT_DEVICE_NAME" />". Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Cтудия стилиндеги микрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, белгилөө кутучасы белгиленген жок.</translation>
 <translation id="8949925099261528566">Туташып турат, Интернет жок</translation>
 <translation id="8951539504029375108">Ырасталган Thunderbolt түзмөктөрү гана Chromebook түзмөгүңүзгө шайкеш келет</translation>

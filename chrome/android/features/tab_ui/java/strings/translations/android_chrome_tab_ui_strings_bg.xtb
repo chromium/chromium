@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="4590027107044272416">Вече можете да отворите нов раздел оттук</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Искате ли да затворите 1 неактивен раздел?}other{Искате ли да затворите <ph name="TAB_COUNT_MANY" /> неактивни раздела?}}</translation>
-<translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
 <translation id="4686942373615810936">Създадено току-що</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затваряне след 1 ден}other{Затваряне след <ph name="DAY_COUNT_MANY" /> дни}}</translation>
 <translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>

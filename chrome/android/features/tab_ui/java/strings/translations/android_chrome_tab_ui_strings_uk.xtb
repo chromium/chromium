@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4590027107044272416">Тепер ви можете відкрити нову вкладку за допомогою цієї кнопки</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрити 1 неактивну вкладку?}one{Закрити <ph name="TAB_COUNT_MANY" /> неактивну вкладку?}few{Закрити <ph name="TAB_COUNT_MANY" /> неактивні вкладки?}many{Закрити <ph name="TAB_COUNT_MANY" /> неактивних вкладок?}other{Закрити <ph name="TAB_COUNT_MANY" /> неактивної вкладки?}}</translation>
-<translation id="4648718555153979859">Тут згруповано ваші вкладки</translation>
 <translation id="4686942373615810936">Щойно створено</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрити через 1 день}one{Закрити через <ph name="DAY_COUNT_MANY" /> день}few{Закрити через <ph name="DAY_COUNT_MANY" /> дні}many{Закрити через <ph name="DAY_COUNT_MANY" /> днів}other{Закрити через <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="4777866634702576038">Видалити групу вкладок?</translation>

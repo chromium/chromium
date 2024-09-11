@@ -1960,7 +1960,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7727952505535211425">Open the website in the address bar in a new tab</translation>
 <translation id="7728657226117099693">Turn off caps lock</translation>
 <translation id="7742327441377685481">No notifications</translation>
-<translation id="774736258792760908">When you turn on Help me write and Help me read, the input text and document content is sent to Google AI servers to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="7748275671948949022">Highlight Launcher button on shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
 <translation id="888982883502837004">Firmware updates are available for your device. Click to review and update.</translation>
-<translation id="8893479486525393799">Studio mic</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />). Connect your device to power.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2302,6 +2300,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8939855324412367560">Input audio is '<ph name="INPUT_DEVICE_NAME" />' and output audio is '<ph name="OUTPUT_DEVICE_NAME" />'. Go to Settings to change.</translation>
 <translation id="8940956008527784070">Battery low (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studio-style mic</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> tick box not ticked.</translation>
 <translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8951539504029375108">Only approved Thunderbolt devices are compatible with your Chromebook</translation>

@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Esci dall'anteprima dello sfondo</translation>
 <translation id="1754578112426924640">Pulsante Modifica per <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnostica</translation>
+<translation id="1756681705074952506">Metodo di immissione</translation>
 <translation id="175763766237925754">Buono (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Scrivi più velocemente e con maggiore sicurezza</translation>
 <translation id="3662461537616691585">bordeaux e granata</translation>
 <translation id="3668449597372804501">Sfondo Flusso di nuvole</translation>
+<translation id="3668570675727296296">Impostazioni lingua</translation>
 <translation id="3675132884790542448">maiali</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Esci da stato mobile</translation>
 <translation id="3716250181321371108">Crea controllo</translation>
 <translation id="3716830479327464973">Se consenti questa opzione, Registratore analizzerà le tue registrazioni audio per:</translation>
+<translation id="3719826155360621982">Home page</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="404928562651467259">AVVISO</translation>
 <translation id="4050208988451295487">Ecco alcune opzioni:</translation>
+<translation id="405181879009056822">Impostazioni di ChromeOS</translation>
 <translation id="4054683689023980771">Download dell'immagine in corso…</translation>
 <translation id="4059839844193047929">Se esci da questa pagina, la registrazione in corso verrà interrotta</translation>
 <translation id="4063039537646912479">azzurro</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Sfondo Alba</translation>
 <translation id="5294769550414936029">versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Sposta finestra nella scrivania</translation>
+<translation id="5302048478445481009">Lingua</translation>
 <translation id="5303837385540978511">Sfondo esclusivo di <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identità</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Creazione dell'immagine ad alta risoluzione in corso…</translation>
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
+<translation id="6786747875388722282">Estensioni</translation>
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
 <translation id="6796229976413584781">Scorciatoia eliminata</translation>
 <translation id="6798678288485555829">Navigazione nel testo</translation>
@@ -1282,6 +1288,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Touchscreen USB</translation>
 <translation id="757747079855995705">pietra</translation>
+<translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Riposiziona con il mouse o i tasti Freccia.</translation>
 <translation id="7618774594543487847">Neutra</translation>
@@ -1355,6 +1362,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7971535376154084247">Controlli generali</translation>
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
+<translation id="7982789257301363584">Rete</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" è stata avviata automaticamente}other{# app sono state avviate automaticamente}}</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1449,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8424039430705546751">giù</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8431300646573772016">Novità di ChromeOS</translation>
+<translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="843568408673868420">Connessione a Internet</translation>
 <translation id="844521431886043384">DNS non configurato</translation>
 <translation id="8456200178779628126">Usa Google AI per ricevere assistenza nella lettura e nella scrittura</translation>
@@ -1503,6 +1512,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="879568662008399081">Questa rete potrebbe avere un captive portal</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8798441408945964110">Nome provider</translation>
+<translation id="8808828119384186784">Impostazioni di Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Sfondo</translation>
 <translation id="8820457400746201697">Sposta il punto di contatto blu su un'azione. Seleziona la chiave associata da personalizzare.</translation>

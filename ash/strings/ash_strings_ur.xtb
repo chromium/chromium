@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">‏Wi-Fi آن ہے</translation>
 <translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="4212472694152630271">‏PIN پر سوئچ کریں</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />، <ph name="EFFECT_NAME" />، ٹوگل بٹن، <ph name="STATE" /></translation>
 <translation id="4215497585250573029">‏VPN کی ترتیبات</translation>
 <translation id="4217571870635786043">املاء</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، انسٹال کردہ ایپ، موقوف ہے</translation>
@@ -1958,7 +1959,6 @@
 <translation id="7727952505535211425">ایڈریس بار میں ویب سائٹ کو ایک نئے ٹیب میں کھولیں</translation>
 <translation id="7728657226117099693">کیپس لاک کو آف کریں</translation>
 <translation id="7742327441377685481">کوئی اطلاع نہیں ہے</translation>
-<translation id="774736258792760908">‏جب آپ لکھنے میں میری مدد کریں اور پڑھنے میں میری مدد کریں کو آن کرتے ہیں تو لکھنے سے متعلق تجاویز، خلاصے تیار کرنے، سوالات کے جوابات دینے اور پروڈکٹ کو بہتر بنانے کے لیے ان پٹ ٹیکسٹ اور دستاویز کا مواد Google AI سرورز کو بھیجا جاتا ہے جو <ph name="LINK_TO_SERVICE_TERMS" /> کے ساتھ مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔</translation>
 <translation id="7748275671948949022">لانچر بٹن کو شیلف پر نمایاں کریں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2285,7 +2285,6 @@
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
-<translation id="8893479486525393799">اسٹوڈیو مائیک</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% بیٹری باقی ہے (تقریباََ <ph name="TIME_LEFT" />)۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="88986195241502842">صفحہ نیچے</translation>

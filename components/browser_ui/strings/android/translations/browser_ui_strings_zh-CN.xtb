@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">允许网站运行 JavaScript（推荐）</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344522958567249764">管理广告隐私设置</translation>
+<translation id="5373874281522292782">标签页分组已保存</translation>
 <translation id="5389626883706033615">禁止网站向您请求使用它们保存的与您相关的信息</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">正在下载内容</translation>
 <translation id="6709432001666529933">需先询问，得到许可后才允许网站跟踪您的双手（推荐）</translation>
 <translation id="6722828510648505498">屏蔽来自身份服务的登录提示。</translation>
+<translation id="6729704574271585059">您创建的分组会保存在“标签页分组”部分，并在您的所有设备上更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">重置权限？</translation>
 <translation id="6766622839693428701">向下滑动即可关闭。</translation>

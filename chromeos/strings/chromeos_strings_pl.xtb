@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
 <translation id="1207734034680156868">Sugestie są wyświetlane na podstawie podanych przez Ciebie informacji</translation>
 <translation id="121090498480012229">odtwórz lub wstrzymaj multimedia</translation>
+<translation id="1216675364136048456">Zamknij</translation>
 <translation id="1223498995510244364">Streść</translation>
 <translation id="123124571410524056">Podejrzany portal</translation>
 <translation id="1232610416724362657">wodospad</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normalny</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
 <translation id="1593528591614229756">Wybierz te punkty APN, które udostępnia operator komórkowy lub administrator. Wybranie punktu APN spowoduje wyłączenie wszystkich niestandardowych punktów APN. Nieprawidłowe punkty APN mogą zakłócać połączenie mobilne. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Ukryj transkrypcję</translation>
 <translation id="160633243685262989">Podgląd obrazu</translation>
 <translation id="1611649489706141841">do przodu</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Wybrałeś(-aś) album udostępniony. Inne osoby mogą dodawać i zmieniać zdjęcia. Tapeta może pokazywać zdjęcia spoza tego albumu.</translation>
+<translation id="1661512400125589646">Wstrzymaj</translation>
 <translation id="1661865805917886535">Niektóre informacje o koncie i systemie mogą zostać przesłane do Google. Zgodnie z naszą polityką prywatności (<ph name="PRIVACYPOLICYURL" />) i Warunkami korzystania z usługi (<ph name="TERMSOFSERVICEURL" />) używamy tych informacji do rozwiązywania problemów technicznych i ulepszania oferowanych usług. Aby poprosić o zmianę treści, wejdź na stronę pomocy prawnej (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
@@ -167,10 +170,12 @@
 <translation id="1753496554272155572">Ikona zamknięcia podglądu tapety</translation>
 <translation id="1754578112426924640">Przycisk edytowania elementu <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacja diagnostyczna</translation>
+<translation id="1756681705074952506">Sposób wprowadzania tekstu</translation>
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkrypcja</translation>
 <translation id="1765169783255151332">Szybkie przełączanie klawiszy</translation>
 <translation id="1768959921651994223">Typ uwierzytelniania</translation>
 <translation id="1776228893584526149">Odcień tapety</translation>
@@ -215,6 +220,7 @@
 <translation id="1954818433534793392">budynku</translation>
 <translation id="1962550982027027473">Domyślny punkt APN jest wymagany</translation>
 <translation id="1967860190218310525">Utwórz nowy APN</translation>
+<translation id="1967917622327567355">Wyświetl transkrypcję</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">tradycyjna</translation>
 <translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
@@ -258,6 +264,7 @@
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
 <translation id="2195732836444333448">Usługa zajęta. Spróbuj ponownie wkrótce.</translation>
+<translation id="2197185031095816179">Resetowanie bezpieczeństwa może pomóc w usuwaniu niechcianych wyskakujących okienek, przywracaniu połączenia z siecią i rozwiązywaniu innych nieoczekiwanych problemów.</translation>
 <translation id="2201758491318984023">roweru</translation>
 <translation id="2203272733515928691">gorące źródło</translation>
 <translation id="2203642483788377106">klif</translation>
@@ -514,6 +521,7 @@
 <translation id="3661106764436337772">Pisz szybciej i z większą pewnością</translation>
 <translation id="3662461537616691585">bordowym i kasztanowym</translation>
 <translation id="3668449597372804501">Tapeta Chmury</translation>
+<translation id="3668570675727296296">Ustawienia języka</translation>
 <translation id="3675132884790542448">świnie</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
 <translation id="370665806235115550">Ładuję...</translation>
@@ -521,6 +529,7 @@
 <translation id="3715651196924935218">Zamknij tryb pływający</translation>
 <translation id="3716250181321371108">Utwórz element sterujący</translation>
 <translation id="3716830479327464973">Jeśli na to zezwolisz, Dyktafon będzie analizować nagrania dźwiękowe, aby:</translation>
+<translation id="3719826155360621982">Strona główna</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (liczba opinii: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Brak połączenia</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
@@ -534,6 +543,7 @@
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="382043424867370667">Tapeta Zachód słońca</translation>
 <translation id="3824259034819781947">Dołącz pliki</translation>
+<translation id="3836587210832263413">Włączaj tylko te rozszerzenia, którym ufasz</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="3845880861638660475">Aby zamknąć okno, naciśnij <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">przyciemnienie klawiatury</translation>
@@ -579,6 +589,7 @@
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="404928562651467259">OSTRZEŻENIE</translation>
 <translation id="4050208988451295487">Kilka opcji:</translation>
+<translation id="405181879009056822">Ustawienia ChromeOS</translation>
 <translation id="4054683689023980771">Pobieram obraz</translation>
 <translation id="4059839844193047929">Jeśli opuścisz tę stronę, bieżące nagrywanie zostanie zakończone</translation>
 <translation id="4063039537646912479">jasnoniebieski</translation>
@@ -593,6 +604,7 @@
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tryb ciemny</translation>
+<translation id="4126551873361000548">Przewiń do tyłu o 10 s</translation>
 <translation id="4130035430755296270">Najedź kursorem, aby zobaczyć więcej opcji układu</translation>
 <translation id="4130750466177569591">Zgadzam się</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
@@ -622,6 +634,7 @@
 <translation id="4251839292699800785">Stylowe biuro</translation>
 <translation id="4258281355379922695">Opóźnienie HTTP</translation>
 <translation id="4266143281602681663">włóczki</translation>
+<translation id="4269815121975886860">Ustawienia uruchamiania</translation>
 <translation id="4271957103967917607">Wyświetl na pełnym ekranie</translation>
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4278766082079064416">Skrót jest używany do opcji „<ph name="CONFLICT_ACCEL_NAME" />”. Edytuj lub usuń, aby rozwiązać konflikt.</translation>
@@ -673,6 +686,7 @@
 <translation id="4507392511610824664">zwiększ jasność</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
+<translation id="4516323842122524821">Głośność</translation>
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4536864596629708641">Konfiguracja IP</translation>
@@ -756,6 +770,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Oprogramowanie urządzenia <ph name="DEVICE_NAME" /> zostało zaktualizowane do wersji <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel wśród drzew</translation>
+<translation id="4965661459364092269">Resetowanie bezpieczeństwa zostało zakończone</translation>
 <translation id="4965703485264574128">Aby uzyskać wynik przybliżony, pomnóż <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Podziel</translation>
 <translation id="4972592110715526173">zmiana trybu</translation>
@@ -776,6 +791,7 @@
 <translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
 <translation id="5051044138948155788">To jedyna strona. Pojawi się ekran rozpoczęcia skanowania.</translation>
+<translation id="5053233795640754917">Wstrzymaj</translation>
 <translation id="5078711626843651677">Modele głosu są tymczasowo przechowywane na urządzeniu do czasu zakończenia etykietowania rozmówców. W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation>
 <translation id="5078983345702708852">futurystyczne</translation>
 <translation id="5087864757604726239">wstecz</translation>
@@ -783,6 +799,7 @@
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Aby kontynuować proces aktualizacji, odłącz kabel USB urządzenia <ph name="DEVICE_NAME" />, a następnie podłącz go ponownie</translation>
+<translation id="5095864667399748231">Włącz/wyłącz dźwięk</translation>
 <translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Synonimy:</translation>
@@ -816,6 +833,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">Półka na książki w stylu <ph name="SIMPLE_STYLE" /> w pokoju w odcieniu <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Włącz jasny tryb kolorów</translation>
+<translation id="5261479807286543505">Ustawienia uruchamiania</translation>
 <translation id="5264277876637023664">Przeprowadź test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN jest wyłączony.</translation>
@@ -825,6 +843,7 @@
 <translation id="5292579816060236070">Tapeta Wschód słońca</translation>
 <translation id="5294769550414936029">wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Przenieś okno na biurko</translation>
+<translation id="5302048478445481009">Język</translation>
 <translation id="5303837385540978511">Tapeta tylko na urządzenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Tożsamość</translation>
@@ -927,6 +946,7 @@
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5893975327266416093">Naciśnij klawisz na klawiaturze, aby go przypisać</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
+<translation id="5896602941605730551">Odtwórz</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5903200662178656908">Urządzenie to zestaw klawiatury i myszy.</translation>
 <translation id="5904994456462260490">Dodaj nowy APN</translation>
@@ -1119,12 +1139,14 @@
 <translation id="6761537227090937007">Tworzę obraz w wysokiej rozdzielczości…</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
+<translation id="6786747875388722282">Rozszerzenia</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
 <translation id="6796229976413584781">Skrót został usunięty</translation>
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
+<translation id="6846843854964504403">Resetowanie bezpieczeństwa</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6862416241246624313">Opinia przesłana</translation>
 <translation id="6866732840889595464">stokrotka</translation>
@@ -1279,6 +1301,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekran dotykowy USB</translation>
 <translation id="757747079855995705">kamienia</translation>
+<translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Zmień położenie przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7618774594543487847">Neutralny</translation>
@@ -1305,9 +1328,11 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7746357909584236306">do edycji</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
 <translation id="7752963721013053477">Od świtu do zmierzchu – na wyłączność</translation>
+<translation id="7760571082554155847">Ustawienia strony głównej</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
+<translation id="7774759755755950354">Wstecz</translation>
 <translation id="7778717409420828014">Twoją opinię sprawdzi nasz zespół, bo opinie pomagają nami ulepszać Chromebooka. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
@@ -1345,6 +1370,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943235353293548836">Trwały odstęp utrzymywania aktywności</translation>
 <translation id="7943516765291457328">Włącz Bluetooth, aby skanować w poszukiwaniu hotspotów w pobliżu</translation>
+<translation id="7944482598620888754">Zawartość witryny</translation>
 <translation id="7944562637040950644">przełącz podświetlenie klawiatury</translation>
 <translation id="7953669802889559161">Metody wprowadzania</translation>
 <translation id="7955587717700691983">Klawiatura Bluetooth</translation>
@@ -1352,6 +1378,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7971535376154084247">Ustawienia ogólne</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
+<translation id="7982789257301363584">Sieć</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacja „<ph name="APP_NAME_1" />” została uruchomiona automatycznie}few{# aplikacje zostały uruchomione automatycznie}many{# aplikacji zostało uruchomionych automatycznie}other{# aplikacji zostało uruchomione automatycznie}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
@@ -1380,6 +1407,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
+<translation id="8135609423982943441">Chromebook został zresetowany do bezpiecznych wartości domyślnych. W każdej chwili możesz je zmienić w Ustawieniach.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8151185429379586178">Narzędzia dla deweloperów</translation>
@@ -1397,6 +1425,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8227488649450500937">Wypróbuj jeden z tych promptów lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
+<translation id="8236972776513018241">Transkrypcja</translation>
 <translation id="8238771987802558562">Wybierz APN</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="8250926778281121244">rdzawy</translation>
@@ -1409,6 +1438,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8302368968391049045">Zapora sieciowa HTTPS</translation>
+<translation id="8308787307410010965">Ustawienia treści witryny</translation>
 <translation id="8312330582793120272">odtwórz multimedia</translation>
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8320910311642849813">las</translation>
@@ -1438,6 +1468,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8424039430705546751">w dół</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8431300646573772016">Co nowego w Chrome OS</translation>
+<translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="843568408673868420">Połączenie z internetem</translation>
 <translation id="844521431886043384">Nie skonfigurowano DNS</translation>
 <translation id="8456200178779628126">Korzystaj z AI od Google, aby ułatwić sobie czytanie i pisanie</translation>
@@ -1498,8 +1529,10 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8775713578693478175">APN modemu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">W sieci może znajdować się portal przechwytujący</translation>
+<translation id="8797082062139985406">Utwórz nazwę za pomocą AI od Google</translation>
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8798441408945964110">Nazwa dostawcy</translation>
+<translation id="8808828119384186784">Ustawienia Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8820457400746201697">Przenieś niebieski punkt kontaktu do działania. Aby dostosować, wybierz powiązany klawisz.</translation>
@@ -1517,6 +1550,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8864415976656252616">Brak sugerowanych treści. Zapoznaj się z najpopularniejszymi materiałami pomocy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
+<translation id="8878117140814294155">Przełącz wyciszenie mikrofonu</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8882789155418924367">sowy</translation>
 <translation id="8892443466059986410">Anuluj edytowanie skrótu</translation>
@@ -1605,6 +1639,8 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="951780398843003443">porównywać głosy w całym nagraniu i zaznaczać w transkrypcji, co mówi która osoba.</translation>
 <translation id="952992212772159698">Nie aktywowano</translation>
 <translation id="95718197892796296">gliny</translation>
+<translation id="959792926760890141">Resetowanie bezpieczeństwa powoduje wyłączenie rozszerzeń przeglądarki Chrome i przywrócenie sieci oraz innych ustawień do bezpiecznych wartości domyślnych.
+          Domyślna wyszukiwarka zostanie zresetowana, ale karty, pliki, pliki cookie i historia nie ulegną zmianie.</translation>
 <translation id="960719561871045870">Kod operatora</translation>
 <translation id="965918541715156800">żółtym i morskim</translation>
 <translation id="966787709310836684">menu</translation>

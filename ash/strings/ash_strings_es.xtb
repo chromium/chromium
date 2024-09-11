@@ -374,6 +374,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">batería</translation>
 <translation id="2361210043495191221">Activar o desactivar Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efectos de aspecto</translation>
 <translation id="236574664504281623">Enviado desde <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">No se puede iniciar sesión en tu Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
@@ -734,6 +735,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3600061223661453002">Desactivado</translation>
 <translation id="3604801046548457007">Se ha creado el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">La pantalla braille está conectada.</translation>
+<translation id="3612634595000403645">Preferencias de efectos de aspecto</translation>
 <translation id="3615926715408477684">El Bluetooth se activará al habilitar los datos móviles</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Se ha movido el menú a la esquina superior derecha de la pantalla.</translation>
@@ -895,6 +897,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4146671046252289537">Desplazarse al final de la siguiente palabra</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4151054805501931758">Retoque de retrato</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de batería (aproximadamente <ph name="TIME_LEFT" />).
 Algunas funciones están limitadas para aumentar la duración de la batería.</translation>
 <translation id="4160919062868802509">Se han detectado varias fuentes de audio</translation>
@@ -1961,7 +1964,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7727952505535211425">Abrir el sitio web de la barra de direcciones en una pestaña nueva</translation>
 <translation id="7728657226117099693">Desactivar bloqueo de mayúsculas</translation>
 <translation id="7742327441377685481">No hay notificaciones</translation>
-<translation id="774736258792760908">Cuando activas Ayúdame a escribir y Ayúdame a leer, el texto de entrada y el contenido del documento se envían a los servidores de la IA de Google para generar sugerencias de escritura y resúmenes, responder preguntas y mejorar el producto, de acuerdo con los <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="7748275671948949022">Destacar el botón del menú de aplicaciones en la estantería</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1970,6 +1972,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7768784765476638775">Enunciar selección</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar Wi‐Fi en su lugar</translation>
+<translation id="77747521138552256">Demasiados intentos de introducción de PIN. Espera <ph name="TIME_LEFT" /> y vuelve a introducir el PIN, o escribe la contraseña para iniciar sesión de inmediato.</translation>
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7781829728241885113">Ayer</translation>
@@ -2288,7 +2291,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8877788021141246043">Añadir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz click para verlas y actualizar.</translation>
-<translation id="8893479486525393799">Micrófono de estudio</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se eliminará permanentemente.</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>
 <translation id="88986195241502842">Avanzar página</translation>

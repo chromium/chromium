@@ -374,6 +374,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360398059912971776">batéria</translation>
 <translation id="2361210043495191221">Prepnúť Wi-Fi <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efekty vzhľadu</translation>
 <translation id="236574664504281623">Odoslané zo zariadenia <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Do Chromebooku sa nedá prihlásiť</translation>
 <translation id="2367972762794486313">Zobraziť aplikácie</translation>
@@ -734,6 +735,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3600061223661453002">Vypnuté</translation>
 <translation id="3604801046548457007">Bola vytvorená plocha <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Bola pripojená Braillova obrazovka.</translation>
+<translation id="3612634595000403645">Predvoľby efektov vzhľadu</translation>
 <translation id="3615926715408477684">Zapnutím mobilných dát aktivujete Bluetooth</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3616883743181209306">Ponuka bola presunutá do pravého horného rohu obrazovky.</translation>
@@ -894,6 +896,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4146671046252289537">Kurzor sa presunie na koniec ďalšieho slova</translation>
 <translation id="4146833061457621061">Prehrať hudbu</translation>
 <translation id="4150201353443180367">Displej</translation>
+<translation id="4151054805501931758">Retuš portrétu</translation>
 <translation id="4156293514828496577">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />).
 Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translation>
 <translation id="4160919062868802509">Bolo zistených viac zdrojov zvuku</translation>
@@ -917,6 +920,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4209973997261364186">Pripojenie Wi‑Fi je zapnuté</translation>
 <translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4212472694152630271">Prepnúť na PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, prepínač, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Nastavenia VPN</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
 <translation id="4221957499226645091">Nainštalovaná aplikácia <ph name="APP_NAME" /> bola pozastavená</translation>
@@ -1959,7 +1963,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7727952505535211425">Otvorenie webu na paneli s adresou na novej karte</translation>
 <translation id="7728657226117099693">Vypnúť Caps Lock</translation>
 <translation id="7742327441377685481">Žiadne upozornenia</translation>
-<translation id="774736258792760908">Keď zapnete asistenta pri písaní a asistenta pri čítaní, vstupný text a obsah dokumentov budú odoslané na servery umelej inteligencie Googlu, aby bolo možné generovať návrhy formulácií aj zhrnutia, odpovedať na otázky a zlepšovať danú službu v súlade so <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1968,6 +1971,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
 <translation id="7769299611924763557">Váš gif bude čoskoro pripravený</translation>
 <translation id="7773536009433685931">Zapnúť Wi‐Fi</translation>
+<translation id="77747521138552256">Príliš veľa pokusov o zadanie kódu PIN. Počkajte <ph name="TIME_LEFT" /> a skúste PIN zadať znova alebo sa okamžite prihláste zadaním hesla.</translation>
 <translation id="7780094051999721182">skratky</translation>
 <translation id="7780159184141939021">Otáčanie obrazovky</translation>
 <translation id="7781829728241885113">Včera</translation>
@@ -2285,7 +2289,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
 <translation id="8878886163241303700">Rozšírenie obrazovky</translation>
 <translation id="888982883502837004">Pre vaše zariadenie sú k dispozícii aktualizácie firmvéru. Kliknutím si ich zobrazte a firmvér aktualizujte.</translation>
-<translation id="8893479486525393799">Štúdiový mikrofón</translation>
 <translation id="8896630965521842259">Šablóna <ph name="DESK_TEMPLATE_NAME" /> bude natrvalo odstránená</translation>
 <translation id="889790758758811533">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />). Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="88986195241502842">Posunúť stránku nadol</translation>

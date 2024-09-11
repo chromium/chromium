@@ -849,6 +849,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Τελευταία 15 λεπτά</translation>
 <translation id="5032430150487044192">Δεν είναι δυνατή η δημιουργία κωδικού QR</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> καρτέλες - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5040262127954254034">Απόρρητο</translation>
 <translation id="504456571576643789">Λάβετε υπόψη τα εξής</translation>
@@ -1068,6 +1069,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Περισσότερες λεπτομέρειες<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6130303040046284160">Ελαχιστοποίηση καρτέλας</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="6137022273846704445">Γλώσσα της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Αλλάξτε τις ρυθμίσεις του ιστοτόπου σας εδώ.</translation>
 <translation id="6140912465461743537">Χώρα/Περιοχή</translation>
@@ -1171,6 +1173,7 @@
 <translation id="656065428026159829">Δείτε περισσότερα</translation>
 <translation id="6565959834589222080">Το Wi-Fi χρησιμοποιείται όταν είναι διαθέσιμο</translation>
 <translation id="6569373978618239158">Θα βλέπετε πλέον ειδήσεις από τον ιστότοπο <ph name="SITE_NAME" /> όταν ανοίγετε μια νέα καρτέλα. Οι ιστότοποι που ακολουθείτε αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να τους διαχειριστείτε στις ρυθμίσεις του Discover.</translation>
+<translation id="6570116402456758630">Σύνοψη σελίδας</translation>
 <translation id="6573096386450695060">Να επιτρέπονται πάντα</translation>
 <translation id="6573431926118603307">Οι καρτέλες που έχετε ανοίξει στο Chrome στις άλλες συσκευές σας θα εμφανίζονται εδώ.</translation>
 <translation id="6583199322650523874">Προσθήκη σελιδοδείκτη στην τρέχουσα σελίδα</translation>

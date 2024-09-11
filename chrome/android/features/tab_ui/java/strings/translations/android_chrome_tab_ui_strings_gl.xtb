@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4590027107044272416">Agora a opción para abrir pestanas novas está aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Queres pechar 1 pestana inactiva?}other{Queres pechar <ph name="TAB_COUNT_MANY" /> pestanas inactivas?}}</translation>
-<translation id="4648718555153979859">As túas pestanas agrúpanse aquí</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Pechar despois de 1 día}other{Pechar despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>

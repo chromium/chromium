@@ -125,7 +125,7 @@
 <translation id="1365866993922957110">স্বয়ংক্ৰিয় আপডে’ট লাভ কৰক</translation>
 <translation id="1372545819342940910">পাছলৈ ডেস্ক ছেভ কৰক</translation>
 <translation id="1383597849754832576">কথন ফাইল ডাউনল’ড কৰিব নোৱাৰি। পাছত পুনৰ চেষ্টা কৰক।</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1391102559483454063">অন আছে</translation>
 <translation id="1394698770495054737">সম্পূৰ্ণ অস্পষ্ট</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{১ দিন পূৰ্বে}one{# দিন পূৰ্বে}other{# দিন পূৰ্বে}}</translation>
@@ -1960,7 +1960,6 @@
 <translation id="7727952505535211425">এটা নতুন টেবত ঠিকনাৰ বাৰত ৱেবছাইটটো খোলক</translation>
 <translation id="7728657226117099693">কেপ্‌ছ লক অফ কৰক</translation>
 <translation id="7742327441377685481">কোনো জাননী নাই</translation>
-<translation id="774736258792760908">আপুনি হেল্প মী ৰাইট আৰু হেল্প মী ৰীড অন কৰিলে ইনপুট কৰা পাঠ আৰু নথিত থকা সমলখিনি <ph name="LINK_TO_SERVICE_TERMS" /> অনুসৰি লিখাৰ পৰামৰ্শ সৃষ্টি কৰিবলৈ, সাৰাংশ প্ৰস্তুত কৰিবলৈ, প্ৰশ্নৰ উত্তৰ দিবলৈ আৰু প্ৰ’ডাক্টটো উন্নত কৰিবলৈ Google AI ছাৰ্ভাৰলৈ পঠিওৱা হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।</translation>
 <translation id="7748275671948949022">শ্বেল্ফত থকা লঞ্চাৰ বুটামটো হাইলাইট কৰক</translation>
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@
 <translation id="8877788021141246043">ৰিমাইণ্ডাৰ ছেট কৰক</translation>
 <translation id="8878886163241303700">বিস্তাৰিত স্ক্ৰীন</translation>
 <translation id="888982883502837004">আপোনাৰ ডিভাইচটোৰ বাবে ফাৰ্মৱেৰ আপডে’ট উপলব্ধ। পৰ্যালোচনা আৰু আপডে’ট কৰিবলৈ ক্লিক কৰক।</translation>
-<translation id="8893479486525393799">Studioৰ মাইক</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাৱে মচা হ’ব</translation>
 <translation id="889790758758811533">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)। আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="88986195241502842">পেজ ডাউন</translation>
@@ -2302,6 +2300,7 @@
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>
 <translation id="8939855324412367560">অডিঅ’ ইনপুটটো হৈছে "<ph name="INPUT_DEVICE_NAME" />" আৰু আউটপুট অডিঅ’টো হৈছে "<ph name="OUTPUT_DEVICE_NAME" />"। সলনি কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="8940956008527784070">বেটাৰীৰ চাৰ্জ কম আছে (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ষ্টুডিঅ’-ষ্টাইল মাইক</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />ৰ <ph name="EMAIL" />ৰ চেক বাকচত টিক চিহ্ন দিয়া হোৱা নাই।</translation>
 <translation id="8949925099261528566">সংযোজিত, ইণ্টাৰনেট নাই</translation>
 <translation id="8951539504029375108">আপোনাৰ Chromebookৰ সৈতে কেৱল অনুমোদিত Thunderbolt ডিভাইচ সমিল হয়</translation>

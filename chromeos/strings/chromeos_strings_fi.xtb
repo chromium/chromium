@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Poistu taustakuvan esikatselusta</translation>
 <translation id="1754578112426924640">Muokkaa painiketta: <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostiikka-sovellus</translation>
+<translation id="1756681705074952506">Syöttötapa</translation>
 <translation id="175763766237925754">Hyvä (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Kirjoita nopeammin ja itsevarmemmin</translation>
 <translation id="3662461537616691585">viininpuna ja punaruskea</translation>
 <translation id="3668449597372804501">Pilvien kulku ‑taustakuva</translation>
+<translation id="3668570675727296296">Kieliasetukset</translation>
 <translation id="3675132884790542448">siat</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Poistu kelluvasta tilasta</translation>
 <translation id="3716250181321371108">Luo ohjain</translation>
 <translation id="3716830479327464973">Kun sallit tämän, Tallentaja analysoi audiotallenteet näihin tarkoituksiin:</translation>
+<translation id="3719826155360621982">Etusivu</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="404928562651467259">Varoitus</translation>
 <translation id="4050208988451295487">Tässä on muutamia vaihtoehtoja:</translation>
+<translation id="405181879009056822">ChromeOS-asetukset</translation>
 <translation id="4054683689023980771">Ladataan kuvaa</translation>
 <translation id="4059839844193047929">Jos poistut tältä sivulta, nykyinen tallennus päättyy</translation>
 <translation id="4063039537646912479">vaaleansininen</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Auringonnousu-taustakuva</translation>
 <translation id="5294769550414936029">versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Siirrä ikkuna työpöydälle</translation>
+<translation id="5302048478445481009">Kieli</translation>
 <translation id="5303837385540978511">Tuotteen <ph name="PRODUCT_NAME" /> oma taustakuva</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identiteetti</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Luodaan korkearesoluutioista kuvaa…</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
+<translation id="6786747875388722282">Laajennukset</translation>
 <translation id="6791471867139427246">näppäimistön vaaleat värit</translation>
 <translation id="6796229976413584781">Pikanäppäin poistettu</translation>
 <translation id="6798678288485555829">Tekstissä siirtyminen</translation>
@@ -1282,6 +1288,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>
 <translation id="757747079855995705">kivi</translation>
+<translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7613724632293948900">Sijoita uudelleen hiirellä tai nuolinäppäimillä.</translation>
 <translation id="7618774594543487847">Neutraali</translation>
@@ -1355,6 +1362,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7971535376154084247">Yleiset asetukset</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
+<translation id="7982789257301363584">Verkko</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" käynnistettiin automaattisesti}other{# sovellusta käynnistettiin automaattisesti}}</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
 <translation id="8004582292198964060">Selain</translation>
@@ -1441,6 +1449,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8424039430705546751">alas</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8431300646573772016">Chrome OS: uutta</translation>
+<translation id="8433186206711564395">Verkkoasetukset</translation>
 <translation id="843568408673868420">Internetyhteydet</translation>
 <translation id="844521431886043384">DNS:ää ei ole määritetty</translation>
 <translation id="8456200178779628126">Käytä Googlen tekoälyä saadaksesi apua lukemiseen ja kirjoittamiseen</translation>
@@ -1503,6 +1512,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
+<translation id="8808828119384186784">Chromen asetukset</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Taustakuva</translation>
 <translation id="8820457400746201697">Siirrä sininen kosketuspiste toimintoon. Muokkaa sitä valitsemalla siihen liittyvä näppäin.</translation>

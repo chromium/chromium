@@ -1960,7 +1960,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7727952505535211425">Buka situs di kolom URL di tab baru</translation>
 <translation id="7728657226117099693">Nonaktifkan Caps Lock</translation>
 <translation id="7742327441377685481">Tidak ada notifikasi</translation>
-<translation id="774736258792760908">Saat Anda mengaktifkan fitur Bantu tulis dan Bantu baca, teks input dan konten dokumen dikirim ke server AI Google untuk membuat saran penulisan, membuat ringkasan, menjawab pertanyaan, dan meningkatkan kualitas produk, yang tunduk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="7748275671948949022">Tandai tombol Peluncur di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2287,7 +2286,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8878886163241303700">Memperluas layar</translation>
 <translation id="888982883502837004">Update firmware tersedia untuk perangkat Anda. Klik untuk meninjau dan mengupdate.</translation>
-<translation id="8893479486525393799">Mikrofon studio</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dihapus secara permanen</translation>
 <translation id="889790758758811533">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />). Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2302,6 +2300,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="8939855324412367560">Audio input adalah "<ph name="INPUT_DEVICE_NAME" />" dan audio output adalah "<ph name="OUTPUT_DEVICE_NAME" />". Buka Setelan untuk mengubah.</translation>
 <translation id="8940956008527784070">Baterai lemah (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Mikrofon bergaya studio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak centang tidak dicentang.</translation>
 <translation id="8949925099261528566">Terhubung, tidak ada internet</translation>
 <translation id="8951539504029375108">Hanya perangkat Thunderbolt yang disetujui yang kompatibel dengan Chromebook</translation>

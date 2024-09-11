@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4590027107044272416">You can now open a new tab here</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Close 1 inactive tab?}other{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}}</translation>
-<translation id="4648718555153979859">Your tabs are grouped together here</translation>
 <translation id="4686942373615810936">Created just now</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Close after 1 day}other{Close after <ph name="DAY_COUNT_MANY" /> days}}</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>

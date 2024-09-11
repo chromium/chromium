@@ -1961,7 +1961,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7727952505535211425">Fungua tovuti kwenye sehemu ya anwani katika kichupo kipya</translation>
 <translation id="7728657226117099693">Zima Caps Lock</translation>
 <translation id="7742327441377685481">Hakuna arifa</translation>
-<translation id="774736258792760908">Unapowasha kipengele cha Nisaidie kuandika na cha Nisaidie kusoma, maandishi unayoweka na maudhui ya hati hutumwa kwa seva za Google AI ili kutayarisha mapendekezo ya kuandika, mihtasari, kujibu maswali na kuboresha bidhaa, hatua inayosimamiwa na <ph name="LINK_TO_SERVICE_TERMS" />. Usijumuishe taarifa zozote binafsi, nyeti au za siri.</translation>
 <translation id="7748275671948949022">Angazia kitufe cha Kifungua programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2288,7 +2287,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8877788021141246043">Weka kikumbusho</translation>
 <translation id="8878886163241303700">Kuongeza skrini</translation>
 <translation id="888982883502837004">Masasisho ya programu dhibiti yanapatikana kwa kifaa chako. Bofya ili ukague na usasishe.</translation>
-<translation id="8893479486525393799">Maikrofoni ya studio</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> itafutwa kabisa</translation>
 <translation id="889790758758811533">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />). Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="88986195241502842">Ukurasa mmoja chini</translation>
@@ -2303,6 +2301,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
 <translation id="8939855324412367560">Kifaa cha kuingiza sauti ni "<ph name="INPUT_DEVICE_NAME" />" na kifaa cha kutoa sauti ni "<ph name="OUTPUT_DEVICE_NAME" />". Nenda kwenye mipangilio ili ubadilishe.</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Maikrofoni yenye madoido ya studio</translation>
 <translation id="894774083269346314">Kisanduku cha kuteua cha <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> hakijateuliwa.</translation>
 <translation id="8949925099261528566">Kimeunganishwa, hakuna intaneti</translation>
 <translation id="8951539504029375108">Vifaa vya Thunderbolt vilivyoidhinishwa pekee ndivyo vinavyooana na Chromebook yako</translation>

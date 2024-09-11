@@ -1960,7 +1960,6 @@ Nova namestitev</translation>
 <translation id="7727952505535211425">Odpiranje spletnega mesta v naslovni vrstici na novem zavihku</translation>
 <translation id="7728657226117099693">Izklop tipke Caps Lock</translation>
 <translation id="7742327441377685481">Ni obvestil</translation>
-<translation id="774736258792760908">Ko vklopite funkciji Pomagaj mi pisati in Pomagaj mi brati, se vnosno besedilo in vsebina dokumenta pošljeta v strežnike Googlove umetne inteligence zaradi ustvarjanja predlogov za pisanje, ustvarjanje povzetkov, odgovarjanje na vprašanja in izboljšanja izdelka v skladu z <ph name="LINK_TO_SERVICE_TERMS" />. Ne vključite osebnih, občutljivih ali zaupnih podatkov.</translation>
 <translation id="7748275671948949022">Označevanje gumba za Zaganjalnik na polici</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749958366403230681">Hitra tipka 4</translation>
@@ -2287,7 +2286,6 @@ Nova namestitev</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8878886163241303700">Razširjanje zaslona</translation>
 <translation id="888982883502837004">Posodobitve vdelane programske opreme so na voljo za vašo napravo. Kliknite, če si želite ogledati in posodobiti.</translation>
-<translation id="8893479486525393799">Studijski mikrofon</translation>
 <translation id="8896630965521842259">Predloga <ph name="DESK_TEMPLATE_NAME" /> bo trajno izbrisana.</translation>
 <translation id="889790758758811533">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />). Napravo priklopite na napajanje.</translation>
 <translation id="88986195241502842">Page Down</translation>
@@ -2302,6 +2300,7 @@ Nova namestitev</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8939855324412367560">Zvočni vhod je »<ph name="INPUT_DEVICE_NAME" />«, zvočni izhod pa »<ph name="OUTPUT_DEVICE_NAME" />«. To lahko spremenite v nastavitvah.</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Mikrofon v studijskem slogu</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje ni označeno.</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8951539504029375108">Z vašim Chromebookom so združljive samo odobrene naprave Thunderbolt.</translation>

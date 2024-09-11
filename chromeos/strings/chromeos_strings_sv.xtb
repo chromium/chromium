@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Stäng förhandsgranskning av bakgrund</translation>
 <translation id="1754578112426924640">Redigeringsknapp för <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
+<translation id="1756681705074952506">Inmatningsmetod</translation>
 <translation id="175763766237925754">Bra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Skriv snabbare och med mer självsäkerhet</translation>
 <translation id="3662461537616691585">vinrött och rödbrunt</translation>
 <translation id="3668449597372804501">Bakgrund med moln</translation>
+<translation id="3668570675727296296">Språkinställningar</translation>
 <translation id="3675132884790542448">grisar</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Avsluta flytläge</translation>
 <translation id="3716250181321371108">Skapa kontroll</translation>
 <translation id="3716830479327464973">När du tillåter detta analyseras dina ljudinspelningar i Ljudinspelare för att</translation>
+<translation id="3719826155360621982">Startsida</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
 <translation id="3748026146096797577">Ej ansluten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="404928562651467259">VARNING</translation>
 <translation id="4050208988451295487">Några alternativ:</translation>
+<translation id="405181879009056822">ChromeOS-inställningar</translation>
 <translation id="4054683689023980771">Laddar ned bild …</translation>
 <translation id="4059839844193047929">Om du lämnar den här sidan avslutas den aktuella inspelningen</translation>
 <translation id="4063039537646912479">ljusblå</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Bakgrund med soluppgång</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flytta fönstret till ett skrivbord</translation>
+<translation id="5302048478445481009">Språk</translation>
 <translation id="5303837385540978511">Exklusiv bakgrund för <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Skapar högupplöst bild …</translation>
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
+<translation id="6786747875388722282">Tillägg</translation>
 <translation id="6791471867139427246">färg på tangentbordets belysning</translation>
 <translation id="6796229976413584781">Genvägen har raderats</translation>
 <translation id="6798678288485555829">Textnavigering</translation>
@@ -1282,6 +1288,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-pekskärm</translation>
 <translation id="757747079855995705">sten</translation>
+<translation id="7590883480672980941">Inmatningsinställningar</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7613724632293948900">Flytta med musen eller piltangenterna.</translation>
 <translation id="7618774594543487847">Neutralt</translation>
@@ -1355,6 +1362,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7971535376154084247">Allmänna inställningar</translation>
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
+<translation id="7982789257301363584">Nätverk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> startades automatiskt}other{# appar startades automatiskt}}</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
@@ -1441,6 +1449,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8424039430705546751">ned</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8431300646573772016">Nyheter i ChromeOS</translation>
+<translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="843568408673868420">Internetanslutning</translation>
 <translation id="844521431886043384">DNS har inte konfigurerats</translation>
 <translation id="8456200178779628126">Använd Googles AI för att få hjälp med att läsa och skriva</translation>
@@ -1503,6 +1512,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="879568662008399081">Nätverket kan ha en infångstportal</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
+<translation id="8808828119384186784">Inställningar för Chrome</translation>
 <translation id="8814190375133053267">wifi</translation>
 <translation id="8818152010000655963">Bakgrund</translation>
 <translation id="8820457400746201697">Flytta den blå pekytan till en åtgärd. Välj den tangent som du vill anpassa.</translation>

@@ -917,6 +917,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4209973997261364186">I-Wi-Fi ivuliwe</translation>
 <translation id="4212246570487010370">Qhubeka nokuphequlula</translation>
 <translation id="4212472694152630271">Shintshela Kuphinikhodi</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, inkinobho yokuguqula, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Izilungiselelo ze-VPN</translation>
 <translation id="4217571870635786043">Ukuthola</translation>
 <translation id="4221957499226645091">I-<ph name="APP_NAME" />, Uhlelo Lokusebenza Olufakiwe, Luphunyuziwe</translation>
@@ -1959,7 +1960,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7727952505535211425">Vula iwebhusayithi kubha yekheli kuthebhu entsha</translation>
 <translation id="7728657226117099693">Vala iCaps Lock</translation>
 <translation id="7742327441377685481">Azikho izaziso</translation>
-<translation id="774736258792760908">Uma uvula okuthi Ngisize ngibhale nokuthi Ngisize ngifunde, umbalo ofakwayo nokuqukethwe kwedokhumenti kuthunyelwa kumaseva weGoogle AI ukwenza iziphakamiso zokubhala, ukwenza izifinyezo, ukuphendula imibuzo, nokuthuthukisa umkhiqizo, kunjonjelwe kokuthi <ph name="LINK_TO_SERVICE_TERMS" />. Ungafaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.</translation>
 <translation id="7748275671948949022">Gqamisa inkinobho Yesiqalisi kushelufu</translation>
 <translation id="7749443890790263709">Inombolo enkulu yamadeski ifinyelelwe.</translation>
 <translation id="7749958366403230681">I-ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8877788021141246043">Setha isikhumbuzi</translation>
 <translation id="8878886163241303700">Yandisa isikrini</translation>
 <translation id="888982883502837004">Izibuyekezo ze-firmware ziyatholakala kudivayisi yakho. Chofoza ukuze ubuyekeze futhi uvuselele.</translation>
-<translation id="8893479486525393799">I-mic yasesi-studio</translation>
 <translation id="8896630965521842259">I-<ph name="DESK_TEMPLATE_NAME" /> izosuswa unomphela</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% yebhethri esele (cishe u-<ph name="TIME_LEFT" />). Xhuma idivayisi yakho emandleni.</translation>
 <translation id="88986195241502842">Pheyija uye phansi</translation>

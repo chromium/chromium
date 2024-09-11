@@ -404,6 +404,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
       URL-Muster dürfen nicht im Konflikt mit <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
+<translation id="1309259005392595570">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS deaktivieren</translation>
 <translation id="1309465583050255779">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" />" den Namen des Standardsuchanbieters an.
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" />" nicht konfiguriert ist, wird der von der Such-URL angegebene Hostname verwendet.</translation>
@@ -3352,6 +3353,7 @@ Jede Regel hat folgende Bestandteile:
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Melden der Netzwerkschnittstellen auf Geräten deaktivieren</translation>
 <translation id="3540935459049973317">Zeitbeschränkungen für Apps</translation>
+<translation id="3546260240984542017">Leerzeichen für alle MIME-Typen beibehalten</translation>
 <translation id="3546271546272655966">„<ph name="DBSC_FEATURE_NAME" />“ kann abhängig vom Funktionseinführungsprozess verwendet werden.</translation>
 <translation id="3547954654003013442">Proxy-Einstellungen</translation>
 <translation id="3548064438634502368">Browser schließen</translation>
@@ -4857,6 +4859,7 @@ Mit dieser Richtlinie wird eine Erweiterungs-ID oder eine Update-URL nur ihrer b
 Bei <ph name="MS_WIN_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
 
 Bei <ph name="MAC_OS_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="4737832614429402441">Standardwert für den Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS verwenden</translation>
 <translation id="4739596156184678950">Speichern von Dateien direkt in <ph name="GOOGLE_DRIVE_NAME" /> zulassen</translation>
 <translation id="4742973303930120836">Druckmodus mit Hintergrundgrafiken einschränken</translation>
 <translation id="4745232963710538589">Erweiterung „Insights“ zum Senden von Messwerten zur Nutzung aktivieren</translation>
@@ -6637,6 +6640,21 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
 Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner auf dem Sperrbildschirm unabhängig von dem in der Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> festgelegten Wert nicht angezeigt.</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6135552820180449830">Crosh (wird seit Version 99 unterstützt)</translation>
+<translation id="6136179371737299503">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS anbietet. In zukünftigen Versionen wird der Algorithmus ML‑KEM, ein Post-Quanten-Standard des NIST, sein. Ursprünglich war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
+
+Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_OS_NAME" /> in TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
+
+Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_OS_NAME" /> in TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
+
+Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_OS_NAME" /> dem standardmäßigen Roll-out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
+
+Das Anbieten von Kyber ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
+
+Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_OS_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.
+
+Wenn sowohl diese Richtlinie als auch die Richtlinie „PostQuantumKeyAgreementEnabled“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>
 <translation id="6141402445226505817">Immer die ungefähre Erkennung der Zeitzone verwenden</translation>
 <translation id="6141944295566709543">Zulassen, dass Nutzer Medien abspielen, wenn das Gerät gesperrt ist</translation>
@@ -6804,27 +6822,6 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
       Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Chrome for Testing installieren und ausführen.
 
       Ist die Richtlinie deaktiviert, dürfen Nutzer Chrome for Testing nicht ausführen. Nutzer können Chrome for Testing dennoch installieren, aber diese Chrome-Version wird nicht mit den Profilen ausgeführt, für die diese Richtlinie deaktiviert ist.</translation>
-<translation id="6258646807927528870">Konfiguriert eine Liste von Datenkontrollregeln zur Vermeidung von Datenlecks.
-
-      Jede Regel besteht aus den folgenden Elementen:
-      – Bedingungsfeldern zum Auslösen der Regel. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern in den Feldern „<ph name="DATA_CONTROLS_SOURCES" />“, „<ph name="DATA_CONTROLS_DESTINATIONS" />“, „<ph name="DATA_CONTROLS_AND" />“, „<ph name="DATA_CONTROLS_OR" />“ und „<ph name="DATA_CONTROLS_NOT" />“ übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
-      – Einer Liste der anzuwendenden Einschränkungen. Je nach Einschränkung sind möglicherweise nur „<ph name="DATA_CONTROLS_SOURCES" />“- oder „<ph name="DATA_CONTROLS_DESTINATIONS" />“-Bedingungen verfügbar.
-
-      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
-– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
-      – Das Blockieren von Screenshots basierend auf den Quelltabs.
-
-      Wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ auf „True“ gesetzt ist, werden die ausgelösten Regeln dem Administrator gemeldet.
-      Die Einschränkungsebene kann mit BLOCK, WARN oder REPORT festgelegt werden.
-      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
-      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen.
-      – Wenn die Einschränkungsebene auf REPORT gesetzt ist, wird die Nutzeraktion nicht unterbrochen, aber ein Bericht wird gesendet, wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ aktiviert ist.
-
-      Hinweise:
-      – Formatiere die URL-Muster gemäß diesem Format (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-      – Für Regeln zur Vermeidung von Datenlecks speziell für <ph name="PRODUCT_OS_NAME" /> kannst du dir auch die Richtlinie „<ph name="DATA_LEAK_PREVENTION_RULES_LIST" />“ ansehen.
-
-      Ist die Richtlinie nicht konfiguriert, werden keine Einschränkungen angewendet.</translation>
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
 <translation id="6264247808139384018">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
@@ -8089,6 +8086,7 @@ integrierte Passwortmanager verwendet.
 
 Diese Richtlinie wirkt sich nicht auf Passwortmanager von Drittanbietern aus, die APIs für Barrierefreiheit verwenden.</translation>
 <translation id="7114169791477667553">Standardsuchmaschine deaktivieren</translation>
+<translation id="7115684775550072082">Leerzeichen nur für die MIME-Typen „text“ und „xml“ beibehalten</translation>
 <translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
 
       Die Richtlinie erlaubt dem Nutzer die Anmeldung in <ph name="PRODUCT_NAME" />.
@@ -8411,6 +8409,13 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aktivieren</translation>
 <translation id="7362566456990049303">Nur Nutzer</translation>
 <translation id="736486789939370545">Installation externer Erweiterungen erlauben</translation>
+<translation id="7364975417585163622">Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Leerzeichen in <ph name="DATA_URL_SCHEME" />-URLs widerrufen.
+Zuvor wurden Leerzeichen nur beibehalten, wenn der Medientyp der obersten Ebene „<ph name="TEXT_MEDIA_TYPE" />“ war oder den Medientyp-String „<ph name="XML" />“ enthielt.
+Jetzt werden Leerzeichen in allen Daten-URLs beibehalten, unabhängig vom Medientyp.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist das neue Verhalten aktiviert.
+
+Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="7366948865469126526">Einheitenumrechnung über „Schnellinfo“ deaktivieren</translation>
 <translation id="7367734504783638685">Synchronisierung von Passwörtern zwischen SSO-Drittanbietern und Chrome-Geräten</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
@@ -10009,6 +10014,19 @@ Wenn JavaScript-Optimierungen deaktiviert sind (indem du den Wert dieser Richtli
 Die Richtlinie kann für bestimmte URL‑Muster überschrieben werden. Hierfür stehen die Richtlinien „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ und „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ zur Verfügung.
 
 Ist diese Richtlinie nicht konfiguriert, sind JavaScript-Optimierungen aktiviert.</translation>
+<translation id="8670585636650044874">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS anbietet. In zukünftigen Versionen wird der Algorithmus ML‑KEM, ein Post-Quanten-Standard des NIST, sein. Ursprünglich war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
+
+Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_NAME" /> in TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
+
+Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_NAME" /> in TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
+
+Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Roll-out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
+
+Das Anbieten eines Post-Quanten-Algorithmus für Schlüsselvereinbarungen ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
+
+Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
 <translation id="8671193325113134911">Strikte MIME-Typprüfung für Worker-Skripts aktivieren</translation>
 <translation id="8671303329680827168">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />“.</translation>
@@ -10463,6 +10481,7 @@ Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profil
 <translation id="9015759770696099204">Einstellungen von F11/F12 sind deaktiviert</translation>
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
+<translation id="9025912013525357598">Beibehaltung von Leerzeichen in Daten-URLs unabhängig vom Medientyp</translation>
 <translation id="9026905189580734497">Mit dieser Richtlinie werden die Einstellungen der Funktion „Hilfe beim Lesen“ für <ph name="PRODUCT_OS_NAME" /> festgelegt.
 
 „0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.

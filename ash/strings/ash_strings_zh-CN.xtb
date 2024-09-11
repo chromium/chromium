@@ -1958,7 +1958,6 @@
 <translation id="7727952505535211425">在新标签页中打开地址栏中的网站</translation>
 <translation id="7728657226117099693">关闭大写锁定功能</translation>
 <translation id="7742327441377685481">无通知</translation>
-<translation id="774736258792760908">开启“帮我写”和“帮我读”功能后，系统会将输入文本和文档内容发送到 Google AI 服务器，以根据 <ph name="LINK_TO_SERVICE_TERMS" />生成写作建议、总结内容、回答问题并改进产品。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="7748275671948949022">突出显示任务栏上的启动器按钮</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2285,7 +2284,6 @@
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8878886163241303700">正在扩展屏幕</translation>
 <translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
-<translation id="8893479486525393799">录音室麦克风</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>
 <translation id="889790758758811533">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。请为设备接通电源。</translation>
 <translation id="88986195241502842">向下翻页</translation>
@@ -2300,6 +2298,7 @@
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8939855324412367560">音频输入设备为“<ph name="INPUT_DEVICE_NAME" />”，音频输出设备为“<ph name="OUTPUT_DEVICE_NAME" />”。如需更改，请前往“设置”。</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">录音室风麦克风</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>

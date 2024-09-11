@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
 <translation id="4590027107044272416">Itt új lapot nyithat meg</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Bezár 1 inaktív lapot?}other{Bezár <ph name="TAB_COUNT_MANY" /> inaktív lapot?}}</translation>
-<translation id="4648718555153979859">A lapok itt vannak csoportosítva</translation>
 <translation id="4686942373615810936">Épp most létrehozva</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Bezárás 1 nap után}other{Bezárás <ph name="DAY_COUNT_MANY" /> nap után}}</translation>
 <translation id="4777866634702576038">Törli a lapcsoportot?</translation>

@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Pisahkan</translation>
 <translation id="4590027107044272416">Anda sekarang dapat membuka tab baru di sini</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Tutup 1 tab tidak aktif?}other{Tutup <ph name="TAB_COUNT_MANY" /> tab tidak aktif?}}</translation>
-<translation id="4648718555153979859">Tab Anda dikelompokkan menjadi satu di sini</translation>
 <translation id="4686942373615810936">Baru saja dibuat</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Tutup setelah 1 hari}other{Tutup setelah <ph name="DAY_COUNT_MANY" /> hari}}</translation>
 <translation id="4777866634702576038">Hapus grup tab?</translation>

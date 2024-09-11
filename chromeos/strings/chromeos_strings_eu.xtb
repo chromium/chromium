@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Irten horma-paperaren aurrebistatik</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> editatzeko botoia.</translation>
 <translation id="1755556344721611131">Diagnostikoen aplikazioa</translation>
+<translation id="1756681705074952506">Idazketa-metodoa</translation>
 <translation id="175763766237925754">Ona (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Idatzi bizkorrago eta ziurrago</translation>
 <translation id="3662461537616691585">gorrimina eta granatea</translation>
 <translation id="3668449597372804501">Hodeien fluxua erakusten duen horma-papera</translation>
+<translation id="3668570675727296296">Hizkuntza-ezarpenak</translation>
 <translation id="3675132884790542448">txerriak</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Irten leiho gainerakorraren ikuspegitik</translation>
 <translation id="3716250181321371108">Sortu kontrolatzeko aukera bat</translation>
 <translation id="3716830479327464973">Baimena emanez gero, Grabagailua aplikazioak audio-grabaketak aztertuko ditu, hauek egiteko:</translation>
+<translation id="3719826155360621982">Orri nagusia</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> iritzi)</translation>
 <translation id="3748026146096797577">Konektatu gabe</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="404928562651467259">ABISUA</translation>
 <translation id="4050208988451295487">Aukera batzuk:</translation>
+<translation id="405181879009056822">ChromeOS-en ezarpenak</translation>
 <translation id="4054683689023980771">Irudia deskargatzen</translation>
 <translation id="4059839844193047929">Orri honetatik irteten bazara, oraingo grabaketa amaituko da</translation>
 <translation id="4063039537646912479">urdin argi koloreko</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">Egunsentia erakusten duen horma-papera</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="5300814202279832142">Eraman leihoa lan-eremura</translation>
+<translation id="5302048478445481009">Hizkuntza</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> gailuko horma-paper esklusiboa</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitatea</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Bereizmen handiko irudia sortzen…</translation>
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
+<translation id="6786747875388722282">Luzapenak</translation>
 <translation id="6791471867139427246">teklatuaren argiaren kolorea</translation>
 <translation id="6796229976413584781">Ezabatu da lasterbidea</translation>
 <translation id="6798678288485555829">Testuetako nabigazioa</translation>
@@ -1282,6 +1288,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB bidezko ukipen-pantaila</translation>
 <translation id="757747079855995705">harria</translation>
+<translation id="7590883480672980941">Idazketa-metodoaren ezarpenak</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> geratzen dira</translation>
 <translation id="7613724632293948900">Aldatu posizioa saguarekin edo gezi-teklekin.</translation>
 <translation id="7618774594543487847">Neutroa</translation>
@@ -1355,6 +1362,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7971535376154084247">Kontrolatzeko aukera orokorrak</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan ezarpenetara</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
+<translation id="7982789257301363584">Sarea</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" automatikoki abiarazi da}other{# aplikazio automatikoki abiarazi dira}}</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
@@ -1441,6 +1449,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8424039430705546751">behera</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8431300646573772016">Chrome OS-ren berritasunak</translation>
+<translation id="8433186206711564395">Sarearen ezarpenak</translation>
 <translation id="843568408673868420">Interneteko konexioa</translation>
 <translation id="844521431886043384">Ez dago DNSrik konfiguratuta</translation>
 <translation id="8456200178779628126">Erabili Google-ren AA irakurtzeko eta idazteko laguntza jasotzeko</translation>
@@ -1503,6 +1512,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="879568662008399081">Baliteke sareak sare-zerbitzuaren atari bat edukitzea</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8798441408945964110">Hornitzailearen izena</translation>
+<translation id="8808828119384186784">Chrome-ren ezarpenak</translation>
 <translation id="8814190375133053267">Wifi-konexioa</translation>
 <translation id="8818152010000655963">Horma-papera</translation>
 <translation id="8820457400746201697">Eraman harreman-puntu urdina ekintza batera. Pertsonalizatzeko, hautatu erlazionatutako tekla.</translation>

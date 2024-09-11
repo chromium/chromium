@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Videofeed fra webcam</translation>
 <translation id="1676557873873341166">Optager video</translation>
 <translation id="1684279041537802716">Kontrastfarve</translation>
+<translation id="1697278726914783200">Optag</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
 <translation id="1708602061922134366">Google-blå</translation>
@@ -167,6 +168,7 @@
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
 <translation id="1754578112426924640">Knappen Rediger for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
+<translation id="1756681705074952506">Indtastningsmetode</translation>
 <translation id="175763766237925754">Godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +516,7 @@
 <translation id="3661106764436337772">Skriv hurtigere og med større selvsikkerhed</translation>
 <translation id="3662461537616691585">bordeaux og rødbrun</translation>
 <translation id="3668449597372804501">Baggrunden Flow med skyer</translation>
+<translation id="3668570675727296296">Sprogindstillinger</translation>
 <translation id="3675132884790542448">grise</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -521,6 +524,7 @@
 <translation id="3715651196924935218">Afslut svævetilstand</translation>
 <translation id="3716250181321371108">Opret styringselement</translation>
 <translation id="3716830479327464973">Når du giver tilladelse til dette, analyserer Lydoptager dine lydoptagelser for at:</translation>
+<translation id="3719826155360621982">Startside</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -579,6 +583,7 @@
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4050208988451295487">Nogle muligheder:</translation>
+<translation id="405181879009056822">Indstillinger for ChromeOS</translation>
 <translation id="4054683689023980771">Downloader billedet</translation>
 <translation id="4059839844193047929">Hvis du forlader denne side, afsluttes din aktuelle optagelse</translation>
 <translation id="4063039537646912479">lyseblå</translation>
@@ -689,6 +694,7 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4594021849294327751">Opret transskription</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Der kan ikke oprettes billeder for denne forespørgsel. Prøv en anden prompt.</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
@@ -825,6 +831,7 @@
 <translation id="5292579816060236070">Baggrunden Solopgang</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flyt vindue til skrivebord</translation>
+<translation id="5302048478445481009">Sprog</translation>
 <translation id="5303837385540978511">Baggrund udelukkende til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identitet</translation>
@@ -991,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Oprettet <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
+<translation id="6189987971574353264">Afspil</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
 <translation id="6196607555925437199">Genskab</translation>
 <translation id="6205145102504628069">Flow med skyer</translation>
@@ -1119,6 +1127,7 @@
 <translation id="6761537227090937007">Opretter billede i høj opløsning…</translation>
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
 <translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
+<translation id="6786747875388722282">Udvidelser</translation>
 <translation id="6791471867139427246">farve på keyboardets lys</translation>
 <translation id="6796229976413584781">Genvejen er slettet</translation>
 <translation id="6798678288485555829">Tekstnavigation</translation>
@@ -1282,6 +1291,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchskærm</translation>
 <translation id="757747079855995705">sten</translation>
+<translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
 <translation id="7613724632293948900">Juster med musen eller piletasterne.</translation>
 <translation id="7618774594543487847">Neutral</translation>
@@ -1355,6 +1365,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7971535376154084247">Generelle styringselementer</translation>
 <translation id="7977800524392185497">Gå til Indstillinger for at oprette forbindelse til et <ph name="NETWORK_NAME" />-netværk</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
+<translation id="7982789257301363584">Netværk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" blev startet automatisk}one{# app blev startet automatisk}other{# apps blev startet automatisk}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1441,6 +1452,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8424039430705546751">ned</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8431300646573772016">Nyt i ChromeOS</translation>
+<translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
 <translation id="8456200178779628126">Brug Google AI for at få hjælp til at læse og skrive</translation>
@@ -1503,6 +1515,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="879568662008399081">Dette netværk har muligvis en loginportal</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Navn på udbyder</translation>
+<translation id="8808828119384186784">Indstillinger for Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Baggrund</translation>
 <translation id="8820457400746201697">Flyt det blå touchpunkt for at foretage en handling. Vælg den tilknyttede tast for at tilpasse den.</translation>

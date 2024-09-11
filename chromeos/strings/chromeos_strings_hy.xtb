@@ -167,6 +167,7 @@
 <translation id="1753496554272155572">Փակել պաստառի նախադիտումը</translation>
 <translation id="1754578112426924640">Փոփոխելու կոճակ <ph name="ACCELERATOR_INFO" /> ստեղների համադրության համար։</translation>
 <translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
+<translation id="1756681705074952506">Ներածման եղանակ</translation>
 <translation id="175763766237925754">Լավ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
@@ -514,6 +515,7 @@
 <translation id="3661106764436337772">Գրեք ավելի արագ և ավելի վստահ</translation>
 <translation id="3662461537616691585">բորդո և շագանակագույն</translation>
 <translation id="3668449597372804501">«Ամպերի հոսք» պաստառ</translation>
+<translation id="3668570675727296296">Լեզվի կարգավորումներ</translation>
 <translation id="3675132884790542448">խոզեր</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
 <translation id="370665806235115550">Բեռնում…</translation>
@@ -521,6 +523,7 @@
 <translation id="3715651196924935218">Դուրս գալ լողացող ռեժիմից</translation>
 <translation id="3716250181321371108">Ստեղծել կարգավորում</translation>
 <translation id="3716830479327464973">Երբ սա թույլատրեք, Ձայնագրիչը կվերլուծի ձեր ձայնագրությունները, ինչի շնորհիվ կկարողանա՝</translation>
+<translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> կարծիք)</translation>
 <translation id="3748026146096797577">Միացված չէ</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
@@ -579,6 +582,7 @@
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
 <translation id="4050208988451295487">Մի քանի տարբերակներ՝</translation>
+<translation id="405181879009056822">ChromeOS-ի կարգավորումներ</translation>
 <translation id="4054683689023980771">Պատկերը ներբեռնվում է</translation>
 <translation id="4059839844193047929">Եթե դուրս գաք այս էջից, ձեր ընթացիկ ձայնագրումը կավարտվի</translation>
 <translation id="4063039537646912479">բաց կապույտ</translation>
@@ -825,6 +829,7 @@
 <translation id="5292579816060236070">«Արևածագ» պաստառ</translation>
 <translation id="5294769550414936029">տարբերակ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Պատուհանը տեղափոխել աշխատասեղան</translation>
+<translation id="5302048478445481009">Լեզու</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" />-ի բացառիկ պաստառ</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Ինքնություն</translation>
@@ -1119,6 +1124,7 @@
 <translation id="6761537227090937007">Բարձր որակի պատկերի ստեղծում…</translation>
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
+<translation id="6786747875388722282">Ընդլայնումներ</translation>
 <translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
 <translation id="6796229976413584781">Դյուրանցումը հեռացվեց</translation>
 <translation id="6798678288485555829">Նավիգացիա տեքստում</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB հպէկրան</translation>
 <translation id="757747079855995705">քար</translation>
+<translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7618774594543487847">Չեզոք</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7971535376154084247">Ընդհանուր կարգավորումներ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
+<translation id="7982789257301363584">Ցանց</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» հավելվածն ավտոմատ գործարկվել է}one{# հավելված ավտոմատ գործարկվել է}other{# հավելված ավտոմատ գործարկվել է}}</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
@@ -1441,6 +1449,7 @@
 <translation id="8424039430705546751">ներքև</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
+<translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="843568408673868420">Ինտերնետ կապ</translation>
 <translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>
 <translation id="8456200178779628126">Օգտագործեք Google AI-ը՝ կարդալու և գրելու հետ կապված օգնություն ստանալու համար</translation>
@@ -1503,6 +1512,7 @@
 <translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
+<translation id="8808828119384186784">Chrome-ի կարգավորումներ</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Պաստառ</translation>
 <translation id="8820457400746201697">Գործողությունը կատարելու համար տեղափոխեք հպման կապույտ կետը։ Կարգավորելու համար ընտրեք կապված ստեղնը։</translation>

@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="4590027107044272416">Tani mund të hapësh një skedë të re këtu.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Të mbyllet 1 skedë joaktive?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> skeda joaktive?}}</translation>
-<translation id="4648718555153979859">Skedat e tua grupohen së bashku këtu</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
 <translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>

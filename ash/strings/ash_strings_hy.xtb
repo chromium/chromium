@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Wi-Fi-ը միացված է</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4212472694152630271">Անցնել PIN կոդով նույնականացմանը</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, փոխանջատիչ կոճակ, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN կարգավորումներ</translation>
 <translation id="4217571870635786043">Ձայնային ներածում</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
@@ -1959,7 +1960,6 @@
 <translation id="7727952505535211425">Բացել կայքը հասցեագոտում՝ նոր ներդիրում</translation>
 <translation id="7728657226117099693">Անջատել Caps Lock-ը</translation>
 <translation id="7742327441377685481">Ծանուցումներ չկան</translation>
-<translation id="774736258792760908">Երբ միացնում եք Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթները, մուտքագրված տեքստը և փաստաթղթի բովանդակությունը ուղարկվում են Google AI-ի սերվերներ՝ ամփոփագրեր և գրելու առաջարկներ ստեղծելու, հարցերին պատասխանելու և պրոդուկտը բարելավելու համար՝ համաձայն <ph name="LINK_TO_SERVICE_TERMS" />։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -2286,7 +2286,6 @@
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
 <translation id="888982883502837004">Ձեր սարքի համար հասանելի են ներկառուցված ծրագրի թարմացումներ։ Սեղմեք՝ դրանք տեսնելու և թարմացնելու համար։</translation>
-<translation id="8893479486525393799">Ստուդիայի խոսափող</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-ն ընդմիշտ կջնջվի</translation>
 <translation id="889790758758811533">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />% (մոտ <ph name="TIME_LEFT" />)։ Միացրեք սարքը հոսանքին։</translation>
 <translation id="88986195241502842">Էջը վար</translation>

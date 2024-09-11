@@ -374,6 +374,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360398059912971776">aku</translation>
 <translation id="2361210043495191221">Lülita WiFi sisse/välja. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Välimuse efektid</translation>
 <translation id="236574664504281623">Saadetud seadmest <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Teie Chromebooki ei õnnestu sisse logida</translation>
 <translation id="2367972762794486313">Rakenduste kuvamine</translation>
@@ -734,6 +735,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3600061223661453002">Väljas</translation>
 <translation id="3604801046548457007">Töölaud <ph name="DESK_TITILE" /> on loodud</translation>
 <translation id="3606978283550408104">Punktkirja ekraanikuva on ühendatud.</translation>
+<translation id="3612634595000403645">Välimuse efektide eelistused</translation>
 <translation id="3615926715408477684">Mobiilse andmeside lubamisel lubatakse Bluetooth</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3616883743181209306">Menüü teisaldati ekraanikuva paremasse ülanurka.</translation>
@@ -895,6 +897,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4146671046252289537">Järgmise sõna lõppu teisaldamine</translation>
 <translation id="4146833061457621061">Esita muusikat</translation>
 <translation id="4150201353443180367">Kuva</translation>
+<translation id="4151054805501931758">Portree viimistlus</translation>
 <translation id="4156293514828496577">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />).
 Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4160919062868802509">Tuvastatud on mitu heliallikat</translation>
@@ -1961,7 +1964,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7727952505535211425">Veebisaidi avamine uue vahelehe aadressiribal</translation>
 <translation id="7728657226117099693">Suurtäheluku väljalülitamine</translation>
 <translation id="7742327441377685481">Märguandeid pole</translation>
-<translation id="774736258792760908">Kui lülitate funktsioonid Aita mul kirjutada ja Aita mul lugeda sisse ning sisestatud tekst ja dokumendi sisu saadetakse Google'i AI serveritesse, et genereerida kirjutamissoovitusi, kokkuvõtteid, vastata küsimustele ja täiustada toodet vastavalt dokumendile <ph name="LINK_TO_SERVICE_TERMS" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="7748275671948949022">Riiulil Käivitaja nupu esile tõstmine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1970,6 +1972,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7768784765476638775">Vali ja kuula</translation>
 <translation id="7769299611924763557">Teie GIF on varsti valmis</translation>
 <translation id="7773536009433685931">Lülita sisse hoopis WiFi</translation>
+<translation id="77747521138552256">Sisestasite liiga palju kordi vale PIN-koodi. Oodake <ph name="TIME_LEFT" /> ja proovige PIN-koodi uuesti või sisestage parool, et logida kohe sisse.</translation>
 <translation id="7780094051999721182">otseteid</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7781829728241885113">Eile</translation>
@@ -2288,7 +2291,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
-<translation id="8893479486525393799">Stuudiomikrofon</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
 <translation id="889790758758811533">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />). Ühendage seade toiteallikaga.</translation>
 <translation id="88986195241502842">Lehe lõppu</translation>
@@ -2303,6 +2305,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>
 <translation id="8939855324412367560">Sisendheliks on „<ph name="INPUT_DEVICE_NAME" />“ ja väljundheliks on „<ph name="OUTPUT_DEVICE_NAME" />“. Muutmiseks avage menüü Seaded.</translation>
 <translation id="8940956008527784070">Aku tühjeneb (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Stuudiostiilis mikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, ruut ei ole märgitud.</translation>
 <translation id="8949925099261528566">Ühendatud, Interneti-ühendus puudub</translation>
 <translation id="8951539504029375108">Teie Chromebookiga ühilduvad ainult heakskiidetud Thunderbolti seadmed</translation>

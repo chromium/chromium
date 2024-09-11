@@ -849,6 +849,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5032430150487044192">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> برگه - <ph name="URL_LIST" />}one{‫<ph name="TAB_COUNT_MANY" /> برگه - <ph name="URL_LIST" />}other{‫<ph name="TAB_COUNT_MANY" /> برگه - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040262127954254034">حریم خصوصی</translation>
 <translation id="504456571576643789">مواردی که باید درنظر داشت</translation>
@@ -1068,6 +1069,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6130303040046284160">کوچک کردن برگه</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> برگه}one{‫<ph name="TAB_COUNT_MANY" /> برگه}other{‫<ph name="TAB_COUNT_MANY" /> برگه}}</translation>
 <translation id="6137022273846704445">زبان <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
@@ -1171,6 +1173,7 @@
 <translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>
 <translation id="6569373978618239158">‏اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="SITE_NAME" /> خواهید دید. سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. می‌توانید در تنظیمات «یافته‌ها»، آن‌ها را مدیریت کنید.</translation>
+<translation id="6570116402456758630">خلاصه صفحه</translation>
 <translation id="6573096386450695060">همیشه مجاز</translation>
 <translation id="6573431926118603307">‏برگه‌هایی که در دستگاه‌های دیگر در Chrome باز کرده‌اید، در اینجا نمایان می‌شوند.</translation>
 <translation id="6583199322650523874">نشانک‌گذاری صفحه کنونی</translation>
@@ -1513,7 +1516,7 @@
 <translation id="799576009106109668">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="8001245658307297681">درحال مشاهده فایل محلی هستید</translation>
 <translation id="8004582292198964060">مرورگر</translation>
-<translation id="8014210850410408071">سپس، گذرنویسه را وارد کنید</translation>
+<translation id="8014210850410408071">سپس، گذرواژه‌ها را وارد کنید</translation>
 <translation id="8015452622527143194">برگرداندن همه‌چیز در صفحه به‌اندازه پیش‌فرض</translation>
 <translation id="8017431260099661477">پیوند دعوت باز نشد</translation>
 <translation id="8026238112629815203">نحوه ذخیره شدن گذرواژه‌ها در این دستگاه را تغییر دادیم</translation>

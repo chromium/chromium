@@ -80,7 +80,6 @@
 <translation id="4460014764210899310">Разгрупаваць</translation>
 <translation id="4590027107044272416">Цяпер новую ўкладку можна адкрыць тут</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрыць 1 неактыўную ўкладку?}one{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўную ўкладку?}few{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўныя ўкладкі?}many{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўных укладак?}other{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўнай укладкі?}}</translation>
-<translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4686942373615810936">Створана толькі што</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрываць праз 1 дзень}one{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзень}few{Закрываць праз <ph name="DAY_COUNT_MANY" /> дні}many{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзён}other{Закрываць праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="4777866634702576038">Выдаліць групу ўкладак?</translation>
