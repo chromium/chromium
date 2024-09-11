@@ -102,6 +102,8 @@ class HttpStreamPool::Job {
   // requested a client certificate.
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
+  const ProxyInfo& proxy_info() const { return proxy_info_; }
+
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }

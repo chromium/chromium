@@ -312,6 +312,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
+    used_proxy_info_ = used_proxy_info;
     stream_ = std::move(stream);
     SetResult(OK);
   }
@@ -333,6 +334,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
     net_error_details_ = net_error_details;
+    used_proxy_info_ = used_proxy_info;
     resolve_error_info_ = resolve_error_info;
     SetResult(status);
   }
@@ -383,6 +385,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return request_->connection_attempts();
   }
 
+  const ProxyInfo& used_proxy_info() const { return used_proxy_info_; }
+
  private:
   void SetResult(int rv) {
     result_ = rv;
@@ -415,6 +419,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   ResolveErrorInfo resolve_error_info_;
   SSLInfo cert_error_ssl_info_;
   scoped_refptr<SSLCertRequestInfo> cert_info_;
+  ProxyInfo used_proxy_info_;
 };
 
 constexpr std::string_view kDefaultServerName = "www.example.org";
@@ -4113,6 +4118,27 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReportBadProxyAfterSuccessOnDirect) {
   auto it = retry_info_map.find(proxy_chain);
   ASSERT_TRUE(it != retry_info_map.end());
   EXPECT_THAT(it->second.net_error, IsError(ERR_PROXY_CONNECTION_FAILED));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, DirectProxyInfoForIpProtection) {
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+  ProxyInfo proxy_info;
+  proxy_info.UseProxyChain(kIpProtectionDirectChain);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  StaticSocketDataProvider data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_proxy_info(proxy_info).RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.used_proxy_info().ToDebugString(),
+            proxy_info.ToDebugString());
 }
 
 }  // namespace net

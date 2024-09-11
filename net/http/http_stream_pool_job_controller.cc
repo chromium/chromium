@@ -103,7 +103,8 @@ void HttpStreamPool::JobController::OnStreamReady(
   SetJobResult(job, OK);
   request_->Complete(negotiated_protocol,
                      ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
-  delegate_->OnStreamReady(ProxyInfo::Direct(), std::move(stream));
+  // `job` should not be destroyed yet.
+  delegate_->OnStreamReady(job->proxy_info(), std::move(stream));
 }
 
 void HttpStreamPool::JobController::OnStreamFailed(
@@ -114,7 +115,8 @@ void HttpStreamPool::JobController::OnStreamFailed(
   request_->AddConnectionAttempts(job->connection_attempts());
   SetJobResult(job, status);
   if (AllJobsFinished()) {
-    delegate_->OnStreamFailed(status, net_error_details, ProxyInfo::Direct(),
+    // `job` should not be destroyed yet.
+    delegate_->OnStreamFailed(status, net_error_details, job->proxy_info(),
                               std::move(resolve_error_info));
   }
 }
