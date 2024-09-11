@@ -403,6 +403,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
 
+  MLOperand* scatterND(const MLOperand* input,
+                       const MLOperand* indices,
+                       const MLOperand* updates,
+                       const MLOperatorOptions* options,
+                       ExceptionState& exception_state);
+
   MLOperand* sigmoid(const MLOperand* input,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);

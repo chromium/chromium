@@ -220,6 +220,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kResample2d:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "resample2d";
+    case webnn::mojom::blink::Operation::Tag::kScatterNd:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "scatterND";
     case webnn::mojom::blink::Operation::Tag::kSigmoid:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "sigmoid";

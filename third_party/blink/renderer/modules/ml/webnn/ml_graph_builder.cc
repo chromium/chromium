@@ -2240,6 +2240,32 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   return output;
 }
 
+MLOperand* MLGraphBuilder::scatterND(const MLOperand* input,
+                                     const MLOperand* indices,
+                                     const MLOperand* updates,
+                                     const MLOperatorOptions* options,
+                                     ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  HeapVector<Member<const MLOperand>> inputs = {input, indices, updates};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateScatterNDAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), updates->Descriptor(),
+          options->label().Utf8()));
+
+  auto* scatter_nd = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kScatterNd, options);
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), scatter_nd);
+
+  scatter_nd->Connect(std::move(inputs), {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
                                    const MLOperatorOptions* options,
                                    ExceptionState& exception_state) {

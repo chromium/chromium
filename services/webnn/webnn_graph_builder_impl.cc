@@ -1857,6 +1857,42 @@ bool ValidateReshape(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateScatterND(const ContextProperties& context_properties,
+                       const IdToOperandMap& id_to_operand_map,
+                       const mojom::ScatterND& scatter_nd,
+                       base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(scatter_nd.input_operand_id) ||
+      !processed_operands.contains(scatter_nd.indices_operand_id) ||
+      !processed_operands.contains(scatter_nd.updates_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(scatter_nd.output_operand_id);
+
+  auto* input = GetMojoOperand(id_to_operand_map, scatter_nd.input_operand_id);
+  auto* indices =
+      GetMojoOperand(id_to_operand_map, scatter_nd.indices_operand_id);
+  auto* updates =
+      GetMojoOperand(id_to_operand_map, scatter_nd.updates_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, scatter_nd.output_operand_id);
+  if (!input || !indices || !updates || !output || output == input ||
+      output == indices || output == updates) {
+    return false;
+  }
+
+  auto validated_output = ValidateScatterNDAndInferOutput(
+      context_properties, input->descriptor, indices->descriptor,
+      updates->descriptor, scatter_nd.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateSlice(const ContextProperties& context_properties,
                    const IdToOperandMap& id_to_operand_map,
                    const mojom::Slice& slice,
@@ -2237,6 +2273,9 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_relu(),
           context_properties.data_type_limits.relu_input, processed_operands);
+    case mojom::Operation::Tag::kScatterNd:
+      return ValidateScatterND(context_properties, id_to_operand_map,
+                               *operation.get_scatter_nd(), processed_operands);
     case mojom::Operation::Tag::kSlice:
       return ValidateSlice(context_properties, id_to_operand_map,
                            *operation.get_slice(), processed_operands);

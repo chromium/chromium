@@ -1054,6 +1054,13 @@ void RetrieveOperationConnectivity(
       output_ids = {reshape->output_operand_id};
       break;
     }
+    case Operation::Tag::kScatterNd: {
+      const auto& scatter_nd = operation->get_scatter_nd();
+      input_ids = {scatter_nd->input_operand_id, scatter_nd->indices_operand_id,
+                   scatter_nd->updates_operand_id};
+      output_ids = {scatter_nd->output_operand_id};
+      break;
+    }
     case Operation::Tag::kSigmoid: {
       const auto& sigmoid = operation->get_sigmoid();
       input_ids = {sigmoid->input_operand_id};

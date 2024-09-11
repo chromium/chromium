@@ -143,6 +143,11 @@ struct DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+
+  // ScatterND.
+  SupportedDataTypes scatter_nd_input;
+  SupportedDataTypes scatter_nd_indices;
+
   SupportedDataTypes sigmoid_input;
   SupportedDataTypes slice_input;
   SupportedDataTypes softmax_input;

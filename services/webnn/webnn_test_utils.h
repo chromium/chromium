@@ -485,6 +485,11 @@ class GraphInfoBuilder final {
 
   void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildScatterND(uint64_t input_operand_id,
+                      uint64_t indices_operand_id,
+                      uint64_t updates_operand_id,
+                      uint64_t output_operand_id);
+
   void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftmax(uint64_t input_operand_id,

@@ -284,6 +284,10 @@ ContextProperties ContextImplDml::GetProperties(
        // Reshape is emulated by identity.
        /*reshape_input=*/kFloat16To32Ints8To32,
 
+       // TODO(crbug.com/363761938): Implement ScatterND.
+       /*scatter_nd_input=*/{},
+       /*scatter_nd_indices=*/{},
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
 

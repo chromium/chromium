@@ -141,6 +141,13 @@ dictionary MLSingleInputSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLScatterSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits indices;
+  MLSupportLimits updates;
+  MLSupportLimits output;
+};
+
 dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
@@ -238,6 +245,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits relu;
   MLSingleInputSupportLimits resample2d;
   MLSingleInputSupportLimits reshape;
+  MLScatterSupportLimits scatterND;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;
   MLSingleInputSupportLimits softmax;

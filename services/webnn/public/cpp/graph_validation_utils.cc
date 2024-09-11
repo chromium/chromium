@@ -2413,6 +2413,83 @@ base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
   return OperandDescriptor::Create(input.data_type(), output_shape);
 }
 
+base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& indices,
+    const OperandDescriptor& updates,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.scatter_nd_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.scatter_nd_input)));
+  }
+
+  static constexpr char kIndicesParam[] = "indices";
+  if (!context_properties.data_type_limits.scatter_nd_indices.Has(
+          indices.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentTypeError(
+                   kIndicesParam, indices.data_type(),
+                   context_properties.data_type_limits.scatter_nd_indices)));
+  }
+
+  // Updates tensor's data type should be the same as input's.
+  if (input.data_type() != updates.data_type()) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The updates tensor data type should be the same as "
+                       "input data type."));
+  }
+
+  if (input.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (indices.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The indices should not be a scalar."));
+  }
+
+  const uint32_t indices_last_dim_size = indices.shape()[indices.Rank() - 1];
+  if (indices_last_dim_size > input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label, base::StringPrintf(
+                   "The size of the last dimension of indices tensor (%u)"
+                   "should not be greater than input rank (%u).",
+                   indices_last_dim_size, input.Rank())));
+  }
+
+  // Validate `updates.shape` =
+  // `indices.shape[:-1]` + `input.shape[indices.shape[-1]:]`, where `+` denotes
+  // the concatenation of shapes.
+  auto checked_updates_rank = base::MakeCheckedNum<uint32_t>(indices.Rank()) -
+                              1 + input.Rank() - indices_last_dim_size;
+  if (!checked_updates_rank.IsValid()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The expected updates rank is too large."));
+  }
+
+  std::vector<uint32_t> expected_updates_shape;
+  expected_updates_shape.reserve(checked_updates_rank.ValueOrDie());
+  base::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+                     std::back_inserter(expected_updates_shape));
+  base::ranges::copy(input.shape().begin() + indices_last_dim_size,
+                     input.shape().end(),
+                     std::back_inserter(expected_updates_shape));
+
+  if (expected_updates_shape != updates.shape()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The updates tensor shape is invalid."));
+  }
+
+  // The output tensor has the same data type and shape as input's.
+  return input;
+}
+
 base::expected<OperandDescriptor, std::string> ValidateTriangularAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,

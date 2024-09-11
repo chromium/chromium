@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_prelu_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_quantize_dequantize_linear_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
@@ -790,6 +791,17 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   reshape->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
   op_support_limits->setReshape(reshape);
+
+  MLScatterSupportLimits* scatter_nd = MLScatterSupportLimits::Create();
+  scatter_nd->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.scatter_nd_input));
+  scatter_nd->setIndices(
+      SupportedDataTypesToSupportLimits(data_type_limits.scatter_nd_indices));
+  scatter_nd->setUpdates(
+      SupportedDataTypesToSupportLimits(data_type_limits.scatter_nd_input));
+  scatter_nd->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.scatter_nd_input));
+  op_support_limits->setScatterND(scatter_nd);
 
   MLSingleInputSupportLimits* sigmoid = MLSingleInputSupportLimits::Create();
   sigmoid->setInput(

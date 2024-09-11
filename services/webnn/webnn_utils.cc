@@ -132,6 +132,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kResample2d;
     case mojom::Operation::Tag::kReshape:
       return ops::kReshape;
+    case mojom::Operation::Tag::kScatterNd:
+      return ops::kScatterND;
     case mojom::Operation::Tag::kSigmoid:
       return ops::kSigmoid;
     case mojom::Operation::Tag::kSlice:

@@ -92,6 +92,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes relu_input,
                  SupportedDataTypes resample2d_input,
                  SupportedDataTypes reshape_input,
+                 SupportedDataTypes scatter_nd_input,
+                 SupportedDataTypes scatter_nd_indices,
                  SupportedDataTypes sigmoid_input,
                  SupportedDataTypes slice_input,
                  SupportedDataTypes softmax_input,
@@ -194,6 +196,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+  SupportedDataTypes scatter_nd_input;
+  SupportedDataTypes scatter_nd_indices;
   SupportedDataTypes sigmoid_input;
   SupportedDataTypes slice_input;
   SupportedDataTypes softmax_input;
@@ -289,6 +293,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.relu_input == rhs.relu_input &&
          lhs.resample2d_input == rhs.resample2d_input &&
          lhs.reshape_input == rhs.reshape_input &&
+         lhs.scatter_nd_input == rhs.scatter_nd_input &&
+         lhs.scatter_nd_indices == rhs.scatter_nd_indices &&
          lhs.sigmoid_input == rhs.sigmoid_input &&
          lhs.slice_input == rhs.slice_input &&
          lhs.softmax_input == rhs.softmax_input &&

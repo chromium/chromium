@@ -5824,6 +5824,137 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
         .Test();
   }
 }
+
+struct ScatterNDTester {
+  OperandInfo input;
+  OperandInfo indices;
+  OperandInfo updates;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", updates.dimensions, updates.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildScatterND(input_operand_id, indices_operand_id,
+                           updates_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ScatterNDTest) {
+  {
+    // Test a valid scatterND with 3-D input, 2-D indices and 3-D updates.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND that the updates tensor data type is not the
+    // same as input data type.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat16, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND with scalar input tensor.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND with scalar indices tensor.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND that the size of last dimension of indices
+    // tensor is greater than input rank.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 4}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose updates tensor shape is invalid.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        // Updates tensor shape should be [2, 4, 4].
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose output shape is not the same as input.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND whose output data type is not the same as
+    // input.
+    ScatterNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 4, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 1}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4, 4}},
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {4, 4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid scatterND where the output is the same as the input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 4, 4}, OperandDataType::kFloat32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", {2, 4, 4}, OperandDataType::kFloat32);
+    builder.BuildScatterND(input_operand_id, indices_operand_id,
+                           updates_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct SliceTester {
   struct SliceAttributes {
     std::vector<uint32_t> starts;

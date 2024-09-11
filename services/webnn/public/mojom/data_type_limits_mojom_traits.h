@@ -330,6 +330,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.reshape_input;
   }
+  static webnn::SupportedDataTypes scatter_nd_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.scatter_nd_input;
+  }
+  static webnn::SupportedDataTypes scatter_nd_indices(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.scatter_nd_indices;
+  }
   static webnn::SupportedDataTypes sigmoid_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.sigmoid_input;
@@ -460,6 +468,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadReluInput(&out->relu_input) &&
            data.ReadResample2dInput(&out->resample2d_input) &&
            data.ReadReshapeInput(&out->reshape_input) &&
+           data.ReadScatterNdInput(&out->scatter_nd_input) &&
+           data.ReadScatterNdIndices(&out->scatter_nd_indices) &&
            data.ReadSigmoidInput(&out->sigmoid_input) &&
            data.ReadSliceInput(&out->slice_input) &&
            data.ReadSoftmaxInput(&out->softmax_input) &&

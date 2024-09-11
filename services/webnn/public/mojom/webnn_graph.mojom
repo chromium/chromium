@@ -955,6 +955,72 @@ struct Reshape {
   string label;
 };
 
+// Represents ScatterND operation that first copies the values of `input` to
+// `output` tensor, and then overwrites the values of `output` tensor to values
+// specified
+// by `updates` tensor at specific index positions specified by `indices`
+// tensor.
+//
+// Its calculation follows the pseudocode:
+// ```
+// output = input
+// // Let `q` denote the rank of `indices` tensor.
+// output[indices[i_{0}, ..., i_{q-2}]] = updates[i_{0}, ..., i_{q-2}]
+// ```
+//
+// The last dimension of `indices` tensor corresponds to indices of elements (if
+// `indices.shape[-1]` == `output.rank`) or slices (if `indices.shape[-1]` <
+// `output.rank`) along dimension `indices.shape[-1]` of `output.shape`.
+// The index value for `i`th dimension (0 <= `i` < `indices.shape[-1]`) must be
+// within the bounds [`-output.shape[i]`, `output.shape[i]` - 1] and a negative
+// index means indexing from the end of the dimension.
+//
+// This operation expects the tensors rank and shape as follows:
+// `input.rank` >= 1.
+// `indices.rank` >= 1, where `indices.shape[-1]` <= `input.rank`.
+// `updates.shape` = `indices.shape[:-1]` + `input.shape[indices.shape[-1]:]`,
+// where `+` denotes the concatenation of shapes.
+// `output.shape` == `input.shape`.
+//
+// Example 1: Insert individual elements in a tensor by index
+// data    = [1, 2, 3, 4, 5, 6, 7, 8]
+// indices = [[4], [3], [1], [7]]
+// updates = [9, 10, 11, 12]
+// output  = [1, 11, 3, 10, 9, 6, 7, 12]
+//
+// Example 2: Insert entire slices of a higher rank tensor
+// data    = [[[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+// indices = [[0], [2]]
+// updates = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+//             [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]]]
+// output  = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+//            [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+//            [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]],
+//            [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+//
+// The values of `indices` tensor aren't known until graph execution, and may
+// cause out-of-bounds write issue. A backend implementation must guarantee the
+// index values do not cause invalid writes outside the output tensor, either by
+// the platform API (e.g. DML) or by introducing a `clamp` operator in the
+// compiled graph.
+// The out-of-bounds `indices` handling is being discussed in WG:
+// https://github.com/webmachinelearning/webnn/issues/486
+struct ScatterND {
+  // The operand id is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  // The `input`, `indices` and `updates` are scatterND operator input operands.
+  // Their id must be distinct from the output operand id.
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 updates_operand_id;
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Corresponds to `MLOperand sigmoid(MLOperand x)` that compute the sigmoid
 // function of the input tensor following the expression 1 / (exp(-x) + 1).
 struct Sigmoid {
@@ -1182,6 +1248,7 @@ union Operation {
   Relu relu;
   Resample2d resample2d;
   Reshape reshape;
+  ScatterND scatter_nd;
   Sigmoid sigmoid;
   Slice slice;
   Softmax softmax;

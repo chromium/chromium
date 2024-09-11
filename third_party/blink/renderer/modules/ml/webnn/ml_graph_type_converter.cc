@@ -1504,6 +1504,25 @@ OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
 }
 
+OperationPtr CreateScatterNDOperation(const OperandToIdMap& operand_to_id_map,
+                                      const MLOperator* scatter_nd) {
+  auto scatter_nd_mojo = webnn::mojom::blink::ScatterND::New();
+  scatter_nd_mojo->input_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 0);
+  scatter_nd_mojo->indices_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 1);
+  scatter_nd_mojo->updates_operand_id =
+      GetOperatorInputId(scatter_nd, operand_to_id_map, 2);
+  scatter_nd_mojo->output_operand_id =
+      GetOperatorOutputId(scatter_nd, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(scatter_nd->Options());
+  scatter_nd_mojo->label = options->label();
+  return webnn::mojom::blink::Operation::NewScatterNd(
+      std::move(scatter_nd_mojo));
+}
+
 OperationPtr CreateSigmoidOperation(const OperandToIdMap& operand_to_id_map,
                                     const MLOperator* sigmoid) {
   auto sigmoid_mojo = blink_mojom::Sigmoid::New();
@@ -1824,6 +1843,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kReshape:
       graph_info->operations.push_back(
           CreateReshapeOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kScatterNd:
+      graph_info->operations.push_back(
+          CreateScatterNDOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kSigmoid:
       graph_info->operations.push_back(

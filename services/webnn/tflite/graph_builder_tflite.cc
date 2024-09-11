@@ -380,7 +380,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*elu_input=*/kFloat32AndInt8,
        /*expand_input=*/kFloat32AndInts8To32AndInt64,
        /*gather_input=*/kFloat32AndInt8To64AndUint8,
-       /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
+       /*gather_indices=*/
+       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
        // GatherElements is not implemented.
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
@@ -424,6 +425,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*relu_input=*/kFloat32,
        /*resample2d_input=*/kFloat32,
        /*reshape_input=*/SupportedDataTypes::All(),
+       // TODO(crbug.com/363677532): Implement scatterND.
+       /*scatter_nd_input=*/{},
+       /*scatter_nd_indices=*/{},
        /*sigmoid_input=*/kFloat32,
        /*slice_input=*/kFloat32AndInts8To32AndInt64,
        /*softmax_input=*/kFloat32,
@@ -658,6 +662,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       operator_offset = SerializeWhere(*op.get_where());
       break;
     case mojom::Operation::Tag::kGatherElements:
+    case mojom::Operation::Tag::kScatterNd:
       return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
