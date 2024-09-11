@@ -12,7 +12,6 @@ static_library("ash") {
   sources = [
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
-    "login_screen_shown_observer.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
     "system_sounds_delegate_impl.cc",

@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/child_accounts/parent_access_code",
   "+chrome/browser/ash/login",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/login_screen_shown_observer.h",
   "+chrome/browser/ui/ash/wallpaper",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
