@@ -2593,7 +2593,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
-  <component>Blink&gt;History&gt;VisitedLinks</component>
+  <component>1456589</component>
   <summary>
     Number of rows in visited_links table in History DB. Metrics are logged on
     initialization of the History DB on 1% of starts.

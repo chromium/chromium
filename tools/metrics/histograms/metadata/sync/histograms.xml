@@ -948,7 +948,6 @@ chromium-metrics-reviews@google.com.
     units="bytes" expires_after="2025-04-01">
   <owner>ankushkush@google.com</owner>
   <owner>treib@chromium.org</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Size of individual sync entities (not including tombstones) in bytes,
     including the sync metadata. Recorded right before an entity is committed to
@@ -961,7 +960,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-01">
   <owner>ankushkush@google.com</owner>
   <owner>treib@chromium.org</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Size of individual sync tombstones in bytes, including the sync metadata.
     Recorded right before an entity is committed to the server. See also
