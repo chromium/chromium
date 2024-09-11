@@ -2509,6 +2509,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
@@ -2520,9 +2522,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
       "&gsc=2&hl=en-US&cs=0");
+  content::TestNavigationObserver first_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->LoadURLInResultsFrame(first_search_url);
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+  first_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -2546,12 +2549,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&vsint=KgwKAggHEgIIAxgBIAI&q=kiwi&lns_fp=1&"
       "lns_mode=text&gsc=2&hl=en-US&cs=0");
-  // We can't use content::WaitForLoadStop here since the last navigation is
-  // successful.
-  content::TestNavigationObserver observer(
+  content::TestNavigationObserver second_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
-  observer.WaitForNavigationFinished();
+  second_observer.WaitForNavigationFinished();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
@@ -2570,7 +2571,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(loaded_search_query->lens_selection_type_,
             lens::SELECT_TEXT_HIGHLIGHT);
   GURL url_without_start_time_or_size =
-      RemoveStartTimeAndSizeParams(observer.last_navigation_url());
+      RemoveStartTimeAndSizeParams(second_observer.last_navigation_url());
   EXPECT_EQ(url_without_start_time_or_size, second_search_url);
 
   // Popping a query with a region should resend a region search request.
@@ -2589,10 +2590,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The full sequence of events necessary to load Lens search results is not
   // currently testable, so load the expected URL manually.
-  content::TestNavigationObserver pop_observer(
+  content::TestNavigationObserver third_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->LoadURLInResultsFrame(first_search_url);
-  pop_observer.Wait();
+  third_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
@@ -2611,8 +2612,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.height(), 100);
   EXPECT_FALSE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
-  VerifySearchQueryParameters(pop_observer.last_navigation_url());
-  VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
+  VerifySearchQueryParameters(third_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(third_observer.last_navigation_url(),
                             first_search_url);
 }
 
@@ -2637,6 +2638,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page.
@@ -2644,9 +2647,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
       "&gsc=2&hl=en-US&cs=0");
+  content::TestNavigationObserver first_load_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->LoadURLInResultsFrame(first_search_url);
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+  first_load_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
