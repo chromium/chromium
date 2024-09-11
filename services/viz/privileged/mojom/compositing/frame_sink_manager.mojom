@@ -40,6 +40,10 @@ struct RootCompositorFrameSinkParams {
   // Disables begin frame rate limiting for the display compositor.
   bool disable_frame_rate_limit = false;
 
+  // Whether to create a surface control input receiver on Viz.
+  [EnableIf=is_android]
+  bool create_input_receiver = false;
+
   [EnableIf=is_android]
   float refresh_rate;
 

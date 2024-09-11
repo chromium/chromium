@@ -235,8 +235,20 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
       run_all_compositor_stages_before_draw_, &debug_settings_,
       hint_session_factory_);
 
-  if (root_compositor_frame_sink)
+  if (root_compositor_frame_sink) {
     root_sink_map_[frame_sink_id] = std::move(root_compositor_frame_sink);
+    if (GetInputManager()) {
+      bool create_input_receiver = false;
+#if BUILDFLAG(IS_ANDROID)
+      create_input_receiver = params->create_input_receiver;
+#endif
+      GetInputManager()->OnCreateCompositorFrameSink(
+          frame_sink_id,
+          /*is_root=*/true,
+          /*render_input_router_config=*/nullptr, create_input_receiver,
+          params->widget);
+    }
+  }
 
   MaybeAddHitTestQuery(frame_sink_id);
 }
@@ -283,8 +295,9 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
 
   if (GetInputManager()) {
     GetInputManager()->OnCreateCompositorFrameSink(
-        frame_sink_id, /*is_root=*/false,
-        std::move(render_input_router_config));
+        frame_sink_id,
+        /*is_root=*/false, std::move(render_input_router_config),
+        /*create_input_receiver=*/false, gpu::SurfaceHandle());
   }
 }
 
