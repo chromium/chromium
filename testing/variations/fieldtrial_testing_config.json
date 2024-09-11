@@ -8408,6 +8408,23 @@
             ]
         }
     ],
+    "DirectCompositorThreadIpc": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DirectCompositorThreadIpc"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableBlackHoleOnNoNewNetwork": [
         {
             "platforms": [
@@ -14255,22 +14272,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoPredictiveAllocation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MojoUseBinder": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoUseBinder"
                     ]
                 }
             ]
