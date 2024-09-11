@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2024-03-14">
+    expires_after="2026-03-14">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -145,8 +145,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileLazyMicroSeconds" units="microseconds"
-    expires_after="2023-09-10">
-  <owner>hablich@chromium.org</owner>
+    expires_after="2025-9-10">
+  <owner>leszeks@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
   <summary>
     Aggregated time spent compiling functions lazily during a single script
     execution.
@@ -175,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScript.CacheBehaviour" enum="V8CacheBehaviour"
-    expires_after="2025-02-10">
+    expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -201,9 +202,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.BackgroundThread"
-    units="microseconds" expires_after="2025-02-23">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
-  <owner>rmcilroy@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
     Total time spent in compiling a script (incl. parsing) on a background
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ConsumeCache"
-    units="microseconds" expires_after="2024-01-14">
+    units="microseconds" expires_after="2026-01-14">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ConsumeCache.Failed"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.IsolateCacheHit"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.CacheTooCold"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.InlineScript"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.Other"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.ScriptTooSmall"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ProduceCache"
-    units="microseconds" expires_after="2024-02-11">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.StreamingFinalization"
-    units="microseconds" expires_after="2024-06-16">
+    units="microseconds" expires_after="2025-9-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileSerializeMicroSeconds" units="microseconds"
-    expires_after="2024-09-22">
+    expires_after="2025-9-10">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -1568,7 +1568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SnapshotDeserializeContextMicroSeconds"
-    units="microseconds" expires_after="2024-07-21">
+    units="microseconds" expires_after="2025-09-10">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -1583,7 +1583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SnapshotDeserializeIsolateMicroSeconds"
-    units="microseconds" expires_after="2024-07-21">
+    units="microseconds" expires_after="2025-09-10">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -1598,7 +1598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SnapshotDeserializeRoSpaceMicroSeconds"
-    units="microseconds" expires_after="2024-03-14">
+    units="microseconds" expires_after="2025-09-10">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
