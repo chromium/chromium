@@ -45,7 +45,9 @@ class SessionWrapper final : public mojom::Session {
   void Execute(
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
-  void GetSizeInTokens(const std::string& text,
+  void GetSizeInTokens(mojom::InputPtr input,
+                       GetSizeInTokensCallback callback) override;
+  void GetSizeInTokensDeprecated(const std::string& text,
                        GetSizeInTokensCallback callback) override;
   void Score(const std::string& text, ScoreCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Session> session) override;
@@ -71,10 +73,10 @@ class SessionWrapper final : public mojom::Session {
                       std::move(on_complete));
   }
 
-  void GetSizeInTokensInternal(const std::string& text,
+  void GetSizeInTokensInternal(mojom::InputPtr input,
                                GetSizeInTokensCallback callback,
                                base::OnceClosure on_complete) {
-    session_->SizeInTokens(text,
+    session_->SizeInTokens(std::move(input),
                            std::move(callback).Then(std::move(on_complete)));
   }
 
@@ -310,18 +312,25 @@ void SessionWrapper::Execute(
                                weak_ptr_factory_.GetWeakPtr());
 }
 
-void SessionWrapper::GetSizeInTokens(const std::string& text,
+void SessionWrapper::GetSizeInTokens(mojom::InputPtr input,
                                      GetSizeInTokensCallback callback) {
   if (!model_) {
     return;
   }
 
-  auto size_in_tokens_internal =
-      base::BindOnce(&SessionWrapper::GetSizeInTokensInternal,
-                     weak_ptr_factory_.GetWeakPtr(), text, std::move(callback));
+  auto size_in_tokens_internal = base::BindOnce(
+      &SessionWrapper::GetSizeInTokensInternal, weak_ptr_factory_.GetWeakPtr(),
+      std::move(input), std::move(callback));
 
   model_->AddAndRunPendingTask(std::move(size_in_tokens_internal),
                                weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::GetSizeInTokensDeprecated(const std::string& text,
+                                     GetSizeInTokensCallback callback) {
+  auto input = mojom::Input::New();
+  input->pieces.push_back(text);
+  GetSizeInTokens(std::move(input), std::move(callback));
 }
 
 void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {

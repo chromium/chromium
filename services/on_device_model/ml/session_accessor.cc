@@ -93,12 +93,12 @@ void SessionAccessor::Score(const std::string& text, ChromeMLScoreFn score_fn) {
                      text, std::move(score_fn)));
 }
 
-void SessionAccessor::SizeInTokens(const std::string& text,
+void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
                                    ChromeMLSizeInTokensFn size_in_tokens_fn) {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&SessionAccessor::SizeInTokensInternal,
-                                        base::Unretained(this), text,
-                                        std::move(size_in_tokens_fn)));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SessionAccessor::SizeInTokensInternal,
+                                base::Unretained(this), std::move(input),
+                                std::move(size_in_tokens_fn)));
 }
 
 DISABLE_CFI_DLSYM
@@ -168,10 +168,12 @@ void SessionAccessor::ScoreInternal(const std::string& text,
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::SizeInTokensInternal(
-    const std::string& text,
+    on_device_model::mojom::InputPtr input,
     ChromeMLSizeInTokensFn size_in_tokens_fn) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  chrome_ml_->api().SessionSizeInTokens(session_, text, size_in_tokens_fn);
+  chrome_ml_->api().SessionSizeInTokensInputPiece(
+      session_, model_, input->pieces.data(), input->pieces.size(),
+      size_in_tokens_fn);
 }
 
 }  // namespace ml

@@ -177,7 +177,9 @@ interface Session {
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
-  GetSizeInTokens@2(string text) => (uint32 size);
+  [MinVersion=2]
+  GetSizeInTokens@5(Input input) => (uint32 size);
+  GetSizeInTokensDeprecated@2(string text) => (uint32 size);
 
   // Gets the probability score of the first token in `text` on top of the
   // current context.

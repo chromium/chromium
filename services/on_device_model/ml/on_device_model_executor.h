@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
       on_device_model::mojom::InputOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
       base::OnceClosure on_complete);
-  void SizeInTokens(const std::string& text,
+  void SizeInTokens(on_device_model::mojom::InputPtr input,
                     base::OnceCallback<void(uint32_t)> callback);
   void Score(const std::string& text, base::OnceCallback<void(float)> callback);
   std::unique_ptr<SessionImpl> Clone();

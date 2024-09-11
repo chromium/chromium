@@ -88,7 +88,12 @@ void FakeOnDeviceSession::Execute(
       settings_->execute_delay);
 }
 
-void FakeOnDeviceSession::GetSizeInTokens(const std::string& text,
+void FakeOnDeviceSession::GetSizeInTokensDeprecated(const std::string& text,
+                                          GetSizeInTokensCallback callback) {
+  std::move(callback).Run(0);
+}
+
+void FakeOnDeviceSession::GetSizeInTokens(mojom::InputPtr input,
                                           GetSizeInTokensCallback callback) {
   std::move(callback).Run(0);
 }

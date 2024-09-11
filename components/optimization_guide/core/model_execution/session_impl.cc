@@ -993,7 +993,9 @@ SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
 void SessionImpl::GetSizeInTokens(
     const std::string& text,
     OptimizationGuideModelSizeInTokenCallback callback) {
-  GetOrCreateSession().GetSizeInTokens(text, std::move(callback));
+  auto input = on_device_model::mojom::Input::New();
+  input->pieces.push_back(text);
+  GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
 }
 
 const SamplingParams SessionImpl::GetSamplingParams() const {

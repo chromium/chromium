@@ -81,7 +81,9 @@ class FakeOnDeviceSession final : public mojom::Session {
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
-  void GetSizeInTokens(const std::string& text,
+  void GetSizeInTokensDeprecated(const std::string& text,
+                       GetSizeInTokensCallback callback) override;
+  void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
 
   void Score(const std::string& text, ScoreCallback callback) override;

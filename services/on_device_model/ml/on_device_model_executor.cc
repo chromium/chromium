@@ -334,9 +334,10 @@ void SessionImpl::Execute(
 }
 
 DISABLE_CFI_DLSYM
-void SessionImpl::SizeInTokens(const std::string& text,
+void SessionImpl::SizeInTokens(on_device_model::mojom::InputPtr input,
                                base::OnceCallback<void(uint32_t)> callback) {
-  session_->SizeInTokens(text, ConvertCallbackToFn(std::move(callback)));
+  session_->SizeInTokens(std::move(input),
+                         ConvertCallbackToFn(std::move(callback)));
 }
 
 DISABLE_CFI_DLSYM
