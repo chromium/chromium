@@ -167,6 +167,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE},
       {"geolocationWarningTextForWeather",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER},
+      {"geolocationWarningManagedTextForWeather",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_MANAGED_TEXT_FOR_WEATHER},
       {"autoModeGeolocationDialogText",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY},
       {"autoModeGeolocationDialogConfirmButton",

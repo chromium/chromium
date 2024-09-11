@@ -21,6 +21,7 @@ export interface AmbientState {
   ambientUiVisibility: AmbientUiVisibility|null;
   shouldShowTimeOfDayBanner: boolean;
   geolocationPermissionEnabled: boolean|null;
+  geolocationIsUserModifiable: boolean|null;
 }
 
 export function emptyState(): AmbientState {
@@ -35,5 +36,6 @@ export function emptyState(): AmbientState {
     ambientUiVisibility: null,
     shouldShowTimeOfDayBanner: false,
     geolocationPermissionEnabled: null,
+    geolocationIsUserModifiable: null,
   };
 }

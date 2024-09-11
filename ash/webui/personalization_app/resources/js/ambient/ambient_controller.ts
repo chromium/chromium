@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setGeolocationPermissionEnabledAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
@@ -22,9 +22,16 @@ import {isValidTopicSourceAndTheme} from './utils.js';
 export async function initializeData(
     provider: AmbientProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const {geolocationEnabled} =
-      await provider.isGeolocationEnabledForSystemServices();
+  const [{geolocationEnabled}, {geolocationIsUserModifiable}] =
+      await Promise.all([
+        provider.isGeolocationEnabledForSystemServices(),
+        provider.isGeolocationUserModifiable(),
+      ]);
+  store.beginBatchUpdate();
   store.dispatch(setGeolocationPermissionEnabledAction(geolocationEnabled));
+  store.dispatch(
+      setGeolocationIsUserModifiableAction(geolocationIsUserModifiable));
+  store.endBatchUpdate();
 }
 
 // Enable or disable ambient mode.

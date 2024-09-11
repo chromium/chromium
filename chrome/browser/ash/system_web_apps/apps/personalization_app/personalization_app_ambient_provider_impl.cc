@@ -161,6 +161,13 @@ bool PersonalizationAppAmbientProviderImpl::
   }
 }
 
+bool PersonalizationAppAmbientProviderImpl::IsGeolocationUserModifiable() {
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
+  return pref_service->IsUserModifiablePreference(
+      prefs::kUserGeolocationAccessLevel);
+}
+
 void PersonalizationAppAmbientProviderImpl::
     NotifyGeolocationPermissionChanged() {
   if (!ambient_observer_remote_.is_bound()) {
@@ -168,7 +175,7 @@ void PersonalizationAppAmbientProviderImpl::
   }
 
   ambient_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
-      IsGeolocationEnabledForSystemServices());
+      IsGeolocationEnabledForSystemServices(), IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
@@ -766,6 +773,11 @@ void PersonalizationAppAmbientProviderImpl::
     IsGeolocationEnabledForSystemServices(
         IsGeolocationEnabledForSystemServicesCallback callback) {
   std::move(callback).Run(IsGeolocationEnabledForSystemServices());
+}
+
+void PersonalizationAppAmbientProviderImpl::IsGeolocationUserModifiable(
+    IsGeolocationUserModifiableCallback callback) {
+  std::move(callback).Run(IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppAmbientProviderImpl::

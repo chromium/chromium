@@ -12,7 +12,7 @@ import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientUiVisibilityAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientUiVisibilityAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
@@ -135,8 +135,12 @@ export class AmbientObserver implements AmbientObserverInterface {
     store.dispatch(setAmbientUiVisibilityAction(ambientUiVisibility));
   }
 
-  onGeolocationPermissionForSystemServicesChanged(enabled: boolean): void {
+  onGeolocationPermissionForSystemServicesChanged(
+      enabled: boolean, isUserModifiable: boolean): void {
     const store = PersonalizationStore.getInstance();
+    store.beginBatchUpdate();
     store.dispatch(setGeolocationPermissionEnabledAction(enabled));
+    store.dispatch(setGeolocationIsUserModifiableAction(isUserModifiable));
+    store.endBatchUpdate();
   }
 }

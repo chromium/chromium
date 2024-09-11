@@ -485,6 +485,8 @@ suite('AmbientSubpageElementTest', function() {
       });
 
   test('show Geolocation dialog and click allow', async () => {
+    personalizationStore.setReducersEnabled(true);
+
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ true);
@@ -496,8 +498,7 @@ suite('AmbientSubpageElementTest', function() {
     // Enable Privacy Hub feature flag.
     loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
 
-    // Disable geolocation and select Auto Schedule; This should show the
-    // warning message.
+    // Disable geolocation; this should show the warning message.
     personalizationStore.data.ambient.geolocationPermissionEnabled = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
@@ -526,7 +527,6 @@ suite('AmbientSubpageElementTest', function() {
 
     // Confirm the dialog; this should enable the geolocation permission,
     // resulting in both the dialog and warning text disappearing.
-    personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
         AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
     confirmButton.click();
@@ -546,6 +546,49 @@ suite('AmbientSubpageElementTest', function() {
         weatherUnit.shadowRoot!.getElementById('geolocationDialog');
     assertFalse(!!warningElement);
     assertFalse(!!geolocationDialog);
+  });
+
+  test('show Geolocation warning text when location is managed', async () => {
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    personalizationStore.setReducersEnabled(true);
+
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const weatherUnit =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
+    assertTrue(!!weatherUnit);
+    // Check no warning is shown by default.
+    let warningElement =
+        weatherUnit!.shadowRoot!.getElementById('geolocationWarningDiv');
+    assertFalse(!!warningElement);
+
+
+    // Disable geolocation and mark as unmodifiable by the user. This happens
+    // when the respective setting is policy-set.
+    personalizationStore.data.ambient.geolocationPermissionEnabled = false;
+    personalizationStore.data.ambient.geolocationIsUserModifiable = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Check warning message is present.
+    warningElement =
+        weatherUnit!.shadowRoot!.getElementById('geolocationWarningDiv');
+    assertTrue(!!warningElement);
+
+    // Check that managed icon is present.
+    assertTrue(!!warningElement.querySelector('cr-policy-indicator'));
+
+    // Check that users are not prompted to change location.
+    assertFalse(!!warningElement.querySelector('localized-link'));
+
+    // Check the displayed string.
+    assertEquals(
+        ambientSubpageElement.i18n('geolocationWarningManagedTextForWeather'),
+        warningElement.innerText);
   });
 
   test('duration is default to ten minutes', async () => {

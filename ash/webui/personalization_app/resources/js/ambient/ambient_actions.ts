@@ -23,13 +23,14 @@ export enum AmbientActionName {
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
   SET_SHOULD_SHOW_TIME_OF_DAY_BANNER = 'set_should_show_time_of_day_banner',
   SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
+  SET_GEOLOCATION_IS_USER_MODIFIABLE = 'set_geolocation_is_user_modifiable',
 }
 
-export type AmbientActions =
-    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
-    SetAmbientThemeAction|SetPreviewsAction|SetScreenSaverDurationAction|
-    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction|
-    SetShouldShowTimeOfDayBannerAction|SetGeolocationPermissionEnabledAction;
+export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
+    SetAmbientModeEnabledAction|SetAmbientThemeAction|SetPreviewsAction|
+    SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
+    SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction|
+    SetGeolocationPermissionEnabledAction|SetGeolocationIsUserModifiableAction;
 
 export interface SetAlbumsAction extends Action {
   name: AmbientActionName.SET_ALBUMS;
@@ -92,6 +93,11 @@ export interface SetShouldShowTimeOfDayBannerAction extends Action {
 export interface SetGeolocationPermissionEnabledAction extends Action {
   name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
   enabled: boolean;
+}
+
+export interface SetGeolocationIsUserModifiableAction extends Action {
+  name: AmbientActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE;
+  isUserModifiable: boolean;
 }
 
 
@@ -178,4 +184,12 @@ export function setShouldShowTimeOfDayBannerAction(
 export function setGeolocationPermissionEnabledAction(enabled: boolean):
     SetGeolocationPermissionEnabledAction {
   return {name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
+}
+
+export function setGeolocationIsUserModifiableAction(isUserModifiable: boolean):
+    SetGeolocationIsUserModifiableAction {
+  return {
+    name: AmbientActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE,
+    isUserModifiable,
+  };
 }

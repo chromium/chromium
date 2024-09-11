@@ -2595,6 +2595,9 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           OFF - To display local weather <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_MANAGED_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed (but is managed by the admin) for displaying local weather info">
+          OFF - This setting is managed by your administrator.
+        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
           Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph>-<ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, turn on system location access.
         </message>
