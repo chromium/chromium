@@ -53,10 +53,14 @@ views::View* ItemInColumnWithIndexClosestTo(views::View* column,
   }
 }
 
-std::unique_ptr<views::View> CreateListItemView() {
+std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
   auto view = std::make_unique<views::View>();
   view->SetUseDefaultFillLayout(true);
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  view->GetViewAccessibility().SetPosInSet(pos_in_set);
+  // Setting the hierarchical level explicitly allows the SetSize to be
+  // overridden later.
+  view->GetViewAccessibility().SetHierarchicalLevel(1);
   return view;
 }
 
@@ -181,9 +185,16 @@ PickerImageItemView* PickerImageItemGridView::AddImageItem(
                           return v->GetPreferredSize().height();
                         });
   PickerImageItemView* new_item =
-      shortest_column->AddChildView(CreateListItemView())
+      shortest_column
+          ->AddChildView(CreateListItemView(focusable_items_.size() + 1))
           ->AddChildView(std::move(image_item));
   focusable_items_.push_back(new_item);
+
+  // Update the SetSize for all items.
+  for (views::View* view : focusable_items_) {
+    view->parent()->GetViewAccessibility().SetSetSize(focusable_items_.size());
+  }
+
   return new_item;
 }
 

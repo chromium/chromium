@@ -635,28 +635,53 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  ash::PickerImageItemView* item =
+  ash::PickerImageItemView* item1 =
       section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title1", base::DoNothing()));
-  item->SetAction(ash::PickerActionType::kInsert);
-  section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
-      std::make_unique<views::ImageView>(
-          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
-      u"title2", base::DoNothing()));
-  section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
-      std::make_unique<views::ImageView>(
-          ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
-      u"title3", base::DoNothing()));
+  item1->SetAction(ash::PickerActionType::kInsert);
 
-  sm_.Call([item]() { item->RequestFocus(); });
+  ash::PickerImageItemView* item2 =
+      section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
+          std::make_unique<views::ImageView>(
+              ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+          u"title2", base::DoNothing()));
+  item2->SetAction(ash::PickerActionType::kOpen);
+
+  ash::PickerImageItemView* item3 =
+      section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
+          std::make_unique<views::ImageView>(
+              ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
+          u"title3", base::DoNothing()));
+
+  sm_.Call([item1]() { item1->RequestFocus(); });
 
   sm_.ExpectSpeechPattern("Insert title1");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
   sm_.ExpectSpeechPattern("1 of 3");
   sm_.ExpectSpeechPattern("Press * to activate");
+
+  sm_.Call([item2]() { item2->RequestFocus(); });
+
+  // TODO: b/362129770 - item2 should not have "List end".
+  sm_.ExpectSpeechPattern("Open title2");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("2 of 3");
+  sm_.ExpectSpeechPattern("List end");
+  sm_.ExpectSpeechPattern("Press * to activate");
+
+  sm_.Call([item3]() { item3->RequestFocus(); });
+
+  // TODO: b/362129770 - item3 should have "List end".
+  sm_.ExpectSpeechPattern("title3");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("3 of 3");
+  sm_.ExpectSpeechPattern("Press * to activate");
+
   sm_.Replay();
 }
 
