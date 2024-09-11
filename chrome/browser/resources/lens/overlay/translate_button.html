@@ -14,6 +14,7 @@
   .button {
     border: none;
     padding: 0;
+    pointer-events: all;
   }
 
   .button-label {
@@ -46,7 +47,16 @@
     gap: 0px;
     margin-block-start: 5px;
     margin-block-end: 5px;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
+  }
+
+  :host([is-translate-mode-enabled]) .language-picker-button {
+    max-width: 150px;
     min-width: 77px;
+    transform: scaleX(1);
+    transition-delay: 33ms;
   }
 
   .language-picker-label {
@@ -145,13 +155,33 @@
     display: flex;
   }
 
+  .translate-icon {
+    display: block;
+    height: 20px;
+    mask-image: url('translate.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+  }
+
   #languagePicker {
     border-radius: 100px;
     display: flex;
-    gap: 6px;
     height: 48px;
+    gap: 6px;
+    max-width: 0px;
+    opacity: 0;
+    transition: max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 0s,
+                opacity 50ms linear 0s;
     pointer-events: all;
-    position: relative;
+  }
+
+  :host([is-translate-mode-enabled]) #languagePicker {
+    max-width: 320px;
+    opacity: 1;
+    transition: max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                opacity 100ms linear 33ms;
   }
 
   #languagePickerMenuStarsIcon {
@@ -207,23 +237,47 @@
     margin-inline-start: 16px;
   }
 
-  #translateButton {
-    background-color: var(--color-selection-element);
-    height: 48px;
-    min-width: 50px;
-    pointer-events: all;
-    width: 164px;
-  }
-
-  :host([is-translate-mode-enabled]) #translateButton {
+  #translateDisableButton {
     background-color: var(--color-surface-container-highest-dark);
     gap: 0px;
     height: 38px;
     margin-block-start: 5px;
     margin-block-end: 5px;
     margin-inline-end: 5px;
-    min-width: 38px;
+    min-width: 0px;
+    opacity: 0;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: opacity 50ms linear,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    width: 0px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateDisableButton {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: opacity 100ms linear 33ms,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms;
     width: 38px;
+  }
+
+  #translateEnableButton {
+    background-color: transparent;
+    height: 48px;
+    opacity: 1;
+    transition: opacity 150ms linear 50ms;
+    position: absolute;
+    width: 164px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateEnableButton {
+    left: 50%;
+    opacity: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 50ms linear;
   }
 
   #translateButtonLabel {
@@ -232,29 +286,26 @@
   }
 
   #translateContainer {
-    background-color: white;
+    background-color: var(--color-selection-element);
     border-radius: 36px;
     display: flex;
     flex-direction: row;
+    min-width: 164px;
+    overflow: hidden;
   }
 
-  #translateIcon {
-    background-color: var(--color-primary);
-    display: block;
-    height: 20px;
-    mask-image: url('translate.svg');
-    mask-position: center;
-    mask-repeat: no-repeat;
-    mask-size: 100%;
-    width: 20px;
+  :host([is-translate-mode-enabled]) #translateContainer {
+    background-color: white;
   }
 
-  :host([is-translate-mode-enabled]) #translateIcon {
+  #translateDisableIcon {
     background-color: var(--color-overlay-icon);
   }
 
-  :host([is-translate-mode-enabled]) #translateButtonLabel,
-  :host(:not([is-translate-mode-enabled])) #languagePicker,
+  #translateEnableIcon {
+    background-color: var(--color-primary);
+  }
+
   :host(:not([should-show-stars-icon])) #starsIcon {
     display: none;
   }
@@ -266,6 +317,14 @@
   }
 </style>
 <div id="translateContainer">
+  <cr-button id="translateEnableButton" class="button"
+  on-click="onTranslateButtonClick">
+    <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
+    </span>
+    <span id="translateButtonLabel" class="button-label">
+      $i18n{translateButtonLabel}
+    </span>
+  </cr-button>
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick">
@@ -283,11 +342,9 @@
       </span>
     </cr-button>
   </div>
-  <cr-button id="translateButton" class="button"
+  <cr-button id="translateDisableButton" class="button"
   on-click="onTranslateButtonClick">
-    <span id="translateIcon" slot="prefix-icon"></span>
-    <span id="translateButtonLabel" class="button-label">
-      $i18n{translateButtonLabel}
+    <span id="translateDisableIcon" class="translate-icon" slot="prefix-icon">
     </span>
   </cr-button>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"

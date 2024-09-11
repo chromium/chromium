@@ -54,7 +54,8 @@ export interface TranslateButtonElement {
     targetLanguageButton: CrButtonElement,
     targetLanguagePickerContainer: DomRepeat,
     targetLanguagePickerMenu: HTMLDivElement,
-    translateButton: CrButtonElement,
+    translateDisableButton: CrButtonElement,
+    translateEnableButton: CrButtonElement,
   };
 }
 
