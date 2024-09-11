@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 
+#import <algorithm>
 #import <memory>
 #import <utility>
 #import <vector>
@@ -13,6 +14,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -45,6 +47,19 @@ using base::SysNSStringToUTF16;
 using password_manager::CredentialUIEntry;
 
 namespace {
+
+base::Time GetLastUsedModifiedOrCreatedTime(
+    password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
+    const CredentialUIEntry& entry) {
+  base::Time time = entry.last_used_time;
+  for (const password_manager::PasswordForm& form :
+       saved_passwords_presenter->GetCorrespondingPasswordForms(entry)) {
+    time = std::max(time, form.date_last_used);
+    time = std::max(time, form.date_password_modified);
+    time = std::max(time, form.date_created);
+  }
+  return time;
+}
 
 bool MatchesRealmUsernamePasswordAndCreationTime(
     CredentialDetails* credentialDetails,
@@ -227,8 +242,9 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 }
 
 - (void)setConsumer:(id<PasswordDetailsConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
 
   // The email might be empty and the callee handles that.
@@ -321,7 +337,10 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
       [self conflictingAccountPassword:credentialDetails];
   DCHECK(localCredential != _credentials.end());
   DCHECK(accountCredential.has_value());
-  if (localCredential->last_used_time < accountCredential->last_used_time) {
+  if (GetLastUsedModifiedOrCreatedTime(self.savedPasswordsPresenter,
+                                       *localCredential) <
+      GetLastUsedModifiedOrCreatedTime(self.savedPasswordsPresenter,
+                                       *accountCredential)) {
     [self removeCredential:credentialDetails];
     return;
   }
