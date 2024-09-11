@@ -1056,6 +1056,7 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_DIGITAL_ASSET_LINKS_LOAD_INCLUDES,
                 "Enable loading include statements when checking digital asset links."),
         Flag.baseFeature("PrefetchNewWaitLoop"),
+        Flag.baseFeature("DirectCompositorThreadIpc"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
