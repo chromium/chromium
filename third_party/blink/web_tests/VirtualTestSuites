@@ -2186,6 +2186,7 @@
   },
   {
     "prefix": "produce-compile-hints",
+    "owners": ["marja@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/fetch",
