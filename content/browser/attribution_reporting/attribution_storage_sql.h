@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -292,7 +293,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       base::Time now);
 
   [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
-      const std::vector<StoredSource::Id>&,
+      base::span<const StoredSource::Id>,
       base::Time now);
 
   [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
@@ -338,12 +339,10 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<int64_t> NumberOfSources();
 
   // Deactivates the given sources. Returns false on error.
-  [[nodiscard]] bool DeactivateSources(
-      const std::vector<StoredSource::Id>& sources);
+  [[nodiscard]] bool DeactivateSources(base::span<const StoredSource::Id>);
 
   // Returns false on failure.
-  [[nodiscard]] bool DeleteSources(
-      const std::vector<StoredSource::Id>& source_ids);
+  [[nodiscard]] bool DeleteSources(base::span<const StoredSource::Id>);
 
   // Returns whether the database execution was successful.
   // `source_id_to_attribute` and `source_ids_to_delete` would be populated if
@@ -439,7 +438,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool DeleteEventLevelReportsTriggeredLaterThanForSources(
-      const std::vector<StoredSource::Id>&,
+      base::span<const StoredSource::Id>,
       base::Time source_time) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool RemoveScopesDataForSource(StoredSource::Id)
@@ -475,7 +474,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool ClearReportsForSourceIds(
-      const std::vector<StoredSource::Id>& source_ids,
+      base::span<const StoredSource::Id>,
       int& num_event_reports_deleted,
       int& num_aggregatable_reports_deleted)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

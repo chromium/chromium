@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -114,7 +115,7 @@ class CONTENT_EXPORT RateLimitTable {
 
   [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
       sql::Database* db,
-      const std::vector<StoredSource::Id>&);
+      base::span<const StoredSource::Id>);
 
   [[nodiscard]] DestinationRateLimitResult SourceAllowedForDestinationRateLimit(
       sql::Database* db,
@@ -151,9 +152,8 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter);
   // Returns false on failure.
-  [[nodiscard]] bool ClearDataForSourceIds(
-      sql::Database* db,
-      const std::vector<StoredSource::Id>& source_ids);
+  [[nodiscard]] bool ClearDataForSourceIds(sql::Database* db,
+                                           base::span<const StoredSource::Id>);
 
   void AppendRateLimitDataKeys(sql::Database* db,
                                std::set<AttributionDataModel::DataKey>& keys);

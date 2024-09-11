@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/ranges/functional.h"
@@ -437,7 +438,7 @@ RateLimitTable::GetSourcesToDeactivateForDestinationLimit(
 
 bool RateLimitTable::DeactivateSourcesForDestinationLimit(
     sql::Database* db,
-    const std::vector<StoredSource::Id>& source_ids) {
+    base::span<const StoredSource::Id> source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
@@ -735,7 +736,7 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
 
 bool RateLimitTable::ClearDataForSourceIds(
     sql::Database* db,
-    const std::vector<StoredSource::Id>& source_ids) {
+    base::span<const StoredSource::Id> source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);

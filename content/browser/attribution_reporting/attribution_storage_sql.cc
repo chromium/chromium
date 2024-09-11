@@ -559,7 +559,7 @@ AttributionStorageSql::StartTransaction() {
 }
 
 bool AttributionStorageSql::DeactivateSources(
-    const std::vector<StoredSource::Id>& sources) {
+    base::span<const StoredSource::Id> sources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(&db_);
@@ -586,7 +586,7 @@ bool AttributionStorageSql::DeactivateSources(
 }
 
 bool AttributionStorageSql::DeactivateSourcesForDestinationLimit(
-    const std::vector<StoredSource::Id>& sources,
+    base::span<const StoredSource::Id> sources,
     base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sources.empty()) {
@@ -1506,7 +1506,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 }
 
 bool AttributionStorageSql::DeleteEventLevelReportsTriggeredLaterThanForSources(
-    const std::vector<StoredSource::Id>& sources,
+    base::span<const StoredSource::Id> sources,
     base::Time source_time) {
   DCHECK(db_.HasActiveTransactions());
   // Note that this may also delete true reports if the user configured the
@@ -1986,9 +1986,9 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
         int num_aggregatable_reports_deleted = 0;
         bool ok = absl::visit(
             base::Overloaded{[](absl::monostate) { return true; },
-                             [&](StoredSource::Id id)
+                             [&](const StoredSource::Id id)
                                  VALID_CONTEXT_REQUIRED(sequence_checker_) {
-                                   const std::vector<StoredSource::Id> ids{id};
+                                   auto ids = base::span_from_ref(id);
                                    if (!DeleteSources(ids)) {
                                      return false;
                                    }
@@ -2411,7 +2411,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
 }
 
 bool AttributionStorageSql::DeleteSources(
-    const std::vector<StoredSource::Id>& source_ids) {
+    base::span<const StoredSource::Id> source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2532,7 +2532,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
 }
 
 bool AttributionStorageSql::ClearReportsForSourceIds(
-    const std::vector<StoredSource::Id>& source_ids,
+    base::span<const StoredSource::Id> source_ids,
     int& num_event_reports_deleted,
     int& num_aggregatable_reports_deleted) {
   sql::Transaction transaction(&db_);

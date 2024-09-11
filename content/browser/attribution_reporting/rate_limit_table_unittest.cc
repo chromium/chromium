@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1116,7 +1117,8 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
                           Pair(5, _), Pair(6, _)));
 
   ASSERT_TRUE(table_.ClearDataForSourceIds(
-      &db_, {StoredSource::Id(5), StoredSource::Id(7), StoredSource::Id(9)}));
+      &db_, base::span({StoredSource::Id(5), StoredSource::Id(7),
+                        StoredSource::Id(9)})));
 
   ASSERT_THAT(GetRateLimitRows(),
               ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
@@ -1575,8 +1577,8 @@ TEST_F(RateLimitTableTest, DeactivateSourcesForDestinationLimit) {
                    .GetSourcesToDeactivateForDestinationLimit(
                        &db_, new_source, /*source_time=*/base::Time::Now())
                    ->empty());
-  ASSERT_TRUE(
-      table_.DeactivateSourcesForDestinationLimit(&db_, {StoredSource::Id(1)}));
+  ASSERT_TRUE(table_.DeactivateSourcesForDestinationLimit(
+      &db_, base::span({StoredSource::Id(1)})));
   EXPECT_TRUE(table_
                   .GetSourcesToDeactivateForDestinationLimit(
                       &db_, new_source, /*source_time=*/base::Time::Now())
