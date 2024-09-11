@@ -67,7 +67,12 @@
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// If a font name in prefs default values starts with a comma, consider it's a
+// comma-separated font list and resolve it to the first available font.
+#define PREFS_FONT_LIST 1
 #include "ui/gfx/font_list.h"
+#else
+#define PREFS_FONT_LIST 0
 #endif
 
 using blink::web_pref::WebPreferences;
@@ -116,12 +121,6 @@ ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Resolves the comma-separated font list to the first available font in the
-// default value. crbug.com/41323186.
-BASE_FEATURE(kPrefsFontList, "PrefsFontList", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 #if BUILDFLAG(IS_WIN)
 // On Windows with antialiasing we want to use an alternate fixed font like
@@ -432,16 +431,15 @@ void PrefsTabHelper::RegisterProfilePrefs(
     // not be really critical after all.
     if (browser_script != pref_script) {
       std::string value = l10n_util::GetStringUTF8(pref.resource_id);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (value.starts_with(',') &&
-          base::FeatureList::IsEnabled(kPrefsFontList)) {
+#if PREFS_FONT_LIST
+      if (value.starts_with(',')) {
         value = gfx::FontList::FirstAvailableOrFirst(value);
       }
-#else
+#else   // !PREFS_FONT_LIST
       DCHECK(!value.starts_with(','))
           << "This platform doesn't support default font lists. "
           << pref.pref_name << "=" << value;
-#endif
+#endif  // PREFS_FONT_LIST
       registry->RegisterStringPref(pref.pref_name, value);
       fonts_with_defaults.insert(pref.pref_name);
     }
