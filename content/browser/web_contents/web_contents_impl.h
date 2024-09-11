@@ -1491,6 +1491,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool IsPopup() const override;
 
+  bool IsPartitionedPopin() const override;
+
   RenderFrameHostImpl* PartitionedPopinOpener() const override;
 
   WebContents* OpenedPartitionedPopin() const override;

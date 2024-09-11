@@ -1381,7 +1381,7 @@ enum class WindowProxyPageContext {
 };
 
 WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->PartitionedPopinOpener()) {
+  if (frame->delegate()->IsPartitionedPopin()) {
     return WindowProxyPageContext::kPartitionedPopin;
   } else if (frame->delegate()->IsPopup()) {
     return WindowProxyPageContext::kPopup;
@@ -4518,10 +4518,10 @@ const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
   // If this frame is in a partitioned popin, we consider the opener's top-frame
   // to be this frame's top-frame as long as we aren't in a fenced-frame.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  RenderFrameHostImpl* partitioned_popin_opener =
-      delegate_->PartitionedPopinOpener();
-  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
-    return partitioned_popin_opener->GetMainFrame()->GetLastCommittedOrigin();
+  if (delegate_->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+    return delegate_->PartitionedPopinOpener()
+        ->GetMainFrame()
+        ->GetLastCommittedOrigin();
   }
 
   if (is_main_frame()) {
@@ -4561,7 +4561,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
   net::IsolationInfo::RequestType request_type =
       (is_main_frame() &&
-       (!delegate()->PartitionedPopinOpener() || IsNestedWithinFencedFrame()))
+       (!delegate()->IsPartitionedPopin() || IsNestedWithinFencedFrame()))
           ? net::IsolationInfo::RequestType::kMainFrame
           : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
@@ -4719,9 +4719,9 @@ RenderFrameHostImpl::GetAncestorChainForStorageKeyCalculation(
   // to be this frame's top-frame as long as we aren't in a fenced-frame. We
   // must add all intermediate frames to ensure proper StorageKey calculation.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  RenderFrameHostImpl* partitioned_popin_opener =
-      delegate()->PartitionedPopinOpener();
-  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
+  if (delegate()->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+    RenderFrameHostImpl* partitioned_popin_opener =
+        delegate()->PartitionedPopinOpener();
     while (partitioned_popin_opener) {
       ancestor_chain.push_back(partitioned_popin_opener);
       partitioned_popin_opener = partitioned_popin_opener->parent_;
@@ -8836,7 +8836,7 @@ void RenderFrameHostImpl::CreateNewWindow(
       mojo::ReportBadMessage("Partitioned popins not permitted.");
       return;
     }
-    if (delegate()->PartitionedPopinOpener()) {
+    if (delegate()->IsPartitionedPopin()) {
       mojo::ReportBadMessage("Partitioned popins cannot open their own popin.");
       return;
     }
@@ -9069,9 +9069,10 @@ void RenderFrameHostImpl::CreateNewWindow(
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params = nullptr;
-  RenderFrameHostImpl* partitioned_popin_opener =
-      new_main_rfh->delegate()->PartitionedPopinOpener();
-  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
+  if (new_main_rfh->delegate()->IsPartitionedPopin() &&
+      !IsNestedWithinFencedFrame()) {
+    RenderFrameHostImpl* partitioned_popin_opener =
+        new_main_rfh->delegate()->PartitionedPopinOpener();
     partitioned_popin_params = blink::mojom::PartitionedPopinParams::New(
         partitioned_popin_opener->ComputeTopFrameOrigin(
             partitioned_popin_opener->GetLastCommittedOrigin()),

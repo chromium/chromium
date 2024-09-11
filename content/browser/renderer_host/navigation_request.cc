@@ -2016,7 +2016,7 @@ NavigationRequest::NavigationRequest(
     if (frame_tree_node->IsOutermostMainFrame() &&
         frame_tree_node->current_frame_host()
             ->delegate()
-            ->PartitionedPopinOpener()) {
+            ->IsPartitionedPopin()) {
       headers.SetHeader("Sec-Popin-Context", "partitioned");
     }
   }

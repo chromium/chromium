@@ -809,15 +809,33 @@ bool WebContentsImpl::IsPopup() const {
   return is_popup_;
 }
 
+bool WebContentsImpl::IsPartitionedPopin() const {
+  // The feature must be enabled if a popin was opened.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !partitioned_popin_opener_);
+
+  return !!partitioned_popin_opener_;
+}
+
 RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
   // A popin cannot open a popin so at most one could be set at a time.
   DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+
+  // The feature must be enabled if the popin opener is set.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !partitioned_popin_opener_);
+
   return partitioned_popin_opener_.get();
 }
 
 WebContents* WebContentsImpl::OpenedPartitionedPopin() const {
   // A popin cannot open a popin so at most one could be set at a time.
   DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+
+  // The feature must be enabled if a popin was opened.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+         !opened_partitioned_popin_);
+
   return opened_partitioned_popin_.get();
 }
 
@@ -11332,6 +11350,11 @@ void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
     WebContentsImpl* new_window,
     const mojom::CreateNewWindowParams& params,
     RenderFrameHostImpl* opener) {
+  // We should not take action if the feature is disabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
+    return;
+  }
+
   // All popins should be counted as popups to ensure proper UX treatment.
   if (!params.features->is_partitioned_popin || !new_window->is_popup_) {
     return;

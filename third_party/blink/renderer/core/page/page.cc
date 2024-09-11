@@ -501,6 +501,11 @@ const SecurityOrigin* Page::GetPartitionedPopinOpenerTopFrameOrigin() const {
   // We should never be in a state where one of these was set and not the other.
   DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
          !partitioned_popin_opener_site_for_cookies_);
+
+  // The feature must be enabled if a popin top-frame origin was set.
+  DCHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
+         !partitioned_popin_opener_top_frame_origin_);
+
   return partitioned_popin_opener_top_frame_origin_.get();
 }
 
@@ -509,6 +514,11 @@ Page::GetPartitionedPopinOpenerSiteForCookies() const {
   // We should never be in a state where one of these was set and not the other.
   DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
          !partitioned_popin_opener_site_for_cookies_);
+
+  // The feature must be enabled if a popin site for cookies was set.
+  DCHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
+         !partitioned_popin_opener_site_for_cookies_);
+
   return partitioned_popin_opener_site_for_cookies_;
 }
 
