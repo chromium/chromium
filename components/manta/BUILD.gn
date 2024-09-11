@@ -5,12 +5,9 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
-# TODO(b/358224257): Re-enable when shared_library is properly used.
-# allow_internal = is_chrome_branded
-allow_internal = false
-
 component("manta") {
   sources = [
+    "anchovy/anchovy_proto_helper.cc",
     "anchovy/anchovy_proto_helper.h",
     "anchovy/anchovy_provider.cc",
     "anchovy/anchovy_provider.h",
@@ -27,14 +24,6 @@ component("manta") {
     "manta_status.h",
     "provider_params.h",
   ]
-
-  if (allow_internal) {
-    sources += [
-      "//components/accessibility/internal/anchovy/anchovy_proto_helper.cc",
-    ]
-  } else {
-    sources += [ "anchovy/anchovy_proto_helper.cc" ]
-  }
 
   defines = [ "IS_MANTA_IMPL" ]
 

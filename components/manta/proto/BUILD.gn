@@ -11,6 +11,7 @@ allow_internal = false
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
+    "anchovy.proto",
     "common.proto",
     "manta.proto",
     "rpc_status.proto",
