@@ -431,8 +431,10 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
   CompressionGroupResultMap compression_groups_out;
   for (auto& compression_group : *compression_groups) {
     int compression_group_id;
-    auto compression_group_result =
-        ParseCompressionGroup(compression_group, compression_group_id);
+    // This consumes each value of the list, to avoid having to copy the
+    // contents of each compression group.
+    auto compression_group_result = ParseCompressionGroup(
+        std::move(compression_group), compression_group_id);
 
     if (!compression_group_result.has_value()) {
       return base::unexpected(std::move(compression_group_result).error());
@@ -453,15 +455,14 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
 
 base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>
 TrustedSignalsFetcher::ParseCompressionGroup(
-    const base::Value& compression_group_value,
+    base::Value compression_group_value,
     int& compression_group_id) {
   if (!compression_group_value.is_dict()) {
     return base::unexpected(CreateError(
         base::StringPrintf("Compression group is not of type map")));
   }
 
-  const base::Value::Dict& compression_group_dict =
-      compression_group_value.GetDict();
+  base::Value::Dict& compression_group_dict = compression_group_value.GetDict();
   std::optional<int> compression_group_id_opt =
       compression_group_dict.FindInt("compressionGroupId");
   if (!compression_group_id_opt.has_value() || *compression_group_id_opt < 0) {
@@ -484,7 +485,7 @@ TrustedSignalsFetcher::ParseCompressionGroup(
     ttl = base::Milliseconds(std::max(0, ttl_ms_value->GetInt()));
   }
 
-  const auto* content = compression_group_dict.FindBlob("content");
+  auto* content = compression_group_dict.FindBlob("content");
   if (!content) {
     return base::unexpected(CreateError(base::StringPrintf(
         "Compression group %i missing binary string \"content\"",
@@ -495,11 +496,7 @@ TrustedSignalsFetcher::ParseCompressionGroup(
 
   CompressionGroupResult result;
   result.compression_scheme = compression_scheme_;
-  // TODO(crbug.com/333445540): This copy is only necessary because Value::Dict
-  // does not allow blob/binary types to be moved, unlike std::strings. Modify
-  // base::Value to allow that, and switch this code to take advantage of the
-  // capability.
-  result.compression_group_data = *content;
+  result.compression_group_data = std::move(*content);
   result.ttl = ttl;
   return result;
 }

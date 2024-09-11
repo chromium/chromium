@@ -80,7 +80,7 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     base::TimeDelta ttl) {
   TrustedSignalsFetcher::CompressionGroupResult out;
   out.compression_scheme = compression_scheme;
-  out.compression_group_data = std::vector<uint8_t>(
+  out.compression_group_data = base::Value::BlobStorage(
       compression_group_data.begin(), compression_group_data.end());
   out.ttl = ttl;
   return out;

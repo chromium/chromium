@@ -121,7 +121,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme;
 
     // The still-compressed data for the compression group.
-    std::vector<uint8_t> compression_group_data;
+    base::Value::BlobStorage compression_group_data;
 
     // Time until the response expires.
     base::TimeDelta ttl;
@@ -193,7 +193,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // passed in value. On failure, leaves `compression_group_id` alone, and
   // returns a string.
   base::expected<CompressionGroupResult, std::string> ParseCompressionGroup(
-      const base::Value& compression_group_value,
+      base::Value compression_group_value,
       int& compression_group_id);
 
   // Returns a string error message, prefixing the passed in message with the

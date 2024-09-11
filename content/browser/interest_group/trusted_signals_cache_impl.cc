@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"

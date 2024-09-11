@@ -471,7 +471,7 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     base::TimeDelta ttl = base::Hours(1)) {
   TrustedSignalsFetcher::CompressionGroupResult result;
   result.compression_group_data =
-      std::vector<std::uint8_t>(body.begin(), body.end());
+      base::Value::BlobStorage(body.begin(), body.end());
   result.compression_scheme = compression_scheme;
   result.ttl = ttl;
   return result;

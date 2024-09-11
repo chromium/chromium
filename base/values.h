@@ -257,6 +257,7 @@ class BASE_EXPORT GSL_OWNER Value {
   const std::string* GetIfString() const;
   std::string* GetIfString();
   const BlobStorage* GetIfBlob() const;
+  BlobStorage* GetIfBlob();
   const Dict* GetIfDict() const;
   Dict* GetIfDict();
   const List* GetIfList() const;
@@ -273,6 +274,7 @@ class BASE_EXPORT GSL_OWNER Value {
   const std::string& GetString() const;
   std::string& GetString();
   const BlobStorage& GetBlob() const;
+  BlobStorage& GetBlob();
   const Dict& GetDict() const;
   Dict& GetDict();
   const List& GetList() const;
@@ -284,6 +286,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // Prefer over `std::move(value.Get...())` so clang-tidy can warn about
   // potential use-after-move mistakes.
   std::string TakeString() &&;
+  BlobStorage TakeBlob() &&;
   Dict TakeDict() &&;
   List TakeList() &&;
 
@@ -382,6 +385,7 @@ class BASE_EXPORT GSL_OWNER Value {
     const std::string* FindString(std::string_view key) const;
     std::string* FindString(std::string_view key);
     const BlobStorage* FindBlob(std::string_view key) const;
+    BlobStorage* FindBlob(std::string_view key);
     const Dict* FindDict(std::string_view key) const;
     Dict* FindDict(std::string_view key);
     const List* FindList(std::string_view key) const;
@@ -507,6 +511,7 @@ class BASE_EXPORT GSL_OWNER Value {
     const std::string* FindStringByDottedPath(std::string_view path) const;
     std::string* FindStringByDottedPath(std::string_view path);
     const BlobStorage* FindBlobByDottedPath(std::string_view path) const;
+    BlobStorage* FindBlobByDottedPath(std::string_view path);
     const Dict* FindDictByDottedPath(std::string_view path) const;
     Dict* FindDictByDottedPath(std::string_view path);
     const List* FindListByDottedPath(std::string_view path) const;
