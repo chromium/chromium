@@ -2,24 +2,20 @@
 <meta charset="utf-8">
 <title>CSS Test Reference</title>
 <style>
+  .no-bottom-margin {
+    margin-bottom: 0;
+  }
   .clamp {
     display: flow-root;
-    background-color: yellow;
-    padding: 0.5em;
     font: 16px / 32px serif;
     white-space: pre;
-  }
-  .float {
-    float: left;
-    background-color: orange;
-    padding: 0.5em;
-    height: 100px;
-    width: 100px;
+    background-color: yellow;
   }
 </style>
+
+<p class="no-bottom-margin"><span>The following yellow box should clamp after 4 lines.</span></p>
 
 <div class="clamp">Line 1
 Line 2
 Line 3
-Line 4
-<div class="float"></div>Line 5…</div>
+Line 4…</div>
