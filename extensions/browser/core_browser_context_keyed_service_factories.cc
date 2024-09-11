@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/image_loader_factory.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
@@ -49,6 +50,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
+  PermissionsManager::GetFactory();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();
   ServiceWorkerKeepalive::EnsureShutdownNotifierFactoryBuilt();
