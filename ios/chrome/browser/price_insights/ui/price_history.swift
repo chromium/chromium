@@ -90,6 +90,51 @@ struct TooltipView: View {
   }
 }
 
+/// A view modifier that conditionally applies different gestures based on the iOS version for the graph.
+struct GraphGesture: ViewModifier {
+  let geometry: GeometryProxy
+  let proxy: ChartProxy
+  let updateSelectionData: (CGPoint, GeometryProxy, ChartProxy) -> Void
+  let updateTooltipPosition: (GeometryProxy, ChartProxy) -> Void
+  let recordGraphInteraction: () -> Void
+
+  func body(content: Content) -> some View {
+    if #available(iOS 18, *) {
+      /// To avoid conflicts between vertical scrolling and horizontal dragging
+      /// to display the tooltip, a long press is necessary. Once a long press
+      /// is detected, the system starts listening for a drag event, which we
+      /// interpret as the user's intent to horizontally drag the tooltip on the graph.
+      /// The heuristic for the long press was chosen after manual testing.
+      content.gesture(
+        LongPressGesture(minimumDuration: 0.07)
+          .sequenced(before: DragGesture())
+          .onChanged { value in
+            if case .second(_, let drag) = value, let drag = drag {
+              updateSelectionData(drag.location, geometry, proxy)
+              updateTooltipPosition(geometry, proxy)
+            }
+          }
+          .onEnded { _ in
+            recordGraphInteraction()
+          }
+      )
+    } else {
+      /// TODO(b/364871144): Investigate a solution that allows for both vertical
+      /// scrolling and horizontal dragging on iOS versions earlier than 18.
+      content.gesture(
+        DragGesture()
+          .onChanged { value in
+            updateSelectionData(value.location, geometry, proxy)
+            updateTooltipPosition(geometry, proxy)
+          }
+          .onEnded { _ in
+            recordGraphInteraction()
+          }
+      )
+    }
+  }
+}
+
 /// Represents a view displaying a historical graph.
 struct HistoryGraph: View {
   /// The price history data consisting of dates and corresponding prices.
@@ -238,24 +283,14 @@ struct HistoryGraph: View {
               break
             }
           })
-          .gesture(
-            /// To avoid conflicts between vertical scrolling and horizontal dragging
-            /// to display the tooltip, a long press is necessary. Once a long press
-            /// is detected, the system starts listening for a drag event, which we
-            /// interpret as the user's intent to horizontally drag the tooltip on the graph.
-            /// The heuristic for the long press was chosen after manual testing.
-            LongPressGesture(minimumDuration: 0.07)
-              .sequenced(before: DragGesture())
-              .onChanged { value in
-                if case .second(_, let drag) = value, let drag = drag {
-                  updateSelectionData(location: drag.location, geometry: geometry, chart: proxy)
-                  updateTooltipPosition(geometry: geometry, chart: proxy)
-                }
-              }
-              .onEnded { _ in
-                recordGraphInteraction()
-              }
-          )
+          .modifier(
+            GraphGesture(
+              geometry: geometry,
+              proxy: proxy,
+              updateSelectionData: updateSelectionData,
+              updateTooltipPosition: updateTooltipPosition,
+              recordGraphInteraction: recordGraphInteraction
+            ))
       }
     }
     .overlay(
