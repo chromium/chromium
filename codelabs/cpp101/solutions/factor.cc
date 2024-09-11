@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
 
-  if (argc <= 1) {
+  if (argc < 2) {
     LOG(INFO) << argv[0] << ": missing operand\n";
     return -1;
   }

@@ -83,7 +83,6 @@
 -chromeos/ash/services/libassistant/
 -chromeos/components/kcer/kcer_nss
 -clank/
--codelabs/
 -components/allocation_recorder/
 -components/chromeos_camera
 -components/commerce/
@@ -146,3 +145,9 @@
 # Removing this directory may fail on the bot CI bot:
 # https://luci-milo.appspot.com/ui/p/chrome/builders/official/win-arm64-clang
 -chrome/installer/
+
+# //codelabs is a directory that contains examples for developers to modify as
+# they learn about chromium development. This is indefinitely opt-out because
+# it is not part of the main build, and we don't want developers to be blocked
+# by this check.
+-codelabs/
