@@ -52,6 +52,9 @@ export function unrollEvents(
 
   for (const event of events) {
     switch (event) {
+      case ChromiumBidi.BiDiModule.Bluetooth:
+        addEvents(Object.values(ChromiumBidi.Bluetooth.EventNames));
+        break;
       case ChromiumBidi.BiDiModule.BrowsingContext:
         addEvents(Object.values(ChromiumBidi.BrowsingContext.EventNames));
         break;

@@ -48,6 +48,7 @@ export class CdpTarget {
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
 
+  #deviceAccessEnabled = false;
   #cacheDisableState = false;
   #networkDomainEnabled = false;
   #fetchDomainStages = {
@@ -288,6 +289,9 @@ export class CdpTarget {
     } catch (err) {
       this.#logger?.(LogType.debugError, err);
       this.#networkDomainEnabled = !enabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
     }
   }
 
@@ -303,17 +307,49 @@ export class CdpTarget {
       return;
     }
     this.#cacheDisableState = cacheDisabled;
-    await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
-      cacheDisabled,
-    });
+    try {
+      await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
+        cacheDisabled,
+      });
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#cacheDisableState = !cacheDisabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
+    }
   }
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
     const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
-    await this.#cdpClient.sendCommand(
-      enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+    if (this.#deviceAccessEnabled === enabled) {
+      return;
+    }
+
+    this.#deviceAccessEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+      );
+    } catch (err) {
+      this.#logger?.(LogType.debugError, err);
+      this.#deviceAccessEnabled = !enabled;
+      if (!this.#isExpectedError(err)) {
+        throw err;
+      }
+    }
+  }
+
+  /**
+   * Heuristic checking if the error is due to the session being closed. If so, ignore the
+   * error.
+   */
+  #isExpectedError(err: unknown): boolean {
+    const error = err as {code?: unknown; message?: unknown};
+    return (
+      error.code === -32001 &&
+      error.message === 'Session with given id not found.'
     );
-    return;
   }
 
   #setEventListeners() {

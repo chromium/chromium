@@ -18,8 +18,9 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_DICT, ANY_STR, AnyWithEntries
-from test_helpers import (ANY_TIMESTAMP, execute_command, get_next_command_id,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_next_command_id, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -558,3 +559,40 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
         'method': 'log.entryAdded',
         'params': AnyWithEntries({'text': 'SOME_MESSAGE'})
     }) == resp
+
+
+@pytest.mark.asyncio
+async def test_unsubscribe_from_detached_target(websocket, context_id,
+                                                read_sorted_messages):
+    events = [
+        'bluetooth', 'browser', 'browsingContext', 'cdp', 'input', 'log',
+        'network', 'script', 'session'
+    ]
+
+    await subscribe(websocket, events)
+
+    close_command_id = await send_JSON_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id
+        }
+    })
+
+    unsubscribe_command_id = await send_JSON_command(websocket, {
+        "method": "session.unsubscribe",
+        "params": {
+            "events": events
+        }
+    })
+
+    # Read only command responses ignoring events previously subscribed.
+    [close_command_response, unsubscribe_command_response
+     ] = await read_sorted_messages(2, lambda message: "id" in message)
+    assert close_command_response == AnyExtending({
+        "id": close_command_id,
+        "type": "success"
+    })
+    assert unsubscribe_command_response == AnyExtending({
+        "id": unsubscribe_command_id,
+        "type": "success"
+    })
