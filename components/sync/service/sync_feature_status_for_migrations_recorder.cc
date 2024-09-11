@@ -22,7 +22,8 @@ SyncFeatureStatusForSyncToSigninMigrationFromInt(int value) {
   // Verify that `converted` is actually a valid enum value.
   switch (converted) {
     case SyncFeatureStatusForSyncToSigninMigration::kUndefined:
-    case SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused:
+    case SyncFeatureStatusForSyncToSigninMigration::kDisabled:
+    case SyncFeatureStatusForSyncToSigninMigration::kPaused:
     case SyncFeatureStatusForSyncToSigninMigration::kInitializing:
     case SyncFeatureStatusForSyncToSigninMigration::kActive:
       return converted;
@@ -125,13 +126,14 @@ SyncFeatureStatusForSyncToSigninMigration
 SyncFeatureStatusForMigrationsRecorder::DetermineSyncFeatureStatus(
     const SyncService* sync) const {
   if (!sync->IsSyncFeatureEnabled()) {
-    return SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused;
+    return SyncFeatureStatusForSyncToSigninMigration::kDisabled;
   }
 
   switch (sync->GetTransportState()) {
     case SyncService::TransportState::DISABLED:
+      return SyncFeatureStatusForSyncToSigninMigration::kDisabled;
     case SyncService::TransportState::PAUSED:
-      return SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused;
+      return SyncFeatureStatusForSyncToSigninMigration::kPaused;
     case SyncService::TransportState::START_DEFERRED:
     case SyncService::TransportState::INITIALIZING:
     case SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:

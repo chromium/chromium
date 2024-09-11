@@ -1003,6 +1003,9 @@ chromium-metrics-reviews@google.com.
     just before shutdown during the previous run of Chrome (i.e. before
     re-evaluation). See also data-type-specific statuses in
     `Sync.DataTypeActiveForSyncToSigninMigration.*`.
+
+    Before M130, &quot;disabled&quot; and &quot;paused&quot; were recorded to a
+    single bucket (number 1, now &quot;disabled&quot;).
   </summary>
 </histogram>
 

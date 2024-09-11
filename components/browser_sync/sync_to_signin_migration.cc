@@ -79,9 +79,10 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
           GetSyncFeatureStatusForSyncToSigninMigration(pref_service);
   bool forced = false;
   switch (status) {
-    case syncer::SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused:
+    case syncer::SyncFeatureStatusForSyncToSigninMigration::kDisabled:
+    case syncer::SyncFeatureStatusForSyncToSigninMigration::kPaused:
     case syncer::SyncFeatureStatusForSyncToSigninMigration::kActive:
-      // In both these cases, the status is known, and migration can go ahead.
+      // In all these cases, the status is known, and migration can go ahead.
       break;
     case syncer::SyncFeatureStatusForSyncToSigninMigration::kInitializing:
       // In the previous browser run, Sync didn't finish initializing. Defer
