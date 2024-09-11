@@ -318,58 +318,6 @@ TEST_F(OSCryptAsyncTest, EncryptorOption) {
     EXPECT_TRUE(
         MaybeVerifyFailedDecryptOperation(failing_plaintext, *test_ciphertext));
   }
-  // Test also that if there are multiple key providers with
-  // compatible_with_os_crypt_sync then the highest precedence is picked.
-  {
-    ProviderList providers;
-    providers.emplace_back(/*precedence=*/10u,
-                           std::make_unique<TestKeyProvider>(
-                               kTESTProviderName, /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/true));
-    providers.emplace_back(/*precedence=*/8u,
-                           std::make_unique<TestKeyProvider>(
-                               "FOO", /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/false));
-    providers.emplace_back(/*precedence=*/5u,
-                           std::make_unique<TestKeyProvider>(
-                               "BAR", /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/true));
-    OSCryptAsync factory(std::move(providers));
-    Encryptor encryptor =
-        GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
-    const auto ciphertext = encryptor.EncryptString("secrets");
-    ASSERT_TRUE(ciphertext);
-    // Should be encrypted with TEST - it's the highest precedence provider
-    // that indicates it's compatible with OSCrypt sync.
-    EXPECT_TRUE(std::equal(kTESTProviderName.cbegin(), kTESTProviderName.cend(),
-                           ciphertext->cbegin()));
-  }
-  // Just in case, test that order doesn't matter here, although this is also
-  // tested elsewhere.
-  {
-    ProviderList providers;
-    providers.emplace_back(/*precedence=*/5u,
-                           std::make_unique<TestKeyProvider>(
-                               "BAR", /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/true));
-    providers.emplace_back(/*precedence=*/8u,
-                           std::make_unique<TestKeyProvider>(
-                               "FOO", /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/false));
-    providers.emplace_back(/*precedence=*/10u,
-                           std::make_unique<TestKeyProvider>(
-                               kTESTProviderName, /*use_for_encryption=*/true,
-                               /*compatible_with_os_crypt_sync=*/true));
-    OSCryptAsync factory(std::move(providers));
-    Encryptor encryptor =
-        GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
-    const auto ciphertext = encryptor.EncryptString("secrets");
-    ASSERT_TRUE(ciphertext);
-    // Should be encrypted with TEST - it's the highest precedence provider
-    // that indicates it's compatible with OSCrypt sync.
-    EXPECT_TRUE(std::equal(kTESTProviderName.cbegin(), kTESTProviderName.cend(),
-                           ciphertext->cbegin()));
-  }
 }
 
 class SlowTestKeyProvider : public TestKeyProvider {
@@ -729,6 +677,24 @@ TEST_F(OSCryptAsyncDeathTest, OverlappingNamesBackwards) {
         std::ignore = GetInstanceSync(factory);
       },
       "Tags must not overlap.");
+}
+
+TEST_F(OSCryptAsyncDeathTest, TwoOsCryptCompatibleKeyProviders) {
+  ProviderList providers;
+  providers.emplace_back(
+      /*precedence=*/10u, std::make_unique<TestKeyProvider>(
+                              "ABC", /*use_for_encryption=*/true,
+                              /*compatible_with_os_crypt_sync=*/true));
+  providers.emplace_back(
+      /*precedence=*/15u, std::make_unique<TestKeyProvider>(
+                              "DEF", /*use_for_encryption=*/true,
+                              /*compatible_with_os_crypt_sync=*/true));
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        OSCryptAsync factory(std::move(providers));
+        std::ignore = GetInstanceSync(factory);
+      },
+      "Cannot have more than one key marked OSCrypt sync compatible.");
 }
 
 TEST_F(OSCryptAsyncTest, NoCrashWithLongNames) {

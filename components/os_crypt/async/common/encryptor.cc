@@ -93,7 +93,18 @@ Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
 Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
     : keys_(std::move(keys)),
-      provider_for_encryption_(provider_for_encryption) {}
+      provider_for_encryption_(provider_for_encryption) {
+  // It is not permitted to have multiple keys that mark themselves as OSCrypt
+  // sync compatible.
+  bool already_found_os_crypt_compatible = false;
+  for (const auto& key : keys_) {
+    if (key.second.is_os_crypt_sync_compatible_) {
+      CHECK(!already_found_os_crypt_compatible)
+          << "Cannot have more than one key marked OSCrypt sync compatible.";
+      already_found_os_crypt_compatible = true;
+    }
+  }
+}
 Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
@@ -331,10 +342,8 @@ Encryptor Encryptor::Clone(Option option) const {
     case Option::kEncryptSyncCompat:
       for (const auto& [provider, key] : keyring) {
         if (key.is_os_crypt_sync_compatible_) {
-          // Keys are already sorted by precedence, so if multiple keys are
-          // compatible, the one with the highest precedence (later in the
-          // keyring) is picked.
           provider_for_encryption = provider;
+          break;
         }
       }
       break;
