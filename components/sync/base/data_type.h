@@ -25,11 +25,6 @@ namespace syncer {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-//
-// |kDataTypeInfoMap| struct entries are in the same order as their definition
-// in DataType enum. When you make changes in DataType enum, don't forget to
-// update the |kDataTypeInfoMap| struct in data_type.cc and also the
-// SyncDataType histogram suffix in histograms.xml
 enum DataType {
   // Object type unknown. This may be used when:
   // a) The client received *valid* data from a data type which this version
