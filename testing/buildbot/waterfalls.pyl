@@ -5418,10 +5418,7 @@
           'out_dir_arg',
           'xcode_16_main',
           'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_webrtc_fyi_tests',
-        },
+        ]
       },
     },
   },

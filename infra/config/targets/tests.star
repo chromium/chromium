@@ -1388,10 +1388,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "ios_remoting_unittests",
-)
-
-targets.tests.isolated_script_test(
     name = "ios_testing_unittests",
 )
 

@@ -3788,7 +3788,6 @@ targets.legacy_basic_suite(
                 shards = 3,
             ),
         ),
-        "ios_remoting_unittests": targets.legacy_test_config(),
         "ios_testing_unittests": targets.legacy_test_config(),
         "net_unittests": targets.legacy_test_config(),
         # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
@@ -3856,13 +3855,6 @@ targets.legacy_basic_suite(
                 shards = 2,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_remoting_fyi_unittests",
-    tests = {
-        "ios_remoting_unittests": targets.legacy_test_config(),
     },
 )
 

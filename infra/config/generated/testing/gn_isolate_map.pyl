@@ -958,10 +958,6 @@
     "label": "//ios/net:ios_net_unittests",
     "type": "generated_script",
   },
-  "ios_remoting_unittests": {
-    "label": "//remoting/ios:ios_remoting_unittests",
-    "type": "generated_script",
-  },
   "ios_testing_unittests": {
     "label": "//ios/testing:ios_testing_unittests",
     "type": "generated_script",

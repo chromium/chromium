@@ -1005,11 +1005,6 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "ios_remoting_unittests",
-    label = "//remoting/ios:ios_remoting_unittests",
-)
-
-targets.binaries.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
 )

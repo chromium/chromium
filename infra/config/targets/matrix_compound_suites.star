@@ -1328,20 +1328,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "ios_webrtc_fyi_tests",
-    basic_suites = {
-        "ios_remoting_fyi_unittests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(

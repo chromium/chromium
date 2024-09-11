@@ -4167,7 +4167,6 @@
           'shards': 3,
         },
       },
-      'ios_remoting_unittests': {},
       'ios_testing_unittests': {},
       'net_unittests': {},
       'services_unittests': {},
@@ -4224,10 +4223,6 @@
           'shards': 2,
         },
       },
-    },
-
-    'ios_remoting_fyi_unittests': {
-      'ios_remoting_unittests': {},
     },
 
     'ios_screen_size_dependent_tests': {
@@ -7700,17 +7695,6 @@
         ],
       },
       'ios_screen_size_dependent_tests': {
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
-    'ios_webrtc_fyi_tests': {
-      'ios_remoting_fyi_unittests': {
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_5',
           'SIM_IPAD_AIR_6TH_GEN_18_0',
