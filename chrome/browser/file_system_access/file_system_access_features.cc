@@ -18,7 +18,11 @@ BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
 // Enables persistent permissions for the File System Access API.
 BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              "kFileSystemAccessPersistentPermissions",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Enables the updated Page Info UI for the persistent permissions feature.
 BASE_FEATURE(kFileSystemAccessPersistentPermissionsUpdatedPageInfo,

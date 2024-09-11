@@ -238,7 +238,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
            "file-system-last-picked-directory", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FEDERATED_IDENTITY_SHARING, "fedcm-share",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,

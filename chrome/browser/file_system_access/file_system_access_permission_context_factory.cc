@@ -13,28 +13,16 @@
 ChromeFileSystemAccessPermissionContext*
 FileSystemAccessPermissionContextFactory::GetForProfile(
     content::BrowserContext* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40101963): Local FS portion of FSA API is not yet enabled on
-  // Android. Create the permission context instance when supported on Android.
-  return nullptr;
-#else
   return static_cast<ChromeFileSystemAccessPermissionContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
-#endif
 }
 
 // static
 ChromeFileSystemAccessPermissionContext*
 FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
     content::BrowserContext* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40101963): Local FS portion of FSA API is not yet enabled on
-  // Android. Create the permission context instance when supported on Android.
-  return nullptr;
-#else
   return static_cast<ChromeFileSystemAccessPermissionContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, false));
-#endif
 }
 
 // static
