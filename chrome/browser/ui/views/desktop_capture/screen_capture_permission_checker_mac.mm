@@ -6,6 +6,7 @@
 
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/cocoa/permissions_utils.h"
 #include "ui/base/ui_base_features.h"
@@ -40,6 +41,10 @@ const base::FeatureParam<int> kDesktopCapturePermissionCheckerUpdateIntervalMs{
 std::unique_ptr<ScreenCapturePermissionCheckerMac>
 ScreenCapturePermissionCheckerMac::MaybeCreate(
     base::RepeatingCallback<void(bool)> callback) {
+  if (!system_media_permissions::ScreenCaptureNeedsSystemLevelPermissions()) {
+    return nullptr;
+  }
+
   if (base::FeatureList::IsEnabled(
           kDesktopCapturePermissionCheckerKillSwitch) &&
       base::mac::MacOSMajorVersion() >= 13) {
