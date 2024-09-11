@@ -42,34 +42,36 @@ TEST(CookiesHelperUnittest, ValidateCrossSiteAncestorErrorCases) {
   std::string site = "https://example.com";
   std::string invalid_site = "invalid";
   struct {
+    std::string description;
     std::string url;
     std::optional<std::string> top_level_site;
     std::optional<bool> has_cross_site_ancestor;
     std::string error_str;
   } error_cases[] = {
-      {// No `top_level_site` and a `has_cross_site_ancestor`
+      {/*description=*/"No top_level_site and a has_cross_site_ancestor",
        /*url=*/site, /*top_level_site=*/std::nullopt,
        /*has_cross_site_ancestor=*/true,
        /*error_str=*/
        "CookiePartitionKey.topLevelSite is not present when "
        "CookiePartitionKey.hasCrossSiteAncestor is present."},
-      {// Empty string for `top_level_site` and a
-       // `has_cross_site_ancestor` value of true
+      {/*description=*/"Empty string for top_level_site and a "
+                       "has_cross_site_ancestor` value of true",
        /*url=*/site, /*top_level_site=*/"", /*has_cross_site_ancestor=*/true,
        /*error_str=*/"CookiePartitionKey.hasCrossSiteAncestor is invalid."},
-      {// Invalid `url`
+      {/*description=*/"Invalid url",
        /*url=*/invalid_site, /*top_level_site=*/site,
        /*has_cross_site_ancestor=*/true, /*error_str=*/"Invalid url_string."},
-      {// Invalid `top_level_site`
+      {/*description=*/"Invalid top_level_site",
        /*url=*/site, /*top_level_site=*/invalid_site,
        /*has_cross_site_ancestor=*/true,
        /*error_str=*/"Invalid value for CookiePartitionKey.topLevelSite."},
-      {// `has_cross_site_ancestor` can not be true if `url` and
-       // `top_level_site` aren't first party.
+      {/*description=*/"has_cross_site_ancestor can not be true if url and "
+                       "top_level_site` aren't first party.",
        /*url=*/site, /*top_level_site=*/invalid_site,
        /*has_cross_site_ancestor=*/false,
        /*error_str=*/"Invalid value for CookiePartitionKey.topLevelSite."},
-      {// `has_cross_site_ancestor` must be populated for validation.
+      {/*description=*/"has_cross_site_ancestor must be populated for "
+                       "validation.",
        /*url=*/site, /*top_level_site=*/site,
        /*has_cross_site_ancestor=*/std::nullopt,
        /*error_str=*/
@@ -78,6 +80,7 @@ TEST(CookiesHelperUnittest, ValidateCrossSiteAncestorErrorCases) {
   };
 
   for (const auto& tc : error_cases) {
+    SCOPED_TRACE(tc.description);
     base::Value::Dict partition_key_vals;
 
     if (tc.top_level_site.has_value()) {
