@@ -54,6 +54,11 @@ declare_args() {
 
   # DBSC is only supported on windows for now
   enable_device_bound_sessions = is_win
+
+  # Bracketed URIs parsing is only available for debug builds.
+  # TODO(crbug.com/365771838): Ensure tests are updated if needed if this
+  # feature is changed at all.
+  enable_bracketed_proxy_uris = is_debug
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,

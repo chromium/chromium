@@ -12,8 +12,10 @@
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "build/buildflag.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 
 namespace net {
 
@@ -156,6 +158,14 @@ bool ProxyChain::IsValidInternal() const {
     return is_valid;
   }
   DCHECK(is_multi_proxy());
+
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  // A chain can only be multi-proxy in release builds if it is for ip
+  // protection.
+  if (!is_for_ip_protection() && is_multi_proxy()) {
+    return false;
+  }
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
   // Verify that the chain is zero or more SCHEME_QUIC servers followed by zero
   // or more SCHEME_HTTPS servers.

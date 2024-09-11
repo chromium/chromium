@@ -4,8 +4,13 @@
 
 #include "net/base/proxy_string_util.h"
 
+#include <string>
+#include <vector>
+
+#include "build/buildflag.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -121,6 +126,25 @@ TEST(ProxySpecificationUtilTest, DirectProxyUriToProxyChain) {
       ProxyUriToProxyChain("direct://xyz", ProxyServer::SCHEME_HTTP);
   EXPECT_FALSE(invalid_uri.IsValid());
   EXPECT_FALSE(invalid_uri.is_direct());
+}
+
+// A multi-proxy string containing URIs is not acceptable input for the
+// ProxyUriToProxyChain function and should return an invalid `ProxyChain()`.
+TEST(ProxySpecificationUtilTest, ProxyUriToProxyChainWithBracketsInvalid) {
+  // Release builds should return an invalid proxy chain for multi-proxy chains.
+  const char* const invalid_multi_proxy_uris[] = {
+      "[]",
+      "[direct://]",
+      "[https://foopy]",
+      "[https://foopy https://hoopy]",
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        ProxyUriToProxyChain(uri, ProxyServer::SCHEME_HTTP);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
 }
 
 // Test parsing some invalid inputs.
@@ -250,5 +274,116 @@ TEST(ProxySpecificationUtilTest, InvalidPacResultElementToProxyServer) {
   }
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// A multi-proxy chain that contains any mention of direct will be considered an
+// invalid `ProxyChain()`.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainMultiProxyDirectIsInvalid) {
+  const char* const invalid_multi_proxy_uris[] = {
+      "[direct://xyz]",             // direct with ports
+      "[direct:// direct://]",      // Two directs in chain
+      "[direct:// https://foopy]",  // direct first in chain
+      "[https://foopy direct://]",  // direct later in chain
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
+}
+
+// A input containing a single uri of direct will be valid.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainSingleDirectIsValid) {
+  const char* const valid_direct_uris[] = {
+      "direct://",    // non-bracketed direct
+      "[direct://]",  // bracketed direct
+  };
+
+  for (const char* uri : valid_direct_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_TRUE(multi_proxy_uri.IsValid());
+    EXPECT_TRUE(multi_proxy_uri.is_direct());
+  }
+}
+
+TEST(ProxySpecificationUtilTest, MultiProxyUrisToProxyChainValid) {
+  const struct {
+    const char* const input_uri;
+    const std::vector<std::string> expected_uris;
+    ProxyServer::Scheme expected_scheme;
+  } tests[] = {
+      // 1 Proxy (w/ and w/o brackets):
+      {"[https://foopy:443]", {"https://foopy:443"}, ProxyServer::SCHEME_HTTPS},
+      {"https://foopy:443", {"https://foopy:443"}, ProxyServer::SCHEME_HTTPS},
+
+      // 2 Proxies:
+      {"[https://foopy:443 https://hoopy:443]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+
+      // Extra padding in uris string ignored:
+      {" [https://foopy:443 https://hoopy:443] ",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"[\thttps://foopy:443 https://hoopy:443\t       ] ",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"     \t[       https://foopy:443 https://hoopy:443\t        ]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+      {"[https://foopy:443  https://hoopy:443]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},  // Delimiter is two spaces.
+      {"[https://foopy \thttps://hoopy]",
+       {"https://foopy:443", "https://hoopy:443"},
+       ProxyServer::SCHEME_HTTPS},  // Delimiter is followed by tab.
+
+      // 3 Proxies:
+      {"[https://foopy:443 https://hoopy:443 https://loopy:443]",
+       {"https://foopy:443", "https://hoopy:443", "https://loopy:443"},
+       ProxyServer::SCHEME_HTTPS},
+  };
+
+  for (const auto& test : tests) {
+    ProxyChain proxy_chain =
+        MultiProxyUrisToProxyChain(test.input_uri, test.expected_scheme);
+
+    EXPECT_TRUE(proxy_chain.IsValid());
+    EXPECT_EQ(proxy_chain.length(), test.expected_uris.size());
+
+    std::vector<ProxyServer> proxies = proxy_chain.proxy_servers();
+    for (size_t i = 0; i < proxies.size(); i++) {
+      const ProxyServer& proxy = proxies[i];
+      EXPECT_TRUE(proxy.is_valid());
+      EXPECT_EQ(test.expected_uris[i], ProxyServerToProxyUri(proxy));
+    }
+  }
+}
+
+// If the input URIs is invalid, an invalid `ProxyChain()` will be returned.
+TEST(ProxySpecificationUtilTest,
+     MultiProxyUrisToProxyChainInvalidFormatReturnsInvalidProxyChain) {
+  const char* const invalid_multi_proxy_uris[] = {
+      "",                                 // Empty string
+      "   ",                              // String with only spaces
+      "[]",                               // No proxies within brackets
+      "https://foopy https://hoopy",      // Missing brackets
+      "[https://foopy https://hoopy",     // Missing bracket
+      "https://foopy https://hoopy]",     // Missing bracket
+      "https://foopy \t   https://hoopy"  // Missing brackets and bad delimiter
+  };
+
+  for (const char* uri : invalid_multi_proxy_uris) {
+    ProxyChain multi_proxy_uri =
+        MultiProxyUrisToProxyChain(uri, ProxyServer::SCHEME_HTTPS);
+    EXPECT_FALSE(multi_proxy_uri.IsValid());
+    EXPECT_FALSE(multi_proxy_uri.is_direct());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 }  // namespace
 }  // namespace net

@@ -85,8 +85,10 @@ const ProxyServer kHttpsNestedProxyServer{
 
 const ProxyChain kHttpProxyChain{kHttpProxyServer};
 const ProxyChain kHttpsProxyChain{kHttpsProxyServer};
-const ProxyChain kHttpsNestedProxyChain{
-    {kHttpsProxyServer, kHttpsNestedProxyServer}};
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
+const ProxyChain kHttpsNestedProxyChain =
+    ProxyChain::ForIpProtection({{kHttpsProxyServer, kHttpsNestedProxyServer}});
 
 constexpr char kTestHeaderName[] = "Foo";
 // Note: `kTestSpdyHeaderName` should be a lowercase version of

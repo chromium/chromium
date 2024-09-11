@@ -6,10 +6,13 @@
 
 #include <vector>
 
+#include "base/logging.h"
+#include "build/buildflag.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,42 +30,51 @@ TEST(ProxyListTest, SetFromPacString) {
     const char* pac_input;
     const char* debug_output;
   } tests[] = {
-    // Valid inputs:
-    {  "PROXY foopy:10",
-       "PROXY foopy:10",
-    },
-    {  " DIRECT",  // leading space.
-       "DIRECT",
-    },
-    {  "PROXY foopy1 ; proxy foopy2;\t DIRECT",
-       "PROXY foopy1:80;PROXY foopy2:80;DIRECT",
-    },
-    {  "proxy foopy1 ; SOCKS foopy2",
-       "PROXY foopy1:80;SOCKS foopy2:1080",
-    },
-    // Try putting DIRECT first.
-    {  "DIRECT ; proxy foopy1 ; DIRECT ; SOCKS5 foopy2;DIRECT ",
-       "DIRECT;PROXY foopy1:80;DIRECT;SOCKS5 foopy2:1080;DIRECT",
-    },
-    // Try putting DIRECT consecutively.
-    {  "DIRECT ; proxy foopy1:80; DIRECT ; DIRECT",
-       "DIRECT;PROXY foopy1:80;DIRECT;DIRECT",
-    },
+      // Valid inputs:
+      {
+          "PROXY foopy:10",
+          "PROXY foopy:10",
+      },
+      {
+          " DIRECT",  // leading space.
+          "DIRECT",
+      },
+      {
+          "PROXY foopy1 ; proxy foopy2;\t DIRECT",
+          "PROXY foopy1:80;PROXY foopy2:80;DIRECT",
+      },
+      {
+          "proxy foopy1 ; SOCKS foopy2",
+          "PROXY foopy1:80;SOCKS foopy2:1080",
+      },
+      // Try putting DIRECT first.
+      {
+          "DIRECT ; proxy foopy1 ; DIRECT ; SOCKS5 foopy2;DIRECT ",
+          "DIRECT;PROXY foopy1:80;DIRECT;SOCKS5 foopy2:1080;DIRECT",
+      },
+      // Try putting DIRECT consecutively.
+      {
+          "DIRECT ; proxy foopy1:80; DIRECT ; DIRECT",
+          "DIRECT;PROXY foopy1:80;DIRECT;DIRECT",
+      },
 
-    // Invalid inputs (parts which aren't understood get
-    // silently discarded):
-    //
-    // If the proxy list string parsed to empty, automatically fall-back to
-    // DIRECT.
-    {  "PROXY-foopy:10",
-       "DIRECT",
-    },
-    {  "PROXY",
-       "DIRECT",
-    },
-    {  "PROXY foopy1 ; JUNK ; JUNK ; SOCKS5 foopy2 ; ;",
-       "PROXY foopy1:80;SOCKS5 foopy2:1080",
-    },
+      // Invalid inputs (parts which aren't understood get
+      // silently discarded):
+      //
+      // If the proxy list string parsed to empty, automatically fall-back to
+      // DIRECT.
+      {
+          "PROXY-foopy:10",
+          "DIRECT",
+      },
+      {
+          "PROXY",
+          "DIRECT",
+      },
+      {
+          "PROXY foopy1 ; JUNK ; JUNK ; SOCKS5 foopy2 ; ;",
+          "PROXY foopy1:80;SOCKS5 foopy2:1080",
+      },
   };
 
   for (const auto& test : tests) {
@@ -103,14 +115,14 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
 }
 
 TEST(ProxyListTest, RemoveProxiesWithoutSchemeWithProxyChains) {
-  const ProxyChain kProxyChainFooHttps({
+  const auto kProxyChainFooHttps = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "foo-a", 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "foo-b", 443),
   });
-  const ProxyChain kProxyChainBarMixed({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_SOCKS5,
+  const auto kProxyChainBarMixed = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_QUIC,
                                          "bar-a", 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "bar-b", 443),
@@ -379,7 +391,100 @@ TEST(ProxyListTest, ToPacString) {
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
   EXPECT_EQ(list.ToPacString(), "HTTPS foo:443");
+  // ToPacString should fail for proxy chains.
+  list.AddProxyChain(ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+  EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
+}
 
+TEST(ProxyListTest, ToDebugString) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  list.AddProxyChain(ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+
+  EXPECT_EQ(
+      list.ToDebugString(),
+      "HTTPS foo:443;[https://foo-a:443, https://foo-b:443] (IP Protection)");
+}
+
+TEST(ProxyListTest, ToValue) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  list.AddProxyChain(ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+
+  base::Value expected(base::Value::Type::LIST);
+  base::Value::List& exp_list = expected.GetList();
+  exp_list.Append("[https://foo:443]");
+  exp_list.Append("[https://foo-a:443, https://foo-b:443] (IP Protection)");
+
+  EXPECT_EQ(list.ToValue(), expected);
+}
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// The following tests are for non-release builds where multi-proxy chains are
+// permitted outside of Ip Protection.
+
+TEST(ProxyListTest,
+     NonIpProtectionMultiProxyChainRemoveProxiesWithoutSchemeWithProxyChains) {
+  const ProxyChain kProxyChainFooHttps({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  });
+  const ProxyChain kProxyChainBarMixed({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_QUIC,
+                                         "bar-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "bar-b", 443),
+  });
+  const ProxyChain kProxyChainGraultSocks = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_SOCKS4, "grault", 443);
+
+  ProxyList list;
+  list.AddProxyChain(kProxyChainFooHttps);
+  list.AddProxyChain(kProxyChainBarMixed);
+  list.AddProxyChain(kProxyChainGraultSocks);
+  list.AddProxyChain(ProxyChain::Direct());
+
+  // Remove anything that isn't entirely HTTPS.
+  list.RemoveProxiesWithoutScheme(ProxyServer::SCHEME_HTTPS);
+
+  std::vector<net::ProxyChain> expected = {
+      kProxyChainFooHttps,
+      ProxyChain::Direct(),
+  };
+  EXPECT_EQ(list.AllChains(), expected);
+}
+
+// `ToPacString` should only be called if the list contains no multi-proxy
+// chains, as those cannot be represented in PAC syntax. This is not an issue in
+// release builds because a `ProxyChain` constructed with multiple proxy servers
+// would automatically default to an empty, invalid
+// `ProxyChain` (unless for Ip Protection); however, in non-release builds,
+// multi-proxy chains are permitted which means they must be CHECKED when this
+// function is called.
+TEST(ProxyListTest, NonIpProtectionMultiProxyChainToPacString) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  EXPECT_EQ(list.ToPacString(), "HTTPS foo:443");
   // ToPacString should fail for proxy chains.
   list.AddProxyChain(ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
@@ -390,7 +495,7 @@ TEST(ProxyListTest, ToPacString) {
   EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
 }
 
-TEST(ProxyListTest, ToDebugString) {
+TEST(ProxyListTest, NonIpProtectionMultiProxyChainToDebugString) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
@@ -405,7 +510,7 @@ TEST(ProxyListTest, ToDebugString) {
             "HTTPS foo:443;[https://foo-a:443, https://foo-b:443]");
 }
 
-TEST(ProxyListTest, ToValue) {
+TEST(ProxyListTest, NonIpProtectionMultiProxyChainToValue) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
@@ -423,6 +528,7 @@ TEST(ProxyListTest, ToValue) {
 
   EXPECT_EQ(list.ToValue(), expected);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 }  // anonymous namespace
 

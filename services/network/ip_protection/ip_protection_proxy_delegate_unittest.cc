@@ -816,8 +816,10 @@ TEST_F(IpProtectionProxyDelegateTest, OnFallback) {
       "NetworkService.IpProtection.ProxyChainFallback", kChainId, 1);
 }
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
-  net::ProxyChain chain1({
+  net::ProxyChain chain1 = net::ProxyChain::ForIpProtection({
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "proxy2a.com", 80),
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
@@ -831,7 +833,7 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
   existing_proxy_list.AddProxyChain(chain2);
   existing_proxy_list.AddProxyChain(chain3);
 
-  net::ProxyChain custom1({
+  net::ProxyChain custom1 = net::ProxyChain::ForIpProtection({
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "custom-a.com", 80),
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,

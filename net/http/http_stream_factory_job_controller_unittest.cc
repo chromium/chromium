@@ -646,6 +646,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 class JobControllerReconsiderProxyAfterErrorTest
     : public HttpStreamFactoryJobControllerTestBase {
  public:
@@ -1259,8 +1261,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1{{kBadProxyServer1, kGoodProxyServer}};
-  const ProxyChain kNestedProxyChain2{{kBadProxyServer2, kGoodProxyServer}};
+  const ProxyChain kNestedProxyChain1 =
+      ProxyChain::ForIpProtection({{kBadProxyServer1, kGoodProxyServer}});
+  const ProxyChain kNestedProxyChain2 =
+      ProxyChain::ForIpProtection({{kBadProxyServer2, kGoodProxyServer}});
 
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {
@@ -1497,8 +1501,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1{{kGoodProxyServer, kBadProxyServer1}};
-  const ProxyChain kNestedProxyChain2{{kGoodProxyServer, kBadProxyServer2}};
+  const ProxyChain kNestedProxyChain1 =
+      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer1}});
+  const ProxyChain kNestedProxyChain2 =
+      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer2}});
 
   for (GURL dest_url :
        {GURL("http://www.example.com"), GURL("https://www.example.com")}) {

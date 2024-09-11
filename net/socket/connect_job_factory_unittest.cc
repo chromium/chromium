@@ -139,6 +139,8 @@ class TestTransportConnectJobFactory : public TransportConnectJob::Factory {
   std::vector<scoped_refptr<TransportSocketParams>> params_;
 };
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 class ConnectJobFactoryTest : public TestWithTaskEnvironment {
  public:
   ConnectJobFactoryTest() {
@@ -575,7 +577,8 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
                                   HostPortPair("proxy1.test", 443)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 443)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       kEndpoint, kNestedProxyChain, TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -652,7 +655,8 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
                                   HostPortPair("proxy1.test", 443)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 443)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       /*using_ssl=*/false, kEndpoint, kNestedProxyChain,
@@ -729,7 +733,8 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 443)};
 
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       kEndpoint, kNestedProxyChain, TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -825,7 +830,8 @@ TEST_F(ConnectJobFactoryTest,
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 443)};
 
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       /*using_ssl=*/true, kEndpoint, kNestedProxyChain,

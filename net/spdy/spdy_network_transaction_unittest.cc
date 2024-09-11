@@ -187,8 +187,9 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
     // Start the transaction, read some data, finish.
     void RunDefaultTest() {
-      if (!StartDefaultTest())
+      if (!StartDefaultTest()) {
         return;
+      }
       FinishDefaultTest();
     }
 
@@ -228,8 +229,9 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
       output_.rv = callback_.WaitForResult();
       // Finish async network reads/writes.
       base::RunLoop().RunUntilIdle();
-      if (output_.rv != OK)
+      if (output_.rv != OK) {
         session_->spdy_session_pool()->CloseCurrentSessions(ERR_ABORTED);
+      }
     }
 
     void WaitForCallbackToComplete() { output_.rv = callback_.WaitForResult(); }
@@ -281,8 +283,9 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
         SocketDataProvider* data,
         std::unique_ptr<SSLSocketDataProvider> ssl_provider) {
       data_vector_.push_back(data);
-      if (ssl_provider->next_proto == kProtoUnknown)
+      if (ssl_provider->next_proto == kProtoUnknown) {
         ssl_provider->next_proto = kProtoHTTP2;
+      }
       // Even when next_protos only includes HTTP1, `application_settions`
       // always includes the full list from the HttpNetworkSession. The
       // SSLClientSocket layer, which is mocked out in these tests, is the layer
@@ -943,7 +946,8 @@ TEST_P(SpdyNetworkTransactionTest, ThreeGets) {
   spdy::SpdySerializedFrame fbody3(spdy_util_.ConstructSpdyDataFrame(5, true));
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(req2, 3),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(req2, 3),
       CreateMockWrite(req3, 6),
   };
   MockRead reads[] = {
@@ -1022,7 +1026,8 @@ TEST_P(SpdyNetworkTransactionTest, TwoGetsLateBinding) {
   spdy::SpdySerializedFrame fbody2(spdy_util_.ConstructSpdyDataFrame(3, true));
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(req2, 3),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(req2, 3),
   };
   MockRead reads[] = {
       CreateMockRead(resp, 1),  CreateMockRead(body, 2),
@@ -1099,7 +1104,8 @@ TEST_P(SpdyNetworkTransactionTest, TwoGetsLateBindingFromPreconnect) {
   spdy::SpdySerializedFrame fbody2(spdy_util_.ConstructSpdyDataFrame(3, true));
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(req2, 3),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(req2, 3),
   };
   MockRead reads[] = {
       CreateMockRead(resp, 1),  CreateMockRead(body, 2),
@@ -1207,8 +1213,10 @@ TEST_P(SpdyNetworkTransactionTest, ThreeGetsWithMaxConcurrent) {
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(settings_ack, 5),
-      CreateMockWrite(req2, 6), CreateMockWrite(req3, 10),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(settings_ack, 5),
+      CreateMockWrite(req2, 6),
+      CreateMockWrite(req3, 10),
   };
 
   MockRead reads[] = {
@@ -1335,7 +1343,8 @@ TEST_P(SpdyNetworkTransactionTest, FourGetsWithMaxConcurrentPriority) {
       spdy_util_.ConstructSpdySettings(settings));
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(settings_ack, 5),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(settings_ack, 5),
       // By making these synchronous, it guarantees that they are not *started*
       // before their sequence number, which in turn verifies that only a single
       // request is in-flight at a time.
@@ -1467,7 +1476,8 @@ TEST_P(SpdyNetworkTransactionTest, ThreeGetsWithMaxConcurrentDelete) {
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(settings_ack, 5),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(settings_ack, 5),
       CreateMockWrite(req2, 6),
   };
   MockRead reads[] = {
@@ -1548,8 +1558,9 @@ class KillerCallback : public TestCompletionCallbackBase {
 
  private:
   void OnComplete(int result) {
-    if (result < 0)
+    if (result < 0) {
       transaction_.reset();
+    }
 
     SetResult(result);
   }
@@ -1827,7 +1838,8 @@ TEST_P(SpdyNetworkTransactionTest, ChunkedPost) {
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(body, 1),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(body, 1),
   };
 
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
@@ -1862,8 +1874,10 @@ TEST_P(SpdyNetworkTransactionTest, DelayedChunkedPost) {
   spdy::SpdySerializedFrame chunk2(spdy_util_.ConstructSpdyDataFrame(1, false));
   spdy::SpdySerializedFrame chunk3(spdy_util_.ConstructSpdyDataFrame(1, true));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(chunk1, 1),
-      CreateMockWrite(chunk2, 2), CreateMockWrite(chunk3, 3),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(chunk1, 1),
+      CreateMockWrite(chunk2, 2),
+      CreateMockWrite(chunk3, 3),
   };
 
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
@@ -1984,7 +1998,8 @@ TEST_P(SpdyNetworkTransactionTest, ResponseBeforePostCompletes) {
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(body, 3),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(body, 3),
   };
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
   MockRead reads[] = {
@@ -2072,7 +2087,8 @@ TEST_P(SpdyNetworkTransactionTest, ResponseWithoutHeaders) {
   spdy::SpdySerializedFrame rst(
       spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_PROTOCOL_ERROR));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(rst, 2),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(rst, 2),
   };
   SequencedSocketData data(reads, writes);
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
@@ -2089,7 +2105,8 @@ TEST_P(SpdyNetworkTransactionTest, ResponseWithTwoSynReplies) {
   spdy::SpdySerializedFrame rst(
       spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_PROTOCOL_ERROR));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(rst, 4),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(rst, 4),
   };
 
   spdy::SpdySerializedFrame resp0(
@@ -2134,12 +2151,11 @@ TEST_P(SpdyNetworkTransactionTest, ResetReplyWithTransferEncoding) {
   spdy::SpdySerializedFrame rst(
       spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_PROTOCOL_ERROR));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(rst, 2),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(rst, 2),
   };
 
-  const char* const headers[] = {
-    "transfer-encoding", "chunked"
-  };
+  const char* const headers[] = {"transfer-encoding", "chunked"};
   spdy::SpdySerializedFrame resp(
       spdy_util_.ConstructSpdyGetReply(headers, 1, 1));
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
@@ -4773,7 +4789,8 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -4884,6 +4901,8 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
 
 // Same as above except for nested proxies where HTTP_1_1_REQUIRED is received
 // from the second proxy in the chain.
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   request_.method = "GET";
 
@@ -4891,7 +4910,8 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -5479,7 +5499,8 @@ TEST_P(SpdyNetworkTransactionTest, RetryAfterRefused) {
   spdy::SpdySerializedFrame req2(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 3, LOWEST));
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(req2, 2),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(req2, 2),
   };
 
   spdy::SpdySerializedFrame refused(
@@ -5545,8 +5566,10 @@ TEST_P(SpdyNetworkTransactionTest, OutOfOrderHeaders) {
   spdy::SpdySerializedFrame req3(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 5, MEDIUM));
   MockWrite writes[] = {
-      MockWrite(ASYNC, ERR_IO_PENDING, 0), CreateMockWrite(req1, 1),
-      CreateMockWrite(req2, 5), CreateMockWrite(req3, 6),
+      MockWrite(ASYNC, ERR_IO_PENDING, 0),
+      CreateMockWrite(req1, 1),
+      CreateMockWrite(req2, 5),
+      CreateMockWrite(req3, 6),
   };
 
   spdy::SpdySerializedFrame resp1(
@@ -5650,7 +5673,8 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateReceived) {
       spdy_util_.ConstructSpdyDataFrame(1, content, true));
 
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(body, 1),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(body, 1),
       CreateMockWrite(body_end, 2),
   };
 
@@ -5832,8 +5856,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateSent) {
   // Finish async network reads.
   base::RunLoop().RunUntilIdle();
 
-  SpdyHttpStream* stream =
-      static_cast<SpdyHttpStream*>(trans->stream_.get());
+  SpdyHttpStream* stream = static_cast<SpdyHttpStream*>(trans->stream_.get());
   ASSERT_TRUE(stream);
   ASSERT_TRUE(stream->stream());
 
@@ -5879,7 +5902,8 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateOverflow) {
   // We're not going to write a data frame with FIN, we'll receive a bad
   // WINDOW_UPDATE while sending a request and will send a RST_STREAM frame.
   MockWrite writes[] = {
-      CreateMockWrite(req, 0), CreateMockWrite(body, 2),
+      CreateMockWrite(req, 0),
+      CreateMockWrite(body, 2),
       CreateMockWrite(rst, 3),
   };
 
@@ -6099,8 +6123,9 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResume) {
   reads.push_back(CreateMockRead(window_update, i++));
 
   // Stalled frames which can be sent after receiving window updates.
-  if (last_body.size() > 0)
+  if (last_body.size() > 0) {
     writes.push_back(CreateMockWrite(body4, i++));
+  }
   writes.push_back(CreateMockWrite(body5, i++));
 
   spdy::SpdySerializedFrame reply(
@@ -6254,8 +6279,9 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   writes.push_back(CreateMockWrite(settings_ack, i++));
 
   // Stalled frames which can be sent after |settings_ack|.
-  if (last_body.size() > 0)
+  if (last_body.size() > 0) {
     writes.push_back(CreateMockWrite(body4, i++));
+  }
   writes.push_back(CreateMockWrite(body5, i++));
 
   spdy::SpdySerializedFrame reply(
@@ -6416,8 +6442,9 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   writes.push_back(CreateMockWrite(settings_ack, i++));
 
   // Stalled frames which can be sent after |settings_ack|.
-  if (last_body.size() > 0)
+  if (last_body.size() > 0) {
     writes.push_back(CreateMockWrite(body4, i++));
+  }
   writes.push_back(CreateMockWrite(body5, i++));
 
   spdy::SpdySerializedFrame reply(

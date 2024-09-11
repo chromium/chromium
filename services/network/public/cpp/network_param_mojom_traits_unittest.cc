@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/public/cpp/network_param_mojom_traits.h"
+
 #include <vector>
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
-#include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "services/network/public/mojom/network_param.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,12 +22,14 @@ TEST(ProxyChain, SerializeAndDeserializeInvalid) {
   EXPECT_EQ(original, copied);
 }
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST(ProxyChain, SerializeAndDeserialize) {
   const net::ProxyChain kChains[] = {
       net::ProxyChain::Direct(),
       net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
           net::ProxyServer::SCHEME_HTTPS, "foo1", 80)),
-      net::ProxyChain({
+      net::ProxyChain::ForIpProtection({
           net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
           net::ProxyServer::FromSchemeHostAndPort(

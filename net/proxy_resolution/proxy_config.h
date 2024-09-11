@@ -36,6 +36,8 @@ class NET_EXPORT ProxyConfig {
  public:
   // ProxyRules describes the "manual" proxy settings.
   struct NET_EXPORT ProxyRules {
+    // A `Type` other than `EMPTY` does not guarantee the presence of a valid
+    // proxy chain.
     enum class Type {
       EMPTY,
       PROXY_LIST,
@@ -81,6 +83,8 @@ class NET_EXPORT ProxyConfig {
     //    to all otherwise unspecified url-schemes, however the default proxy-
     //    scheme for proxy urls in the 'socks' list is understood to be
     //    socks4:// if unspecified.
+    //  * In debug mode, allow_bracketed_proxy_chains can be set to true. In
+    //    this case, brackets can be used to format multi-proxy chains.
     //
     // For example:
     //   "http=foopy:80;ftp=foopy2"  -- use HTTP proxy "foopy:80" for http://
@@ -102,7 +106,8 @@ class NET_EXPORT ProxyConfig {
     //   "http=foopy;socks=foopy2   --  use HTTP proxy "foopy" for http URLs,
     //                                  and use socks4://foopy2 for all other
     //                                  URLs.
-    void ParseFromString(const std::string& proxy_rules);
+    void ParseFromString(const std::string& proxy_rules,
+                         bool allow_bracketed_proxy_chains = false);
 
     // Returns one of {&proxies_for_http, &proxies_for_https, &proxies_for_ftp,
     // &fallback_proxies}, or NULL if there is no proxy to use.

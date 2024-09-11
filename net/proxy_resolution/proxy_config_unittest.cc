@@ -5,8 +5,11 @@
 #include "net/proxy_resolution/proxy_config.h"
 
 #include "base/json/json_writer.h"
+#include "base/test/gtest_util.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,6 +101,38 @@ TEST(ProxyConfigTest, Equals) {
   EXPECT_TRUE(config1.Equals(config2));
   EXPECT_TRUE(config2.Equals(config1));
 }
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+TEST(ProxyConfigTest, EqualsMultiProxyChains) {
+  ProxyConfig config1;
+  ProxyConfig config2;
+
+  config2.proxy_rules().type =
+      ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
+  config2.proxy_rules().proxies_for_https.SetSingleProxyChain(
+      MultiProxyUrisToProxyChain("[https://foopy:443 https://hoopy:443]",
+                                 ProxyServer::SCHEME_HTTPS));
+
+  EXPECT_FALSE(config1.Equals(config2));
+  EXPECT_FALSE(config2.Equals(config1));
+
+  config1.proxy_rules().type =
+      ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
+  config1.proxy_rules().proxies_for_https.SetSingleProxyChain(
+      MultiProxyUrisToProxyChain("[https://foopy:80 https://hoopy:80]",
+                                 ProxyServer::SCHEME_HTTPS));
+
+  EXPECT_FALSE(config1.Equals(config2));
+  EXPECT_FALSE(config2.Equals(config1));
+
+  config1.proxy_rules().proxies_for_https.SetSingleProxyChain(
+      MultiProxyUrisToProxyChain("[https://foopy https://hoopy]",
+                                 ProxyServer::SCHEME_HTTPS));
+
+  EXPECT_TRUE(config1.Equals(config2));
+  EXPECT_TRUE(config2.Equals(config1));
+}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 struct ProxyConfigToValueTestCase {
   ProxyConfig config;
@@ -208,6 +243,25 @@ ProxyConfigToValueTestCase GetTestCaseSingleProxyList() {
       "\"]}"};
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// Multi-proxy chains present
+ProxyConfigToValueTestCase GetTestCaseMultiProxyChainProxyPerScheme() {
+  ProxyConfig config;
+  config.proxy_rules().ParseFromString(
+      "http=[https://proxy1:8080 https://proxy2:8080];https=socks5://proxy2",
+      /*allow_bracketed_proxy_chains=*/true);
+  config.proxy_rules().bypass_rules.AddRuleFromString("*.google.com");
+  config.set_pac_url(GURL("http://wpad/wpad.dat"));
+  config.set_auto_detect(true);
+
+  return {std::move(config),
+          "{\"auto_detect\":true,\"bypass_list\":[\"*.google.com\"],\"pac_"
+          "url\":\"http://wpad/"
+          "wpad.dat\",\"proxy_per_scheme\":{\"http\":[\"[https://proxy1:8080, "
+          "https://proxy2:8080]\"],\"https\":[\"[socks5://proxy2:1080]\"]}}"};
+}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProxyConfigToValueTest,
@@ -220,6 +274,9 @@ INSTANTIATE_TEST_SUITE_P(
                     GetTestCaseSingleProxyWithBypass(),
                     GetTestCaseSingleProxyWithReversedBypass(),
                     GetTestCaseProxyPerScheme(),
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+                    GetTestCaseMultiProxyChainProxyPerScheme(),
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
                     GetTestCaseSingleProxyList()));
 
 TEST(ProxyConfigTest, ParseProxyRules) {
@@ -284,7 +341,7 @@ TEST(ProxyConfigTest, ParseProxyRules) {
       },
 
       // Give a scheme-specific proxy as well as a non-scheme specific.
-      // The first entry "foopy" takes precedance marking this list as
+      // The first entry "foopy" takes precedence marking this list as
       // Type::PROXY_LIST.
       {
           "foopy ; ftp=ftp-proxy",
@@ -298,7 +355,7 @@ TEST(ProxyConfigTest, ParseProxyRules) {
       },
 
       // Give a scheme-specific proxy as well as a non-scheme specific.
-      // The first entry "ftp=ftp-proxy" takes precedance marking this list as
+      // The first entry "ftp=ftp-proxy" takes precedence marking this list as
       // Type::PROXY_LIST_PER_SCHEME.
       {
           "ftp=ftp-proxy ; foopy",
@@ -433,13 +490,23 @@ TEST(ProxyConfigTest, ParseProxyRules) {
           nullptr,
       },
 
+      // Multi-proxy bracketed URIs will result in no proxy being set
+      {
+          "http=[https://proxy1:8080 https://proxy2:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
+      }
+
   };
 
   ProxyConfig config;
 
   for (const auto& test : tests) {
     config.proxy_rules().ParseFromString(test.proxy_rules);
-
     EXPECT_EQ(test.type, config.proxy_rules().type);
     ExpectProxyServerEquals(test.single_proxy,
                             config.proxy_rules().single_proxies);
@@ -454,10 +521,181 @@ TEST(ProxyConfigTest, ParseProxyRules) {
   }
 }
 
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// In release builds, `ParseFromString` should not allow parsing of multi-proxy
+// chains by setting bool to true. A true value should crash.
+TEST(ProxyConfigTest, ParseProxyRulesDisallowMultiProxyChainsInReleaseBuilds) {
+  ProxyConfig config;
+
+  EXPECT_CHECK_DEATH(config.proxy_rules().ParseFromString(
+      "http=[https://proxy1:8080 https://proxy2:8080]", true));
+}
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+// Tests for multi-proxy chains which are currently only allowed in debug mode.
+TEST(ProxyConfigTest, MultiProxyChainsParseProxyRules) {
+  const struct {
+    const char* proxy_rules;
+
+    ProxyConfig::ProxyRules::Type type;
+    // For multi-proxy chains, proxies within a single chain will be formatted
+    // within a bracket separated by a space and comma.
+    const char* single_proxy;
+    const char* proxy_for_http;
+    const char* proxy_for_https;
+    const char* proxy_for_ftp;
+    const char* fallback_proxy;
+  } tests[] = {
+
+      // One HTTP proxy for all schemes.
+      {
+          "[https://proxy1:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST,
+          "HTTPS proxy1:8080",
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Multiple proxies for all schemes.
+      {
+          "[https://proxy1:8080 https://proxy2:8080],[https://proxy3:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST,
+          "[https://proxy1:8080, https://proxy2:8080];HTTPS proxy3:8080",
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Only specify a proxy chain for "http://" urls.
+      {
+          "http=[https://proxy1:8080 https://proxy2:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          "[https://proxy1:8080, https://proxy2:8080]",
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Specify different multi-proxy chains for different schemes.
+      {
+          "http=[https://proxy1:8080 https://proxy2:8080] ; "
+          "https=[https://proxy3:8080 https://proxy4:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          "[https://proxy1:8080, https://proxy2:8080]",
+          "[https://proxy3:8080, https://proxy4:8080]",
+          nullptr,
+          nullptr,
+      },
+
+      // Give a scheme-specific proxy as well as a non-scheme specific.
+      // The first entry takes precedence marking this list as Type::PROXY_LIST.
+      {
+          "[https://proxy1:8080 https://proxy2:8080] ; "
+          "http=[https://proxy3:8080 https://proxy4:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST,
+          "[https://proxy1:8080, https://proxy2:8080]",
+          nullptr,
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Give a scheme-specific proxy as well as a non-scheme specific.
+      // The first entry takes precedence marking this list as
+      // Type::PROXY_LIST_PER_SCHEME.
+      {
+          "http=[https://proxy3:8080 https://proxy4:8080] ; "
+          "[https://proxy1:8080 https://proxy2:8080]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          "[https://proxy3:8080, https://proxy4:8080]",
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Include a list of entries for a single scheme.
+      {
+          "ftp=[https://proxy1:80 https://proxy2:80],[https://proxy3:80 "
+          "https://proxy4:80],[https://proxy5:80 https://proxy6:80]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          nullptr,
+          nullptr,
+          "[https://proxy1:80, https://proxy2:80];[https://proxy3:80, "
+          "https://proxy4:80];[https://proxy5:80, https://proxy6:80]",
+          nullptr,
+      },
+
+      // Include multiple entries for the same scheme -- they accumulate.
+      {
+          "http=[https://proxy1:80 https://proxy2:80]; http=[https://proxy3:80 "
+          "https://proxy4:80],[https://proxy5:80 https://proxy6:80]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          "[https://proxy1:80, https://proxy2:80];[https://proxy3:80, "
+          "https://proxy4:80];[https://proxy5:80, https://proxy6:80]",
+          nullptr,
+          nullptr,
+          nullptr,
+      },
+
+      // Include lists of entries for multiple schemes.
+      {
+          "http=[https://proxy1:80 https://proxy2:80]; ftp=[https://proxy3:80 "
+          "https://proxy4:80],[https://proxy5:80 https://proxy6:80]",
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          "[https://proxy1:80, https://proxy2:80]",
+          nullptr,
+          "[https://proxy3:80, https://proxy4:80];[https://proxy5:80, "
+          "https://proxy6:80]",
+          nullptr,
+      },
+
+      // Include unsupported schemes -- they are discarded.
+      {
+          "crazy=[https://proxy1:80 https://proxy2:80] ; foo=bar ; "
+          "https=[https://proxy3:80 https://proxy4:80]",
+
+          ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME,
+          nullptr,
+          nullptr,
+          "[https://proxy3:80, https://proxy4:80]",
+          nullptr,
+          nullptr,
+      },
+  };
+
+  ProxyConfig config;
+
+  for (const auto& test : tests) {
+    config.proxy_rules().ParseFromString(test.proxy_rules, true);
+    EXPECT_EQ(test.type, config.proxy_rules().type);
+    ExpectProxyServerEquals(test.single_proxy,
+                            config.proxy_rules().single_proxies);
+    ExpectProxyServerEquals(test.proxy_for_http,
+                            config.proxy_rules().proxies_for_http);
+    ExpectProxyServerEquals(test.proxy_for_https,
+                            config.proxy_rules().proxies_for_https);
+    ExpectProxyServerEquals(test.proxy_for_ftp,
+                            config.proxy_rules().proxies_for_ftp);
+    ExpectProxyServerEquals(test.fallback_proxy,
+                            config.proxy_rules().fallback_proxies);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
 TEST(ProxyConfigTest, ProxyRulesSetBypassFlag) {
   // Test whether the did_bypass_proxy() flag is set in proxy info correctly.
   ProxyConfig::ProxyRules rules;
-  ProxyInfo  result;
+  ProxyInfo result;
 
   rules.ParseFromString("http=httpproxy:80");
   rules.bypass_rules.AddRuleFromString(".com");

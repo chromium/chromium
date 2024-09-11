@@ -46,6 +46,7 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/auth.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_once_callback.h"
@@ -99,6 +100,7 @@
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/mock_proxy_resolver.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
@@ -411,6 +413,8 @@ TransportInfo EmbeddedHttpServerTransportInfo() {
 
 }  // namespace
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 class HttpNetworkTransactionTestBase : public PlatformTest,
                                        public WithTaskEnvironment {
  public:
@@ -6784,7 +6788,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -6973,7 +6978,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7128,7 +7134,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   // Configure a nested proxy.
   const ProxyServer kProxyServer{ProxyServer::SCHEME_HTTPS,
                                  HostPortPair("proxy.test", 70)};
-  const ProxyChain kNestedProxyChain{{kProxyServer, kProxyServer}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer, kProxyServer}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7279,7 +7286,8 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7445,7 +7453,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7520,7 +7529,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7581,7 +7591,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7681,7 +7692,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -7767,7 +7779,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -8151,7 +8164,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -8387,7 +8401,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -8503,7 +8518,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -8686,7 +8702,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -8756,7 +8773,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -9037,7 +9055,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseFirstHop) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
   HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kFirstHopOnlyChain);
@@ -9051,7 +9070,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseSecondHop) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   const ProxyChain kSecondHopOnlyChain{{kProxyServer2}};
 
@@ -9066,9 +9086,11 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseReversedChain) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
-  const ProxyChain kReversedChain{{kProxyServer2, kProxyServer1}};
+  const ProxyChain kReversedChain =
+      ProxyChain::ForIpProtection({{kProxyServer2, kProxyServer1}});
 
   HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kReversedChain);
 }
@@ -9092,7 +9114,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
   const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
   const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
 
@@ -9356,7 +9379,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
@@ -9567,7 +9591,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);

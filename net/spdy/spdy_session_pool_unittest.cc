@@ -54,10 +54,9 @@
 using base::trace_event::MemoryAllocatorDump;
 using net::test::IsError;
 using net::test::IsOk;
+using testing::ByRef;
 using testing::Contains;
 using testing::Eq;
-using testing::Contains;
-using testing::ByRef;
 
 namespace net {
 
@@ -205,8 +204,7 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
  public:
   SessionOpeningDelegate(SpdySessionPool* spdy_session_pool,
                          const SpdySessionKey& key)
-      : spdy_session_pool_(spdy_session_pool),
-        key_(key) {}
+      : spdy_session_pool_(spdy_session_pool), key_(key) {}
 
   ~SessionOpeningDelegate() override = default;
 
@@ -251,7 +249,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentSessions) {
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
@@ -426,7 +424,7 @@ TEST_F(SpdySessionPoolTest, CloseAllSessions) {
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
@@ -576,7 +574,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data1(reads, base::span<MockWrite>());
@@ -802,7 +800,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -967,7 +966,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -1464,7 +1464,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -1610,8 +1611,9 @@ class TestOnRequestDeletedCallback {
   void OnRequestDeleted() {
     EXPECT_FALSE(invoked_);
     invoked_ = true;
-    if (request_deleted_callback_)
+    if (request_deleted_callback_) {
       std::move(request_deleted_callback_).Run();
+    }
     run_loop_.Quit();
   }
 
@@ -1864,13 +1866,15 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
 
 // Tests the OnSSLConfigForServersChanged() method matches SpdySessions
 // containing proxy chains.
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {
       MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
-  ProxyChain proxy_chain({
+  auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "proxya", 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
