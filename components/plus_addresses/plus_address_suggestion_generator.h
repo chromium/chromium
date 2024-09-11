@@ -33,7 +33,8 @@ class PlusAddressSuggestionGenerator final {
   PlusAddressSuggestionGenerator(
       const PlusAddressSettingService* setting_service,
       PlusAddressAllocator* allocator,
-      url::Origin origin);
+      url::Origin origin,
+      std::string primary_email);
   ~PlusAddressSuggestionGenerator();
 
   // Returns the suggestions to be offered on the `focused_field` with Password
@@ -84,6 +85,8 @@ class PlusAddressSuggestionGenerator final {
   // TODO(crbug.com/362445807): Eliminate this parameter once the allocator
   // no longer needs it.
   const url::Origin origin_;
+  // The primary email address of the user.
+  const std::string primary_email_;
 };
 
 }  // namespace plus_addresses

@@ -172,6 +172,9 @@
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT" desc="The secondary text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO" desc="The secondary text in the Autofill suggestion for creating a new plus address." translateable="false">
+      Lorem Ipsum <ph name="GAIA_EMAIL"><ex>foo@gmail.com</ex>$1</ph>
+    </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
       Refresh plus address
     </message>

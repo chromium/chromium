@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/plus_address_suggestion_generator.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -94,6 +95,8 @@ class PlusAddressSuggestionGeneratorTest : public ::testing::Test {
  public:
   PlusAddressSuggestionGeneratorTest() = default;
 
+  const std::string kPrimaryEmail = "foo@gmail.com";
+
  protected:
   FakePlusAddressAllocator& allocator() { return allocator_; }
   FakePlusAddressSettingService& setting_service() { return setting_service_; }
@@ -117,7 +120,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   allocator().set_is_next_allocation_synchronous(false);
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
-      url::Origin::Create(GURL("https://foo.bar")));
+      url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(generator.GetSuggestions(
                   /*is_creation_enabled=*/true, PasswordFormClassification(),
                   FormFieldData(),
@@ -137,7 +140,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   allocator().set_is_next_allocation_synchronous(true);
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
-      url::Origin::Create(GURL("https://foo.bar")));
+      url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(generator.GetSuggestions(
                   /*is_creation_enabled=*/true, PasswordFormClassification(),
                   FormFieldData(),
@@ -187,7 +190,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
 
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
-      url::Origin::Create(GURL("https://foo.bar")));
+      url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
   EXPECT_THAT(
       generator.GetSuggestions(
           /*is_creation_enabled=*/true, PasswordFormClassification(),
@@ -196,6 +199,45 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
           /*affiliated_profiles=*/{}),
       ElementsAre(AllOf(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
                         Field(&Suggestion::labels, IsEmpty()))));
+}
+
+// Tests properties of the label for suggestions for 2nd (and subsequent)
+// create.
+// - On Android, there should be no label.
+// - On iOS, the label should not contain the primary email.
+// - On Desktop, the label should contain the primary email.
+TEST_F(PlusAddressSuggestionGeneratorTest, ProfileInLabel) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressSuggestionRedesign};
+  setting_service().set_has_accepted_notice(true);
+
+  PlusAddressSuggestionGenerator generator(
+      &setting_service(), &allocator(),
+      url::Origin::Create(GURL("https://foo.bar")), kPrimaryEmail);
+
+  std::vector<Suggestion> suggestions = generator.GetSuggestions(
+      /*is_creation_enabled=*/true, PasswordFormClassification(),
+      FormFieldData(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*affiliated_profiles=*/{});
+  ASSERT_EQ(suggestions.size(), 1u);
+
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_THAT(suggestions[0].labels, IsEmpty());
+    return;
+  }
+
+  ASSERT_EQ(suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
+
+  const bool is_email_in_label =
+      suggestions[0].labels[0][0].value.find(
+          base::UTF8ToUTF16(kPrimaryEmail)) != std::u16string::npos;
+  if constexpr (BUILDFLAG(IS_IOS)) {
+    EXPECT_FALSE(is_email_in_label);
+  } else {
+    EXPECT_TRUE(is_email_in_label);
+  }
 }
 
 }  // namespace

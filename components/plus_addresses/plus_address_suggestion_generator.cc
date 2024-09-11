@@ -75,8 +75,11 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
   return suggestion;
 }
 
+// Returns the labels for a create new plus address suggestion.
+// `forwarding_address` is the email that traffic is forwarded to.
 std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
-    bool has_accepted_notice) {
+    bool has_accepted_notice,
+    std::string_view forwarding_address) {
   // On Android, there are no labels since the Keyboard Accessory only allows
   // for single line chips.
   if constexpr (BUILDFLAG(IS_ANDROID)) {
@@ -86,8 +89,21 @@ std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
       base::FeatureList::IsEnabled(features::kPlusAddressSuggestionRedesign)) {
     return {};
   }
-  return {{Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+
+  // On iOS the `forwarding_address` is not shown due to size constraints.
+  if constexpr (BUILDFLAG(IS_IOS)) {
+    return {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  }
+
+  std::u16string label_text =
+      base::FeatureList::IsEnabled(features::kPlusAddressSuggestionRedesign)
+          ? l10n_util::GetStringFUTF16(
+                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO,
+                base::UTF8ToUTF16(forwarding_address))
+          : l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT);
+  return {{Suggestion::Text(std::move(label_text))}};
 }
 
 }  // namespace
@@ -95,10 +111,12 @@ std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     const PlusAddressSettingService* setting_service,
     PlusAddressAllocator* allocator,
-    url::Origin origin)
+    url::Origin origin,
+    std::string primary_email)
     : setting_service_(CHECK_DEREF(setting_service)),
       allocator_(CHECK_DEREF(allocator)),
-      origin_(std::move(origin)) {}
+      origin_(std::move(origin)),
+      primary_email_(std::move(primary_email)) {}
 
 PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
 
@@ -195,7 +213,8 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   suggestion.labels = CreateLabelsForCreateSuggestion(
       !base::FeatureList::IsEnabled(
           features::kPlusAddressUserOnboardingEnabled) ||
-      setting_service_->GetHasAcceptedNotice());
+          setting_service_->GetHasAcceptedNotice(),
+      primary_email_);
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
   suggestion.feature_for_iph =
@@ -238,8 +257,11 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
     suggestion.is_loading = Suggestion::IsLoading(true);
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
-  suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  suggestion.labels = CreateLabelsForCreateSuggestion(
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled) ||
+          setting_service_->GetHasAcceptedNotice(),
+      primary_email_);
   // TODO(crbug.com/362445807): Consider adding IPH and new badge for inline
   // suggestions.
   return suggestion;
