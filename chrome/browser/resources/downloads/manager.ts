@@ -97,7 +97,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   protected items_: MojomData[] = [];
   protected hasDownloads_: boolean = false;
-  private hasShadow_: boolean = false;
+  // Used for CSS styling.
+  protected hasShadow_: boolean = false;
   protected inSearchMode_: boolean = false;
   protected spinnerActive_: boolean = false;
   protected bypassPromptItemId_: string = '';
