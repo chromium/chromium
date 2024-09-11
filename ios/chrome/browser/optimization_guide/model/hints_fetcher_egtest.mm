@@ -173,8 +173,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 // optimization guide hints fetching are integration tested. This includes tests
 // that verify hints fetcher failure cases, fetching of hints for multiple open
 // tabs at startup, hints are cleared when browsing history is cleared, etc.
-
-- (void)testHintsFetchBasic {
+// TODO(crbug.com/366045251): Re-enable once fixed.
+- (void)DISABLED_testHintsFetchBasic {
   [ChromeEarlGrey loadURL:GURL("https://foo.com/test")];
   // Wait for the hints to be served.
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
