@@ -2626,9 +2626,9 @@ crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property
 
 # ====== New tests from wpt-importer added here ======
 [ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
-[ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Pass Failure Timeout ]
-[ Mac15 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout ]
-[ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout Crash ]
+[ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Pass Timeout ]
+crbug.com/365828864 [ Mac15 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout ]
+crbug.com/365828864 [ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/364935894 [ Mac14 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 crbug.com/364935894 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-only-picker-opt-in.tentative.html [ Failure ]
