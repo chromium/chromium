@@ -217,10 +217,9 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::~MockFaceLandmarkerResult() =
 
 FaceGazeTestUtils::MockFaceLandmarkerResult&
 FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
-    double x,
-    double y) {
-  forehead_location_.Set("x", x);
-  forehead_location_.Set("y", y);
+    const std::pair<double, double>& location) {
+  forehead_location_.Set("x", location.first);
+  forehead_location_.Set("y", location.second);
   return *this;
 }
 
@@ -426,8 +425,8 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   // initially, and upcoming forehead locations will be computed relative to
   // this.
   ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
-          config.forehead_location().x(), config.forehead_location().y()));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(std::make_pair(
+          config.forehead_location().x(), config.forehead_location().y())));
   TriggerMouseControllerInterval();
   AssertCursorAt(config.cursor_location());
 }

@@ -520,17 +520,22 @@ export class MouseController {
 
   /**
    * Construct a kernel for smoothing the recent facegaze points.
-   * Specifically, this is a Hamming curve with M = targetBufferSize_ * 2,
-   * matching the project-gameface Python implementation.
+   * Specifically, this is an exponential curve with amplitude of 0.92 and
+   * y-intercept of 0.08. This ensures that the curve hits the points (0, 0.08)
+   * and (1, 1).
    * Note: Whenever the buffer size is updated, we must reconstruct
    * the smoothing kernel so that it is the right length.
    */
   private calcSmoothKernel_(): void {
     this.smoothKernel_ = [];
     let sum = 0;
-    for (let i = 0; i < this.targetBufferSize_; i++) {
-      const value = .54 -
-          .46 * Math.cos((2 * Math.PI * i) / (this.targetBufferSize_ * 2 - 1));
+    const step = 1 / this.targetBufferSize_;
+    // We use values step <= i <= 1 to determine the weight of each point.
+    for (let i = step; i <= 1; i += step) {
+      const smoothFactor = Math.E;
+      const numerator = (Math.E ** (smoothFactor * i)) - 1;
+      const denominator = (Math.E ** smoothFactor) - 1;
+      const value = 0.92 * (numerator / denominator) + 0.08;
       this.smoothKernel_.push(value);
       sum += value;
     }

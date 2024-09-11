@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
@@ -210,8 +211,8 @@ class FaceGazeTestUtils {
     MockFaceLandmarkerResult& operator=(const MockFaceLandmarkerResult&) =
         delete;
 
-    MockFaceLandmarkerResult& WithNormalizedForeheadLocation(double x,
-                                                             double y);
+    MockFaceLandmarkerResult& WithNormalizedForeheadLocation(
+        const std::pair<double, double>& location);
     MockFaceLandmarkerResult& WithGesture(const MediapipeGesture& gesture,
                                           int confidence);
 
