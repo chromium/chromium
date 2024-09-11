@@ -2215,13 +2215,6 @@ PaintLayerClipper PaintLayer::Clipper() const {
   return PaintLayerClipper(this);
 }
 
-bool PaintLayer::ScrollsOverflow() const {
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea())
-    return scrollable_area->ScrollsOverflow();
-
-  return false;
-}
-
 FilterOperations PaintLayer::FilterOperationsIncludingReflection() const {
   const auto& style = GetLayoutObject().StyleRef();
   FilterOperations filter_operations = style.Filter();
