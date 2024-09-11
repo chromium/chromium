@@ -37,6 +37,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="User action in Chrome (back press, close button)"/>
   <int value="1" label="User action in Android (home)"/>
   <int value="2" label="Auto-closed"/>
+  <int value="3" label="AuthTab success"/>
 </enum>
 
 <enum name="CustomTabsConnection">

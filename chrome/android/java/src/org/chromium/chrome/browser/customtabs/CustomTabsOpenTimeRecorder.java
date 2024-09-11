@@ -53,13 +53,19 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
     // This should be kept in sync with the definition |CustomTabsCloseCause|
     // in tools/metrics/histograms/enums.xml.
-    @IntDef({CloseCause.USER_ACTION_CHROME, CloseCause.USER_ACTION_ANDROID, CloseCause.AUTOCLOSE})
+    @IntDef({
+        CloseCause.USER_ACTION_CHROME,
+        CloseCause.USER_ACTION_ANDROID,
+        CloseCause.AUTOCLOSE,
+        CloseCause.AUTH_TAB
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CloseCause {
         int USER_ACTION_CHROME = 0;
         int USER_ACTION_ANDROID = 1;
         int AUTOCLOSE = 2;
-        int COUNT = 3;
+        int AUTH_TAB = 3;
+        int COUNT = 4;
     }
 
     private @CloseCause int mCloseCause;
@@ -85,6 +91,9 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     @Override
     public void onStopWithNative() {
         assert mOnStartTimestampMs != 0;
+        if (mCloseCause == CloseCause.AUTOCLOSE && mIntent.isAuthTab()) {
+            mCloseCause = CloseCause.AUTH_TAB;
+        }
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.CloseCause", mCloseCause, CloseCause.COUNT);
 
@@ -98,7 +107,8 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
         if (mIsCctFinishing.getAsBoolean()) {
             long time = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
-            boolean wasUserClose = mCloseCause != CloseCause.AUTOCLOSE;
+            boolean wasUserClose =
+                    mCloseCause != CloseCause.AUTOCLOSE && mCloseCause != CloseCause.AUTH_TAB;
             boolean isPartial = mIntent.isPartialCustomTab();
 
             long recordDuration = Math.min(duration / DateUtils.SECOND_IN_MILLIS, 300);
@@ -149,7 +159,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
                 long time,
                 String packageName,
                 long sessionDuration,
-                boolean wasAutomaticallyClosed,
+                boolean wasUserClosed,
                 boolean isPartialCct);
     }
 }
