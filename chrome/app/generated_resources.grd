@@ -11571,6 +11571,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
         Close unused tabs
       </message>
+      <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
+        These tabs have been unused for <ph name="COUNT">$1<ex>7</ex></ph> or more days.
+      </message>
 
       <!-- Strings for Window Titles in Menus -->
       <if expr="not use_titlecase">

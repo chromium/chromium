@@ -14,15 +14,17 @@ export function getHtml(this: DeclutterPageElement) {
       </cr-icon-button>
       <div id="headerText">
         <div class="title">$i18n{declutterTitle}</div>
-        <div class="subheading">Tabs not used for 7 days or more</div>
+        <div class="subheading">$i18n{declutterBody}</div>
       </div>
     </div>
     <div id="tabList">
       ${this.staleTabDatas_.map((item, index) => html`
           <tab-search-item class="mwb-list-item" .data="${item}"
+              close-button-icon="tab-search:remove"
               role="option"
               data-index="${index}"
-              @close="${this.onTabRemove_}">
+              @close="${this.onTabRemove_}"
+              hide-url>
           </tab-search-item>
       `)}
     </div>
