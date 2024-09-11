@@ -5,6 +5,8 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
@@ -110,6 +112,21 @@ void VcEffectsDelegate::RecordInitialStates() {
           video_conference_utils::GetEffectHistogramNameForInitialState(
               effect_id),
           current_state.value());
+      if (effect_id == VcEffectId::kStudioLook) {
+        // Records initial preference states associated with Stduio Look effect.
+        raw_ptr<CameraEffectsController> effects_controller_ =
+            Shell::Get()->camera_effects_controller();
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForInitialState(
+                VcEffectId::kPortraitRelighting),
+            *effects_controller_->GetEffectState(
+                VcEffectId::kPortraitRelighting) != 0);
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForInitialState(
+                VcEffectId::kFaceRetouch),
+            *effects_controller_->GetEffectState(VcEffectId::kFaceRetouch) !=
+                0);
+      }
     } else {
       RecordMetricsForSetValueEffectOnStartup(effect_id, current_state.value());
     }
