@@ -26,7 +26,8 @@ bool PasswordManagerSettingsServiceImpl::IsSettingEnabled(
     // GMS Core. PasswordManagerSettingsServiceImpl is instantiated only when
     // GMS Core is not in use, so always return false in this case.
     case PasswordManagerSetting::kBiometricReauthBeforePwdFilling:
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
       return pref_service_->GetBoolean(
           password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 #else

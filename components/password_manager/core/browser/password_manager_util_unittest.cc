@@ -154,11 +154,13 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
 #endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, false);
+#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kHadBiometricsAvailable, false);
     ON_CALL(mock_client_, GetLocalStatePrefs())
         .WillByDefault(Return(&pref_service_));
     ON_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
