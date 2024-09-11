@@ -104,10 +104,10 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         syncer::prefs::internal::kSyncKeepEverythingSynced, false);
     prefs_.registry()->RegisterBooleanPref(
-        base::StrCat({syncer::prefs::internal::
-                          kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-                      ".",
-                      syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+        base::StrCat(
+            {syncer::prefs::internal::
+                 kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
+             ".", syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
         false);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
@@ -137,7 +137,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
           base::StrCat(
               {syncer::prefs::internal::
                    kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-               ".", syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+               ".",
+               syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
           true);
     } else {
       prefs_.SetBoolean(

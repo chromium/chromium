@@ -457,6 +457,10 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type);
 // time and thus can be used when persisting data.
 int DataTypeToStableIdentifier(DataType data_type);
 
+// This returns a string that is stable over time and thus can be used for local
+// persistence. It is guaranteed to be lowercase.
+const char* DataTypeToStableLowerCaseString(DataType data_type);
+
 // Returns the comma-separated string representation of |data_types|.
 std::string DataTypeSetToDebugString(DataTypeSet data_types);
 
@@ -470,11 +474,6 @@ std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
 // it except for bookmarks and Nigori. For this reason, the server may or may
 // not return the root entity.
 std::string DataTypeToProtocolRootTag(DataType data_type);
-
-// As opposed to DataTypeToProtocolRootTag(), this returns a string that isn't
-// exposed in the sync protocol, but that is still stable and thus can be used
-// for local persistence. It is guaranteed to be lowercase.
-const char* GetDataTypeLowerCaseRootTag(DataType data_type);
 
 // Returns true if |data_type| is a real datatype
 bool IsRealDataType(DataType data_type);

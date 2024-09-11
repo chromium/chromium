@@ -929,19 +929,9 @@ std::string DataTypeSetToDebugString(DataTypeSet data_types) {
   return result;
 }
 
-std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set) {
-  return out << DataTypeSetToDebugString(data_type_set);
-}
-
-std::string DataTypeToProtocolRootTag(DataType data_type) {
-  DCHECK(ProtocolTypes().Has(data_type));
-  DCHECK(IsRealDataType(data_type));
-  const std::string root_tag = GetDataTypeLowerCaseRootTag(data_type);
-  DCHECK(!root_tag.empty());
-  return "google_chrome_" + root_tag;
-}
-
-const char* GetDataTypeLowerCaseRootTag(DataType data_type) {
+const char* DataTypeToStableLowerCaseString(DataType data_type) {
+  // WARNING: existing strings must not be changed without migration, they are
+  // persisted!
   switch (data_type) {
     case UNSPECIFIED:
       return "";
@@ -1050,7 +1040,21 @@ const char* GetDataTypeLowerCaseRootTag(DataType data_type) {
     case NIGORI:
       return "nigori";
   }
+  // WARNING: existing strings must not be changed without migration, they
+  // are persisted!
   NOTREACHED();
+}
+
+std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set) {
+  return out << DataTypeSetToDebugString(data_type_set);
+}
+
+std::string DataTypeToProtocolRootTag(DataType data_type) {
+  DCHECK(ProtocolTypes().Has(data_type));
+  DCHECK(IsRealDataType(data_type));
+  const std::string root_tag = DataTypeToStableLowerCaseString(data_type);
+  DCHECK(!root_tag.empty());
+  return "google_chrome_" + root_tag;
 }
 
 bool IsRealDataType(DataType data_type) {

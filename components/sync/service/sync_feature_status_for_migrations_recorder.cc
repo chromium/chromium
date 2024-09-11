@@ -119,7 +119,7 @@ std::string SyncFeatureStatusForMigrationsRecorder::GetDataTypeStatusPrefName(
     DataType type) {
   return base::StrCat(
       {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix, ".",
-       GetDataTypeLowerCaseRootTag(type)});
+       DataTypeToStableLowerCaseString(type)});
 }
 
 SyncFeatureStatusForSyncToSigninMigration

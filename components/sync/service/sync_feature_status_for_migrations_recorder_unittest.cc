@@ -49,7 +49,7 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
   bool GetDataTypeStatus(DataType type) const {
     return pref_service_.GetBoolean(base::StrCat(
         {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-         ".", GetDataTypeLowerCaseRootTag(type)}));
+         ".", DataTypeToStableLowerCaseString(type)}));
   }
 
   TestSyncService& sync_service() { return sync_service_; }

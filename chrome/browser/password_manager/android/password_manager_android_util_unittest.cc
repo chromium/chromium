@@ -162,10 +162,10 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         syncer::prefs::internal::kSyncKeepEverythingSynced, false);
     pref_service_.registry()->RegisterBooleanPref(
-        base::StrCat({syncer::prefs::internal::
-                          kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-                      ".",
-                      syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+        base::StrCat(
+            {syncer::prefs::internal::
+                 kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
+             ".", syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
         false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::
@@ -196,7 +196,8 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
           base::StrCat(
               {syncer::prefs::internal::
                    kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-               ".", syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+               ".",
+               syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
           true);
       ASSERT_EQ(browser_sync::GetSyncToSigninMigrationDataTypeDecision(
                     &pref_service_, syncer::PASSWORDS,
