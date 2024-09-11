@@ -1224,6 +1224,7 @@ source_set("unit_tests") {
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
+    "payments/credit_card_access_manager_risk_based_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",
     "payments/credit_card_cvc_authenticator_unittest.cc",
     "payments/credit_card_otp_authenticator_unittest.cc",
