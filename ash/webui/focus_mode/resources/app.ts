@@ -131,6 +131,10 @@ function isPlaybackStatus(data: any): boolean {
       typeof data.initial == 'boolean');
 }
 
+function isMediaErrorEventData(data: any): boolean {
+  return isEventData(data) && data.cmd == 'mediaErrorEvent';
+}
+
 function getProvider(): TrackProviderInterface {
   if (!providerInstance) {
     providerInstance = TrackProvider.getRemote();
@@ -142,6 +146,7 @@ function getProvider(): TrackProviderInterface {
 function postPlayRequest(track: TrackDefinition) {
   if (!track.mediaUrl.url) {
     // If there is no valid URL, then there's no point in continuing.
+    getProvider().reportPlayerError();
     return;
   }
 
@@ -240,6 +245,8 @@ globalThis.addEventListener('message', async (event: MessageEvent) => {
         position: data.position,
         initial: data.initial,
       });
+    } else if (isMediaErrorEventData(data)) {
+      getProvider().reportPlayerError();
     }
   }
 });

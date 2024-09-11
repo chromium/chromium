@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/error_message_toast.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/tab_slider.h"
@@ -54,6 +55,12 @@ constexpr int kNonPremiumLabelViewMaxWidth = 288;
 
 constexpr float kOfflineStateOpacity = 0.38f;
 constexpr auto kLabelPadding = gfx::Insets::VH(0, 40);
+
+constexpr auto kErrorMessagePadding = gfx::Insets::TLBR(0, 4, 4, 4);
+constexpr int kErrorMessageRoundedCornerRadius = 12;
+constexpr gfx::Insets kErrorMessageButtonInsets =
+    gfx::Insets::TLBR(8, 10, 8, 16);
+constexpr gfx::Insets kErrorMessageLabelInsets = gfx::Insets::TLBR(8, 16, 8, 0);
 
 std::optional<int> GetYouTubeMusicIconResourceId() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -174,10 +181,7 @@ FocusModeSoundsView::FocusModeSoundsView(
 
     if (soundscape_container_) {
       // Start downloading playlists for Soundscape.
-      sounds_controller->DownloadPlaylistsForType(
-          /*is_soundscape_type=*/true,
-          base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
-                         weak_factory_.GetWeakPtr()));
+      DownloadPlaylistsForType(/*is_soundscape_type=*/true);
     }
 
     if (youtube_music_container_) {
@@ -186,10 +190,7 @@ FocusModeSoundsView::FocusModeSoundsView(
       sounds_controller->SetYouTubeMusicNoPremiumCallback(base::BindRepeating(
           &FocusModeSoundsView::ToggleYouTubeMusicAlternateView,
           weak_factory_.GetWeakPtr(), /*show=*/true));
-      sounds_controller->DownloadPlaylistsForType(
-          /*is_soundscape_type=*/false,
-          base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
-                         weak_factory_.GetWeakPtr()));
+      DownloadPlaylistsForType(/*is_soundscape_type=*/false);
     }
 
     if (should_show_soundscapes) {
@@ -207,6 +208,14 @@ FocusModeSoundsView::FocusModeSoundsView(
 FocusModeSoundsView::~FocusModeSoundsView() {
   FocusModeController::Get()->focus_mode_sounds_controller()->RemoveObserver(
       this);
+}
+
+void FocusModeSoundsView::Layout(PassKey) {
+  LayoutSuperclass<RoundedContainer>(this);
+  if (error_message_) {
+    error_message_->UpdateBoundsToContainer(GetLocalBounds(),
+                                            kErrorMessagePadding);
+  }
 }
 
 void FocusModeSoundsView::OnSelectedPlaylistChanged() {
@@ -243,6 +252,25 @@ void FocusModeSoundsView::OnPlaylistStateChanged() {
   }
 }
 
+void FocusModeSoundsView::OnPlayerError() {
+  const auto& selected_playlist = FocusModeController::Get()
+                                      ->focus_mode_sounds_controller()
+                                      ->selected_playlist();
+  if (selected_playlist.empty()) {
+    LOG(WARNING) << "Media player error with no selected playlist";
+    return;
+  }
+
+  const bool is_soundscape_type =
+      selected_playlist.type == focus_mode_util::SoundType::kSoundscape;
+  ShowErrorMessageForType(
+      /*is_soundscape_type=*/is_soundscape_type,
+      is_soundscape_type
+          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FAILED_PLAYING_SOUNDS
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC,
+      ErrorMessageToast::ButtonActionType::kDismiss);
+}
+
 void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
   auto* sounds_controller =
       FocusModeController::Get()->focus_mode_sounds_controller();
@@ -252,6 +280,10 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
     }
     const auto& playlists = sounds_controller->soundscape_playlists();
     if (playlists.size() != kFocusModePlaylistViewsNum) {
+      ShowErrorMessageForType(
+          is_soundscape_type,
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS,
+          ErrorMessageToast::ButtonActionType::kReload);
       return;
     }
     soundscape_container_->UpdateContents(playlists);
@@ -261,6 +293,12 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
     }
     const auto& playlists = sounds_controller->youtube_music_playlists();
     if (playlists.size() != kFocusModePlaylistViewsNum) {
+      if (!youtube_music_container_->IsAlternateViewVisible()) {
+        ShowErrorMessageForType(
+            is_soundscape_type,
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC,
+            ErrorMessageToast::ButtonActionType::kReload);
+      }
       return;
     }
     youtube_music_container_->UpdateContents(playlists);
@@ -355,6 +393,7 @@ void FocusModeSoundsView::CreatesSoundSectionViews(
 void FocusModeSoundsView::ToggleYouTubeMusicAlternateView(bool show) {
   CHECK(youtube_music_container_);
   youtube_music_container_->ShowAlternateView(show);
+  MaybeDismissErrorMessage();
 }
 
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {
@@ -366,6 +405,7 @@ void FocusModeSoundsView::OnYouTubeMusicButtonToggled() {
 }
 
 void FocusModeSoundsView::MayShowSoundscapeContainer(bool show) {
+  MaybeDismissErrorMessage();
   if (soundscape_container_) {
     soundscape_container_->SetVisible(show);
   }
@@ -377,6 +417,55 @@ void FocusModeSoundsView::MayShowSoundscapeContainer(bool show) {
     soundscape_button_->GetViewAccessibility().SetIsSelected(show);
     youtube_music_button_->GetViewAccessibility().SetIsSelected(!show);
   }
+}
+
+void FocusModeSoundsView::DownloadPlaylistsForType(bool is_soundscape_type) {
+  FocusModeController::Get()
+      ->focus_mode_sounds_controller()
+      ->DownloadPlaylistsForType(
+          is_soundscape_type,
+          base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void FocusModeSoundsView::MaybeDismissErrorMessage() {
+  if (!error_message_.get()) {
+    return;
+  }
+
+  RemoveChildViewT(std::exchange(error_message_, nullptr));
+}
+
+void FocusModeSoundsView::ShowErrorMessageForType(
+    bool is_soundscape_type,
+    const int message_id,
+    ErrorMessageToast::ButtonActionType type) {
+  MaybeDismissErrorMessage();
+
+  views::Button::PressedCallback callback;
+  switch (type) {
+    case ErrorMessageToast::ButtonActionType::kDismiss:
+      callback =
+          base::BindRepeating(&FocusModeSoundsView::MaybeDismissErrorMessage,
+                              weak_factory_.GetWeakPtr());
+      break;
+    case ErrorMessageToast::ButtonActionType::kReload:
+      callback =
+          base::BindRepeating(&FocusModeSoundsView::DownloadPlaylistsForType,
+                              weak_factory_.GetWeakPtr(), is_soundscape_type);
+      break;
+  }
+
+  error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(
+      std::move(callback), l10n_util::GetStringUTF16(message_id), type,
+      cros_tokens::kCrosSysSystemBase));
+  error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  error_message_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
+  error_message_->error_message_label()->SetProperty(views::kMarginsKey,
+                                                     kErrorMessageLabelInsets);
+  error_message_->action_button()->SetProperty(views::kMarginsKey,
+                                               kErrorMessageButtonInsets);
 }
 
 BEGIN_METADATA(FocusModeSoundsView)

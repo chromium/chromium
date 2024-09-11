@@ -172,6 +172,12 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
         base::Time::Now());
   }
 
+  void ReportPlayerError() override {
+    if (auto* controller = FocusModeController::Get()) {
+      controller->focus_mode_sounds_controller()->ReportPlayerError();
+    }
+  }
+
   void BindInterface(
       mojo::PendingReceiver<focus_mode::mojom::TrackProvider> receiver) {
     receiver_.reset();

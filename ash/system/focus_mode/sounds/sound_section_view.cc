@@ -77,6 +77,10 @@ void SoundSectionView::SetAlternateView(
   alternate_view_ = AddChildView(std::move(alternate_view));
 }
 
+bool SoundSectionView::IsAlternateViewVisible() const {
+  return alternate_view_ && alternate_view_->GetVisible();
+}
+
 void SoundSectionView::UpdateStateForSelectedPlaylist(
     const focus_mode_util::SelectedPlaylist& selected_playlist) {
   for (auto* playlist_view : playlist_view_list_) {

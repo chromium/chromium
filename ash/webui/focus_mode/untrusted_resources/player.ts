@@ -35,6 +35,10 @@ function sendTrackRequest() {
   parent.postMessage({cmd: 'gettrack'}, TRUSTED_ORIGIN);
 }
 
+function mediaErrorEvent() {
+  parent.postMessage({cmd: 'mediaErrorEvent'}, TRUSTED_ORIGIN);
+}
+
 interface PlaybackStatus {
   state: string;
   position: number;
@@ -100,6 +104,20 @@ globalThis.addEventListener('load', () => {
   getPlayerElement().addEventListener('ended', () => {
     replyPlaybackStatus('ended');
     sendTrackRequest();
+  });
+
+  getPlayerElement().addEventListener('error', () => {
+    const mediaError = getPlayerElement().error;
+    switch (mediaError?.code) {
+      case MediaError.MEDIA_ERR_ABORTED:
+      case MediaError.MEDIA_ERR_DECODE:
+      case MediaError.MEDIA_ERR_NETWORK:
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        mediaErrorEvent();
+        break;
+      default:
+        break;
+    }
   });
 
   // Registering this makes the "next track" button show up in the media

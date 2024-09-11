@@ -77,4 +77,7 @@ interface TrackProvider {
 
   // Used by the player to report playback.
   ReportPlayback(PlaybackData data);
+
+  // Used by the player to report an error.
+  ReportPlayerError();
 };

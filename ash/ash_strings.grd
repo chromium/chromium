@@ -838,6 +838,15 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION" desc="The accessible description for a unselected playlist image button on the focus panel">
         Unselected
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC" desc="The text for the error toast when the focus mode isn't connected to the YouTube Music">
+        Couldn’t connect to YouTube Music
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS" desc="The text for the error toast when the focus mode isn't connected to the Focus sounds">
+        Couldn’t connect to Focus sounds
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FAILED_PLAYING_SOUNDS" desc="The text for the error toast when the player couldn't play the Soundscape playlist">
+        Couldn’t play Focus sounds
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do Not Disturb while in Focus
       </message>

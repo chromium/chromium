@@ -354,6 +354,12 @@ void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
                          base::BindOnce(&OnTrackFetched, std::move(callback)));
 }
 
+void FocusModeSoundsController::ReportPlayerError() {
+  for (auto& observer : observers_) {
+    observer.OnPlayerError();
+  }
+}
+
 void FocusModeSoundsController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

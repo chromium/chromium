@@ -64,6 +64,8 @@ class ASH_EXPORT FocusModeSoundsController
     virtual void OnSelectedPlaylistChanged() = 0;
     // Called when the state of `selected_playlist_` has been changed.
     virtual void OnPlaylistStateChanged() {}
+    // Called when the media player encounters an error.
+    virtual void OnPlayerError() {}
   };
 
   FocusModeSoundsController();
@@ -82,6 +84,9 @@ class ASH_EXPORT FocusModeSoundsController
   using GetNextTrackCallback = base::OnceCallback<void(
       const std::optional<FocusModeSoundsDelegate::Track>&)>;
   void GetNextTrack(GetNextTrackCallback callback);
+
+  // Called by `FocusModeTrackProvider::ReportPlayerError`.
+  void ReportPlayerError();
 
   const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {
     return soundscape_playlists_;
