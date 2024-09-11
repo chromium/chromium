@@ -443,6 +443,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // transaction.
   int64_t total_sent_bytes_ = 0;
 
+  // When the transaction started creating a stream.
+  base::TimeTicks create_stream_start_time_;
+
   // When the transaction started / finished sending the request, including
   // the body, if present. |send_start_time_| is set to |base::TimeTicks()|
   // until |SendRequest()| is called on |stream_|, and reset for auth restarts.

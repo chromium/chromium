@@ -2256,6 +2256,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.NetworkTransaction.Create{StreamType}Time.{HostType}.{Protocol}"
+    units="ms" expires_after="2025-03-08">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The time taken for creating a(n) {StreamType}. Recorded in
+    HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
+    completes successfully.
+  </summary>
+  <token key="StreamType">
+    <variant name="HttpStream"/>
+    <variant name="WebSocketStream"/>
+  </token>
+  <token key="HostType" variants="NetworkTransactionBlockedHostType"/>
+  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+</histogram>
+
+<histogram
     name="Net.NetworkTransaction.GenerateProxyAuthTokenBlocked{HostType}.{Protocol}"
     enum="Boolean" expires_after="2025-03-02">
   <owner>bashi@chromium.org</owner>

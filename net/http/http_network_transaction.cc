@@ -951,6 +951,8 @@ int HttpNetworkTransaction::DoCreateStream() {
   // they can also be disabled when retrying after a QUIC error).
   if (!enable_ip_based_pooling_)
     DCHECK(!enable_alternative_services_);
+
+  create_stream_start_time_ = base::TimeTicks::Now();
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
@@ -971,6 +973,15 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   if (result == OK) {
     next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
+    CHECK(!create_stream_start_time_.is_null());
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"Net.NetworkTransaction.Create",
+             (ForWebSocketHandshake() ? "WebSocketStreamTime."
+                                      : "HttpStreamTime."),
+             (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
+             NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - create_stream_start_time_);
   } else if (result == ERR_HTTP_1_1_REQUIRED ||
              result == ERR_PROXY_HTTP_1_1_REQUIRED) {
     return HandleHttp11Required(result);
