@@ -527,6 +527,7 @@ component("platform") {
     "bindings/v8_dom_activity_logger.h",
     "bindings/v8_dom_wrapper.cc",
     "bindings/v8_dom_wrapper.h",
+    "bindings/v8_external_memory_accounter.h",
     "bindings/v8_global_value_map.h",
     "bindings/v8_histogram_accumulator.cc",
     "bindings/v8_histogram_accumulator.h",

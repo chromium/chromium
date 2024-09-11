@@ -78,7 +78,12 @@ RTCRtpScriptTransformer::RTCRtpScriptTransformer(
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state, rtc_encoded_underlying_sink_,
       /*high_water_mark=*/1);
-  serialized_data_memory_accounter_.Register(SizeOfExternalMemoryInBytes());
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
+}
+
+RTCRtpScriptTransformer::~RTCRtpScriptTransformer() {
+  serialized_data_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 size_t RTCRtpScriptTransformer::SizeOfExternalMemoryInBytes() {
@@ -115,7 +120,7 @@ ScriptValue RTCRtpScriptTransformer::options(ScriptState* script_state) {
     // The data is put on the V8 GC heap here, and therefore the V8 GC does
     // the accounting from here on. We unregister the registered memory to
     // avoid double accounting.
-    serialized_data_memory_accounter_.Unregister();
+    serialized_data_memory_accounter_.Clear(isolate);
     value = data_as_serialized_script_value_->Deserialize(isolate, options);
   } else {
     value = v8::Null(isolate);
