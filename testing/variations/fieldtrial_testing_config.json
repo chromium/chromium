@@ -26366,10 +26366,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithIncludes",
                     "enable_features": [
                         "WebViewAutoSAA",
                         "WebViewDigitalAssetLinksLoadIncludes"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutIncludes",
+                    "enable_features": [
+                        "WebViewAutoSAA"
                     ]
                 }
             ]
