@@ -11,7 +11,6 @@ import android.util.FloatProperty;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.LocalizationUtils;
@@ -24,23 +23,6 @@ import org.chromium.ui.base.LocalizationUtils;
 public class StripLayoutGroupTitle extends StripLayoutView {
 
     private final Context mContext;
-
-    /**
-     * Get the bounds of the view w.r.t screen.
-     *
-     * @param out Screen coordinates of the view to populate.
-     * @param windowRectSupplier Supplier for holder window bounds for computation.
-     */
-    public void getDrawBoundsOnScreen(Rect out, Supplier<Rect> windowRectSupplier) {
-        float dpToPx = mContext.getResources().getDisplayMetrics().density;
-        int leftWithOffset = (int) (getPaddedX() * dpToPx) + windowRectSupplier.get().left;
-        int topWithOffset = (int) (getPaddedY() * dpToPx) + windowRectSupplier.get().top;
-        out.set(
-                leftWithOffset,
-                topWithOffset,
-                (int) (leftWithOffset + (getPaddedWidth() * dpToPx)),
-                (int) (topWithOffset + (getPaddedHeight() * dpToPx)));
-    }
 
     /** Delegate for additional group title functionality. */
     public interface StripLayoutGroupTitleDelegate extends StripLayoutViewOnClickHandler {
@@ -172,6 +154,20 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public float getPaddedHeight() {
         return getHeight() - MARGIN_TOP_DP - MARGIN_BOTTOM_DP;
+    }
+
+    /**
+     * Get padded bounds for this view.
+     *
+     * @param out Rect to set the bounds.
+     */
+    public void getPaddedBoundsPx(Rect out) {
+        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+        out.set(
+                (int) (getPaddedX() * dpToPx),
+                (int) (getPaddedY() * dpToPx),
+                (int) ((getPaddedX() + getPaddedWidth()) * dpToPx),
+                (int) ((getPaddedY() + getPaddedHeight()) * dpToPx));
     }
 
     /**

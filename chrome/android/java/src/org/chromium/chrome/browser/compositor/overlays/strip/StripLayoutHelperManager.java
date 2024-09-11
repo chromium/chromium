@@ -19,7 +19,6 @@ import android.util.FloatProperty;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
-import android.view.View.OnLayoutChangeListener;
 import android.view.ViewStub;
 import android.view.animation.Interpolator;
 
@@ -35,7 +34,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -117,8 +115,7 @@ public class StripLayoutHelperManager
                 PauseResumeWithNativeObserver,
                 TabStripTransitionDelegate,
                 TopResumedActivityChangedObserver,
-                AppHeaderObserver,
-                OnLayoutChangeListener {
+                AppHeaderObserver {
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -203,8 +200,6 @@ public class StripLayoutHelperManager
     // External influences
     private TabModelSelector mTabModelSelector;
     private final LayoutUpdateHost mUpdateHost;
-    private final WindowAndroid mWindowAndroid;
-    private final Rect mWindowRect = new Rect();
 
     // Event Filters
     private final AreaMotionEventFilter mEventFilter;
@@ -504,22 +499,12 @@ public class StripLayoutHelperManager
         mToolbarManager = toolbarManager;
         mStatusBarColorController = mToolbarManager.getStatusBarColorController();
 
-        mWindowAndroid = windowAndroid;
-        mWindowAndroid
-                .getActivity()
-                .get()
-                .getWindow()
-                .getDecorView()
-                .addOnLayoutChangeListener(this);
-        Supplier<Rect> mWindowRectSupplier = () -> mWindowRect;
-
         mNormalHelper =
                 new StripLayoutHelper(
                         context,
                         managerHost,
                         updateHost,
                         renderHost,
-                        mWindowRectSupplier,
                         false,
                         mModelSelectorButton,
                         mTabDragSource,
@@ -537,7 +522,6 @@ public class StripLayoutHelperManager
                         managerHost,
                         updateHost,
                         renderHost,
-                        mWindowRectSupplier,
                         true,
                         mModelSelectorButton,
                         mTabDragSource,
@@ -701,12 +685,6 @@ public class StripLayoutHelperManager
             mDesktopWindowStateProvider.removeObserver(this);
         }
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
-        mWindowAndroid
-                .getActivity()
-                .get()
-                .getWindow()
-                .getDecorView()
-                .removeOnLayoutChangeListener(this);
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
@@ -1544,31 +1522,6 @@ public class StripLayoutHelperManager
     @StripVisibilityState
     int getStripVisibilityState() {
         return mStripVisibilityStateSupplier.get();
-    }
-
-    /**
-     * Layout event for activity decorView to update window rect. Required to compute absolute
-     * positions for strip views.
-     */
-    @Override
-    public void onLayoutChange(
-            View rootView,
-            int left,
-            int top,
-            int right,
-            int bottom,
-            int oldLeft,
-            int oldTop,
-            int oldRight,
-            int oldBottom) {
-        rootView.getWindowVisibleDisplayFrame(mWindowRect);
-
-        // In multi-window, the coordinates of root view will be different than (0,0).
-        // So we translate the coordinates of |mWindowRect| w.r.t. its window. This ensures the
-        // |mWindowRect| always starts at (0,0).
-        int[] rootCoordinates = new int[2];
-        rootView.getLocationOnScreen(rootCoordinates);
-        mWindowRect.offset(-rootCoordinates[0], -rootCoordinates[1]);
     }
 
     void simulateHoverEventForTesting(int event, float x, float y) {

@@ -33,6 +33,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
@@ -60,7 +61,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -169,7 +169,6 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
-    private final Supplier<Rect> mWindowRectSupplier = () -> new Rect(1, 1, 1000, 100);
 
     /** Reset the environment before each test. */
     @Before
@@ -1799,6 +1798,9 @@ public class StripLayoutHelperTest {
         groupTabs(0, 1);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        Drawable mockDrawable = mock(Drawable.class);
+        when(mTabGroupContextMenuCoordinator.getMenuBackground(any(), anyBoolean()))
+                .thenReturn(mockDrawable);
 
         // Set up tabModel and menu coordinator.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
@@ -1819,9 +1821,9 @@ public class StripLayoutHelperTest {
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertTrue(view instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle titleView = (StripLayoutGroupTitle) view;
-        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         Rect expectedRect = new Rect();
-        titleView.getDrawBoundsOnScreen(expectedRect, mWindowRectSupplier);
+        titleView.getPaddedBoundsPx(expectedRect);
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
 
@@ -4044,7 +4046,6 @@ public class StripLayoutHelperTest {
                         mManagerHost,
                         mUpdateHost,
                         mRenderHost,
-                        mWindowRectSupplier,
                         incognito,
                         mModelSelectorBtn,
                         mTabDragSource,

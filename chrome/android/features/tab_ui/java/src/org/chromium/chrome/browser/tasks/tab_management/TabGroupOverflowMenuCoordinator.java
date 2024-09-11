@@ -9,6 +9,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * menu and displaying the menu.
  */
 public abstract class TabGroupOverflowMenuCoordinator {
+
     /** Helper interface for handling menu item clicks for tab group related actions. */
     @FunctionalInterface
     public interface OnItemClickedCallback {
@@ -73,8 +75,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 @StyleRes int animStyle,
                 @HorizontalOrientation int horizontalOrientation,
                 @LayoutRes int menuLayout,
+                Drawable menuBackground,
                 OnItemClickedCallback onItemClickedCallback,
-                boolean isIncognito,
                 int tabId,
                 @Nullable String collaborationId,
                 @DimenRes int popupWidthRes,
@@ -126,14 +128,11 @@ public abstract class TabGroupOverflowMenuCoordinator {
 
             View decorView = activity.getWindow().getDecorView();
 
-            final @DrawableRes int bgDrawableId =
-                    isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
-
             mMenuWindow =
                     new AnchoredPopupWindow(
                             mContext,
                             decorView,
-                            AppCompatResources.getDrawable(mContext, bgDrawableId),
+                            menuBackground,
                             mContentView,
                             anchorViewRectProvider);
             mMenuWindow.setFocusable(true);
@@ -264,6 +263,14 @@ public abstract class TabGroupOverflowMenuCoordinator {
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();
 
+    /** Returns menu background drawable. */
+    public Drawable getMenuBackground(Context context, boolean isIncognito) {
+        final @DrawableRes int bgDrawableId =
+                isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
+
+        return AppCompatResources.getDrawable(context, bgDrawableId);
+    }
+
     // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this
     // method
     /** See {@link #createAndShowMenu(RectProvider, int, boolean, boolean, Integer, Activity)} */
@@ -300,6 +307,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
         assert mMenuHolder == null;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
         @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
+        Drawable menuBackground = getMenuBackground(activity, isIncognito);
         mMenuHolder =
                 new OverflowMenuHolder(
                         anchorViewRectProvider,
@@ -308,8 +316,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
                         animStyle,
                         horizontalOrientation,
                         mMenuLayout,
+                        menuBackground,
                         mOnItemClickedCallback,
-                        isIncognito,
                         tabId,
                         collaborationId,
                         getMenuWidth(),

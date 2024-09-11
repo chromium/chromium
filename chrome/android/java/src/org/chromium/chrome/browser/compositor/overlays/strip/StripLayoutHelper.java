@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -349,7 +350,6 @@ public class StripLayoutHelper
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
     private final RectF mTouchableRect = new RectF();
-    private final Supplier<Rect> mWindowRectSupplier;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -505,7 +505,6 @@ public class StripLayoutHelper
             LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            Supplier<Rect> windowRectSupplier,
             boolean incognito,
             CompositorButton modelSelectorButton,
             @Nullable TabDragSource tabDragSource,
@@ -526,7 +525,6 @@ public class StripLayoutHelper
         mLastHoverCardExitTime = INVALID_TIME;
         mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
-        mWindowRectSupplier = windowRectSupplier;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1942,10 +1940,26 @@ public class StripLayoutHelper
                             TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
         }
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
-        Rect tabGroupTitleRect = new Rect();
-        groupTitle.getDrawBoundsOnScreen(tabGroupTitleRect, mWindowRectSupplier);
-        mTabGroupContextMenuCoordinator.showMenu(
-                new RectProvider(tabGroupTitleRect), groupTitle.getRootId());
+        RectProvider anchorRectProvider = new RectProvider();
+        getAnchorRect(groupTitle, anchorRectProvider);
+        mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getRootId());
+    }
+
+    private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
+        int[] toolbarCoordinates = new int[2];
+        Rect backgroundPadding = new Rect();
+        mToolbarContainerView.getLocationInWindow(toolbarCoordinates);
+        Drawable background =
+                mTabGroupContextMenuCoordinator.getMenuBackground(mContext, mIncognito);
+        background.getPadding(backgroundPadding);
+        groupTitle.getPaddedBoundsPx(anchorRectProvider.getRect());
+        // Use parent toolbar view coordinates to offset title rect.
+        // Also shift the anchor left by menu padding to align the menu exactly with title x.
+        int xOffset =
+                MathUtils.flipSignIf(
+                        toolbarCoordinates[0] - backgroundPadding.left,
+                        LocalizationUtils.isLayoutRtl());
+        anchorRectProvider.getRect().offset(xOffset, toolbarCoordinates[1]);
     }
 
     private void startDragOrReorderTab(long time, float x, float y, StripLayoutTab clickedTab) {
