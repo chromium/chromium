@@ -11,6 +11,7 @@
 
 namespace autofill {
 
+// LINT.IfChange
 std::string FillingProductToString(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kNone:
@@ -32,12 +33,16 @@ std::string FillingProductToString(FillingProduct filling_product) {
     case FillingProduct::kPlusAddresses:
       return "PlusAddresses";
     case FillingProduct::kStandaloneCvc:
-      return "VirtualCard.StandaloneCvc";
+      return "StandaloneCvc";
     case FillingProduct::kPredictionImprovements:
       return "PredictionImprovements";
   };
   NOTREACHED();
 }
+// LINT.ThenChange(
+//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
+//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
+// )
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   switch (type) {

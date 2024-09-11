@@ -96,6 +96,48 @@ chromium-metrics-reviews@google.com.
                feature"/>
 </variants>
 
+<!-- LINT.IfChange(Autofill.FillingProduct) -->
+
+<variants name="Autofill.FillingProduct">
+  <variant name="Address"
+      summary="User chose to fill a form or field with an address profile."/>
+  <variant name="Autocomplete"
+      summary="User chose to fill a field with autocomplete."/>
+  <variant name="Compose"
+      summary="User chose to fill a field with a compose suggestion."/>
+  <variant name="CreditCard"
+      summary="User chose to fill a form or field with a credit card profile."/>
+  <variant name="Iban" summary="User chose to fill a field with an iban."/>
+  <variant name="MerchantPromoCode"
+      summary="User chose to fill a field with a merchant promo code."/>
+  <variant name="None" summary="No filling product matches."/>
+  <variant name="Password"
+      summary="User chose to fill a form or field with password credentials."/>
+  <variant name="PlusAddresses"
+      summary="User chose to fill a field with a prediction improvement."/>
+  <variant name="PredictionImprovements"
+      summary="User chose to fill a field with a plus addresses suggestion."/>
+  <variant name="StandaloneCvc"
+      summary="User chose to fill a form or field with a CVC."/>
+</variants>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.mm:FillingProductToString) -->
+
+<!-- LINT.IfChange(Autofill.FillingProduct.Condensed) -->
+
+<variants name="Autofill.FillingProduct.Condensed">
+  <variant name="Address"
+      summary="User chose to fill a form or field with an address profile."/>
+  <variant name="CreditCard"
+      summary="User chose to fill a form or field with a credit card profile."/>
+  <variant name="Password"
+      summary="User chose to fill a form or field with password credentials."/>
+  <variant name="StandaloneCvc"
+      summary="User chose to fill a form or field with a CVC."/>
+</variants>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.mm:FillingProductToString) -->
+
 <variants name="Autofill.FormEventWithMetadata">
   <variant name="FilledWithMetadata" summary="A card with metadata was filled"/>
   <variant name="FilledWithMetadataOnce"
@@ -2372,12 +2414,7 @@ chromium-metrics-reviews@google.com.
     classification. Recorded when a field-by-field filling suggestion is
     accepted by the user from an Autofill popup.
   </summary>
-  <token key="FillingProduct">
-    <variant name="Address"/>
-    <variant name="CreditCard"/>
-    <variant name="Password"/>
-    <variant name="StandaloneCvc"/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
@@ -2584,12 +2621,7 @@ chromium-metrics-reviews@google.com.
     field or a group of fields (address fields, phone fields, name fields or
     email fields).
   </summary>
-  <token key="FillingProduct">
-    <variant name="Address"/>
-    <variant name="CreditCard"/>
-    <variant name="Password"/>
-    <variant name="StandaloneCvc"/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
@@ -4335,26 +4367,7 @@ chromium-metrics-reviews@google.com.
     Records the duration that the autofill root popup remains open. Emitted by
     the popup controller on hide. Note that it is not emitted for sub popups.
   </summary>
-  <token key="FillingProduct">
-    <variant name="Address"
-        summary="User chose to fill a form or field with an address profile."/>
-    <variant name="Autocomplete"
-        summary="User chose to fill a field with autocomplete."/>
-    <variant name="Compose"
-        summary="User chose to fill a field with a compose suggestion."/>
-    <variant name="CreditCard"
-        summary="User chose to fill a form or field with a credit card
-                 profile."/>
-    <variant name="Iban" summary="User chose to fill a field with an iban."/>
-    <variant name="MerchantPromoCode"
-        summary="User chose to fill a field with a merchant promo code."/>
-    <variant name="None" summary="No filling product matches."/>
-    <variant name="Password"
-        summary="User chose to fill a form or field with password
-                 credentials."/>
-    <variant name="PlusAddresses"
-        summary="User chose to fill a field with a plus addresses suggestion."/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.PopupHidingReason"
@@ -4377,29 +4390,7 @@ chromium-metrics-reviews@google.com.
     disappers or cannot be displayed. Recorded everytime an Autofill popup
     disappears or cannot be displayed.
   </summary>
-  <token key="FillingProduct">
-    <variant name="Address"
-        summary="User chose to fill a form or field with an address profile."/>
-    <variant name="Autocomplete"
-        summary="User chose to fill a field with autocomplete."/>
-    <variant name="Compose"
-        summary="User chose to fill a field with a compose suggestion."/>
-    <variant name="CreditCard"
-        summary="User chose to fill a form or field with a credit card
-                 profile."/>
-    <variant name="Iban" summary="User chose to fill a field with an iban."/>
-    <variant name="MerchantPromoCode"
-        summary="User chose to fill a field with a merchant promo code."/>
-    <variant name="None" summary="No filling product matches."/>
-    <variant name="Password"
-        summary="User chose to fill a form or field with password
-                 credentials."/>
-    <variant name="PlusAddresses"
-        summary="User chose to fill a field with a plus addresses suggestion."/>
-    <variant name="StandaloneCvc"
-        summary="User chose to fill a form or field with a CVC for a virtual
-                 card saved on file."/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
 <histogram
@@ -4429,21 +4420,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AutofillPopupInteractionLevel"
       variants="AutofillPopupInteractionLevel"/>
-  <token key="FillingProduct">
-    <variant name="Address" summary="popup with address suggestion(s)"/>
-    <variant name="Autocomplete"
-        summary="popup with autocomplete suggestion(s)"/>
-    <variant name="Compose" summary="popup with compose suggestion(s)"/>
-    <variant name="CreditCard" summary="popup with credit card suggestion(s)"/>
-    <variant name="Iban" summary="popup with iban suggestion(s)"/>
-    <variant name="MerchantPromoCode"
-        summary="popup with merchant promo code suggestion(s)"/>
-    <variant name="None"
-        summary="popup with suggestion(s) that match no filling product"/>
-    <variant name="Password" summary="popup with password suggestion(s)"/>
-    <variant name="PlusAddresses"
-        summary="popup with plus addresses suggestion(s)"/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
@@ -6479,28 +6456,7 @@ chromium-metrics-reviews@google.com.
     The index of the accepted Autofill suggestion, split by context. Logged when
     the user taps on a suggestion. iOS only. {FillingProduct} {Context}
   </summary>
-  <token key="FillingProduct">
-    <variant name="Address"
-        summary="User chose to fill a form or field with an address profile."/>
-    <variant name="Autocomplete"
-        summary="User chose to fill a field with autocomplete."/>
-    <variant name="Compose"/>
-    <variant name="CreditCard"
-        summary="User chose to fill a form or field with a credit card
-                 profile."/>
-    <variant name="Iban" summary="User chose to fill a field with an iban."/>
-    <variant name="MerchantPromoCode"
-        summary="User chose to fill a field with a merchant promo code."/>
-    <variant name="None" summary="No filling product matches."/>
-    <variant name="Password"
-        summary="User chose to fill a form or field with password
-                 credentials."/>
-    <variant name="PlusAddresses"
-        summary="User chose to fill a field with a plus addresses suggestion."/>
-    <variant name="StandaloneCvc"
-        summary="User chose to fill a form or field with a CVC for a virtual
-                 card saved on file."/>
-  </token>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
   <token key="Context">
     <variant name="BottomSheet"/>
     <variant name="KeyboardAccessory"/>
