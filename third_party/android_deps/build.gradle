@@ -112,11 +112,14 @@ dependencies {
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
+    // Needed by androidx.datastore
+    compile "com.squareup.okio:okio-jvm:3.9.0"
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
     // Needed by androidx.benchmark
