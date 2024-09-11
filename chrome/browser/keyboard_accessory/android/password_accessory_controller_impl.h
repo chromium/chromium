@@ -15,6 +15,7 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -100,7 +101,9 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
-      ShowMigrationWarningCallback show_migration_warning_callback);
+      ShowMigrationWarningCallback show_migration_warning_callback,
+      std::unique_ptr<PasswordAccessLossWarningBridge>
+          access_loss_warning_bridge);
 
   // Returns true if the current site attached to `web_contents_` has a SECURE
   // security level.
@@ -123,7 +126,9 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
-      ShowMigrationWarningCallback show_migration_warning_callback);
+      ShowMigrationWarningCallback show_migration_warning_callback,
+      std::unique_ptr<PasswordAccessLossWarningBridge>
+          access_loss_warning_bridge);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -260,6 +265,10 @@ class PasswordAccessoryControllerImpl
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  // Bridge used for showing the password access loss warning sheet after
+  // filling credentials.
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
 

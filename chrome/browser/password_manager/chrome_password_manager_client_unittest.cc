@@ -316,7 +316,8 @@ class MockPasswordAccessoryControllerImpl
                                         mf_controller,
                                         password_client,
                                         driver_supplier,
-                                        base::DoNothing()) {}
+                                        base::DoNothing(),
+                                        nullptr) {}
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
