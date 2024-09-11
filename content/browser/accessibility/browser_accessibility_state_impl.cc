@@ -317,6 +317,10 @@ void BrowserAccessibilityStateImpl::OnOtherThreadDone() {
 }
 
 void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
+  if (!g_instance) {
+    // There can be a race on shutdown since this is posted as a delayed task.
+    return;
+  }
   base::TimeTicks now = ui::EventTimeForNow();
   accessibility_last_usage_time_ = now;
   if (accessibility_active_start_time_.is_null())
