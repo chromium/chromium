@@ -421,6 +421,7 @@
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
+    "owners": ["clamy@chromium.org", "chrome-secure-web-and-net@chromium.org"],
     "platforms": ["Linux"],
     "bases": ["external/wpt/wasm/jsapi/memory",
               "fast/workers/worker-atomics-wait.html",
