@@ -59,16 +59,6 @@ class AppContainerBase final : public AppContainer {
   // the Delete method if it's no longer required.
   static std::unique_ptr<AppContainerBase> CreateProfile(
       const wchar_t* package_name,
-      const wchar_t* display_name,
-      const wchar_t* description);
-
-  // Creates a new AppContainer object. This will create a new profile
-  // if it doesn't already exist. The profile must be deleted manually using
-  // the `DeleteNoFirewall` method if it's no longer required. This differs from
-  // the `CreateProfile` method in that it doesn't register the profile with the
-  // system firewall which might remove contention and deadlock issues.
-  static std::unique_ptr<AppContainerBase> CreateProfileNoFirewall(
-      const wchar_t* package_name,
       const wchar_t* display_name);
 
   // Opens a derived AppContainer object. No checks will be made on
@@ -85,12 +75,6 @@ class AppContainerBase final : public AppContainer {
   // Delete a profile based on name. Returns true if successful, or if the
   // package doesn't already exist.
   static bool Delete(const wchar_t* package_name);
-
-  // Delete a profile based on name. Returns true if successful, or if the
-  // package doesn't already exist. This differs from the `DeleteProfile`
-  // method in that it doesn't delete the profile with the system firewall
-  // which might remove contention and deadlock issues.
-  static bool DeleteNoFirewall(const wchar_t* package_name);
 
   // Build an impersontion token from an existing token.
   // `token` specify the base token to create the new token from. Must have

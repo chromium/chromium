@@ -49,25 +49,6 @@ const wchar_t kAppContainerSid[] =
     L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
     L"924012148-2839372144";
 
-constexpr ACProfileRegistration GetProfileRegistration() {
-#if defined(ARCH_CPU_ARM64)
-  return ACProfileRegistration::kNoFirewall;
-#else
-  return ACProfileRegistration::kDefault;
-#endif  // defined(ARCH_CPU_ARM64)
-}
-
-void DeleteProfile(const wchar_t* package_name) {
-  switch (GetProfileRegistration()) {
-    case ACProfileRegistration::kDefault:
-      AppContainerBase::Delete(package_name);
-      break;
-    case ACProfileRegistration::kNoFirewall:
-      AppContainerBase::DeleteNoFirewall(package_name);
-      break;
-  }
-}
-
 std::wstring GenerateRandomPackageName() {
   return base::ASCIIToWide(base::StringPrintf(
       "%016" PRIX64 "%016" PRIX64, base::RandUint64(), base::RandUint64()));
@@ -177,8 +158,8 @@ std::wstring GetAppContainerProfileName() {
 // Adds an app container policy similar to network service.
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
-  ResultCode ret = policy->GetConfig()->AddAppContainerProfile(
-      profile_name.c_str(), GetProfileRegistration());
+  ResultCode ret =
+      policy->GetConfig()->AddAppContainerProfile(profile_name.c_str());
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
@@ -217,9 +198,8 @@ class AppContainerTest : public ::testing::Test {
     policy_ = broker_services_->CreatePolicy();
     ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetProcessMitigations(
                                MITIGATION_HEAP_TERMINATE));
-    ASSERT_EQ(SBOX_ALL_OK,
-              policy_->GetConfig()->AddAppContainerProfile(
-                  package_name_.c_str(), GetProfileRegistration()));
+    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
+                               package_name_.c_str()));
     created_profile_ = true;
   }
 
@@ -228,7 +208,7 @@ class AppContainerTest : public ::testing::Test {
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
     }
     if (created_profile_) {
-      DeleteProfile(package_name_.c_str());
+      AppContainerBase::Delete(package_name_.c_str());
     }
   }
 
@@ -479,7 +459,7 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
 
-  DeleteProfile(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
 TEST(AppContainerLaunchTest, IsAppContainer) {
@@ -490,26 +470,13 @@ TEST(AppContainerLaunchTest, IsAppContainer) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
 
-  DeleteProfile(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
 TEST(AppContainerLaunchTest, IsNotAppContainer) {
   TestRunner runner;
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
-}
-
-TEST(AppContainerLaunchTest, IsAppContainerNoFirewall) {
-  if (!features::IsAppContainerSandboxSupported()) {
-    return;
-  }
-  TestRunner runner;
-  std::wstring package_name = GenerateRandomPackageName();
-  ASSERT_EQ(SBOX_ALL_OK,
-            runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
-                package_name.c_str(), ACProfileRegistration::kNoFirewall));
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
 }
 
 SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
@@ -523,7 +490,7 @@ SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
   return SBOX_TEST_SUCCEEDED;
 }
 
-TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
+TEST(AppContainerLaunchTest, CreateTempFile) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
@@ -531,13 +498,13 @@ TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
   std::wstring package_name = GenerateRandomPackageName();
   ASSERT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
-                package_name.c_str(), ACProfileRegistration::kNoFirewall));
+                package_name.c_str()));
   EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetTokenLevel(
                              USER_UNPROTECTED, USER_UNPROTECTED));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"CreateTempFileInAppContainer"));
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
+  EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
 }
 
 TEST(LowBoxTest, ChildProcessMitigationLowBox) {

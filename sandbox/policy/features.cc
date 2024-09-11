@@ -123,12 +123,6 @@ BASE_FEATURE(kWinSboxNoFakeGdiInit,
 BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
              "WinSboxRestrictCoreSharingOnRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Creates an AppContainer policy without registering with the Windows firewall
-// service. See crbug.com/352720904 for details.
-BASE_FEATURE(kWinSboxACProfileWithoutFirewall,
-             "WinSboxACProfileWithoutFirewall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
