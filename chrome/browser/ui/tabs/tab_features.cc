@@ -13,8 +13,10 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "extensions/common/extension_features.h"
@@ -140,6 +143,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
           &tab, side_panel_registry_.get());
+
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    CreateFingerprintingProtectionWebContentsHelper(
+        tab.GetContents(), profile->GetPrefs(),
+        TrackingProtectionSettingsFactory::GetForProfile(profile),
+        profile->IsIncognitoProfile());
+  }
 }
 
 TabFeatures::TabFeatures() = default;
