@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UserNotifications/UserNotifications.h>
+
 #import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
+#import "ios/chrome/browser/ui/push_notification/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/system_alert_handler.h"
 
 namespace {
 
@@ -62,26 +64,12 @@ void WaitForPriceTrackingPromoToDisappear() {
 
 // Tests the first opt in flow of the price tracking promo card in the magic
 // stack whereby the user has not opted into notifications in the app at all.
-// TODO(crbug.com/365725410): Test is flaky on iPhone device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testFirstOptInFlow testFirstOptInFlow
-#else
-#define MAYBE_testFirstOptInFlow DISABLED_testFirstOptInFlow
-#endif
-- (void)MAYBE_testFirstOptInFlow {
+- (void)testFirstOptInFlow {
+  ScopedNotificationAuthSwizzler auth(YES);
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ButtonWithAccessibilityLabelId(
                      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW)]
       performAction:grey_tap()];
-
-  if ([EarlGrey WaitForAlertVisibility:YES withTimeout:1]) {
-    NSError* error;
-    NSString* alertString = [EarlGrey SystemAlertTextWithError:&error];
-    NSString* expectedString = @"Would Like to Send You Notifications";
-    XCTAssertTrue([alertString containsString:expectedString]);
-    XCTAssertTrue([EarlGrey AcceptSystemDialogWithError:nil]);
-    XCTAssertTrue([EarlGrey WaitForAlertVisibility:NO withTimeout:1]);
-  }
   WaitForPriceTrackingPromoToDisappear();
 }
 
