@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
@@ -65,7 +66,7 @@ class AITextSession : public AIContextBoundObject,
    private:
     uint32_t max_tokens_;
     uint32_t current_tokens_ = 0;
-    std::optional<ContextItem> system_prompt_;
+    std::optional<ContextItem> initial_prompts_;
     std::deque<ContextItem> context_items_;
   };
 
@@ -102,15 +103,16 @@ class AITextSession : public AIContextBoundObject,
             ForkCallback callback) override;
   void Destroy() override;
 
-  // Gets the token count for the system prompt, updates the session, and passes
-  // the session information back through the callback.
-  void SetSystemPrompt(std::string system_prompt,
-                       CreateTextSessionCallback callback);
+  // Format the initial prompts, gets the token count, updates the session, and
+  // passes the session information back through the callback.
+  void SetInitialPrompts(
+      const std::optional<std::string> system_prompt,
+      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
+      CreateTextSessionCallback callback);
   blink::mojom::AITextSessionInfoPtr GetTextSessionInfo();
 
-  // The following methods expose the format for testing.
-  static std::string GetPromptFormatForTesting();
-  static std::string GetSystemPromptFormatForTesting();
+  static const char* FormatPromptRole(
+      blink::mojom::AIAssistantInitialPromptRole role);
 
  private:
   void ModelExecutionCallback(
@@ -119,9 +121,10 @@ class AITextSession : public AIContextBoundObject,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
-  void InitializeContextWithSystemPrompt(const std::string& text,
-                                         CreateTextSessionCallback callback,
-                                         uint32_t size);
+  void InitializeContextWithInitialPrompts(
+      const std::string& initial_prompts_text,
+      CreateTextSessionCallback callback,
+      uint32_t size);
 
   // This function is passed as a completion callback to the
   // `GetSizeInTokens()`. It will

@@ -48,6 +48,7 @@ class AITextSessionFactory : public GarbageCollected<AITextSessionFactory>,
       AIMetrics::AISessionType session_type,
       mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
       const WTF::String& system_prompt,
+      Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
       CreateTextSessionCallback callback);
 
  private:

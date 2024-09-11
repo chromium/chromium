@@ -15,22 +15,50 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 
 using testing::_;
 using testing::Test;
+using Role = blink::mojom::AIAssistantInitialPromptRole;
 
 namespace {
 
 const uint32_t kTestMaxContextToken = 10u;
-const uint32_t kTestSystemPromptToken = 5u;
+const uint32_t kTestInitialPromptsToken = 5u;
 const uint32_t kDefaultTopK = 1;
 const float kDefaultTemperature = 0.0;
 
 const char kTestPrompt[] = "Test prompt";
-const char kTestSystemPrompt[] = "Test system prompt";
+const char kExpectedFormattedTestPrompt[] = "User: Test prompt\nModel: ";
+const char kTestSystemPrompts[] = "Test system prompt";
+const char kExpectedFormattedSystemPrompts[] = "Test system prompt\n";
 const char kTestResponse[] = "Test response";
+
+const char kTestInitialPromptsUser1[] = "How are you?";
+const char kTestInitialPromptsSystem1[] = "I'm fine, thank you, and you?";
+const char kTestInitialPromptsUser2[] = "I'm fine too.";
+const char kExpectedFormattedInitialPrompts[] =
+    "User: How are you?\nModel: I'm fine, thank you, and you?\nUser: I'm fine "
+    "too.\n";
+const char kExpectedFormattedSystemPromptAndInitialPrompts[] =
+    "Test system prompt\nUser: How are you?\nModel: I'm fine, thank you, and "
+    "you?\nUser: I'm fine too.\n";
+std::vector<blink::mojom::AIAssistantInitialPromptPtr> GetTestInitialPrompts() {
+  auto create_initial_prompt = [](Role role, const char* content) {
+    return blink::mojom::AIAssistantInitialPrompt::New(role, content);
+  };
+  std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts{};
+  initial_prompts.push_back(
+      create_initial_prompt(Role::kUser, kTestInitialPromptsUser1));
+  initial_prompts.push_back(
+      create_initial_prompt(Role::kAssistant, kTestInitialPromptsSystem1));
+  initial_prompts.push_back(
+      create_initial_prompt(Role::kUser, kTestInitialPromptsUser2));
+  return initial_prompts;
+}
 
 }  // namespace
 
@@ -40,7 +68,10 @@ class AITextSessionTest : public AITestUtils::AITestBase {
   void RunPromptTest(
       const std::string& prompt_input,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt) {
+      const std::optional<std::string>& system_prompt,
+      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
+      const std::string& expected_context,
+      const std::string& expected_prompt) {
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params_copy;
     if (sampling_params) {
       sampling_params_copy = sampling_params->Clone();
@@ -79,18 +110,13 @@ class AITextSessionTest : public AITestUtils::AITestBase {
                   });
 
           ON_CALL(*session, AddContext(_))
-              .WillByDefault([&system_prompt](
-                                 const google::protobuf::MessageLite&
+              .WillByDefault([&](const google::protobuf::MessageLite&
                                      request_metadata) {
-                EXPECT_TRUE(system_prompt.has_value());
                 EXPECT_THAT(
                     static_cast<const optimization_guide::proto::StringValue*>(
                         &request_metadata)
                         ->value(),
-                    base::StringPrintf(
-                        AITextSession::GetSystemPromptFormatForTesting()
-                            .c_str(),
-                        system_prompt->c_str()));
+                    expected_context.c_str());
               });
           EXPECT_CALL(*session, ExecuteModel(_, _))
               .WillOnce(
@@ -103,9 +129,7 @@ class AITextSessionTest : public AITestUtils::AITestBase {
                             const optimization_guide::proto::StringValue*>(
                             &request_metadata)
                             ->value(),
-                        base::StringPrintf(
-                            AITextSession::GetPromptFormatForTesting().c_str(),
-                            kTestPrompt));
+                        expected_prompt);
                     callback.Run(CreateExecutionResult(kTestResponse,
                                                        /*is_complete=*/true));
                   });
@@ -114,9 +138,9 @@ class AITextSessionTest : public AITestUtils::AITestBase {
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     mojo::Remote<blink::mojom::AITextSession> mock_session;
-    ai_manager->CreateTextSession(mock_session.BindNewPipeAndPassReceiver(),
-                                  std::move(sampling_params), system_prompt,
-                                  base::NullCallback());
+    ai_manager->CreateTextSession(
+        mock_session.BindNewPipeAndPassReceiver(), std::move(sampling_params),
+        system_prompt, std::move(initial_prompts), base::NullCallback());
 
     AITestUtils::MockModelStreamingResponder mock_responder;
 
@@ -167,70 +191,88 @@ class AITextSessionTest : public AITestUtils::AITestBase {
 
 TEST_F(AITextSessionTest, PromptDefaultSession) {
   RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr,
-                /*system_prompt=*/std::nullopt);
+                /*system_prompt=*/std::nullopt, /*initial_prompts=*/{},
+                /*expected_context=*/"", kExpectedFormattedTestPrompt);
 }
 
 TEST_F(AITextSessionTest, PromptSessionWithSamplingParams) {
   RunPromptTest(kTestPrompt,
                 blink::mojom::AITextSessionSamplingParams::New(
                     /*top_k=*/10, /*temperature=*/0.6),
-                /*system_prompt=*/std::nullopt);
+                /*system_prompt=*/std::nullopt, /*initial_prompts=*/{},
+                /*expected_context=*/"", kExpectedFormattedTestPrompt);
 }
 
 TEST_F(AITextSessionTest, PromptSessionWithSystemPrompt) {
-  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr, kTestSystemPrompt);
+  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr, kTestSystemPrompts,
+                /*initial_prompts=*/{}, kExpectedFormattedSystemPrompts,
+                kExpectedFormattedTestPrompt);
 }
 
-// Tests `AITextSession::Context` creation without system prompt.
-TEST(AITextSessionContextCreationTest, CreateContext_WithoutSystemPrompt) {
+TEST_F(AITextSessionTest, PromptSessionWithInitialPrompts) {
+  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr,
+                /*system_prompt=*/std::nullopt, GetTestInitialPrompts(),
+                kExpectedFormattedInitialPrompts, kExpectedFormattedTestPrompt);
+}
+
+TEST_F(AITextSessionTest, PromptSessionWithSystemPromptAndInitialPrompts) {
+  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr, kTestSystemPrompts,
+                GetTestInitialPrompts(),
+                kExpectedFormattedSystemPromptAndInitialPrompts,
+                kExpectedFormattedTestPrompt);
+}
+
+// Tests `AITextSession::Context` creation without initial prompts.
+TEST(AITextSessionContextCreationTest, CreateContext_WithoutInitialPrompts) {
   AITextSession::Context context(kTestMaxContextToken, std::nullopt);
   EXPECT_FALSE(context.HasContextItem());
 }
 
-// Tests `AITextSession::Context` creation with valid system prompt.
-TEST(AITextSessionContextCreationTest, CreateContext_WithSystemPrompt_Normal) {
+// Tests `AITextSession::Context` creation with valid initial prompts.
+TEST(AITextSessionContextCreationTest,
+     CreateContext_WithInitialPrompts_Normal) {
   AITextSession::Context context(
       kTestMaxContextToken, AITextSession::Context::ContextItem{
-                                "system prompt\n", kTestSystemPromptToken});
+                                "initial prompts\n", kTestInitialPromptsToken});
   EXPECT_TRUE(context.HasContextItem());
 }
 
-// Tests `AITextSession::Context` creation with system prompt that exceeds the
+// Tests `AITextSession::Context` creation with initial prompts that exceeds the
 // max token limit.
 TEST(AITextSessionContextCreationTest,
-     CreateContext_WithSystemPrompt_Overflow) {
+     CreateContext_WithInitialPrompts_Overflow) {
   EXPECT_DEATH_IF_SUPPORTED(
       AITextSession::Context context(
           kTestMaxContextToken,
-          AITextSession::Context::ContextItem{"long system prompt\n",
+          AITextSession::Context::ContextItem{"long initial prompts\n",
                                               kTestMaxContextToken + 1u}),
       "");
 }
 
-// Tests the `AITextSession::Context` that's initialized with/without any system
-// prompt.
-class AITextSessionContextTest
-    : public testing::Test,
-      public testing::WithParamInterface</*is_init_with_system_prompt=*/bool> {
+// Tests the `AITextSession::Context` that's initialized with/without any
+// initial prompt.
+class AITextSessionContextTest : public testing::Test,
+                                 public testing::WithParamInterface<
+                                     /*is_init_with_initial_prompts=*/bool> {
  public:
-  bool IsInitializedWithSystemPrompt() { return GetParam(); }
+  bool IsInitializedWithInitialPrompts() { return GetParam(); }
 
   uint32_t GetMaxContextToken() {
-    return IsInitializedWithSystemPrompt()
-               ? kTestMaxContextToken - kTestSystemPromptToken
+    return IsInitializedWithInitialPrompts()
+               ? kTestMaxContextToken - kTestInitialPromptsToken
                : kTestMaxContextToken;
   }
 
-  std::string GetSystemPromptPrefix() {
-    return IsInitializedWithSystemPrompt() ? "system prompt\n" : "";
+  std::string GetInitialPromptsPrefix() {
+    return IsInitializedWithInitialPrompts() ? "initial prompts\n" : "";
   }
 
   AITextSession::Context context_{
       kTestMaxContextToken,
-      IsInitializedWithSystemPrompt()
+      IsInitializedWithInitialPrompts()
           ? std::optional<
-                AITextSession::Context::ContextItem>{{"system prompt",
-                                                      kTestSystemPromptToken}}
+                AITextSession::Context::ContextItem>{{"initial prompts",
+                                                      kTestInitialPromptsToken}}
           : std::nullopt};
 };
 
@@ -238,15 +280,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AITextSessionContextTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithSystemPrompt"
-                                             : "WithoutSystemPrompt";
+                           return info.param ? "WithInitialPrompts"
+                                             : "WithoutInitialPrompts";
                          });
 
 // Tests `GetContextString()` and `HasContextItem()` when the context is empty.
 TEST_P(AITextSessionContextTest, TestContextOperation_Empty) {
-  EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix());
+  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix());
 
-  if (IsInitializedWithSystemPrompt()) {
+  if (IsInitializedWithInitialPrompts()) {
     EXPECT_TRUE(context_.HasContextItem());
   } else {
     EXPECT_FALSE(context_.HasContextItem());
@@ -257,26 +299,26 @@ TEST_P(AITextSessionContextTest, TestContextOperation_Empty) {
 // to the context.
 TEST_P(AITextSessionContextTest, TestContextOperation_NonEmpty) {
   context_.AddContextItem({"test", 1u});
-  EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix() + "test");
+  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix() + "test");
   EXPECT_TRUE(context_.HasContextItem());
 
   context_.AddContextItem({" test again", 2u});
   EXPECT_EQ(context_.GetContextString(),
-            GetSystemPromptPrefix() + "test test again");
+            GetInitialPromptsPrefix() + "test test again");
   EXPECT_TRUE(context_.HasContextItem());
 }
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow.
 TEST_P(AITextSessionContextTest, TestContextOperation_Overflow) {
   context_.AddContextItem({"test", 1u});
-  EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix() + "test");
+  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix() + "test");
   EXPECT_TRUE(context_.HasContextItem());
 
   // Since the total number of tokens will exceed `kTestMaxContextToken`, the
   // old item will be evicted.
   context_.AddContextItem({"test long token", GetMaxContextToken()});
   EXPECT_EQ(context_.GetContextString(),
-            GetSystemPromptPrefix() + "test long token");
+            GetInitialPromptsPrefix() + "test long token");
   EXPECT_TRUE(context_.HasContextItem());
 }
 
@@ -284,8 +326,8 @@ TEST_P(AITextSessionContextTest, TestContextOperation_Overflow) {
 // the first insertion.
 TEST_P(AITextSessionContextTest, TestContextOperation_OverflowOnFirstItem) {
   context_.AddContextItem({"test very long token", GetMaxContextToken() + 1u});
-  EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix());
-  if (IsInitializedWithSystemPrompt()) {
+  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix());
+  if (IsInitializedWithInitialPrompts()) {
     EXPECT_TRUE(context_.HasContextItem());
   } else {
     EXPECT_FALSE(context_.HasContextItem());

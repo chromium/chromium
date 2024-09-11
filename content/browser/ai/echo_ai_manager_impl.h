@@ -47,6 +47,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingReceiver<::blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
       const std::optional<std::string>& system_prompt,
+      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
       CreateTextSessionCallback callback) override;
 
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;

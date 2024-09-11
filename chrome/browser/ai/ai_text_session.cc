@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
@@ -21,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -28,9 +30,30 @@ namespace {
 
 // The format for the prompt and the context. The prompt structure helps the
 // model distinguish the roles in the previous conversation.
-const char kPromptFormat[] = "User: %s\nModel: ";
-const char kContextFormat[] = "%s\n%s\n";
+
+// The template used to format each prompt input. Example:
+// ```
+// User: what is the opposite of large?
+// Model:
+// ```
+const char kPromptFormat[] = "%s: %s\n%s: ";
+// The template used to format each context entry. Example:
+// ```
+// User: what is the opposite of large?
+// Model: small.
+// ```
+const char kContextFormat[] = "%s%s\n";
+
+// The templates used to format different parts of the system prompt. Example:
+// ```
+// You are a professor of antonyms.      [system prompt]
+// User: what is the opposite of big?    [initial prompt for `User` role]
+// Model: small.                         [initial prompt for `Assistant` role]
+// User: what is the opposite of cheap?  [initial prompt for `User` role]
+// Model: expensive.                     [initial prompt for `Assistant` role]
+// ```
 const char kSystemPromptFormat[] = "%s\n";
+const char kInitialPromptFormat[] = "%s: %s\n";
 
 }  // namespace
 
@@ -38,13 +61,13 @@ using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 AITextSession::Context::Context(uint32_t max_tokens,
-                                std::optional<ContextItem> system_prompt)
-    : max_tokens_(max_tokens), system_prompt_(system_prompt) {
-  if (system_prompt.has_value()) {
-    CHECK_GE(max_tokens_, system_prompt->tokens)
-        << "the caller shouldn't create an AITextSession with the system "
-           "prompt containing more tokens than the limit.";
-    current_tokens_ += system_prompt->tokens;
+                                std::optional<ContextItem> initial_prompts)
+    : max_tokens_(max_tokens), initial_prompts_(initial_prompts) {
+  if (initial_prompts.has_value()) {
+    CHECK_GE(max_tokens_, initial_prompts->tokens)
+        << "the caller shouldn't create an AITextSession with the initial "
+           "prompts containing more tokens than the limit.";
+    current_tokens_ += initial_prompts->tokens;
   }
 }
 
@@ -63,9 +86,9 @@ void AITextSession::Context::AddContextItem(ContextItem context_item) {
 
 std::string AITextSession::Context::GetContextString() {
   std::string context;
-  if (system_prompt_.has_value()) {
+  if (initial_prompts_.has_value()) {
     context =
-        base::StringPrintf(kSystemPromptFormat, system_prompt_->text.c_str());
+        base::StringPrintf(kSystemPromptFormat, initial_prompts_->text.c_str());
   }
   for (auto& context_item : context_items_) {
     context.append(context_item.text);
@@ -74,7 +97,7 @@ std::string AITextSession::Context::GetContextString() {
 }
 
 bool AITextSession::Context::HasContextItem() {
-  return system_prompt_.has_value() || !context_items_.empty();
+  return initial_prompts_.has_value() || !context_items_.empty();
 }
 
 AITextSession::AITextSession(
@@ -102,12 +125,22 @@ AITextSession::AITextSession(
 
 AITextSession::~AITextSession() = default;
 
-void AITextSession::SetSystemPrompt(std::string system_prompt,
-                                    CreateTextSessionCallback callback) {
+void AITextSession::SetInitialPrompts(
+    const std::optional<std::string> system_prompt,
+    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
+    CreateTextSessionCallback callback) {
+  std::string initial_prompts_str = base::StringPrintf(
+      kSystemPromptFormat, system_prompt.value_or("").c_str());
+  for (auto& initial_prompt : initial_prompts) {
+    initial_prompts_str += base::StringPrintf(
+        kInitialPromptFormat, FormatPromptRole(initial_prompt->role),
+        initial_prompt->content.c_str());
+  }
+  base::TrimString(initial_prompts_str, "\n", &initial_prompts_str);
   session_->GetSizeInTokens(
-      system_prompt,
-      base::BindOnce(&AITextSession::InitializeContextWithSystemPrompt,
-                     weak_ptr_factory_.GetWeakPtr(), system_prompt,
+      initial_prompts_str,
+      base::BindOnce(&AITextSession::InitializeContextWithInitialPrompts,
+                     weak_ptr_factory_.GetWeakPtr(), initial_prompts_str,
                      std::move(callback)));
 }
 
@@ -115,8 +148,8 @@ void AITextSession::SetDeletionCallback(base::OnceClosure deletion_callback) {
   receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
-void AITextSession::InitializeContextWithSystemPrompt(
-    const std::string& text,
+void AITextSession::InitializeContextWithInitialPrompts(
+    const std::string& initial_prompts_text,
     CreateTextSessionCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
@@ -135,8 +168,8 @@ void AITextSession::InitializeContextWithSystemPrompt(
     return;
   }
 
-  context_ =
-      std::make_unique<Context>(max_token, Context::ContextItem{text, size});
+  context_ = std::make_unique<Context>(
+      max_token, Context::ContextItem{initial_prompts_text, size});
   std::move(callback).Run(GetTextSessionInfo());
 }
 
@@ -212,8 +245,11 @@ void AITextSession::Prompt(
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   optimization_guide::proto::StringValue request;
-  const std::string formatted_input =
-      base::StringPrintf(kPromptFormat, input.c_str());
+  const std::string formatted_input = base::StringPrintf(
+      kPromptFormat,
+      FormatPromptRole(blink::mojom::AIAssistantInitialPromptRole::kUser),
+      input.c_str(),
+      FormatPromptRole(blink::mojom::AIAssistantInitialPromptRole::kAssistant));
   request.set_value(formatted_input);
   session_->ExecuteModel(
       request, base::BindRepeating(&AITextSession::ModelExecutionCallback,
@@ -269,11 +305,15 @@ blink::mojom::AITextSessionInfoPtr AITextSession::GetTextSessionInfo() {
 }
 
 // static
-std::string AITextSession::GetPromptFormatForTesting() {
-  return kPromptFormat;
-}
-
-// static
-std::string AITextSession::GetSystemPromptFormatForTesting() {
-  return kSystemPromptFormat;
+const char* AITextSession::FormatPromptRole(
+    blink::mojom::AIAssistantInitialPromptRole role) {
+  switch (role) {
+    case blink::mojom::AIAssistantInitialPromptRole::kSystem:
+      return "System";
+    case blink::mojom::AIAssistantInitialPromptRole::kUser:
+      return "User";
+    case blink::mojom::AIAssistantInitialPromptRole::kAssistant:
+      return "Model";
+  }
+  NOTREACHED();
 }

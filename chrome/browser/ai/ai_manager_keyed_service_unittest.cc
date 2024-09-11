@@ -115,7 +115,9 @@ TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
   // After creating one `AITextSession`, the `AIUserDataSet` contains 1
   // element.
   mock_remote->CreateTextSession(mock_session.BindNewPipeAndPassReceiver(),
-                                 nullptr, std::nullopt, callback.Get());
+                                 /*sampling_params=*/nullptr,
+                                 /*system_prompt=*/std::nullopt,
+                                 /*initial_prompts=*/{}, callback.Get());
   run_loop.Run();
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 

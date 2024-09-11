@@ -9,7 +9,7 @@
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant_capabilities.h"
@@ -34,7 +34,7 @@ class AIAssistantFactory final : public ScriptWrappable,
 
   // ai_assistant_factory.idl implementation.
   ScriptPromise<AIAssistant> create(ScriptState* script_state,
-                                    const AITextSessionOptions* options,
+                                    const AIAssistantCreateOptions* options,
                                     ExceptionState& exception_state);
   ScriptPromise<AIAssistantCapabilities> capabilities(
       ScriptState* script_state,

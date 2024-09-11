@@ -104,7 +104,7 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         kModelToBeInstalled:
       return blink::mojom::ModelAvailabilityCheckResult::kAfterDownload;
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -361,6 +361,7 @@ void AIManagerKeyedService::CreateTextSession(
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
     const std::optional<std::string>& system_prompt,
+    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
     CreateTextSessionCallback callback) {
   // Since this is a mojo IPC implementation, the context should be non-null;
   AIContextBoundObjectSet* context_bound_object_set =
@@ -374,10 +375,11 @@ void AIManagerKeyedService::CreateTextSession(
     return;
   }
 
-  if (system_prompt.has_value()) {
-    // If the system prompt is provided, we need to set the system prompt and
-    // invoke the callback after it.
-    session->SetSystemPrompt(system_prompt.value(), std::move(callback));
+  if (system_prompt.has_value() || !initial_prompts.empty()) {
+    // If the initial prompt is provided, we need to set it and invoke the
+    // callback after this, because the token counting happens asynchronously.
+    session->SetInitialPrompts(system_prompt, std::move(initial_prompts),
+                               std::move(callback));
   } else {
     std::move(callback).Run(session->GetTextSessionInfo());
   }

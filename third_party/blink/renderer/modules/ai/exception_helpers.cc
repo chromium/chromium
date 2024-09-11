@@ -36,6 +36,11 @@ const char kExceptionMessageUnableToCreateSession[] =
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
+const char kExceptionMessageSystemPromptAndInitialPromptsExist[] =
+    "The systemPrompt and initialPrompts should not present at the same time.";
+const char kExceptionMessageSystemPromptIsNotTheFirst[] =
+    "The prompt with 'system' role must be placed at the first entry of "
+    "initialPrompts.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
