@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -670,8 +669,6 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
 }
 
 TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyForceInstall) {
-  // Mark as enterprise managed.
-  policy::ScopedDomainEnterpriseManagement scoped_domain;
   CreateEmptyExtensionService();
   service()->Init();
 
