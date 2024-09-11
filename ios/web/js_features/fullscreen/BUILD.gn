@@ -25,6 +25,7 @@ optimize_ts("fullscreen_js") {
 
   sources = [ "resources/fullscreen.ts" ]
   deps = [
+    "//ios/web/public/js_messaging:error_reporting",
     "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:util_scripts",
   ]

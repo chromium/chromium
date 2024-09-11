@@ -6,6 +6,7 @@
  * @fileoverview APIs used by CRWContextMenuController.
  */
 
+import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -22,8 +23,10 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                 coordinates.
  */
 function findElementAtPoint(requestId: string, x: number, y: number) {
-  gCrWeb.contextMenuAllFrames.findElementAtPointInPageCoordinates(
-      requestId, x, y);
+  catchAndReportErrors(function() {
+    gCrWeb.contextMenuAllFrames.findElementAtPointInPageCoordinates(
+        requestId, x, y);
+  });
 }
 
 gCrWeb.contextMenu = {findElementAtPoint};
