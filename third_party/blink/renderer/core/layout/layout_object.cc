@@ -3524,7 +3524,7 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   if (!skip_info.AncestorSkipped())
     container->MapAncestorToLocal(ancestor, transform_state, mode);
 
-  PhysicalOffset container_offset = OffsetFromContainer(container);
+  PhysicalOffset container_offset = OffsetFromContainer(container, mode);
   bool use_transforms = !(mode & kIgnoreTransforms);
 
   // Just because container and this have preserve-3d doesn't mean all

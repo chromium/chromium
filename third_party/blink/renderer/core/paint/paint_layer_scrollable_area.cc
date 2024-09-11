@@ -2417,7 +2417,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
           : 0;
 
   PhysicalRect local_expose_rect =
-      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect, flag);
+      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect);
   ScrollOffset target_offset = scroll_into_view_util::GetScrollOffsetToExpose(
       *this, local_expose_rect, scroll_margin, *params->align_x.get(),
       *params->align_y.get());

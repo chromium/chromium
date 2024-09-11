@@ -1801,4 +1801,40 @@ TEST_F(LayoutObjectTest, ContainingScrollContainer) {
                            ->ContainingScrollContainer());
 }
 
+TEST_F(LayoutObjectTest, ScrollOffsetMapping) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="overflow:scroll; width:300px; height:300px;">
+      <div id="inner" style="width:1000px; height:1000px; margin:50px;"></div>
+    </div>
+    <div style="width:200vw; height:200vh;"></div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  ASSERT_TRUE(scroller);
+  scroller->scrollTo(100, 200);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+  LayoutObject* inner = GetLayoutObjectByElementId("inner");
+  ASSERT_TRUE(inner);
+
+  // Test with scroll offsets included:
+  gfx::PointF offset;
+  offset = inner->LocalToAncestorPoint(offset, /*ancestor=*/nullptr);
+  EXPECT_EQ(offset, gfx::PointF(-52, -162));
+  // And back again:
+  offset = inner->AncestorToLocalPoint(/*ancestor=*/nullptr, offset);
+  EXPECT_EQ(offset, gfx::PointF());
+
+  // Test with scroll offsets excluded:
+  offset = gfx::PointF();
+  offset = inner->LocalToAncestorPoint(offset, /*ancestor=*/nullptr,
+                                       kIgnoreScrollOffset);
+  EXPECT_EQ(offset, gfx::PointF(58, 58));
+  // And back again:
+  offset = inner->AncestorToLocalPoint(/*ancestor=*/nullptr, offset,
+                                       kIgnoreScrollOffset);
+  EXPECT_EQ(offset, gfx::PointF());
+}
+
 }  // namespace blink
