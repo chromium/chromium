@@ -648,7 +648,7 @@ Vp9FrameHeader VP9VaapiVideoEncoderDelegate::GetDefaultFrameHeader(
     const bool keyframe) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Vp9FrameHeader hdr{};
+  Vp9FrameHeader hdr;
   DCHECK(!visible_size_.IsEmpty());
   hdr.frame_width = visible_size_.width();
   hdr.frame_height = visible_size_.height();

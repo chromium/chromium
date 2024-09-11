@@ -113,7 +113,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
 
     // Parse the merged buffer with the created superframe index.
     for (size_t j = 0; j <= i; j++) {
-      Vp9FrameHeader frame_header{};
+      Vp9FrameHeader frame_header;
       gfx::Size allocate_size;
       std::unique_ptr<DecryptConfig> frame_decrypt_config;
       EXPECT_EQ(vp9_parser.ParseNextFrame(&frame_header, &allocate_size,
