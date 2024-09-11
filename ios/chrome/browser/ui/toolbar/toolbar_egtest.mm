@@ -363,6 +363,11 @@ void WaitForEmpyOmnibox() {
 
 // Tests typing in the omnibox.
 - (void)testToolbarOmniboxTyping {
+  // TODO(crbug.com/365987488): Enable the test for iPad when bug is fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 
