@@ -9,14 +9,10 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/language_detection/core/language_detection_resolver.h"
@@ -24,7 +20,6 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
-namespace language_detection {
 namespace {
 
 constexpr char kTFLiteModelVersion[] = "TFLite_v1";
@@ -49,68 +44,9 @@ class ScopedLanguageDetectionModelStateRecorder {
   language_detection::LanguageDetectionModelState state_;
 };
 
-// Loads model from |model_file| using |num_threads|. This can be called on
-// any thread.
-std::optional<std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>>
-LoadModelFromFile(base::File model_file, int num_threads) {
-  ScopedLanguageDetectionModelStateRecorder recorder(
-      LanguageDetectionModelState::kModelFileInvalid);
-
-  if (!model_file.IsValid()) {
-    return std::nullopt;
-  }
-
-  recorder.set_state(LanguageDetectionModelState::kModelFileValid);
-
-  tflite::task::text::NLClassifierOptions options;
-  options.set_input_tensor_index(0);
-  options.set_output_score_tensor_index(0);
-  options.set_output_label_tensor_index(2);
-
-  options.mutable_base_options()
-      ->mutable_compute_settings()
-      ->mutable_tflite_settings()
-      ->mutable_cpu_settings()
-      ->set_num_threads(num_threads);
-
-  base::ElapsedTimer timer;
-// Windows doesn't support using mmap for the language detection model.
-#if !BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
-    options.mutable_base_options()
-        ->mutable_model_file()
-        ->mutable_file_descriptor_meta()
-        ->set_fd(model_file.GetPlatformFile());
-  } else
-#endif
-  {
-    std::string file_content(model_file.GetLength(), '\0');
-    if (!model_file.ReadAndCheck(0,
-                                 base::as_writable_byte_span(file_content))) {
-      return std::nullopt;
-    }
-    *options.mutable_base_options()
-         ->mutable_model_file()
-         ->mutable_file_content() = std::move(file_content);
-  }
-
-  auto statusor_classifier =
-      tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(
-          options, CreateLangIdResolver());
-  if (!statusor_classifier.ok()) {
-    LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.InvalidModelFile",
-                            true);
-    return std::nullopt;
-  }
-  base::UmaHistogramTimes("LanguageDetection.TFLiteModel.Create.Duration",
-                          timer.Elapsed());
-
-  recorder.set_state(LanguageDetectionModelState::kModelAvailable);
-
-  return std::move(statusor_classifier).value();
-}
-
 }  // namespace
+
+namespace language_detection {
 
 #if !BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMmapLanguageDetectionModel,
@@ -135,7 +71,6 @@ LanguageDetectionModel::~LanguageDetectionModel() = default;
 std::vector<Prediction> LanguageDetectionModel::Predict(
     const std::u16string& contents,
     bool truncate) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
   base::ElapsedTimer timer;
 
@@ -181,39 +116,71 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
 }
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetModel(LoadModelFromFile(std::move(model_file), num_threads_));
-}
+  ScopedLanguageDetectionModelStateRecorder recorder(
+      LanguageDetectionModelState::kModelFileInvalid);
 
-void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
-                                                 base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadModelFromFile, std::move(model_file), num_threads_),
-      base::BindOnce(&LanguageDetectionModel::SetModel,
-                     weak_factory_.GetWeakPtr())
-          .Then(std::move(callback)));
+  if (!model_file.IsValid()) {
+    return;
+  }
+
+  recorder.set_state(LanguageDetectionModelState::kModelFileValid);
+
+  tflite::task::text::NLClassifierOptions options;
+  options.set_input_tensor_index(0);
+  options.set_output_score_tensor_index(0);
+  options.set_output_label_tensor_index(2);
+
+  options.mutable_base_options()
+      ->mutable_compute_settings()
+      ->mutable_tflite_settings()
+      ->mutable_cpu_settings()
+      ->set_num_threads(num_threads_);
+
+  base::ElapsedTimer timer;
+// Windows doesn't support using mmap for the language detection model.
+#if !BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
+    options.mutable_base_options()
+        ->mutable_model_file()
+        ->mutable_file_descriptor_meta()
+        ->set_fd(model_file.GetPlatformFile());
+  } else
+#endif
+  {
+    std::string file_content(model_file.GetLength(), '\0');
+    if (!model_file.ReadAndCheck(0,
+                                 base::as_writable_byte_span(file_content))) {
+      return;
+    }
+    *options.mutable_base_options()
+         ->mutable_model_file()
+         ->mutable_file_content() = std::move(file_content);
+  }
+
+  auto statusor_classifier =
+      tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(
+          options, CreateLangIdResolver());
+  if (!statusor_classifier.ok()) {
+    LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.InvalidModelFile",
+                            true);
+    return;
+  }
+  base::UmaHistogramTimes("LanguageDetection.TFLiteModel.Create.Duration",
+                          timer.Elapsed());
+
+  recorder.set_state(LanguageDetectionModelState::kModelAvailable);
+
+  lang_detection_model_ = std::move(*statusor_classifier);
 }
 
 bool LanguageDetectionModel::IsAvailable() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lang_detection_model_ != nullptr;
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40748826): Return the model version provided
   // by the model itself.
   return kTFLiteModelVersion;
-}
-
-void LanguageDetectionModel::SetModel(
-    std::optional<OwnedNLClassifier> optional_model) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (optional_model.has_value()) {
-    lang_detection_model_ = std::move(optional_model).value();
-  }
 }
 
 }  // namespace language_detection
