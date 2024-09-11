@@ -239,14 +239,16 @@ TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
 
 // Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, TabSwitching) {
-  // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kPreFirstTab)
-    return;
-
   const auto first_activity_type = activity_type();
   const auto second_activity_type =
       static_cast<ActivityType>((static_cast<int>(first_activity_type) + 1) %
                                 static_cast<int>(ActivityType::kMaxValue));
+
+  // Transition to kPreFirstTab is not a valid scenario. Early exit.
+  if (first_activity_type == ActivityType::kPreFirstTab ||
+      second_activity_type == ActivityType::kPreFirstTab) {
+    return;
+  }
 
   // Validating startup, so seed the activity type to kPreFirstTab,
   SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
@@ -286,5 +288,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          ActivityType::kTrustedWebActivity,
                                          ActivityType::kWebapp,
                                          ActivityType::kWebApk,
-                                         ActivityType::kAuthTab,
-                                         ActivityType::kPreFirstTab));
+                                         ActivityType::kPreFirstTab,
+                                         ActivityType::kAuthTab));
