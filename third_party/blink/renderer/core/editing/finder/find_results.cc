@@ -66,21 +66,26 @@ FindResults::Iterator::Iterator(const FindBuffer& find_buffer,
                                 TextSearcherICU* text_searcher)
     : find_buffer_(&find_buffer),
       text_searcher_(text_searcher),
+      // Initialize match_ with a value so that IsAtEnd() returns false.
       match_({0u, 0u}) {
   operator++();
 }
 
 const FindResults::BufferMatchResult FindResults::Iterator::operator*() const {
-  DCHECK(match_);
+  DCHECK(!IsAtEnd());
   return FindResults::BufferMatchResult({match_->start, match_->length});
 }
 
 void FindResults::Iterator::operator++() {
-  DCHECK(match_);
+  DCHECK(!IsAtEnd());
   match_ = text_searcher_->NextMatchResult();
   if (match_ && find_buffer_ && find_buffer_->IsInvalidMatch(*match_)) {
     operator++();
   }
+}
+
+bool FindResults::Iterator::IsAtEnd() const {
+  return !match_.has_value();
 }
 
 }  // namespace blink
