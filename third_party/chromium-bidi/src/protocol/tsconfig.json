@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/cjs/protocol"
+    "outDir": "../../lib/esm/protocol"
   },
   "references": [{"path": "../utils/tsconfig.json"}]
 }

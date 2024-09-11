@@ -122,7 +122,7 @@ export function createBiDiServerProcess() {
     runParams = {
       file: 'node',
       args: [
-        resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
+        resolve(join('lib', 'esm', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),
       ],
       options: {

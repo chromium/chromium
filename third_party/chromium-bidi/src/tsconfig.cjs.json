@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.cjs.json",
+  "files": [],
+  "references": [
+    {"path": "./bidiMapper/tsconfig.cjs.json"},
+    {"path": "./bidiTab/tsconfig.cjs.json"}
+  ]
+}

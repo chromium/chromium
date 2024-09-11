@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.cjs.json",
+  "compilerOptions": {
+    "outDir": "../../lib/cjs/cdp"
+  },
+  "references": [{"path": "../utils/tsconfig.cjs.json"}]
+}

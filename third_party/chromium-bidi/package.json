@@ -54,7 +54,7 @@
         "tsc"
       ],
       "files": [
-        "lib/cjs/bidiMapper/index.js",
+        "lib/esm/bidiMapper/",
         "rollup.config.mjs"
       ],
       "output": [
@@ -68,7 +68,7 @@
       ],
       "service": {
         "readyWhen": {
-          "lineMatches": "(BiDi server|ChromeDriver) was started successfully\\."
+          "lineMatches": "(BiDi server|ChromeDriver) was started successfully"
         }
       },
       "dependencies": [
@@ -83,10 +83,29 @@
       ]
     },
     "tsc": {
-      "command": "tsc --build src/tsconfig.json --pretty",
+      "dependencies": [
+        "tsc:esm",
+        "tsc:cjs"
+      ]
+    },
+    "tsc:esm": {
+      "command": "tsc --build src/tsconfig.json --pretty && node ./tools/generate-module-package-json.mjs lib/esm/package.json",
       "clean": "if-file-deleted",
       "files": [
-        "**/tsconfig*.json",
+        "tsconfig.base.json",
+        "src/**/tsconfig*.json",
+        "src/**/*.ts"
+      ],
+      "output": [
+        "lib/esm/**"
+      ]
+    },
+    "tsc:cjs": {
+      "command": "tsc --build src/tsconfig.cjs.json --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "tsconfig.base.json",
+        "src/**/tsconfig*.cjs.json",
         "src/**/*.ts"
       ],
       "output": [
@@ -147,7 +166,6 @@
     "@eslint/js": "9.10.0",
     "@puppeteer/browsers": "2.4.0",
     "@rollup/plugin-alias": "5.1.0",
-    "@rollup/plugin-commonjs": "26.0.1",
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/wasm-node": "4.21.2",
     "@types/chai": "4.3.17",

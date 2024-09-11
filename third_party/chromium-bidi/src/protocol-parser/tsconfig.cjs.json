@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.cjs.json",
+  "compilerOptions": {
+    "outDir": "../../lib/cjs/protocol-parser"
+  },
+  "references": [
+    {"path": "../protocol/tsconfig.cjs.json"},
+    {"path": "../utils/tsconfig.cjs.json"}
+  ]
+}

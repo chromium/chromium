@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/cjs/bidiServer"
+    "outDir": "../../lib/esm/bidiServer"
   },
   "references": [
     {"path": "../bidiMapper/tsconfig.json"},

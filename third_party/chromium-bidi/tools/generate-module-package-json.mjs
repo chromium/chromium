@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC.
+ * Copyright 2024 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import url from 'url';
+import {mkdirSync, writeFileSync} from 'fs';
+import {dirname} from 'path';
 
-// eslint-disable-next-line no-underscore-dangle
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-
-export async function getMapperTabSource(): Promise<string> {
-  return await fs.readFile(
-    path.join(__dirname, '../../iife/mapperTab.js'),
-    'utf8'
-  );
-}
-//
+/**
+ * Outputs the dummy package.json file to the path specified
+ * by the first argument.
+ */
+mkdirSync(dirname(process.argv[2]), {recursive: true});
+writeFileSync(process.argv[2], `{"type": "module"}`);

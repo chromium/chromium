@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
-    "outDir": "../../lib/cjs/bidiTab"
+    "outDir": "../../lib/esm/bidiTab"
   },
   "references": [
     {"path": "../bidiMapper/tsconfig.json"},

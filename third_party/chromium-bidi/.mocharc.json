@@ -1,5 +1,0 @@
-{
-  "require": ["source-map-support/register"],
-  "source-maps": true,
-  "spec": "{lib,tools}/**/*.spec.{js,mjs}"
-}

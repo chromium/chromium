@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {isSingleComplexGrapheme, isSingleGrapheme} from './GraphemeTools';
+import {isSingleComplexGrapheme, isSingleGrapheme} from './GraphemeTools.js';
 
 describe('GraphemeTools', () => {
   describe('isSingleGrapheme', () => {

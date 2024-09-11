@@ -2,8 +2,8 @@
   "extends": "../tsconfig.base.json",
   "files": [],
   "references": [
-    {"path": "bidiMapper/tsconfig.json"},
-    {"path": "bidiServer/tsconfig.json"},
-    {"path": "bidiTab/tsconfig.json"}
+    {"path": "./bidiMapper/tsconfig.json"},
+    {"path": "./bidiServer/tsconfig.json"},
+    {"path": "./bidiTab/tsconfig.json"}
   ]
 }
