@@ -2460,7 +2460,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kWasFocusedByTapOrClick,
                   OptionalBooleanToBool(was_focused_by_tap_or_click));
   SetStatusVector(AutofillStatus::kIsInSubFrame,
-                  form.ToFormData().host_frame() != field.host_frame());
+                  form.global_id().frame_token != field.host_frame());
 
   if (filling_prevented_by_iframe_security_policy !=
       OptionalBoolean::kUndefined) {
