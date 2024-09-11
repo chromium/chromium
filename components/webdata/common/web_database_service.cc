@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,6 +19,20 @@
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata/common/web_database_backend.h"
+
+namespace features {
+
+// If enabled, then an Encryptor will be requested that is not always backwards
+// compatible with OSCrypt Sync. On some platforms, this might mean a key is
+// used that is stored more securely, such as using App-Bound encryption on
+// Windows.
+// If this feature is enabled, any data stored by `WebDatabaseService` is not
+// guaranteed to be retrievable if OSCrypt Async is not used.
+BASE_FEATURE(kUseNewEncryptionKeyForWebData,
+             "UseNewEncryptionKeyForWebData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
 
 // Receives messages from the backend on the DB sequence, posts them to
 // WebDatabaseService on the UI sequence.
@@ -81,11 +96,14 @@ void WebDatabaseService::CompleteLoadDatabase(
 }
 
 void WebDatabaseService::LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt) {
+  const auto option =
+      base::FeatureList::IsEnabled(features::kUseNewEncryptionKeyForWebData)
+          ? os_crypt_async::Encryptor::Option::kNone
+          : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
   // TODO(crbug.com/40267945): Place kEncryptSyncCompat behind base::Feature and
   // then remove it.
   subscription_ = os_crypt->GetInstance(
-      base::BindOnce(&WebDatabaseService::CompleteLoadDatabase, this),
-      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+      base::BindOnce(&WebDatabaseService::CompleteLoadDatabase, this), option);
 }
 
 void WebDatabaseService::ShutdownDatabase() {
