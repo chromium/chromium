@@ -10956,8 +10956,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "prob": "0.01",
-                        "survey_cycle_length": "90",
+                        "prob": "0.02",
+                        "survey_cycle_length": "30",
                         "survey_start_date_ms": "1721606400000",
                         "trigger_id": "ZMEQmwKYE0jBnuKU19R0Uk7d5aG4"
                     },
