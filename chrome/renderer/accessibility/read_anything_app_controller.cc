@@ -1791,13 +1791,14 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
 }
 
 v8::Local<v8::Value>
-ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index) {
+ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index,
+                                                              bool phrases) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
 
   std::vector<ReadAloudTextSegment> nodes =
-      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index);
+      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index, phrases);
 
   v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
   for (int i = 0; i < (int)nodes.size(); i++) {

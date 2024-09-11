@@ -118,7 +118,9 @@ class ReadAloudAppModel {
 
   // Given a text index for the current granularity, return the nodes and the
   // corresponding text ranges for that part of the text. The text ranges
-  // consist of start and end offsets within each node.
+  // consist of start and end offsets within each node. If the `phrases`
+  // argument is `true`, the text ranges for the containing phrase are returned,
+  // otherwise the text ranges for the word are returned.
   //
   // For example, if a current granularity segment has text:
   // "Hello darkness, my old friend."
@@ -131,7 +133,8 @@ class ReadAloudAppModel {
   // For index=17, which corresponds to the word "my ", will return:
   //    [{"207", 6, 9}].
   std::vector<ReadAloudTextSegment> GetHighlightForCurrentSegmentIndex(
-      int index) const;
+      int index,
+      bool phrases) const;
 
   // Updates the session count for the given metric name using
   // SingleSampleMetric. These are then logged once on destruction.

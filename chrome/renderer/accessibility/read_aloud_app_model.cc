@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
+#include "ui/accessibility/accessibility_features.h"
 
 ReadAloudAppModel::ReadAloudAppModel()
     : sentence_movement_options_(ui::AXMovementOptions(
@@ -86,7 +87,9 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
       // out of the content- should we reset the state?
       return next_granularity.node_ids;
     }
-
+    if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+      next_granularity.CalculatePhrases();
+    }
     processed_granularities_on_current_page_.push_back(next_granularity);
   }
 
@@ -102,6 +105,9 @@ void ReadAloudAppModel::PreprocessTextForSpeech(
       GetNextNodes(is_pdf, is_docs, current_nodes);
 
   while (current_granularity.node_ids.size() > 0) {
+    if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+      current_granularity.CalculatePhrases();
+    }
     processed_granularities_on_current_page_.push_back(current_granularity);
     current_granularity = GetNextNodes(is_pdf, is_docs, current_nodes);
   }
@@ -526,7 +532,8 @@ bool ReadAloudAppModel::IsValidAXPosition(
 }
 
 std::vector<ReadAloudTextSegment>
-ReadAloudAppModel::GetHighlightForCurrentSegmentIndex(int index) const {
+ReadAloudAppModel::GetHighlightForCurrentSegmentIndex(int index,
+                                                      bool phrases) const {
   // If the granularity index isn't valid, return an empty array.
   if (processed_granularity_index_ >=
       processed_granularities_on_current_page_.size()) {
@@ -541,15 +548,33 @@ ReadAloudAppModel::GetHighlightForCurrentSegmentIndex(int index) const {
     return {};
   }
 
-  // Get the remaining text in the current granularity that occurs after the
-  // starting index.
-  std::u16string current_text = current_granularity.text.substr(index);
+  if (phrases && features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+    // Phrase highlighting. Find the previous and next boundaries, and get all
+    // segments between them.
+    int start = current_granularity.GetPhraseIndex(index);
+    if (start < 0) {
+      // Index is not valid, or phrase boundaries are not valid.
+      return {};
+    }
+    int start_index = current_granularity.phrase_boundaries[start];
+    // The phrase ends either at the start of the next phrase, or if it is the
+    // last phrase of the sentence, at the end of the sentence.
+    int end_index =
+        (start < (int)current_granularity.phrase_boundaries.size() - 1)
+            ? current_granularity.phrase_boundaries[start + 1]
+            : current_granularity.text.size();
+    return current_granularity.GetSegmentsForRange(start_index, end_index);
+  } else {
+    // Word highlighting. Get the remaining text in the current granularity that
+    // occurs after the starting index.
+    std::u16string current_text = current_granularity.text.substr(index);
 
-  // Get the word length of the next word following the index.
-  int word_length = GetNextWord(current_text);
-  int end_index = index + word_length;
+    // Get the word length of the next word following the index.
+    int word_length = GetNextWord(current_text);
+    int end_index = index + word_length;
 
-  return current_granularity.GetSegmentsForRange(index, end_index);
+    return current_granularity.GetSegmentsForRange(index, end_index);
+  }
 }
 
 void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {

@@ -54,6 +54,21 @@ struct ReadAloudCurrentGranularity {
                int text_end,
                const std::u16string& text);
 
+  // For a given start..end range within `text`, returns a list of nodes and
+  // offsets corresponding to that range.
+  std::vector<ReadAloudTextSegment> GetSegmentsForRange(int start_index,
+                                                        int end_index);
+
+  // Calculate phrase boundaries from the text.
+  void CalculatePhrases();
+
+  // Calculate the phrase_boundaries index corresponding to a text index.
+  int GetPhraseIndex(int index) {
+    return std::upper_bound(phrase_boundaries.begin(), phrase_boundaries.end(),
+                            index) -
+           phrase_boundaries.begin() - 1;
+  }
+
   // All of the ReadAloudTextSegments in the current granularity.
   std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
 
@@ -80,10 +95,8 @@ struct ReadAloudCurrentGranularity {
   // highlighting.
   std::u16string text;
 
-  // For a given start..end range within `text`, returns a list of nodes and
-  // offsets corresponding to that range.
-  std::vector<ReadAloudTextSegment> GetSegmentsForRange(int start_index,
-                                                        int end_index);
+  // Boundary indices for phrases. Starts at 0.
+  std::vector<int> phrase_boundaries;
 };
 }  // namespace a11y
 

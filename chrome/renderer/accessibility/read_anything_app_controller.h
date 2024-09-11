@@ -322,10 +322,14 @@ class ReadAnythingAppController
   // correctly position the highlight within the current text segment. The
   // return value is thus a list containing node id, start, and length.
   //
+  //  If the `phrases` argument is `true`, the text ranges for the containing
+  //  phrase are returned, otherwise the text ranges for the word are returned.
+  //
   // Note that this is only needed for custom granularity highlighting. Sentence
   // highlighting is able to be handled directly in WebUI because the entire
   // speech segment is highlighted at once.
-  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index);
+  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index,
+                                                          bool phrases);
 
   // SetContentForTesting and SetLanguageForTesting are used by
   // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController

@@ -266,7 +266,7 @@ class ReadAnythingReadAloudWordHighlightingMochaTest
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
          features::kReadAnythingReadAloudAutomaticWordHighlighting},
-        {});
+        {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
  private:
@@ -327,5 +327,11 @@ class ReadAnythingReadAloudPhraseHighlightingMochaTest
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
                        HighlightMenu) {
   RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
+                       PhraseHighlighting) {
+  RunSidePanelTest("side_panel/read_anything/phrase_highlighting_test.js",
                    "mocha.run()");
 }
