@@ -24,8 +24,8 @@ StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
                                                        mutable_body) {
   scoped_refptr<network::ResourceRequestBody> network_body;
   if (auto form_body = mutable_body.FormBody()) {
-    CHECK_NE(blink::EncodedFormData::FormDataType::kInvalid,
-             form_body->GetType());
+    DUMP_WILL_BE_CHECK_NE(blink::EncodedFormData::FormDataType::kInvalid,
+                          form_body->GetType());
     // Here we need to keep the original body, because other members such as
     // `identifier` are on the form body.
     network_body =
@@ -115,8 +115,8 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
     }
   }
 
-  CHECK_NE(blink::EncodedFormData::FormDataType::kInvalid,
-           form_data->GetType());
+  DUMP_WILL_BE_CHECK_NE(blink::EncodedFormData::FormDataType::kInvalid,
+                        form_data->GetType());
   form_data->identifier_ = in.identifier();
   form_data->contains_password_data_ = in.contains_sensitive_info();
   form_data->SetBoundary(
