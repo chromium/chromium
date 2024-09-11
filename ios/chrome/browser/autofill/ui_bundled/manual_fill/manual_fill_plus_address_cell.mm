@@ -173,7 +173,7 @@ CGFloat GetFaviconSize() {
 
   // Header.
   NSAttributedString* attributedText =
-      CreateSiteNameLabelAttributedText(plusAddress);
+      CreateSiteNameLabelAttributedText(plusAddress, /*should_show_host=*/YES);
   self.siteNameLabel.attributedText = attributedText;
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     self.siteNameLabel.numberOfLines = 0;

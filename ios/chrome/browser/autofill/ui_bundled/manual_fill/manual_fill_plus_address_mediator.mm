@@ -9,6 +9,7 @@
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -245,17 +246,17 @@
   GURL URL(plusProfile.facet.canonical_spec());
 
   std::string host = URL.host();
-  std::string site_name =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  NSString* siteName = base::SysUTF8ToNSString(site_name);
-  NSString* plusAddressHost = base::SysUTF8ToNSString(host);
-  if ([plusAddressHost hasPrefix:@"www."] && plusAddressHost.length > 4) {
-    plusAddressHost = [plusAddressHost substringFromIndex:4];
-  }
+  std::string siteName = net::registry_controlled_domains::GetDomainAndRegistry(
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  NSString* plusAddressSiteName =
+      base::SysUTF8ToNSString(siteName.size() > 0 ? siteName : host);
+  NSString* plusAddressHost = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS,
+      GetOriginForDisplay(plusProfile));
   return [[ManualFillPlusAddress alloc]
       initWithPlusAddress:base::SysUTF8ToNSString(*plusProfile.plus_address)
-                 siteName:siteName.length ? siteName : plusAddressHost
+                 siteName:plusAddressSiteName
                      host:plusAddressHost
                       URL:URL];
 }

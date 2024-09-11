@@ -203,7 +203,8 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 // Creates the attributed string containing the site name and potentially a host
 // subtitle for the site name label.
 NSMutableAttributedString* CreateSiteNameLabelAttributedText(
-    ManualFillSiteInfo* siteInfo);
+    ManualFillSiteInfo* site_info,
+    BOOL should_show_host);
 
 // Sets the cell's container and its overflow menu button's accessibility label
 // with the given `accessibility_context`. `accessibility_context` contains
