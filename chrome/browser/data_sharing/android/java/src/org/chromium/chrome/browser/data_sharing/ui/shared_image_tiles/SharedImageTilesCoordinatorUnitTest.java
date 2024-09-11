@@ -34,7 +34,6 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.Arrays;
 
@@ -52,7 +51,6 @@ public class SharedImageTilesCoordinatorUnitTest {
     private Context mContext;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private SharedImageTilesView mView;
-    private ChromeImageButton mButtonTileView;
     private TextView mCountTileView;
 
     @Before
@@ -65,12 +63,10 @@ public class SharedImageTilesCoordinatorUnitTest {
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(mContext, type, color, mDataSharingService);
         mView = mSharedImageTilesCoordinator.getView();
-        mButtonTileView = mView.findViewById(R.id.shared_image_tiles_add);
         mCountTileView = mView.findViewById(R.id.tiles_count);
     }
 
-    private void verifyViews(int buttonVisibility, int countVisibility, int iconViewCount) {
-        assertEquals(mButtonTileView.getVisibility(), buttonVisibility);
+    private void verifyViews(int countVisibility, int iconViewCount) {
         assertEquals(mCountTileView.getVisibility(), countVisibility);
         assertEquals(mSharedImageTilesCoordinator.getAllIconViews().size(), iconViewCount);
     }
@@ -89,43 +85,19 @@ public class SharedImageTilesCoordinatorUnitTest {
         // 3 tile count: Tile Tile Tile
         // 4 tile count: Tile Tile +2
         // etc
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 0);
+        verifyViews(View.GONE, /* iconViewCount= */ 0);
 
         mSharedImageTilesCoordinator.updateTilesCount(1);
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 1);
+        verifyViews(View.GONE, /* iconViewCount= */ 1);
 
         mSharedImageTilesCoordinator.updateTilesCount(2);
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 2);
+        verifyViews(View.GONE, /* iconViewCount= */ 2);
 
         mSharedImageTilesCoordinator.updateTilesCount(3);
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 3);
+        verifyViews(View.GONE, /* iconViewCount= */ 3);
 
         mSharedImageTilesCoordinator.updateTilesCount(4);
-        verifyViews(View.GONE, View.VISIBLE, /* iconViewCount= */ 2);
-    }
-
-    @Test
-    public void testClickableTheme() {
-        initialize(SharedImageTilesType.CLICKABLE, SharedImageTilesColor.DEFAULT);
-        // Clickable theme should have the following view logic:
-        // 1 tile: Tile (add user)
-        // 2 tiles Tile Tile (add user)
-        // 3 tiles: Tile Tile Tile
-        // 4 tiles: Tile Tile +2
-        // etc
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 0);
-
-        mSharedImageTilesCoordinator.updateTilesCount(1);
-        verifyViews(View.VISIBLE, View.GONE, /* iconViewCount= */ 1);
-
-        mSharedImageTilesCoordinator.updateTilesCount(2);
-        verifyViews(View.VISIBLE, View.GONE, /* iconViewCount= */ 2);
-
-        mSharedImageTilesCoordinator.updateTilesCount(3);
-        verifyViews(View.GONE, View.GONE, /* iconViewCount= */ 3);
-
-        mSharedImageTilesCoordinator.updateTilesCount(4);
-        verifyViews(View.GONE, View.VISIBLE, /* iconViewCount= */ 2);
+        verifyViews(View.VISIBLE, /* iconViewCount= */ 2);
     }
 
     @Test

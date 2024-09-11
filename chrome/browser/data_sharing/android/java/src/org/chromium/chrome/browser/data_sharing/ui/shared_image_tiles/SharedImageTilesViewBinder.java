@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.Sha
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.ICON_TILES;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.IS_LOADING;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.REMAINING_TILES;
-import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.SHOW_ADD_BUTTON;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,10 +26,6 @@ class SharedImageTilesViewBinder {
         } else if (REMAINING_TILES == propertyKey) {
             if (model.get(REMAINING_TILES) > 0) {
                 view.showCountTile(model.get(REMAINING_TILES));
-            }
-        } else if (SHOW_ADD_BUTTON == propertyKey) {
-            if (model.get(SHOW_ADD_BUTTON)) {
-                view.showButtonTile();
             }
         }
     }
