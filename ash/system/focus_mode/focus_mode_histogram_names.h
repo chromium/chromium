@@ -12,8 +12,6 @@ constexpr char kMediumSuffix[] = "Medium";
 constexpr char kLongSuffix[] = "Long";
 
 // Histograms recorded when starting a session.
-constexpr char kHasSelectedTaskOnSessionStartHistogramName[] =
-    "Ash.FocusMode.StartSession.HasSelectedTask";
 constexpr char kInitialDurationOnSessionStartsHistogramName[] =
     "Ash.FocusMode.StartSession.InitialDuration";
 constexpr char kStartSessionSourceHistogramName[] =

@@ -604,43 +604,6 @@ TEST_F(FocusModeControllerMultiUserTest, CheckInitialDurationHistograms) {
       2);
 }
 
-// Verify that when we start a focus session, the histogram will record whether
-// there is a selected task or not.
-TEST_F(FocusModeControllerMultiUserTest, CheckHasSelectedTaskHistogram) {
-  base::HistogramTester histogram_tester;
-
-  auto* controller = FocusModeController::Get();
-  EXPECT_FALSE(controller->in_focus_session());
-  histogram_tester.ExpectTotalCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      0);
-
-  // 1. Start a focus session without a selected task.
-  EXPECT_FALSE(controller->HasSelectedTask());
-  controller->ToggleFocusMode();
-  EXPECT_TRUE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      false, 1);
-  controller->ToggleFocusMode();
-  EXPECT_FALSE(controller->in_focus_session());
-
-  // 2. Start a focus session with a selected task.
-  FocusModeTask task;
-  task.task_id = {.list_id = "abc", .id = "1"};
-  task.title = "Focus Task";
-  task.updated = base::Time::Now();
-
-  controller->SetSelectedTask(task);
-  EXPECT_TRUE(controller->HasSelectedTask());
-
-  controller->ToggleFocusMode();
-  EXPECT_TRUE(controller->in_focus_session());
-  histogram_tester.ExpectBucketCount(
-      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
-      true, 1);
-}
-
 // Tests that the histogram will record how many tasks we selected during a
 // focus session.
 TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {

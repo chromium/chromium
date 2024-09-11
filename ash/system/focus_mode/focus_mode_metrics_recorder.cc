@@ -56,13 +56,6 @@ void RecordStartSessionSourceHistogram(
   }
 }
 
-void RecordHasSelectedTaskOnSessionStartHistogram() {
-  base::UmaHistogramBoolean(
-      /*name=*/focus_mode_histogram_names::
-          kHasSelectedTaskOnSessionStartHistogramName,
-      /*sample=*/FocusModeController::Get()->HasSelectedTask());
-}
-
 void RecordTasksSelectedHistogram(const int tasks_selected_count) {
   base::UmaHistogramCounts100(
       focus_mode_histogram_names::kTasksSelectedHistogramName,
@@ -289,8 +282,6 @@ void FocusModeMetricsRecorder::RecordHistogramsOnStart(
   RecordInitialDurationHistogram(
       /*session_duration=*/initial_session_duration_);
   RecordStartSessionSourceHistogram(source);
-  // TODO(b/344594740): Remove `RecordHasSelectedTaskOnSessionStartHistogram()`.
-  RecordHasSelectedTaskOnSessionStartHistogram();
   RecordStartedWithTaskHistogram(selected_task_id);
   RecordExistingMediaPlayingOnStartHistogram();
 }
