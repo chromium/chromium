@@ -959,8 +959,10 @@ TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
 
 // If the risk data is empty, then the manager does not retrieve a client token
 // from the facilitated payments API client.
-TEST_F(FacilitatedPaymentsManagerTest, RiskDataEmpty_GetClientTokenNotCalled) {
+TEST_F(FacilitatedPaymentsManagerTest,
+       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
+  EXPECT_CALL(*client_, ShowErrorScreen());
 
   manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
                              /*risk_data=*/"");

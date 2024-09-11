@@ -311,8 +311,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
   LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
-    // TODO: b/348143700 - Show error screen if the loading screen is being
-    // shown.
+    client_->ShowErrorScreen();
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
     Reset();
     return;
