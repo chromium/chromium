@@ -2647,7 +2647,7 @@
   {
     "name":"enable-bubble-corner-radius-update",
     "owners": ["amehfooz@google.com"],
-    "expiry_milestone": 128
+    "expiry_milestone": 134
   },
   {
     "name": "enable-builtin-hls",
