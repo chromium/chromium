@@ -109,7 +109,7 @@ class GWSPageLoadMetricsObserver
  private:
   void LogMetricsOnComplete();
   void RecordNavigationTimingHistograms();
-  void RecordLatencyTraceEvents();
+  void RecordLatencyTraceEvents(base::TimeTicks response_start_time);
 
   // Records the histograms required before commit. This is to ensure that we
   // are getting the metrics only for GWS navigations.
