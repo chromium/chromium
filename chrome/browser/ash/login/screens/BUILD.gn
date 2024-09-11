@@ -195,6 +195,7 @@ static_library("screens") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/proximity_auth",
+    "//chromeos/ash/experiences/idle_detector",
     "//chromeos/ash/services/device_sync:group_private_key_and_better_together_metadata_status",
     "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/dbus/power",

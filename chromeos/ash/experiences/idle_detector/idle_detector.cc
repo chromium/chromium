@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/idle_detector.h"
+#include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
@@ -37,10 +37,11 @@ void IdleDetector::Start(const base::TimeDelta& timeout) {
 }
 
 void IdleDetector::ResetTimer() {
-  if (timer_.IsRunning())
+  if (timer_.IsRunning()) {
     timer_.Reset();
-  else
+  } else {
     timer_.Start(FROM_HERE, timeout_, idle_callback_);
+  }
 }
 
 }  // namespace ash

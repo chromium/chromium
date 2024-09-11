@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/extensions",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/idle_detector.h",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",

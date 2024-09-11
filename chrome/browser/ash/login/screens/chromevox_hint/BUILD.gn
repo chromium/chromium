@@ -16,6 +16,7 @@ static_library("chromevox_hint") {
 
   deps = [
     "//ash/constants",
+    "//chromeos/ash/experiences/idle_detector",
     "//chromeos/dbus/constants",
   ]
 }

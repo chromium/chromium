@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_IDLE_DETECTOR_H_
-#define CHROME_BROWSER_ASH_IDLE_DETECTOR_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_IDLE_DETECTOR_IDLE_DETECTOR_H_
+#define CHROMEOS_ASH_EXPERIENCES_IDLE_DETECTOR_IDLE_DETECTOR_H_
 
 #include "base/functional/callback.h"
 #include "base/time/tick_clock.h"
@@ -13,7 +13,8 @@
 
 namespace ash {
 
-class IdleDetector : public ui::UserActivityObserver {
+class COMPONENT_EXPORT(CHROMEOS_ASH_EXPERIENCES_IDLE_DETECTOR) IdleDetector
+    : public ui::UserActivityObserver {
  public:
   IdleDetector(const base::RepeatingClosure& on_idle_callback,
                const base::TickClock* tick_clock);
@@ -41,4 +42,4 @@ class IdleDetector : public ui::UserActivityObserver {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_IDLE_DETECTOR_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_IDLE_DETECTOR_IDLE_DETECTOR_H_
