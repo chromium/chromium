@@ -18,6 +18,7 @@ class InkModeledShapeViewStub : public InkModeledShapeView {
 
   // InkModeledShapeView:
   uint32_t RenderGroupCount() const override;
+  uint32_t OutlineCount(uint32_t group_index) const override;
   std::vector<OutlinePositions> GetRenderGroupOutlinePositions(
       uint32_t group_index) const override;
   InkRect Bounds() const override;

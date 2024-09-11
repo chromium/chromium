@@ -21,6 +21,7 @@ class InkModeledShapeView {
   virtual ~InkModeledShapeView() = default;
 
   virtual uint32_t RenderGroupCount() const = 0;
+  virtual uint32_t OutlineCount(uint32_t group_index) const = 0;
 
   // Gets the collection of all outline positions for the 0-based render group
   // index.
