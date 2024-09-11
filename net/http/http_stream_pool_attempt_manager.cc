@@ -695,15 +695,19 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
     std::unique_ptr<StreamAttempt> attempt;
+    // Set to non-null if the attempt is a TLS attempt.
+    TlsStreamAttempt* tls_attempt_ptr = nullptr;
     if (using_tls) {
       attempt = std::make_unique<TlsStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
           /*ssl_config_provider=*/this);
+      tls_attempt_ptr = static_cast<TlsStreamAttempt*>(attempt.get());
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint);
     }
+
     net_log().AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START,
         attempt->net_log().source());
@@ -741,11 +745,10 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), raw_attempt));
-      if (using_tls) {
-        static_cast<TlsStreamAttempt*>(raw_attempt->attempt.get())
-            ->SetTcpHandshakeCompletionCallback(base::BindOnce(
-                &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
-                base::Unretained(this), raw_attempt));
+      if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
+        tls_attempt_ptr->SetTcpHandshakeCompletionCallback(base::BindOnce(
+            &AttemptManager::OnInFlightAttemptTcpHandshakeComplete,
+            base::Unretained(this), raw_attempt));
       }
     }
 

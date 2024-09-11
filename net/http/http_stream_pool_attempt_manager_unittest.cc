@@ -832,7 +832,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TcpFailAsync) {
   ASSERT_EQ(requester.connection_attempts()[0].result, ERR_FAILED);
 }
 
-TEST_F(HttpStreamPoolAttemptManagerTest, TlsOk) {
+TEST_F(HttpStreamPoolAttemptManagerTest, TlsOkAsync) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   auto data = std::make_unique<SequencedSocketData>();
@@ -847,6 +847,25 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TlsOk) {
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, TcpSyncTlsAsyncOk) {
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
