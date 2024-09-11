@@ -4,85 +4,46 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import android.content.Context;
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the educational tip module. */
 public class EducationalTipModuleMediator {
     private static final String FORCE_TAB_GROUP = "force_tab_group";
     private static final String FORCE_TAB_GROUP_SYNC = "force_tab_group_sync";
+    private static final String FORCE_QUICK_DELETE = "force_quick_delete";
 
-    private final Context mContext;
+    private final EducationTipModuleActionDelegate mActionDelegate;
     private final @ModuleType int mModuleType;
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
-    private final BottomSheetController mBottomSheetController;
-    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final ShowHubPaneCallback mShowHubPaneCallback;
-    private final Supplier<ViewGroup> mParentViewSupplier;
     private final CallbackController mCallbackController;
 
     private EducationalTipCardProvider mEducationalTipCardProvider;
 
     EducationalTipModuleMediator(
-            @NonNull Context context,
             @NonNull PropertyModel model,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ShowHubPaneCallback showHubPaneCallback,
-            @NonNull Supplier<ViewGroup> parentViewSupplier) {
-        mContext = context;
+            EducationTipModuleActionDelegate actionDelegate) {
         mModuleType = ModuleType.EDUCATIONAL_TIP;
         mModel = model;
         mModuleDelegate = moduleDelegate;
-        mBottomSheetController = bottomSheetController;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mShowHubPaneCallback = showHubPaneCallback;
-        mParentViewSupplier = parentViewSupplier;
+        mActionDelegate = actionDelegate;
 
         mCallbackController = new CallbackController();
     }
 
     /** Show the educational tip module. */
     void showModule() {
-        @EducationalTipCardType int type = getCardType();
-
-        if (type == EducationalTipCardType.TAB_GROUPS) {
-            mEducationalTipCardProvider =
-                    EducationalTipCardProviderFactory.createInstance(
-                            mContext,
-                            this::removeModule,
-                            mCallbackController,
-                            mModalDialogManagerSupplier,
-                            mShowHubPaneCallback,
-                            mParentViewSupplier);
-        } else if (type == EducationalTipCardType.TAB_GROUP_SYNC) {
-            mEducationalTipCardProvider =
-                    EducationalTipCardProviderFactory.createInstance(
-                            mContext,
-                            this::removeModule,
-                            mCallbackController,
-                            mShowHubPaneCallback);
-        } else {
-            mEducationalTipCardProvider =
-                    EducationalTipCardProviderFactory.createInstance(
-                            mContext, getCardType(), this::removeModule, mBottomSheetController);
-        }
+        mEducationalTipCardProvider =
+                EducationalTipCardProviderFactory.createInstance(
+                        getCardType(), this::removeModule, mCallbackController, mActionDelegate);
 
         mModel.set(
                 EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
@@ -111,6 +72,9 @@ public class EducationalTipModuleMediator {
         } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_TAB_GROUP_SYNC, false)) {
             return EducationalTipCardType.TAB_GROUP_SYNC;
+        } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_QUICK_DELETE, false)) {
+            return EducationalTipCardType.QUICK_DELETE;
         }
         return EducationalTipCardType.DEFAULT_BROWSER_PROMO;
     }

@@ -154,6 +154,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -2116,14 +2117,22 @@ public class RootUiCoordinator
         return mReadAloudControllerSupplier;
     }
 
+    /** Returns the {@link AppMenuHandler}. */
+    public @Nullable AppMenuHandler getAppMenuHandler() {
+        if (mAppMenuCoordinator != null) {
+            return mAppMenuCoordinator.getAppMenuHandler();
+        }
+        return null;
+    }
+
     /**
      * Saves relevant information that will be used to restore the UI state after the activity is
      * recreated. This is expected to be invoked in {@code Activity#onSaveInstanceState(Bundle)}.
      *
      * @param outState The {@link Bundle} that is used to save state information.
      * @param isRecreatingForTabletModeChange Whether the activity is recreated due to a fold
-     *         configuration change. {@code true} if the fold configuration changed, {@code false}
-     *         otherwise.
+     *     configuration change. {@code true} if the fold configuration changed, {@code false}
+     *     otherwise.
      */
     public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
         assert mTabModelSelectorSupplier.hasValue();

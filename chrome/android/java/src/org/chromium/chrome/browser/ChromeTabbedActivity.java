@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
@@ -29,6 +30,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -103,6 +105,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
@@ -191,6 +194,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleBuilder;
+import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
@@ -233,6 +237,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -2282,23 +2287,56 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
             EducationalTipModuleBuilder educationalTipModuleBuilder =
-                    new EducationalTipModuleBuilder(
-                            this,
-                            mRootUiCoordinator.getBottomSheetController(),
-                            getModalDialogManagerSupplier(),
-                            (paneId) -> {
-                                if (mLayoutManager != null) {
-                                    HubShowPaneHelper hubShowPaneHelper =
-                                            mHubProvider.getHubShowPaneHelper();
-                                    hubShowPaneHelper.setPaneToShow(paneId);
-                                    mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
-                                }
-                            },
-                            () -> mCompositorViewHolder);
+                    new EducationalTipModuleBuilder(createEducationTipModuleActionDelegate());
             moduleRegistry.registerModule(ModuleType.EDUCATIONAL_TIP, educationalTipModuleBuilder);
         }
 
         mModuleRegistrySupplier.set(moduleRegistry);
+    }
+
+    private EducationTipModuleActionDelegate createEducationTipModuleActionDelegate() {
+        return new EducationTipModuleActionDelegate() {
+            @NonNull
+            @Override
+            public Context getContext() {
+                return ChromeTabbedActivity.this;
+            }
+
+            @NonNull
+            @Override
+            public BottomSheetController getBottomSheetController() {
+                return mRootUiCoordinator.getBottomSheetController();
+            }
+
+            @Override
+            public void openHubPane(int paneId) {
+                if (mLayoutManager == null) return;
+
+                // Opens the tab switcher and displays a specific pane.
+                HubShowPaneHelper hubShowPaneHelper = mHubProvider.getHubShowPaneHelper();
+                hubShowPaneHelper.setPaneToShow(paneId);
+                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
+            }
+
+            @Override
+            public void openTabGroupIphDialog() {
+                TabGridIphDialogCoordinator tabGridIphDialogCoordinator =
+                        new TabGridIphDialogCoordinator(
+                                ChromeTabbedActivity.this, getModalDialogManager());
+                tabGridIphDialogCoordinator.setParentView(mCompositorViewHolder);
+
+                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
+                tabGridIphDialogCoordinator.showIph();
+            }
+
+            @Override
+            public void openAndHighlightQuickDeleteMenuItem() {
+                // Opens the app menu and highlights the quick delete menu item.
+                mRootUiCoordinator.getAppMenuHandler().setMenuHighlight(R.id.quick_delete_menu_id);
+                getMenuOrKeyboardActionController()
+                        .onMenuOrKeyboardAction(R.id.show_menu, /* fromMenu= */ false);
+            }
+        };
     }
 
     private boolean shouldIgnoreIntent() {

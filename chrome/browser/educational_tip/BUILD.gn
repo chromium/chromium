@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationTipModuleActionDelegate.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProvider.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderFactory.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilder.java",
@@ -16,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoCoordinator.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/cards/QuickDeletePromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupSyncPromoCoordinator.java",
   ]
@@ -42,6 +44,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/default_browser_promo_logo.xml",
     "java/res/drawable/educational_tip_module_content_image_background.xml",
+    "java/res/drawable/quick_delete_promo_logo.xml",
     "java/res/drawable/tab_group_promo_logo.xml",
     "java/res/drawable/tab_group_sync_promo_logo.xml",
     "java/res/layout/educational_tip_default_browser_bottom_sheet.xml",
@@ -63,6 +66,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/DefaultBrowserPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/QuickDeletePromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupSyncPromoCoordinatorUnitTest.java",
   ]

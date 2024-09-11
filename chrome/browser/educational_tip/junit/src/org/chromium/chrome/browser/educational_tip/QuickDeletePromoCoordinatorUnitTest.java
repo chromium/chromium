@@ -19,33 +19,33 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
-/** Test relating to {@link TabGroupPromoCoordinator} */
+/** Test relating to {@link QuickDeletePromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
-public class TabGroupPromoCoordinatorUnitTest {
+public class QuickDeletePromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mOnModuleClickedCallback;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
 
-    private TabGroupPromoCoordinator mTabGroupPromoCoordinator;
+    private QuickDeletePromoCoordinator mQuickDeletePromoCoordinator;
 
     @Before
     public void setUp() {
-        mTabGroupPromoCoordinator =
-                new TabGroupPromoCoordinator(
+        mQuickDeletePromoCoordinator =
+                new QuickDeletePromoCoordinator(
                         mOnModuleClickedCallback, new CallbackController(), mActionDelegate);
     }
 
     @Test
     @SmallTest
     public void testClickTabGroupPromoCard() {
-        mTabGroupPromoCoordinator.onCardClicked();
-        verify(mActionDelegate).openTabGroupIphDialog();
+        mQuickDeletePromoCoordinator.onCardClicked();
+        verify(mActionDelegate).openAndHighlightQuickDeleteMenuItem();
         verify(mOnModuleClickedCallback).run();
     }
 }

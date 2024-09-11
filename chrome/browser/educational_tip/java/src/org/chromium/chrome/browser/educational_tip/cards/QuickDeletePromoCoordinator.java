@@ -11,10 +11,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.hub.PaneId;
 
-/** Coordinator for the Tab group sync promo card. */
-public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider {
+/** Coordinator for the quick delete promo card. */
+public class QuickDeletePromoCoordinator implements EducationalTipCardProvider {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Runnable mOnClickedRunnable;
 
@@ -23,7 +22,7 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
      * @param callbackController The instance of {@link CallbackController}.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public TabGroupSyncPromoCoordinator(
+    public QuickDeletePromoCoordinator(
             @NonNull Runnable onModuleClickedCallback,
             @NonNull CallbackController callbackController,
             @NonNull EducationTipModuleActionDelegate actionDelegate) {
@@ -32,7 +31,7 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
         mOnClickedRunnable =
                 callbackController.makeCancelable(
                         () -> {
-                            mActionDelegate.openHubPane(PaneId.TAB_GROUPS);
+                            mActionDelegate.openAndHighlightQuickDeleteMenuItem();
                             onModuleClickedCallback.run();
                         });
     }
@@ -41,21 +40,19 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
 
     @Override
     public String getCardTitle() {
-        return mActionDelegate
-                .getContext()
-                .getString(R.string.educational_tip_tab_group_sync_title);
+        return mActionDelegate.getContext().getString(R.string.educational_tip_quick_delete_title);
     }
 
     @Override
     public String getCardDescription() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_tab_group_sync_description);
+                .getString(R.string.educational_tip_quick_delete_description);
     }
 
     @Override
     public @DrawableRes int getCardImage() {
-        return R.drawable.tab_group_sync_promo_logo;
+        return R.drawable.quick_delete_promo_logo;
     }
 
     @Override

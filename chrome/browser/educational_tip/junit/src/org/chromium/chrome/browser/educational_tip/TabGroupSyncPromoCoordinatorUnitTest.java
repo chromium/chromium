@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-
-import android.content.Context;
 
 import androidx.test.filters.SmallTest;
 
@@ -23,10 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.ShowHubPaneCallback;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -37,33 +31,23 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
         shadows = {ShadowAppCompatResources.class})
 public class TabGroupSyncPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mContext;
     @Mock private Runnable mOnModuleClickedCallback;
-    @Mock private ShowHubPaneCallback mShowHubPaneCallback;
+    @Mock private EducationTipModuleActionDelegate mActionDelegate;
 
     private TabGroupSyncPromoCoordinator mTabGroupSyncPromoCoordinator;
-    private CallbackController mCallbackController;
 
     @Before
     public void setUp() {
-        mCallbackController = new CallbackController();
-
         mTabGroupSyncPromoCoordinator =
                 new TabGroupSyncPromoCoordinator(
-                        mContext,
-                        mOnModuleClickedCallback,
-                        mCallbackController,
-                        mShowHubPaneCallback);
+                        mOnModuleClickedCallback, new CallbackController(), mActionDelegate);
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testClickTabGroupPromoCard() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         mTabGroupSyncPromoCoordinator.onCardClicked();
-        verify(mShowHubPaneCallback).onClick(eq(PaneId.TAB_GROUPS));
+        verify(mActionDelegate).openHubPane(eq(PaneId.TAB_GROUPS));
         verify(mOnModuleClickedCallback).run();
     }
 }
