@@ -4471,7 +4471,7 @@ enum WebFeature {
   kV8Window_PopinContextTypesSupported_Method = 5096,
   kV8Window_PopinContextType_Method = 5097,
   kWebAuthentication_AttestationFormats = 5098,
-
+  kCssDisplayPropertyMultipleValues = 5099,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -437,6 +437,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kModuleDedicatedWorker, WebDXFeature::kJsModulesWorkers},
           {WebFeature::kModuleSharedWorker,
            WebDXFeature::kJsModulesSharedWorkers},
+          {WebFeature::kCssDisplayPropertyMultipleValues,
+           WebDXFeature::kTwoValueDisplay},
       }};
 
   return *kMap;

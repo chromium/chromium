@@ -3257,6 +3257,7 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenStream& stream,
   if (id != CSSValueID::kInvalid) {
     const CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent(stream);
     if (stream.Peek().Id() != CSSValueID::kInvalid) {
+      context.Count(WebFeature::kCssDisplayPropertyMultipleValues);
       return ParseDisplayMultipleKeywords(stream, value);
     }
 
