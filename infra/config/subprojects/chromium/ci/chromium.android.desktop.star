@@ -253,8 +253,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = "android_desktop_tests",
         mixins = [
-            # TODO(b/362336776): Switch to Android Desktop AVD when ready.
-            "14-x64-emulator",
+            "14-desktop-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
