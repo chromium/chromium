@@ -4189,9 +4189,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.ChosenSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2023-06-01">
-  <owner>fgorski@chromium.org</owner>
+    enum="OmniboxSearchEngineType" expires_after="never">
+<!-- expires-never: Continuously monitored by Android partner team. -->
+
   <owner>wylieb@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The type of the search engine chosen by the user in Search Engine Choice
     flow.
@@ -4199,19 +4201,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.Events"
-    enum="AndroidSearchEngineChoiceEvents" expires_after="2023-06-01">
+    enum="AndroidSearchEngineChoiceEvents" expires_after="never">
+<!-- expires-never: Continuously monitored by Android partner team. -->
+
   <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Counts occurences of various events related to Search Engine Choice feature.
   </summary>
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.EventsV2"
-    enum="AndroidSearchEngineChoiceEventsV2" expires_after="2024-05-26">
+    enum="AndroidSearchEngineChoiceEventsV2" expires_after="never">
+<!-- expires-never: Continuously monitored by Android partner team. -->
+
   <owner>wylieb@chromium.org</owner>
-  <owner>pavely@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Counts occurences of various events related to Search Engine Choice V2
     feature.
@@ -4219,9 +4224,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.SearchEngineBeforeChoicePrompt"
-    enum="OmniboxSearchEngineType" expires_after="2025-01-20">
+    enum="OmniboxSearchEngineType" expires_after="never">
+<!-- expires-never: Continuously monitored by Android partner team. -->
+
   <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The type of the search engine used before Search Engine Choice flow was
     presented.
