@@ -6,6 +6,7 @@
 
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
+#include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -190,29 +192,71 @@ clang::SourceRange getExprRange(const clang::Expr* expr) {
 // raw pointer type to a base::span type. It handles preservation of
 // const/volatile qualifiers and uses a specific printing policy to format the
 // underlying pointee type.
-std::string GenerateSpanType(const clang::ASTContext& ast_context,
-                             const clang::QualType& pointer_type) {
-  std::string result;
+// This functions generates a string representing the converted type from a
+// raw pointer type to a base::span type. It handles preservation of
+// const/volatile qualifiers and uses a specific printing policy to format the
+// underlying pointee type.
+std::string GenerateSpanType(clang::SourceManager& source_manager,
+                             const clang::ASTContext& ast_context,
+                             const clang::DeclaratorDecl& decl) {
+  // Preserve qualifiers.
+  const clang::QualType& pointer_type = decl.getType();
+  std::ostringstream qualifiers;
+  qualifiers << (pointer_type.isConstQualified() ? "const " : "")
+             << (pointer_type.isVolatileQualified() ? "volatile " : "");
 
+  // If `pointer_type` not "auto", getContainedAutoType() returns nullptr.
+  if (!pointer_type->getContainedAutoType()) {
+    // Strategy: Use the original text as much as possible when its isn't
+    // "auto". So for example, if we see `uint16_t` and so on, we can keep
+    // `uint16_t`, instead of `unsigned short`.
+    clang::Rewriter rewriter(source_manager, ast_context.getLangOpts());
+
+    // The range of the type specifier, including the qualifiers:
+    //
+    //                       const int* array[32] = ...;
+    //                       |     |   |
+    // getOuterLocStart()----+     |   |
+    // getTypeSpecStartLoc()-------+   |
+    // getTypeSpecEndLoc()-------------+
+    //
+    clang::SourceRange source_with_qualifiers(
+        decl.getOuterLocStart(),  // Include the qualifiers.
+        decl.getTypeSpecEndLoc());
+    std::string type_with_qualifiers =
+        rewriter.getRewrittenText(source_with_qualifiers);
+    // Because of `pointer_type`, the last character of `type_spec_text` is '*'.
+    size_t pos = type_with_qualifiers.find_last_of('*');
+
+    // If the `pointer_type` is a pointer of array or a pointer of a function,
+    // E.g. int (*array)[32], int (*func)(int, ...), ...
+    // `pos` is not equal to length()-1.
+    if (pos == type_with_qualifiers.length() - 1) {
+      // Remove '*' from `type_with_qualifiers` to obtain
+      // `pointee_type_as_string`.
+      std::string type = type_with_qualifiers.substr(0, pos);
+      return qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
+    }
+  }
+
+  // If the original type cannot be recovered from the source, we need to
+  // consult the clang deduced type.
+  //
+  // Please note that the deduced type may not be the same as the original type.
+  // For example, if we have the following code:
+  //   const auto* p = get_buffer<uint16_t>();
+  // we will get:`unsigned short` instead of `uint16_t`.
   clang::QualType pointee_type = pointer_type->getPointeeType();
 
-  // Preserve qualifiers.
-  if (pointer_type.isConstQualified()) {
-    result += "const ";
-  }
-  if (pointer_type.isVolatileQualified()) {
-    result += "volatile ";
-  }
-
-  // Convert pointee type to string.
   clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
-  printing_policy.SuppressScope = 1;
+  printing_policy.SuppressScope = 0;
+  printing_policy.SuppressUnwrittenScope = 1;
+  printing_policy.SuppressInlineNamespace = 1;
+  printing_policy.SuppressDefaultTemplateArgs = 1;
   printing_policy.PrintCanonicalTypes = 1;
-  std::string pointee_type_as_string =
-      pointee_type.getAsString(printing_policy);
-  result += llvm::formatv("base::span<{0}>", pointee_type_as_string);
 
-  return result;
+  std::string type = pointee_type.getAsString(printing_policy);
+  return qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
 }
 
 // It is intentional that this function ignores cast expressions and applies
@@ -341,12 +385,11 @@ static Node getNodeFromRawPtrTypeLoc(
 
 static Node getNodeFromDecl(const clang::DeclaratorDecl* decl,
                             const MatchFinder::MatchResult& result) {
-  const clang::SourceManager& source_manager = *result.SourceManager;
+  clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   clang::SourceRange replacement_range{decl->getBeginLoc(),
                                        decl->getLocation()};
-  auto pointer_type = decl->getType();
-  auto replacement_text = GenerateSpanType(ast_context, pointer_type);
+  auto replacement_text = GenerateSpanType(source_manager, ast_context, *decl);
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range, replacement_text, source_manager);
   Node n;
