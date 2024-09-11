@@ -15,12 +15,13 @@ class TemplateURLFetcher;
 
 namespace ios {
 // Singleton that owns all TemplateURLFetchers and associates them with
-// ChromeBrowserState.
+// Profile.
 class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static TemplateURLFetcher* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TemplateURLFetcher* GetForBrowserState(ProfileIOS* profile);
 
+  static TemplateURLFetcher* GetForProfile(ProfileIOS* profile);
   static TemplateURLFetcherFactory* GetInstance();
 
   TemplateURLFetcherFactory(const TemplateURLFetcherFactory&) = delete;

@@ -16,11 +16,13 @@ namespace autofill {
 class PersonalDataManager;
 
 // Singleton that owns all PersonalDataManagers and associates them with
-// ChromeBrowserState.
+// profiles.
 class PersonalDataManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static PersonalDataManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static PersonalDataManager* GetForBrowserState(ProfileIOS* profile);
+
+  static PersonalDataManager* GetForProfile(ProfileIOS* profile);
   static PersonalDataManagerFactory* GetInstance();
 
   PersonalDataManagerFactory(const PersonalDataManagerFactory&) = delete;

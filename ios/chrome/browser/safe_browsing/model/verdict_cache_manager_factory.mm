@@ -18,10 +18,15 @@
 
 // static
 safe_browsing::VerdictCacheManager*
-VerdictCacheManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+VerdictCacheManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::VerdictCacheManager* VerdictCacheManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<safe_browsing::VerdictCacheManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

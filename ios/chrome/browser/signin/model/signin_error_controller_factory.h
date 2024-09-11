@@ -18,8 +18,10 @@ namespace ios {
 // ChromeBrowserState.
 class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SigninErrorController* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static SigninErrorController* GetForBrowserState(ProfileIOS* profile);
+
+  static SigninErrorController* GetForProfile(ProfileIOS* profile);
   static SigninErrorControllerFactory* GetInstance();
 
   SigninErrorControllerFactory(const SigninErrorControllerFactory&) = delete;

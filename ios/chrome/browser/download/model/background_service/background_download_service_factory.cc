@@ -42,10 +42,15 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // static
 download::BackgroundDownloadService*
-BackgroundDownloadServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+BackgroundDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+download::BackgroundDownloadService*
+BackgroundDownloadServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<download::BackgroundDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

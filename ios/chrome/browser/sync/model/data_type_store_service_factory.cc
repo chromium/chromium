@@ -20,9 +20,15 @@ DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
 
 // static
 syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<syncer::DataTypeStoreService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()

@@ -19,12 +19,18 @@
 
 // static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-             ? static_cast<webauthn::PasskeyModel*>(
-                   GetInstance()->GetServiceForBrowserState(browser_state,
-                                                            true))
-             : nullptr;
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
+    ProfileIOS* profile) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+    return nullptr;
+  }
+  return static_cast<webauthn::PasskeyModel*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

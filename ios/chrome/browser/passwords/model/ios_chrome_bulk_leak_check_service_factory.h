@@ -17,13 +17,17 @@ class BulkLeakCheckServiceInterface;
 }
 
 // Singleton that owns all BulkLeakCheckServices and associates them with
-// ChromeBrowserState.
+// profile.
 class IOSChromeBulkLeakCheckServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static IOSChromeBulkLeakCheckServiceFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static password_manager::BulkLeakCheckServiceInterface* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static password_manager::BulkLeakCheckServiceInterface* GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromeBulkLeakCheckServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromeBulkLeakCheckServiceFactory>;

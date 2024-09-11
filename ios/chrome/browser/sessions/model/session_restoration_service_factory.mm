@@ -235,9 +235,15 @@ void OnSessionMigrationDone(
 
 // static
 SessionRestorationService* SessionRestorationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SessionRestorationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -11,10 +11,15 @@
 
 // static
 safe_browsing::SafeBrowsingMetricsCollector*
-SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SafeBrowsingMetricsCollectorFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::SafeBrowsingMetricsCollector*
+SafeBrowsingMetricsCollectorFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::SafeBrowsingMetricsCollector*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

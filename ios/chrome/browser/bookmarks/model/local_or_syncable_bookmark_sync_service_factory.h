@@ -18,13 +18,12 @@ namespace ios {
 class LocalOrSyncableBookmarkSyncServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the instance of BookmarkSyncService associated with this profile
-  // (creating one if none exists).
+  // TODO(crbug.com/358301380): remove this method.
   static sync_bookmarks::BookmarkSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
-  // Returns an instance of the LocalOrSyncableBookmarkSyncServiceFactory
-  // singleton.
+  static sync_bookmarks::BookmarkSyncService* GetForProfile(
+      ProfileIOS* profile);
   static LocalOrSyncableBookmarkSyncServiceFactory* GetInstance();
 
   LocalOrSyncableBookmarkSyncServiceFactory(

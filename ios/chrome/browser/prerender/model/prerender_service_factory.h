@@ -14,11 +14,13 @@
 class PrerenderService;
 
 // Singleton that creates the PrerenderService and associates that service with
-// ChromeBrowserState.
+// profile.
 class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static PrerenderService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static PrerenderService* GetForBrowserState(ProfileIOS* profile);
+
+  static PrerenderService* GetForProfile(ProfileIOS* profile);
   static PrerenderServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.

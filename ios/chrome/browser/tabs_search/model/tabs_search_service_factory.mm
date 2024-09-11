@@ -30,10 +30,17 @@ history::WebHistoryService* WebHistoryServiceGetter(
 
 }  // namespace
 
+// static
 TabsSearchService* TabsSearchServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+TabsSearchService* TabsSearchServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<TabsSearchService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TabsSearchServiceFactory* TabsSearchServiceFactory::GetInstance() {

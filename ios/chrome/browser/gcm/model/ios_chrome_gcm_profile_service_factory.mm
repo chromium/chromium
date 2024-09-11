@@ -57,9 +57,15 @@ void RequestProxyResolvingSocketFactory(
 
 // static
 gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<gcm::GCMProfileService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -19,7 +19,10 @@ class StrikeDatabase;
 // ChromeBrowserState.
 class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static StrikeDatabase* GetForBrowserState(ChromeBrowserState* browser_state);
+
+  static StrikeDatabase* GetForProfile(ProfileIOS* profile);
   static StrikeDatabaseFactory* GetInstance();
 
   StrikeDatabaseFactory(const StrikeDatabaseFactory&) = delete;

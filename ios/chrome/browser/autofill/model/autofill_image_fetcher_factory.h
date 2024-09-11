@@ -16,11 +16,13 @@ namespace autofill {
 class AutofillImageFetcherImpl;
 
 // Singleton that owns all AutofillImageFetcherImpls and associates them with
-// ChromeBrowserState.
+// profiles.
 class AutofillImageFetcherFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static AutofillImageFetcherImpl* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AutofillImageFetcherImpl* GetForBrowserState(ProfileIOS* profile);
+
+  static AutofillImageFetcherImpl* GetForProfile(ProfileIOS* profile);
   static AutofillImageFetcherFactory* GetInstance();
 
   AutofillImageFetcherFactory(const AutofillImageFetcherFactory&) = delete;

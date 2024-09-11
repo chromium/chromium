@@ -16,10 +16,11 @@ class TextToSpeechPlaybackController;
 class TextToSpeechPlaybackControllerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Convenience getter that typecasts the value returned to a
-  // TextToSpeechPlaybackController.
+  // TODO(crbug.com/358301380): remove this method.
   static TextToSpeechPlaybackController* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static TextToSpeechPlaybackController* GetForProfile(ProfileIOS* profile);
   // Getter for singleton instance.
   static TextToSpeechPlaybackControllerFactory* GetInstance();
 

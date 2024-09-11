@@ -20,7 +20,10 @@ class IdleServiceFactory : public BrowserStateKeyedServiceFactory {
   IdleServiceFactory& operator=(const BrowserStateKeyedServiceFactory&) =
       delete;
 
+  // TODO(crbug.com/358301380): remove this method.
   static IdleService* GetForBrowserState(ChromeBrowserState* browser_state);
+
+  static IdleService* GetForProfile(ProfileIOS* profile);
   static IdleServiceFactory* GetInstance();
 
  private:

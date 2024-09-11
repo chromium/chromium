@@ -63,17 +63,22 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 
 // static
 SharingService* IOSSharingServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  CHECK(!browser_state->IsOffTheRecord());
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SharingService* IOSSharingServiceFactory::GetForProfile(ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
   return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
 SharingService* IOSSharingServiceFactory::GetForProfileIfExists(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

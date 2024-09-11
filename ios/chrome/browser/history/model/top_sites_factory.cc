@@ -24,9 +24,15 @@ namespace ios {
 
 // static
 scoped_refptr<history::TopSites> TopSitesFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+scoped_refptr<history::TopSites> TopSitesFactory::GetForProfile(
+    ProfileIOS* profile) {
   return base::WrapRefCounted(static_cast<history::TopSites*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+      GetInstance()->GetServiceForBrowserState(profile, true).get()));
 }
 
 // static

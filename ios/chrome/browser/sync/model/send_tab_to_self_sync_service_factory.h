@@ -19,9 +19,12 @@ class SendTabToSelfSyncService;
 // ChromeBrowserState.
 class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static send_tab_to_self::SendTabToSelfSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static send_tab_to_self::SendTabToSelfSyncService* GetForProfile(
+      ProfileIOS* profile);
   static SendTabToSelfSyncServiceFactory* GetInstance();
 
   // Returns the default factory used to build SendTabToSelfSyncService. Can be

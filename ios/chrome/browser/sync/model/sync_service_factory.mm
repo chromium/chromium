@@ -106,7 +106,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetDeviceInfoSyncService(
       DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state));
   builder.SetDualReadingListModel(
-      ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+      ReadingListModelFactory::GetAsDualReadingListModelForProfile(
           browser_state));
   builder.SetFaviconService(ios::FaviconServiceFactory::GetForBrowserState(
       browser_state, ServiceAccessType::IMPLICIT_ACCESS));

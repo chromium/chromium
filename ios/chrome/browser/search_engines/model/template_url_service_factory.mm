@@ -59,9 +59,15 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
 
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+TemplateURLService* TemplateURLServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<TemplateURLService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

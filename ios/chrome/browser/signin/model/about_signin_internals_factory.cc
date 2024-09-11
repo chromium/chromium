@@ -32,9 +32,15 @@ AboutSigninInternalsFactory::~AboutSigninInternalsFactory() {}
 
 // static
 AboutSigninInternals* AboutSigninInternalsFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AboutSigninInternals* AboutSigninInternalsFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<AboutSigninInternals*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

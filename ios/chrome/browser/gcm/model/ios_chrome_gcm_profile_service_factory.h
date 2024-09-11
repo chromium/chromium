@@ -17,13 +17,14 @@ class GCMProfileService;
 }
 
 // Singleton that owns all GCMProfileService and associates them with
-// ChromeBrowserState.
+// profiles.
 class IOSChromeGCMProfileServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static gcm::GCMProfileService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static gcm::GCMProfileService* GetForBrowserState(ProfileIOS* profile);
 
+  static gcm::GCMProfileService* GetForProfile(ProfileIOS* profile);
   static IOSChromeGCMProfileServiceFactory* GetInstance();
 
   IOSChromeGCMProfileServiceFactory(const IOSChromeGCMProfileServiceFactory&) =

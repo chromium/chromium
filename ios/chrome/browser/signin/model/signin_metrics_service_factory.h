@@ -16,8 +16,10 @@ class SigninMetricsService;
 // Singleton that manages the `SigninMetricsService` service per browser state.
 class SigninMetricsServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SigninMetricsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static SigninMetricsService* GetForBrowserState(ProfileIOS* profile);
+
+  static SigninMetricsService* GetForProfile(ProfileIOS* profile);
   static SigninMetricsServiceFactory* GetInstance();
 
   SigninMetricsServiceFactory(const SigninMetricsServiceFactory&) = delete;

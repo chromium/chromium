@@ -16,9 +16,11 @@ class UnitConversionService;
 // ChromeBrowserState.
 class UnitConversionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
+  static UnitConversionService* GetForBrowserState(ProfileIOS* profile);
+
+  static UnitConversionService* GetForProfile(ProfileIOS* profile);
   static UnitConversionServiceFactory* GetInstance();
-  static UnitConversionService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
 
   UnitConversionServiceFactory(const UnitConversionServiceFactory&) = delete;
   UnitConversionServiceFactory& operator=(const UnitConversionServiceFactory&) =

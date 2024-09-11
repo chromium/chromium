@@ -25,10 +25,10 @@ class SessionRestorationServiceFactory final
     kOptimized,
   };
 
-  // Returns the instance of the service associated with `service`.
-  static SessionRestorationService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static SessionRestorationService* GetForBrowserState(ProfileIOS* profile);
 
+  static SessionRestorationService* GetForProfile(ProfileIOS* profile);
   static SessionRestorationServiceFactory* GetInstance();
 
   // Requests that session storage for `browser_state` is migrated if needed.

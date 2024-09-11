@@ -24,9 +24,15 @@
 
 // static
 CredentialProviderService* CredentialProviderServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+CredentialProviderService* CredentialProviderServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<CredentialProviderService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

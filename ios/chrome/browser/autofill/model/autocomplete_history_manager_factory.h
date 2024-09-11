@@ -16,12 +16,14 @@ namespace autofill {
 class AutocompleteHistoryManager;
 
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
-// ChromeBrowserState.
+// profiles.
 class AutocompleteHistoryManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static AutocompleteHistoryManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AutocompleteHistoryManager* GetForBrowserState(ProfileIOS* profile);
+
+  static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
   static AutocompleteHistoryManagerFactory* GetInstance();
 
   AutocompleteHistoryManagerFactory(const AutocompleteHistoryManagerFactory&) =

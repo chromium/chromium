@@ -24,10 +24,15 @@ IOSChromePasswordSenderServiceFactory::GetInstance() {
 
 // static
 password_manager::PasswordSenderService*
-IOSChromePasswordSenderServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSChromePasswordSenderServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+password_manager::PasswordSenderService*
+IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordSenderService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()

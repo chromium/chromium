@@ -14,10 +14,10 @@ class GoogleGroupsManager;
 class GoogleGroupsManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Creates the service if it doesn't exist already for `browser_state`.
-  static GoogleGroupsManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static GoogleGroupsManager* GetForBrowserState(ProfileIOS* profile);
 
+  static GoogleGroupsManager* GetForProfile(ProfileIOS* profile);
   static GoogleGroupsManagerFactory* GetInstance();
 
   GoogleGroupsManagerFactory(const GoogleGroupsManagerFactory&) =

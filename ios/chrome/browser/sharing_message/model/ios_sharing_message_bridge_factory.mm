@@ -15,10 +15,15 @@
 
 // static
 SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  CHECK(!browser_state->IsOffTheRecord());
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SharingMessageBridge*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -27,9 +27,15 @@ AutocompleteScoringModelServiceFactory::GetInstance() {
 // static
 AutocompleteScoringModelService*
 AutocompleteScoringModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AutocompleteScoringModelService*
+AutocompleteScoringModelServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<AutocompleteScoringModelService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()

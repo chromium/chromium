@@ -60,9 +60,15 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
 
 // static
 DataSharingService* DataSharingServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* context) {
+  return GetForProfile(context);
+}
+
+// static
+DataSharingService* DataSharingServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DataSharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 // static

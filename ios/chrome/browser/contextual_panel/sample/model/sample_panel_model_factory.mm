@@ -11,9 +11,14 @@
 
 // static
 SamplePanelModel* SamplePanelModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SamplePanelModel* SamplePanelModelFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<SamplePanelModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

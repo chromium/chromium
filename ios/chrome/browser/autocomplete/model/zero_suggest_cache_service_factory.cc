@@ -16,9 +16,15 @@ namespace ios {
 
 // static
 ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ZeroSuggestCacheService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

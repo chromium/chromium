@@ -14,12 +14,14 @@ class HostContentSettingsMap;
 
 namespace ios {
 // Singleton that owns all HostContentSettingsMaps and associates them with
-// ChromeBrowserState.
+// profiles.
 class HostContentSettingsMapFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static HostContentSettingsMap* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static HostContentSettingsMap* GetForBrowserState(ProfileIOS* profile);
+
+  static HostContentSettingsMap* GetForProfile(ProfileIOS* profile);
   static HostContentSettingsMapFactory* GetInstance();
 
   HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;

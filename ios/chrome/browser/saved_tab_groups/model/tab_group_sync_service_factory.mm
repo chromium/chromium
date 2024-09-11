@@ -48,10 +48,15 @@ CreateSavedTabGroupDataTypeConfiguration(ChromeBrowserState* browser_state) {
 
 // static
 TabGroupSyncService* TabGroupSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<TabGroupSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state,
-                                               /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {

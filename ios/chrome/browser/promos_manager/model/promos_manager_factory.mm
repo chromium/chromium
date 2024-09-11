@@ -17,10 +17,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-PromosManager* PromosManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+PromosManager* PromosManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+PromosManager* PromosManagerFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<PromosManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

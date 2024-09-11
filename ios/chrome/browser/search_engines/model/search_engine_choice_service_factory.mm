@@ -33,10 +33,15 @@ SearchEngineChoiceServiceFactory::GetInstance() {
 
 // static
 search_engines::SearchEngineChoiceService*
-SearchEngineChoiceServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SearchEngineChoiceServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+search_engines::SearchEngineChoiceService*
+SearchEngineChoiceServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<search_engines::SearchEngineChoiceService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 std::unique_ptr<KeyedService>

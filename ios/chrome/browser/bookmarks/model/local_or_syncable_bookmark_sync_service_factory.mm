@@ -32,9 +32,15 @@ GetWipeModelUponSyncDisabledBehavior() {
 // static
 sync_bookmarks::BookmarkSyncService*
 LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+sync_bookmarks::BookmarkSyncService*
+LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

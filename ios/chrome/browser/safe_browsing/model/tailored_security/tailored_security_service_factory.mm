@@ -13,10 +13,15 @@
 
 // static
 safe_browsing::TailoredSecurityService*
-TailoredSecurityServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+TailoredSecurityServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::TailoredSecurityService*
+TailoredSecurityServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::TailoredSecurityService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

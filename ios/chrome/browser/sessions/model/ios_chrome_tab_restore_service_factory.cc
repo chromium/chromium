@@ -32,10 +32,15 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
 
 // static
 sessions::TabRestoreService*
-IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSChromeTabRestoreServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+sessions::TabRestoreService* IOSChromeTabRestoreServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<sessions::TabRestoreService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

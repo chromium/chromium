@@ -16,10 +16,14 @@
 namespace autofill {
 
 // static
-LogRouter* AutofillLogRouterFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+LogRouter* AutofillLogRouterFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+LogRouter* AutofillLogRouterFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<LogRouter*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

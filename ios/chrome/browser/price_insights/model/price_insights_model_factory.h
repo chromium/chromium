@@ -12,12 +12,13 @@
 class PriceInsightsModel;
 
 // Singleton that owns all PriceInsightsModels and associates them with
-// BrowserStates.
+// profile.
 class PriceInsightsModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static PriceInsightsModel* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static PriceInsightsModel* GetForBrowserState(ProfileIOS* profile);
 
+  static PriceInsightsModel* GetForProfile(ProfileIOS* profile);
   static PriceInsightsModelFactory* GetInstance();
 
   PriceInsightsModelFactory(const PriceInsightsModelFactory&) = delete;

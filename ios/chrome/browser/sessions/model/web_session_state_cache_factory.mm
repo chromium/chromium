@@ -75,10 +75,16 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
 
 // static
 WebSessionStateCache* WebSessionStateCacheFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+WebSessionStateCache* WebSessionStateCacheFactory::GetForProfile(
+    ProfileIOS* profile) {
   WebSessionStateCacheWrapper* wrapper =
       static_cast<WebSessionStateCacheWrapper*>(
-          GetInstance()->GetServiceForBrowserState(browser_state, true));
+          GetInstance()->GetServiceForBrowserState(profile, true));
   return wrapper ? wrapper->web_session_state_cache() : nil;
 }
 

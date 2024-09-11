@@ -12,13 +12,14 @@
 class ContextualPanelModelService;
 
 // Singleton that owns all ContextualPanelModelServices and associates them with
-// BrowserStates.
+// profiles.
 class ContextualPanelModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static ContextualPanelModelService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ContextualPanelModelService* GetForBrowserState(ProfileIOS* profile);
 
+  static ContextualPanelModelService* GetForProfile(ProfileIOS* profile);
   static ContextualPanelModelServiceFactory* GetInstance();
 
   ContextualPanelModelServiceFactory(

@@ -13,10 +13,14 @@
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
 
 // static
-SigninClient* SigninClientFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SigninClient* SigninClientFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SigninClient* SigninClientFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<SigninClient*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -27,15 +27,15 @@ IOSChromePasswordReuseManagerFactory::GetInstance() {
 
 // static
 password_manager::PasswordReuseManager*
-IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled)) {
-    return nullptr;
-  }
+IOSChromePasswordReuseManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
 
+// static
+password_manager::PasswordReuseManager*
+IOSChromePasswordReuseManagerFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordReuseManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 IOSChromePasswordReuseManagerFactory::IOSChromePasswordReuseManagerFactory()

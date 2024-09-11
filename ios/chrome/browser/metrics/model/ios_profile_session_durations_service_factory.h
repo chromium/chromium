@@ -14,10 +14,11 @@ class IOSProfileSessionDurationsService;
 class IOSProfileSessionDurationsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Creates the service if it doesn't exist already for `browser_state`.
+  // TODO(crbug.com/358301380): remove this method.
   static IOSProfileSessionDurationsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static IOSProfileSessionDurationsService* GetForProfile(ProfileIOS* profile);
   static IOSProfileSessionDurationsServiceFactory* GetInstance();
 
   IOSProfileSessionDurationsServiceFactory(

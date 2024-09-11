@@ -20,10 +20,15 @@
 
 // static
 ReadingListDownloadService*
-ReadingListDownloadServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ReadingListDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ReadingListDownloadService* ReadingListDownloadServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ReadingListDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

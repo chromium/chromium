@@ -15,11 +15,13 @@ class InMemoryURLIndex;
 
 namespace ios {
 // Singleton that owns all InMemoryURLIndexs and associates them with
-// ChromeBrowserState.
+// profiles.
 class InMemoryURLIndexFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static InMemoryURLIndex* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static InMemoryURLIndex* GetForBrowserState(ProfileIOS* profile);
+
+  static InMemoryURLIndex* GetForProfile(ProfileIOS* profile);
   static InMemoryURLIndexFactory* GetInstance();
 
   // Returns the default factory used to build InMemoryURLIndexs. Can be

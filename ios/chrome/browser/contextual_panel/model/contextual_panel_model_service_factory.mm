@@ -18,10 +18,15 @@
 
 // static
 ContextualPanelModelService*
-ContextualPanelModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ContextualPanelModelServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ContextualPanelModelService* ContextualPanelModelServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ContextualPanelModelService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

@@ -18,8 +18,10 @@ class LargeIconCache;
 // ChromeBrowserState.
 class IOSChromeLargeIconCacheFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static LargeIconCache* GetForBrowserState(ChromeBrowserState* browser_state);
 
+  static LargeIconCache* GetForProfile(ProfileIOS* profile);
   static IOSChromeLargeIconCacheFactory* GetInstance();
 
   IOSChromeLargeIconCacheFactory(const IOSChromeLargeIconCacheFactory&) =

@@ -68,13 +68,13 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(), account_password_store_.get(),
           ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
-          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+          ReadingListModelFactory::GetAsDualReadingListModelForProfile(
               browser_state_));
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
           ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
-          ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+          ReadingListModelFactory::GetAsDualReadingListModelForProfile(
               browser_state_));
 }
 

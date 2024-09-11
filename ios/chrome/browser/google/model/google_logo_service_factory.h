@@ -15,12 +15,13 @@ class KeyedService;
 class GoogleLogoService;
 
 // Singleton that owns all GoogleLogoServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static GoogleLogoService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static GoogleLogoService* GetForBrowserState(ProfileIOS* profile);
 
+  static GoogleLogoService* GetForProfile(ProfileIOS* profile);
   static GoogleLogoServiceFactory* GetInstance();
 
   GoogleLogoServiceFactory(const GoogleLogoServiceFactory&) = delete;

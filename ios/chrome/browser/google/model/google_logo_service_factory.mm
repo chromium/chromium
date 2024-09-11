@@ -15,9 +15,15 @@
 
 // static
 GoogleLogoService* GoogleLogoServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+GoogleLogoService* GoogleLogoServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<GoogleLogoService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

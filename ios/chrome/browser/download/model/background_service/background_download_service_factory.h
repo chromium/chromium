@@ -17,12 +17,16 @@ class BackgroundDownloadService;
 }  // namespace download
 
 // Singleton that owns all BackgroundDownloadServiceFactory and associates them
-// with ChromeBrowserState.
+// with profiles.
 class BackgroundDownloadServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static download::BackgroundDownloadService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static download::BackgroundDownloadService* GetForProfile(
+      ProfileIOS* profile);
   static BackgroundDownloadServiceFactory* GetInstance();
 
  private:

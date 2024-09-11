@@ -14,12 +14,14 @@
 class ExternalFileRemover;
 
 // Singleton that owns all `ExternalFileRemover` and associates them with
-// browser states. Listens for the `BrowserState`'s destruction notification and
+// profiles. Listens for the `ProfileIOS`'s destruction notification and
 // cleans up the associated `ExternalFileRemover`.
 class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ExternalFileRemover* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ExternalFileRemover* GetForBrowserState(ProfileIOS* profile);
+
+  static ExternalFileRemover* GetForProfile(ProfileIOS* profile);
   static ExternalFileRemoverFactory* GetInstance();
 
   ExternalFileRemoverFactory(const ExternalFileRemoverFactory&) = delete;

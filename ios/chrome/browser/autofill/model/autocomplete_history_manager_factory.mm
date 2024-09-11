@@ -21,10 +21,15 @@ namespace autofill {
 
 // static
 AutocompleteHistoryManager*
-AutocompleteHistoryManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+AutocompleteHistoryManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AutocompleteHistoryManager* AutocompleteHistoryManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<AutocompleteHistoryManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

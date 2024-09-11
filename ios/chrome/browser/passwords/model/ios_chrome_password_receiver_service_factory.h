@@ -13,13 +13,17 @@ namespace password_manager {
 class PasswordReceiverService;
 }
 
-// Creates instances of PasswordReceiverService per BrowserState.
+// Creates instances of PasswordReceiverService per profile.
 class IOSChromePasswordReceiverServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static IOSChromePasswordReceiverServiceFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static password_manager::PasswordReceiverService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static password_manager::PasswordReceiverService* GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromePasswordReceiverServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordReceiverServiceFactory>;

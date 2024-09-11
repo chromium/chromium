@@ -16,9 +16,13 @@ class IOSChromePasswordCheckManager;
 class IOSChromePasswordCheckManagerFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static IOSChromePasswordCheckManagerFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static scoped_refptr<IOSChromePasswordCheckManager> GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static scoped_refptr<IOSChromePasswordCheckManager> GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromePasswordCheckManagerFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordCheckManagerFactory>;

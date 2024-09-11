@@ -14,10 +14,15 @@
 
 // static
 ContentNotificationService*
-ContentNotificationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ContentNotificationServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ContentNotificationService* ContentNotificationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ContentNotificationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

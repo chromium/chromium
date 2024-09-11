@@ -23,18 +23,27 @@ std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
 
 }  // namespace
 
+// static
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForBrowserState(
     ProfileIOS* profile) {
-  return static_cast<FaviconLoader*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetForProfile(profile);
 }
 
+// static
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
   return static_cast<FaviconLoader*>(
       GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
+// static
+FaviconLoader* IOSChromeFaviconLoaderFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<FaviconLoader*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
 IOSChromeFaviconLoaderFactory* IOSChromeFaviconLoaderFactory::GetInstance() {
   static base::NoDestructor<IOSChromeFaviconLoaderFactory> instance;
   return instance.get();

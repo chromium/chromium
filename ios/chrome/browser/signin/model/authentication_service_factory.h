@@ -23,8 +23,10 @@ class AuthenticationServiceDelegate;
 // cleans up the associated `AuthenticationService`.
 class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static AuthenticationService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AuthenticationService* GetForBrowserState(ProfileIOS* profile);
+
+  static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 
   // Force the instantiation of AuthenticationService and initialize it with

@@ -20,9 +20,12 @@ class LanguageModelManager;
 // provided depends on feature flags.
 class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static LanguageModelManagerFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static language::LanguageModelManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static language::LanguageModelManager* GetForProfile(ProfileIOS* profile);
+  static LanguageModelManagerFactory* GetInstance();
 
   LanguageModelManagerFactory(const LanguageModelManagerFactory&) = delete;
   LanguageModelManagerFactory& operator=(const LanguageModelManagerFactory&) =

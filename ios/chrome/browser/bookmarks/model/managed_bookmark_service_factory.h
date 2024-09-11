@@ -14,12 +14,14 @@ class ManagedBookmarkService;
 }
 
 // Singleton that owns all ManagedBookmarkService and associates them with
-// ChromeBrowserState.
+// profiles.
 class ManagedBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static bookmarks::ManagedBookmarkService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static bookmarks::ManagedBookmarkService* GetForProfile(ProfileIOS* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
 
   ManagedBookmarkServiceFactory(const ManagedBookmarkServiceFactory&) = delete;

@@ -27,10 +27,15 @@ IOSChromePasswordCheckManagerFactory::GetInstance() {
 
 // static
 scoped_refptr<IOSChromePasswordCheckManager>
-IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSChromePasswordCheckManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+scoped_refptr<IOSChromePasswordCheckManager>
+IOSChromePasswordCheckManagerFactory::GetForProfile(ProfileIOS* profile) {
   return base::WrapRefCounted(static_cast<IOSChromePasswordCheckManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+      GetInstance()->GetServiceForBrowserState(profile, true).get()));
 }
 
 IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory()

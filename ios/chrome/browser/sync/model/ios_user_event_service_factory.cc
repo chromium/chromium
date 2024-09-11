@@ -27,9 +27,15 @@
 
 // static
 syncer::UserEventService* IOSUserEventServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+syncer::UserEventService* IOSUserEventServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<syncer::UserEventService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

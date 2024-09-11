@@ -19,8 +19,12 @@ class SupervisedUserSettingsService;
 class SupervisedUserSettingsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static supervised_user::SupervisedUserSettingsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static supervised_user::SupervisedUserSettingsService* GetForProfile(
+      ProfileIOS* profile);
   static SupervisedUserSettingsServiceFactory* GetInstance();
 
   SupervisedUserSettingsServiceFactory(

@@ -14,13 +14,17 @@ namespace password_manager {
 class PasswordReuseManager;
 }
 
-// Creates instances of PasswordReuseManager per ChromeBrowserState.
+// Creates instances of PasswordReuseManager per profile.
 class IOSChromePasswordReuseManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static IOSChromePasswordReuseManagerFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static password_manager::PasswordReuseManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static password_manager::PasswordReuseManager* GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromePasswordReuseManagerFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordReuseManagerFactory>;

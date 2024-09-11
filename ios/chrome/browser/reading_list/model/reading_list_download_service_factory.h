@@ -14,12 +14,14 @@
 class ReadingListDownloadService;
 
 // Singleton that creates the ReadingListDownloadService and associates that
-// service with ChromeBrowserState.
+// service with Profile.
 class ReadingListDownloadServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static ReadingListDownloadService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ReadingListDownloadService* GetForBrowserState(ProfileIOS* profile);
+
+  static ReadingListDownloadService* GetForProfile(ProfileIOS* profile);
   static ReadingListDownloadServiceFactory* GetInstance();
 
   ReadingListDownloadServiceFactory(const ReadingListDownloadServiceFactory&) =

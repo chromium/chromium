@@ -18,15 +18,18 @@ namespace ios {
 class SearchEngineChoiceServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
+  static search_engines::SearchEngineChoiceService* GetForBrowserState(
+      ProfileIOS* profile);
+
+  static search_engines::SearchEngineChoiceService* GetForProfile(
+      ProfileIOS* profile);
+  static SearchEngineChoiceServiceFactory* GetInstance();
+
   SearchEngineChoiceServiceFactory(const SearchEngineChoiceServiceFactory&) =
       delete;
   SearchEngineChoiceServiceFactory& operator=(
       const SearchEngineChoiceServiceFactory&) = delete;
-
-  static search_engines::SearchEngineChoiceService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
-  static SearchEngineChoiceServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;

@@ -18,9 +18,10 @@ class UserEventService;
 // Singleton that associates UserEventServices to ChromeBrowserStates.
 class IOSUserEventServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::UserEventService* GetForBrowserState(
-      ChromeBrowserState* context);
+  // TODO(crbug.com/358301380): remove this method.
+  static syncer::UserEventService* GetForBrowserState(ProfileIOS* profile);
 
+  static syncer::UserEventService* GetForProfile(ProfileIOS* profile);
   static IOSUserEventServiceFactory* GetInstance();
 
  private:

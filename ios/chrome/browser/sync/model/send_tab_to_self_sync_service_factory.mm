@@ -48,9 +48,15 @@ SendTabToSelfSyncServiceFactory::GetInstance() {
 
 // static
 SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SendTabToSelfSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

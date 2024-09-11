@@ -19,8 +19,12 @@ class SupervisedUserMetricsService;
 class SupervisedUserMetricsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static supervised_user::SupervisedUserMetricsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static supervised_user::SupervisedUserMetricsService* GetForProfile(
+      ProfileIOS* profile);
   static SupervisedUserMetricsServiceFactory* GetInstance();
 
   SupervisedUserMetricsServiceFactory(

@@ -19,8 +19,10 @@ class TranslateRanker;
 // a BrowserState.
 class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static translate::TranslateRanker* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static translate::TranslateRanker* GetForBrowserState(ProfileIOS* profile);
+
+  static translate::TranslateRanker* GetForProfile(ProfileIOS* profile);
   static TranslateRankerFactory* GetInstance();
 
   TranslateRankerFactory(const TranslateRankerFactory&) = delete;

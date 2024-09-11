@@ -16,10 +16,10 @@ class TabGroupSyncService;
 // Factory for the Tab Group Sync service.
 class TabGroupSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the TabGroupSyncService for this `browser_state`.
-  static TabGroupSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TabGroupSyncService* GetForBrowserState(ProfileIOS* profile);
 
+  static TabGroupSyncService* GetForProfile(ProfileIOS* profile);
   static TabGroupSyncServiceFactory* GetInstance();
 
   TabGroupSyncServiceFactory(const TabGroupSyncServiceFactory&) = delete;

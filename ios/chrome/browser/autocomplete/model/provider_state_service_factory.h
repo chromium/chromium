@@ -21,11 +21,13 @@ class BrowserState;
 namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class ProviderStateServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ProviderStateService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ProviderStateService* GetForBrowserState(ProfileIOS* profile);
+
+  static ProviderStateService* GetForProfile(ProfileIOS* profile);
   static ProviderStateServiceFactory* GetInstance();
 
   ProviderStateServiceFactory(const ProviderStateServiceFactory&) = delete;
