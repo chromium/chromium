@@ -10,6 +10,7 @@ import './cra/cra-icon-button.js';
 import './genai-error.js';
 import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
+import './spoken-message.js';
 import './summary-consent-card.js';
 
 import {
@@ -24,9 +25,7 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {
-  ModelResponse,
-} from '../core/on_device_model/types.js';
+import {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
@@ -221,19 +220,34 @@ export class SummarizationView extends ReactiveLitElement {
   private renderSummaryContent() {
     const summary = this.summary.value;
     if (summary === null) {
-      return html`<genai-placeholder></genai-placeholder>`;
+      return html`
+        <genai-placeholder
+          aria-label=${i18n.summaryStartedStatusMessage}
+          aria-live="polite"
+          tabindex="-1"
+        ></genai-placeholder>
+      `;
     }
     switch (summary.kind) {
       case 'error':
-        return html`<genai-error
-          .error=${summary.error}
-          .resultType=${GenaiResultType.SUMMARY}
-        >
-        </genai-error>`;
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryFailedStatusMessage}
+          </spoken-message>
+          <genai-error
+            .error=${summary.error}
+            .resultType=${GenaiResultType.SUMMARY}
+          >
+          </genai-error>`;
       case 'success':
+        // Don't add space around ${summary.result}
         // prettier-ignore
-        return html`<div id="summary" ${ref(this.summaryContainer)}>${
-          summary.result}</div>
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryFinishedStatusMessage}
+          </spoken-message>
+          <div
+            id="summary"
+            ${ref(this.summaryContainer)}
+          >${summary.result}</div>
           ${this.renderSummaryFooter()}`;
       default:
         assertExhaustive(summary);

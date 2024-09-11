@@ -399,8 +399,17 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_HEADER">
     Download Gemini model to summarize recordings?
   </message>
+  <message desc="" name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
+    Failed to generate summary
+  </message>
+  <message desc="" name="IDS_RECORDER_SUMMARY_FINISHED_STATUS_MESSAGE">
+    Summary generated successfully
+  </message>
   <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
     Summary
+  </message>
+  <message desc="" name="IDS_RECORDER_SUMMARY_STARTED_STATUS_MESSAGE">
+    Generating summary
   </message>
   <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
     Rename

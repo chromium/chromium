@@ -36,6 +36,7 @@ component_files = [
   "settings-row.ts",
   "speaker-label-consent-dialog-content.ts",
   "speaker-label-consent-dialog.ts",
+  "spoken-message.ts",
   "styles/speaker_label.ts",
   "summarization-view.ts",
   "summary-consent-card.ts",
