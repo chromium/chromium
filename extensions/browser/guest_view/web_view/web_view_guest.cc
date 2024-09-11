@@ -1551,17 +1551,6 @@ void WebViewGuest::WebContentsCreated(WebContents* source_contents,
 void WebViewGuest::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
-  // Ask the embedder for permission.
-  base::Value::Dict request_info;
-  const GURL& origin =
-      requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-  request_info.Set(webview::kOrigin, origin.spec());
-  web_view_permission_helper_->RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, std::move(request_info),
-      base::BindOnce(&WebViewGuest::OnFullscreenPermissionDecided,
-                     weak_ptr_factory_.GetWeakPtr()),
-      false /* allowed_by_default */);
-
   // TODO(lazyboy): Right now the guest immediately goes fullscreen within its
   // bounds. If the embedder denies the permission then we will see a flicker.
   // Once we have the ability to "cancel" a renderer/ fullscreen request:
@@ -1569,6 +1558,12 @@ void WebViewGuest::EnterFullscreenModeForTab(
   // Calling SetFullscreenState(true) once the embedder allowed the request.
   // Otherwise we would cancel renderer/ fullscreen if the embedder denied.
   SetFullscreenState(true);
+
+  // Ask the embedder for permission.
+  web_view_permission_helper_->RequestFullscreenPermission(
+      requesting_frame->GetLastCommittedOrigin(),
+      base::BindOnce(&WebViewGuest::OnFullscreenPermissionDecided,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebViewGuest::ExitFullscreenModeForTab(WebContents* web_contents) {

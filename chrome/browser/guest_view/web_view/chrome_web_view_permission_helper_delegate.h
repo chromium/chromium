@@ -16,6 +16,10 @@
 #include "chrome/common/plugin.mojom.h"
 #endif
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace extensions {
 class WebViewGuest;
 
@@ -69,6 +73,10 @@ class ChromeWebViewPermissionHelperDelegate
       const GURL& url,
       bool allowed_by_default,
       base::OnceCallback<void(bool)> callback) override;
+
+  void RequestFullscreenPermission(
+      const url::Origin& requesting_origin,
+      WebViewPermissionHelper::PermissionResponseCallback callback) override;
 
  private:
 #if BUILDFLAG(ENABLE_PLUGINS)

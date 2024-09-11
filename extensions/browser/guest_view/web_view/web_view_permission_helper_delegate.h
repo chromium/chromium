@@ -17,6 +17,10 @@ struct MediaStreamRequest;
 class WebContents;
 }  // namespace content
 
+namespace url {
+class Origin;
+}  // namespace url
+
 class GURL;
 
 namespace extensions {
@@ -67,6 +71,10 @@ class WebViewPermissionHelperDelegate {
       const GURL& url,
       bool allowed_by_default,
       base::OnceCallback<void(bool)> callback) {}
+
+  virtual void RequestFullscreenPermission(
+      const url::Origin& requesting_origin,
+      WebViewPermissionHelper::PermissionResponseCallback callback) {}
 
   // Called when file system access is requested by the guest content using the
   // asynchronous HTML5 file system API. The request is plumbed through the
