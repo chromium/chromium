@@ -1524,6 +1524,10 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
     result.Set("accountImage", base::Base64Encode(*png_bytes));
   }
 
+  if (!extended_info.IsEmpty()) {
+    result.Set("accountFullName", extended_info.full_name);
+  }
+
   return result;
 }
 
