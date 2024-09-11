@@ -99,6 +99,15 @@ class ControlledFramePermissionRequestTestBase
   void VerifyDisabledPermission(const DisabledPermissionTestCase& test_case,
                                 const DisabledPermissionTestParam& test_param);
 
+  void VerifyDisabledPermission(const DisabledPermissionTestCase& test_case,
+                                const DisabledPermissionTestParam& test_param,
+                                content::RenderFrameHost* app_frame,
+                                content::RenderFrameHost* controlled_frame);
+
+  std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+  SetUpControlledFrame(const DisabledPermissionTestCase& test_case,
+                       const DisabledPermissionTestParam& test_param);
+
  private:
   void SetUpPermissionRequestEventListener(
       content::RenderFrameHost* app_frame,

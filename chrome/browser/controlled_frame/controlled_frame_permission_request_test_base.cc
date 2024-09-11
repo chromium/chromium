@@ -290,26 +290,19 @@ void ControlledFramePermissionRequestTestBase::VerifyEnabledPermission(
 void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
     const DisabledPermissionTestCase& test_case,
     const DisabledPermissionTestParam& test_param) {
-  // If the permission has no dependent permissions policy feature, then skip
-  // the true negative permissions policy test cases.
-  if (!test_param.policy_features_enabled &&
-      test_case.policy_features.empty()) {
+  auto [app_frame, controlled_frame] =
+      SetUpControlledFrame(test_case, test_param);
+  if (!app_frame || !controlled_frame) {
     return;
   }
+  VerifyDisabledPermission(test_case, test_param, app_frame, controlled_frame);
+}
 
-  web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
-  if (test_param.policy_features_enabled) {
-    for (auto& policy_feature : test_case.policy_features) {
-      manifest_builder.AddPermissionsPolicyWildcard(policy_feature);
-    }
-  }
-
-  auto [app_frame, controlled_frame] =
-      InstallAndOpenIwaThenCreateControlledFrame(
-          /*controlled_frame_host_name=*/kPermissionAllowedHost,
-          /*controlled_frame_src_relative_url=*/"/index.html",
-          manifest_builder);
-
+void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param,
+    content::RenderFrameHost* app_frame,
+    content::RenderFrameHost* controlled_frame) {
   std::string expected_iwa_result = test_param.iwa_expect_success
                                         ? test_case.success_result
                                         : test_case.failure_result;
@@ -342,6 +335,30 @@ void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
 
   EXPECT_EQ(content::EvalJs(app_frame, "window.permissionEventHandled;"),
             false);
+}
+
+std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+ControlledFramePermissionRequestTestBase::SetUpControlledFrame(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param) {
+  // If the permission has no dependent permissions policy feature, then
+  // skip
+  // the true negative permissions policy test cases.
+  if (!test_param.policy_features_enabled &&
+      test_case.policy_features.empty()) {
+    return {nullptr, nullptr};
+  }
+
+  web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
+  if (test_param.policy_features_enabled) {
+    for (auto& policy_feature : test_case.policy_features) {
+      manifest_builder.AddPermissionsPolicyWildcard(policy_feature);
+    }
+  }
+
+  return InstallAndOpenIwaThenCreateControlledFrame(
+      /*controlled_frame_host_name=*/kPermissionAllowedHost,
+      /*controlled_frame_src_relative_url=*/"/index.html", manifest_builder);
 }
 
 }  // namespace controlled_frame

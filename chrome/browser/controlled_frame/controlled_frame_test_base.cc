@@ -131,12 +131,12 @@ std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
 ControlledFrameTestBase::InstallAndOpenIwaThenCreateControlledFrame(
     std::optional<std::string_view> controlled_frame_host_name,
     std::string_view controlled_frame_src_relative_url,
-    web_app::ManifestBuilder manfest_buider) {
+    web_app::ManifestBuilder manfest_builder) {
   CHECK(embedded_https_test_server().Started())
       << "Controlled Frame content server has not been started.";
 
   web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(manfest_buider);
+      CreateAndInstallEmptyApp(manfest_builder);
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   CHECK(app_frame);
 
