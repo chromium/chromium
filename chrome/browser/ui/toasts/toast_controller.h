@@ -12,8 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
+class Browser;
 class BrowserWindowInterface;
 class ToastRegistry;
 class ToastSpecification;
@@ -35,7 +37,8 @@ struct ToastParams {
   std::vector<std::u16string> action_button_string_replacement_params_;
 };
 
-class ToastController : public views::WidgetObserver {
+class ToastController : public views::WidgetObserver,
+                        public BrowserListObserver {
  public:
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
                            const ToastRegistry* toast_registry);
@@ -43,6 +46,7 @@ class ToastController : public views::WidgetObserver {
 
   bool IsShowingToast() const;
   bool CanShowToast(ToastId id) const;
+  std::optional<ToastId> GetCurrentToastId() const;
 
   // Attempts to show the toast and returns true if the toast was successfully
   // shown, otherwise return false. Callers that show a persistent toast must
@@ -55,18 +59,26 @@ class ToastController : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  // BrowserListObserver::
+  void OnBrowserClosing(Browser* browser) override;
+
+  base::OneShotTimer* GetToastCloseTimerForTesting();
+
  private:
+  void QueueToast(ToastParams params);
   void ShowToast(ToastParams params);
-  void CreateToast(const ToastSpecification*);
+  virtual void CreateToast(const ToastParams& params,
+                           const ToastSpecification* spec);
   virtual void CloseToast(toasts::ToastCloseReason reason);
-  void OnToastClosed();
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
-  std::optional<ToastParams> current_toast_params_;
-  std::optional<ToastParams> next_toast_params_;
+  std::optional<ToastParams> current_ephemeral_params_;
+  std::optional<ToastParams> next_ephemeral_params_;
+  std::optional<ToastParams> persistent_params_;
+  std::optional<ToastId> currently_showing_toast_id_;
   base::OneShotTimer toast_close_timer_;
 
   // Observer to check when the toast is destroyed.

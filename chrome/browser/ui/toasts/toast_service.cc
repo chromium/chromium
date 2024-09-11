@@ -64,4 +64,13 @@ void ToastService::RegisterToasts(
                                base::Unretained(browser_window_interface)))
           .AddCloseButton()
           .Build());
+
+  // TODO(crbug.com/357929158): This registration only partially implements the
+  // Chromnient toast and will need to handle alternate icons and strings.
+  toast_registry_->RegisterToast(
+      ToastId::kLensOverlay,
+      ToastSpecification::Builder(vector_icons::kSearchChromeRefreshIcon,
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE)
+          .AddPersistance()
+          .Build());
 }

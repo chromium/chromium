@@ -15,6 +15,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
@@ -22,6 +25,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
@@ -32,12 +36,16 @@ ToastController::ToastController(
     BrowserWindowInterface* browser_window_interface,
     const ToastRegistry* toast_registry)
     : browser_window_interface_(browser_window_interface),
-      toast_registry_(toast_registry) {}
+      toast_registry_(toast_registry) {
+  BrowserList::AddObserver(this);
+}
 
-ToastController::~ToastController() = default;
+ToastController::~ToastController() {
+  BrowserList::RemoveObserver(this);
+}
 
 bool ToastController::IsShowingToast() const {
-  return current_toast_params_.has_value();
+  return GetCurrentToastId().has_value();
 }
 
 bool ToastController::CanShowToast(ToastId id) const {
@@ -49,14 +57,15 @@ bool ToastController::CanShowToast(ToastId id) const {
     return true;
   }
 
-  const ToastSpecification* current_toast_spec =
-      toast_registry_->GetToastSpecification(
-          current_toast_params_.value().toast_id_);
   const ToastSpecification* potential_toast_spec =
       toast_registry_->GetToastSpecification(id);
 
-  return !(current_toast_spec->is_persistent_toast() &&
+  return !(persistent_params_.has_value() &&
            potential_toast_spec->is_persistent_toast());
+}
+
+std::optional<ToastId> ToastController::GetCurrentToastId() const {
+  return currently_showing_toast_id_;
 }
 
 bool ToastController::MaybeShowToast(ToastParams params) {
@@ -67,12 +76,7 @@ bool ToastController::MaybeShowToast(ToastParams params) {
   CloseToast(toasts::ToastCloseReason::kPreempted);
 
   if (IsShowingToast()) {
-    // TODO(crbug.com/358610190): Record that a toast was preempted if
-    // `next_toast_params_` already have a value.
-
-    // Queue the params since we are waiting for the previous toast to
-    // fully close before showing the next toast.
-    next_toast_params_ = std::move(params);
+    QueueToast(std::move(params));
   } else {
     ShowToast(std::move(params));
   }
@@ -81,77 +85,117 @@ bool ToastController::MaybeShowToast(ToastParams params) {
 }
 
 void ToastController::ClosePersistentToast(ToastId id) {
-  CHECK(current_toast_params_.has_value());
-  CHECK_EQ(current_toast_params_.value().toast_id_, id);
-  // TODO(crbug.com/358610787): close the persistent toast and have internal
-  // state reflect that.
-  CloseToast(toasts::ToastCloseReason::kAborted);
+  CHECK(persistent_params_.has_value());
+  CHECK_EQ(persistent_params_.value().toast_id_, id);
+  std::optional<ToastId> current_toast_id = GetCurrentToastId();
+  persistent_params_ = std::nullopt;
+
+  // Close the toast if we are currently showing a persistent toast.
+  if (current_toast_id.has_value() &&
+      toast_registry_->GetToastSpecification(current_toast_id.value())
+          ->is_persistent_toast()) {
+    CloseToast(toasts::ToastCloseReason::kFeatureDismiss);
+  }
 }
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
-  current_toast_params_ = std::nullopt;
+  current_ephemeral_params_ = std::nullopt;
+  currently_showing_toast_id_ = std::nullopt;
   toast_ = nullptr;
   toast_observer_.Reset();
   toast_close_timer_.Stop();
 
-  // TODO(crbug.com/358610190): Record toast closed reason.
+  if (next_ephemeral_params_.has_value()) {
+    ShowToast(std::move(next_ephemeral_params_.value()));
+    next_ephemeral_params_ = std::nullopt;
+  } else if (persistent_params_.has_value()) {
+    ShowToast(std::move(persistent_params_.value()));
+  }
+}
 
-  // The previous toast is destroyed so we should show the next toast.
-  if (next_toast_params_.has_value()) {
-    ShowToast(std::move(next_toast_params_.value()));
-    next_toast_params_ = std::nullopt;
+void ToastController::OnBrowserClosing(Browser* browser) {
+  // Clear any queued toasts to prevent them from showing
+  // after an existing toast is destroyed.
+  if (browser_window_interface_ == browser) {
+    next_ephemeral_params_ = std::nullopt;
+    persistent_params_ = std::nullopt;
+  }
+}
+
+base::OneShotTimer* ToastController::GetToastCloseTimerForTesting() {
+  return &toast_close_timer_;
+}
+
+void ToastController::QueueToast(ToastParams params) {
+  if (next_ephemeral_params_.has_value()) {
+    // TODO(crbug.com/358610190): Record that next_ephemeral_params_ was
+    // preempted.
+    next_ephemeral_params_ = std::nullopt;
+  } else if (persistent_params_.has_value()) {
+    // TODO(crbug.com/358610190): Record that persistent_params_ was
+    // preempted.
+  } else {
+    // Since we are queuing a toast, current_ephemeral_params must have a value
+    // if we do not already have another ephemeral toast queued up.
+    CHECK(current_ephemeral_params_.has_value());
+    // TODO(crbug.com/358610190): Record that current_ephemeral_params was
+    // preempted.
+  }
+
+  if (toast_registry_->GetToastSpecification(params.toast_id_)
+          ->is_persistent_toast()) {
+    CHECK(!persistent_params_.has_value());
+    persistent_params_ = std::move(params);
+  } else {
+    next_ephemeral_params_ = std::move(params);
   }
 }
 
 void ToastController::ShowToast(ToastParams params) {
-  current_toast_params_ = std::move(params);
-
   const ToastSpecification* current_toast_spec =
-      toast_registry_->GetToastSpecification(
-          current_toast_params_.value().toast_id_);
-
+      toast_registry_->GetToastSpecification(params.toast_id_);
   CHECK(current_toast_spec);
-  if (!current_toast_spec->is_persistent_toast()) {
+
+  currently_showing_toast_id_ = params.toast_id_;
+  if (current_toast_spec->is_persistent_toast()) {
+    persistent_params_ = std::move(params);
+  } else {
+    current_ephemeral_params_ = std::move(params);
     toast_close_timer_.Start(
         FROM_HERE, toast_features::kToastTimeout.Get(),
         base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
                        toasts::ToastCloseReason::kAutoDismissed));
   }
 
-  CreateToast(current_toast_spec);
+  CreateToast(current_toast_spec->is_persistent_toast()
+                  ? persistent_params_.value()
+                  : current_ephemeral_params_.value(),
+              current_toast_spec);
 }
 
 void ToastController::CloseToast(toasts::ToastCloseReason reason) {
-  if (!IsShowingToast()) {
-    return;
+  if (toast_) {
+    toast_->Close(reason);
   }
-
-  CHECK(toast_);
-  toast_->Close(reason);
 }
 
-void ToastController::CreateToast(const ToastSpecification* spec) {
-  if (!browser_window_interface_) {
-    CHECK_IS_TEST();
-    return;
-  }
-  CHECK(current_toast_params_.has_value());
-  std::unique_ptr<toasts::ToastView> toast =
-      std::make_unique<toasts::ToastView>(
-          browser_window_interface_->TopContainer(),
-          FormatString(spec->body_string_id(),
-                       current_toast_params_->body_string_replacement_params_),
-          spec->icon(), spec->has_close_button());
+void ToastController::CreateToast(const ToastParams& params,
+                                  const ToastSpecification* spec) {
+  auto toast_view = std::make_unique<toasts::ToastView>(
+      browser_window_interface_->TopContainer(),
+      FormatString(spec->body_string_id(),
+                   params.body_string_replacement_params_),
+      spec->icon(), spec->has_close_button());
+
   if (spec->action_button_string_id().has_value()) {
-    toast->AddActionButton(
-        FormatString(
-            spec->action_button_string_id().value(),
-            current_toast_params_->action_button_string_replacement_params_),
+    toast_view->AddActionButton(
+        FormatString(spec->action_button_string_id().value(),
+                     params.action_button_string_replacement_params_),
         spec->action_button_callback());
   }
-  toast_ = toast.get();
+  toast_ = toast_view.get();
   views::Widget* const toast_widget =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
+      views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
   toast_observer_.Observe(toast_widget);
   toast_widget->SetVisibilityChangedAnimationsEnabled(false);
   toast_widget->ShowInactive();

@@ -15,6 +15,7 @@ source_set("toasts") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/toasts/api:toasts",
     "//content/public/browser",

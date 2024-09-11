@@ -31,6 +31,23 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
         [&]() { GetToastController()->MaybeShowToast(std::move(params)); });
   }
 
+  auto FireToastCloseTimer() {
+    return Do([=]() {
+      GetToastController()->GetToastCloseTimerForTesting()->FireNow();
+    });
+  }
+
+  auto CheckShowingToastId(ToastId expected_id) {
+    return CheckResult(
+        [=]() {
+          ToastController* const toast_controller = GetToastController();
+          std::optional<ToastId> current_toast_id =
+              toast_controller->GetCurrentToastId();
+          return current_toast_id.value();
+        },
+        expected_id);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -59,4 +76,39 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptEphemeralToast) {
                     return GetToastController()->IsShowingToast();
                   }),
                   ShowToast(ToastParams(ToastId::kImageCopied)));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowPersistentToast) {
+  RunTestSequence(ShowToast(ToastParams(ToastId::kLensOverlay)),
+                  WaitForShow(toasts::ToastView::kToastViewId), Check([=]() {
+                    return GetToastController()->IsShowingToast();
+                  }));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PersistentToastHides) {
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLensOverlay)),
+      WaitForShow(toasts::ToastView::kToastViewId), Do([=]() {
+        GetToastController()->ClosePersistentToast(ToastId::kLensOverlay);
+      }),
+      WaitForHide(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptPersistentToast) {
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLensOverlay)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      Check([=]() { return GetToastController()->IsShowingToast(); }),
+      CheckShowingToastId(ToastId::kLensOverlay),
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      // Ephemeral Toast should force the persistent toast to close
+      WaitForHide(toasts::ToastView::kToastViewId),
+      // After the persistent toast closes, the ephemeral toast should show
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckShowingToastId(ToastId::kLinkCopied),
+      // Simulate the ephemeral toast timing out and auto dismiss
+      FireToastCloseTimer(), WaitForHide(toasts::ToastView::kToastViewId),
+      // Persistent toast should reshow
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckShowingToastId(ToastId::kLensOverlay));
 }

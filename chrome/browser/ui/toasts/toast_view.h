@@ -27,8 +27,8 @@ enum class ToastCloseReason {
   kCloseButton = 2,
   kPreempted = 3,
   kMenuItemClick = 4,
-  kAborted = 5,  // When the feature explicitly dismisses the toast.
-  kMaxValue = kAborted
+  kFeatureDismiss = 5,
+  kMaxValue = kFeatureDismiss
 };
 
 // The view for toasts.
