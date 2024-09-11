@@ -97,6 +97,37 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
       params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verify that page navigation is allowed in locked fullscreen mode when locked
+// for OnTask. Only applicable for non-web browser scenarios.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
+                       NavigationAllowedInLockedFullscreenWhenLockedForOnTask) {
+  // Set locked fullscreen state.
+  aura::Window* const window = browser()->window()->GetNativeWindow();
+  PinWindow(window, /*trusted=*/true);
+  browser()->SetLockedForOnTask(true);
+
+  // Navigate to a page.
+  const GURL kUrl(chrome::kChromeUIVersionURL);
+  NavigateParams params(MakeNavigateParams(browser()));
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.url = kUrl;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  Navigate(&params);
+
+  // The original browser should still be at the same page, but the newly
+  // opened browser should sit on the chrome:version page.
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      kUrl,
+      params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Subclass that tests navigation while in the Guest session.
 class BrowserGuestSessionNavigatorTest : public BrowserNavigatorTest {
  protected:

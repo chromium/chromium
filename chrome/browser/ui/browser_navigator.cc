@@ -608,10 +608,22 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  if (source_browser &&
-      platform_util::IsBrowserLockedFullscreen(source_browser)) {
-    // Block any navigation requests in locked fullscreen mode.
-    return nullptr;
+  // Block navigation requests when in locked fullscreen mode. We allow
+  // navigation requests in the webapp when locked for OnTask (only relevant for
+  // non-web browser scenarios).
+  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
+  // OnTask.
+  if (source_browser) {
+    bool should_block_navigation =
+        platform_util::IsBrowserLockedFullscreen(source_browser);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (source_browser->IsLockedForOnTask()) {
+      should_block_navigation = false;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    if (should_block_navigation) {
+      return nullptr;
+    }
   }
 
   // Open System Apps in their standalone window if necessary.
