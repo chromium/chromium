@@ -9277,7 +9277,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
   }
 }
 
-void RenderFrameHostImpl::ForwardFencedFrameEventToEmbedder(
+void RenderFrameHostImpl::ForwardFencedFrameEventAndUserActivationToEmbedder(
     const std::string& event_type) {
   if (!blink::features::IsFencedFramesEnabled()) {
     mojo::ReportBadMessage(
@@ -9305,10 +9305,29 @@ void RenderFrameHostImpl::ForwardFencedFrameEventToEmbedder(
     return;
   }
 
+  // The `window.fence.notifyEvent()` API allows a fenced frame to "transfer"
+  // transient activation to its embedder. To transfer, the fenced frame
+  // consumes transient activation on itself, and then applies transient
+  // activation to its outer document afterwards. This ensures that the
+  // embedder can use an activation-gated API in response to an event occurring
+  // in the fenced frame, but that only one of those APIs can be used per event.
+  // First, consume transient activation in the fenced frame document (this
+  // RenderFrameHostImpl).
   CHECK(owner_);
   owner_->UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
       blink::mojom::UserActivationNotificationType::kNone);
+
+  // Then, apply transient activation to the outer document.
+  RenderFrameHostImpl* outer_document = GetParentOrOuterDocument();
+  outer_document->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kInteraction);
+
+  // But the above won't apply activation to the outer document's *renderer*,
+  // so let's do that too.
+  outer_document->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
 
   GetProxyToOuterDelegate()
       ->GetAssociatedRemoteFrame()

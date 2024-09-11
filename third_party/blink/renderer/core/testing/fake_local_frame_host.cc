@@ -296,7 +296,7 @@ void FakeLocalFrameHost::CreateFencedFrame(
                                "unit tests, so this path should not be hit";
 }
 
-void FakeLocalFrameHost::ForwardFencedFrameEventToEmbedder(
+void FakeLocalFrameHost::ForwardFencedFrameEventAndUserActivationToEmbedder(
     const WTF::String& event_type) {
   NOTREACHED_IN_MIGRATION()
       << "ForwardFencedFrameEventToEmbedder is tested above the unit "

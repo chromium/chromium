@@ -447,8 +447,9 @@ void Fence::notifyEvent(const Event* triggering_event,
     return;
   }
 
-  frame->GetLocalFrameHostRemote().ForwardFencedFrameEventToEmbedder(
-      triggering_event->type());
+  frame->GetLocalFrameHostRemote()
+      .ForwardFencedFrameEventAndUserActivationToEmbedder(
+          triggering_event->type());
 
   // The browser process checks and consumes user activation as part of the
   // above IPC, so this just needs to update the renderer's state.
