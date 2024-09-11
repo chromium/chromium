@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 
+#include "ash/shell.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
@@ -199,6 +200,30 @@ TEST_F(TargetViewTest, TestGestureSupport) {
   // Check if the action is dropped on the expected position.
   VerifyLastActionPosition(action_view_size + 2,
                            GetPointInScreenFromTargetView(local_center));
+}
+
+TEST_F(TargetViewTest, TestMultiDisplay) {
+  UpdateDisplay("1000x900,1000x900");
+  aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
+  display::Display display1 = display::Screen::GetScreen()->GetDisplayMatching(
+      root_windows[1]->GetBoundsInScreen());
+
+  // Move the window from the primary display to `display1`.
+  auto* arc_window = widget_->GetNativeWindow();
+  ASSERT_TRUE(arc_window);
+  auto screen_bounds = arc_window->bounds();
+  const auto& display_bounds = display1.bounds();
+  screen_bounds.Offset(display_bounds.x(), display_bounds.y());
+  arc_window->SetBoundsInScreen(screen_bounds, display1);
+  // Update `controller_` since it is updated from switching display.
+  controller_ = GetDisplayOverlayController();
+
+  // Show `target_view` and it should show inside of the window bounds.
+  EnableEditMode();
+  PressAddButton();
+  auto* target_view = GetTargetView();
+  EXPECT_TRUE(target_view);
+  EXPECT_TRUE(screen_bounds.Contains(target_view->GetBoundsInScreen()));
 }
 
 }  // namespace arc::input_overlay
