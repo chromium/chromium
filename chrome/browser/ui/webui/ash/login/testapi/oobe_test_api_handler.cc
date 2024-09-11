@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
+#include "chrome/browser/ash/login/screens/split_modifier_keyboard_info_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -99,6 +100,9 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 
   dict->Set("testapi_shouldSkipGeminiIntro",
             GeminiIntroScreen::ShouldBeSkipped());
+
+  dict->Set("testapi_shouldSkipSplitModifierKeyboardInfo",
+            SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 
   dict->Set("testapi_shouldSkipAssistant",
             features::IsOobeSkipAssistantEnabled() ||
