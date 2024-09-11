@@ -11,7 +11,6 @@ import argparse
 import datetime
 import logging
 import os
-import re
 import sys
 
 from py_utils import cloud_storage
@@ -182,13 +181,9 @@ def ProcessOptions(options):
   if options.intermediate_dir:
     options.intermediate_dir = resolve_dir(options.intermediate_dir)
   else:
-    if options.results_label:
-      filesafe_label = re.sub(r'\W+', '_', options.results_label)
-    else:
-      filesafe_label = 'run'
     start_time = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
     options.intermediate_dir = os.path.join(
-        options.output_dir, 'artifacts', '%s_%s' % (filesafe_label, start_time))
+        options.output_dir, 'artifacts', 'run_%s' % start_time)
 
   if options.upload_results:
     options.upload_bucket = cloud_storage.BUCKET_ALIASES.get(
