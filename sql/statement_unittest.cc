@@ -320,12 +320,23 @@ TEST_F(StatementTest, BindString) {
     insert.Reset(/*clear_bound_vars=*/true);
   }
 
-  Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
-  for (const std::string& value : values) {
-    ASSERT_TRUE(select.Step());
-    EXPECT_EQ(value, select.ColumnString(0));
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnString(0));
+    }
+    EXPECT_FALSE(select.Step());
   }
-  EXPECT_FALSE(select.Step());
+
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnStringView(0));
+    }
+    EXPECT_FALSE(select.Step());
+  }
 }
 
 TEST_F(StatementTest, BindString_NullData) {

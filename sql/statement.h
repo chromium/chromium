@@ -203,6 +203,19 @@ class COMPONENT_EXPORT(SQL) Statement {
   // `ColumnBlobAsString16()`.
   std::u16string ColumnString16(int column_index);
 
+  // Returns a string view pointing to a buffer containing the string data.
+  //
+  // This can be used to avoid allocating a temporary string when the value is
+  // immediately passed to a function accepting a string view. Otherwise, the
+  // string view's contents should be copied to a caller-owned buffer
+  // immediately. Any method call on the `Statement` may invalidate the string
+  // view.
+  //
+  // The string view will be empty (and may have a null data) if the underlying
+  // string is empty. Code that needs to distinguish between empty strings and
+  // NULL should call `GetColumnType()` before calling `ColumnStringView()`.
+  std::string_view ColumnStringView(int column_index);
+
   // Conforms with base::Time serialization recommendations.
   //
   // This is equivalent to the following snippets, which should be replaced.
