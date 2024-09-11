@@ -130,7 +130,7 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
     return;
   }
   if (_showSpinnerTimer.IsRunning()) {
-    _showSpinnerTimer.Reset();
+    _showSpinnerTimer.Stop();
   }
   _spinnerView.hidden = YES;
 
