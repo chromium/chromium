@@ -1021,6 +1021,7 @@ display::DisplayConfig GtkUi::GetDisplayConfig() const {
   }
   config.primary_scale =
       std::max(1, gdk_monitor_get_scale_factor(primary)) * font_scale;
+  config.font_scale = font_scale;
   config.display_geometries.reserve(monitors.size());
   for (GdkMonitor* monitor : monitors) {
     GdkRectangle geometry;
