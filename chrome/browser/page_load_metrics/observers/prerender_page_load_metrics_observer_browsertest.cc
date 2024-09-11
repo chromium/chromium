@@ -193,9 +193,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
 
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderNavigationToActivation,
@@ -328,12 +325,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // The visibility at activation should be visible as the page gets hidden
-  // after prerender activation starts.
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
-
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
   EXPECT_EQ(2u, entries.size());
 
@@ -399,9 +390,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       /*navigation_handle_callback=*/{});
   waiter->Wait();
 
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderNavigationToActivation,
@@ -496,10 +484,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  histogram_tester().ExpectTotalCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      0);
-
   // As the prerender was cancelled, no prerendering metrics are recorded.
   EXPECT_EQ(0u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Prerender.")
@@ -531,9 +515,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
 
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
   CheckFirstPaintMetrics();
   CheckFirstContentfulPaintMetrics();
 
@@ -616,10 +597,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   primary_page_manager.WaitForNavigationFinished();
   prerender_observer.WaitForActivation();
   waiter->Wait();
-
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
 
   // Force navigation to another page, which should force logging of metrics
   // persisted at the end of the page load lifetime.
@@ -722,19 +699,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                                  TimingField::kFirstContentfulPaint);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
-
-  // "PageLoad.Internal.Prerender2.VisibilityAtActivation" is recorded only once
-  // when the activation is finished. It's not recorded for the initial
-  // prerendering navigation.
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kVisible, 1);
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kOccluded, 0);
-  histogram_tester().ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadPrerender2VisibilityAtActivation,
-      page_load_metrics::internal::VisibilityAtActivation::kHidden, 0);
 
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(

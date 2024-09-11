@@ -293,12 +293,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Prerender Activation Navigation"/>
 </enum>
 
-<enum name="PageLoadPrerenderVisibilityAtActivation">
-  <int value="0" label="Hidden"/>
-  <int value="1" label="Occluded"/>
-  <int value="2" label="Visible"/>
-</enum>
-
 <!-- LINT.IfChange(PageLoadTimingStatus) -->
 
 <enum name="PageLoadTimingStatus">
