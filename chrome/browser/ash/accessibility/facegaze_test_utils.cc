@@ -152,6 +152,7 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
   cursor_location_ = gfx::Point(600, 400);
   buffer_size_ = 1;
   use_cursor_acceleration_ = false;
+  use_landmark_weights_ = false;
   use_velocity_threshold_ = false;
   dialog_accepted_ = true;
 
@@ -208,6 +209,12 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorSpeeds(
 FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureRepeatDelayMs(
     int delay) {
   gesture_repeat_delay_ms_ = delay;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithLandmarkWeights(
+    bool use_weights) {
+  use_landmark_weights_ = use_weights;
   return *this;
 }
 
@@ -416,6 +423,7 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   // Set required configuration properties.
   SetBufferSize(config.buffer_size());
   SetCursorAcceleration(config.use_cursor_acceleration());
+  SetLandmarkWeights(config.use_landmark_weights());
   SetVelocityThreshold(config.use_velocity_threshold());
 
   // By default the cursor is placed at the center of the screen. To
@@ -459,6 +467,12 @@ void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
   GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
                          use_acceleration);
   GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::SetLandmarkWeights(bool use_weights) {
+  std::string true_script = "faceGazeTestSupport.setLandmarkWeights(true);";
+  std::string false_script = "faceGazeTestSupport.setLandmarkWeights(false);";
+  ExecuteAccessibilityCommonScript(use_weights ? true_script : false_script);
 }
 
 void FaceGazeTestUtils::SetVelocityThreshold(bool use_threshold) {

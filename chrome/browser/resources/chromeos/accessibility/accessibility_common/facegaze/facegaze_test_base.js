@@ -19,6 +19,8 @@ class Config {
     /** @type {boolean} */
     this.useMouseAcceleration = false;
     /** @type {boolean} */
+    this.useLandmarkWeights = false;
+    /** @type {boolean} */
     this.useVelocityThreshold = false;
     /** @type {?Map<string, number>} */
     this.speeds = null;
@@ -69,6 +71,12 @@ class Config {
   /** @return {!Config} */
   withMouseAcceleration() {
     this.useMouseAcceleration = true;
+    return this;
+  }
+
+  /** @return {!Config} */
+  withLandmarkWeights() {
+    this.useLandmarkWeights = true;
     return this;
   }
 
@@ -308,6 +316,9 @@ FaceGazeTestBase = class extends E2ETestBase {
     if (config.repeatDelayMs > 0) {
       faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
     }
+
+    faceGaze.mouseController_.setLandmarkWeightsForTesting(
+        config.useLandmarkWeights);
 
     faceGaze.mouseController_.setVelocityThresholdForTesting(
         config.useVelocityThreshold);

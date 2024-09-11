@@ -27,6 +27,15 @@ interface FloatingPoint2D {
   y: number;
 }
 
+enum LandmarkType {
+  FOREHEAD = 'forehead',
+  FOREHEAD_TOP = 'foreheadTop',
+  LEFT_TEMPLE = 'leftTemple',
+  NOSE_TIP = 'noseTip',
+  RIGHT_TEMPLE = 'rightTemple',
+  ROTATION = 'rotation',
+}
+
 /** Handles all interaction with the mouse. */
 export class MouseController {
   /** Last seen mouse location (cached from event in onMouseMovedOrDragged_). */
@@ -90,10 +99,14 @@ export class MouseController {
 
     this.calcSmoothKernel_();
     this.calcVelocityThreshold_();
+
     this.landmarkWeights_ = new Map();
-    // TODO(b:309121742): This should be a fixed list of weights depending on
-    // what works best from experimentation.
-    this.landmarkWeights_.set('forehead', 1);
+    this.landmarkWeights_.set(LandmarkType.FOREHEAD, 0.1275);
+    this.landmarkWeights_.set(LandmarkType.FOREHEAD_TOP, 0.0738);
+    this.landmarkWeights_.set(LandmarkType.NOSE_TIP, 0.3355);
+    this.landmarkWeights_.set(LandmarkType.LEFT_TEMPLE, 0.0336);
+    this.landmarkWeights_.set(LandmarkType.RIGHT_TEMPLE, 0.0336);
+    this.landmarkWeights_.set(LandmarkType.ROTATION, 0.3960);
 
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init();
@@ -679,6 +692,15 @@ export class MouseController {
                             velocity + this.velocityThreshold_;
   }
 
+  setLandmarkWeightsForTesting(useWeights: boolean): void {
+    if (!useWeights) {
+      // If we don't want to use landmark weights, we should default to the
+      // forehead location.
+      this.landmarkWeights_ = new Map();
+      this.landmarkWeights_.set('forehead', 1);
+    }
+  }
+
   setVelocityThresholdForTesting(useThreshold: boolean): void {
     this.useVelocityThreshold_ = useThreshold;
   }
@@ -691,14 +713,14 @@ export namespace MouseController {
    * https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png.
    */
   export const LANDMARK_INDICES = [
-    {name: 'forehead', index: 8},
-    {name: 'foreheadTop', index: 10},
-    {name: 'noseTip', index: 4},
-    {name: 'rightTemple', index: 127},
-    {name: 'leftTemple', index: 356},
+    {name: LandmarkType.FOREHEAD, index: 8},
+    {name: LandmarkType.FOREHEAD_TOP, index: 10},
+    {name: LandmarkType.NOSE_TIP, index: 4},
+    {name: LandmarkType.RIGHT_TEMPLE, index: 127},
+    {name: LandmarkType.LEFT_TEMPLE, index: 356},
     // Rotation does not have a landmark index, but is included in this list
     // because it can be used as a landmark.
-    {name: 'rotation', index: -1},
+    {name: LandmarkType.ROTATION, index: -1},
   ];
 
   /** How frequently to run the mouse movement logic. */

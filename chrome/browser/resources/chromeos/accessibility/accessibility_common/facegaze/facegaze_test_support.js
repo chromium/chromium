@@ -66,6 +66,12 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
+  /** @param {boolean} useWeights */
+  setLandmarkWeights(useWeights) {
+    this.getMouseController_().setLandmarkWeightsForTesting(useWeights);
+    this.notifyCcTests_();
+  }
+
   /** @param {boolean} useThreshold */
   setVelocityThreshold(useThreshold) {
     this.getMouseController_().setVelocityThresholdForTesting(useThreshold);

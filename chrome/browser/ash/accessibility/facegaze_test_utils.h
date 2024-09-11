@@ -165,12 +165,14 @@ class FaceGazeTestUtils {
         const base::flat_map<FaceGazeGesture, int>& gesture_confidences);
     Config& WithCursorSpeeds(const CursorSpeeds& speeds);
     Config& WithGestureRepeatDelayMs(int delay);
+    Config& WithLandmarkWeights(bool use_weights);
     Config& WithVelocityThreshold(bool use_threshold);
 
     const gfx::PointF& forehead_location() const { return forehead_location_; }
     const gfx::Point& cursor_location() const { return cursor_location_; }
     int buffer_size() const { return buffer_size_; }
     bool use_cursor_acceleration() const { return use_cursor_acceleration_; }
+    bool use_landmark_weights() const { return use_landmark_weights_; }
     bool use_velocity_threshold() const { return use_velocity_threshold_; }
     bool dialog_accepted() const { return dialog_accepted_; }
     const std::optional<base::flat_map<FaceGazeGesture, MacroName>>&
@@ -194,6 +196,7 @@ class FaceGazeTestUtils {
     gfx::Point cursor_location_;
     int buffer_size_;
     bool use_cursor_acceleration_;
+    bool use_landmark_weights_;
     bool use_velocity_threshold_;
     bool dialog_accepted_;
 
@@ -275,6 +278,7 @@ class FaceGazeTestUtils {
   void SetCursorSpeeds(const CursorSpeeds& speeds);
   void SetBufferSize(int size);
   void SetCursorAcceleration(bool use_acceleration);
+  void SetLandmarkWeights(bool use_weights);
   void SetVelocityThreshold(bool use_threshold);
   void SetGesturesToMacros(
       const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros);
