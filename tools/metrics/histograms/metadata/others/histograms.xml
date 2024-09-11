@@ -5029,7 +5029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstUserAction.BackgroundTime" units="minutes"
-    expires_after="2024-09-12">
+    expires_after="2025-09-12">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
 
   <owner>justincohen@chromium.org</owner>
@@ -5046,7 +5046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstUserAction.HandsetUserActionType"
-    enum="FirstUserActionType" expires_after="2024-09-12">
+    enum="FirstUserActionType" expires_after="2025-09-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5061,7 +5061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstUserAction.TabletUserActionType"
-    enum="FirstUserActionType" expires_after="2024-09-12">
+    enum="FirstUserActionType" expires_after="2025-09-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
