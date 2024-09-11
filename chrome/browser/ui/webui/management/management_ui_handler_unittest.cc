@@ -307,7 +307,7 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
   }
   void CreateSecureDnsManagerForTesting(PrefService* local_state) {
     secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-        local_state, /*is_profile_managed=*/true);
+        local_state, /*profile_prefs=*/nullptr, /*is_profile_managed=*/true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1495,8 +1495,8 @@ TEST_F(ManagementUIHandlerTests, ReportLegacyTechReport) {
 TEST_F(ManagementUIHandlerTests,
        ShowPrivacyDisclosureForSecureDnsWithIdentifiers) {
   ResetTestConfig();
-  local_state_.Set(prefs::kDnsOverHttpsMode,
-                   base::Value(SecureDnsConfig::kModeSecure));
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsMode,
+                              base::Value(SecureDnsConfig::kModeSecure));
   local_state_.Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
   local_state_.Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                    base::Value("www.test-dns.com"));

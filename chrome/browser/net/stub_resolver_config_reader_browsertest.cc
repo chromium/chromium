@@ -139,10 +139,19 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   std::string multiple_good_templates =
       "  " + good_get_template + "   " + good_post_template + "  ";
 
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName, bad_template);
+  PrefService* pref_service_for_user_settings =
+      g_browser_process->local_state();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS, the local_state is shared between all users so the user-set
+  // pref is stored in the profile's pref service.
+  pref_service_for_user_settings = browser()->profile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
+                                            SecureDnsConfig::kModeSecure);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            bad_template);
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -150,7 +159,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName, good_post_template);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            good_post_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -159,9 +169,10 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_post_template),
             secure_dns_config.doh_servers());
 
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeAutomatic);
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName, bad_template);
+  pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
+                                            SecureDnsConfig::kModeAutomatic);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            bad_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -169,8 +180,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName,
-                         good_then_bad_template);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            good_then_bad_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -179,8 +190,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_get_template),
             secure_dns_config.doh_servers());
 
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName,
-                         bad_then_good_template);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            bad_then_good_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -189,8 +200,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_get_template),
             secure_dns_config.doh_servers());
 
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName,
-                         multiple_good_templates);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            multiple_good_templates);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -199,8 +210,10 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(multiple_good_templates),
             secure_dns_config.doh_servers());
 
-  local_state->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
-  local_state->SetString(kDnsOverHttpsTemplatesPrefName, good_get_template);
+  pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
+                                            SecureDnsConfig::kModeOff);
+  pref_service_for_user_settings->SetString(kDnsOverHttpsTemplatesPrefName,
+                                            good_get_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -208,7 +221,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
-  local_state->SetString(prefs::kDnsOverHttpsMode, "no_match");
+  pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
+                                            "no_match");
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled,
@@ -218,8 +232,10 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
 
   // Test case with policy BuiltInDnsClientEnabled enabled. The DoH fields
   // should be unaffected.
-  local_state->Set(prefs::kBuiltInDnsClientEnabled,
-                   base::Value(!async_dns_feature_enabled));
+  // The `prefs::kBuiltInDnsClientEnabled` pref is stored on local_state on all
+  // platforms (including Chrome OS).
+  g_browser_process->local_state()->Set(
+      prefs::kBuiltInDnsClientEnabled, base::Value(!async_dns_feature_enabled));
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(!async_dns_feature_enabled,
@@ -381,35 +397,6 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kTemplateIdentifiers[] =
-    "https://dns.google.alternativeuri/"
-    "${USER_EMAIL}";
-constexpr char kEffectiveTemplateIdentifiers[] =
-    "https://dns.google.alternativeuri/"
-    "8E71AF9783B71B6996DAE103B28BC55882BD5CB93B29260D000D8121D9D10977";
-IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
-                       DohWithIdentifiers) {
-  PrefService* local_state = g_browser_process->local_state();
-
-  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager =
-      std::make_unique<ash::SecureDnsManager>(local_state,
-                                              /*is_profile_managed=*/true);
-
-  local_state->SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeSecure);
-  local_state->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                         kTemplateIdentifiers);
-  local_state->SetString(prefs::kDnsOverHttpsSalt, "test-salt");
-
-  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
-      false /* force_check_parental_controls_for_automatic_mode */);
-
-  EXPECT_EQ(secure_dns_config.doh_servers().ToString(),
-            kEffectiveTemplateIdentifiers);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StubResolverConfigReaderBrowsertest,

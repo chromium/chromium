@@ -244,7 +244,7 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
   }
 
   secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-      g_browser_process->local_state(),
+      g_browser_process->local_state(), primary_profile->GetPrefs(),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 }
 
