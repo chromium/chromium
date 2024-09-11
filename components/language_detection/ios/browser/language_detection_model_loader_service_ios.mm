@@ -49,14 +49,10 @@ LanguageDetectionModelLoaderServiceIOS::LanguageDetectionModelLoaderServiceIOS(
       language_detection_model_(
           base::MakeRefCounted<LanguageDetectionModelContainer>()) {
   if (language_detection_model_service_) {
-    if (!language_detection_model_->IsAvailable()) {
-      language_detection_model_service_->NotifyOnModelFileAvailable(
-          base::BindOnce(&LanguageDetectionModelLoaderServiceIOS::
-                             OnLanguageModelFileAvailabilityChanged,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      OnLanguageModelFileAvailabilityChanged(true);
-    }
+    language_detection_model_service_->GetLanguageDetectionModelFile(
+        base::BindOnce(&LanguageDetectionModelLoaderServiceIOS::
+                           OnLanguageDetectionModelFileReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -73,16 +69,9 @@ bool LanguageDetectionModelLoaderServiceIOS::IsModelAvailable() {
 }
 
 void LanguageDetectionModelLoaderServiceIOS::
-    OnLanguageModelFileAvailabilityChanged(bool available) {
-  if (available) {
-    DCHECK(language_detection_model_service_);
-    base::File model_file =
-        language_detection_model_service_->GetLanguageDetectionModelFile();
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SetLanguageDetectionModelModelFile,
-                       language_detection_model_, std::move(model_file)));
-  }
+    OnLanguageDetectionModelFileReceived(base::File model_file) {
+  SetLanguageDetectionModelModelFile(language_detection_model_,
+                                     std::move(model_file));
 }
 
 }  // namespace language_detection

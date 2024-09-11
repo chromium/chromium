@@ -34,6 +34,20 @@ void CloseModelFile(base::File model_file) {
   model_file.Close();
 }
 
+void PostGetModelCallback(
+    language_detection::LanguageDetectionModelService::GetModelCallback
+        callback,
+    base::File file) {
+  // Posts to the same task runner as PostTaskAndReply.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](language_detection::LanguageDetectionModelService::GetModelCallback
+                 callback,
+             base::File file) { std::move(callback).Run(std::move(file)); },
+          std::move(callback), std::move(file)));
+}
+
 // Util class for recording the result of loading the detection model. The
 // result is recorded when it goes out of scope and its destructor is called.
 class ScopedModelLoadingResultRecorder {
@@ -49,10 +63,6 @@ class ScopedModelLoadingResultRecorder {
  private:
   bool was_loaded_ = false;
 };
-
-// The maximum number of pending model requests allowed to be kept
-// by the LanguageDetectionModelService.
-constexpr int kMaxPendingRequestsAllowed = 100;
 
 }  // namespace
 
@@ -72,7 +82,7 @@ LanguageDetectionModelService::~LanguageDetectionModelService() {
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, this);
   // Clear any pending requests, no model file is acceptable as shutdown is
   // happening.
-  NotifyModelUpdatesAndClear(false);
+  NotifyModelUpdatesAndClear();
 }
 
 void LanguageDetectionModelService::Shutdown() {
@@ -82,7 +92,7 @@ void LanguageDetectionModelService::Shutdown() {
   UnloadModelFile();
   // Clear any pending requests, no model file is acceptable as shutdown is
   // happening.
-  NotifyModelUpdatesAndClear(false);
+  NotifyModelUpdatesAndClear();
 }
 
 void LanguageDetectionModelService::UnloadModelFile() {
@@ -92,13 +102,17 @@ void LanguageDetectionModelService::UnloadModelFile() {
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&CloseModelFile,
                                   std::move(*language_detection_model_file_)));
+  } else {
+    language_detection_model_file_ = base::File();
   }
 }
 
-void LanguageDetectionModelService::NotifyModelUpdatesAndClear(
-    bool is_model_available) {
+void LanguageDetectionModelService::NotifyModelUpdatesAndClear() {
+  // We should always have a (possibly invalid) file by now.
+  CHECK(language_detection_model_file_);
   for (auto& pending_request : pending_model_requests_) {
-    std::move(pending_request).Run(is_model_available);
+    PostGetModelCallback(std::move(pending_request),
+                         language_detection_model_file_->Duplicate());
   }
   pending_model_requests_.clear();
 }
@@ -113,7 +127,7 @@ void LanguageDetectionModelService::OnModelUpdated(
   }
   if (!model_info.has_value()) {
     UnloadModelFile();
-    NotifyModelUpdatesAndClear(false);
+    NotifyModelUpdatesAndClear();
     return;
   }
   background_task_runner_->PostTaskAndReplyWithResult(
@@ -132,26 +146,20 @@ void LanguageDetectionModelService::OnModelFileLoaded(base::File model_file) {
   UnloadModelFile();
   language_detection_model_file_ = std::move(model_file);
   result_recorder.set_was_loaded();
-  NotifyModelUpdatesAndClear(true);
+  NotifyModelUpdatesAndClear();
 }
 
-base::File LanguageDetectionModelService::GetLanguageDetectionModelFile() {
-  DCHECK(IsModelAvailable());
-  if (!language_detection_model_file_) {
-    return base::File();
-  }
-  // The model must be valid at this point.
-  DCHECK(language_detection_model_file_->IsValid());
-  return language_detection_model_file_->Duplicate();
-}
-
-void LanguageDetectionModelService::NotifyOnModelFileAvailable(
-    NotifyModelAvailableCallback callback) {
-  DCHECK(!IsModelAvailable());
-  if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
+void LanguageDetectionModelService::GetLanguageDetectionModelFile(
+    GetModelCallback callback) {
+  if (language_detection_model_file_.has_value()) {
+    PostGetModelCallback(std::move(callback),
+                         language_detection_model_file_->Duplicate());
+    return;
+  } else if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
     pending_model_requests_.emplace_back(std::move(callback));
     return;
   }
-  std::move(callback).Run(false);
+
+  PostGetModelCallback(std::move(callback), base::File());
 }
 }  // namespace language_detection

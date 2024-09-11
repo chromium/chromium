@@ -25,6 +25,10 @@ class OptimizationGuideModelProvider;
 
 namespace language_detection {
 
+// The maximum number of pending model requests allowed to be kept
+// by the LanguageDetectionModelService.
+inline constexpr int kMaxPendingRequestsAllowed = 100;
+
 // Service that manages models required to support language detection in the
 // browser. Currently, the service should only be used in the browser as it
 // relies on the Optimization Guide.
@@ -35,7 +39,6 @@ class LanguageDetectionModelService
       public optimization_guide::OptimizationTargetModelObserver {
  public:
   using GetModelCallback = base::OnceCallback<void(base::File)>;
-  using NotifyModelAvailableCallback = base::OnceCallback<void(bool)>;
 
   LanguageDetectionModelService(
       optimization_guide::OptimizationGuideModelProvider* opt_guide,
@@ -51,29 +54,19 @@ class LanguageDetectionModelService
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  // Returns the language detection model file, should only be called when the
-  // is model file is already available. See the |NotifyOnModelFileAvailable|
-  // for an asynchronous notification of the model being available.
-  base::File GetLanguageDetectionModelFile();
-
-  // Returns whether the language detection model is loaded and available to be
-  // requested.
-  bool IsModelAvailable() { return language_detection_model_file_.has_value(); }
-
-  // If the model file is not available, requestors can ask to be notified, via
-  // |callback|. This enables a two-step approach to relabily get the model file
-  // when it becomes available if the requestor needs the file right when it
-  // becomes available (e.g., the translate driver). This is to ensure that if
-  // the callback becomes empty, only the notification gets dropped, rather than
-  // the model file which has to be closed on a background thread.
-  void NotifyOnModelFileAvailable(NotifyModelAvailableCallback callback);
+  // Provides the language detection model file. It will asynchronously call
+  // `callback` with the file when availability is known. The callback is always
+  // asynchronous, even if the model is already available. If the model is
+  // definiteively unavailable or if too many calls to this are
+  // pending, the provided file will be the invalid `base::File()`.
+  void GetLanguageDetectionModelFile(GetModelCallback callback);
 
  private:
   // Unloads the model in background task.
   void UnloadModelFile();
 
   // Notifies the model update to observers, and clears the observer list.
-  void NotifyModelUpdatesAndClear(bool is_model_available);
+  void NotifyModelUpdatesAndClear();
 
   void OnModelFileLoaded(base::File model_file);
 
@@ -90,7 +83,7 @@ class LanguageDetectionModelService
   // The set of callbacks associated with requests for the language detection
   // model. The callback notifies requesters than the model file is now
   // available and can be safely requested.
-  std::vector<NotifyModelAvailableCallback> pending_model_requests_;
+  std::vector<GetModelCallback> pending_model_requests_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

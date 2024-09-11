@@ -43,7 +43,7 @@ class LanguageDetectionModelLoaderServiceIOS : public KeyedService {
  private:
   // Notifies |this| that the translate model service is available for model
   // requests or is invalidating existing requests specified by |is_available|.
-  void OnLanguageModelFileAvailabilityChanged(bool available);
+  void OnLanguageDetectionModelFileReceived(base::File model_file);
   // The TranslageModelService that will handle the downloading and provide
   // the file containing the model.
   raw_ptr<language_detection::LanguageDetectionModelService>

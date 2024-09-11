@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -149,6 +152,62 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 0);
 }
 
+// Makes requesting and waiting for the model file easy. This can only be used
+// once.
+class ModelFileGetter {
+ public:
+  explicit ModelFileGetter(
+      LanguageDetectionModelService& language_detection_model_service)
+      : language_detection_model_service_(language_detection_model_service) {}
+
+  // Queues a request to get the model file. Do not call this again.
+  void RequestModelFile() {
+    CHECK_EQ(state_, State::kUnused);
+    language_detection_model_service_->GetLanguageDetectionModelFile(
+        base::BindOnce(
+            [](ModelFileGetter* getter, base::File model_file) {
+              getter->waiter_.OnEvent();
+              getter->model_file_ = std::move(model_file);
+            },
+            base::Unretained(this)));
+    state_ = State::kWaiting;
+  }
+
+  // Waits for the file and returns it if the request is satisfied. Returns
+  // `nullopt` if the waiting is interrupted before the request is satisfied.
+  // `RequestModelFile` must be called first.
+  [[nodiscard]] std::optional<base::File> WaitForModelFile() {
+    CHECK_EQ(state_, State::kWaiting);
+    if (waiter_.Wait()) {
+      state_ = State::kUsed;
+      return std::move(model_file_);
+    } else {
+      // This should really only happen if the test times out.
+      return std::nullopt;
+    }
+  }
+
+  // Wraps requesting and waiting.
+  [[nodiscard]] std::optional<base::File> RequestAndWaitForModelFile() {
+    RequestModelFile();
+    return WaitForModelFile();
+  }
+
+  // Returns whether a file has been received.
+  bool HasFileBeenReceived() { return model_file_.has_value(); }
+
+ private:
+  raw_ref<LanguageDetectionModelService> language_detection_model_service_;
+  content::WaiterHelper waiter_;
+  enum class State {
+    kUnused = 0,
+    kWaiting = 1,
+    kUsed = 2,
+  };
+  State state_ = State::kUnused;
+  std::optional<base::File> model_file_;
+};
+
 class LanguageDetectionModelServiceBrowserTest
     : public LanguageDetectionModelServiceDisabledBrowserTest {
  public:
@@ -171,6 +230,13 @@ class LanguageDetectionModelServiceBrowserTest
     ASSERT_TRUE(origin_server_->Start());
     english_url_ = origin_server_->GetURL("/hello_world.html");
     InProcessBrowserTest::SetUp();
+  }
+
+  // Waits for the model file to be resolved. `nullopt` will be returned if the
+  // waiting is interrupted, e.g. by test timeout.
+  [[nodiscard]] std::optional<base::File> RequestAndWaitForModelFile() {
+    ModelFileGetter getter(*language_detection_model_service());
+    return getter.RequestAndWaitForModelFile();
   }
 
   ~LanguageDetectionModelServiceBrowserTest() override = default;
@@ -247,9 +313,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
-  base::File model_file =
-      language_detection_model_service()->GetLanguageDetectionModelFile();
-  EXPECT_TRUE(model_file.IsValid());
+  ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
@@ -257,18 +321,10 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
-  EXPECT_FALSE(language_detection_model_service()->IsModelAvailable());
 
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  language_detection_model_service()->NotifyOnModelFileAvailable(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         LanguageDetectionModelService* language_detection_model_service,
-         bool is_available) {
-        EXPECT_TRUE(language_detection_model_service->IsModelAvailable());
-        EXPECT_TRUE(is_available);
-        run_loop->Quit();
-      },
-      run_loop.get(), language_detection_model_service()));
+  ModelFileGetter getter(*language_detection_model_service());
+  getter.RequestModelFile();
+  ASSERT_FALSE(getter.HasFileBeenReceived());
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
@@ -282,11 +338,10 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
   histogram_tester.ExpectUniqueSample(
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
-  run_loop->Run();
 
-  base::File model_file =
-      language_detection_model_service()->GetLanguageDetectionModelFile();
-  EXPECT_TRUE(model_file.IsValid());
+  auto model_file = getter.WaitForModelFile();
+  ASSERT_TRUE(model_file.has_value());
+  EXPECT_TRUE(model_file->IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
@@ -428,9 +483,112 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 2);
 
-  base::File model_file =
-      language_detection_model_service()->GetLanguageDetectionModelFile();
-  EXPECT_TRUE(model_file.IsValid());
+  ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
+}
+
+// Test that the service correctly handles being notified that there is no
+// longer a valid model available and also that it then handles a valid model
+// becoming available.
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
+                       ModelUpdateFromOptimizationGuideMissingModelInfo) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(language_detection_model_service());
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+
+  ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
+
+  // Tell the service that there is no longer a model available.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+
+  ASSERT_FALSE(RequestAndWaitForModelFile()->IsValid());
+
+  // Tell the service that a model is available again.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 2);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 2);
+
+  ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
+}
+
+// Tests that we immediately reject requests if we exceed the allowed number of
+// pending requests.
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
+                       LimitPendingRequests) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(language_detection_model_service());
+
+  ASSERT_GE(kMaxPendingRequestsAllowed, 1);
+
+  // The intention is to queue `kMaxPendingRequestsAllowed` pending requests and
+  // then one more that should fail immediately. However sometimes a request is
+  // already queued due to the renderer process, so we queue 1-less than max,
+  // expecting them all to remain pending and then be successfully fulfilled and
+  // then one more which may or may not remain pending.
+  // TODO(https://crbug.com/364504537): Make this a unittest to avoid this race
+  // condition.
+  std::vector<std::unique_ptr<ModelFileGetter>> getters;
+  for (int i = 0; i < kMaxPendingRequestsAllowed - 1; i++) {
+    getters.emplace_back(
+        std::make_unique<ModelFileGetter>(*language_detection_model_service()));
+    getters.back()->RequestModelFile();
+  }
+
+  // This one might exceed the max depending on whether we received a request
+  // from the renderer, so we never check its status.
+  ModelFileGetter maybe_getter(*language_detection_model_service());
+  maybe_getter.RequestModelFile();
+
+  // Requesting one more should definitely give an invalid file immediately.
+  ASSERT_FALSE(RequestAndWaitForModelFile()->IsValid());
+  // The first `kMaxPendingRequestsAllowed - 1` pending ones should still be
+  // pending.
+  for (auto& getter_good : getters) {
+    ASSERT_FALSE(getter_good->HasFileBeenReceived());
+  }
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
+
+  // The first `kMaxPendingRequestsAllowed` should get a valid file now.
+  for (auto& getter_good : getters) {
+    ASSERT_TRUE(getter_good->WaitForModelFile()->IsValid());
+  }
+
+  // Requesting one more now should give a valid file because the queue has been
+  // emptied.
+  ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
 }
 
 }  // namespace
