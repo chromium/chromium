@@ -309,7 +309,6 @@ def ProcessJavacOutput(output, target_name):
 def CreateJarFile(jar_path,
                   classes_dir,
                   services_map=None,
-                  service_provider_configuration_dir=None,
                   additional_jar_files=None,
                   extra_classes_jar=None):
   """Zips files from compilation into a single jar."""
@@ -317,13 +316,6 @@ def CreateJarFile(jar_path,
   with action_helpers.atomic_output(jar_path) as f:
     with zipfile.ZipFile(f.name, 'w') as z:
       zip_helpers.zip_directory(z, classes_dir)
-      if service_provider_configuration_dir:
-        config_files = build_utils.FindInDirectory(
-            service_provider_configuration_dir)
-        for config_file in config_files:
-          zip_path = os.path.relpath(config_file,
-                                     service_provider_configuration_dir)
-          zip_helpers.add_to_zip_hermetic(z, zip_path, src_path=config_file)
       if services_map:
         for service_class, impl_classes in sorted(services_map.items()):
           zip_path = 'META-INF/services/' + service_class
@@ -587,8 +579,6 @@ def _RunCompiler(changes,
                                     options.jar_info_exclude_globs)
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
-    service_provider_configuration = os.path.join(
-        temp_dir, 'service_provider_configuration')
 
     if java_files:
       os.makedirs(classes_dir)
@@ -629,16 +619,6 @@ def _RunCompiler(changes,
                                            input_srcjars_dir)
       logging.info('Done extracting srcjars')
 
-    if options.header_jar:
-      logging.info('Extracting service provider configs')
-      # Extract META-INF/services/* so that it can be copied into the output
-      # .jar
-      build_utils.ExtractAll(options.header_jar,
-                             no_clobber=True,
-                             path=service_provider_configuration,
-                             pattern='META-INF/services/*')
-      logging.info('Done extracting service provider configs')
-
     if java_files:
       # Don't include the output directory in the initial set of args since it
       # being in a temp dir makes it unstable (breaks md5 stamping).
@@ -677,8 +657,7 @@ def _RunCompiler(changes,
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
     CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
-                  service_provider_configuration, options.additional_jar_files,
-                  options.kotlin_jar_path)
+                  options.additional_jar_files, options.kotlin_jar_path)
 
     # Remove input srcjars that confuse Android Studio:
     # https://crbug.com/353326240

@@ -3128,28 +3128,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_deps/cipd/libs/com_google_auto_auto_common': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_google_auto_auto_common',
-              'version': 'version:2@1.2.1.cr1',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/com_google_auto_service_auto_service': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_google_auto_service_auto_service',
-              'version': 'version:2@1.0-rc6.cr1',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_deps/cipd/libs/com_google_auto_service_auto_service_annotations': {
       'packages': [
           {

@@ -38,12 +38,6 @@ class ChromiumDepGraph {
             description: 'Base library for gmscore / Google Play Services.'),
         com_google_android_gms_play_services_location: new PropertyOverride(
             description: 'Provides data about the device\'s physical location via gmscore.'),
-        com_google_auto_auto_common: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        com_google_auto_service_auto_service: new PropertyOverride(
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
         com_google_auto_service_auto_service_annotations: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
