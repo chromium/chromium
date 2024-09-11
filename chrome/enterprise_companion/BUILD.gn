@@ -413,9 +413,13 @@ artifact_zip("enterprise_companion_zip") {
   if (is_linux) {
     inputs = [ "$root_build_dir/enterprise_companion" ]
     deps = [ ":enterprise_companion" ]
-  } else if (is_mac && host_os == "mac") {
-    inputs = [ "$root_build_dir/enterprise_companion_installer_unsigned.pkg" ]
-    deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+  } else if (is_mac) {
+    inputs = [
+      "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/Info.plist",
+      "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/MacOS/${enterprise_companion_product_full_name}",
+      "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/PkgInfo",
+    ]
+    deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]
