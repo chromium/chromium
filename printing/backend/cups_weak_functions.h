@@ -12,5 +12,7 @@
 
 WEAK_CUPS_FN(httpConnect2);
 
-// This may be removed when Amazon Linux 2 reaches EOL (30 Jun 2025).
+// These may be removed when Amazon Linux 2 reaches EOL (30 Jun 2025).
+WEAK_CUPS_FN(cupsFindDestDefault);
+WEAK_CUPS_FN(cupsFindDestSupported);
 WEAK_CUPS_FN(ippValidateAttributes);
