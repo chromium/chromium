@@ -59,9 +59,7 @@ export class GenaiError extends ReactiveLitElement {
 
       case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
         imageName = 'genai_error_general';
-        // TODO(hsuanling): update this with i18n string.
-        message = `For now, a transcript fewer than ${
-          MIN_WORD_LENGTH} words is not supported`;
+        message = i18n.genAiErrorTranscriptionTooShortLabel(MIN_WORD_LENGTH);
         break;
       }
 

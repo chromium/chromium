@@ -30,6 +30,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRUST_AND_SAFETY_LABEL},
     {"genAiErrorTitleSuggestionTrustAndSafetyLabel",
      IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL},
+    {"genAiErrorTranscriptionTooShortLabel",
+     IDS_RECORDER_GEN_AI_ERROR_TRANSCRIPTION_TOO_SHORT_LABEL},
     {"genAiExperimentBadge", IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE},
     {"genAiLearnMoreLink", IDS_RECORDER_GEN_AI_LEARN_MORE_LINK},
     {"genaiNegativeFeedbackButtonTooltip",
