@@ -7982,8 +7982,6 @@ crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/cs
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure ]
 
-crbug.com/352651673 http/tests/devtools/copy-network-request.js [ Failure Pass ]
-
 # Gardener 2024-08-23
 crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
 

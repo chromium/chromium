@@ -1,7 +1,7 @@
 Tests curl command generation
 
 cURL Windows:
-curl "http://example.org/path"
+curl ^"http://example.org/path^"
 
 
 cURL Unix:
@@ -27,7 +27,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" --data-raw "123"
+curl ^"http://example.org/path^" --data-raw ^"123^"
 
 
 cURL Unix:
@@ -57,9 +57,9 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/x-www-form-urlencoded" ^
-  --data-raw "1&b"
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/x-www-form-urlencoded^" ^
+  --data-raw ^"1^&b^"
 
 
 cURL Unix:
@@ -98,8 +98,8 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/json" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/json^" ^
   --data-raw ^"^{^\^"a^\^":1^}^"
 
 
@@ -139,8 +139,8 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
   --data-raw ^"1234^
 
 00^^^^'^\^"^!^"
@@ -182,8 +182,8 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
   --data-raw ^"1234^
 
 ^00^^^^'^\^"^!^"
@@ -225,13 +225,13 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
   --data-raw ^"^%^OS^%^
 
 ^%^%^OS^%^%^
 
-^\^"^\^\^\^"'^$&^!^"
+^\^"^\^\^\^"'^$^&^!^"
 
 
 cURL Unix:
@@ -270,9 +270,9 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
-  --data-raw ^"^!^@^#^$^%^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^<^>?^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
+  --data-raw ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^<^>?^
 
 qwer^
 
@@ -319,8 +319,8 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
   --data-raw ^"^^^^ÿ	^܀^"
 
 
@@ -388,8 +388,8 @@ fetch("http://labs.ft.com/?querystring=[]{}", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/binary" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/binary^" ^
   --data-raw ^"^%^PATH^%^$PATH^"
 
 
@@ -429,7 +429,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path"
+curl ^"http://example.org/path^"
 
 
 cURL Unix:
@@ -457,7 +457,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" -H "Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117"
+curl ^"http://example.org/path^" -H ^"Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117^"
 
 
 cURL Unix:
@@ -486,7 +486,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" -X ^"^|evilcommand^|^"
+curl ^"http://example.org/path^" -X ^"^|evilcommand^|^"
 
 
 cURL Unix:
@@ -514,8 +514,8 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: application/x-www-form-urlencoded" ^
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: application/x-www-form-urlencoded^" ^
   --data-raw ^"^@/etc/passwd^"
 
 
@@ -555,7 +555,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" -H "Referer: https://example.com"
+curl ^"http://example.org/path^" -H ^"Referer: https://example.com^"
 
 
 cURL Unix:
@@ -587,7 +587,7 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" -H "No-Value-Header;"
+curl ^"http://example.org/path^" -H ^"No-Value-Header;^"
 
 
 cURL Unix:
@@ -681,9 +681,9 @@ fetch (for nodejs):
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: foo/bar" ^
-  --data-raw "baz"
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: foo/bar^" ^
+  --data-raw ^"baz^"
 
 
 cURL Unix:
@@ -722,9 +722,9 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Content-Type: foo/bar" ^
-  --data-raw "baz"
+curl ^"http://example.org/path^" ^
+  -H ^"Content-Type: foo/bar^" ^
+  --data-raw ^"baz^"
 
 
 cURL Unix:
