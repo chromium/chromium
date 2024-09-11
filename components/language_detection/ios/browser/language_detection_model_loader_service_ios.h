@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace translate {
@@ -17,7 +16,6 @@ class LanguageDetectionModel;
 }  // namespace translate
 
 namespace language_detection {
-class LanguageDetectionModelContainer;
 class LanguageDetectionModelService;
 
 // A service that contains the LanguageDetectionModel and handles its loading.
@@ -29,8 +27,7 @@ class LanguageDetectionModelLoaderServiceIOS : public KeyedService {
  public:
   LanguageDetectionModelLoaderServiceIOS(
       language_detection::LanguageDetectionModelService*
-          language_detection_model_service,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
+          language_detection_model_service);
   ~LanguageDetectionModelLoaderServiceIOS() override;
 
   // Get for the actual TFLite language detection model.
@@ -41,15 +38,22 @@ class LanguageDetectionModelLoaderServiceIOS : public KeyedService {
   bool IsModelAvailable();
 
  private:
+  class ModelContainer;
+
   // Notifies |this| that the translate model service is available for model
   // requests or is invalidating existing requests specified by |is_available|.
   void OnLanguageDetectionModelFileReceived(base::File model_file);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // The TranslageModelService that will handle the downloading and provide
   // the file containing the model.
   raw_ptr<language_detection::LanguageDetectionModelService>
       language_detection_model_service_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  scoped_refptr<LanguageDetectionModelContainer> language_detection_model_;
+
+  // Wraps the TFLite language detection model and its dependencies.
+  std::unique_ptr<ModelContainer> model_container_;
+
   base::WeakPtrFactory<LanguageDetectionModelLoaderServiceIOS>
       weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "partition_alloc/pointers/raw_ref.h"
 
@@ -27,6 +28,12 @@ class LanguageDetectionModel {
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
   void UpdateWithFile(base::File model_file);
+
+  // Updates the language detection model for use by memory-mapping
+  // |model_file| used to detect the language of the page. Performs
+  // the operation on a background sequence and call |callback| on
+  // completion
+  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback);
 
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.

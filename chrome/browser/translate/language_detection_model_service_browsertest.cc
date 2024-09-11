@@ -367,15 +367,8 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 }
 
 // TODO(crbug.com/40836720): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LanguageDetectionModelAvailableForDetection \
-  DISABLED_LanguageDetectionModelAvailableForDetection
-#else
-#define MAYBE_LanguageDetectionModelAvailableForDetection \
-  LanguageDetectionModelAvailableForDetection
-#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       MAYBE_LanguageDetectionModelAvailableForDetection) {
+                       DISABLED_LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
@@ -403,18 +396,8 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 // Disabled on linux+ASAN, macOS+ASAN, chromeOS+ASAN and windows due to high
 // failure rate: crbug.com/1199854 crbug.com/1297485.
 // TODO(crbug.com/40904444): Re-enable this test
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||        \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_MAC)) ||          \
-    (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
-    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_WIN)
-#define MAYBE_LanguageDetectionWithBackgroundTab \
-  DISABLED_LanguageDetectionWithBackgroundTab
-#else
-#define MAYBE_LanguageDetectionWithBackgroundTab \
-  LanguageDetectionWithBackgroundTab
-#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       MAYBE_LanguageDetectionWithBackgroundTab) {
+                       DISABLED_LanguageDetectionWithBackgroundTab) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(

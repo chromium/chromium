@@ -9,6 +9,9 @@
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace tflite::task::text::nlclassifier {
@@ -82,6 +85,12 @@ class LanguageDetectionModel {
   // |model_file| used to detect the language of the page.
   void UpdateWithFile(base::File model_file);
 
+  // Updates the language detection model for use by memory-mapping
+  // |model_file| used to detect the language of the page. Performs
+  // the operation on a background sequence and call |callback| on
+  // completion
+  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback);
+
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.
   bool IsAvailable() const;
@@ -89,13 +98,24 @@ class LanguageDetectionModel {
   std::string GetModelVersion() const;
 
  private:
+  // An owned NLClassifier.
+  using OwnedNLClassifier =
+      std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>;
+
+  // Updates the model if the not unset.
+  void SetModel(std::optional<OwnedNLClassifier> optional_model);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // The tflite classifier that can determine the language of text.
-  std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>
-      lang_detection_model_;
+  OwnedNLClassifier lang_detection_model_;
 
   // The number of threads to use for model inference. -1 tells TFLite to use
   // its internal default logic.
   const int num_threads_ = -1;
+
+  // Used to load the data on a background sequence (see UpdateWithFileAsync).
+  base::WeakPtrFactory<LanguageDetectionModel> weak_factory_{this};
 };
 
 }  // namespace language_detection

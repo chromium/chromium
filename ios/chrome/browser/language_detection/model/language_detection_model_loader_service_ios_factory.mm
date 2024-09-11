@@ -29,10 +29,10 @@ LanguageDetectionModelLoaderServiceIOSFactory::GetInstance() {
 // static
 language_detection::LanguageDetectionModelLoaderServiceIOS*
 LanguageDetectionModelLoaderServiceIOSFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
+    ProfileIOS* profile) {
   return static_cast<
       language_detection::LanguageDetectionModelLoaderServiceIOS*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 LanguageDetectionModelLoaderServiceIOSFactory::
@@ -52,16 +52,10 @@ LanguageDetectionModelLoaderServiceIOSFactory::BuildServiceInstanceFor(
   if (!translate::IsTFLiteLanguageDetectionEnabled()) {
     return nullptr;
   }
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  auto* language_detection_model_service =
-      LanguageDetectionModelServiceFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<
       language_detection::LanguageDetectionModelLoaderServiceIOS>(
-      language_detection_model_service, background_task_runner);
+      LanguageDetectionModelServiceFactory::GetForBrowserState(profile));
 }
 
 web::BrowserState*
