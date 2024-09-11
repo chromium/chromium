@@ -17,14 +17,12 @@
 
 namespace blink {
 
-// TODO(crbug.com/355003172): The default value of checked_iter should be true.
-template <typename T, wtf_size_t inlineCapacity = 0, bool checked_iter = false>
-class HeapVector final
-    : public GarbageCollected<HeapVector<T, inlineCapacity, checked_iter>>,
-      public Vector<T, inlineCapacity, HeapAllocator, checked_iter> {
+template <typename T, wtf_size_t inlineCapacity = 0>
+class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
+                         public Vector<T, inlineCapacity, HeapAllocator> {
   DISALLOW_NEW();
 
-  using BaseVector = Vector<T, inlineCapacity, HeapAllocator, checked_iter>;
+  using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
 
  public:
   HeapVector() = default;
@@ -34,7 +32,7 @@ class HeapVector final
   HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {}
 
   template <wtf_size_t otherCapacity>
-  HeapVector(const HeapVector<T, otherCapacity, checked_iter>& other)  // NOLINT
+  HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
       : BaseVector(other) {}
 
   HeapVector(const HeapVector& other)
@@ -53,7 +51,7 @@ class HeapVector final
       typename Proj,
       typename = std::enable_if_t<
           std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
-  HeapVector(const HeapVector<U, otherSize, checked_iter>& other, Proj proj)
+  HeapVector(const HeapVector<U, otherSize>& other, Proj proj)
       : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
 
   template <typename Collection,
@@ -101,9 +99,8 @@ class HeapVector final
 template <typename T>
 concept IsHeapVector = requires { typename HeapVector<T>; };
 
-template <typename T, wtf_size_t inlineCapacity, bool checked_iter>
-constexpr HeapVector<T, inlineCapacity, checked_iter>::TypeConstraints::
-    TypeConstraints() {
+template <typename T, wtf_size_t inlineCapacity>
+constexpr HeapVector<T, inlineCapacity>::TypeConstraints::TypeConstraints() {
   static_assert(std::is_trivially_destructible_v<HeapVector> || inlineCapacity,
                 "HeapVector must be trivially destructible.");
   static_assert(!WTF::IsWeak<T>::value,

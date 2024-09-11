@@ -782,20 +782,6 @@ TEST(VectorTest, CopyWithProjection) {
   }
 }
 
-TEST(VectorTest, IteratorSwitching) {
-  using UncheckedIntVector = Vector<int, 0, PartitionAllocator, false>;
-  using CheckedIntVector = Vector<int, 0, PartitionAllocator, true>;
-  static_assert(std::is_same_v<UncheckedIntVector::iterator,
-                               WTF::UncheckedIterator<int>>);
-  static_assert(std::is_same_v<CheckedIntVector::iterator,
-                               base::CheckedContiguousIterator<int>>);
-
-  // Check if we can compile code using checked iterators.
-  CheckedIntVector v = {3, 2, 1};
-  for ([[maybe_unused]] int i : v) {
-  }
-}
-
 static_assert(VectorTraits<int>::kCanCopyWithMemcpy,
               "int should be copied with memcopy.");
 static_assert(VectorTraits<char>::kCanCopyWithMemcpy,
