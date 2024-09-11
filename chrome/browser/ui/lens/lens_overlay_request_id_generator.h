@@ -25,10 +25,6 @@ class LensOverlayRequestIdGenerator {
   // called for each interaction.
   void CreateNewAnalyticsId();
 
-  // Increments the image sequence id. This should be called whenever there
-  // is an objects request, since that corresponds with a full image upload.
-  void IncrementImageSequenceId();
-
   // Increments the sequence and returns the next request id.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId();
 
@@ -45,9 +41,6 @@ class LensOverlayRequestIdGenerator {
 
   // The current sequence id.
   int sequence_id_;
-
-  // The current image sequence id.
-  int image_sequence_id_;
 };
 
 }  // namespace lens

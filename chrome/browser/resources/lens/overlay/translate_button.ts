@@ -212,11 +212,7 @@ export class TranslateButtonElement extends PolymerElement {
   private onTranslateButtonClick() {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
-    if (this.isTranslateModeEnabled) {
-      this.maybeIssueTranslateRequest();
-    } else {
-      this.browserProxy.handler.issueEndTranslateModeRequest();
-    }
+    this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
         INVOCATION_SOURCE,
         this.isTranslateModeEnabled ? UserAction.kTranslateButtonEnableAction :

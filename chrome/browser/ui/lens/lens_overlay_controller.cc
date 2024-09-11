@@ -896,10 +896,6 @@ void LensOverlayController::IssueTranslateFullPageRequestForTesting(
   IssueTranslateFullPageRequest(source_language, target_language);
 }
 
-void LensOverlayController::IssueEndTranslateModeRequestForTesting() {
-  IssueEndTranslateModeRequest();
-}
-
 void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
@@ -908,10 +904,6 @@ void LensOverlayController::IssueTranslateFullPageRequest(
   ClearRegionSelection();
   lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
                                                              target_language);
-}
-
-void LensOverlayController::IssueEndTranslateModeRequest() {
-  lens_overlay_query_controller_->SendEndTranslateModeQuery();
 }
 
 void LensOverlayController::NotifyOverlayInitialized() {

@@ -274,11 +274,6 @@ void LensOverlayQueryController::OnImageDataReady(
                                    image_data.image_metadata().height());
 
   AddSignificantRegions(image_data, std::move(significant_region_boxes_));
-
-  // The image sequence should be incremented and the analytics id updated
-  // for all full-image requests.
-  request_id_generator_->IncrementImageSequenceId();
-  request_id_generator_->CreateNewAnalyticsId();
   FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
                         ref_counted_logs->client_logs());
 }
@@ -572,12 +567,6 @@ void LensOverlayQueryController::SendFullPageTranslateQuery(
   // Send a normal full image request. The parameters to make it a translate
   // request will be set when the actual request is sent based on the instance
   // variables.
-  PrepareAndFetchFullImageRequest();
-}
-
-void LensOverlayQueryController::SendEndTranslateModeQuery() {
-  translate_options_.reset();
-
   PrepareAndFetchFullImageRequest();
 }
 
