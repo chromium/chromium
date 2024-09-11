@@ -181,9 +181,10 @@ bool AreInOrder(const Node& start, const Node& end) {
 }  // namespace
 
 // FindBuffer implementation.
-FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range) {
+FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range,
+                       RubySupport ruby_support) {
   DCHECK(range.IsNotNull() && !range.IsCollapsed()) << range;
-  CollectTextUntilBlockBoundary(range);
+  CollectTextUntilBlockBoundary(range, ruby_support);
 }
 
 bool FindBuffer::IsInvalidMatch(MatchResultICU match) const {
@@ -249,7 +250,8 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
       break;
 
     FindBuffer buffer(
-        EphemeralRangeInFlatTree(start_position, range.EndPosition()));
+        EphemeralRangeInFlatTree(start_position, range.EndPosition()),
+        RubySupport(options.IsRubySupported()));
     FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
       if (!options.IsBackwards()) {
@@ -366,7 +368,8 @@ FindResults FindBuffer::FindMatches(const WebString& search_text,
 }
 
 void FindBuffer::CollectTextUntilBlockBoundary(
-    const EphemeralRangeInFlatTree& range) {
+    const EphemeralRangeInFlatTree& range,
+    RubySupport ruby_support) {
   // Collects text until block boundary located at or after |start_node|
   // to |buffer_|. Saves the next starting node after the block to
   // |node_after_block_|.

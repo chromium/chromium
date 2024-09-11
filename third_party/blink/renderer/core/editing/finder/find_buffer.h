@@ -28,7 +28,10 @@ class CORE_EXPORT FindBuffer {
   STACK_ALLOCATED();
 
  public:
-  explicit FindBuffer(const EphemeralRangeInFlatTree& range);
+  using RubySupport = base::StrongAlias<class RubySupportTag, bool>;
+
+  explicit FindBuffer(const EphemeralRangeInFlatTree& range,
+                      RubySupport ruby_support = RubySupport(false));
 
   static EphemeralRangeInFlatTree FindMatchInRange(
       const EphemeralRangeInFlatTree& range,
@@ -74,7 +77,8 @@ class CORE_EXPORT FindBuffer {
   // encountered another LayoutBLockFlow, or if the end of |range| is
   // surpassed. Saves the next starting node after the block (first node in
   // another LayoutBlockFlow or after |end_position|) to |node_after_block_|.
-  void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range);
+  void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range,
+                                     RubySupport ruby_support);
 
   // Replaces nodes that should be ignored with appropriate char constants.
   void ReplaceNodeWithCharConstants(const Node& node);

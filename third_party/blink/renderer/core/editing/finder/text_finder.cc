@@ -247,7 +247,8 @@ bool TextFinder::FindInternal(int identifier,
                                 .SetBackwards(!options.forward)
                                 .SetCaseInsensitive(!options.match_case)
                                 .SetWrappingAround(wrap_within_frame)
-                                .SetStartingInSelection(options.new_session);
+                                .SetStartingInSelection(options.new_session)
+                                .SetRubySupported(true);
   active_match_ = Editor::FindRangeOfString(
       *OwnerFrame().GetFrame()->GetDocument(), search_text,
       EphemeralRangeInFlatTree(active_match_.Get()), find_options,
