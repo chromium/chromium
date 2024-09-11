@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -92,6 +93,13 @@ StreetAddressNode::GetParseRegularExpressionsByRelevance() const {
   DCHECK(pattern_provider);
   const std::string country_code =
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+  // Countries with custom hierarchies are not guaranteed to support street
+  // names, house numbers, floors and apartment numbers. Therefore, we don't
+  // apply the hardcoded fallback regular expressions.
+  if (i18n_model_definition::IsCustomHierarchyAvailableForCountry(
+          AddressCountryCode(country_code))) {
+    return {};
+  }
   return {pattern_provider->GetRegEx(RegEx::kParseHouseNumberStreetName,
                                      country_code),
           pattern_provider->GetRegEx(RegEx::kParseStreetNameHouseNumber,
