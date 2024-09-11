@@ -2305,6 +2305,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
 <translation id="8939855324412367560">La entrada de audio es <ph name="INPUT_DEVICE_NAME" />, y la salida de audio, <ph name="OUTPUT_DEVICE_NAME" />. Ve a Configuración para cambiarlas.</translation>
 <translation id="8940956008527784070">Poca batería (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Micrófono de estudio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Casilla no seleccionada.</translation>
 <translation id="8949925099261528566">Conexión sin Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con Chromebook</translation>

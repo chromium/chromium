@@ -1113,6 +1113,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1780273119488802839">Importando marcadores...</translation>
 <translation id="1780572199786401845">Denunciar contenido ofensivo o no seguro.</translation>
 <translation id="178092663238929451">Configura Compartir con Nearby para recibir y enviar archivos a personas que estén cerca</translation>
+<translation id="1781164264587898620">Aplicar cancelación de ruido y mejoras de audio.</translation>
 <translation id="1781291988450150470">PIN actual</translation>
 <translation id="1781502536226964113">Abrir la página Nueva pestaña</translation>
 <translation id="1781553166608855614">Idioma hablado</translation>
@@ -11001,6 +11002,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 
 Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta cuenta. Puedes gestionar tus cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Tamaño del icono</translation>
+<translation id="8945508919180478719">Micrófono de estudio</translation>
 <translation id="8946359700442089734">Las funciones de depuración no se han habilitado completamente en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Ocultar todas las solicitudes en la barra de direcciones</translation>
 <translation id="894763922177556086">Buena</translation>

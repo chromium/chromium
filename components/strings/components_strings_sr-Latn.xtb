@@ -1015,6 +1015,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
 <translation id="2891963978019740012">Vaš pretraživač u Chrome-u</translation>
 <translation id="2893773853358652045">Četvrti kotur</translation>
+<translation id="2894137550885451583">Ovo su cene u valuti <ph name="CURRENCY" /> za proizvod <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Napravite događaj</translation>
 <translation id="2902312830803030883">Još radnji</translation>
 <translation id="2903493209154104877">Adrese</translation>
@@ -1612,6 +1613,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3949601375789751990">Istorija pregledanja će se pojaviti ovde</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nema sačuvanih načina plaćanja</translation>
+<translation id="3950560191811267370">Donja tabela za trgovinu je zatvorena</translation>
 <translation id="3950574001630941635">Restratuj vodič</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
 <translation id="3953505489397572035">Ova cena je uobičajena</translation>
@@ -2354,6 +2356,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5331585574693522196">Podesi kao podrazumevano</translation>
 <translation id="5332219387342487447">Način isporuke</translation>
 <translation id="5332769172018416402">Pitaj porukom</translation>
+<translation id="533323551986281710">Donja tabela za trgovinu je otvorena na celom ekranu</translation>
 <translation id="5334013548165032829">Detaljne evidencije sistema</translation>
 <translation id="5334145288572353250">Želite da sačuvate adresu?</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
@@ -2536,6 +2539,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5675650730144413517">Ova stranica ne funkcioniše</translation>
 <translation id="5675809467256309336">Dens i elektronska muzika</translation>
 <translation id="5675959228867414813">Prikaži prema datumu</translation>
+<translation id="567604591393105935">Donja tabela za trgovinu je otvorena do polovine ekrana</translation>
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5678007133659493065">Folija</translation>
 <translation id="5680642791693447368">Trileri, kriminalistički filmovi i filmovi misterije</translation>
@@ -3442,6 +3446,7 @@ Dodatni detalji:
 <translation id="7374733840632556089">Ovaj problem se javlja zbog sertifikata koji ste vi ili neko drugi instalirali na uređaju. Sertifikat se koristi za nadgledanje i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje pojedini opravdani razlozi za nadgledanje, na primer na školskoj ili poslovnoj mreži, Chrome želi da budete svesni da se to događa, čak i ako to ne možete da sprečite. Nadgledanje je moguće u bilo kom pregledaču ili aplikaciji koja pristupa vebu.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nijedan sajt nije dozvoljen}=1{1 sajt je dozvoljen}one{# sajt je dozvoljen}few{# sajta su dozvoljena}other{# sajtova je dozvoljeno}}</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
+<translation id="7376031331622621328">Donja tabela za trgovinu</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Ugostiteljstvo</translation>
 <translation id="7378594059915113390">Kontrole za medije</translation>

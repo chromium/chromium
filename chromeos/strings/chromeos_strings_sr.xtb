@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2152882202543497059">Слика: <ph name="NUMBER" /></translation>
+<translation id="2154460308960858308">Обришите претрагу</translation>
 <translation id="2156072344042480449">2 последња упита. Ове упите можете да користите само док сте на овој страници.</translation>
 <translation id="2157660087437850958">бирач емоџија</translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Локални идентитет (опционално)</translation>
 <translation id="3565064564551103223">Дозвољене IPа адресе</translation>
 <translation id="3569407787324516067">Чувар екрана</translation>
+<translation id="3571184524500629183">Затворите претрагу</translation>
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3583278742022654445">Сигнал је слаб. Пробајте да приђете ближе извору WiFi сигнала.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5876385649737594562">Укључите да бисте изабрали опције</translation>
+<translation id="5877503382465267833">Паузирајте снимак <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цеo екран</translation>
 <translation id="5893975327266416093">Додирните тастер на тастатури да бисте доделили</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">Поклопац скенера је отворен. Затворите га и пробајте поново.</translation>
 <translation id="6910845598686542904">Израчунавање модела гласова откривених на снимку</translation>
 <translation id="6911383237894364323">Повезивање са медијским серверима није успело</translation>
+<translation id="6927968682840110570">Назив снимка</translation>
 <translation id="6930242544192836755">Трајање</translation>
 <translation id="6930597342185648547">О позадини</translation>
 <translation id="6939667434404433010">Претражите назив снимка</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7378170410161264436">Снимач звука може да прави транскрипције за снимке са говором.
 Преузмите модел транскрипције (до 100 MB) да бисте преузели те транскрипције.</translation>
 <translation id="7384004438856720753">Палата</translation>
+<translation id="7388345524791662148">Још опција за снимак <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Уграђени тачпед</translation>
 <translation id="7397270852490618635">Искључите светлу тему</translation>
 <translation id="7401543881546089382">Избришите пречицу</translation>
@@ -1295,6 +1300,7 @@
 <translation id="7513770521371759388">дно</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Пустите снимак <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Направи</translation>
 <translation id="7528507600602050979">Садржај помоћи није доступан</translation>
 <translation id="7535791657097741517">Укључите светлу тему</translation>
@@ -1371,6 +1377,7 @@
 <translation id="7897043345768902965">пешачком стазом</translation>
 <translation id="7902285181767404769">Искључите звук обавештења током снимања</translation>
 <translation id="7903695460270716054">Одаберите неке од припремљених илустрација и слика</translation>
+<translation id="7912005977894000746">Назад на главну страницу</translation>
 <translation id="7915220255123750251">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета.</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="7942349550061667556">Црвена</translation>

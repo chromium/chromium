@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2152882202543497059">Slika: <ph name="NUMBER" /></translation>
+<translation id="2154460308960858308">Obrišite pretragu</translation>
 <translation id="2156072344042480449">2 poslednja upita. Ove upite možete da koristite samo dok ste na ovoj stranici.</translation>
 <translation id="2157660087437850958">birač emodžija</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Lokalni identitet (opcionalno)</translation>
 <translation id="3565064564551103223">Dozvoljene IPa adrese</translation>
 <translation id="3569407787324516067">Čuvar ekrana</translation>
+<translation id="3571184524500629183">Zatvorite pretragu</translation>
 <translation id="3577473026931028326">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="357889014807611375">WiFi sa ograničenjem</translation>
 <translation id="3583278742022654445">Signal je slab. Probajte da priđete bliže izvoru WiFi signala.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876385649737594562">Uključite da biste izabrali opcije</translation>
+<translation id="5877503382465267833">Pauzirajte snimak <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Ceo ekran</translation>
 <translation id="5893975327266416093">Dodirnite taster na tastaturi da biste dodelili</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite ga i probajte ponovo.</translation>
 <translation id="6910845598686542904">Izračunavanje modela glasova otkrivenih na snimku</translation>
 <translation id="6911383237894364323">Povezivanje sa medijskim serverima nije uspelo</translation>
+<translation id="6927968682840110570">Naziv snimka</translation>
 <translation id="6930242544192836755">Trajanje</translation>
 <translation id="6930597342185648547">O pozadini</translation>
 <translation id="6939667434404433010">Pretražite naziv snimka</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7378170410161264436">Snimač zvuka može da pravi transkripcije za snimke sa govorom.
 Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</translation>
 <translation id="7384004438856720753">Palata</translation>
+<translation id="7388345524791662148">Još opcija za snimak <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ugrađeni tačped</translation>
 <translation id="7397270852490618635">Isključite svetlu temu</translation>
 <translation id="7401543881546089382">Izbrišite prečicu</translation>
@@ -1295,6 +1300,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7513770521371759388">dno</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Pustite snimak <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Napravi</translation>
 <translation id="7528507600602050979">Sadržaj pomoći nije dostupan</translation>
 <translation id="7535791657097741517">Uključite svetlu temu</translation>
@@ -1371,6 +1377,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7897043345768902965">pešačkom stazom</translation>
 <translation id="7902285181767404769">Isključite zvuk obaveštenja tokom snimanja</translation>
 <translation id="7903695460270716054">Odaberite neke od pripremljenih ilustracija i slika</translation>
+<translation id="7912005977894000746">Nazad na glavnu stranicu</translation>
 <translation id="7915220255123750251">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7942349550061667556">Crvena</translation>

@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Permitir que los sitios ejecuten JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Administrar la privacidad en los anuncios</translation>
+<translation id="5373874281522292782">Se guardaron tus grupos de pestañas</translation>
 <translation id="5389626883706033615">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(1 más)}other{(# más)}}</translation>
 <translation id="5403592356182871684">Nombres</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Descargas activas</translation>
 <translation id="6709432001666529933">Preguntar antes de permitir que los sitios hagan un seguimiento de tus manos (recomendado)</translation>
 <translation id="6722828510648505498">Bloquea los mensajes de acceso de servicios de identidad.</translation>
+<translation id="6729704574271585059">Los grupos que creaste se guardan en la sección de grupos de pestañas y se actualizan en todos tus dispositivos</translation>
 <translation id="6746124502594467657">Mover hacia abajo</translation>
 <translation id="6749077623962119521">¿Deseas restablecer los permisos?</translation>
 <translation id="6766622839693428701">Desliza hacia abajo para cerrar.</translation>

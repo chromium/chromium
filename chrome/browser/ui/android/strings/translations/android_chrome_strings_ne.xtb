@@ -850,6 +850,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5016205925109358554">सेरिफ</translation>
 <translation id="5017529052065664584">पछिल्लो १५ मिनेट</translation>
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="504456571576643789">विचार गर्नु पर्ने कुराहरू</translation>
@@ -1069,6 +1070,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
 <translation id="6130303040046284160">ट्याब मिनिमाइज गर्नुहोस्</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> को भाषा</translation>
 <translation id="6138832295072039549">यहाँ गई आफ्नो साइटसम्बन्धी सेटिङ परिवर्तन गर्नुहोस्</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
@@ -1172,6 +1174,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
 <translation id="6569373978618239158">तपाईंले नयाँ ट्याब खोल्दा अब तपाईंलाई <ph name="SITE_NAME" /> का लेखहरू देखाइने छन्। तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="6570116402456758630">पेजको सारांश</translation>
 <translation id="6573096386450695060">सधैँ अनुमति दिनुहोस्</translation>
 <translation id="6573431926118603307">तपाईँले आफ्ना अन्य डिभाइसमा Chrome मा खोल्नुभएका ट्याबहरू यहाँ देखिनेछन्।</translation>
 <translation id="6583199322650523874">हालको पृष्ठलाई पुस्तक चिन्ह लगाउनुहोस्</translation>
