@@ -10,6 +10,12 @@ source_set("sensitive_content") {
     "sensitive_content_manager.cc",
     "sensitive_content_manager.h",
   ]
+  if (is_android) {
+    sources += [
+      "android/android_sensitive_content_client.cc",
+      "android/android_sensitive_content_client.h",
+    ]
+  }
   deps = [ "//content/public/browser" ]
   public_deps = [
     ":features",

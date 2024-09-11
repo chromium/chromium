@@ -2779,8 +2779,6 @@ static_library("browser") {
       "android/send_tab_to_self/android_notification_handler.h",
       "android/send_tab_to_self/metrics_recorder.cc",
       "android/send_tab_to_self/send_tab_to_self_android_bridge.cc",
-      "android/sensitive_content/chrome_sensitive_content_client.cc",
-      "android/sensitive_content/chrome_sensitive_content_client.h",
       "android/service_tab_launcher.cc",
       "android/service_tab_launcher.h",
       "android/shortcut_helper.cc",
@@ -3405,7 +3403,7 @@ static_library("browser") {
       "//components/search:start_suggest",
       "//components/security_state/content/android",
       "//components/send_tab_to_self",
-      "//components/sensitive_content",
+      "//components/sensitive_content:features",
       "//components/sharing_message",
       "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
