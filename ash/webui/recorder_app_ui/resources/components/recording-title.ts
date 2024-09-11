@@ -126,13 +126,15 @@ export class RecordingTitle extends ReactiveLitElement {
     return assertExists(this.recordingTitleSuggestion.value);
   }
 
+  private readonly recordingId = computed(() => {
+    return this.recordingMetadataSignal.value?.id ?? null;
+  });
+
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
-    if (this.recordingMetadataSignal.value === null) {
+    if (this.recordingId.value === null) {
       return null;
     }
-    return this.recordingDataManager.getTranscription(
-      this.recordingMetadataSignal.value.id,
-    );
+    return this.recordingDataManager.getTranscription(this.recordingId.value);
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
@@ -147,8 +149,7 @@ export class RecordingTitle extends ReactiveLitElement {
   private readonly suggestedTitles = new ScopedAsyncComputed(this, async () => {
     // TODO(pihsun): Cache title suggestion between hide/show the suggestion
     // dialog?
-    if (!this.suggestionShown.value || this.recordingMetadata === null ||
-        !this.shouldShowTitleSuggestion.value) {
+    if (!this.suggestionShown.value || !this.shouldShowTitleSuggestion.value) {
       return null;
     }
     if (this.transcription.value === null) {
