@@ -15158,6 +15158,13 @@ be describing additional metrics about the same event.
       crbug.com/897837 crbug.com/897840
     </summary>
   </metric>
+  <metric name="Experimental.TotalForegroundDuration">
+    <summary>
+      Re-adding experimental version of TotalForegroundDuration to allow for an
+      analysis of the now obsolete field. This will help inform a discrepency
+      found when switching to the PageTiming.TotalForegroundDuration field.
+    </summary>
+  </metric>
   <metric name="HourOfDay">
     <summary>
       The hour of the day when the page load was initiated. The time is measured
