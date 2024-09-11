@@ -82,7 +82,7 @@ static_library("emoji") {
     "//chrome/app:generated_resources",
     "//chrome/browser/resources/chromeos/emoji_picker:resources",
     "//chrome/browser/resources/chromeos/seal:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/emoji:resources",
     "//components/prefs",

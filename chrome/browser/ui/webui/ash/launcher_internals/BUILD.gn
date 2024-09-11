@@ -35,6 +35,6 @@ static_library("launcher_internals") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/resources/chromeos/launcher_internals:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
   ]
 }

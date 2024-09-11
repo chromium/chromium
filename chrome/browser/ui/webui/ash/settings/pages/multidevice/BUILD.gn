@@ -38,7 +38,7 @@ static_library("multidevice") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/session",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",

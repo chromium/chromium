@@ -62,7 +62,7 @@ static_library("parent_access") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/parent_access:resources",
     "//chrome/browser/resources/chromeos/supervision:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/google/core/common",
     "//components/signin/public/base",
     "//google_apis",

@@ -17,7 +17,7 @@ static_library("slow") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/feedback/content",
     "//content/public/browser",

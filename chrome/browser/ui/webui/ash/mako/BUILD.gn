@@ -48,7 +48,7 @@ static_library("mako") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common:mojo_bindings",
     "//chromeos/constants",
     "//components/input",

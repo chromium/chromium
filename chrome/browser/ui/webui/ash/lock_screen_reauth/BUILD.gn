@@ -65,7 +65,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/resources/chromeos/lock_screen_reauth:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",

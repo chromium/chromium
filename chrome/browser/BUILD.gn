@@ -1986,6 +1986,7 @@ static_library("browser") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updater:scheduler",

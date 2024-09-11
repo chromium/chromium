@@ -37,7 +37,7 @@ static_library("files") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/upload_office_to_cloud",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/smb_shares",
     "//chrome/common",

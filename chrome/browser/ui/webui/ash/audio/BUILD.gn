@@ -35,6 +35,6 @@ static_library("audio") {
     "//ash/constants",
     "//chrome/browser/resources/chromeos/audio:resources",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
   ]
 }

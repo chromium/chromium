@@ -57,7 +57,7 @@ static_library("people") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/settings/search",

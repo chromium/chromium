@@ -17,7 +17,7 @@ static_library("vc_tray_tester") {
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/vc_tray_tester:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
   ]

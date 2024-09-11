@@ -27,7 +27,7 @@ static_library("healthd_internals") {
   deps = [
     "//ash/constants",
     "//chrome/browser/resources/chromeos/healthd_internals:resources",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chromeos/ash/services/cros_healthd/public/cpp",
   ]
 }

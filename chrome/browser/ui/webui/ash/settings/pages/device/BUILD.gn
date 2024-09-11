@@ -51,7 +51,7 @@ static_library("device") {
     "//chrome/browser/ash/note_taking",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:chrome_features",

@@ -26,7 +26,7 @@ static_library("crostini_installer") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/dbus/spaced",

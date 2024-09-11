@@ -88,7 +88,7 @@ static_library("cloud_upload") {
     "//chrome/browser/extensions",
     "//chrome/browser/resources/chromeos/cloud_upload:resources",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",

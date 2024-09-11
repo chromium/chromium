@@ -42,6 +42,9 @@ source_set("impl") {
 
   if (!is_chromeos_ash) {
     sources += [ "signin_email_confirmation_dialog.cc" ]
-    deps += [ "//chrome/common" ]
+    deps += [
+      "//chrome/browser/ui/webui",
+      "//chrome/common",
+    ]
   }
 }

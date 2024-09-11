@@ -45,7 +45,7 @@ static_library("office_fallback") {
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chromeos/constants",
     "//ui/base",

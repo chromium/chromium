@@ -17,7 +17,7 @@ static_library("curtain_ui") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/remote_maintenance_curtain:resources",
     "//chrome/browser/resources/chromeos/remote_maintenance_curtain:resources_grit",
-    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
     "//content/public/browser",
