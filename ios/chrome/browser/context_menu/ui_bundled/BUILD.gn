@@ -7,6 +7,7 @@ source_set("coordinator") {
     "context_menu_configuration_provider+Testing.h",
     "context_menu_configuration_provider.h",
     "context_menu_configuration_provider.mm",
+    "context_menu_configuration_provider_delegate.h",
   ]
   deps = [
     ":ui",

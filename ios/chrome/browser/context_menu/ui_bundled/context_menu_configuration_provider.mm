@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -355,6 +356,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
         return;
       }
       UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(loadParams);
+      [strongSelf didOpenTabInBackground:linkURL];
     }];
     [linkOpeningElements addObject:openNewTab];
 
@@ -603,6 +605,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
     UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
         ->Load(groupLoadParams);
+    [strongSelf didOpenTabInBackground:linkURL];
   };
 
   return [actionFactory menuToOpenLinkInGroupWithGroups:groups
@@ -641,9 +644,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   loadParams.origin_point = [params.view convertPoint:params.location
                                                toView:nil];
 
-  UIAction* openImageInNewTab =
-      [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
-                                                   completion:nil];
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* openImageInNewTab = [actionFactory
+      actionOpenImageInNewTabWithUrlLoadParams:loadParams
+                                    completion:^() {
+                                      [weakSelf
+                                          didOpenTabInBackground:imageURL];
+                                    }];
 
   // Check if the URL was a valid link to avoid having the `Open in Tab Group`
   // option twice.
@@ -838,6 +845,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                sourceView:params.view
                                                sourceRect:sourceRect];
   [handler shareURLFromContextMenu:command];
+}
+
+// Informs the delegate that a new tab has been opened in the background.
+- (void)didOpenTabInBackground:(GURL)URL {
+  [self.delegate contextMenuConfigurationProvider:self
+                 didOpenNewTabInBackgroundWithURL:URL];
 }
 
 @end

@@ -13,6 +13,7 @@ class WebState;
 }
 
 class Browser;
+@protocol ContextMenuConfigurationProviderDelegate;
 class GURL;
 
 // Object creating the configuration (action items...) for the context menu.
@@ -47,6 +48,10 @@ class GURL;
 // The URL to be loaded when the user taps on the preview. Empty URL if there is
 // nothing to load.
 @property(nonatomic, assign, readonly) GURL URLToLoad;
+
+// Delegate for events in this class.
+@property(nonatomic, weak) id<ContextMenuConfigurationProviderDelegate>
+    delegate;
 
 @end
 
