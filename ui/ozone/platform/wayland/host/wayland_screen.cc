@@ -46,6 +46,10 @@
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace ui {
 namespace {
 
@@ -127,6 +131,13 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_ = connection_->GetTabletState();
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    OnDeviceScaleFactorChanged();
+    display_scale_factor_observer_.Observe(linux_ui);
+  }
 #endif
 }
 
@@ -594,6 +605,20 @@ bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
   }
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+void WaylandScreen::OnDeviceScaleFactorChanged() {
+  if (const auto* linux_ui = ui::LinuxUi::instance()) {
+    const float new_font_scale = linux_ui->display_config().font_scale;
+    if (new_font_scale != font_scale_) {
+      font_scale_ = new_font_scale;
+      for (auto* window : connection_->window_manager()->GetAllWindows()) {
+        window->OnFontScaleFactorChanged(new_font_scale);
+      }
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 void WaylandScreen::DumpState(std::ostream& out) const {
   out << "WaylandScreen:" << std::endl;

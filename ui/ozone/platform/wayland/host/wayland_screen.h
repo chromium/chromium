@@ -24,6 +24,12 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/public/platform_screen.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/scoped_observation.h"
+#include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace gfx {
 class Rect;
 }
@@ -37,7 +43,12 @@ class OrgGnomeMutterIdleMonitor;
 #endif
 
 // A PlatformScreen implementation for Wayland.
-class WaylandScreen : public PlatformScreen {
+class WaylandScreen : public PlatformScreen
+#if BUILDFLAG(IS_LINUX)
+    ,
+                      public DeviceScaleFactorObserver
+#endif
+{
  public:
   explicit WaylandScreen(WaylandConnection* connection);
   WaylandScreen(const WaylandScreen&) = delete;
@@ -83,6 +94,11 @@ class WaylandScreen : public PlatformScreen {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnTabletStateChanged(display::TabletState tablet_state) override;
   display::TabletState GetTabletState() const override;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // DeviceScaleFactorObserver:
+  void OnDeviceScaleFactorChanged() override;
 #endif
 
   void DumpState(std::ostream& out) const;
@@ -140,6 +156,13 @@ class WaylandScreen : public PlatformScreen {
   uint32_t screen_saver_suspension_count_ = 0;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   display::TabletState tablet_state_;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  float font_scale_ = 1.0f;
+
+  base::ScopedObservation<ui::LinuxUi, DeviceScaleFactorObserver>
+      display_scale_factor_observer_{this};
 #endif
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;

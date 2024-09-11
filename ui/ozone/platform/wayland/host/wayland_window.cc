@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -426,6 +427,11 @@ void WaylandWindow::OnChannelDestroyed() {
   frame_manager_->RecordFrame(
       std::make_unique<WaylandFrame>(root_surface(), wl::WaylandOverlayConfig(),
                                      std::move(subsurfaces_to_overlays)));
+}
+
+// TODO(crbug.com/40856031): Implement ui scaling.
+void WaylandWindow::OnFontScaleFactorChanged(float new_font_scale) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandWindow::DumpState(std::ostream& out) const {
