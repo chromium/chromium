@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.context_menu.LinkContextMenuFacility;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -45,22 +46,25 @@ public class TopBottomLinksPageStation extends WebPageStation {
         return Pair.create(station, topFacility);
     }
 
-    // TODO(crbug.com/362995902): Make this more generic and move to WebPageStation.
-    private void scrollDown() {
-        View contentView = mActivityTabSupplier.get().getView();
-        float width = contentView.getWidth();
-        float height = contentView.getHeight();
-        // Start the scroll with some height to avoid touching the nav bar region.
-        float fromY = height - height / 10;
-        float toY = 0;
-        TouchCommon.performDragNoFling(
-                mActivityElement.get(),
-                width / 2,
-                width / 2,
-                fromY,
-                toY,
-                /* steps= */ 50,
-                /* duration= */ 500);
+    /** Scrolls down the page using a drag gesture to dismiss browser controls. */
+    private Transition.Trigger gestureScrollToBottomTrigger() {
+        return () -> {
+            assertSuppliersCanBeUsed();
+            View contentView = mActivityTabSupplier.get().getView();
+            float width = contentView.getWidth();
+            float height = contentView.getHeight();
+            // Start the scroll with some height to avoid touching the nav bar region.
+            float fromY = height - height / 10;
+            float toY = 0;
+            TouchCommon.performDragNoFling(
+                    mActivityElement.get(),
+                    width / 2,
+                    width / 2,
+                    fromY,
+                    toY,
+                    /* steps= */ 50,
+                    /* duration= */ 500);
+        };
     }
 
     /** The page is scrolled to the top, and the top link is displayed. */
@@ -83,7 +87,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         /** Scroll to the bottom of the page. */
         public BottomFacility scrollToBottom() {
             return mHostStation.swapFacilitySync(
-                    this, new BottomFacility(), mHostStation::scrollDown);
+                    this, new BottomFacility(), mHostStation.gestureScrollToBottomTrigger());
         }
     }
 
