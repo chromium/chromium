@@ -253,6 +253,7 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
       void,
       FetchImagesForURLs,
       (base::span<const GURL> card_art_urls,
+       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
        base::OnceCallback<void(
            const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
       (override));

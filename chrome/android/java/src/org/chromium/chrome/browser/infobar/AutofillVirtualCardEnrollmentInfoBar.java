@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.infobars.ConfirmInfoBar;
@@ -253,8 +254,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
 
         // Get and resize the issuer icon.
         AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(
-                        layout.getContext(), AutofillUiUtils.CardIconSize.LARGE);
+                AutofillUiUtils.CardIconSpecs.create(layout.getContext(), ImageSize.LARGE);
         Bitmap scaledIssuerIcon =
                 Bitmap.createScaledBitmap(
                         mIssuerIcon, cardIconSpecs.getWidth(), cardIconSpecs.getHeight(), true);

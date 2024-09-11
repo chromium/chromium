@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -193,7 +194,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                             .getCustomImageForAutofillSuggestionIfAvailable(
                                     bankAccount.getDisplayIconUrl(),
                                     AutofillUiUtils.CardIconSpecs.create(
-                                            context, AutofillUiUtils.CardIconSize.SQUARE));
+                                            context, ImageSize.SQUARE));
         }
         if (bankIconOptional.isPresent()) {
             bankAccountModelBuilder.with(BANK_ACCOUNT_ICON_BITMAP, bankIconOptional.get());

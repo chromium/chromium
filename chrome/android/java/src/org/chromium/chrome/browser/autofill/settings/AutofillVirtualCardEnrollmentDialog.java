@@ -15,6 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -138,7 +139,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                         R.string.autofill_virtual_card_enrollment_dialog_card_container_title),
                 mVirtualCardEnrollmentFields.getCardArtUrl(),
                 mVirtualCardEnrollmentFields.getNetworkIconId(),
-                AutofillUiUtils.CardIconSize.LARGE,
+                ImageSize.LARGE,
                 R.dimen.virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end,
                 /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                 /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,

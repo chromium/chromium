@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -1168,13 +1169,15 @@ public class PersonalDataManager implements Destroyable {
         mImageFetcher.prefetchImages(
                 getCreditCardsToSuggest().stream()
                         .map(card -> card.getCardArtUrl())
-                        .toArray(GURL[]::new));
+                        .toArray(GURL[]::new),
+                new int[] {ImageSize.SMALL, ImageSize.LARGE});
     }
 
     /**
      * Return the card art image for the given `customImageUrl`.
-     * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
-     *         it is fetched from this URL.
+     *
+     * @param customImageUrl URL of the image. If the image is available, it is returned, otherwise
+     *     it is fetched from this URL.
      * @param cardIconSpecs {@code CardIconSpecs} instance containing the specs for the card icon.
      * @return Bitmap image if found in the local cache, else return an empty object.
      */

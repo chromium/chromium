@@ -36,8 +36,12 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   virtual ~AutofillImageFetcher() = default;
 
   // AutofillImageFetcherBase:
+  // The image sizes passed in the arguments are unused as this param is only
+  // used for Android. For Desktop, the implementation of this method has
+  // hardcoded image sizes.
   void FetchImagesForURLs(
-      base::span<const GURL> card_art_urls,
+      base::span<const GURL> image_urls,
+      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
       base::OnceCallback<void(
           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
       override;

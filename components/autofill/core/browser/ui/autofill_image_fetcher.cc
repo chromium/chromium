@@ -58,7 +58,8 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 }  // namespace
 
 void AutofillImageFetcher::FetchImagesForURLs(
-    base::span<const GURL> card_art_urls,
+    base::span<const GURL> image_urls,
+    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
     base::OnceCallback<void(
         const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
   if (!GetImageFetcher()) {
@@ -70,10 +71,10 @@ void AutofillImageFetcher::FetchImagesForURLs(
   // only when all the images are fetched.
   const auto barrier_callback =
       base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
-          card_art_urls.size(), std::move(callback));
+          image_urls.size(), std::move(callback));
 
-  for (const auto& card_art_url : card_art_urls) {
-    FetchImageForURL(barrier_callback, card_art_url);
+  for (const auto& image_url : image_urls) {
+    FetchImageForURL(barrier_callback, image_url);
   }
 }
 

@@ -24,12 +24,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -163,7 +163,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         PersonalDataManagerFactory.getForProfile(getProfile()),
                         mCard.getCardArtUrl(),
                         mCard.getIssuerIconDrawableId(),
-                        AutofillUiUtils.CardIconSize.LARGE,
+                        ImageSize.LARGE,
                         ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
 

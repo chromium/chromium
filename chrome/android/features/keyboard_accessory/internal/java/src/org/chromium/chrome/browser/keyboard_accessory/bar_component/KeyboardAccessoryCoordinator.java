@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -31,6 +30,7 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessoryS
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -194,7 +194,7 @@ public class KeyboardAccessoryCoordinator {
                                 personalDataManager,
                                 suggestion.getCustomIconUrl(),
                                 suggestion.getIconId(),
-                                AutofillUiUtils.CardIconSize.SMALL,
+                                ImageSize.SMALL,
                                 /* showCustomIcon= */ true);
         return uiConfiguration;
     }
