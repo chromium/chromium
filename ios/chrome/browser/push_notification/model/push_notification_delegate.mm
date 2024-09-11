@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
@@ -259,8 +260,20 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       if (base::FeatureList::IsEnabled(
               send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
           browserState) {
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browserState)
-            ->RefreshLocalDeviceInfo();
+        syncer::DeviceInfoSyncService* deviceInfoSyncService =
+            DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
+        deviceInfoSyncService->RefreshLocalDeviceInfo();
+
+        // Since Send Tab is a high intent notification, enroll user in
+        // provisional notifications.
+        AuthenticationService* authService =
+            AuthenticationServiceFactory::GetForBrowserState(browserState);
+        [ProvisionalPushNotificationUtil
+            enrollUserToProvisionalNotificationsForClientIds:
+                {PushNotificationClientId::kSendTab}
+                                             withAuthService:authService
+                                       deviceInfoSyncService:
+                                           deviceInfoSyncService];
       }
     }
   });

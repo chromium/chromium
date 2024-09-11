@@ -6,6 +6,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -17,8 +18,10 @@
 + (void)enrollUserToProvisionalNotificationsForClientIds:
             (std::vector<PushNotificationClientId>)clientIds
                                          withAuthService:
-                                             (AuthenticationService*)
-                                                 authService {
+                                             (AuthenticationService*)authService
+                                   deviceInfoSyncService:
+                                       (syncer::DeviceInfoSyncService*)
+                                           deviceInfoSyncService {
   if (authService &&
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // Only users with "Not Determined" authorization status are eligible for
@@ -36,6 +39,10 @@
                   signin::ConsentLevel::kSignin);
               for (PushNotificationClientId clientId : clientIds) {
                 service->SetPreference(identity.gaiaID, clientId, true);
+                if (clientId == PushNotificationClientId::kSendTab &&
+                    deviceInfoSyncService) {
+                  deviceInfoSyncService->RefreshLocalDeviceInfo();
+                }
               }
             });
           }

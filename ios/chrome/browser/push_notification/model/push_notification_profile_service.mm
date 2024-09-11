@@ -31,7 +31,7 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
       GetApplicationContext()->GetPushNotificationService();
   if (!service->DeviceTokenIsSet()) {
     [PushNotificationUtil
-        registerDeviceWithAPNSWithContentNotificationsAvailable:NO];
+        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
   }
 
   NSString* gaia = base::SysUTF8ToNSString(primary_account.gaia);

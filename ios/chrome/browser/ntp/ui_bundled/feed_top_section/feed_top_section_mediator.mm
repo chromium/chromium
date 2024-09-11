@@ -343,7 +343,8 @@ using base::UserMetricsAction;
           {PushNotificationClientId::kContent,
            PushNotificationClientId::kSports}
                                        withAuthService:
-                                           self.authenticationService];
+                                           self.authenticationService
+                                 deviceInfoSyncService:nil];
 }
 
 #pragma mark - Metrics

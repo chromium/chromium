@@ -116,7 +116,8 @@
           PushNotificationClientId::kSports};
       [ProvisionalPushNotificationUtil
           enrollUserToProvisionalNotificationsForClientIds:clientIds
-                                           withAuthService:authService];
+                                           withAuthService:authService
+                                     deviceInfoSyncService:nil];
     }
   }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
