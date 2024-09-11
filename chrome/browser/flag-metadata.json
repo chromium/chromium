@@ -3529,9 +3529,14 @@
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125
   },
-    {
+  {
     "name": "enable-lens-overlay",
     "owners": [ "stkhapugin@chromium.org", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "enable-lens-overlay-translate-button",
+    "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
   },
   {

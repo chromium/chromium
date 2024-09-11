@@ -2428,6 +2428,10 @@ const char kLensOverlayName[] = "Lens overlay";
 const char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";
 
+const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
+const char kLensOverlayTranslateButtonDescription[] =
+    "Enables translate button via the Lens overlay.";
+
 const char kLensImageTranslateName[] =
     "Translate text in images with Google Lens";
 const char kLensImageTranslateDescription[] =

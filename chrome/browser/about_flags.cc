@@ -11927,6 +11927,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kCertVerificationNetworkTime)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-translate-button",
+     flag_descriptions::kLensOverlayTranslateButtonName,
+     flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateButton)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

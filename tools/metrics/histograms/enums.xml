@@ -16147,6 +16147,7 @@ from previous Chrome versions.
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
+  <int value="-1878244826" label="LensOverlayTranslateButton:disabled"/>
   <int value="-1877422414" label="FlexFirmwareUpdate:disabled"/>
   <int value="-1877005823" label="ZeroSuggestInMemoryCaching:enabled"/>
   <int value="-1876955850" label="EnablePciguardUi:enabled"/>
@@ -24053,6 +24054,7 @@ from previous Chrome versions.
   <int value="1419984081"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
+  <int value="1420438813" label="LensOverlayTranslateButton:enabled"/>
   <int value="1421267643" label="HoldingSpaceRefresh:disabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
   <int value="1422421509" label="SetTimeoutWithoutClamp:disabled"/>
