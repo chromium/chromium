@@ -305,13 +305,15 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       }
 
       // We expect to see the following order of events:
+      //
       // - element shown
       // - element activated (optional)
       // - element hidden
-      // However, the code that detects menu item activation is called *after*
-      // the current callback. To make sure the events happen in the right order
-      // we'll defer processing of element hidden events until the end of the
-      // current system event queue.
+      //
+      // However, the OS notification for "element activated" fires *after* the
+      // NSMenuDidEndTrackingNotification notification that is used here for
+      // "element hidden". Therefore, to ensure correct ordering, defer
+      // processing "element hidden" by posting to the main dispatch queue.
       dispatch_after(
           dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
           dispatch_get_main_queue(), ^{
