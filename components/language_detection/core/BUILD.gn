@@ -7,6 +7,8 @@
 # instance in each component that uses the library.
 component("language_detection") {
   sources = [
+    "features.cc",
+    "features.h",
     "language_detection_provider.cc",
     "language_detection_provider.h",
   ]

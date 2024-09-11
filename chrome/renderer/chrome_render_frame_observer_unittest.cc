@@ -4,11 +4,19 @@
 
 #include "chrome/renderer/chrome_render_frame_observer.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/language_detection/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class ChromeRenderFrameObserverTest : public testing::Test {
+class ChromeRenderFrameObserverTest : public testing::Test,
+                                      public testing::WithParamInterface<bool> {
  public:
+  ChromeRenderFrameObserverTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        language_detection::features::kLazyUpdateTranslateModel, GetParam());
+  }
+
   bool NeedsDownscale(const gfx::Size& original_image_size,
                       int32_t requested_image_min_area_pixels,
                       const gfx::Size& requested_image_max_size) {
@@ -26,9 +34,14 @@ class ChromeRenderFrameObserverTest : public testing::Test {
   bool IsAnimatedWebp(const std::vector<uint8_t> image_data) {
     return ChromeRenderFrameObserver::IsAnimatedWebp(image_data);
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeRenderFrameObserverTest,
+INSTANTIATE_TEST_SUITE_P(All, ChromeRenderFrameObserverTest, testing::Bool());
+
+TEST_P(ChromeRenderFrameObserverTest,
        NeedsDownscale_RequestLargeThanOriginalReturnFalse) {
   EXPECT_FALSE(
       NeedsDownscale(/* original_image_size */ gfx::Size(10, 10),
@@ -36,27 +49,27 @@ TEST_F(ChromeRenderFrameObserverTest,
                      /* requested_image_max_size */ gfx::Size(20, 20)));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsDownscale_SameSizeReturnFalse) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsDownscale_SameSizeReturnFalse) {
   EXPECT_FALSE(
       NeedsDownscale(/* original_image_size */ gfx::Size(10, 10),
                      /* requested_image_min_area_pixels */ 100,
                      /* requested_image_max_size */ gfx::Size(10, 10)));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsDownscale_OnlyWidthShortReturnTrue) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsDownscale_OnlyWidthShortReturnTrue) {
   EXPECT_TRUE(NeedsDownscale(/* original_image_size */ gfx::Size(10, 10),
                              /* requested_image_min_area_pixels */ 100,
                              /* requested_image_max_size */ gfx::Size(9, 10)));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsDownscale_OnlyAreaSmallReturnFalse) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsDownscale_OnlyAreaSmallReturnFalse) {
   EXPECT_FALSE(
       NeedsDownscale(/* original_image_size */ gfx::Size(10, 10),
                      /* requested_image_min_area_pixels */ 20,
                      /* requested_image_max_size */ gfx::Size(20, 20)));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_JpegFormat) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_JpegFormat) {
   EXPECT_TRUE(
       NeedsEncodeImage(/* image_extension */ ".png",
                        /* image_format */ chrome::mojom::ImageFormat::JPEG));
@@ -74,7 +87,7 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_JpegFormat) {
                        /* image_format */ chrome::mojom::ImageFormat::JPEG));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
   EXPECT_FALSE(
       NeedsEncodeImage(/* image_extension */ ".png",
                        /* image_format */ chrome::mojom::ImageFormat::PNG));
@@ -92,7 +105,7 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
                        /* image_format */ chrome::mojom::ImageFormat::PNG));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_WebpFormat) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_WebpFormat) {
   EXPECT_TRUE(
       NeedsEncodeImage(/* image_extension */ ".png",
                        /* image_format */ chrome::mojom::ImageFormat::WEBP));
@@ -110,7 +123,7 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_WebpFormat) {
                        /* image_format */ chrome::mojom::ImageFormat::WEBP));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
+TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
   EXPECT_FALSE(NeedsEncodeImage(
       /* image_extension */ ".png",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
@@ -128,7 +141,7 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
 }
 
-TEST_F(ChromeRenderFrameObserverTest,
+TEST_P(ChromeRenderFrameObserverTest,
        IsAnimatedWebp_HeaderTooSmall_ReturnsFalse) {
   // First 10 bytes taken from a real animated webp image.
   const std::vector<uint8_t> broken_image_data{82, 73, 70, 70, 228,
@@ -136,7 +149,7 @@ TEST_F(ChromeRenderFrameObserverTest,
   EXPECT_FALSE(IsAnimatedWebp(broken_image_data));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_StaticWebp_ReturnsFalse) {
+TEST_P(ChromeRenderFrameObserverTest, IsAnimatedWebp_StaticWebp_ReturnsFalse) {
   // First 75 bytes taken from a real animated webp image.
   const std::vector<uint8_t> static_webp_image_data{
       82,  73,  70,  70,  88,  59,  1,   0,   87,  69,  66,  80,  86,
@@ -148,7 +161,7 @@ TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_StaticWebp_ReturnsFalse) {
   EXPECT_FALSE(IsAnimatedWebp(static_webp_image_data));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_Jpeg_ReturnsFalse) {
+TEST_P(ChromeRenderFrameObserverTest, IsAnimatedWebp_Jpeg_ReturnsFalse) {
   // First 75 bytes taken from a real jpeg image.
   const std::vector<uint8_t> jpeg_image_data{
       255, 216, 255, 224, 0,  16,  74,  70,  73,  70, 0,  1,  1,  1,   0,
@@ -159,7 +172,7 @@ TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_Jpeg_ReturnsFalse) {
   EXPECT_FALSE(IsAnimatedWebp(jpeg_image_data));
 }
 
-TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_AnimatedWebp_ReturnsTrue) {
+TEST_P(ChromeRenderFrameObserverTest, IsAnimatedWebp_AnimatedWebp_ReturnsTrue) {
   // First 75 bytes taken from a real animated webp image.
   const std::vector<uint8_t> animated_webp_image_data{
       82, 73, 70, 70, 228, 26, 0, 0, 87,  69,  66,  80,  86,  80,  56,

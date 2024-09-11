@@ -6784,6 +6784,7 @@ test("unit_tests") {
     "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
     "//components/language/core/browser",
+    "//components/language_detection/core:language_detection",
     "//components/lens",
     "//components/leveldb_proto:test_support",
     "//components/live_caption:constants",
