@@ -1565,12 +1565,6 @@
     {
       name: "DocumentWrite",
     },
-    // When this flag is enabled, a workaround for https://crbug.com/356158097
-    // is removed.
-    {
-      name: "DOMExceptionV8CaptureStackTraceDisableWorkaround",
-      status: "experimental"
-    },
     {
       name: "DOMPartsAPI",
       status: "experimental",

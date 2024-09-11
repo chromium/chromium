@@ -173,19 +173,6 @@ void ExceptionState::SetException(ExceptionCode exception_code,
   } else {
     DCHECK(isolate_);
     exception_.Reset(isolate_, exception);
-    // Temporary workaround while debugging the root cause of
-    // https://crbug.com/356158097. The workaround immediately materializes the
-    // stack trace string. The workaround is enabled by default, but can be
-    // disabled by experimental flag.
-    if (main_context_.GetClassName() &&
-        strcmp(main_context_.GetClassName(), "IDBDatabase") == 0) [[unlikely]] {
-      if (!RuntimeEnabledFeatures::
-              DOMExceptionV8CaptureStackTraceDisableWorkaroundEnabled())
-          [[likely]] {
-        std::ignore = exception.As<v8::Object>()->Get(
-            isolate_->GetCurrentContext(), V8String(isolate_, "stack"));
-      }
-    }
   }
 }
 
