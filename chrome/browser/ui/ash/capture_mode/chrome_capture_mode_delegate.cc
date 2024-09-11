@@ -382,7 +382,8 @@ void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 
 void ChromeCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    const gfx::Image& thumbnail) {
   auto* profile = ProfileManager::GetActiveUserProfile();
   if (!odfs_temp_dir_.GetPath().empty() &&
       odfs_temp_dir_.GetPath().IsParent(path) && profile) {
@@ -400,7 +401,8 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
                 UpdateProgress,
             notification->GetWeakPtr()),
         base::BindOnce(&CaptureFileFinalized, path, std::move(callback),
-                       std::move(notification)));
+                       std::move(notification)),
+        thumbnail);
     notification_ptr->SetCancelClosure(base::BindOnce(
         &ash::cloud_upload::OdfsSkyvaultUploader::Cancel, uploader));
     return;

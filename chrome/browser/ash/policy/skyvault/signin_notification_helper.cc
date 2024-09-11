@@ -76,6 +76,9 @@ void SignInNotificationDelegate::Click(
   if (!signin_callback_) {
     return;
   }
+  if (!button_index) {
+    return;
+  }
 
   switch (*button_index) {
     case NotificationButtonIndex::kSignInButton:
@@ -99,8 +102,9 @@ void ShowSignInNotification(
     Profile* profile,
     int64_t id,
     ash::cloud_upload::OdfsSkyvaultUploader::FileType file_type,
-    const std::string& file_name,
-    base::OnceCallback<void(base::File::Error)> signin_callback) {
+    const base::FilePath& file_path,
+    base::OnceCallback<void(base::File::Error)> signin_callback,
+    std::optional<const gfx::Image> thumbnail) {
   switch (file_type) {
     case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload: {
       message_center::RichNotificationData rich_notification_data;
@@ -115,7 +119,7 @@ void ShowSignInNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           /*title=*/
           l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE),
-          /*message=*/base::UTF8ToUTF16(file_name),
+          /*message=*/base::UTF8ToUTF16(file_path.BaseName().value()),
           /*icon=*/ui::ImageModel(),
           /*display_source=*/
           l10n_util::GetStringUTF16(
@@ -145,6 +149,10 @@ void ShowSignInNotification(
     case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture: {
       message_center::RichNotificationData rich_notification_data;
       rich_notification_data.vector_small_image = &ash::kCaptureModeIcon;
+      if (thumbnail.has_value()) {
+        rich_notification_data.image = thumbnail.value();
+        rich_notification_data.image_path = file_path;
+      }
       auto notification_id = base::StrCat(
           {kScreenCaptureSignInNotificationIdPrefix, base::NumberToString(id)});
       message_center::Notification notification(

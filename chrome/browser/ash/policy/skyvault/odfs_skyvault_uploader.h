@@ -57,7 +57,8 @@ class OdfsSkyvaultUploader
       const base::FilePath& path,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback,
-      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);
+      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
+      std::optional<const gfx::Image> thumbnail = std::nullopt);
 
   // Uploads the file at `file_system_url` to OneDrive, placing it at the
   // specified `target_path`.
@@ -96,12 +97,12 @@ class OdfsSkyvaultUploader
   void Cancel();
 
  protected:
-  OdfsSkyvaultUploader(
-      Profile* profile,
-      int64_t id,
-      const storage::FileSystemURL& file_system_url,
-      FileType file_type,
-      base::RepeatingCallback<void(int64_t)> progress_callback);
+  OdfsSkyvaultUploader(Profile* profile,
+                       int64_t id,
+                       const storage::FileSystemURL& file_system_url,
+                       FileType file_type,
+                       base::RepeatingCallback<void(int64_t)> progress_callback,
+                       std::optional<const gfx::Image> thumbnail);
   ~OdfsSkyvaultUploader() override;
 
   // Returns the path to upload the file to.
@@ -164,6 +165,9 @@ class OdfsSkyvaultUploader
   // Set to `true` if upload is explicitly cancelled by owner. Forces every step
   // to exit early.
   bool cancelled_ = false;
+
+  // Optional preview of the file that is being uploaded.
+  std::optional<const gfx::Image> thumbnail_;
 
   base::WeakPtrFactory<OdfsSkyvaultUploader> weak_ptr_factory_{this};
 };

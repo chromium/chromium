@@ -53,7 +53,8 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     const base::FilePath& path,
     FileType file_type,
     base::RepeatingCallback<void(int64_t)> progress_callback,
-    base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback) {
+    base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
+    std::optional<const gfx::Image> thumbnail) {
   auto* file_system_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
   DCHECK(file_system_context);
@@ -64,7 +65,8 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
       new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
-                               file_type, std::move(progress_callback));
+                               file_type, std::move(progress_callback),
+                               thumbnail);
 
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
   odfs_skyvault_uploader->Run(base::BindOnce(
@@ -92,9 +94,9 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     case FileType::kDownload:
     case FileType::kScreenCapture:
       CHECK(base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path));
-      odfs_skyvault_uploader =
-          new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
-                                   file_type, std::move(progress_callback));
+      odfs_skyvault_uploader = new OdfsSkyvaultUploader(
+          profile, ++g_id_counter, file_system_url, file_type,
+          std::move(progress_callback), std::nullopt);
       break;
     case FileType::kMigration:
       odfs_skyvault_uploader = OdfsMigrationUploader::Create(
@@ -125,14 +127,16 @@ OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     int64_t id,
     const storage::FileSystemURL& file_system_url,
     FileType file_type,
-    base::RepeatingCallback<void(int64_t)> progress_callback)
+    base::RepeatingCallback<void(int64_t)> progress_callback,
+    std::optional<const gfx::Image> thumbnail)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       id_(id),
       file_system_url_(file_system_url),
       file_type_(file_type),
-      progress_callback_(std::move(progress_callback)) {}
+      progress_callback_(std::move(progress_callback)),
+      thumbnail_(thumbnail) {}
 
 OdfsSkyvaultUploader::~OdfsSkyvaultUploader() {
   // Stop observing IO task updates.
@@ -149,8 +153,8 @@ base::FilePath OdfsSkyvaultUploader::GetDestinationFolderPath(
 void OdfsSkyvaultUploader::RequestSignIn(
     base::OnceCallback<void(base::File::Error)> on_sign_in_cb) {
   policy::skyvault_ui_utils::ShowSignInNotification(
-      profile_, id_, file_type_, file_system_url_.path().BaseName().value(),
-      std::move(on_sign_in_cb));
+      profile_, id_, file_type_, file_system_url_.path(),
+      std::move(on_sign_in_cb), thumbnail_);
 }
 
 void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
@@ -338,7 +342,8 @@ OdfsMigrationUploader::OdfsMigrationUploader(
                            id,
                            file_system_url,
                            FileType::kMigration,
-                           /*progress_callback=*/base::DoNothing()),
+                           /*progress_callback=*/base::DoNothing(),
+                           std::nullopt),
       target_path_(target_path) {}
 
 OdfsMigrationUploader::~OdfsMigrationUploader() = default;

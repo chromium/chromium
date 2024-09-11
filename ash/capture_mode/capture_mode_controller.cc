@@ -1660,18 +1660,19 @@ void CaptureModeController::OnImageFileSaved(
     const CaptureModeBehavior* behavior,
     const base::FilePath& file_saved_path) {
   if (file_saved_path.empty()) {
-    OnImageFileFinalized(png_bytes, behavior, /*success=*/false,
+    OnImageFileFinalized(/*image=*/gfx::Image(), behavior, /*success=*/false,
                          file_saved_path);
     return;
   }
+  const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   delegate_->FinalizeSavedFile(
       base::BindOnce(&CaptureModeController::OnImageFileFinalized,
-                     weak_ptr_factory_.GetWeakPtr(), png_bytes, behavior),
-      file_saved_path);
+                     weak_ptr_factory_.GetWeakPtr(), image, behavior),
+      file_saved_path, image);
 }
 
 void CaptureModeController::OnImageFileFinalized(
-    scoped_refptr<base::RefCountedMemory> png_bytes,
+    const gfx::Image& image,
     const CaptureModeBehavior* behavior,
     bool success,
     const base::FilePath& file_saved_path) {
@@ -1683,8 +1684,7 @@ void CaptureModeController::OnImageFileFinalized(
     std::move(on_file_saved_callback_for_test_).Run(file_saved_path);
   }
 
-  DCHECK(png_bytes && png_bytes->size());
-  const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
+  DCHECK(!image.IsEmpty());
   CopyImageToClipboard(image);
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage,
                           behavior);
@@ -2280,7 +2280,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
                                  weak_ptr_factory_.GetWeakPtr(),
                                  /*should_delete_file=*/false,
                                  video_thumbnail)),
-        video_file_path);
+        video_file_path, gfx::Image(video_thumbnail));
   }
 }
 

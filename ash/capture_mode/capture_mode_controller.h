@@ -491,7 +491,7 @@ class ASH_EXPORT CaptureModeController
   // Called back after the image file was saved to the final location.
   // Parameters are same as for `OnImageFileSaved()` with `success` indicating
   // the result of finalizing the file.
-  void OnImageFileFinalized(scoped_refptr<base::RefCountedMemory> png_bytes,
+  void OnImageFileFinalized(const gfx::Image& image,
                             const CaptureModeBehavior* behavior,
                             bool success,
                             const base::FilePath& file_saved_path);
