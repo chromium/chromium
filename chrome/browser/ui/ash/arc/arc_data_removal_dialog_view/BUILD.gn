@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc_data_removal_dialog_view") {
+  sources = [ "arc_data_removal_dialog_view.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//chrome/browser/ash/app_list/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/session",
+    "//components/constrained_window",
+  ]
+}
