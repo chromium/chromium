@@ -473,7 +473,6 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -713,9 +712,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   browser_sync::UserEventServiceFactory::GetInstance();
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
-#if defined(TOOLKIT_VIEWS)
-  WebUIContentsWrapperServiceFactory::GetInstance();
-#endif
   BulkLeakCheckServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   captions::LiveCaptionControllerFactory::GetInstance();

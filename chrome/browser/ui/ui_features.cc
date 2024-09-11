@@ -425,12 +425,6 @@ BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,
              "EnterpriseUpdatedProfileCreationScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This enables enables persistence of a WebContents in a 1-to-1 association
-// with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
-BASE_FEATURE(kWebUIBubblePerProfilePersistence,
-             "WebUIBubblePerProfilePersistence",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.
 BASE_FEATURE(kWebUITabStrip,
