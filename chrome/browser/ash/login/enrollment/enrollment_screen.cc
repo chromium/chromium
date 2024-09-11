@@ -1002,10 +1002,12 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
       effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
     return false;
   }
-
-  CHECK(signin_artifacts_);
-  CHECK(enrollment_launcher_);
-  CHECK(enrollment_succeeded_);
+  // Technically this should be an invariant, but this feature is not crucial
+  // and allows for an easy fallback to the normal flow. Because of this we use
+  // soft checks in case of unforeseen flows that would cause a crash otherwise.
+  if (!signin_artifacts_ || !enrollment_launcher_ || !enrollment_succeeded_) {
+    return false;
+  }
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
       signin_artifacts_->email, signin_artifacts_->gaia_id,

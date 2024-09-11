@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/ui/mock_signin_ui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -206,9 +207,11 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   virtual void SetUpLoginDisplay() {
-    EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(mock_signin_ui_.get()));
+    ON_CALL(*mock_login_display_host_, GetSigninUI())
+        .WillByDefault(Return(mock_signin_ui_.get()));
+
+    ON_CALL(*mock_login_display_host_, GetWizardContext())
+        .WillByDefault(Return(&dummy_wizard_context_));
   }
 
   void SetUpOnMainThread() override {
@@ -299,6 +302,8 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
                                    {existing_user_},
                                    nullptr,
                                    &cryptohome_mixin_};
+
+  WizardContext dummy_wizard_context_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {
@@ -420,12 +425,6 @@ class ExistingUserControllerPublicSessionTest
     device_local_account_policy.Build();
     session_manager_client()->set_device_local_account_policy(
         kPublicSessionUserEmail, device_local_account_policy.GetBlob());
-  }
-
-  void SetUpLoginDisplay() override {
-    EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(mock_signin_ui_.get()));
   }
 
   void TearDownOnMainThread() override {
