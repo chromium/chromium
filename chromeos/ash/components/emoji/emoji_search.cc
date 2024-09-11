@@ -58,7 +58,7 @@ std::map<std::u16string, double, std::less<>> CombineSearchTerms(
 // position in keyword / name, as well as storing names in `names`.
 void AddDataFromFileToMap(
     const int file_id_in_resources,
-    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>& map,
+    EmojiEntryMap& map,
     std::map<std::string, std::string, std::less<>>& names) {
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -110,8 +110,7 @@ void AddDataFromFileToMap(
 }
 
 std::map<std::string_view, double> GetResultsFromMap(
-    const std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>&
-        map,
+    const EmojiEntryMap& map,
     base::span<const std::u16string_view> lowercase_words) {
   std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view lowercase_word : lowercase_words) {
