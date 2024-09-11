@@ -893,6 +893,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.CctAccountMismatch" enum="CctAccountMismatchType"
+    expires_after="2025-02-10">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    When CCT is launched by AGA, records whether there is a mismatch between the
+    account signed in to Chrome and the account signed in to the app that
+    launched Chrome. This can happen if the user is signed in to Chrome but not
+    the 1P app, or vice-versa, or if the user is signed in to both apps but with
+    different accounts.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ChromeSignoutConfirmationPrompt.{Variant}"
     enum="ChromeSignoutConfirmationChoice" expires_after="2025-02-10">
   <owner>droger@chromium.org</owner>

@@ -237,6 +237,15 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Required credential field missing"/>
 </enum>
 
+<enum name="CctAccountMismatchType">
+  <int value="0" label="Signed out of both Chrome and 1P app"/>
+  <int value="1" label="Signed in to Chrome and 1P app with same account"/>
+  <int value="2" label="Signed out of 1P app but signed in to Chrome"/>
+  <int value="3" label="Signed out of Chrome but signed in to 1P app"/>
+  <int value="4"
+      label="Signed in to 1P app and Chrome with different accounts"/>
+</enum>
+
 <enum name="ChromeSigninSettingModification">
   <int value="0" label="No modifications"/>
   <int value="1" label="Modified to always ask"/>
