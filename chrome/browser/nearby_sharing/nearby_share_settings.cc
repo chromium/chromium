@@ -218,6 +218,8 @@ void NearbyShareSettings::GetVisibility(
 
 void NearbyShareSettings::SetVisibility(
     nearby_share::mojom::Visibility visibility) {
+  DCHECK(pref_service_);
+
   pref_service_->SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                             static_cast<int>(visibility));
 }

@@ -24,6 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -770,7 +771,11 @@ NearbySharingServiceImpl::ClearForegroundReceiveSurfaces() {
 }
 
 bool NearbySharingServiceImpl::IsInHighVisibility() const {
-  return in_high_visibility;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    return prefs_->GetBoolean(prefs::kNearbySharingInHighVisibilityPrefName);
+  }
+
+  return in_high_visibility_;
 }
 
 bool NearbySharingServiceImpl::IsTransferring() const {
@@ -4883,13 +4888,19 @@ void NearbySharingServiceImpl::OnStartDiscoveryResult(
 
 void NearbySharingServiceImpl::SetInHighVisibility(
     bool new_in_high_visibility) {
-  if (in_high_visibility == new_in_high_visibility) {
+  if (IsInHighVisibility() == new_in_high_visibility) {
     return;
   }
 
-  in_high_visibility = new_in_high_visibility;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    prefs_->SetBoolean(prefs::kNearbySharingInHighVisibilityPrefName,
+                       /*value=*/new_in_high_visibility);
+  } else {
+    in_high_visibility_ = new_in_high_visibility;
+  }
+
   for (auto& observer : observers_) {
-    observer.OnHighVisibilityChanged(in_high_visibility);
+    observer.OnHighVisibilityChanged(new_in_high_visibility);
   }
 }
 
