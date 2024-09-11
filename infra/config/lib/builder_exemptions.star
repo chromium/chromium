@@ -268,7 +268,6 @@ exempted_from_description_builders = {
         "android-11-x86-rel",
         "android-12-x64-dbg-tests",
         "android-12-x64-fyi-rel",
-        "android-12l-x64-dbg-tests",
         "android-12l-x64-fyi-dbg",
         "android-13-x64-fyi-rel",
         "android-androidx-packager",

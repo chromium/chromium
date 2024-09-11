@@ -793,6 +793,7 @@ ci.builder(
 
 ci.builder(
     name = "android-12l-x64-dbg-tests",
+    description_html = "Run Chromium tests on Android 12l tablet-flavor emulator.",
     triggered_by = ["ci/Android x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -825,7 +826,8 @@ ci.builder(
 
 ci.builder(
     name = "android-12l-landscape-x64-dbg-tests",
-    description_html = "Run Chromium tests on Android 12l emulator in Landscape Mode.",
+    description_html = "Run Chromium tests on Android 12l tablet-flavor " +
+                       "emulator in Landscape Mode.",
     triggered_by = ["ci/Android x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -852,6 +854,36 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "12L-L",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+)
+
+ci.builder(
+    name = "android-12l-x64-rel-cq",
+    # TODO(crbug.com/364967534): Enable on branch once stable.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run CQ-specific Chromium test suites on Android 12l " +
+                       "tablet-flavor emulator.",
+    builder_spec = builder_config.copy_from("ci/android-13-x64-rel"),
+    gn_args = "ci/android-13-x64-rel",
+    targets = targets.bundle(
+        targets = "android_12l_rel_cq_gtests",
+        mixins = [
+            "12l-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    # TODO(crbug.com/364967534): Enable gardener_rotations once stable.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(crbug.com/364967534): Enable tree_closing once stable.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        # TODO(crbug.com/364967534): Change to "on_cq".
+        category = "builder_tester|x64",
+        short_name = "12L",
     ),
     contact_team_email = "clank-engprod@google.com",
 )

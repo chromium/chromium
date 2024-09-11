@@ -2132,6 +2132,17 @@ targets.tests.gtest_test(
     binary = "browser_tests",
 )
 
+targets.tests.gtest_test(
+    name = "tablet_sensitive_chrome_public_test_apk",
+    mixins = [
+        "skia_gold_test",
+    ],
+    args = [
+        "--annotation=Restriction=Tablet",
+    ],
+    binary = "chrome_public_test_apk",
+)
+
 targets.tests.isolated_script_test(
     name = "telemetry_chromium_minidump_unittests",
     args = [

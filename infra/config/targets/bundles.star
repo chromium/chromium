@@ -18,6 +18,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_12l_rel_cq_gtests",
+    targets = [
+        "tablet_sensitive_chrome_public_test_apk",
+    ],
+)
+
+targets.bundle(
     name = "android_ar_gtests",
     targets = [
         "monochrome_public_test_ar_apk",
