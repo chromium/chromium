@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -206,7 +207,15 @@ TEST(CommandTest, ExtensionCommandParsing) {
     CheckParse(kTests[i], i, false, all_platforms);
 }
 
-TEST(CommandTest, ExtensionCommandParsingFallback) {
+// TODO(https://crbug.com/356905053): Add/adjust command key support on
+// desktop-android platform.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_ExtensionCommandParsingFallback \
+  DISABLED_ExtensionCommandParsingFallback
+#else
+#define MAYBE_ExtensionCommandParsingFallback ExtensionCommandParsingFallback
+#endif
+TEST(CommandTest, MAYBE_ExtensionCommandParsingFallback) {
   std::string description = "desc";
   std::string command_name = "foo";
 

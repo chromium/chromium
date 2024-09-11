@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_io_thread.h"
+#include "build/android_buildflags.h"
 #include "build/buildflag.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/common/content_client.h"
@@ -83,6 +84,11 @@ void ExtensionsTestSuite::Initialize() {
 
   base::FilePath extensions_shell_and_test_pak_path;
   base::PathService::Get(base::DIR_ASSETS, &extensions_shell_and_test_pak_path);
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // On Android all pak files are inside the paks folder.
+  extensions_shell_and_test_pak_path =
+      extensions_shell_and_test_pak_path.Append(FILE_PATH_LITERAL("paks"));
+#endif
   ui::ResourceBundle::InitSharedInstanceWithPakPath(
       extensions_shell_and_test_pak_path.AppendASCII(
           "extensions_shell_and_test.pak"));
