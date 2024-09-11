@@ -19,6 +19,7 @@ function withArgs<Args extends I18nArgType[]>(): Args {
 }
 
 const noArgStringNames = [
+  'backToMainButtonAriaLabel',
   'backToMainButtonTooltip',
   'closeDialogButtonTooltip',
   'exportDialogAudioFormatWebmOption',
@@ -111,6 +112,8 @@ const noArgStringNames = [
   'recordingItemPlayButtonTooltip',
   'recordingListHeader',
   'recordingListNoMatchText',
+  'recordingListSearchBoxClearButtonAriaLabel',
+  'recordingListSearchBoxCloseButtonAriaLabel',
   'recordingListSearchBoxPlaceholder',
   'recordingListSearchButtonTooltip',
   'recordingListSortButtonTooltip',
@@ -144,6 +147,7 @@ const noArgStringNames = [
   'titleRenameTooltip',
   'titleSuggestionButtonTooltip',
   'titleSuggestionHeader',
+  'titleTextfieldAriaLabel',
   'transcriptionAutoscrollButton',
   'transcriptionNoSpeechText',
   'transcriptionSpeakerLabelPendingLabel',
@@ -157,6 +161,9 @@ const withArgsStringNames = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
+  recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
+  recordingItemPauseButtonAriaLabel: withArgs<[string]>(),
+  recordingItemPlayButtonAriaLabel: withArgs<[string]>(),
   settingsOptionsSummaryDownloadingProgressDescription: withArgs<[number]>(),
   settingsOptionsTranscriptionDownloadingProgressDescription:
     withArgs<[number]>(),

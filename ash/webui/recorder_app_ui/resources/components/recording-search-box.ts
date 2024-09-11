@@ -174,6 +174,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
           slot="trailing"
           shape="circle"
           @click=${this.closeSearchBox}
+          aria-label=${i18n.recordingListSearchBoxClearButtonAriaLabel}
         >
           <cra-icon slot="icon" name="remove_fill"></cra-icon>
         </cra-icon-button>`;
@@ -200,6 +201,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
         size="small"
         slot="leading"
         @click=${this.closeSearchBox}
+        aria-label=${i18n.recordingListSearchBoxCloseButtonAriaLabel}
       >
         <cra-icon slot="icon" name="search"></cra-icon>
       </cra-icon-button>

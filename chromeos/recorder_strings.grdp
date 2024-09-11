@@ -5,6 +5,9 @@
   <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
     Recorder
   </message>
+  <message desc="Accessibility label of the button to navigate back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_ARIA_LABEL">
+    Back to main page
+  </message>
   <message desc="Tooltip of the button to navigate back to main page." meaning="Go back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP">
     Back
   </message>
@@ -183,8 +186,17 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Accessibility label of the volume slider for the playback." meaning="Set the playback volume." name="IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL">
     Volume
   </message>
+  <message desc="Accessibility label of the button to open more recording options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_ARIA_LABEL">
+    More options for <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
   <message desc="Tooltip of the button to open more record options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_TOOLTIP">
     More options
+  </message>
+  <message desc="Accessibility label of the button to pause the recording." meaning="Pause the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_ARIA_LABEL">
+    Pause <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
+  <message desc="Accessibility label of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_ARIA_LABEL">
+    Play <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
   </message>
   <message desc="Tooltip of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_TOOLTIP">
     Play
@@ -194,6 +206,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Message when there’re no recordings with the titles matching with the search keyword." name="IDS_RECORDER_RECORDING_LIST_NO_MATCH_TEXT">
     No matching results
+  </message>
+  <message desc="Accessibility of the button to clear the text in the search box." meaning="Clear the search box." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_CLEAR_BUTTON_ARIA_LABEL">
+    Clear search
+  </message>
+  <message desc="Accessibility of the button to close the search box." meaning="Close the search box." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_CLOSE_BUTTON_ARIA_LABEL">
+    Close search
   </message>
   <message desc="Placeholder text on the search box used to search recordings." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_PLACEHOLDER">
     Search recording name
@@ -389,6 +407,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Header of title suggestion." name="IDS_RECORDER_TITLE_SUGGESTION_HEADER">
     A few options:
+  </message>
+  <message desc="Accessibility label for the textfield showing the recording name." meaning="Textfield for the recording name being renamed." name="IDS_RECORDER_TITLE_TEXTFIELD_ARIA_LABEL">
+    Recording name
   </message>
   <message desc="Button to enable autoscroll for transcription." name="IDS_RECORDER_TRANSCRIPTION_AUTOSCROLL_BUTTON">
     Autoscroll

@@ -276,6 +276,7 @@ export class RecordingTitle extends ReactiveLitElement {
           .value=${this.recordingMetadata?.title ?? ''}
           @change=${this.onChangeTitle}
           @focusout=${this.onFocusout}
+          aria-label=${i18n.titleTextfieldAriaLabel}
         >
           ${suggestionIconButton}
         </cros-textfield>

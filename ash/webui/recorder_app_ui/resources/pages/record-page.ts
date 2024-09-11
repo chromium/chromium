@@ -809,7 +809,7 @@ export class RecordPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           @click=${this.onBackClick}
-          aria-label=${i18n.backToMainButtonTooltip}
+          aria-label=${i18n.backToMainButtonAriaLabel}
         >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>

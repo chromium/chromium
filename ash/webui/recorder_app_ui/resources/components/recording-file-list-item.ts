@@ -406,6 +406,10 @@ export class RecordingFileListItem extends ReactiveLitElement {
       '--progress':
         this.playProgress === null ? null : clamp(this.playProgress, 0, 100),
     };
+    const title = assertExists(this.recording?.title);
+    const ariaLabel = this.playing ?
+      i18n.recordingItemPauseButtonAriaLabel(title) :
+      i18n.recordingItemPlayButtonAriaLabel(title);
 
     return html`
       <cra-icon-button
@@ -414,7 +418,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         shape="circle"
         @click=${this.onPlayClick}
         @pointerdown=${/* To prevent ripple on card. */ stopPropagation}
-        aria-label=${i18n.recordingItemPlayButtonTooltip}
+        aria-label=${ariaLabel}
       >
         <cra-icon slot="icon" .name=${playIcon}></cra-icon>
       </cra-icon-button>
@@ -429,6 +433,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
     const classes = {
       'menu-shown': this.menuShown.value,
     };
+    const title = this.recording.title;
 
     // TODO(pihsun): Check why the ripple sometimes doesn't happen on touch
     // long-press but sometimes does.
@@ -446,7 +451,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
           >
             ${this.renderPlayButton()}
             <div id="recording-info">
-              ${this.renderTitle(this.recording.title, this.searchHighlight)}
+              ${this.renderTitle(title, this.searchHighlight)}
               ${this.renderDescription(this.recording.description)}
               ${this.renderRecordingTimeline(this.recording)}
             </div>
@@ -455,7 +460,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             buttonstyle="floating"
             id="options"
             @click=${this.onOptionsClick}
-            aria-label=${i18n.recordingItemOptionsButtonTooltip}
+            aria-label=${i18n.recordingItemOptionsButtonAriaLabel(title)}
           >
             <cra-icon slot="icon" name="more_vertical"></cra-icon>
           </cra-icon-button>

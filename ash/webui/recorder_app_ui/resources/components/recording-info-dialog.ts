@@ -198,6 +198,7 @@ export class RecordingInfoDialog extends ReactiveLitElement {
           size="small"
           shape="circle"
           @click=${this.hide}
+          aria-label=${i18n.closeDialogButtonTooltip}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

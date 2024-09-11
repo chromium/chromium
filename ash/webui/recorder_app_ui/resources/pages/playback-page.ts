@@ -642,7 +642,7 @@ export class PlaybackPage extends ReactiveLitElement {
           buttonstyle="floating"
           @click=${() => navigateTo('main')}
           ${ref(this.backButton)}
-          aria-label=${i18n.backToMainButtonTooltip}
+          aria-label=${i18n.backToMainButtonAriaLabel}
         >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
