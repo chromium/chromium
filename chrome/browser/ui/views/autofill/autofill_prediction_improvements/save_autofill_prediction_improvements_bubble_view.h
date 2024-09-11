@@ -40,6 +40,7 @@ class SaveAutofillPredictionImprovementsBubbleView
   void WindowClosing() override;
 
  private:
+  void OnDialogAccepted();
   base::WeakPtr<SaveAutofillPredictionImprovementsController> controller_;
 };
 

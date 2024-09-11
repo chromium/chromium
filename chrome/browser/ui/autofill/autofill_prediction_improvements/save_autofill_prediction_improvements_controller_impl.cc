@@ -40,12 +40,13 @@ SaveAutofillPredictionImprovementsController::GetOrCreate(
       web_contents);
 }
 
-void SaveAutofillPredictionImprovementsControllerImpl::OfferSave() {
+void SaveAutofillPredictionImprovementsControllerImpl::OfferSave(
+    std::vector<PredictionImprovement> new_prediction_improvements) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
   }
-
+  prediction_improvements_ = std::move(new_prediction_improvements);
   DoShowBubble();
 }
 
@@ -76,6 +77,13 @@ void SaveAutofillPredictionImprovementsControllerImpl::DoShowBubble() {
 base::WeakPtr<SaveAutofillPredictionImprovementsController>
 SaveAutofillPredictionImprovementsControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::vector<
+    SaveAutofillPredictionImprovementsController::PredictionImprovement>&
+SaveAutofillPredictionImprovementsControllerImpl::GetPredictionImprovements()
+    const {
+  return prediction_improvements_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(

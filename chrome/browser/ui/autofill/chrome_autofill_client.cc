@@ -43,6 +43,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -793,7 +794,7 @@ void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble() {
   if (SaveAutofillPredictionImprovementsController* controller =
           SaveAutofillPredictionImprovementsController::GetOrCreate(
               web_contents())) {
-    controller->OfferSave();
+    controller->OfferSave({});
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

@@ -7935,6 +7935,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/add_new_address_bubble_view_unittest.cc",
       "../browser/ui/views/autofill/address_editor_view_unittest.cc",
       "../browser/ui/views/autofill/autofill_field_promo_view_impl_unittest.cc",
+      "../browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view_unittest.cc",
       "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
