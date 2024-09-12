@@ -17434,6 +17434,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE" desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
       Select anything to search with Google Lens
     </message>
+    <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT" desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to drag over the screen to select text to search with Google Lens.">
+      Select text with Google Lens
+    </message>
     <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE" desc="Text that is shown in the Lens Overlay education bubble when starting the feature in an offline state. Informs the user that Lens is not currently available.">
       Google Lens is not available. Try again later.
     </message>
