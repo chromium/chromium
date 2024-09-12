@@ -216,6 +216,9 @@
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
       Can't save plus address.
     </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_TIMEOUT_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a timeout error is encountered during inline creation." translateable="false">
+      Make sure you're online and try again
+    </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
       Try again
     </message>

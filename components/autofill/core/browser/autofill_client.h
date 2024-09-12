@@ -260,7 +260,9 @@ class AutofillClient {
     kGenericError,
     // The quota for plus address creation is exhausted (account-wide or
     // site-specific).
-    kQuotaExhausted
+    kQuotaExhausted,
+    // The network request timed out.
+    kTimeout,
   };
   // Shows UI to inform the user about a plus address error (apart from
   // affiliation errors).

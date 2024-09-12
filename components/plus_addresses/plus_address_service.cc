@@ -664,46 +664,53 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
           std::move(updated_suggestions),
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 
-  // Next, send the network request for creation.
-  PlusAddressRequestCallback callback = base::BindOnce(
-      [](HideSuggestionsCallback hide_callback,
-         PlusAddressCallback fill_callback,
-         ShowAffiliationErrorDialogCallback show_affiliation_error,
-         ShowErrorDialogCallback show_error,
-         base::OnceClosure reshow_suggestions,
-         const PlusAddress& requested_address,
-         const PlusProfileOrError& profile_or_error) {
-        // Always hide the popup.
-        std::move(hide_callback)
-            .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
-        if (!profile_or_error.has_value()) {
-          if (profile_or_error.error().IsQuotaError()) {
-            std::move(show_error)
-                .Run(PlusAddressErrorDialogType::kQuotaExhausted,
-                     /*on_accepted=*/base::DoNothing());
-            return;
-          }
-          // TODO(crbug.com/362445807): Differentiate more between different
-          // error cases and add tests.
-          std::move(show_error)
-              .Run(PlusAddressErrorDialogType::kGenericError,
-                   /*on_accepted=*/std::move(reshow_suggestions));
-          return;
-        }
-        if (requested_address != profile_or_error->plus_address) {
-          std::move(show_affiliation_error)
-              .Run(GetOriginForDisplay(*profile_or_error),
-                   base::UTF8ToUTF16(profile_or_error->plus_address.value()));
-          return;
-        }
+  ConfirmPlusAddress(
+      primary_main_frame_origin, std::move(requested_plus_address),
+      base::BindOnce(
+          &PlusAddressService::OnConfirmInlineCreation, base::Unretained(this),
+          std::move(hide_suggestions_callback), std::move(fill_field_callback),
+          std::move(show_affiliation_error_dialog),
+          std::move(show_error_dialog), std::move(reshow_suggestions),
+          requested_plus_address));
+}
 
-        std::move(fill_callback).Run(profile_or_error->plus_address.value());
-      },
-      std::move(hide_suggestions_callback), std::move(fill_field_callback),
-      std::move(show_affiliation_error_dialog), std::move(show_error_dialog),
-      std::move(reshow_suggestions), requested_plus_address);
-  ConfirmPlusAddress(primary_main_frame_origin,
-                     std::move(requested_plus_address), std::move(callback));
+void PlusAddressService::OnConfirmInlineCreation(
+    HideSuggestionsCallback hide_callback,
+    PlusAddressCallback fill_callback,
+    ShowAffiliationErrorDialogCallback show_affiliation_error,
+    ShowErrorDialogCallback show_error,
+    base::OnceClosure reshow_suggestions,
+    const PlusAddress& requested_address,
+    const PlusProfileOrError& profile_or_error) {
+  // Always hide the popup.
+  std::move(hide_callback)
+      .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
+
+  if (profile_or_error.has_value()) {
+    // The returned address was not the requested one. This means that there
+    // must already exist an address for an affiliated domain.
+    if (requested_address != profile_or_error->plus_address) {
+      std::move(show_affiliation_error)
+          .Run(GetOriginForDisplay(*profile_or_error),
+               base::UTF8ToUTF16(profile_or_error->plus_address.value()));
+      return;
+    }
+    std::move(fill_callback).Run(profile_or_error->plus_address.value());
+    return;
+  }
+
+  if (profile_or_error.error().IsQuotaError()) {
+    std::move(show_error)
+        .Run(PlusAddressErrorDialogType::kQuotaExhausted,
+             /*on_accepted=*/base::DoNothing());
+    return;
+  }
+  std::move(show_error)
+      .Run(profile_or_error.error().IsTimeoutError()
+               ? PlusAddressErrorDialogType::kTimeout
+               : PlusAddressErrorDialogType::kGenericError,
+           /*on_accepted=*/std::move(reshow_suggestions));
+  return;
 }
 
 }  // namespace plus_addresses

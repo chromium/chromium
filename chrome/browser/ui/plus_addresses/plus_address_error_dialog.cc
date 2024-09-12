@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,57 @@
 #include "ui/base/models/dialog_model_field.h"
 
 namespace plus_addresses {
+
+namespace {
+
+std::unique_ptr<ui::DialogModel> CreateErrorDialogWithWithCancelAndAccept(
+    std::u16string description,
+    base::OnceClosure on_accepted) {
+  return ui::DialogModel::Builder()
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
+      .AddParagraph(ui::DialogModelLabel(std::move(description)))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetId(
+                           kPlusAddressErrorDialogCancelButton))
+      .AddOkButton(std::move(on_accepted),
+                   ui::DialogModel::Button::Params()
+                       .SetId(kPlusAddressErrorDialogAcceptButton)
+                       .SetLabel(l10n_util::GetStringUTF16(
+                           IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON)))
+      .Build();
+}
+
+std::unique_ptr<ui::DialogModel> CreateGenericErrorDialog(
+    base::OnceClosure on_accepted) {
+  return CreateErrorDialogWithWithCancelAndAccept(
+      /*description=*/l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION),
+      std::move(on_accepted));
+}
+
+std::unique_ptr<ui::DialogModel> CreateTimeoutErrorDialog(
+    base::OnceClosure on_accepted) {
+  return CreateErrorDialogWithWithCancelAndAccept(
+      /*description=*/l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_CREATE_INLINE_TIMEOUT_ERROR_DESCRIPTION),
+      std::move(on_accepted));
+}
+
+std::unique_ptr<ui::DialogModel> CreateQuotaErrorDialog(
+    base::OnceClosure on_accepted) {
+  return ui::DialogModel::Builder()
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
+      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION)))
+      .AddOkButton(std::move(on_accepted),
+                   ui::DialogModel::Button::Params().SetId(
+                       kPlusAddressErrorDialogAcceptButton))
+      .Build();
+}
+
+}  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorDialogAcceptButton);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorDialogCancelButton);
@@ -52,25 +104,18 @@ void ShowInlineCreationAffiliationErrorDialog(
 void ShowInlineCreationErrorDialog(content::WebContents* web_contents,
                                    PlusAddressErrorDialogType error_dialog_type,
                                    base::OnceClosure on_accepted) {
-  // TODO(crbug.com/362445807): Differentiate dialog design based on
-  // `error_dialog_type`.
-  constrained_window::ShowWebModal(
-      ui::DialogModel::Builder()
-          .SetTitle(l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
-          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION)))
-          .AddCancelButton(base::DoNothing(),
-                           ui::DialogModel::Button::Params().SetId(
-                               kPlusAddressErrorDialogCancelButton))
-          .AddOkButton(
-              std::move(on_accepted),
-              ui::DialogModel::Button::Params()
-                  .SetId(kPlusAddressErrorDialogAcceptButton)
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON)))
-          .Build(),
-      web_contents);
+  auto create_model = [&]() {
+    switch (error_dialog_type) {
+      case PlusAddressErrorDialogType::kGenericError:
+        return CreateGenericErrorDialog(std::move(on_accepted));
+      case PlusAddressErrorDialogType::kTimeout:
+        return CreateTimeoutErrorDialog(std::move(on_accepted));
+      case PlusAddressErrorDialogType::kQuotaExhausted:
+        return CreateQuotaErrorDialog(std::move(on_accepted));
+    }
+    NOTREACHED();
+  };
+  constrained_window::ShowWebModal(create_model(), web_contents);
 }
 
 }  // namespace plus_addresses

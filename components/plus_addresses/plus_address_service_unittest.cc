@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -775,9 +776,9 @@ TEST_F(PlusAddressServiceRequestsTest,
 }
 
 // Tests that when the server call to create a plus address from an inline
-// suggestion returns with a TOO_MANY_REQUESTS error, a call is made to show an
-// error dialog that the quota is exhausted.
-TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionQuotaError) {
+// suggestion returns with a HTTP_REQUEST_TIMEOUT error, a call is made to show
+// an error dialog that allows trying again
+TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
@@ -785,6 +786,7 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionQuotaError) {
   base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
   base::MockCallback<PlusAddressService::ShowErrorDialogCallback>
       show_error_callback;
+  base::MockCallback<base::OnceClosure> reshow_callback;
 
   PlusProfile profile = test::CreatePlusProfile();
   PlusProfile affiliated_profile = test::CreatePlusProfile2();
@@ -805,21 +807,23 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionQuotaError) {
     EXPECT_CALL(check, Call);
     EXPECT_CALL(hide_callback,
                 Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
+    // Simulate accepting by running the callback.
     EXPECT_CALL(
         show_error_callback,
-        Run(PlusAddressService::PlusAddressErrorDialogType::kQuotaExhausted,
-            _));
+        Run(PlusAddressService::PlusAddressErrorDialogType::kTimeout, _))
+        .WillOnce(RunOnceCallback<1>());
+    EXPECT_CALL(reshow_callback, Run);
   }
   service().OnAcceptedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
       /*show_affiliation_error_dialog=*/base::DoNothing(),
-      show_error_callback.Get(), /*reshow_suggestions=*/base::DoNothing());
+      show_error_callback.Get(), reshow_callback.Get());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
-      kCreatePlusAddressEndpoint, "", net::HTTP_TOO_MANY_REQUESTS);
+      kCreatePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

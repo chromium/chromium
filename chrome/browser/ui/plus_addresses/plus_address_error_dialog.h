@@ -29,8 +29,7 @@ void ShowInlineCreationAffiliationErrorDialog(
     std::u16string affiliated_plus_address,
     base::OnceClosure on_accepted);
 
-// Shows a tab-modal error dialog that offers trying again and runs
-// `on_accepted` if the user chooses to do so.
+// Shows a tab-modal error dialog and runs `on_accepted` if the user accepts it.
 using PlusAddressErrorDialogType =
     autofill::AutofillClient::PlusAddressErrorDialogType;
 void ShowInlineCreationErrorDialog(content::WebContents* web_contents,

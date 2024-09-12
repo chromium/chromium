@@ -32,6 +32,14 @@ class PlusAddressErrorDialogInteractiveUiTest : public InteractiveBrowserTest {
     });
   }
 
+  InteractiveBrowserTestApi::StepBuilder ShowErrorDialog(
+      PlusAddressErrorDialogType type,
+      base::OnceClosure on_accepted) {
+    return Do([this, type, cb = std::move(on_accepted)]() mutable {
+      ShowInlineCreationErrorDialog(web_contents(), type, std::move(cb));
+    });
+  }
+
  private:
 };
 
@@ -48,8 +56,30 @@ IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
                        ShowAndCancelAffiliationErrorDialog) {
   base::test::TestFuture<void> on_accepted;
   RunTestSequence(ShowAffiliationErrorDialog(on_accepted.GetCallback()),
+                  EnsurePresent(kPlusAddressErrorDialogCancelButton),
                   PressButton(kPlusAddressErrorDialogCancelButton),
                   Check([&]() { return !on_accepted.IsReady(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
+                       ShowAndAcceptTimeoutErrorDialog) {
+  base::test::TestFuture<void> on_accepted;
+  RunTestSequence(ShowErrorDialog(PlusAddressErrorDialogType::kTimeout,
+                                  on_accepted.GetCallback()),
+                  EnsurePresent(kPlusAddressErrorDialogCancelButton),
+                  PressButton(kPlusAddressErrorDialogAcceptButton),
+                  Check([&]() { return on_accepted.IsReady(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
+                       ShowAndAcceptQuotaErrorDialog) {
+  base::test::TestFuture<void> on_accepted;
+  // Quota error dialogs do not have a cancel button.
+  RunTestSequence(ShowErrorDialog(PlusAddressErrorDialogType::kQuotaExhausted,
+                                  on_accepted.GetCallback()),
+                  EnsureNotPresent(kPlusAddressErrorDialogCancelButton),
+                  PressButton(kPlusAddressErrorDialogAcceptButton),
+                  Check([&]() { return on_accepted.IsReady(); }));
 }
 
 }  // namespace

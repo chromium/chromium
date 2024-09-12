@@ -261,6 +261,23 @@ class PlusAddressService : public KeyedService,
       GetSuggestionsCallback callback,
       std::vector<PlusProfile> affiliated_profiles);
 
+  // Reacts to the server response for confirming a plus address from an inline
+  // suggestion.
+  // - In all cases, it hides the showing suggestions.
+  // - In the success case, it then fills the confirmed plus address.
+  // - In the error case, it shows a modal dialog to either
+  //   * fill an affiliated plus address, or
+  //   * oinform the user that their quota is exhausted, or
+  //   * retry by reshowing the suggestions(e.g. on timeout).
+  void OnConfirmInlineCreation(
+      HideSuggestionsCallback hide_callback,
+      PlusAddressCallback fill_callback,
+      ShowAffiliationErrorDialogCallback show_affiliation_error,
+      ShowErrorDialogCallback show_error,
+      base::OnceClosure reshow_suggestions,
+      const PlusAddress& requested_address,
+      const PlusProfileOrError& profile_or_error);
+
   const raw_ref<PrefService> pref_service_;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
