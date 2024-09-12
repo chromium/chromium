@@ -18,7 +18,13 @@ public final class ProcessGlobalConfigConstants {
 
     /** @hide */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @StringDef(value = {DATA_DIRECTORY_SUFFIX, DATA_DIRECTORY_BASE_PATH, CACHE_DIRECTORY_BASE_PATH})
+    @StringDef(
+            value = {
+                DATA_DIRECTORY_SUFFIX,
+                DATA_DIRECTORY_BASE_PATH,
+                CACHE_DIRECTORY_BASE_PATH,
+                CONFIGURE_PARTITIONED_COOKIES
+            })
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.PARAMETER, ElementType.METHOD})
     public @interface ProcessGlobalConfigMapKey {}
@@ -40,4 +46,10 @@ public final class ProcessGlobalConfigConstants {
      * chromium via reflection into AndroidX class.
      */
     public static final String CACHE_DIRECTORY_BASE_PATH = "CACHE_DIRECTORY_BASE_PATH";
+
+    /**
+     * Key for configuring if partitioned cookies are enabled in the process global config map that
+     * is read in chromium via reflection into AndroidX class.
+     */
+    public static final String CONFIGURE_PARTITIONED_COOKIES = "CONFIGURE_PARTITIONED_COOKIES";
 }

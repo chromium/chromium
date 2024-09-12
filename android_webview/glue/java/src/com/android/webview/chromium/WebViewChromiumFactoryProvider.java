@@ -411,9 +411,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
 
-            // Temporarily disable CHIPS until the CookieManager API supports the feature.
             CommandLine cl = CommandLine.getInstance();
-            cl.appendSwitch("disable-partitioned-cookies");
 
             boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
             if (multiProcess) {
@@ -495,6 +493,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
 
                 deleteContentsOnPackageDowngrade(packageInfo);
+            }
+
+            if (!androidXConfig.getPartitionedCookiesEnabled()) {
+                cl.appendSwitch("disable-partitioned-cookies");
             }
 
             // Now safe to use WebView data directory.
