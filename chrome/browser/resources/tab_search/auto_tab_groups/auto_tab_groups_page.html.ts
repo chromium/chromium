@@ -15,6 +15,14 @@ export function getHtml(this: AutoTabGroupsPageElement) {
         class="auto-tab-groups-header"
         aria-live="polite"
         aria-relevant="all">
+      ${
+      this.declutterEnabled_ ? html`
+        <cr-icon-button class="back-button"
+            iron-icon="cr:arrow-back"
+            @click="${this.onBackClick_}">
+        </cr-icon-button>
+      ` :
+                               ''}
       ${this.getTitle_()}
     </div>
     <auto-tab-groups-not-started id="notStarted"

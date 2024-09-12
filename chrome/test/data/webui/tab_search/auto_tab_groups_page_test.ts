@@ -9,7 +9,7 @@ import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSe
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createProfileData, createTab} from './tab_search_test_data.js';
+import {createProfileData, createTab, createTabOrganizationSession} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 import {TestTabSearchSyncBrowserProxy} from './test_tab_search_sync_browser_proxy.js';
 
@@ -24,7 +24,7 @@ suite('AutoTabGroupsPageTest', () => {
 
     testApiProxy = new TestTabSearchApiProxy();
     testApiProxy.setProfileData(createProfileData());
-    const session = createSession();
+    const session = createTabOrganizationSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
@@ -42,7 +42,7 @@ suite('AutoTabGroupsPageTest', () => {
 
     testApiProxy = new TestTabSearchApiProxy();
     testApiProxy.setProfileData(createProfileData());
-    const session = createSession();
+    const session = createTabOrganizationSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
@@ -55,27 +55,6 @@ suite('AutoTabGroupsPageTest', () => {
 
     document.body.appendChild(autoTabGroupsResults);
     return microtasksFinished();
-  }
-
-  function createSession(override: Partial<TabOrganizationSession> = {}):
-      TabOrganizationSession {
-    return Object.assign(
-        {
-          activeTabId: -1,
-          sessionId: 1,
-          state: TabOrganizationState.kNotStarted,
-          organizations: [{
-            organizationId: 1,
-            name: stringToMojoString16('foo'),
-            tabs: [
-              createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
-              createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
-              createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
-            ],
-          }],
-          error: TabOrganizationError.kNone,
-        },
-        override);
   }
 
   function createMultiOrganizationSession(
@@ -206,7 +185,7 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
+        createTabOrganizationSession({state: TabOrganizationState.kSuccess}));
     await microtasksFinished();
 
     const results =
@@ -305,7 +284,7 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
+        createTabOrganizationSession({state: TabOrganizationState.kSuccess}));
 
     assertEquals(0, testApiProxy.getCallCount('acceptTabOrganization'));
 
@@ -394,7 +373,7 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
+        createTabOrganizationSession({state: TabOrganizationState.kSuccess}));
     await microtasksFinished();
 
     assertEquals(0, testApiProxy.getCallCount('rejectSession'));
@@ -422,7 +401,7 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({
+        createTabOrganizationSession({
           state: TabOrganizationState.kFailure,
           error: TabOrganizationError.kGeneric,
         }));
@@ -450,7 +429,7 @@ suite('AutoTabGroupsPageTest', () => {
       successTitleSingle: successString,
     });
     await autoTabGroupsPageSetup();
-    const session = createSession({
+    const session = createTabOrganizationSession({
       state: TabOrganizationState.kSuccess,
       activeTabId: 4,
       organizations: [{
@@ -484,7 +463,7 @@ suite('AutoTabGroupsPageTest', () => {
       successTitleSingle: successString,
     });
     await autoTabGroupsPageSetup();
-    const session = createSession({
+    const session = createTabOrganizationSession({
       state: TabOrganizationState.kSuccess,
       activeTabId: 2,
       organizations: [{
@@ -508,5 +487,27 @@ suite('AutoTabGroupsPageTest', () => {
     const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
     assertTrue(!!header);
     assertEquals(successString, header.textContent!.trim());
+  });
+
+  test('Shows back button when declutter is enabled', async () => {
+    loadTimeData.overrideValues({
+      declutterEnabled: true,
+    });
+    await autoTabGroupsPageSetup();
+
+    const backButton =
+        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
+    assertTrue(!!backButton);
+  });
+
+  test('Hides back button when declutter is disabled', async () => {
+    loadTimeData.overrideValues({
+      declutterEnabled: false,
+    });
+    await autoTabGroupsPageSetup();
+
+    const backButton =
+        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
+    assertFalse(!!backButton);
   });
 });

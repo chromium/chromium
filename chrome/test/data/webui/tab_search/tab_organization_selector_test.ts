@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {AutoTabGroupsPageElement, DeclutterPageElement, Tab, TabOrganizationSelectorButtonElement, TabOrganizationSelectorElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabOrganizationState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTab} from './tab_search_test_data.js';
+import {createTab, createTabOrganizationSession} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabOrganizationSelectorTest', () => {
@@ -18,6 +19,10 @@ suite('TabOrganizationSelectorTest', () => {
   let testApiProxy: TestTabSearchApiProxy;
 
   async function selectorSetup(staleTabCount: number = 3) {
+    loadTimeData.overrideValues({
+      declutterEnabled: true,
+    });
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
@@ -102,6 +107,63 @@ suite('TabOrganizationSelectorTest', () => {
     assertFalse(isVisible(autoTabGroupsState));
     assertFalse(isVisible(declutterState));
   });
+
+  test('Auto tab groups base state navigates to selector', async () => {
+    await selectorSetup();
+    const autoTabGroupsButton =
+        selector.shadowRoot!.querySelector<HTMLElement>('#autoTabGroupsButton');
+    assertTrue(!!autoTabGroupsButton);
+    autoTabGroupsButton.click();
+    await microtasksFinished();
+
+    assertFalse(isVisible(noSelectionState));
+    assertTrue(isVisible(autoTabGroupsState));
+    assertFalse(isVisible(declutterState));
+
+    const autoTabGroupsBackButton =
+        autoTabGroupsState.shadowRoot!.querySelector<HTMLElement>(
+            '.back-button');
+    assertTrue(!!autoTabGroupsBackButton);
+    autoTabGroupsBackButton.click();
+    await microtasksFinished();
+
+    assertTrue(isVisible(noSelectionState));
+    assertFalse(isVisible(autoTabGroupsState));
+    assertFalse(isVisible(declutterState));
+  });
+
+  test(
+      'Auto tab groups non-base state doesnt navigate to selector',
+      async () => {
+        await selectorSetup();
+        const session = createTabOrganizationSession({
+          state: TabOrganizationState.kInProgress,
+        });
+        testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+            session);
+        await microtasksFinished();
+
+        const autoTabGroupsButton =
+            selector.shadowRoot!.querySelector<HTMLElement>(
+                '#autoTabGroupsButton');
+        assertTrue(!!autoTabGroupsButton);
+        autoTabGroupsButton.click();
+        await microtasksFinished();
+
+        assertFalse(isVisible(noSelectionState));
+        assertTrue(isVisible(autoTabGroupsState));
+        assertFalse(isVisible(declutterState));
+
+        const autoTabGroupsBackButton =
+            autoTabGroupsState.shadowRoot!.querySelector('cr-icon-button');
+        assertTrue(!!autoTabGroupsBackButton);
+        autoTabGroupsBackButton.click();
+        await microtasksFinished();
+
+        assertFalse(isVisible(noSelectionState));
+        assertTrue(isVisible(autoTabGroupsState));
+        assertFalse(isVisible(declutterState));
+      });
 
   test('Disables declutter when no stale tabs', async () => {
     await selectorSetup(0);

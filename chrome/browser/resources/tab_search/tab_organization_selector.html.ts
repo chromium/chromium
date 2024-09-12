@@ -32,7 +32,8 @@ export function getHtml(this: TabOrganizationSelectorElement) {
 </div>
 
 <div ?hidden=${this.selectedState_ !== OrganizationFeature.AUTO_TAB_GROUPS}>
-  <auto-tab-groups-page></auto-tab-groups-page>
+  <auto-tab-groups-page @back-click="${this.onBackClick_}">
+  </auto-tab-groups-page>
 </div>
 
 <div ?hidden=${this.selectedState_ !== OrganizationFeature.DECLUTTER}>

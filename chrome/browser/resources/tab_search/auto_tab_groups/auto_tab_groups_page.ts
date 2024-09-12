@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import '../strings.m.js';
 import './auto_tab_groups_failure.js';
 import './auto_tab_groups_in_progress.js';
@@ -49,6 +51,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
       multiTabOrganization_: {type: Boolean},
+      declutterEnabled_: {type: Boolean},
       modelStrategy_: {type: Number, notify: true},
     };
   }
@@ -62,6 +65,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       loadTimeData.getBoolean('showTabOrganizationFRE');
   protected multiTabOrganization_: boolean =
       loadTimeData.getBoolean('multiTabOrganizationEnabled');
+  protected declutterEnabled_: boolean =
+      loadTimeData.getBoolean('declutterEnabled');
   protected modelStrategy_: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
@@ -242,6 +247,14 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   protected onRejectAllGroupsClick_() {
     this.apiProxy_.rejectSession(this.session_!.sessionId);
+  }
+
+  protected onBackClick_() {
+    if (this.session_ && this.state_ !== TabOrganizationState.kNotStarted) {
+      this.apiProxy_.rejectSession(this.session_!.sessionId);
+    } else {
+      this.fire('back-click');
+    }
   }
 
   protected onCreateGroupClick_(
