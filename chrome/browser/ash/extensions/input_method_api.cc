@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
-#include "chrome/browser/ash/url_handler/os_url_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -296,16 +295,6 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
 
   const GURL& options_page_url = ime->options_page_url();
   if (!options_page_url.is_empty()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // If Lacros is the only browser, open the options page in an Ash app window
-    // instead of a regular Ash browser window.
-    if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-        !chromeos::IsKioskSession()) {
-      bool launched = ash::TryLaunchOsUrlHandler(options_page_url);
-      DCHECK(launched);
-      return RespondNow(NoArguments());
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     content::WebContents* web_contents = GetSenderWebContents();
     if (web_contents) {
       Browser* browser = chrome::FindBrowserWithTab(web_contents);

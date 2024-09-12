@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/url_handler/os_url_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -186,22 +185,8 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
     return;
   }
 
-  // If Lacros is the only browser, we need to open the options page in an Ash
-  // app window instead of a regular Ash browser window so that the user can't
-  // navigate in Ash. We do so using the OsUrlHandler SWA. Exception: Kiosk mode
-  // doesn't support SWA but already hide the navigation bar.
-  bool open_with_os_url_handler =
-      !crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      !chromeos::IsKioskSession();
-  if (open_with_os_url_handler) {
-    DCHECK(extensions::OptionsPageInfo::ShouldOpenInTab(extension));
-    GURL url = extensions::OptionsPageInfo::GetOptionsPage(extension);
-    bool launched = ash::TryLaunchOsUrlHandler(url);
-    DCHECK(launched);
-  } else {
-    extensions::ExtensionTabUtil::OpenOptionsPage(
-        extension, chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
-  }
+  extensions::ExtensionTabUtil::OpenOptionsPage(
+      extension, chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
