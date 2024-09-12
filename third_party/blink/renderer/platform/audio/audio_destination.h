@@ -177,6 +177,7 @@ class PLATFORM_EXPORT AudioDestination final
   // into it.
   void PullFromCallback(AudioBus* destination_bus, base::TimeDelta delay);
 
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const String& message) const;
 
   // Accessed by the main thread.

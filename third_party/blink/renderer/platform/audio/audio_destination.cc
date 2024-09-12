@@ -582,13 +582,6 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   PullFromCallback(dest, adjusted_delay);
 }
 
-void AudioDestination::SendLogMessage(const String& message) const {
-  WebRtcLogMessage(String::Format("[WA]AD::%s [state=%s]",
-                                  message.Utf8().c_str(),
-                                  DeviceStateToString(device_state_))
-                       .Utf8());
-}
-
 void AudioDestination::PullFromCallback(AudioBus* destination_bus,
                                         base::TimeDelta delay) {
   callback_->Render(destination_bus, render_quantum_frames_, output_position_,
@@ -599,6 +592,13 @@ void AudioDestination::PullFromCallback(AudioBus* destination_bus,
 media::OutputDeviceStatus AudioDestination::MaybeCreateSinkAndGetStatus() {
   TRACE_EVENT0("webaudio", "AudioDestination::MaybeCreateSinkAndGetStatus");
   return web_audio_device_->MaybeCreateSinkAndGetStatus();
+}
+
+void AudioDestination::SendLogMessage(const String& message) const {
+  WebRtcLogMessage(String::Format("[WA]AD::%s [state=%s]",
+                                  message.Utf8().c_str(),
+                                  DeviceStateToString(device_state_))
+                       .Utf8());
 }
 
 }  // namespace blink

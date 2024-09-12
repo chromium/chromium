@@ -132,6 +132,7 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   // Returns true if the specified AudioParam was connected.
   bool DisconnectFromOutputIfConnected(unsigned output_index, AudioParam&);
 
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const String& message);
 
   Member<BaseAudioContext> context_;

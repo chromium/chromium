@@ -986,13 +986,6 @@ void AudioContext::OnAudioContextManagerServiceConnectionError() {
   audio_context_manager_.reset();
 }
 
-void AudioContext::SendLogMessage(const String& message) {
-  WebRtcLogMessage(String::Format("[WA]AC::%s [state=%s]",
-                                  message.Utf8().c_str(),
-                                  state().Utf8().c_str())
-                       .Utf8());
-}
-
 AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   // Return a copy under the graph lock because returning a reference would
   // allow seeing the audio thread changing the struct values. This method
@@ -1289,6 +1282,13 @@ void AudioContext::HandleRenderError() {
 void AudioContext::invoke_onrendererror_from_platform_for_testing() {
   GetRealtimeAudioDestinationNode()->GetOwnHandler()
       .invoke_onrendererror_from_platform_for_testing();
+}
+
+void AudioContext::SendLogMessage(const String& message) {
+  WebRtcLogMessage(String::Format("[WA]AC::%s [state=%s]",
+                                  message.Utf8().c_str(),
+                                  state().Utf8().c_str())
+                       .Utf8());
 }
 
 }  // namespace blink

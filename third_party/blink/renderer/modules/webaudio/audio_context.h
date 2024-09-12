@@ -236,8 +236,6 @@ class MODULES_EXPORT AudioContext final
   void EnsureAudioContextManagerService();
   void OnAudioContextManagerServiceConnectionError();
 
-  void SendLogMessage(const String& message);
-
   void DidInitialPermissionCheck(mojom::blink::PermissionDescriptorPtr,
                                  mojom::blink::PermissionStatus);
   double GetOutputLatencyQuantizingFactor() const;
@@ -261,6 +259,9 @@ class MODULES_EXPORT AudioContext final
   void ResumeOnPrerenderActivation();
 
   void HandleRenderError();
+
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const String& message);
 
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;

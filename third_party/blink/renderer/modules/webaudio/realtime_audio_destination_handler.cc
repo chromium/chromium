@@ -405,10 +405,10 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
             WebAudioSinkDescriptor::AudioSinkType::kAudible) {
       if (platform_destination_->MaybeCreateSinkAndGetStatus() ==
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
-        WebRtcLogMessage(
-            String::Format("[WA]RADH::%s => (sink_descriptor_=%s)", __func__,
-                           sink_descriptor_.SinkId().Utf8().c_str())
-                .Utf8());
+        SendLogMessage(String::Format("%s => (sink_descriptor_=%s)", __func__,
+                                      sink_descriptor_.SinkId().Utf8().c_str())
+                           .Utf8()
+                           .c_str());
         if (auto* execution_context = Context()->GetExecutionContext()) {
           PeerConnectionDependencyFactory::From(*execution_context)
               .GetWebRtcAudioDevice()
@@ -518,6 +518,12 @@ void RealtimeAudioDestinationHandler::
 bool RealtimeAudioDestinationHandler::
     get_platform_destination_is_playing_for_testing() {
   return platform_destination_->IsPlaying();
+}
+
+void RealtimeAudioDestinationHandler::SendLogMessage(
+    const String& message) const {
+  WebRtcLogMessage(
+      String::Format("[WA]RADH::%s ", message.Utf8().c_str()).Utf8());
 }
 
 }  // namespace blink

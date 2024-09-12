@@ -46,17 +46,18 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(
       media_stream_(media_stream) {
   SetHandler(MediaStreamAudioSourceHandler::Create(
       *this, std::move(audio_source_provider)));
-  WebRtcLogMessage(String::Format("MSASN::%s({audio_track=[kind: %s, id: "
-                                  "%s, label: %s, enabled: "
-                                  "%d, muted: %d]}, {handler=0x%" PRIXPTR
-                                  "}, [this=0x%" PRIXPTR "])",
-                                  __func__, audio_track->kind().Utf8().c_str(),
-                                  audio_track->id().Utf8().c_str(),
-                                  audio_track->label().Utf8().c_str(),
-                                  audio_track->enabled(), audio_track->muted(),
-                                  reinterpret_cast<uintptr_t>(&Handler()),
-                                  reinterpret_cast<uintptr_t>(this))
-                       .Utf8());
+  SendLogMessage(String::Format("%s({audio_track=[kind: %s, id: "
+                                "%s, label: %s, enabled: "
+                                "%d, muted: %d]}, {handler=0x%" PRIXPTR
+                                "}, [this=0x%" PRIXPTR "])",
+                                __func__, audio_track->kind().Utf8().c_str(),
+                                audio_track->id().Utf8().c_str(),
+                                audio_track->label().Utf8().c_str(),
+                                audio_track->enabled(), audio_track->muted(),
+                                reinterpret_cast<uintptr_t>(&Handler()),
+                                reinterpret_cast<uintptr_t>(this))
+                     .Utf8()
+                     .c_str());
 }
 
 MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
@@ -150,6 +151,11 @@ void MediaStreamAudioSourceNode::Trace(Visitor* visitor) const {
 MediaStreamAudioSourceHandler&
 MediaStreamAudioSourceNode::GetMediaStreamAudioSourceHandler() const {
   return static_cast<MediaStreamAudioSourceHandler&>(Handler());
+}
+
+void MediaStreamAudioSourceNode::SendLogMessage(const String& message) {
+  WebRtcLogMessage(
+      String::Format("[WA]MSASN::%s", message.Utf8().c_str()).Utf8());
 }
 
 }  // namespace blink
