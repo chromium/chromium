@@ -2029,6 +2029,7 @@ if (!is_android) {
       "//components/autofill/content/common:features",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer:test_support",
+      "//components/autofill_prediction_improvements/core/browser:browser",
       "//components/back_forward_cache",
       "//components/background_fetch",
       "//components/background_sync",
@@ -2279,7 +2280,6 @@ if (!is_android) {
       "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
-      "//components/user_annotations",
       "//components/user_annotations",
       "//components/user_education/common",
       "//components/user_education/test",
@@ -3376,7 +3376,6 @@ if (!is_android) {
         "//chrome/browser/apps/link_capturing:app_service_browser_tests",
         "//chrome/browser/ui/web_applications:app_service_browser_tests",
         "//chrome/browser/web_applications:app_service_browser_tests",
-        "//components/autofill_prediction_improvements/core/browser:browser",
         "//components/live_caption:live_translate",
         "//components/plus_addresses:blocklist_data",
       ]

@@ -13,8 +13,14 @@ namespace user_annotations {
 
 BASE_DECLARE_FEATURE(kUserAnnotations);
 
+BASE_DECLARE_FEATURE(kUserAnnotationsObserveFormSubmissions);
+
 // Whether the user annotations feature is enabled.
 bool IsUserAnnotationsEnabled();
+
+// Whether the user annotations web contents observer should observe form
+// submissions.
+bool IsUserAnnotationsObserveFormSubmissionsEnabled();
 
 // Whether the form submission for `url` should be added to user annotations.
 bool ShouldAddFormSubmissionForURL(const GURL& url);

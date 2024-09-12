@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
@@ -88,7 +89,9 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceEphemeralProfileBrowserTest,
 }
 #endif
 
-class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
+class UserAnnotationsServiceBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     InitializeFeatureList();
@@ -108,6 +111,21 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     return content::ExecJs(rfh, R"(document.forms[0].submit();)");
   }
 
+  testing::AssertionResult FillForm(content::RenderFrameHost* rfh) {
+    return content::ExecJs(rfh, R"(
+        document.getElementsByName("name")[0].value="John Doe";
+        document.getElementsByName("address")[0].value="123 Main Street";
+        document.getElementsByName("city")[0].value="Knightdale";
+        document.getElementsByName("state")[0].selectedIndex=3;
+        document.getElementsByName("zip")[0].value="27545";
+        document.getElementsByName("country")[0].value="United States";
+        document.getElementsByName("email")[0].value="jd@example.com";
+        document.getElementsByName("phone")[0].value="919-555-5555";
+        )");
+  }
+
+  bool ShouldObserveFormSubmissions() { return GetParam(); }
+
  protected:
   UserAnnotationsService* service() {
     return UserAnnotationsServiceFactory::GetForProfile(browser()->profile());
@@ -118,30 +136,40 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void InitializeFeatureList() {
-    feature_list_.InitAndEnableFeature(kUserAnnotations);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kUserAnnotations,
+        autofill_prediction_improvements::kAutofillPredictionImprovements};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kUserAnnotationsObserveFormSubmissions};
+    if (ShouldObserveFormSubmissions()) {
+      enabled_features.emplace_back(kUserAnnotationsObserveFormSubmissions);
+      disabled_features.clear();
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, ServiceFactoryWorks) {
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, ServiceFactoryWorks) {
   EXPECT_TRUE(service());
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest,
                        ServiceNotCreatedForIncognito) {
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
   EXPECT_EQ(nullptr, UserAnnotationsServiceFactory::GetForProfile(
                          otr_browser->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
   base::HistogramTester histogram_tester;
 
   GURL url(
       embedded_test_server()->GetURL("a.com", "/autofill_address_form.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
@@ -154,20 +182,35 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
       1);
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceBrowserTest,
+                         ::testing::Bool());
+
 class UserAnnotationsServiceExplicitAllowlistBrowserTest
     : public UserAnnotationsServiceBrowserTest {
  protected:
   void InitializeFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kUserAnnotations,
-        {{"allowed_hosts_for_form_submissions", "allowed.com"}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
+        {kUserAnnotations,
+         {{"allowed_hosts_for_form_submissions", "allowed.com"}}},
+        {autofill_prediction_improvements::kAutofillPredictionImprovements,
+         {}}};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kUserAnnotationsObserveFormSubmissions};
+    if (ShouldObserveFormSubmissions()) {
+      enabled_features_and_params.emplace_back(base::test::FeatureRefAndParams{
+          kUserAnnotationsObserveFormSubmissions, {}});
+      disabled_features.clear();
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_and_params,
+                                                disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                        NotOnAllowlist) {
   base::HistogramTester histogram_tester;
 
@@ -175,6 +218,7 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                                           "/autofill_address_form.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
   base::RunLoop().RunUntilIdle();
 
@@ -183,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
       0);
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                        OnAllowlist) {
   base::HistogramTester histogram_tester;
 
@@ -191,6 +235,7 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                                           "/autofill_address_form.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
@@ -202,5 +247,9 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
       1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceExplicitAllowlistBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace user_annotations

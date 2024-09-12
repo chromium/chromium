@@ -73,6 +73,9 @@ UserAnnotationsWebContentsObserver::MaybeCreateForWebContents(
 void UserAnnotationsWebContentsObserver::OnFormSubmitted(
     autofill::AutofillManager& manager,
     const autofill::FormData& form) {
+  if (!user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
+    return;
+  }
   if (!user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
     return;
   }

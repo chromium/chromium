@@ -338,7 +338,8 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   // TODO(crbug.com/365962363): Also return early here if
   // `!IsFormEligibleByFieldCriteria(form_structure))` once the parser is
   // implemented.
-  if (!client_->GetUserAnnotationsService() ||
+  if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled() ||
+      !client_->GetUserAnnotationsService() ||
       !user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
     std::move(callback).Run(
         /*to_be_upserted_entries=*/{},
