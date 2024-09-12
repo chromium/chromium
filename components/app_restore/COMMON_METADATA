@@ -1,0 +1,11 @@
+buganizer: {
+  component_id:1238037
+}
+buganizer_public: {
+  component_id:1238204
+}
+monorail {
+  component: "Platform>Apps>Foundation, UI>Shell>WindowManager"
+}
+os: CHROME_OS
+team_email: "chromeos-apps-foundation-core@google.com, chromeos-wm-corexp@google.com"
