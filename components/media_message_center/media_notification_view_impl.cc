@@ -129,6 +129,13 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   auto main_row = std::make_unique<views::View>();
   main_row_ = AddChildView(std::move(main_row));
 
+  // TODO(crbug.com/40232718): `main_row_` sets the flex property in
+  // `UpdateViewForExpandedState`, which means it will always satisfy the
+  // constraints passed in during the CalculatePreferredSize phase. So we set it
+  // here to not require constraints. If possible, consider removing the
+  // following flex property
+  main_row_->SetLayoutManagerUseConstrainedSpace(false);
+
   // |title_artist_row_| contains the title and artist labels.
   auto title_artist_row = std::make_unique<views::View>();
   title_artist_row_layout_ =
