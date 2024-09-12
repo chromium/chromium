@@ -46,6 +46,8 @@ constexpr CGFloat kTrashIconSize = 32;
 // Top padding for the trash icon view.
 constexpr CGFloat kTrashIconContainerViewTopPadding = 33;
 
+constexpr CGFloat kTrashIconContainerViewAlphaComponent = 0.11;
+
 // Vertical padding for the title.
 constexpr CGFloat kTitleVerticalPadding = 22;
 
@@ -640,7 +642,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UIView* iconContainerView = [[UIView alloc] init];
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   iconContainerView.layer.cornerRadius = kTrashIconContainerViewCornerRadius;
-  iconContainerView.backgroundColor = [UIColor colorNamed:kRed50Color];
+  iconContainerView.backgroundColor = [[UIColor colorNamed:kRed600Color]
+      colorWithAlphaComponent:kTrashIconContainerViewAlphaComponent];
 
   // Trash icon that inside the container with the red background.
   UIImageView* icon =
