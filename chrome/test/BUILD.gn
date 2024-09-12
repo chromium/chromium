@@ -9453,16 +9453,17 @@ test("unit_tests") {
 
   if (is_linux) {
     sources += [
-      "../browser/notifications/notification_platform_bridge_linux_unittest.cc",
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",
     ]
 
-    deps += [
-      "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests",
-      "//components/dbus/thread_linux",
-    ]
+    deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
+
+    if (use_dbus) {
+      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
+      deps += [ "//components/dbus/thread_linux" ]
+    }
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

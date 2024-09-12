@@ -6920,10 +6920,7 @@ static_library("browser") {
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
     ]
-    deps += [
-      "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//components/dbus/thread_linux",
-    ]
+    deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
 
     if (is_chromeos_lacros) {
       sources += [
@@ -6939,9 +6936,6 @@ static_library("browser") {
       sources += [
         "download/download_status_updater_linux.cc",
         "icon_loader_auralinux.cc",
-        "notifications/notification_platform_bridge_linux.cc",
-        "notifications/notification_platform_bridge_linux.h",
-        "platform_util_linux.cc",
         "shell_integration_linux.cc",
         "shell_integration_linux.h",
         "upgrade_detector/directory_monitor.cc",
@@ -6959,6 +6953,15 @@ static_library("browser") {
     if (rtc_use_pipewire) {
       configs +=
           [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
+    }
+
+    if (is_linux && use_dbus) {
+      sources += [
+        "notifications/notification_platform_bridge_linux.cc",
+        "notifications/notification_platform_bridge_linux.h",
+        "platform_util_linux.cc",
+      ]
+      deps += [ "//components/dbus/thread_linux" ]
     }
   }
 
