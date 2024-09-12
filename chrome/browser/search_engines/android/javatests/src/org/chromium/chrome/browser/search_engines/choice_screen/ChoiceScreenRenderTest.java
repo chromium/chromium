@@ -37,7 +37,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.search_engines.FakeSearchEngineChoiceServiceDelegate;
+import org.chromium.components.search_engines.FakeSearchEngineCountryDelegate;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -72,7 +72,7 @@ public class ChoiceScreenRenderTest {
                 () ->
                         SearchEngineChoiceService.setInstanceForTests(
                                 new SearchEngineChoiceService(
-                                        new FakeSearchEngineChoiceServiceDelegate(
+                                        new FakeSearchEngineCountryDelegate(
                                                 /* enableLogging= */ true))));
     }
 

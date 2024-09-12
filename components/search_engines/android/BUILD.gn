@@ -13,18 +13,13 @@ android_library("delegate_java") {
   ]
 
   sources = [
-    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceDelegate.java",
-    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceDelegateImpl.java",
     "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegate.java",
     "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegateImpl.java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
-  jar_excluded_patterns = [
-    "*/SearchEngineCountryDelegateImpl.class",
-    "*/SearchEngineChoiceServiceDelegateImpl.class",
-  ]
+  jar_excluded_patterns = [ "*/SearchEngineCountryDelegateImpl.class" ]
 }
 
 android_library("delegate_public_impl_java") {
@@ -34,10 +29,7 @@ android_library("delegate_public_impl_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
-  sources = [
-    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceDelegateImpl.java",
-    "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegateImpl.java",
-  ]
+  sources = [ "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegateImpl.java" ]
 }
 
 android_library("java") {
@@ -58,7 +50,7 @@ android_library("java") {
     "//components/search_engines:search_engine_enums_java",
   ]
   sources = [
-    "java/src/org/chromium/components/search_engines/FakeSearchEngineChoiceServiceDelegate.java",
+    "java/src/org/chromium/components/search_engines/FakeSearchEngineCountryDelegate.java",
     "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",

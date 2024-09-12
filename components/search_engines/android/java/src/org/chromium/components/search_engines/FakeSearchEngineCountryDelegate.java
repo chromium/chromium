@@ -13,7 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
 /** Fake delegate that can be triggered in the app as a debug flag option, or used in tests. */
-public class FakeSearchEngineChoiceServiceDelegate extends SearchEngineChoiceServiceDelegate {
+public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
 
     private static final String TAG = "FakeChoiceDelegate";
 
@@ -22,7 +22,8 @@ public class FakeSearchEngineChoiceServiceDelegate extends SearchEngineChoiceSer
             new ObservableSupplierImpl<>(true);
 
     @MainThread
-    public FakeSearchEngineChoiceServiceDelegate(boolean enableLogging) {
+    public FakeSearchEngineCountryDelegate(boolean enableLogging) {
+        super(/* context= */ null);
         ThreadUtils.assertOnUiThread();
 
         mEnableLogging = enableLogging;
@@ -102,14 +103,14 @@ public class FakeSearchEngineChoiceServiceDelegate extends SearchEngineChoiceSer
 
     @Override
     @MainThread
-    public void notifyDeviceChoiceEvent(@DeviceChoiceEventType int eventType) {
+    public void log(@DeviceChoiceEventType int eventType) {
         ThreadUtils.assertOnUiThread();
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            super.notifyDeviceChoiceEvent(eventType);
+            super.log(eventType);
         }
 
         if (mEnableLogging) {
-            Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+            Log.i(TAG, "log(%d)", eventType);
         }
     }
 }

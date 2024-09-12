@@ -36,7 +36,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.components.search_engines.SearchEngineChoiceServiceDelegate.DeviceChoiceEventType;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class SearchEngineChoiceServiceUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private @Mock Context mContext;
-    private @Mock SearchEngineChoiceServiceDelegate mDelegate;
+    private @Mock SearchEngineCountryDelegate mDelegate;
 
     private final boolean mIsClayBlockingEnabled;
 
@@ -69,17 +69,13 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Test
     public void testAbstractDelegate() {
-        var service = new SearchEngineChoiceService(new SearchEngineChoiceServiceDelegate() {});
+        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
 
         // The default implementation should be set to not trigger anything disruptive.
         assertTrue(service.getDeviceCountry().isRejected());
 
         assertFalse(service.isDeviceChoiceDialogEligible());
         assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
-
-        service.notifyDeviceChoiceBlockShown();
-        service.notifyDeviceChoiceBlockCleared();
-        service.launchDeviceChoiceScreens();
 
         var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
         ShadowLooper.runUiThreadTasks();
@@ -95,7 +91,7 @@ public class SearchEngineChoiceServiceUnitTest {
     public void testFakeDelegate() {
         var service =
                 new SearchEngineChoiceService(
-                        new FakeSearchEngineChoiceServiceDelegate(/* enableLogging= */ true));
+                        new FakeSearchEngineCountryDelegate(/* enableLogging= */ true));
 
         if (mIsClayBlockingEnabled) {
             // It should have generally sensible values and make the dialog be shown.
@@ -258,7 +254,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         service.notifyDeviceChoiceBlockShown();
         verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
-                .notifyDeviceChoiceEvent(DeviceChoiceEventType.BLOCK_SHOWN);
+                .log(DeviceChoiceEventType.BLOCK_SHOWN);
     }
 
     @Test
@@ -267,7 +263,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         service.notifyDeviceChoiceBlockCleared();
         verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
-                .notifyDeviceChoiceEvent(DeviceChoiceEventType.BLOCK_CLEARED);
+                .log(DeviceChoiceEventType.BLOCK_CLEARED);
     }
 
     private static void configureClayBlockingFeature(
