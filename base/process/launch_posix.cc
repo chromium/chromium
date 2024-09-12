@@ -476,16 +476,18 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
     CloseSuperfluousFds(fd_shuffle2);
 
-    // Set NO_NEW_PRIVS by default. Since NO_NEW_PRIVS only exists in kernel
-    // 3.5+, do not check the return value of prctl here.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 #ifndef PR_SET_NO_NEW_PRIVS
 #define PR_SET_NO_NEW_PRIVS 38
 #endif
     if (!options.allow_new_privs) {
-      if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) && errno != EINVAL) {
-        // Only log if the error is not EINVAL (i.e. not supported).
-        RAW_LOG(FATAL, "prctl(PR_SET_NO_NEW_PRIVS) failed");
+      if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+        // EINVAL means PR_SET_NO_NEW_PRIVS is unsupported (kernel < 3.5)
+        // EPERM indicates a problem with the environment out of our
+        // control (e.g. a system-imposed seccomp bpf sandbox)
+        if (errno != EINVAL && errno != EPERM) {
+          RAW_LOG(FATAL, "prctl(PR_SET_NO_NEW_PRIVS) failed");
+        }
       }
     }
 
