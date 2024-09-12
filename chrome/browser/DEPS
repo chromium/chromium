@@ -638,4 +638,10 @@ specific_include_rules = {
   "shared_storage_browsertest.cc": [
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
+  "certificate_manager_model.cc": [
+    "+ash/components/kcer",
+  ],
+  "certificate_manager_model_unittest.cc": [
+    "+ash/components/kcer/extra_instances.h",
+  ],
 }

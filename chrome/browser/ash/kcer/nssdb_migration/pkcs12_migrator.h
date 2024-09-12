@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/kcer/kcer.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chromeos/components/kcer/kcer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/scoped_nss_types.h"
 

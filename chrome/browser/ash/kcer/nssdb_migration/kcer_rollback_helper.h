@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_KCER_NSSDB_MIGRATION_KCER_ROLLBACK_HELPER_H_
 #define CHROME_BROWSER_ASH_KCER_NSSDB_MIGRATION_KCER_ROLLBACK_HELPER_H_
 
+#include "ash/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
-#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "components/prefs/pref_service.h"
 
 namespace kcer::internal {

@@ -3440,6 +3440,7 @@ if (!is_android) {
         "data/webui/chromeos/async_gen.h",
       ]
       deps += [
+        "//ash/components/kcer",
         "//ash/webui/system_apps/public:system_web_app_type",
         "//chrome/browser/apps/app_service/app_install",
         "//chrome/browser/apps/app_service/app_install:proto",
@@ -3544,7 +3545,6 @@ if (!is_android) {
         "//chrome/browser/ui/chromeos:test_support",
         "//chrome/browser/web_applications/app_service",
         "//chrome/browser/web_applications/app_service:test_support",
-        "//chromeos/components/kcer",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",
         "//chromeos/dbus/regmon",
@@ -4835,6 +4835,7 @@ if (!is_android) {
         "//ash/components/arc:arc_test_support",
         "//ash/components/arc:prefs",
         "//ash/components/arc/session:arc_base_enums",
+        "//ash/components/kcer:chaps_proto",
         "//ash/constants:constants",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
@@ -5077,7 +5078,6 @@ if (!is_android) {
         "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/ash/services/network_config",
         "//chromeos/ash/services/network_config:in_process_instance",
-        "//chromeos/components/kcer:chaps_proto",
         "//chromeos/components/kiosk:kiosk",
         "//chromeos/components/magic_boost/public/cpp",
         "//chromeos/components/mahi/public/cpp",
@@ -5609,7 +5609,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/app_service:test_support",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
-      "//chromeos/components/kcer",
       "//chromeos/components/magic_boost/public/cpp:cpp",
       "//chromeos/components/mahi/public/cpp",
       "//chromeos/crosapi/cpp:cpp",
@@ -10309,7 +10308,9 @@ test("unit_tests") {
         "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc",
         "../browser/ui/views/global_media_controls/media_item_ui_cast_footer_view_unittest.cc",
       ]
-      deps += [ "//chromeos/components/kcer" ]
+    }
+    if (is_chromeos_ash) {
+      deps += [ "//ash/components/kcer" ]
     }
   }
   if (!is_android && use_nss_certs) {

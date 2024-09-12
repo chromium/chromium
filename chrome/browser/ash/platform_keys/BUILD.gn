@@ -18,6 +18,7 @@ static_library("platform_keys") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash/components/kcer",
     "//ash/constants:constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -26,7 +27,6 @@ static_library("platform_keys") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/network",
-    "//chromeos/components/kcer",
     "//components/keyed_service/core",
     "//components/policy/core/common",
     "//components/user_manager",
@@ -76,6 +76,7 @@ source_set("browser_tests") {
   deps = [
     ":platform_keys",
     ":test_support",
+    "//ash/components/kcer:chaps_proto",
     "//base",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
@@ -84,7 +85,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/chaps_util:test_support",
-    "//chromeos/components/kcer:chaps_proto",
     "//components/policy/core/common",
     "//crypto",
     "//net",
