@@ -3828,14 +3828,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
     ],
-    'modifications': {
-      'linux-ubsan-vptr': {
-        'args': [
-          # TODO(crbug.com/40273116): Remove this.
-          '--gtest_filter=-SandboxBPF.ApplyBasicAllowlistPolicy:SandboxBPF.SyntheticPolicy:SandboxBPF.UnsafeTrapWithCond',
-        ],
-      },
-    },
   },
   'screenshot_sync_metal_passthrough_ganesh_tests': {
     'remove_from': [
