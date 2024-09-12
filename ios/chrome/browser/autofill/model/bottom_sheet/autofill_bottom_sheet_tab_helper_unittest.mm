@@ -64,25 +64,24 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
 
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(chrome_browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     AutofillBottomSheetTabHelper::CreateForWebState(web_state_.get());
     helper_ = AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
 
-    autofill_agent_ = [[AutofillAgent alloc]
-        initWithPrefService:chrome_browser_state_->GetPrefs()
-                   webState:web_state_.get()];
+    autofill_agent_ =
+        [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
+                                          webState:web_state_.get()];
 
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
     autofill_client_ = std::make_unique<TestAutofillClient>(
-        chrome_browser_state_.get(), web_state_.get(), infobar_manager,
-        autofill_agent_);
+        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         web_state_.get(), autofill_client_.get(), autofill_agent_,
@@ -91,7 +90,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   AutofillBottomSheetTabHelper* helper_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;

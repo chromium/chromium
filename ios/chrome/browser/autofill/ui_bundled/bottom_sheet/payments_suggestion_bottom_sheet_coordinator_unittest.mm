@@ -36,26 +36,24 @@
 class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
  public:
   PaymentsSuggestionBottomSheetCoordinatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     // Credit card import requires a PersonalDataManager which itself needs the
-    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            browser_state_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     // Set circular SyncService dependency to null.
     personal_data_manager->SetSyncServiceForTest(nullptr);
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
@@ -78,7 +76,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
  protected:
   // Creates and inserts a new WebState.
   int InsertWebState() {
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
 
@@ -97,7 +95,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIWindow* window_;
   PaymentsSuggestionBottomSheetCoordinator* coordinator_;

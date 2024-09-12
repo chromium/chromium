@@ -77,11 +77,10 @@
     _cardViewController = [[CardViewController alloc] init];
     _reauthenticationModule = reauthenticationModule;
 
-    // Service must use regular browser state, even if the Browser has an
-    // OTR browser state.
-    _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+    // Service must use regular profile, even if the Browser has an
+    // OTR profile.
+    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
+        super.browser->GetProfile()->GetOriginalProfile());
     CHECK(_personalDataManager);
 
     _cardMediator = [[ManualFillCardMediator alloc]
@@ -93,8 +92,7 @@
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
-        initWithBrowserState:super.browser->GetBrowserState()
-                                 ->GetOriginalChromeBrowserState()
+        initWithBrowserState:super.browser->GetProfile()->GetOriginalProfile()
                 webStateList:super.browser->GetWebStateList()
               resultDelegate:_cardMediator];
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
@@ -182,8 +180,7 @@
   [_dispatcher
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:url.gurl
-                                       inIncognito:self.browser
-                                                       ->GetBrowserState()
+                                       inIncognito:self.browser->GetProfile()
                                                        ->IsOffTheRecord()]];
 }
 

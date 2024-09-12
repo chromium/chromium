@@ -471,15 +471,14 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 
 // Resets the password bottom sheet dismiss count to 0.
 - (void)resetPasswordBottomSheetDismissCount {
-  ChromeBrowserState* browserState =
-      _webState
-          ? ChromeBrowserState::FromBrowserState(_webState->GetBrowserState())
-          : nullptr;
-  if (browserState) {
-    int dismissCount = browserState->GetPrefs()->GetInteger(
+  ProfileIOS* profile =
+      _webState ? ProfileIOS::FromBrowserState(_webState->GetBrowserState())
+                : nullptr;
+  if (profile) {
+    int dismissCount = profile->GetPrefs()->GetInteger(
         prefs::kIosPasswordBottomSheetDismissCount);
-    browserState->GetPrefs()->SetInteger(
-        prefs::kIosPasswordBottomSheetDismissCount, 0);
+    profile->GetPrefs()->SetInteger(prefs::kIosPasswordBottomSheetDismissCount,
+                                    0);
     if (dismissCount > 0) {
       // Log how many times the bottom sheet had been dismissed before being
       // re-enabled.

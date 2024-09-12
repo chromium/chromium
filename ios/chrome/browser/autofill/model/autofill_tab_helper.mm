@@ -42,10 +42,9 @@ id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
 }
 
 AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
-    : browser_state_(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())),
+    : profile_(ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
       autofill_agent_([[AutofillAgent alloc]
-          initWithPrefService:browser_state_->GetPrefs()
+          initWithPrefService:profile_->GetPrefs()
                      webState:web_state]),
       web_state_(web_state) {
   web_state->AddObserver(this);
@@ -54,7 +53,7 @@ AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
-      browser_state_, web_state, infobar_manager, autofill_agent_);
+      profile_, web_state, infobar_manager, autofill_agent_);
 
   autofill::AutofillDriverIOSFactory::CreateForWebState(
       web_state, autofill_client_.get(), autofill_agent_,

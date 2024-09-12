@@ -45,7 +45,7 @@ enum class SuggestionType;
 // Chrome iOS implementation of AutofillClient.
 class ChromeAutofillClientIOS : public AutofillClient {
  public:
-  ChromeAutofillClientIOS(ChromeBrowserState* browser_state,
+  ChromeAutofillClientIOS(ProfileIOS* profile,
                           web::WebState* web_state,
                           infobars::InfoBarManager* infobar_manager,
                           id<AutofillClientIOSBridge> bridge);
@@ -148,7 +148,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   raw_ptr<PersonalDataManager> personal_data_manager_;
   raw_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<web::WebState> web_state_;
   __weak id<AutofillClientIOSBridge> bridge_;
   raw_ptr<signin::IdentityManager> identity_manager_;

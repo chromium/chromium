@@ -54,7 +54,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
   void SetUp() override {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -68,28 +68,27 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
     affiliation_service_ = static_cast<affiliations::FakeAffiliationService*>(
-        IOSChromeAffiliationServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        IOSChromeAffiliationServiceFactory::GetForBrowserState(profile_.get()));
 
     presenter_ = std::make_unique<SavedPasswordsPresenter>(
         affiliation_service_, store_, /*accont_store=*/nullptr);
     presenter_->Init();
 
     mediator_ = [[ManualFillPasswordMediator alloc]
-           initWithFaviconLoader:IOSChromeFaviconLoaderFactory::
-                                     GetForBrowserState(browser_state_.get())
+           initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                     profile_.get())
                         webState:fake_web_state_.get()
                      syncService:SyncServiceFactory::GetForBrowserState(
-                                     browser_state_.get())
+                                     profile_.get())
                              URL:GURL("http://www.example.com/")
         invokedOnObfuscatedField:NO
             profilePasswordStore:store_
@@ -111,7 +110,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
         IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -121,7 +120,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   scoped_refptr<TestPasswordStore> store_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   id consumer_;
   raw_ptr<affiliations::FakeAffiliationService> affiliation_service_;

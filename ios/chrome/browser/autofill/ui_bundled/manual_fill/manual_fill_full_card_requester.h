@@ -25,7 +25,7 @@ class WebStateList;
 
 // Inits the requests with required parameters and the `delegate` to receive the
 // success/failure state of the request.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ProfileIOS*)profile
                         webStateList:(WebStateList*)webStateList
                       resultDelegate:
                           (id<FullCardRequestResultDelegateObserving>)delegate;

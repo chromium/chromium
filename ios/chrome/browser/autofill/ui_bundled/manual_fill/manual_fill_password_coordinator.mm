@@ -62,17 +62,17 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    ProfileIOS* profile = self.browser->GetProfile();
     FaviconLoader* faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(browserState);
+        SyncServiceFactory::GetForBrowserState(profile);
     auto profilePasswordStore =
         IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
            initWithFaviconLoader:faviconLoader

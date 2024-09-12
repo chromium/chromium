@@ -56,7 +56,7 @@ class AutofillTabHelper : public web::WebStateObserver,
   void OnDidDoubleRegistration(autofill::LocalFrameToken local) override;
 
   // The BrowserState associated with this WebState.
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   // The Objective-C AutofillAgent instance.
   __strong AutofillAgent* autofill_agent_;

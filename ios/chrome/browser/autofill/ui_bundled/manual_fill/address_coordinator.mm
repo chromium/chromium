@@ -55,17 +55,16 @@
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
 
-    ChromeBrowserState* browserState =
-        self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
 
-    // Service must use regular browser state, even if the Browser has an
-    // OTR browser state.
+    // Service must use regular profile, even if the Browser has an
+    // OTR profile.
     autofill::PersonalDataManager* personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
     CHECK(personalDataManager);
 
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForProfile(profile);
     CHECK(authenticationService);
 
     _addressMediator = [[ManualFillAddressMediator alloc]

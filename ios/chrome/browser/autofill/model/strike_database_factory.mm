@@ -39,14 +39,13 @@ StrikeDatabaseFactory::~StrikeDatabaseFactory() {}
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      chrome_browser_state->GetProtoDatabaseProvider();
+      profile->GetProtoDatabaseProvider();
 
-  return std::make_unique<autofill::StrikeDatabase>(
-      db_provider, chrome_browser_state->GetStatePath());
+  return std::make_unique<autofill::StrikeDatabase>(db_provider,
+                                                    profile->GetStatePath());
 }
 
 }  // namespace autofill

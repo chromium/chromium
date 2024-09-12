@@ -71,28 +71,28 @@
 namespace autofill {
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
     id<AutofillClientIOSBridge> bridge)
-    : pref_service_(browser_state->GetPrefs()),
-      sync_service_(SyncServiceFactory::GetForBrowserState(browser_state)),
-      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserState(
-          browser_state->GetOriginalChromeBrowserState())),
+    : pref_service_(profile->GetPrefs()),
+      sync_service_(SyncServiceFactory::GetForBrowserState(profile)),
+      personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile())),
       autocomplete_history_manager_(
-          AutocompleteHistoryManagerFactory::GetForBrowserState(browser_state)),
-      browser_state_(browser_state),
+          AutocompleteHistoryManagerFactory::GetForProfile(profile)),
+      profile_(profile),
       web_state_(web_state),
       bridge_(bridge),
-      identity_manager_(IdentityManagerFactory::GetForProfile(
-          browser_state->GetOriginalChromeBrowserState())),
+      identity_manager_(
+          IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
       // TODO(crbug.com/40612524): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
       // renderer.
-      log_manager_(LogManager::Create(
-          AutofillLogRouterFactory::GetForBrowserState(browser_state),
-          base::RepeatingClosure())),
+      log_manager_(
+          LogManager::Create(AutofillLogRouterFactory::GetForProfile(profile),
+                             base::RepeatingClosure())),
       ablation_study_(GetApplicationContext()->GetLocalState()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
@@ -162,7 +162,7 @@ FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
     form_data_importer_ = std::make_unique<FormDataImporter>(
         this,
         ios::HistoryServiceFactory::GetForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
+            profile_, ServiceAccessType::EXPLICIT_ACCESS),
         GetApplicationContext()->GetApplicationLocale());
   }
 
@@ -175,8 +175,7 @@ ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
 }
 
 StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
-  return StrikeDatabaseFactory::GetForBrowserState(
-      browser_state_->GetOriginalChromeBrowserState());
+  return StrikeDatabaseFactory::GetForProfile(profile_->GetOriginalProfile());
 }
 
 ukm::UkmRecorder* ChromeAutofillClientIOS::GetUkmRecorder() {
@@ -305,7 +304,7 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
 }
 
 AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
-  return PlusAddressServiceFactory::GetForProfile(browser_state_);
+  return PlusAddressServiceFactory::GetForProfile(profile_);
 }
 
 void ChromeAutofillClientIOS::OfferPlusAddressCreation(
@@ -380,12 +379,12 @@ ChromeAutofillClientIOS::GetDeviceAuthenticator() {
   if (!reauthModule) {
     reauthModule = [[ReauthenticationModule alloc] init];
   }
-  return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
+  return CreateIOSDeviceAuthenticator(reauthModule, profile_, params);
 }
 
 std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_);
+      AuthenticationServiceFactory::GetForProfile(profile_);
   DCHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

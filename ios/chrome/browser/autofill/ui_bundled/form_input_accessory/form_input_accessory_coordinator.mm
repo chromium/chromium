@@ -147,9 +147,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Active Form Input View Controller.
 @property(nonatomic, strong) UIViewController* formInputViewController;
 
-// The browser state. May return null after the coordinator has been stopped
+// The profile. May return null after the coordinator has been stopped
 // (thus the returned value must be checked for null).
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 // Bubble view controller presenter for autofill suggestion tip.
 @property(nonatomic, strong) BubbleViewControllerPresenter* bubblePresenter;
@@ -197,19 +197,19 @@ const base::Feature* FetchIPHFeatureFromEnum(
       LayoutGuideCenterForBrowser(self.browser);
   self.formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
 
-  DCHECK(self.browserState);
+  DCHECK(self.profile);
   auto profilePasswordStore =
       IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.profile->GetOriginalProfile());
 
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
@@ -222,9 +222,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
         accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
       reauthenticationModule:self.reauthenticationModule
-           engagementTracker:feature_engagement::TrackerFactory::
-                                 GetForBrowserState(
-                                     self.browser->GetBrowserState())];
+           engagementTracker:feature_engagement::TrackerFactory::GetForProfile(
+                                 self.browser->GetProfile())];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
 
@@ -768,17 +767,17 @@ const base::Feature* FetchIPHFeatureFromEnum(
   self.alertCoordinator = nil;
 }
 
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
+- (ProfileIOS*)profile {
+  return self.browser ? self.browser->GetProfile() : nullptr;
 }
 
 - (feature_engagement::Tracker*)featureEngagementTracker {
-  ChromeBrowserState* browserState = self.browserState;
-  if (!browserState) {
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
     return nullptr;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   CHECK(tracker);
   return tracker;
 }

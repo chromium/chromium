@@ -41,7 +41,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     // Mediator dependencies.
     // Add test password store.
@@ -58,9 +58,8 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = std::move(builder).Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Add fake web state.
     auto fake_web_state = std::make_unique<web::FakeWebState>();
@@ -126,7 +125,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
   UIViewController* root_view_controller_;

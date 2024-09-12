@@ -227,23 +227,23 @@ using manual_fill::ManualFillDataType;
     return _manualFillPlusAddressMediator;
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForProfile(browserState);
+      PlusAddressServiceFactory::GetForProfile(profile);
   CHECK(plusAddressService);
 
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
       initWithFaviconLoader:faviconLoader
          plusAddressService:plusAddressService
                         URL:URL
-             isOffTheRecord:browserState->IsOffTheRecord()];
+             isOffTheRecord:profile->IsOffTheRecord()];
 
   return _manualFillPlusAddressMediator;
 }

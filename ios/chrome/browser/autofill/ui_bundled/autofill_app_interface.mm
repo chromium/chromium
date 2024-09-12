@@ -61,7 +61,7 @@ GetPasswordProfileStore() {
   // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
   // Incognito context.
   return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState(),
+      chrome_test_util::GetOriginalProfile(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
 
@@ -394,10 +394,9 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)clearProfilesStore {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+      autofill::PersonalDataManagerFactory::GetForProfile(profileIOS);
   for (const autofill::AutofillProfile* profile :
        personalDataManager->address_data_manager().GetProfiles()) {
     personalDataManager->RemoveByGUID(profile->guid());
@@ -410,7 +409,7 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   CHECK(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, conditionBlock));
 
-  autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
+  autofill::prefs::SetAutofillProfileEnabled(profileIOS->GetPrefs(), YES);
 }
 
 + (void)saveExampleProfile {
@@ -438,10 +437,8 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
     personalDataManager->RemoveByGUID(creditCard->guid());
   }
 
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  autofill::prefs::SetAutofillPaymentMethodsEnabled(browserState->GetPrefs(),
-                                                    YES);
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  autofill::prefs::SetAutofillPaymentMethodsEnabled(profile->GetPrefs(), YES);
 }
 
 // Clears all server data including server cards.
@@ -629,12 +626,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 #pragma mark - Private
 
-// The PersonalDataManager instance for the current browser state.
+// The PersonalDataManager instance for the current profile.
 + (autofill::PersonalDataManager*)personalDataManager {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+      autofill::PersonalDataManagerFactory::GetForProfile(profile);
   personalDataManager->payments_data_manager().SetSyncingForTest(true);
   return personalDataManager;
 }

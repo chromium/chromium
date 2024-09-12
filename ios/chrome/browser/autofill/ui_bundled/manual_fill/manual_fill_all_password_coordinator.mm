@@ -67,22 +67,22 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(profile);
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
+          IOSChromeAffiliationServiceFactory::GetForBrowserState(profile),
           IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForBrowserState(browserState));
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForProfile(profile));
 
   _savedPasswordsPresenter->Init();
 

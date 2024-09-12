@@ -54,12 +54,11 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
     _params = params;
     _dismissing = NO;
 
-    ChromeBrowserState* browserState =
-        browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
 
     self.personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            browserState->GetOriginalChromeBrowserState());
+        autofill::PersonalDataManagerFactory::GetForProfile(
+            profile->GetOriginalProfile());
   }
   return self;
 }
