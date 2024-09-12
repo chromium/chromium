@@ -102,14 +102,8 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
 
   base::Value::List result_list;
   Profile* profile = Profile::FromBrowserContext(browser_context());
-
-  WindowController* window_controller =
-      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-  if (!window_controller) {
-    return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
-  }
-  Browser* current_browser = window_controller->GetBrowser();
-
+  Browser* current_browser =
+      ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
       continue;

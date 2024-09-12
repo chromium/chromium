@@ -77,10 +77,6 @@ Browser* BrowserExtensionWindowController::GetBrowser() const {
   return browser_;
 }
 
-bool BrowserExtensionWindowController::IsDeleteScheduled() const {
-  return browser_->is_delete_scheduled();
-}
-
 bool BrowserExtensionWindowController::GetActiveTab(
     content::WebContents** contents,
     int* optional_tab_id) const {
@@ -95,10 +91,6 @@ bool BrowserExtensionWindowController::GetActiveTab(
   }
 
   return false;
-}
-
-bool BrowserExtensionWindowController::HasEditableTabStrip() const {
-  return browser_->window()->IsTabStripEditable();
 }
 
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(

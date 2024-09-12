@@ -35,10 +35,8 @@ class BrowserExtensionWindowController : public WindowController {
                          const GURL& extension_url) const override;
   bool CanClose(Reason* reason) const override;
   Browser* GetBrowser() const override;
-  bool IsDeleteScheduled() const override;
   bool GetActiveTab(content::WebContents** contents,
                     int* tab_id) const override;
-  bool HasEditableTabStrip() const override;
   bool IsVisibleToTabsAPIForExtension(
       const Extension* extension,
       bool allow_dev_tools_windows) const override;

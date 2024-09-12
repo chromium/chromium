@@ -238,11 +238,12 @@ content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
                nullptr /* ignore TabStripModel* output */, &web_contents,
                nullptr /* ignore int tab_index output */, error);
   } else {
-    WindowController* window_controller =
-        ChromeExtensionFunctionDetails(function).GetCurrentWindowController();
-    if (!window_controller) {
+    Browser* browser =
+        ChromeExtensionFunctionDetails(function).GetCurrentBrowser();
+    if (!browser) {
       *error = tabs_constants::kNoCurrentWindowError;
-    } else if (!window_controller->GetActiveTab(&web_contents, nullptr)) {
+    } else if (!ExtensionTabUtil::GetActiveTab(browser, &web_contents,
+                                               nullptr)) {
       *error = tabs_constants::kNoSelectedTabError;
     }
   }
@@ -1181,14 +1182,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   Browser* last_active_browser =
       chrome::FindAnyBrowser(profile, include_incognito_information());
-
-  WindowController* window_controller =
-      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-  if (!window_controller) {
-    return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
-  }
-  Browser* current_browser = window_controller->GetBrowser();
-
+  Browser* current_browser =
+      ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
       continue;
@@ -1530,17 +1525,17 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   int tab_id = -1;
   WebContents* contents = nullptr;
   if (!params->tab_id) {
-    WindowController* window_controller =
-        ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-    if (!window_controller) {
+    Browser* browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
+    if (!browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
-    }
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
+    TabStripModel* tab_strip_model =
+        ExtensionTabUtil::GetEditableTabStripModel(browser);
+    if (!tab_strip_model)
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-    }
-    if (!window_controller->GetActiveTab(&contents, &tab_id)) {
+    contents = tab_strip_model->GetActiveWebContents();
+    if (!contents)
       return RespondNow(Error(tabs_constants::kNoSelectedTabError));
-    }
+    tab_id = sessions::SessionTabHelper::IdForTab(contents).id();
   } else {
     tab_id = *params->tab_id;
   }
@@ -1868,20 +1863,25 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
 
   // If |tab_id| is specified, look for it. Otherwise default to selected tab
   // in the current window.
+
+  Browser* browser = nullptr;
   content::WebContents* web_contents = nullptr;
   if (!params->tab_id) {
-    if (WindowController* window_controller =
-            ChromeExtensionFunctionDetails(this).GetCurrentWindowController()) {
-      if (!window_controller->GetActiveTab(&web_contents, nullptr)) {
-        return RespondNow(Error(tabs_constants::kNoSelectedTabError));
-      }
-    } else {
+    Browser* current_browser =
+        ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
+
+    if (!current_browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
+
+    if (!ExtensionTabUtil::GetActiveTab(current_browser, &web_contents,
+                                        nullptr)) {
+      return RespondNow(Error(kUnknownErrorDoNotUse));
     }
+
+    browser = current_browser;
   } else {
     int tab_id = *params->tab_id;
 
-    Browser* browser = nullptr;
     std::string error;
     if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
                     &browser, nullptr, &web_contents, nullptr, &error)) {
@@ -2346,16 +2346,17 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
       tabs::DetectLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  int tab_id = 0;
+  Browser* browser = nullptr;
   WebContents* contents = nullptr;
 
   // If |tab_id| is specified, look for it. Otherwise default to selected tab
   // in the current window.
+  std::string error;
   if (params->tab_id) {
-    Browser* browser = nullptr;
-    std::string error;
-    if (!GetTabById(*params->tab_id, browser_context(),
-                    include_incognito_information(), &browser, nullptr,
-                    &contents, nullptr, &error)) {
+    tab_id = *params->tab_id;
+    if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
+                    &browser, nullptr, &contents, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
     // The browser will be null for prerender tabs.
@@ -2363,17 +2364,16 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
       return RespondNow(Error(kUnknownErrorDoNotUse));
     }
   } else {
-    WindowController* window_controller =
-        ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-    if (!window_controller) {
+    browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
+    if (!browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
-    }
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
+    TabStripModel* tab_strip_model =
+        ExtensionTabUtil::GetEditableTabStripModel(browser);
+    if (!tab_strip_model)
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-    }
-    if (!window_controller->GetActiveTab(&contents, nullptr)) {
+    contents = tab_strip_model->GetActiveWebContents();
+    if (!contents)
       return RespondNow(Error(tabs_constants::kNoSelectedTabError));
-    }
   }
 
   if (contents->GetController().NeedsReload()) {
@@ -2478,17 +2478,14 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   // If the tab ID wasn't given then it needs to be converted to the
   // currently active tab's ID.
   if (tab_id == -1) {
-    if (WindowController* window_controller =
-            chrome_details_.GetCurrentWindowController()) {
-      content::WebContents* web_contents = nullptr;
-      if (!window_controller->GetActiveTab(&web_contents, &tab_id)) {
-        // Can happen during shutdown.
-        return set_init_result_error(
-            tabs_constants::kNoTabInBrowserWindowError);
-      }
-    } else {
-      // Can happen during shutdown.
+    Browser* browser = chrome_details_.GetCurrentBrowser();
+    // Can happen during shutdown.
+    if (!browser)
       return set_init_result_error(tabs_constants::kNoCurrentWindowError);
+    content::WebContents* web_contents = nullptr;
+    // Can happen during shutdown.
+    if (!ExtensionTabUtil::GetActiveTab(browser, &web_contents, &tab_id)) {
+      return set_init_result_error(tabs_constants::kNoTabInBrowserWindowError);
     }
   }
 
