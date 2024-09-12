@@ -29,7 +29,6 @@
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -396,9 +395,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
-  if (auto* dips_wco = DIPSWebContentsObserver::FromWebContents(web_contents)) {
-    CHECK(dips::StatefulBounceCounter::Get(dips_wco));
-  }
 #if BUILDFLAG(ENABLE_REPORTING)
   if (base::FeatureList::IsEnabled(
           net::features::kReportingApiEnableEnterpriseCookieIssues)) {
