@@ -224,6 +224,20 @@ export class RecordPage extends ReactiveLitElement {
       padding: 24px 0 16px;
     }
 
+    @keyframes pulses {
+      0% {
+        /*
+         * This is var(--cros-ref-motion-easing-emphasized-accelerate), but
+         * using the CSS variable here doesn't work for some reason...
+         */
+        animation-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15);
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
     #timer {
       align-items: center;
       display: flex;
@@ -242,8 +256,8 @@ export class RecordPage extends ReactiveLitElement {
         width: 12px;
 
         .paused & {
+          animation: 1s infinite pulses;
           color: var(--cros-sys-secondary);
-          opacity: 0.5;
         }
       }
 
@@ -264,7 +278,7 @@ export class RecordPage extends ReactiveLitElement {
         var(--cros-ref-motion-easing-emphasized-accelerate);
 
       .paused & {
-        opacity: 0.5;
+        animation: 1s infinite pulses;
       }
     }
 
