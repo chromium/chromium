@@ -89,6 +89,10 @@ void FamilyMember::TurnOnSync() {
   sign_in_functions_.TurnOnSync(account_, 0);
 }
 
+void FamilyMember::SignOutFromWeb() {
+  sign_in_functions_.SignOutFromWeb();
+}
+
 CoreAccountId FamilyMember::GetAccountId() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
@@ -105,6 +109,10 @@ CoreAccountId FamilyMember::GetAccountId() const {
       << account_.user;
 
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+}
+
+std::string_view FamilyMember::GetAccountPassword() const {
+  return account_.password;
 }
 
 }  // namespace supervised_user

@@ -32,6 +32,7 @@ class FamilyMember {
   ~FamilyMember();
 
   void TurnOnSync();
+  void SignOutFromWeb();
 
   // Urls of family member's blocklist and allowlist settings. Member must be a
   // supervised user who is a subject to parental controls.
@@ -56,6 +57,8 @@ class FamilyMember {
   }
 
   CoreAccountId GetAccountId() const;
+
+  std::string_view GetAccountPassword() const;
 
  private:
   signin::test::TestAccount account_;
