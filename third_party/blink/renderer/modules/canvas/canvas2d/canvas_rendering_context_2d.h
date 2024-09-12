@@ -260,6 +260,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
  private:
   friend class CanvasRenderingContext2DAutoRestoreSkCanvas;
+  FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTest,
+                           PrepareMailboxWhenContextIsLostWithFailedRestore);
 
   void PruneLocalFontCache(size_t target_size);
 

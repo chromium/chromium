@@ -184,30 +184,6 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
                                                    &release_callback));
 }
 
-TEST_F(Canvas2DLayerBridgeTest,
-       PrepareMailboxWhenContextIsLostWithFailedRestore) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-
-  bridge->GetOrCreateResourceProvider();
-  EXPECT_TRUE(Host()->IsResourceValid());
-  // When the context is lost we are not sure if we should still be producing
-  // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_FALSE(Host()->IsResourceValid());
-
-  // Restoration will fail because
-  // Platform::createSharedOffscreenGraphicsContext3DProvider() is stubbed
-  // in unit tests.  This simulates what would happen when attempting to
-  // restore while the GPU process is down.
-  bridge->Restore();
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-  EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                   &release_callback));
-}
-
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   // Prepare a mailbox, then report the resource as lost.
   // This test passes by not crashing and not triggering assertions.
