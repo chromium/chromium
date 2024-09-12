@@ -36,6 +36,8 @@
 // Submits the current file selection to the web page.
 - (void)submitFileSelection;
 
+- (void)browseToParent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_MUTATOR_H_

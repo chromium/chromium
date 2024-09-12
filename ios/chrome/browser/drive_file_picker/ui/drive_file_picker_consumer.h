@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 
 @class DriveItemIdentifier;
@@ -44,6 +45,10 @@
 // Sets which sorting criteria and direction appear as enabled.
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
                  direction:(DriveItemsSortingOrder)direction;
+
+- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block;
+
+- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier;
 
 @end
 

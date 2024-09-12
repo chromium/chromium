@@ -67,6 +67,9 @@
   self.fileSelectionSubmitted = YES;
 }
 
+- (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.
@@ -116,6 +119,13 @@
   self.sortingCriteria = criteria;
   self.sortingDirection = direction;
 }
+
+- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block {
+}
+
+- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
+}
+
 @end
 
 // Test fixture for testing DriveFilePickerMediator class.

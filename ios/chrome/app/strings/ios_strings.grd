@@ -1647,9 +1647,27 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
       </message>
-      <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_TITLE" desc="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
-          Enable All
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE" desc="Title for My Drive folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the My Drive folder in Google Drive, the translation must be similar. [iOS only]">
+        My Drive
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES" desc="Title for Shared Drives folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Shared Drives folder in Google Drive, hence the translation must be similar. [iOS only]">
+        Shared Drives
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_COMPUTERS" desc="Title for Computers folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Computers folder in Google Drive, hence the translation must be similar. [iOS only]">
+       Computers
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_STARRED" desc="Title for Starred folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Starred folder in Google Drive, hence the translation must be similar. [iOS only]">
+      Starred
+      </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_RECENT" desc="Title for Recent folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Recent folder in Google Drive, hence the translation must be similar. [iOS only]">
+      Recent
+      </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME" desc="Title for Shared With Me folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the Shared With Me folder in Google Drive, hence the translation must be similar. [iOS only]">
+       Shared With Me
+     </message>
+     <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_TITLE" desc="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Title for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
+          Enable All
+     </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ENABLE_ALL_DESCRIPTION" desc="Description for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]" meaning="Description for a button that makes all files selectable in a file picker, regardless of the types accepted by a form. [iOS only]">
           Include file extensions not specified by the website
       </message>

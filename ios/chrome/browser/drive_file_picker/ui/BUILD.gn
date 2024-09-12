@@ -17,6 +17,7 @@ source_set("ui") {
     "root_drive_file_picker_table_view_controller.mm",
   ]
   deps = [
+    ":alert_utils",
     ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
@@ -38,4 +39,12 @@ source_set("constants") {
     "drive_file_picker_constants.h",
     "drive_file_picker_constants.mm",
   ]
+}
+
+source_set("alert_utils") {
+  sources = [
+    "drive_file_picker_alert_utils.h",
+    "drive_file_picker_alert_utils.mm",
+  ]
+  deps = [ "//base" ]
 }

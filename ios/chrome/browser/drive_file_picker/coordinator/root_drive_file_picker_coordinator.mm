@@ -187,14 +187,13 @@
                          }];
 }
 
+- (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
+}
+
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
-  if (![_viewController isMovingFromParentViewController]) {
-    [_viewController.navigationController popToViewController:_viewController
-                                                     animated:NO];
-  }
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
 }

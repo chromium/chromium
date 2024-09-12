@@ -287,6 +287,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   // File URL to which the selected file is being downloaded.
   NSURL* _selectedFileDestinationURL;
+  // The selected drive item identifier.
+  NSString* _selectedIdentifier;
   // If this is true, all downloadable files can be selected regardless of type.
   BOOL _ignoreAcceptedTypes;
   // Filter used to only show items matching a certain type.
@@ -383,6 +385,15 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 #pragma mark - DriveFilePickerMutator
 
 - (void)selectDriveItem:(DriveItemIdentifier*)driveItem {
+  if (driveItem.type != DriveItemType::kFile && _selectedIdentifier != nil) {
+    __weak __typeof(self) weakSelf = self;
+    [self.consumer showInterruptionAlertWithBlock:^{
+      [weakSelf clearSelection];
+      [weakSelf selectDriveItem:driveItem];
+    }];
+    return;
+  }
+
   DriveListQuery itemQuery;
   switch (driveItem.type) {
     case DriveItemType::kFolder:
@@ -441,7 +452,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     case DriveItemType::kSharedDrives:
     case DriveItemType::kComputers:
     case DriveItemType::kFile:
+      if ([_selectedIdentifier isEqual:driveItem.identifier]) {
+        // If the file is already selected, do nothing.
+        break;
+      }
+      _selectedIdentifier = driveItem.identifier;
       [self downloadDriveItem:driveItem];
+      [self.consumer setSelectedItemIdentifier:driveItem.identifier];
+
       break;
   }
 }
@@ -525,7 +543,26 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [self fetchItemsAppending:NO];
 }
 
+- (void)browseToParent {
+  if (_selectedIdentifier) {
+    __weak __typeof(self) weakSelf = self;
+    [self.consumer showInterruptionAlertWithBlock:^{
+      [weakSelf clearSelection];
+      [weakSelf browseToParent];
+    }];
+    return;
+  }
+
+  [self.delegate browseToParentWithMediator:self];
+}
+
 #pragma mark - Private
+
+- (void)clearSelection {
+  [self.consumer setDownloadStatus:DriveFileDownloadStatus::kNotStarted];
+  [self.consumer setSelectedItemIdentifier:nil];
+  _selectedIdentifier = nil;
+}
 
 - (void)downloadDriveItem:(DriveItemIdentifier*)driveItemIdentifier {
   std::optional<DriveItem> driveItem = FindDriveItemFromIdentifier(

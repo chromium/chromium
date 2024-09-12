@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -36,7 +38,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"root"
-                   title:@"TEST My Drive"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE)
                     icon:CustomSymbolWithPointSize(kMyDriveSymbol,
                                                    kIconPointSize)
             creationDate:nil
@@ -47,7 +50,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_drives"
-                   title:@"TEST Shared Drives"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES)
                     icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
                                                    kIconPointSize)
             creationDate:nil
@@ -58,7 +62,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"computers"
-                   title:@"TEST Computers"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_COMPUTERS)
                     icon:DefaultSymbolWithPointSize(kLaptopAndIphoneSymbol,
                                                     kIconPointSize)
             creationDate:nil
@@ -69,7 +74,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"starred"
-                   title:@"TEST Starred"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_STARRED)
                     icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
                                                     kIconPointSize)
             creationDate:nil
@@ -80,7 +86,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"recent"
-                   title:@"TEST Recent"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_RECENT)
                     icon:DefaultSymbolWithPointSize(kClockSymbol,
                                                     kIconPointSize)
             creationDate:nil
@@ -91,7 +98,8 @@ const CGFloat kIconPointSize = 18;
   // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_with_me"
-                   title:@"TEST Shared With Me"
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
                     icon:DefaultSymbolWithPointSize(kPersonTwoSymbol,
                                                     kIconPointSize)
             creationDate:nil

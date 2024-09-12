@@ -141,14 +141,11 @@
 - (void)stop {
   [_mediator disconnect];
   if (![_viewController isMovingFromParentViewController]) {
-    [_viewController.navigationController popToViewController:_viewController
-                                                     animated:NO];
+    [_viewController.navigationController popViewControllerAnimated:YES];
   }
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
   _mediator = nil;
-  // The owner of this coordinator should use `popToViewController` to dismiss
-  // this `_viewController`.
   _viewController = nil;
 
   _identity = nil;
@@ -192,6 +189,10 @@
                          }];
 }
 
+- (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
+  [self.delegate coordinatorShouldStop:self];
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -202,10 +203,6 @@
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
-  if (![_viewController isMovingFromParentViewController]) {
-    [_viewController.navigationController popToViewController:_viewController
-                                                     animated:NO];
-  }
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
 }
