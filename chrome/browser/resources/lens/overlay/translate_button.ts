@@ -245,7 +245,7 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private maybeIssueTranslateRequest() {
-    if (this.isTranslateModeEnabled) {
+    if (this.isTranslateModeEnabled && this.targetLanguage) {
       this.browserProxy.handler.issueTranslateFullPageRequest(
           this.sourceLanguage ? this.sourceLanguage.code : 'auto',
           this.targetLanguage.code);
@@ -263,7 +263,11 @@ export class TranslateButtonElement extends PolymerElement {
     if (this.sourceLanguage) {
       return this.sourceLanguage.displayName;
     }
-    if (this.contentLanguage !== '') {
+    // There is a race condition where the DOM can render before the language
+    // browser proxy returns the language list. For this reason, we need to
+    // check if the translate language list is present before attempting to find
+    // the content language display name inside of it.
+    if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
           language => language.code === this.contentLanguage);
       if (detectedLanguage !== undefined) {
@@ -273,8 +277,20 @@ export class TranslateButtonElement extends PolymerElement {
     return loadTimeData.getString('detectLanguage');
   }
 
+  private getTargetLanguageDisplayName(): string {
+    if (this.targetLanguage) {
+      return this.targetLanguage.displayName;
+    }
+
+    return '';
+  }
+
   private getContentLanguageDisplayName(): string {
-    if (this.contentLanguage !== '') {
+    // There is a race condition where the DOM can render before the language
+    // browser proxy returns the language list. For this reason, we need to
+    // check if the translate language list is present before attempting to find
+    // the content language display name inside of it.
+    if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
           language => language.code === this.contentLanguage);
       if (detectedLanguage !== undefined) {
