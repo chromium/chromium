@@ -2595,6 +2595,7 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 [ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
 [ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Pass Timeout ]
 crbug.com/365828864 [ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
