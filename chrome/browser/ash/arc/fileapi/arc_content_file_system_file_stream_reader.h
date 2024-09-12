@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_CONTENT_FILE_SYSTEM_FILE_STREAM_READER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
@@ -58,7 +59,8 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
                     net::CompletionOnceCallback callback);
 
   // Called when read completes.
-  void OnRead(net::CompletionOnceCallback callback, int result);
+  void OnRead(net::CompletionOnceCallback callback,
+              std::optional<size_t> result);
 
   // Called when GetFileSize() completes.
   void OnGetFileSize(net::Int64CompletionOnceCallback callback, int64_t size);
@@ -90,7 +92,7 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
       net::CompletionOnceCallback callback,
       scoped_refptr<net::IOBufferWithSize> temporary_buffer,
       int64_t num_bytes_to_consume,
-      int read_result);
+      std::optional<size_t> read_result);
 
   GURL arc_url_;
   int64_t offset_;

@@ -120,19 +120,20 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
   max_size =
       std::min(max_size, static_cast<size_t>(last_written_pos_ - position));
   buffer.resize(max_size);
-  int size_got =
-      UNSAFE_TODO(file_.ReadNoBestEffort(position, &*buffer.begin(), max_size));
 
-  if (size_got < 0) {
+  std::optional<size_t> size_got =
+      file_.ReadNoBestEffort(position, base::as_writable_byte_span(buffer));
+
+  if (!size_got.has_value()) {
     LOG(ERROR) << "Failed to read temporary file";
     return StatusFailure;
   }
 
   // Provided client has requested sufficient large block, make their
   // life easier by not truncating in the middle of a UTF-8 character.
-  if (size_got > 6 && !CBU8_IS_SINGLE(buffer[size_got - 1])) {
+  if (size_got.value() > 6 && !CBU8_IS_SINGLE(buffer[size_got.value() - 1])) {
     std::string truncated;
-    base::TruncateUTF8ToByteSize(buffer, size_got, &truncated);
+    base::TruncateUTF8ToByteSize(buffer, size_got.value(), &truncated);
     // If the above failed, we're dealing with binary files, so
     // don't mess with them.
     if (truncated.size()) {
@@ -140,8 +141,8 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
       size_got = buffer.size();
     }
   }
-  buffer.resize(size_got);
-  last_read_pos_ = position + size_got;
+  buffer.resize(size_got.value());
+  last_read_pos_ = position + size_got.value();
   if (binary_) {
     buffer = base::Base64Encode(buffer);
   }
