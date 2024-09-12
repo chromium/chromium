@@ -1523,8 +1523,8 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   if (!window_controller) {
     return RespondNow(Error(download_extension_errors::kInvisibleContext));
   }
-  content::WebContents* active_contents = window_controller->GetActiveTab();
-  if (!active_contents) {
+  content::WebContents* active_contents = nullptr;
+  if (!window_controller->GetActiveTab(&active_contents, nullptr)) {
     return RespondNow(Error(download_extension_errors::kInvisibleContext));
   }
 

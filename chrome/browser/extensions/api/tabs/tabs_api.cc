@@ -221,11 +221,8 @@ content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
         ChromeExtensionFunctionDetails(function).GetCurrentWindowController();
     if (!window_controller) {
       *error = tabs_constants::kNoCurrentWindowError;
-    } else {
-      web_contents = window_controller->GetActiveTab();
-      if (!web_contents) {
-        *error = tabs_constants::kNoSelectedTabError;
-      }
+    } else if (!window_controller->GetActiveTab(&web_contents, nullptr)) {
+      *error = tabs_constants::kNoSelectedTabError;
     }
   }
   return web_contents;
@@ -1529,11 +1526,9 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     if (!ExtensionTabUtil::IsTabStripEditable()) {
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
     }
-    contents = window_controller->GetActiveTab();
-    if (!contents) {
+    if (!window_controller->GetActiveTab(&contents, &tab_id)) {
       return RespondNow(Error(tabs_constants::kNoSelectedTabError));
     }
-    tab_id = ExtensionTabUtil::GetTabId(contents);
   } else {
     tab_id = *params->tab_id;
   }
@@ -1869,8 +1864,7 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   if (!params->tab_id) {
     if (WindowController* window_controller =
             ChromeExtensionFunctionDetails(this).GetCurrentWindowController()) {
-      web_contents = window_controller->GetActiveTab();
-      if (!web_contents) {
+      if (!window_controller->GetActiveTab(&web_contents, nullptr)) {
         return RespondNow(Error(tabs_constants::kNoSelectedTabError));
       }
     } else {
@@ -2378,8 +2372,7 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
     if (!ExtensionTabUtil::IsTabStripEditable()) {
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
     }
-    contents = window_controller->GetActiveTab();
-    if (!contents) {
+    if (!window_controller->GetActiveTab(&contents, nullptr)) {
       return RespondNow(Error(tabs_constants::kNoSelectedTabError));
     }
   }
@@ -2488,13 +2481,12 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   if (tab_id == -1) {
     if (WindowController* window_controller =
             chrome_details_.GetCurrentWindowController()) {
-      content::WebContents* web_contents = window_controller->GetActiveTab();
-      if (!web_contents) {
+      content::WebContents* web_contents = nullptr;
+      if (!window_controller->GetActiveTab(&web_contents, &tab_id)) {
         // Can happen during shutdown.
         return set_init_result_error(
             tabs_constants::kNoTabInBrowserWindowError);
       }
-      tab_id = ExtensionTabUtil::GetTabId(web_contents);
     } else {
       // Can happen during shutdown.
       return set_init_result_error(tabs_constants::kNoCurrentWindowError);

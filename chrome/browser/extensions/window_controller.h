@@ -101,9 +101,11 @@ class WindowController {
   // Browser::is_delete_scheduled().
   virtual bool IsDeleteScheduled() const = 0;
 
-  // Returns the WebContents associated with the active tab, if any. Returns
-  // null if there is no active tab.
-  virtual content::WebContents* GetActiveTab() const = 0;
+  // On success, returns true and fills in the WebContents and extensions API
+  // tab ID for the active tab. The optional_tab_id may be null if the caller
+  // doesn't need it. Returns false if there is no active tab.
+  virtual bool GetActiveTab(content::WebContents** contents,
+                            int* optional_tab_id) const = 0;
 
   // Returns true if this window has a tab strip that's currently editable or
   // if there's no visible tab strip.
