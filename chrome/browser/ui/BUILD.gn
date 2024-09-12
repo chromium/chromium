@@ -993,6 +993,7 @@ static_library("ui") {
       "//components/resources:android_resources",
       "//components/search_provider_logos",
       "//components/security_state/content/android",
+      "//components/sensitive_content",
       "//components/subresource_filter/core/browser",
       "//components/thin_webview:thin_webview",
       "//components/translate/content/android",

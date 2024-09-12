@@ -170,6 +170,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
@@ -185,6 +186,8 @@
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/sensitive_content/android/android_sensitive_content_client.h"
+#include "components/sensitive_content/features.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
 #else
@@ -368,6 +371,18 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
   autofill_client_provider.CreateClientForWebContents(web_contents);
+#if BUILDFLAG(IS_ANDROID)
+  // The sensitive content client has to be instantiated after the autofill
+  // client, because the sensitive content client starts a flow which uses
+  // `ScopedAutofillManagersObservation`.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SdkVersion::SDK_VERSION_V &&
+      base::FeatureList::IsEnabled(
+          sensitive_content::features::kSensitiveContent)) {
+    sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
+        web_contents, "SensitiveContent.Chrome.");
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }

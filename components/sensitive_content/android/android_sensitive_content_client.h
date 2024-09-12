@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SENSITIVE_CONTENT_ANDROID_ANDROID_SENSITIVE_CONTENT_CLIENT_H_
 #define COMPONENTS_SENSITIVE_CONTENT_ANDROID_ANDROID_SENSITIVE_CONTENT_CLIENT_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "components/sensitive_content/sensitive_content_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -32,8 +33,15 @@ class AndroidSensitiveContentClient
   std::string_view GetHistogramPrefix() override;
 
  private:
+  friend class content::WebContentsUserData<AndroidSensitiveContentClient>;
+
   SensitiveContentManager manager_;
   std::string histogram_prefix_;
+  // Holds a reference to the Java counterpart of the client. Used to update the
+  // content sensitivity on the Java view.
+  base::android::ScopedJavaGlobalRef<jobject> java_sensitive_contents_client_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace sensitive_content
