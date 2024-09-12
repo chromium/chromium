@@ -110,8 +110,18 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
   }
 
   const auto& config = user_context->GetAuthFactorsConfiguration();
+  bool has_online_password = false;
+  bool has_local_password = false;
+  if (config.HasConfiguredFactor(cryptohome::AuthFactorType::kPassword)) {
+    has_online_password = auth::IsGaiaPassword(
+        *config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
+    has_local_password = auth::IsLocalPassword(
+        *config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
+  }
+
   bool is_configured =
       config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+
   if (is_configured) {
     if (user_context->GetReauthProofToken().empty()) {
       auto account_id = user_context->GetAccountId();
@@ -131,6 +141,9 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       }
     }
     CHECK(user_context->HasAuthFactorsConfiguration());
+    if (!has_online_password && !has_local_password) {
+      LOG(ERROR) << "Contuining Recovery with no passwords";
+    }
     recovery_performer_ = std::make_unique<CryptohomeRecoveryPerformer>(
         UserDataAuthClient::Get(),
         g_browser_process->shared_url_loader_factory());
@@ -140,20 +153,8 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     CHECK(user_context->HasAuthFactorsConfiguration());
-    const auto& auth_config = user_context->GetAuthFactorsConfiguration();
-
-    bool has_online_password = false;
-    bool has_local_password = false;
-    if (auth_config.HasConfiguredFactor(
-            cryptohome::AuthFactorType::kPassword)) {
-      has_online_password = auth::IsGaiaPassword(
-          *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
-      has_local_password = auth::IsLocalPassword(
-          *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
-    }
-
     bool has_smart_card =
-        auth_config.HasConfiguredFactor(cryptohome::AuthFactorType::kSmartCard);
+        config.HasConfiguredFactor(cryptohome::AuthFactorType::kSmartCard);
     CHECK(!has_smart_card) << "Recovery for smart card users is not supported!";
 
     // Exactly one of the password should exists.

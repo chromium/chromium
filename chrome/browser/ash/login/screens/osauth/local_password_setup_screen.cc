@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
@@ -94,7 +95,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kRecovery:
-        password_factor_editor.UpdateLocalPassword(
+        password_factor_editor.UpdateOrSetLocalPassword(
             GetToken(), password,
             base::BindOnce(&LocalPasswordSetupScreen::OnUpdateLocalPassword,
                            weak_factory_.GetWeakPtr()));
