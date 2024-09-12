@@ -112,10 +112,6 @@ export function isMagicBoostFeatureEnabled(): boolean {
   return loadTimeData.getBoolean('isMagicBoostFeatureEnabled');
 }
 
-export function isMahiEnabled(): boolean {
-  return loadTimeData.getBoolean('isMahiEnabled');
-}
-
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');

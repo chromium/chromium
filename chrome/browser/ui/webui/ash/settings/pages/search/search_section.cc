@@ -372,10 +372,6 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          chrome::kHelpMeReadWriteLearnMoreURL);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
-  html_source->AddBoolean(
-      "isMahiEnabled",
-      chromeos::features::IsMahiEnabled() &&
-          !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
 
   html_source->AddBoolean(
       "isMagicBoostFeatureEnabled",

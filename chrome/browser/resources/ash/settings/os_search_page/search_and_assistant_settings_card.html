@@ -50,19 +50,7 @@
     </settings-toggle-button>
   </template>
 
-  <template is="dom-if" if="[[isMahiEnabled_]]">
-    <settings-toggle-button id="mahiToggle"
-        class="hr"
-        icon="[[rowIcons_.mahi]]"
-        pref="{{prefs.settings.mahi_enabled}}"
-        label="$i18n{enableHelpMeRead}"
-        sub-label="$i18n{enableHelpMeReadDesc}"
-        deep-link-focus-id$="[[Setting.kMahiOnOff]]"
-        >
-    </settings-toggle-button>
-  </template>
-
-  <!--TODO(b:337868408) deep-link and learn more link for magicboost-->
+  <!--TODO(b:337868408) learn more link for magicboost-->
   <template is="dom-if" if="[[isMagicBoostFeatureEnabled_]]">
     <settings-toggle-button id="magicBoostToggle"
         class="hr"

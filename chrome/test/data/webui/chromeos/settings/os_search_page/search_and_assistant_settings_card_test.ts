@@ -71,78 +71,6 @@ suite('<search-and-assistant-settings-card>', () => {
     });
   });
 
-  suite('Mahi setting toggle', () => {
-    test('should appear if isMahiEnabled flag is true.', () => {
-      loadTimeData.overrideValues({
-        isMahiEnabled: true,
-      });
-      createSearchAndAssistantCard();
-      assertTrue(
-          isVisible(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-              '#mahiToggle')));
-    });
-
-    test('should be hidden if isMahiEnabled flag is false.', () => {
-      loadTimeData.overrideValues({
-        isMahiEnabled: false,
-      });
-      createSearchAndAssistantCard();
-      assertNull(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-          '#mahiToggle'));
-    });
-
-    test('Mahi toggle reflects pref value', () => {
-      loadTimeData.overrideValues({
-        isMahiEnabled: true,
-      });
-      createSearchAndAssistantCard();
-      const fakePrefs = {
-        settings: {
-          mahi_enabled: {
-            value: true,
-          },
-        },
-      };
-      searchAndAssistantSettingsCard.prefs = fakePrefs;
-      flush();
-
-      const mahiToggle =
-          searchAndAssistantSettingsCard.shadowRoot!
-              .querySelector<SettingsToggleButtonElement>('#mahiToggle');
-      assertTrue(!!mahiToggle);
-
-      assertTrue(mahiToggle.checked);
-      assertTrue(searchAndAssistantSettingsCard.get(
-          'prefs.settings.mahi_enabled.value'));
-
-      // Click the toggle change the value of the pref
-      mahiToggle.click();
-      assertFalse(mahiToggle.checked);
-      assertFalse(searchAndAssistantSettingsCard.get(
-          'prefs.settings.mahi_enabled.value'));
-    });
-
-    test('Mahi Toggle is deep linkable', async () => {
-      createSearchAndAssistantCard();
-
-      const setting = settingMojom.Setting.kMahiOnOff;
-      const params = new URLSearchParams();
-      params.append('settingId', setting.toString());
-      Router.getInstance().navigateTo(defaultRoute, params);
-
-      const deepLinkElement =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-              '#mahiToggle');
-      assertTrue(!!deepLinkElement);
-
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement,
-          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
-          `Element should be focused for settingId=${setting}.'`);
-    });
-  });
-
   suite('Magic Boost setting toggle', () => {
     test('should appear if is isMagicBoostFeatureEnabled flag is true', () => {
       loadTimeData.overrideValues({
@@ -226,10 +154,7 @@ suite('<search-and-assistant-settings-card>', () => {
     });
 
     test('sub items are deep-linkable', async () => {
-      // Set `isMahiEnabled` false to hide the to-be-obsolete Mahi toggle that
-      // uses the same deeplink as the HelpMeRead toggle under Magic boost.
       loadTimeData.overrideValues({
-        isMahiEnabled: false,
         isMagicBoostFeatureEnabled: true,
       });
       createSearchAndAssistantCard();
