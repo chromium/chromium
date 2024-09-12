@@ -5222,6 +5222,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NetworkService.MaskedDomainList.FirstUpdateTime" units="ms"
+    expires_after="2025-03-10">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Delay between a MaskedDomainListManager being constructed and its
+    UpdateMaskedDomainList method first being called (measured on entry).
+
+    This effectively measures the duration for which the MDL is not populated
+    and thus requests' eligibilities for IP Protection remain unknown.
+
+    This histogram is only emitted when the MaskedDomainList feature is enabled.
+    The histogram will not be emitted if the MDL never becomes available. It is
+    emitted at most once per Network Service startup.
+
+    This histogram can easily overflow its maximum (10 second) bucket if the
+    component that stores the MDL data is not already available on disk. This
+    histogram is primarily focused on the (more typical) case where such data is
+    already available.
+  </summary>
+</histogram>
+
 <histogram
     name="NetworkService.MaskedDomainList.NetworkServiceProxyAllowList.EstimatedMemoryUsageInKB"
     units="KB" expires_after="2025-01-26">

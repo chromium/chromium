@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -169,6 +170,9 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
 
 constexpr std::string_view kTestDomain = "example.com";
 
+const char kFirstUpdateTimeHistogram[] =
+    "NetworkService.MaskedDomainList.FirstUpdateTime";
+
 }  // namespace
 
 class MaskedDomainListManagerBaseTest : public testing::Test {};
@@ -240,6 +244,48 @@ TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulatedWhenMDLUsed) {
       /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest, AllowlistAcceptsMultipleUpdates) {
+  base::HistogramTester histogram_tester;
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl1;
+  {
+    auto* resource_owner = mdl1.add_resource_owners();
+    resource_owner->set_owner_name("foo");
+    resource_owner->add_owned_resources()->set_domain("example.com");
+  }
+  MaskedDomainList mdl2;
+  {
+    auto* resource_owner = mdl2.add_resource_owners();
+    resource_owner->set_owner_name("foo");
+    resource_owner->add_owned_resources()->set_domain("example.net");
+  }
+  const auto kHttpsRequestUrl1 = GURL("https://example.com");
+  const auto kHttpsRequestUrl2 = GURL("https://example.net");
+  const auto kEmptyNak = net::NetworkAnonymizationKey();
+
+  // No updates yet.
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 0);
+
+  // First update.
+  allow_list.UpdateMaskedDomainList(
+      mdl1, /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
+
+  // Second update. Removes old rules, adds new ones.
+  allow_list.UpdateMaskedDomainList(
+      mdl2, /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+  EXPECT_FALSE(allow_list.Matches(kHttpsRequestUrl1, kEmptyNak));
+  EXPECT_TRUE(allow_list.Matches(kHttpsRequestUrl2, kEmptyNak));
+  histogram_tester.ExpectTotalCount(kFirstUpdateTimeHistogram, 1);
 }
 
 TEST_F(MaskedDomainListManagerTest, ShouldMatchHttp) {

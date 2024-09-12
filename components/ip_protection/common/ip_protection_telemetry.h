@@ -137,16 +137,20 @@ class IpProtectionTelemetry {
 
   // Time taken to create an Android IP Protection auth client, including
   // binding to the system-provided auth service.
-  virtual void AndroidAuthClientCreationTime(base::TimeDelta durection) = 0;
+  virtual void AndroidAuthClientCreationTime(base::TimeDelta duration) = 0;
 
   // Time taken to perform a successful GetInitialData request via
   // the Android auth client/service.
   virtual void AndroidAuthClientGetInitialDataTime(
-      base::TimeDelta durection) = 0;
+      base::TimeDelta duration) = 0;
 
   // Time taken to perform a successful AuthAndSign request via
   // the Android auth client/service.
-  virtual void AndroidAuthClientAuthAndSignTime(base::TimeDelta durection) = 0;
+  virtual void AndroidAuthClientAuthAndSignTime(base::TimeDelta duration) = 0;
+
+  // Delay between the MDL manager being created and UpdateMaskedDomainList
+  // first being called.
+  virtual void MdlFirstUpdateTime(base::TimeDelta duration) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

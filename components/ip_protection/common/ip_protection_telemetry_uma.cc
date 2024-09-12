@@ -210,4 +210,9 @@ void IpProtectionTelemetryUma::AndroidAuthClientAuthAndSignTime(
       duration);
 }
 
+void IpProtectionTelemetryUma::MdlFirstUpdateTime(base::TimeDelta duration) {
+  base::UmaHistogramTimes("NetworkService.MaskedDomainList.FirstUpdateTime",
+                          duration);
+}
+
 }  // namespace ip_protection
