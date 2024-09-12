@@ -33,13 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
-<enum name="DisplayServerSupport">
-  <int value="0" label="None"/>
-  <int value="1" label="X11"/>
-  <int value="2" label="XWayland"/>
-  <int value="3" label="Wayland"/>
-</enum>
-
 <enum name="HappinessTrackingSurvey">
   <summary>Possible survey states and answers for each question.</summary>
   <int value="1" label="Survey Triggered"/>
