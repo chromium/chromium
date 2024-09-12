@@ -1220,6 +1220,9 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     const CSSSelector& simple_selector,
     CSSSelector::PseudoType compound_pseudo_element) {
   switch (compound_pseudo_element) {
+    case CSSSelector::kPseudoColumn:
+      return simple_selector.GetPseudoType() ==
+             CSSSelector::kPseudoScrollMarker;
     case CSSSelector::kPseudoUnknown:
       return true;
     case CSSSelector::kPseudoAfter:

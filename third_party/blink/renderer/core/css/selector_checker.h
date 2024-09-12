@@ -162,6 +162,7 @@ class CORE_EXPORT SelectorChecker {
     bool has_selection_pseudo = false;
     bool has_search_text_pseudo = false;
     bool has_scroll_marker_pseudo = false;
+    bool has_column_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
     bool in_nested_complex_selector = false;
     // If true, elements that are links will match :visited. Otherwise,

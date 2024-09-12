@@ -80,6 +80,9 @@ enum PseudoId : uint8_t {
   kPseudoIdTargetText,
   kPseudoIdHighlight,
   kPseudoIdSpellingError,
+  kPseudoIdColumnScrollMarker,  // Used to store the combined
+                                // ::column::scroll-marker style on the
+                                // originating element's ComputedStyle cache.
   kPseudoIdGrammarError,
   // The following IDs are public but not tracked.
   kPseudoIdViewTransition,

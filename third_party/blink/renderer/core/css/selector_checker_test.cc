@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -925,6 +926,35 @@ TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
 
   SelectorChecker::MatchResult result;
   EXPECT_TRUE(checker.Match(context, result));
+}
+
+TEST_F(SelectorCheckerTest, ColumnWithScrollMarker) {
+  GetDocument().body()->setInnerHTML(
+      "<style>"
+      "#test::column { snap-alignment: center; }"
+      "#test::column::scroll-marker { content: '*'; opacity: 0.5; }"
+      "</style>"
+      "<div id='test'></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  const CSSSelector* selector =
+      css_test_helpers::ParseSelectorList("#test::column::scroll-marker")
+          ->First();
+  ASSERT_TRUE(selector);
+
+  Element* foo = GetDocument().getElementById(AtomicString("test"));
+  ASSERT_TRUE(foo);
+
+  SelectorChecker checker(SelectorChecker::kResolvingStyle);
+  SelectorChecker::SelectorCheckingContext context(foo);
+  context.selector = selector;
+
+  SelectorChecker::MatchResult result;
+  EXPECT_TRUE(checker.Match(context, result));
+  ASSERT_TRUE(foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker));
+  EXPECT_EQ(
+      foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker)->Opacity(),
+      0.5);
 }
 
 }  // namespace blink

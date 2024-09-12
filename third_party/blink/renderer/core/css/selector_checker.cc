@@ -27,6 +27,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -368,8 +369,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   //
   // In all of those cases we need to skip matching the pseudo classes after the
   // pseudo element on the originating element.
+  // But we allow the ::column::scroll-marker case to keep matching when we are
+  // at ::column part.
   if (context.in_rightmost_compound && dynamic_pseudo != kPseudoIdNone &&
-      context.pseudo_id == kPseudoIdNone) {
+      context.pseudo_id == kPseudoIdNone && dynamic_pseudo != kPseudoIdColumn) {
     // We are in the rightmost compound and have matched a pseudo element
     // (dynamic_pseudo is not kPseudoIdNone), which means we are looking at
     // pseudo classes after the pseudo element. We are also matching the
@@ -398,6 +401,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   next_context.has_search_text_pseudo = dynamic_pseudo == kPseudoIdSearchText;
   next_context.has_scroll_marker_pseudo =
       dynamic_pseudo == kPseudoIdScrollMarker;
+  next_context.has_column_pseudo = dynamic_pseudo == kPseudoIdColumn;
   next_context.is_sub_selector = true;
   return MatchSelector(next_context, result);
 }
@@ -2365,6 +2369,14 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
+      return true;
+    }
+    case CSSSelector::kPseudoScrollMarker: {
+      // The style for ::column::scroll-marker is stored on the originating
+      // element's style.
+      result.dynamic_pseudo = context.has_column_pseudo
+                                  ? kPseudoIdColumnScrollMarker
+                                  : kPseudoIdScrollMarker;
       return true;
     }
     case CSSSelector::kPseudoTargetText:
