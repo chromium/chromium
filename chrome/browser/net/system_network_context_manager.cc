@@ -626,12 +626,6 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
           base::Unretained(this)));
-
-  if (base::FeatureList::IsEnabled(features::kCertVerificationNetworkTime)) {
-    cert_verifier_time_updater_ =
-        std::make_unique<CertVerifierServiceTimeUpdater>(
-            g_browser_process->network_time_tracker());
-  }
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -824,6 +818,18 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
         network_annotation_monitor_->GetClient());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // cert_verifier_time_updater_ does not depend on the network service, but
+  // can't be initialized from the constructor since network_time_tracker()
+  // requires the SystemNetworkContextManager to be ready. It does not need to
+  // be recreated every time the network service is restarted (and should not,
+  // since it expects to outlive the NetworkTimeTracker).
+  if (base::FeatureList::IsEnabled(features::kCertVerificationNetworkTime) &&
+      !cert_verifier_time_updater_) {
+    cert_verifier_time_updater_ =
+        std::make_unique<CertVerifierServiceTimeUpdater>(
+            g_browser_process->network_time_tracker());
+  }
 }
 
 void SystemNetworkContextManager::DisableQuic() {
