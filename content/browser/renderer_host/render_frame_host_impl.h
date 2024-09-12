@@ -4504,8 +4504,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<input::TimeoutMonitor> close_timeout_;
 
   // Returns whether the tab was previously discarded.
-  // This is passed to CommitNavigationParams in NavigationRequest or is set on
-  // the outermost main frame when its tree has been discarded.
+  // This is passed to CommitNavigationParams in NavigationRequest.
   bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a

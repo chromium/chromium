@@ -5695,7 +5695,14 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   } else {
     // RenderDocument: After a local<->local swap, this function is called with
     // a null |proxy|.
-    CHECK(ShouldChangeRenderFrameHostOnSameSiteNavigation());
+    // It may be the case that two navigations are queued up. Both may initially
+    // see `ShouldChangeRenderFrameHostOnSameSiteNavigation()` return true,
+    // however after the first one commits the RFH will change. When the second
+    // navigation commits `ShouldChangeRenderFrameHostOnSameSiteNavigation()`
+    // may no longer return true.
+    CHECK_EQ(
+        GetSiteInstance()->group(),
+        frame_tree_node_->current_frame_host()->GetSiteInstance()->group());
 
     // The unload handlers already ran for this document during the
     // local<->local swap. Hence, there is no need to send
@@ -7624,7 +7631,7 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
 
   // This may be called when the main frame document is replaced with the empty
   // document during discard. Suppress document load notifications in this case.
-  if (was_discarded_) {
+  if (document_associated_data_->is_discarded()) {
     return;
   }
 
@@ -11805,7 +11812,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
 }
 
 void RenderFrameHostImpl::DiscardFrame() {
-  was_discarded_ = true;
+  document_associated_data_->MarkDiscarded();
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kDiscarded));
@@ -17284,7 +17291,7 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
     const {
   // Reloading from a discarded state will result in a same-site navigation. In
   // these cases we should always create a new RFH for the navigation.
-  if (was_discarded_) {
+  if (document_associated_data_->is_discarded()) {
     return true;
   }
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(

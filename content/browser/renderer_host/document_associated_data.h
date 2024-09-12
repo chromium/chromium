@@ -68,6 +68,11 @@ class DocumentAssociatedData : public base::SupportsUserData {
   bool dom_content_loaded() const { return dom_content_loaded_; }
   void MarkDomContentLoaded() { dom_content_loaded_ = true; }
 
+  // Indicates whether a discard request has been dispatched for the current
+  // document.
+  bool is_discarded() const { return is_discarded_; }
+  void MarkDiscarded() { is_discarded_ = true; }
+
   // Prerender2:
   //
   // The URL that `blink.mojom.LocalFrameHost::DidFinishLoad()` passed to
@@ -157,6 +162,7 @@ class DocumentAssociatedData : public base::SupportsUserData {
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
   bool dom_content_loaded_ = false;
+  bool is_discarded_ = false;
   std::optional<GURL> pending_did_finish_load_url_for_prerendering_;
   std::vector<raw_ptr<internal::DocumentServiceBase, VectorExperimental>>
       services_;
