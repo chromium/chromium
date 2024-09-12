@@ -1022,7 +1022,7 @@ def make_check_constructor_call(cg_context):
     return node
 
 
-def make_check_coop_restrict_properties_access(cg_context):
+def make_check_proxy_access(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     T = TextNode
@@ -1034,8 +1034,9 @@ def make_check_coop_restrict_properties_access(cg_context):
     if "CrossOrigin" not in ext_attrs:
         return None
 
-    # COOP: restrict-properties never restricts postMessage() and closed
-    # accesses, which should still be possible across browsing context groups.
+    # COOP: restrict-properties and Partitioned Popins never restrict
+    # postMessage() and closed accesses, which should still be possible across
+    # browsing context groups.
     if cg_context.property_.identifier in ("postMessage", "closed"):
         return None
 
@@ -1051,15 +1052,13 @@ def make_check_coop_restrict_properties_access(cg_context):
         error_exit_return_statement = "return;"
 
     return CxxUnlikelyIfNode(
-        cond=("${blink_receiver}->"
-              "IsAccessBlockedByCoopRestrictProperties(${isolate})"),
+        cond=
+        ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
+         ),
         attribute="[[unlikely]]",
         body=[
-            T("""\
-${exception_state}.ThrowSecurityError(
-"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-"Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.");\
-"""),
+            T("${exception_state}.ThrowSecurityError("
+              "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
             T(error_exit_return_statement),
         ])
 
@@ -2044,7 +2043,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_return_value_cache_return_early(cg_context),
         EmptyNode(),
@@ -2722,7 +2721,7 @@ def make_operation_function_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
@@ -3923,7 +3922,7 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
     # Do this before the index verification below, because we do not want to
     # reveal any information about the number of frames in this window.
     body.extend([
-        make_check_coop_restrict_properties_access(cg_context),
+        make_check_proxy_access(cg_context),
         EmptyNode(),
     ])
 
