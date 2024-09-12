@@ -598,14 +598,6 @@ const char kProcessType[]                   = "type";
 const char kProtectedAudiencesConsentedDebugToken[] =
     "protected-audiences-consented-debug-token";
 
-// Uses a specified proxy server, overrides system settings. This switch only
-// affects HTTP and HTTPS requests. ARC-apps use only HTTP proxy server with the
-// highest priority.
-// TODO(yzshen): Move this switch back to chrome/common/chrome_switches.{h,cc},
-// once the network service is able to access the corresponding setting via the
-// pref service.
-const char kProxyServer[] = "proxy-server";
-
 // Enables or disables pull-to-refresh gesture in response to vertical
 // overscroll.
 // Set the value to '0' to disable the feature, set to '1' to enable it for both

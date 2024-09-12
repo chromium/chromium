@@ -68,6 +68,9 @@ extern const char kContextProvider[];
 // Equivalent to Chrome's --proxy-bypass-list switch.
 extern const char kProxyBypassList[];
 
+// Uses a specified proxy server, overrides system settings.
+extern const char kProxyServer[];
+
 }  // namespace switches
 
 #endif  // FUCHSIA_WEB_WEBENGINE_SWITCHES_H_
