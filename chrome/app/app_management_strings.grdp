@@ -120,18 +120,6 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_WEB_A11Y" desc="Text to be read out by ChromeVox, when highlighting an info icon for Web Apps downloaded from the Chrome browser, stating the source URL of the app">
     From <ph name="APP_URL">$1<ex>https://google.com</ex></ph>
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
-    Android App
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CHROME" desc="Text for Chrome app type">
-    Chrome App
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB" desc="Text for Web app type">
-    Web App
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CROS_SYSTEM" desc="Text for ChromeOS System app type">
-    ChromeOS System App
-  </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_WEB_STORE" desc="Text for Chrome Web Store installation source">
     Chrome Web Store
   </message>
