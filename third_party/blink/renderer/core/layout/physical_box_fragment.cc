@@ -1491,11 +1491,16 @@ void PhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.has_adjoining_object_descendants_);
   DCHECK_EQ(may_have_descendant_above_block_start_,
             other.may_have_descendant_above_block_start_);
-  DCHECK_EQ(depends_on_percentage_block_size_,
-            other.depends_on_percentage_block_size_);
   DCHECK_EQ(bit_field_.get<HasDescendantsForTablePartFlag>(),
             other.bit_field_.get<HasDescendantsForTablePartFlag>());
   DCHECK_EQ(IsFragmentationContextRoot(), other.IsFragmentationContextRoot());
+
+  // `depends_on_percentage_block_size_` can change within out-of-flow
+  // simplified layout (a different position-try rule can be selected).
+  if (!IsOutOfFlowPositioned()) {
+    DCHECK_EQ(depends_on_percentage_block_size_,
+              other.depends_on_percentage_block_size_);
+  }
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
   DCHECK_EQ(is_table_part_, other.is_table_part_);
