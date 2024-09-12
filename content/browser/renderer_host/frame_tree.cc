@@ -736,30 +736,27 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
   if (base::Contains(render_view_host_map_, id)) {
     // TODO(https://crbug.com/354382462): Remove crash keys once investigation
     // is done.
-    static auto* const is_registered_key = base::debug::AllocateCrashKeyString(
-        "is_registered", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        is_registered_key,
-        rvh->is_registered_with_frame_tree() ? "true" : "false");
-    static auto* const renderer_view_created_key =
-        base::debug::AllocateCrashKeyString("renderer_view_created",
-                                            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        renderer_view_created_key,
-        rvh->renderer_view_created() ? "true" : "false");
-    static auto* const main_frame_routing_id_key =
-        base::debug::AllocateCrashKeyString("rvh_main_routing_id",
-                                            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        main_frame_routing_id_key,
-        base::NumberToString(rvh->main_frame_routing_id()));
-    static auto* const root_routing_id_key =
-        base::debug::AllocateCrashKeyString("root_routing_id",
-                                            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        root_routing_id_key,
-        base::NumberToString(root()->current_frame_host()->GetRoutingID()));
-    CHECK(false);
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "renderer_view_created",
+                          rvh->renderer_view_created());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "mapped_rvh_main_id",
+                            render_view_host_map_[id]->main_frame_routing_id());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "passed_rvh_main_id",
+                            rvh->main_frame_routing_id());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "root_routing_id",
+                            root()->current_frame_host()->GetRoutingID());
+    SCOPED_CRASH_KEY_NUMBER(
+        "rvh-double", "map_rvh_ptr",
+        reinterpret_cast<size_t>(render_view_host_map_[id]));
+    SCOPED_CRASH_KEY_NUMBER(
+        "rvh-double", "map_rvh_bfcache",
+        render_view_host_map_[id]->is_in_back_forward_cache());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "passed_rvh_ptr",
+                            reinterpret_cast<size_t>(rvh));
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "passed_rvh_bfcache",
+                            rvh->is_in_back_forward_cache());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "frame_tree_primary", is_primary());
+    CHECK_EQ(rvh, render_view_host_map_[id]);
+    base::debug::DumpWithoutCrashing();
   }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);
