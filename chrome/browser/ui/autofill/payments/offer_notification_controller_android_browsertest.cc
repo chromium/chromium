@@ -8,7 +8,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,7 +62,7 @@ class OfferNotificationControllerAndroidBrowserTest
       const std::vector<int64_t>& eligible_instrument_ids,
       const std::string& offer_reward_amount) {
     int64_t offer_id = 4444;
-    base::Time expiry = base::Time::Now() + base::Days(2);
+    base::Time expiry = autofill::AutofillClock::Now() + base::Days(2);
     GURL offer_details_url("https://www.google.com/");
     return autofill::AutofillOfferData::GPayCardLinkedOffer(
         offer_id, expiry, merchant_origins, offer_details_url,

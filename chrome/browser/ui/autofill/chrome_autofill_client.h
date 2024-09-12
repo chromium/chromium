@@ -228,7 +228,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   FormInteractionsFlowId flow_id_;
-  base::TimeTicks flow_id_date_;
+  base::Time flow_id_date_;
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;

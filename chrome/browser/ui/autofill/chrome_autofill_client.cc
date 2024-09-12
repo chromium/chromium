@@ -733,9 +733,9 @@ const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
 FormInteractionsFlowId
 ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   constexpr base::TimeDelta max_flow_time = base::Minutes(20);
-  const base::TimeTicks now = base::TimeTicks::Now();
+  base::Time now = AutofillClock::Now();
 
-  if (now - flow_id_date_ > max_flow_time) {
+  if (now - flow_id_date_ > max_flow_time || now < flow_id_date_) {
     flow_id_ = FormInteractionsFlowId();
     flow_id_date_ = now;
   }

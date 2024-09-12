@@ -34,7 +34,6 @@ std::vector<ui::SimpleComboboxModel::Item> GetExpirationYearItems(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
 
   base::Time::Exploded now_exploded;
-  // TODO(crbug.com/365739714) Get rid of AutofillClock here.
   AutofillClock::Now().LocalExplode(&now_exploded);
 
   if (additional_year != 0 && additional_year < now_exploded.year)
