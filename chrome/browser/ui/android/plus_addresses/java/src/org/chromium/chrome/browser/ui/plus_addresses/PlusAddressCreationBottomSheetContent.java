@@ -163,9 +163,15 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressErrorReportView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
-    public void showConfirmationLoadingState() {
-        showLoadingIndicator();
+    void setLoadingIndicatorVisible(boolean visible) {
+        if (visible) {
+            // We skip the delay because otherwise the height of the bottomsheet
+            // is adjusted once on hiding the confirm button and then again after
+            // the loading view appears.
+            mLoadingView.showLoadingUI(/* skipDelay= */ true);
+        } else {
+            mLoadingView.hideLoadingUI();
+        }
     }
 
     /**
@@ -177,8 +183,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
      */
     public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
         if (errorStateInfo == null) {
-            hideLoadingIndicator();
-
             return;
         }
 
@@ -291,16 +295,5 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                         new SpanApplier.SpanInfo("<link>", "</link>", settingsLink));
         firstTimeNotice.setText(spannableString);
         firstTimeNotice.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    private void showLoadingIndicator() {
-        // We skip the delay because otherwise the height of the bottomsheet
-        // is adjusted once on hiding the confirm button and then again after
-        // the loading view appears.
-        mLoadingView.showLoadingUI(/* skipDelay= */ true);
-    }
-
-    private void hideLoadingIndicator() {
-        mLoadingView.hideLoadingUI();
     }
 }

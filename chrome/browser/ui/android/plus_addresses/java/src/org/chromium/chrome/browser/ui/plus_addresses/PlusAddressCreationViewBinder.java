@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.NORMAL_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
@@ -49,6 +50,8 @@ class PlusAddressCreationViewBinder {
         } else if (propertyKey == LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE) {
             view.setLegacyErrorReportingInstructionVisible(
                     model.get(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE));
+        } else if (propertyKey == LOADING_INDICATOR_VISIBLE) {
+            view.setLoadingIndicatorVisible(model.get(LOADING_INDICATOR_VISIBLE));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }
