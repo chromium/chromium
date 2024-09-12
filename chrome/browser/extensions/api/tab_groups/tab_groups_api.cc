@@ -278,13 +278,13 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   if (window_id) {
-    Browser* target_browser = nullptr;
-
-    if (!windows_util::GetBrowserFromWindowID(
+    WindowController* window_controller = nullptr;
+    if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
-            &target_browser, error)) {
+            &window_controller, error)) {
       return false;
     }
+    Browser* target_browser = window_controller->GetBrowser();
 
     // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
