@@ -125,8 +125,7 @@ class NudgePasswordButtons : public views::View {
     AddSpacerWithSize(autofill::PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false, this);
 
-    const std::u16string accept_button_label =
-        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
+    const std::u16string accept_button_label = controller_->SuggestedText();
     auto accept_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::AcceptButtonPressed,
                             base::Unretained(this)),
