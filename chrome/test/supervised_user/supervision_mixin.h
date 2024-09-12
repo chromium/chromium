@@ -82,6 +82,10 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   // must not be `kSignedOut`.
   void SignIn(SignInMode mode);
 
+  // Invalidates the access token and Google cookie to put the primary user
+  // in the pending state.
+  void SetPendingStateForPrimaryAccount();
+
   EmbeddedTestServerSetupMixin& embedded_test_server_setup_mixin() {
     return *embedded_test_server_setup_mixin_;
   }
