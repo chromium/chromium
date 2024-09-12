@@ -323,7 +323,6 @@ public class MainSettingsFragmentTest {
         if (supportThirdPartyFillingSetting()) {
             assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
             assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
-            assertSettingsExists(MainSettings.PREF_PRIVACY_SECTION, null);
         } else {
             Assert.assertNull(
                     "Third party filling setting should be hidden",
@@ -331,9 +330,6 @@ public class MainSettingsFragmentTest {
             Assert.assertNull(
                     "Autofill section header should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_SECTION));
-            Assert.assertNull(
-                    "Privacy section header should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_PRIVACY_SECTION));
         }
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);

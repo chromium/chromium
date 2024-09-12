@@ -213,16 +213,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
         Basics
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_BROWSER_SETTINGS" translateable="false" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
-        Browser settings
-      </message>
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
-      </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_CHROME" translateable="false" desc='Title of "Chrome" section of preferences. [CHAR_LIMIT=32]'>
-        Chrome
       </message>
 
       <!-- Notification channels -->
@@ -585,41 +577,33 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
         Turn off
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_AUTOFILL" translateable="false" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
+
+      <message name="IDS_PREFS_SECTION_AUTOFILL" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
         Passwords and Autofill
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Autofill Options
+      <message name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Autofill Services
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Restart now
+      <message name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Restart Chrome
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Relaunch Chrome to apply the setting
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Restart Chrome?
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Your tabs will reopen after relaunching.
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        To finish setting up autofill, restart Chrome now. Your tabs will automatically reopen.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Undo setting change
+      <message name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Cancel
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled by the administrator of this device
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Chrome." formatter_data="android_java">
+        Your administrator manages this setting.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled because a different autofill service must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
+        To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph> .
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
-        Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
+        Autofill services are also managed in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?
@@ -1058,10 +1042,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Privacy and security preferences -->
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_PRIVACY_SECURITY_SECTION" translateable="false" desc="Title for the Privacy and Security section. [CHAR_LIMIT=32]">
-        Privacy and security
-      </message>
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>

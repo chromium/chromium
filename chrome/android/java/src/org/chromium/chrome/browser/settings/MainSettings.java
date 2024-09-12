@@ -104,7 +104,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
-    public static final String PREF_PRIVACY_SECTION = "privacy_section";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
     public static final String PREF_NOTIFICATIONS = "notifications";
@@ -479,7 +478,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 && ChromeFeatureList.isEnabled(
                         AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
             addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
-            addPreferenceIfAbsent(PREF_PRIVACY_SECTION);
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
             preference.setFragment(null);
@@ -495,7 +493,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     });
         } else {
             removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
-            removePreferenceIfPresent(PREF_PRIVACY_SECTION);
             removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
