@@ -95,12 +95,9 @@ void QuicSessionPool::ProxyJob::PopulateNetErrorDetails(
   }
 
   // Finally, return the error from the session attempt.
-  if (!session_attempt_ || !session_attempt_->session()) {
-    return;
+  if (session_attempt_) {
+    session_attempt_->PolulateNetErrorDetails(details);
   }
-  details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
-      session_attempt_->session()->connection()->version());
-  details->quic_connection_error = session_attempt_->session()->error();
 }
 
 int QuicSessionPool::ProxyJob::DoLoop(int rv) {
