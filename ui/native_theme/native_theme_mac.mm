@@ -366,7 +366,7 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
   }
 }
 
-gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) const {
+gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) {
   const int kLength = 18 * scale;
   const int kGirth = 6 * scale;
 

@@ -89,7 +89,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // Returns the minimum size for the thumb. We will not inset the thumb if it
   // will be smaller than this size. The scale parameter should be the device
   // scale factor.
-  gfx::Size GetThumbMinSize(bool vertical, float scale) const;
+  static gfx::Size GetThumbMinSize(bool vertical, float scale);
 
  protected:
   friend class NativeTheme;
