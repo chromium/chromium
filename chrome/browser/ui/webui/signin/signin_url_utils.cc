@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "net/base/url_util.h"
 

@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -27,10 +26,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
-#include "chrome/browser/lacros/identity_manager_lacros.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
 
 class ProfilePickerLacrosSignInProvider;
+class IdentityManagerLacros;
 
 namespace account_manager {
 struct Account;
@@ -38,6 +37,7 @@ struct Account;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class Browser;
+class ScopedProfileKeepAlive;
 
 class ForceSigninUIError;
 
