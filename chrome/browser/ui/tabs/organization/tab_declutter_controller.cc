@@ -122,6 +122,16 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
   return true;
 }
 
+void TabDeclutterController::OnActionUIAccepted(
+    base::PassKey<TabSearchContainer>) {
+  // TODO(shibalik): Reset backoff timer.
+}
+
+void TabDeclutterController::OnActionUIDismissed(
+    base::PassKey<TabSearchContainer>) {
+  // TODO(shibalik): Increment the backoff timer.
+}
+
 void TabDeclutterController::SetTimerForTesting(
     const base::TickClock* tick_clock,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {

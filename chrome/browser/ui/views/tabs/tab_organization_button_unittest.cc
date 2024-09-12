@@ -29,7 +29,7 @@ class TabOrganizationButtonTest : public ChromeViewsTestBase {
         l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
         l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
-        kTabOrganizationButtonElementId, Edge::kRight);
+        kAutoTabGroupButtonElementId, Edge::kRight);
   }
 
   void MockButtonCallback() { button_callback_count_++; }

@@ -9721,6 +9721,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Search tabs
       </message>
 
+      <!-- Strings for tab declutter -->
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
+        Close unused tabs?
+      </message>
+      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
+        Close unused tabs?
+      </message>
+      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+        Close unused tabs
+      </message>
+
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
         Organize tabs?

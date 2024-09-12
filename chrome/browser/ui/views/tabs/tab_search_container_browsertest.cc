@@ -26,11 +26,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/animation/slide_animation.h"
 
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
@@ -58,19 +60,20 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        MAYBE_TogglesActionUIState) {
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kNone, nullptr);
   tab_strip_model()->ForceShowingModalUIForTesting(false);
   service->OnTriggerOccured(browser());
 
-  ASSERT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
 }
 
 // TODO(crbug.com/338649929): Flaky on Windows 10 builds.
@@ -89,8 +92,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
           ->tab_strip_region_view()
           ->tab_search_container();
 
-  ASSERT_FALSE(
-      second_search_container->expansion_animation_for_testing()->IsShowing());
+  ASSERT_FALSE(second_search_container->animation_session_for_testing());
 
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
@@ -99,17 +101,18 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
             second_search_container->tab_organization_service_for_testing());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kNone, nullptr);
   tab_strip_model()->ForceShowingModalUIForTesting(false);
   second_search_container->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kNone, nullptr);
   second_browser->tab_strip_model()->ForceShowingModalUIForTesting(false);
   service->OnTriggerOccured(browser());
 
-  EXPECT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
-  EXPECT_FALSE(
-      second_search_container->expansion_animation_for_testing()->IsShowing());
+  EXPECT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+  EXPECT_FALSE(second_search_container->animation_session_for_testing());
 }
 
 // TODO(crbug.com/338649929): Flaky on Windows 10 builds.
@@ -122,136 +125,193 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        MAYBE_DoesntShowIfTabStripModalUIExists) {
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_strip_model()->ForceShowingModalUIForTesting(true);
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
-  tab_search_container()->ShowTabOrganization();
+      LockedExpansionMode::kNone, nullptr);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
-  EXPECT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  EXPECT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_strip_model()->ForceShowingModalUIForTesting(false);
-  tab_search_container()->ShowTabOrganization();
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
-  EXPECT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  EXPECT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()->ShowTabOrganization();
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()->HideTabOrganization();
+  tab_search_container()->HideTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()->expansion_animation_for_testing()->Reset(0);
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(0);
+
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysShow) {
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kWillShow);
-  tab_search_container()->ShowTabOrganization();
+      LockedExpansionMode::kWillShow,
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kNone, nullptr);
 
-  ASSERT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kWillHide);
-  tab_search_container()->HideTabOrganization();
+      LockedExpansionMode::kWillHide,
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()->HideTabOrganization(
+      tab_search_container()->auto_tab_group_button());
 
-  ASSERT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kNone, nullptr);
 
-  ASSERT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonClicked) {
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kWillHide);
+      LockedExpansionMode::kWillHide,
+      tab_search_container()->auto_tab_group_button());
 
-  tab_search_container()->OnOrganizeButtonClicked();
+  tab_search_container()->OnAutoTabGroupButtonClicked();
 
-  EXPECT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  EXPECT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonDismissed) {
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kWillHide);
+      LockedExpansionMode::kWillHide,
+      tab_search_container()->auto_tab_group_button());
 
-  tab_search_container()->OnOrganizeButtonDismissed();
+  tab_search_container()->OnAutoTabGroupButtonDismissed();
 
-  EXPECT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  EXPECT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        DelayedHidesWhenOrganizeButtonTimesOut) {
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
-  tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kWillHide);
-
-  tab_search_container()->OnOrganizeButtonTimeout();
-
-  EXPECT_FALSE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
-      LockedExpansionMode::kNone);
+      LockedExpansionMode::kWillHide,
+      tab_search_container()->auto_tab_group_button());
 
-  ASSERT_TRUE(
-      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+  tab_search_container()->OnOrganizeButtonTimeout(
+      tab_search_container()->auto_tab_group_button());
+
+  EXPECT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone,
+      tab_search_container()->auto_tab_group_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        LogsSuccessWhenButtonClicked) {
   base::HistogramTester histogram_tester;
 
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
   service->OnTriggerOccured(browser());
 
-  tab_search_container()->OnOrganizeButtonClicked();
+  tab_search_container()->OnAutoTabGroupButtonClicked();
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
                                       true, 1);
@@ -264,14 +324,19 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        LogsFailureWhenButtonDismissed) {
   base::HistogramTester histogram_tester;
 
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
   service->OnTriggerOccured(browser());
 
-  tab_search_container()->OnOrganizeButtonDismissed();
+  tab_search_container()->OnAutoTabGroupButtonDismissed();
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
                                       false, 1);
@@ -282,17 +347,127 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        LogsFailureWhenButtonTimeout) {
   base::HistogramTester histogram_tester;
 
-  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
   service->OnTriggerOccured(browser());
 
-  tab_search_container()->OnOrganizeButtonTimeout();
+  tab_search_container()->OnOrganizeButtonTimeout(
+      tab_search_container()->auto_tab_group_button());
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
                                       false, 1);
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       HidesAutoTabGroupButtonFromHalfway) {
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+
+  gfx::SlideAnimation* expansion_animation =
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->expansion_animation();
+
+  gfx::AnimationTestApi animation_api(expansion_animation);
+  base::TimeTicks now = base::TimeTicks::Now();
+  animation_api.SetStartTime(now);
+  animation_api.Step(now + (expansion_animation->GetSlideDuration() / 2));
+
+  double expanded_value = expansion_animation->GetCurrentValue();
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  tab_search_container()->HideTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+
+  EXPECT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+
+  EXPECT_EQ(tab_search_container()
+                ->animation_session_for_testing()
+                ->expansion_animation()
+                ->GetCurrentValue(),
+            expanded_value);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, ShowsDeclutterChip) {
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       ShowsAndHidesDeclutterChip) {
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+
+  // Finish showing declutter chip.
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Hide the declutter chip.
+  tab_search_container()->HideTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown) {
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
+
+  // Show the auto-tab group chip.
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->auto_tab_group_button());
+
+  ASSERT_TRUE(tab_search_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+  tab_search_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Try to show the declutter chip while auto-tab group chip is already shown.
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 }

@@ -10,9 +10,11 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 
 class TabStripModel;
+class TabSearchContainer;
 
 namespace tabs {
 
@@ -47,6 +49,9 @@ class TabDeclutterController {
   base::TimeDelta nudge_timer_interval_minutes() const {
     return nudge_timer_interval_minutes_;
   }
+
+  void OnActionUIAccepted(base::PassKey<TabSearchContainer>);
+  void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
