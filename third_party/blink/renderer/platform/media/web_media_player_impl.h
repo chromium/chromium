@@ -449,14 +449,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-  void AddAudioTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
-  void AddVideoTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
+  void AddMediaTrack(const media::MediaTrack&) override;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
