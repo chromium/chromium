@@ -50,13 +50,19 @@ source_set("crashpad_handler_main") {
   }
 }
 
-static_library("app") {
+source_set("switches") {
+  sources = [
+    "crash_switches.cc",
+    "crash_switches.h",
+  ]
+  public_deps = [ "//build:chromeos_buildflags" ]
+}
+
+source_set("app") {
   sources = [
     "client_upload_info.cc",
     "client_upload_info.h",
     "crash_export_thunks.h",
-    "crash_switches.cc",
-    "crash_switches.h",
     "crashpad.cc",
     "crashpad.h",
   ]
@@ -72,7 +78,11 @@ static_library("app") {
 
   defines = [ "CRASH_IMPLEMENTATION" ]
 
-  public_deps = [ ":lib" ]
+  public_deps = [
+    ":lib",
+    ":switches",
+  ]
+
   deps = [
     "//base",
     "//build:branding_buildflags",
@@ -296,6 +306,7 @@ source_set("unit_tests") {
   sources = []
   deps = [
     ":lib",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",

@@ -79,6 +79,7 @@ executable("gcp_setup") {
     "../eventlog:gcp_eventlog_messages",
     "../extension:common",
     "../gaiacp:common",
+    "../gaiacp:crash",
     "../gaiacp:util",
     "//build:branding_buildflags",
     "//chrome/common:version_header",
