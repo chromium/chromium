@@ -473,6 +473,31 @@ chromium-metrics-reviews@google.com.
   <summary>Records the source when a bookmark is removed.</summary>
 </histogram>
 
+<histogram name="Bookmarks.ReorderDropTarget{ParentNode}"
+    enum="BookmarkReorderDropTarget" expires_after="2025-01-05">
+  <owner>msalama@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records where a bookmark is dropped: on bookmark bar, bookmark menu or a UI
+    that uses the bookmark manager API. Recorded everytime a bookmark is
+    reordered by drag and drop. Reordered in this context means that a bookmark
+    changed its index within the same parent node. {ParentNode}
+  </summary>
+  <token key="ParentNode">
+    <variant name="" summary="Recorded for all bookmarks."/>
+    <variant name=".InBookmarkBarNode"
+        summary="Recorded only for bookmarks that are children of the
+                 Bookmarks Bar node."/>
+    <variant name=".InMobileBookmarkNode"
+        summary="Recorded only for bookmarks that are children of the Mobile
+                 Bookmarks node."/>
+    <variant name=".InOtherBookmarkNode"
+        summary="Recorded only for bookmarks that are children of the Other
+                 Bookmarks node."/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.StarEntryPoint.ClickedAction"
     enum="StarEntryPointAction" expires_after="2022-08-28">
   <owner>corising@chromium.org</owner>

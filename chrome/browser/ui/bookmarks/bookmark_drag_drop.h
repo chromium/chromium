@@ -67,6 +67,15 @@ struct BookmarkDragParams {
   gfx::Point start_point;
 };
 
+// LINT.IfChange(BookmarkReorderDropTarget)
+enum class BookmarkReorderDropTarget {
+  kBookmarkBarView = 0,
+  kBookmarkManagerAPI = 1,
+  kBookmarkMenu = 2,
+  kMaxValue = kBookmarkMenu,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkReorderDropTarget)
+
 // Starts the process of dragging a folder of bookmarks.
 void DragBookmarks(Profile* profile, const BookmarkDragParams& params);
 
@@ -83,7 +92,8 @@ ui::mojom::DragOperation DropBookmarks(
     const bookmarks::BookmarkNodeData& data,
     const bookmarks::BookmarkNode* parent_node,
     size_t index,
-    bool copy);
+    bool copy,
+    BookmarkReorderDropTarget target);
 
 }  // namespace chrome
 

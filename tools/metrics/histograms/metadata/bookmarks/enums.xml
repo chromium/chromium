@@ -112,6 +112,16 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Open folder (via double-click / enter)"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarkReorderDropTarget) -->
+
+<enum name="BookmarkReorderDropTarget">
+  <int value="0" label="Bookmark bar view"/>
+  <int value="1" label="Bookmark manager API"/>
+  <int value="2" label="Bookmark Menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/bookmarks/bookmark_drag_drop.h:BookmarkReorderDropTarget) -->
+
 <enum name="BookmarksEntryPoint">
   <int value="0" label="Accelerator(Ctrl+D)"/>
   <int value="1" label="Gesture"/>
