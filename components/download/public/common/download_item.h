@@ -187,6 +187,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // with the path to the temp copy. The caller is responsible for cleanup.
   // Note: It is important for |callback| to be valid since the downloaded file
   // will not be cleaned up if the callback fails.
+  //
+  // TODO(crbug.com/364924720): All callers currently set
+  // `delete_file_afterward` to false. Remove that argument and rename
+  // the method.
   virtual void StealDangerousDownload(bool delete_file_afterward,
                                       AcquireFileCallback callback) = 0;
 

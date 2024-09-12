@@ -121,6 +121,34 @@ void LogNoticeSeenMetrics(PrefService* prefs) {
   }
 }
 
+bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
+  switch (result) {
+    case DownloadCheckResult::DANGEROUS_HOST:
+    case DownloadCheckResult::DANGEROUS:
+    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
+    case DownloadCheckResult::POTENTIALLY_UNWANTED:
+    case DownloadCheckResult::UNCOMMON:
+      return true;
+
+    case DownloadCheckResult::UNKNOWN:
+    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+    case DownloadCheckResult::DEEP_SCANNED_SAFE:
+    case DownloadCheckResult::DEEP_SCANNED_FAILED:
+    case DownloadCheckResult::SAFE:
+    case DownloadCheckResult::PROMPT_FOR_SCANNING:
+    case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
+    case DownloadCheckResult::ASYNC_SCANNING:
+    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
+    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+    case DownloadCheckResult::BLOCKED_TOO_LARGE:
+    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
+    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
+      return false;
+  }
+}
+
 }  // namespace
 
 using content::BrowserThread;
@@ -255,13 +283,21 @@ void CheckClientDownloadRequest::SetDownloadProtectionData(
                                                        tailored_verdict);
 }
 
-void CheckClientDownloadRequest::MaybeStorePingsForDownload(
+void CheckClientDownloadRequest::MaybeBeginFeedbackForDownload(
     DownloadCheckResult result,
     bool upload_requested,
     const std::string& request_data,
     const std::string& response_body) {
+  // TODO(crbug.com/364924720): Remove the storage of
+  // DownloadFeedbackPings. We have the request and response here.
   DownloadFeedbackService::MaybeStorePingsForDownload(
       result, upload_requested, item_, request_data, response_body);
+
+  if (ShouldUploadToDownloadFeedback(result) && !item_->IsInsecure() &&
+      DownloadFeedbackService::IsEnabledForDownload(*item_)) {
+    Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+    service()->MaybeBeginFeedbackForDownload(profile, item_);
+  }
 }
 
 void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {

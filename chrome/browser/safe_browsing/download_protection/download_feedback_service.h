@@ -40,7 +40,7 @@ class DownloadFeedbackService {
   DownloadFeedbackService(const DownloadFeedbackService&) = delete;
   DownloadFeedbackService& operator=(const DownloadFeedbackService&) = delete;
 
-  ~DownloadFeedbackService();
+  virtual ~DownloadFeedbackService();
 
   // Stores the request and response ping data from the download check, if the
   // check result and file size are eligible. This must be called after a
@@ -64,13 +64,11 @@ class DownloadFeedbackService {
       std::string* ping,
       std::string* response);
 
-  // Begin download feedback for the given |download| in the given |profile|.
-  // Then delete download file if |download_command| is DISCARD, or run the KEEP
-  // command otherwise. This must only be called if IsEnabledForDownload is true
-  // for |download|.
-  void BeginFeedbackForDownload(Profile* profile,
-                                download::DownloadItem* download,
-                                DownloadCommands::Command download_command);
+  // Begin download feedback for the given |download| in the given
+  // |profile|.  This must only be called if IsEnabledForDownload is
+  // true for |download|.
+  virtual void BeginFeedbackForDownload(Profile* profile,
+                                        download::DownloadItem* download);
 
  private:
   static void BeginFeedbackOrDeleteFile(

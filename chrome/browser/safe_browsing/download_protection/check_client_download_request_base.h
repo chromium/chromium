@@ -122,10 +122,11 @@ class CheckClientDownloadRequestBase {
       const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
 
   // Called when a valid response has been received from the server.
-  virtual void MaybeStorePingsForDownload(DownloadCheckResult result,
-                                          bool upload_requested,
-                                          const std::string& request_data,
-                                          const std::string& response_body) = 0;
+  virtual void MaybeBeginFeedbackForDownload(
+      DownloadCheckResult result,
+      bool upload_requested,
+      const std::string& request_data,
+      const std::string& response_body) = 0;
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file

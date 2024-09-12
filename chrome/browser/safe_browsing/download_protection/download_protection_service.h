@@ -158,10 +158,8 @@ class DownloadProtectionService {
 
   // Checks the user permissions, and submits the downloaded file if
   // appropriate. Returns whether the submission was successful.
-  bool MaybeBeginFeedbackForDownload(
-      Profile* profile,
-      download::DownloadItem* download,
-      DownloadCommands::Command download_command);
+  bool MaybeBeginFeedbackForDownload(Profile* profile,
+                                     download::DownloadItem* download);
 
   // Registers a callback that will be run when a ClientDownloadRequest has
   // been formed.

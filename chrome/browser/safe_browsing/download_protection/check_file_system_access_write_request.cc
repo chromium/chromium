@@ -99,7 +99,7 @@ void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
   // IncidentReportingService usage.
 }
 
-void CheckFileSystemAccessWriteRequest::MaybeStorePingsForDownload(
+void CheckFileSystemAccessWriteRequest::MaybeBeginFeedbackForDownload(
     DownloadCheckResult result,
     bool upload_requested,
     const std::string& request_data,

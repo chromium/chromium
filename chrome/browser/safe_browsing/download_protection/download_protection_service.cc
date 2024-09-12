@@ -647,13 +647,11 @@ base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {
 
 bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
     Profile* profile,
-    download::DownloadItem* download,
-    DownloadCommands::Command download_command) {
+    download::DownloadItem* download) {
   PrefService* prefs = profile->GetPrefs();
   bool is_extended_reporting = IsExtendedReportingEnabled(*prefs);
   if (!profile->IsOffTheRecord() && is_extended_reporting) {
-    feedback_service_->BeginFeedbackForDownload(profile, download,
-                                                download_command);
+    feedback_service_->BeginFeedbackForDownload(profile, download);
     return true;
   }
   return false;

@@ -129,15 +129,14 @@ bool DownloadFeedbackService::GetPingsForDownloadForTesting(
 
 void DownloadFeedbackService::BeginFeedbackForDownload(
     Profile* profile,
-    download::DownloadItem* download,
-    DownloadCommands::Command download_command) {
+    download::DownloadItem* download) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DownloadFeedbackPings* pings = DownloadFeedbackPings::FromDownload(*download);
   DCHECK(pings);
 
   download->StealDangerousDownload(
-      download_command == DownloadCommands::DISCARD,
+      /*delete_file_afterward=*/false,
       base::BindOnce(
           &DownloadFeedbackService::BeginFeedbackOrDeleteFile,
           file_task_runner_, weak_ptr_factory_.GetWeakPtr(), profile,

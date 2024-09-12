@@ -595,9 +595,9 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     }
 
     bool upload_requested = response.upload();
-    MaybeStorePingsForDownload(result, upload_requested,
-                               client_download_request_data_,
-                               *response_body.get());
+    MaybeBeginFeedbackForDownload(result, upload_requested,
+                                  client_download_request_data_,
+                                  *response_body.get());
   }
 
   // We don't need the loader anymore.
