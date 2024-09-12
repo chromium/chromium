@@ -1120,8 +1120,6 @@ def main(sys_args):
 
 def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
                                 test_results_files):
-  assert options.benchmark_max_runs == 1, (
-      'Benchmark rerun is not supported with shards.')
   overall_return_code = 0
   # TODO(crbug.com/40631538): shard environment variables are not specified
   # for single-shard shard runs.
@@ -1139,16 +1137,20 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     for (benchmark, story_selection_config) in benchmarks_and_configs.items():
       # Need to run the benchmark on both latest browser and reference
       # build.
-      output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
       command_generator = TelemetryCommandGenerator(
           benchmark, options, story_selection_config=story_selection_config)
-      print('\n### {folder} ###'.format(folder=benchmark))
-      return_code = execute_telemetry_benchmark(
-          command_generator,
-          output_paths,
-          options.xvfb,
-          options.ignore_benchmark_exit_code,
-          no_output_conversion=options.no_output_conversion)
+      for run_num in range(options.benchmark_max_runs):
+        output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
+        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
+                                                           num=run_num))
+        return_code = execute_telemetry_benchmark(
+            command_generator,
+            output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
       if options.run_ref_build:
@@ -1181,10 +1183,14 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           override_executable=configuration['path'],
           additional_flags=additional_flags,
           ignore_shard_env_vars=True)
-      output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
-      print('\n### {folder} ###'.format(folder=name))
-      return_code = execute_gtest_perf_test(command_generator, output_paths,
-                                            options.xvfb)
+      for run_num in range(options.benchmark_max_runs):
+        output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
+        print('\n### {folder} (attempt #{num}) ###'.format(folder=name,
+                                                           num=run_num))
+        return_code = execute_gtest_perf_test(command_generator, output_paths,
+                                              options.xvfb)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
   if 'crossbench' in shard_configuration:
@@ -1194,13 +1200,16 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     original_passthrough_args = options.passthrough_args.copy()
     for benchmark, benchmark_config in benchmarks.items():
       display_name = benchmark_config.get('display_name', benchmark)
-      print(f'\n### {display_name} ###')
       if benchmark_args := benchmark_config.get('arguments', []):
         options.passthrough_args.extend(benchmark_args)
       options.benchmarks = benchmark
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
-      return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                      [])
+      for run_num in range(options.benchmark_max_runs):
+        print(f'\n### {display_name} (attempt #{run_num}) ###')
+        return_code = crossbench_test.execute_benchmark(benchmark, display_name,
+                                                        [])
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
