@@ -37,31 +37,28 @@ const CGFloat kLabelSize = 14;
   [self setAccessibilityValue:tabStripButtonValue];
 }
 
+#pragma mark - UIControl
+
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
-  if (highlighted) {
-    self.tabCountLabel.textColor =
-        self.toolbarConfiguration.buttonsTintColorHighlighted;
-  } else {
-    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
-  }
+  [self updateTabCountLabelTextColor];
 }
 
-// TODO(crbug.com/40265763): rename all the references of 'iphHighlighted' to
+#pragma mark - ToolbarButton
+
+// TODO(crbug.com/40265763): Rename all the references of 'iphHighlighted' to
 // 'customHighlighted' as the highlighting UI wont be limited to IPH cases.
 - (void)setIphHighlighted:(BOOL)iphHighlighted {
   if (self.iphHighlighted == iphHighlighted) {
     return;
   }
   [super setIphHighlighted:iphHighlighted];
-  if (self.iphHighlighted) {
-    self.tabCountLabel.textColor =
-        self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
-  } else {
-    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
-  }
+  [self updateTabCountLabelTextColor];
 }
 
+#pragma mark - Private
+
+// Loads the tab count label lazily.
 - (UILabel*)tabCountLabel {
   if (!_tabCountLabel) {
     [[NSNotificationCenter defaultCenter]
@@ -84,18 +81,30 @@ const CGFloat kLabelSize = 14;
     _tabCountLabel.minimumScaleFactor = 0.1;
     _tabCountLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     _tabCountLabel.textAlignment = NSTextAlignmentCenter;
-    _tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
+    [self updateTabCountLabelTextColor];
   }
   return _tabCountLabel;
 }
-
-#pragma mark - Private
 
 // Callback for the notification that the user changed the bold status.
 - (void)accessibilityBoldTextStatusDidChange {
   // Reset the attributed string to pick up the new font.
   self.tabCountLabel.attributedText =
       TextForTabCount(self.tabCount, kTabGridButtonFontSize);
+}
+
+// Updates the tab count text label color based on the current style.
+- (void)updateTabCountLabelTextColor {
+  if (self.iphHighlighted) {
+    self.tabCountLabel.textColor =
+        self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
+  } else if (self.highlighted) {
+    self.tabCountLabel.textColor =
+        self.toolbarConfiguration.buttonsTintColorHighlighted;
+  } else {
+    self.tabCountLabel.textColor =
+        self.toolbarConfiguration.buttonsTintColor;
+  }
 }
 
 @end

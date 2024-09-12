@@ -127,6 +127,17 @@ UIView* SecondaryToolbarLocationBarContainerView(
   return self;
 }
 
+- (void)makeTranslucent {
+  _visualEffectView.hidden = NO;
+  _contentView.backgroundColor = nil;
+}
+
+- (void)makeOpaque {
+  _visualEffectView.hidden = YES;
+  _contentView.backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
+}
+
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
@@ -358,23 +369,12 @@ UIView* SecondaryToolbarLocationBarContainerView(
   _locationBarBottomConstraint.active = NO;
   _buttonStackViewNoOmniboxConstraint.active = NO;
 
-  // Set the correct constrant for `buttonStackView.topAnchor`.
+  // Set the correct constraint for `buttonStackView.topAnchor`.
   if (self.locationBarView) {
     _locationBarBottomConstraint.active = YES;
   } else {
     _buttonStackViewNoOmniboxConstraint.active = YES;
   }
-}
-
-- (void)makeTranslucent {
-  _visualEffectView.hidden = NO;
-  _contentView.backgroundColor = nil;
-}
-
-- (void)makeOpaque {
-  _visualEffectView.hidden = YES;
-  _contentView.backgroundColor =
-      self.buttonFactory.toolbarConfiguration.backgroundColor;
 }
 
 @end

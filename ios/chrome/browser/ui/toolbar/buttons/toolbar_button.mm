@@ -52,9 +52,9 @@ const CGFloat kButtonImageInset = 3;
               (ToolbarButtonImageLoader)IPHHighlightedImageLoader {
   self = [[super class] buttonWithType:UIButtonTypeSystem];
   if (self) {
-    DCHECK(imageLoader);
-    _imageLoader = imageLoader;
-    _IPHHighlightedImageLoader = IPHHighlightedImageLoader;
+    CHECK(imageLoader);
+    _imageLoader = [imageLoader copy];
+    _IPHHighlightedImageLoader = [IPHHighlightedImageLoader copy];
 
     [self initializeButton];
   }

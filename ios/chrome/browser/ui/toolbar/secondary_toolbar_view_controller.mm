@@ -94,6 +94,16 @@
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
 }
 
+#pragma mark - SecondaryToolbarConsumer
+
+- (void)makeTranslucent {
+  [self.view makeTranslucent];
+}
+
+- (void)makeOpaque {
+  [self.view makeOpaque];
+}
+
 #pragma mark - UIKeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
@@ -166,16 +176,6 @@
     [self removeFromKeyboard];
     [self.view layoutIfNeeded];
   }
-}
-
-#pragma mark - SecondaryToolbarConsumer
-
-- (void)makeTranslucent {
-  [self.view makeTranslucent];
-}
-
-- (void)makeOpaque {
-  [self.view makeOpaque];
 }
 
 @end
