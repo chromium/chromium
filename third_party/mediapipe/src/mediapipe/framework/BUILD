@@ -669,6 +669,23 @@ cc_library(
         "//mediapipe/framework/port:status",
         "//mediapipe/util:resource_util",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:string_view",
+    ],
+)
+
+cc_test(
+    name = "resources_test",
+    srcs = ["resources_test.cc"],
+    data = [
+        "//mediapipe/framework/testdata:resource_calculator.data",
+    ],
+    deps = [
+        ":resources",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:status_matchers",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings:string_view",
     ],
 )
@@ -699,6 +716,7 @@ cc_test(
         "//mediapipe/calculators/core:constant_side_packet_calculator_cc_proto",
         "//mediapipe/framework/api2:builder",
         "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:packet",
         "//mediapipe/framework/api2:port",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:status",
@@ -1552,6 +1570,7 @@ cc_test(
         ":calculator_cc_proto",
         ":calculator_context",
         ":calculator_state",
+        ":resources",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:parse_text_proto",
         "//mediapipe/framework/testdata:night_light_calculator_cc_proto",
@@ -1858,11 +1877,13 @@ cc_test(
     deps = [
         ":calculator_framework",
         ":graph_service",
+        ":resources",
         ":subgraph",
         ":test_calculators",
         "//mediapipe/calculators/core:constant_side_packet_calculator",
         "//mediapipe/calculators/core:constant_side_packet_calculator_cc_proto",
         "//mediapipe/calculators/core:pass_through_calculator",
+        "//mediapipe/framework/api2:builder",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:parse_text_proto",
         "//mediapipe/framework/port:ret_check",

@@ -479,6 +479,8 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/label_map_util.h",
     "src/mediapipe/util/resource_util.cc",
     "src/mediapipe/util/resource_util.h",
+    "src/mediapipe/util/str_util.cc",
+    "src/mediapipe/util/str_util.h",
     "src/mediapipe/util/tflite/error_reporter.cc",
     "src/mediapipe/util/tflite/error_reporter.h",
   ]

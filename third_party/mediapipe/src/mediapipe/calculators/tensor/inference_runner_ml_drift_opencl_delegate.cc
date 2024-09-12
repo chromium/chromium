@@ -36,6 +36,7 @@
 #include "tensorflow/lite/util.h"
 #include "third_party/ml_drift/contrib/tflite_op_resolver.h"
 #include "third_party/odml/infra/ml_drift_delegate/ml_drift_cl.h"
+#include "third_party/odml/infra/ml_drift_delegate/ml_drift_delegate.h"
 
 namespace mediapipe::api2 {
 
@@ -43,9 +44,9 @@ using ::tflite::ml_drift::MlDriftClDelegateDefaultOptionsPtr;
 using ::tflite::ml_drift::TfLiteCreateMlDriftClDelegate;
 
 absl::Status InferenceRunnerMlDriftOpenClDelegate::Init(
-    CalculatorContext* cc, Packet<TfLiteModelPtr> model_packet,
+    const mediapipe::InferenceCalculatorOptions& options,
+    Packet<TfLiteModelPtr> model_packet,
     Packet<ml_drift::contrib::TfLiteOpResolver> op_resolver_packet) {
-  const auto& options = cc->Options<InferenceCalculatorOptions>();
   RET_CHECK_EQ(options.delegate().gpu().api(),
                InferenceCalculatorOptions::Delegate::Gpu::ML_DRIFT_OPENCL);
   model_packet_ = model_packet;
@@ -60,6 +61,11 @@ absl::Status InferenceRunnerMlDriftOpenClDelegate::Init(
   // Initialize ML Drift CL.
   auto delegate_options = MlDriftClDelegateDefaultOptionsPtr();
   delegate_options->enable_fast_tuning = true;
+  if (options.delegate().gpu().allow_precision_loss()) {
+    delegate_options->precision = MlDriftDelegatePrecision::kDefault;
+  } else {
+    delegate_options->precision = MlDriftDelegatePrecision::kFp32;
+  }
   tflite::Interpreter::TfLiteDelegatePtr delegate =
       TfLiteCreateMlDriftClDelegate(std::move(delegate_options));
   ABSL_CHECK_EQ(interpreter_->ModifyGraphWithDelegate(std::move(delegate)),
