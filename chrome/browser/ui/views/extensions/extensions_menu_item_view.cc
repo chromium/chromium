@@ -42,6 +42,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -307,6 +308,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int horizontal_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  const gfx::Insets icon_padding =
+      provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
 
   views::Builder<ExtensionMenuItemView>(this)
       // Set so the extension button receives enter/exit on children to
@@ -360,11 +363,22 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
-                      // Override the hover button border since we are adding
-                      // vertical spacing in between menu items.
-                      .SetBorder(views::CreateEmptyBorder(gfx::Insets(0)))
+                      // Override the hover button border since we are
+                      // adding vertical spacing in between menu items.
+                      // Instead, set the border to be the padding around the
+                      // icon when hovering.
+                      .SetBorder(views::CreateEmptyBorder(icon_padding))
                       .SetTooltipText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))),
+                          IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))
+                      // TODO(crbug.com/40857680): Context menu button can
+                      // be an ImageButton instead of HoverButton since we
+                      // manually add a circle highlight. Change this once
+                      // kExtensionsMenuAccessControl is rolled out and we
+                      // remove the older menu implementation, which relies
+                      // on `context_menu_button_` being a HoverButton.
+                      .CustomConfigure(base::BindOnce([](HoverButton* view) {
+                        InstallCircleHighlightPathGenerator(view);
+                      }))),
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               GetSitePermissionsButtonBuilder(
