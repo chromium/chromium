@@ -42,6 +42,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.HEADER: // Fallthrough.
                 case ItemType.FOOTER: // Fallthrough.
                 case ItemType.FILL_BUTTON:
+                case ItemType.TERMS_LABEL:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:

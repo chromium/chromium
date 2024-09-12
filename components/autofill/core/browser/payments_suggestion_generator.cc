@@ -405,11 +405,13 @@ GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
       client.GetPersonalDataManager()->payments_data_manager().app_locale()));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 Suggestion::Text GetBenefitTextWithTermsAppended(
     const std::u16string& benefit_text) {
   return Suggestion::Text(l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns the benefit text to display in credit card suggestions if it is
 // available.
@@ -422,10 +424,18 @@ std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
           .GetApplicableBenefitDescriptionForCardAndOrigin(
               credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
               client.GetAutofillOptimizationGuide());
-  return benefit_description.empty()
-             ? std::nullopt
-             : std::optional<Suggestion::Text>(
-                   GetBenefitTextWithTermsAppended(benefit_description));
+  if (benefit_description.empty()) {
+    return std::nullopt;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // The TTF bottom sheet displays a separate `Terms apply for card benefits`
+  // message after listing all card suggestion, so it should not be appended
+  // to each one like on Desktop.
+  return std::optional<Suggestion::Text>(benefit_description);
+#else
+  return std::optional<Suggestion::Text>(
+      GetBenefitTextWithTermsAppended(benefit_description));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Set the labels to be shown in the suggestion. Note that this does not
@@ -1172,6 +1182,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                              ->payments_data_manager()
                              .IsCardEligibleForBenefits(credit_card)) {
       suggestion.labels.push_back({*benefit_label});
+      suggestion.should_display_terms_available = true;
     }
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(

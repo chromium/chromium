@@ -464,13 +464,15 @@ public class AutofillTestHelper {
             String secondaryLabel,
             String subLabel,
             String secondarySubLabel,
-            boolean applyDeactivatedStyle) {
+            boolean applyDeactivatedStyle,
+            boolean shouldDisplayTermsAvailable) {
         AutofillSuggestion.Builder builder =
                 new AutofillSuggestion.Builder()
                         .setLabel(label)
                         .setSecondaryLabel(secondaryLabel)
                         .setSubLabel(subLabel)
-                        .setApplyDeactivatedStyle(applyDeactivatedStyle);
+                        .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                        .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable);
         if (!secondarySubLabel.isEmpty()) {
             builder.setSecondarySubLabel(secondarySubLabel);
         }

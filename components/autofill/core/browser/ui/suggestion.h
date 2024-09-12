@@ -402,6 +402,10 @@ struct Suggestion {
   // form. This field should be true only when `is_acceptable` is false  which
   // will make the suggestion deactivated and unclickable.
   bool apply_deactivated_style = false;
+
+  // If true, the user will be presented with the terms message alongside the
+  // suggestions.
+  bool should_display_terms_available = false;
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);

@@ -293,7 +293,14 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   bool did_set_up_image_resource_for_test_ = false;
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// The card benefits label generation currently varies across operating systems.
+// On iOS, the label is not displayed at present. For Desktop, the benefit is
+// shown along with a "terms apply" message (e.g., "5% cash back on all
+// purchases (terms apply)"). On Android(Clank), the benefits label is displayed
+// without the "(terms apply)" message (e.g., "5% cash back on all purchases").
+// Therefore, it is necessary to separate the tests for these methods based on
+// the specific operating system.
+#if !BUILDFLAG(IS_IOS)
 // TODO(crbug.com/325646493): Clean up
 // PaymentsSuggestionGeneratorTest.AutofillCreditCardBenefitsLabelTest setup and
 // parameters.
@@ -352,9 +359,13 @@ class AutofillCreditCardBenefitsLabelTest
       NOTREACHED();
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     expected_benefit_text_ = l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS,
         benefit_description);
+#else
+    expected_benefit_text_ = benefit_description;
+#endif  // !BUILDFLAG(IS_ANDROID)
     card_ = CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000001",
         /*server_id=*/"server_id1",
@@ -402,6 +413,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      &test::GetActiveCreditCardMerchantBenefit),
                      ::testing::Values("amex", "capitalone")));
 
+#if !BUILDFLAG(IS_ANDROID)
 // Checks that for FPAN suggestions that the benefit description is displayed.
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
   EXPECT_THAT(
@@ -548,6 +560,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
+#else
+
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        GetCreditCardSuggestionsForTouchToFill_BenefitsAdded_RealCard) {
   std::vector<CreditCard> cards = {card()};
@@ -560,6 +574,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               EqualLabels({{expected_benefit_text()},
                            {card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
+  EXPECT_TRUE(suggestions[0].should_display_terms_available);
 }
 
 TEST_P(AutofillCreditCardBenefitsLabelTest,
@@ -576,6 +591,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       EqualLabels({{expected_benefit_text()},
                    {l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
+  EXPECT_TRUE(suggestions[0].should_display_terms_available);
 }
 
 // Checks that the merchant benefit description is not displayed for suggestions
@@ -598,6 +614,7 @@ TEST_P(
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
+  EXPECT_FALSE(suggestions[0].should_display_terms_available);
 }
 
 // Checks that the category benefit description is not displayed for suggestions
@@ -625,6 +642,7 @@ TEST_P(
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
+  EXPECT_FALSE(suggestions[0].should_display_terms_available);
 }
 
 // Checks that the benefit description is not displayed when benefit suggestions
@@ -645,9 +663,10 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
+  EXPECT_FALSE(suggestions[0].should_display_terms_available);
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests the scenario when:
 // - autofill is triggered from the context menu on a field which is classified

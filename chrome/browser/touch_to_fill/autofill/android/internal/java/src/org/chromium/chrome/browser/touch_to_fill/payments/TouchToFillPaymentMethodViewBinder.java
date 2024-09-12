@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.view.LayoutInflater;
@@ -278,7 +279,39 @@ class TouchToFillPaymentMethodViewBinder {
     }
 
     /**
-     * Factory used to create a new footer inside the ListView inside the TouchToFillPaymentMethodView.
+     * Factory used to create a new label inside the TouchToFillPaymentMethodView. This label shows
+     * the `Terms apply for card benefits` message when at least one of the cards has benefits.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createTermsLabelView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_terms_label_sheet_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param propertyKey The {@link PropertyKey} which changed.
+     */
+    static void bindTermsLabelView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == CARD_BENEFITS_TERMS_AVAILABLE) {
+            if (model.get(CARD_BENEFITS_TERMS_AVAILABLE)) {
+                TextView termsLabelTextView = view.findViewById(R.id.touch_to_fill_terms_label);
+                termsLabelTextView.setText(
+                        R.string.autofill_payment_method_bottom_sheet_benefits_terms_label);
+            }
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new footer inside the ListView inside the
+     * TouchToFillPaymentMethodView.
+     *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createFooterItemView(ViewGroup parent) {

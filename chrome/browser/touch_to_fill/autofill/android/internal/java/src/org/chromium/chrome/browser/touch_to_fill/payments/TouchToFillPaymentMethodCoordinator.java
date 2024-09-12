@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
@@ -120,6 +121,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 FOOTER,
                 TouchToFillPaymentMethodViewBinder::createFooterItemView,
                 TouchToFillPaymentMethodViewBinder::bindFooterView);
+        adapter.registerType(
+                TERMS_LABEL,
+                TouchToFillPaymentMethodViewBinder::createTermsLabelView,
+                TouchToFillPaymentMethodViewBinder::bindTermsLabelView);
         view.setSheetItemListAdapter(adapter);
     }
 

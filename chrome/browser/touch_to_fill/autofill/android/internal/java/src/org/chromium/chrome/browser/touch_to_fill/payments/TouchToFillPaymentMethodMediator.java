@@ -27,7 +27,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.content.Context;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -169,6 +172,7 @@ class TouchToFillPaymentMethodMediator {
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
+        boolean cardBenefitsTermsAvailable = false;
 
         for (int i = 0; i < mCards.size(); ++i) {
             CreditCard card = mCards.get(i);
@@ -179,6 +183,11 @@ class TouchToFillPaymentMethodMediator {
                             new FillableItemCollectionInfo(i + 1, mCards.size()),
                             cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
+            cardBenefitsTermsAvailable |= suggestions.get(i).shouldDisplayTermsAvailable();
+        }
+
+        if (cardBenefitsTermsAvailable) {
+            sheetItems.add(buildTermsLabel(cardBenefitsTermsAvailable));
         }
 
         if (mCards.size() == 1) {
@@ -343,6 +352,14 @@ class TouchToFillPaymentMethodMediator {
                         .with(IBAN_NICKNAME, iban.getNickname())
                         .with(ON_IBAN_CLICK_ACTION, () -> this.onSelectedIban(iban));
         return ibanModelBuilder.build();
+    }
+
+    private ListItem buildTermsLabel(boolean cardBenefitsTermsAvailable) {
+        return new ListItem(
+                TERMS_LABEL,
+                new PropertyModel.Builder(TermsLabelProperties.ALL_TERMS_LABEL_KEYS)
+                        .with(CARD_BENEFITS_TERMS_AVAILABLE, cardBenefitsTermsAvailable)
+                        .build());
     }
 
     private ListItem buildHeader(boolean hasOnlyLocalPaymentMethods) {

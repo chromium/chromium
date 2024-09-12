@@ -45,6 +45,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A footer section containing additional actions.
         int FOOTER = 4;
+
+        // A section with a terms label is present when card benefits are available.
+        int TERMS_LABEL = 5;
     }
 
     /** Metadata associated with a card's image. */
@@ -117,6 +120,19 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private IbanProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the terms message in the TouchToFill
+     * sheet for payments.
+     */
+    static class TermsLabelProperties {
+        static final PropertyModel.WritableBooleanPropertyKey CARD_BENEFITS_TERMS_AVAILABLE =
+                new PropertyModel.WritableBooleanPropertyKey("card_benefits_terms_available");
+
+        static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {CARD_BENEFITS_TERMS_AVAILABLE};
+
+        private TermsLabelProperties() {}
     }
 
     /**
