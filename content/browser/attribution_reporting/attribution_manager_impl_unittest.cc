@@ -858,11 +858,10 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
 
   ShutdownManager();
 
-  // Fast-forward past the reporting window and past report expiry.
-  task_environment_.FastForwardBy(kFirstReportingWindow);
-  task_environment_.FastForwardBy(base::Days(100));
+  // Fast-forward past source expiry.
+  task_environment_.FastForwardBy(kImpressionExpiry + base::Microseconds(1));
 
-  // Simulate startup and ensure the report is sent before being expired.
+  // Simulate startup and ensure the report is sent.
   // Advance by the max offline report delay, per
   // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
