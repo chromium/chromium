@@ -80,6 +80,39 @@ TEST_F(AlmanacApiUtilTest, GetEndpointUrl) {
             "https://chromeosalmanac-pa.googleapis.com/v1/app-preload");
 }
 
+TEST_F(AlmanacApiUtilTest, QueryAlmanacApi_RequestSettings) {
+  std::string method;
+  std::optional<std::string> method_override_header;
+  std::optional<std::string> content_type;
+  std::string body;
+  GURL url;
+
+  base::RunLoop run_loop;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        url = request.url;
+        content_type =
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+        method_override_header =
+            request.headers.GetHeader("X-HTTP-Method-Override");
+        method = request.method;
+        body = network::GetUploadData(request);
+        run_loop.Quit();
+      }));
+
+  QueryAlmanacApi<TestProto>(
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      TRAFFIC_ANNOTATION_FOR_TESTS, "serialized proto", "endpoint",
+      /*max_response_size=*/1024 * 1024,
+      /*error_histogram_name=*/std::nullopt, base::DoNothing());
+  run_loop.Run();
+  EXPECT_EQ(url, GetAlmanacEndpointUrl("endpoint"));
+  EXPECT_EQ(method, "POST");
+  EXPECT_EQ(method_override_header, "GET");
+  EXPECT_EQ(content_type, "application/x-protobuf");
+  EXPECT_EQ(body, "serialized proto");
+}
+
 TEST_F(AlmanacApiUtilTest, QueryAlmanacApi_ConnectionFailed) {
   test_url_loader_factory_.AddResponse(
       GetAlmanacEndpointUrl("endpoint"), network::mojom::URLResponseHead::New(),

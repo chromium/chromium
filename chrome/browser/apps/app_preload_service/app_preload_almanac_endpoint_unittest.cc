@@ -61,19 +61,11 @@ class AppPreloadAlmanacEndpointTest : public testing::Test {
 };
 
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
-  std::string method;
-  std::optional<std::string> method_override_header;
-  std::optional<std::string> content_type;
   std::string body;
 
   base::RunLoop run_loop;
   url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        content_type =
-            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
-        method_override_header =
-            request.headers.GetHeader("X-HTTP-Method-Override");
-        method = request.method;
         body = network::GetUploadData(request);
         run_loop.Quit();
       }));
@@ -81,10 +73,6 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
   app_preload_almanac_endpoint::GetAppsForFirstLogin(profile(),
                                                      base::DoNothing());
   run_loop.Run();
-
-  EXPECT_EQ(method, "POST");
-  EXPECT_EQ(method_override_header, "GET");
-  EXPECT_EQ(content_type, "application/x-protobuf");
 
   proto::AppPreloadListRequest request;
   ASSERT_TRUE(request.ParseFromString(body));
