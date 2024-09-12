@@ -308,6 +308,7 @@ source_set("browser") {
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
+    "//components/sensitive_content",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
     "//components/strings:components_strings_grit",

@@ -101,6 +101,7 @@ import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.stylus_handwriting.StylusWritingController;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.viz.common.VizFeatures;
@@ -1947,6 +1948,17 @@ public class AwContents implements SmartClipProvider {
         mSettings.setWebContents(mWebContents);
         mAwDarkMode.setWebContents(mWebContents);
         initializeAutofillProviderIfNecessary(selectionActionMenuDelegate);
+        // The sensitive content client has to be instantiated after the autofill
+        // client, because the sensitive content client starts a flow which uses
+        // `ScopedAutofillManagersObservation`.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                // If the content sensitivity of the container view (WebView) is not
+                // `CONTENT_SENSITIVITY_AUTO`, then we consider that the developer of the app
+                // which embeds WebView has opted out of the sensitive content feature.
+                && mContainerView.getContentSensitivity() == View.CONTENT_SENSITIVITY_AUTO
+                && AwFeatureMap.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)) {
+            AwContentsJni.get().initSensitiveContentClient(mNativeAwContents);
+        }
 
         mDisplayObserver.onDIPScaleChanged(getDeviceScaleFactor());
 
@@ -5013,6 +5025,8 @@ public class AwContents implements SmartClipProvider {
                 InterceptNavigationDelegate navigationInterceptionDelegate);
 
         void initializeAndroidAutofill(long nativeAwContents);
+
+        void initSensitiveContentClient(long nativeAwContents);
 
         WebContents getWebContents(long nativeAwContents);
 

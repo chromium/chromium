@@ -104,6 +104,7 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaParamRef<jobject>&
           intercept_navigation_delegate);
   void InitializeAndroidAutofill(JNIEnv* env);
+  void InitSensitiveContentClient(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(JNIEnv* env);
   void SetCompositorFrameConsumer(JNIEnv* env, jlong compositor_frame_consumer);

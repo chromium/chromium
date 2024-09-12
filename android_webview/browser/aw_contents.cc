@@ -83,6 +83,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -351,6 +352,11 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   // AutofillManagers and after the autofill client is available.
   autofill::AutofillProvider::FromWebContents(web_contents_.get())
       ->MaybeInitKeyboardSuppressor();
+}
+
+void AwContents::InitSensitiveContentClient(JNIEnv* env) {
+  sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
+      web_contents_.get(), "SensitiveContent.WebView.");
 }
 
 AwContents::~AwContents() {

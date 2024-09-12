@@ -49,6 +49,7 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials",
+  "+components/sensitive_content",
   "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
