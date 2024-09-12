@@ -102,10 +102,10 @@ class IpProtectionCoreHostTest : public testing::Test {
             /*is_incognito=*/false);
     auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
-    getter_ = std::make_unique<IpProtectionCoreHost>(
+    core_host_ = std::make_unique<IpProtectionCoreHost>(
         IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
-    getter_->SetUpForTesting(
+    core_host_->SetUpForTesting(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         std::move(bsa));
@@ -117,11 +117,11 @@ class IpProtectionCoreHostTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Remove the raw_ptr to the Mock BSA before `getter_` frees it.
+    // Remove the raw_ptr to the Mock BSA before `core_host_` frees it.
     bsa_ = nullptr;
     host_content_settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
-    getter_->Shutdown();
+    core_host_->Shutdown();
   }
 
   // Get the IdentityManager for this test.
@@ -179,8 +179,8 @@ class IpProtectionCoreHostTest : public testing::Test {
                         network::mojom::IpProtectionProxyLayer proxy_layer) {
     SetupAccount();
 
-    getter_->TryGetAuthTokens(num_tokens, proxy_layer,
-                              tokens_future_.GetCallback());
+    core_host_->TryGetAuthTokens(num_tokens, proxy_layer,
+                                 tokens_future_.GetCallback());
 
     RespondToAccessTokenRequest();
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
@@ -257,9 +257,9 @@ class IpProtectionCoreHostTest : public testing::Test {
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
-  std::unique_ptr<IpProtectionCoreHost> getter_;
+  std::unique_ptr<IpProtectionCoreHost> core_host_;
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
-  // ip_protection_token_fetcher_ in getter_.
+  // ip_protection_token_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 };
 
@@ -634,8 +634,9 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
       const std::optional<std::vector<BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future;
-  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
-                            tokens_future.GetCallback());
+  core_host_->TryGetAuthTokens(1,
+                               network::mojom::IpProtectionProxyLayer::kProxyB,
+                               tokens_future.GetCallback());
   const std::optional<base::Time>& try_again_after =
       tokens_future.Get<std::optional<base::Time>>();
   ASSERT_TRUE(try_again_after);
@@ -649,8 +650,9 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
   tokens_future.Clear();
-  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
-                            tokens_future.GetCallback());
+  core_host_->TryGetAuthTokens(1,
+                               network::mojom::IpProtectionProxyLayer::kProxyB,
+                               tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
   const std::optional<std::vector<BlindSignedAuthToken>>& tokens =
@@ -666,12 +668,12 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
                    std::optional<base::TimeDelta> backoff, bool exponential) {
     SCOPED_TRACE(::testing::Message()
                  << "result: " << static_cast<int>(result));
-    EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
+    EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
     if (backoff && exponential) {
-      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 2);
-      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 4);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 2);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 4);
     } else {
-      EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
+      EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
     }
   };
 
@@ -748,7 +750,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
             network::URLLoaderCompletionStatus(net::OK));
       }));
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
   // Extract tuple elements for individual comparison.
@@ -797,7 +799,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListWithOAuthToken) {
       }));
 
   SetupAccount();
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   RespondToAccessTokenRequest();
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
@@ -846,7 +848,7 @@ TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   test_url_loader_factory_.AddResponse(
       token_server_get_proxy_config_url_.spec(), response_str);
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
   // Extract tuple elements for individual comparison.
@@ -885,7 +887,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
                            const std::optional<GeoHint>&>
         future;
-    this->getter_->GetProxyList(future.GetCallback());
+    this->core_host_->GetProxyList(future.GetCallback());
     ASSERT_TRUE(future.Wait());
 
     // Extract tuple elements for individual comparison.
@@ -955,7 +957,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyList_IpProtectionDisabled) {
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
 
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 

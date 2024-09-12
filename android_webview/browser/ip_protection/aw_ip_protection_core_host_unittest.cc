@@ -50,11 +50,11 @@ class AwIpProtectionCoreHostTest : public testing::Test {
                    .city_name = "ALABASTER"}) {}
 
   void SetUp() override {
-    getter_ = std::make_unique<AwIpProtectionCoreHost>(
+    core_host_ = std::make_unique<AwIpProtectionCoreHost>(
         /*aw_browser_context=*/nullptr);
     auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
-    getter_->SetUpForTesting(
+    core_host_->SetUpForTesting(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         std::move(bsa));
@@ -65,13 +65,13 @@ class AwIpProtectionCoreHostTest : public testing::Test {
     ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
   }
 
-  void TearDown() override { getter_->Shutdown(); }
+  void TearDown() override { core_host_->Shutdown(); }
 
   // Call `TryGetAuthTokens()` and run until it completes.
   void TryGetAuthTokens(int num_tokens,
                         network::mojom::IpProtectionProxyLayer proxy_layer) {
-    getter_->TryGetAuthTokens(num_tokens, proxy_layer,
-                              tokens_future_.GetCallback());
+    core_host_->TryGetAuthTokens(num_tokens, proxy_layer,
+                                 tokens_future_.GetCallback());
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
   }
 
@@ -120,10 +120,10 @@ class AwIpProtectionCoreHostTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
 
-  std::unique_ptr<AwIpProtectionCoreHost> getter_;
+  std::unique_ptr<AwIpProtectionCoreHost> core_host_;
 
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
-  // ip_protection_token_batch_ipc_fetcher_ in getter_.
+  // ip_protection_token_batch_ipc_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -382,7 +382,7 @@ TEST_F(AwIpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   test_url_loader_factory_.AddResponse(
       token_server_get_proxy_config_url_.spec(), response_str);
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
   // Extract tuple elements for individual comparison.
@@ -397,7 +397,7 @@ TEST_F(AwIpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
 }
 
 TEST_F(AwIpProtectionCoreHostTest, GetProxyListFailure) {
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
   // Extract tuple elements for individual comparison.
@@ -410,7 +410,7 @@ TEST_F(AwIpProtectionCoreHostTest, GetProxyList_IpProtectionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       net::features::kEnableIpProtectionProxy);
 
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyList(proxy_list_future_.GetCallback());
 
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
