@@ -41,8 +41,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,7 +57,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
@@ -112,27 +109,6 @@ void RecordDefaultAppsForHistogram(const std::string& histogram_name,
       continue;
     }
     base::UmaHistogramEnumeration(histogram_name, default_app_name.value());
-  }
-}
-
-ash::NewWindowDelegate::Disposition ConvertDisposition(
-    WindowOpenDisposition disposition) {
-  switch (disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
-    case WindowOpenDisposition::UNKNOWN:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-      return ash::NewWindowDelegate::Disposition::kNewWindow;
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-      return ash::NewWindowDelegate::Disposition::kSwitchToTab;
   }
 }
 
@@ -697,27 +673,9 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 const GURL& url,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    // Handle os:// URLs directly, without involving Lacros.
-    // See comment in OmniboxLacrosProvider::StartWithoutSearchProvider.
-    if (crosapi::gurl_os_handler_utils::HasOsScheme(url)) {
-      const GURL ash_url =
-          crosapi::gurl_os_handler_utils::GetAshUrlFromLacrosUrl(url);
-      if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(ash_url)) {
-        crosapi::UrlHandlerAsh().OpenUrl(ash_url);
-      } else {
-        LOG(WARNING) << "URL not supported: " << url << " (" << ash_url << ")";
-      }
-    } else {
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ConvertDisposition(disposition));
-    }
-  } else {
-    NavigateParams params(profile, url, transition);
-    params.disposition = disposition;
-    Navigate(&params);
-  }
+  NavigateParams params(profile, url, transition);
+  params.disposition = disposition;
+  Navigate(&params);
 }
 
 void AppListClientImpl::OnProfileAdded(Profile* profile) {
