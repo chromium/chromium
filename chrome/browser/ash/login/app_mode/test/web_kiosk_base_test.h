@@ -10,11 +10,14 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"
 
@@ -30,6 +33,12 @@ class WebKioskBaseTest : public OobeBaseTest {
   WebKioskBaseTest(const WebKioskBaseTest&) = delete;
   WebKioskBaseTest& operator=(const WebKioskBaseTest&) = delete;
   ~WebKioskBaseTest() override;
+
+  Profile* profile() const;
+
+  Browser* kiosk_app_browser() const;
+
+  KioskSystemSession* kiosk_system_session() const;
 
  protected:
   // OobeBaseTest overrides:

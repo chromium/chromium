@@ -141,7 +141,8 @@ KioskSystemSession::KioskSystemSession(
       device_weekly_scheduled_suspend_controller_(
           std::make_unique<DeviceWeeklyScheduledSuspendController>(
               g_browser_process->local_state())),
-      kiosk_vision_(g_browser_process->local_state()) {
+      kiosk_vision_(g_browser_process->local_state()),
+      network_state_observer_(profile->GetPrefs()) {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp:
       InitForChromeAppKiosk();
