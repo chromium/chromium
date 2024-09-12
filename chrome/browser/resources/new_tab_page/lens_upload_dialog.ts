@@ -326,6 +326,13 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     this.$.lensForm.openSystemFilePicker();
   }
 
+  // Remove this after the NTP is fully migrated off of Polymer.
+  // This is to stop Polymer from running its touchend event listener that
+  // keeps the event from making it to the file input.
+  protected onUploadFileTouchEnd_(e: Event) {
+    e.stopPropagation();
+  }
+
   protected handleFormLoading_(event: CustomEvent<LensSubmitType>) {
     this.dialogState_ = DialogState.LOADING;
     switch (event.detail) {
