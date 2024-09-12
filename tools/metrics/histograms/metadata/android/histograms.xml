@@ -3678,6 +3678,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.HasFilepathWithoutFragmentOnDestroy"
+    enum="Boolean" expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the pdf page has a filepath when it is destroyed without a
+    pdf fragment. Used to diagnose potential issue that the fragment is null
+    when the pdf page is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
     expires_after="2025-03-02">
   <owner>shuyng@google.com</owner>

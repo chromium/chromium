@@ -117,6 +117,11 @@ public class PdfCoordinator {
      * Called after a pdf page has been removed from the view hierarchy and will no longer be used.
      */
     void destroy() {
+        if (mChromePdfViewerFragment == null) {
+            PdfUtils.recordHasFilepathWithoutFragmentOnDestroy(mPdfFilePath != null);
+            Log.w(TAG, "Fragment is null when pdf page is destroyed.");
+            return;
+        }
         if (!mFragmentManager.isDestroyed()) {
             mFragmentManager
                     .beginTransaction()
