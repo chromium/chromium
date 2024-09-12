@@ -235,6 +235,19 @@ const CGFloat kFeedContainerExtraHeight = 500;
   DCHECK(self.identityDiscButton);
 
   self.viewDidFinishLoading = YES;
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceStyle.self, UITraitHorizontalSizeClass.self,
+      UITraitPreferredContentSizeCategory.self
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -387,43 +400,16 @@ const CGFloat kFeedContainerExtraHeight = 500;
                       }];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
-              self.traitCollection.userInterfaceStyle];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  if (previousTraitCollection.horizontalSizeClass !=
-      self.traitCollection.horizontalSizeClass) {
-    // Update header constant to cover rotation instances. When the omnibox is
-    // pinned to the top, the fake omnibox is the one shown only in portrait
-    // mode, so if the NTP is opened in landscape mode, a rotation to portrait
-    // mode needs to update the top anchor constant based on the correct header
-    // height.
-    self.headerTopAnchor.constant =
-        -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
-    [self.contentSuggestionsViewController.view setNeedsLayout];
-    [self.contentSuggestionsViewController.view layoutIfNeeded];
-    [self updateOverscrollActionsState];
-    [self updateHeightAboveFeed];
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateFakeOmniboxForScrollPosition];
-    [self updateOverscrollActionsState];
-    // Subviews will receive traitCollectionDidChange after this call, so the
-    // only way to ensure that the scrollview isn't scrolled up too far is to
-    // circle back afterwards and adjust if needed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [self updateHeightAboveFeed];
-        }));
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Public
 
@@ -1980,6 +1966,43 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // latter is for wider devices like iPads and landscape iPhones.
 - (BOOL)shouldPinFakeOmnibox {
   return !IsRegularXRegularSizeClass(self) && IsSplitToolbarMode(self);
+}
+
+// Modifies the view controller depending on which UITrait was changed.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+              self.traitCollection.userInterfaceStyle];
+  }
+
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    // Update header constant to cover rotation instances. When the omnibox is
+    // pinned to the top, the fake omnibox is the one shown only in portrait
+    // mode, so if the NTP is opened in landscape mode, a rotation to portrait
+    // mode needs to update the top anchor constant based on the correct header
+    // height.
+    self.headerTopAnchor.constant =
+        -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+    [self updateOverscrollActionsState];
+    [self updateHeightAboveFeed];
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateFakeOmniboxForScrollPosition];
+    [self updateOverscrollActionsState];
+    // Subviews will receive traitCollectionDidChange after this call, so the
+    // only way to ensure that the scrollview isn't scrolled up too far is to
+    // circle back afterwards and adjust if needed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [self updateHeightAboveFeed];
+        }));
+  }
 }
 
 #pragma mark - Getters
