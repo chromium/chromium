@@ -13,8 +13,8 @@ from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
 
 _log = logging.getLogger(__name__)
-IOS_VERSION = '17.0'
-IOS_DEVICE = 'iPhone 14 Pro'
+IOS_VERSION = '18.0'
+IOS_DEVICE = 'iPhone 15 Pro'
 
 
 def do_delay_imports():
