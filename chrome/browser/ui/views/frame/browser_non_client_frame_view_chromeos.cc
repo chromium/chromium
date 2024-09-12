@@ -947,12 +947,9 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   const bool should_show_caption_buttons = GetShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
-  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
-      browser_view()->GetIsWebAppType()) {
-    // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
-    // BrowserView is re-layed out to take into account these changes.
-    browser_view()->InvalidateLayout();
-  }
+  // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
+  // BrowserView is re-layed out to take into account these changes.
+  browser_view()->InvalidateLayout();
 }
 
 std::unique_ptr<chromeos::FrameHeader>

@@ -9,7 +9,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -151,16 +150,8 @@ bool WaitForPaintAsActive(bool expected, views::FrameCaptionButton* button) {
 
 }  // namespace
 
-class BrowserNonClientFrameViewChromeOSTest
-    : public TopChromeMdParamTest<ChromeOSBrowserUITest> {
- protected:
-  BrowserNonClientFrameViewChromeOSTest()
-      : scoped_features_(
-            chromeos::features::kOverviewSessionInitOptimizations) {}
-
-  base::test::ScopedFeatureList scoped_features_;
-};
-
+using BrowserNonClientFrameViewChromeOSTest =
+    TopChromeMdParamTest<ChromeOSBrowserUITest>;
 using BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip =
     WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewChromeOSTest>;
 using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
@@ -1008,12 +999,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 
   EnterOverviewMode();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  // b/362835104: Browser windows that are not web apps do not require a layout
-  // after the header is made invisible. This is an optimization with no visual
-  // impact. Depends on `kOverviewSessionInitOptimizations` being enabled.
-  ASSERT_FALSE(browser_view->GetIsWebAppType());
-  EXPECT_FALSE(browser_view->needs_layout());
-
   ExitOverviewMode();
 
   // Caption buttons are not supported when using the WebUI tab strip.
