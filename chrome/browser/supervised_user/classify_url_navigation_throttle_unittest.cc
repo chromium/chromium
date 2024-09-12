@@ -30,6 +30,26 @@ namespace supervised_user {
 namespace {
 
 static const char* kExampleURL = "https://example.com/";
+static const char* kExample1URL = "https://example1.com/";
+static const char* kExample2URL = "https://example2.com/";
+
+void ExpectThrottleStatus(base::HistogramTester* tester,
+                          std::map<ClassifyUrlThrottleStatus, int> buckets) {
+  int total = 0;
+  for (const auto& [bucket, count] : buckets) {
+    total += count;
+    tester->ExpectBucketCount(kClassifyUrlThrottleStatusHistogramName, bucket,
+                              count);
+  }
+  tester->ExpectTotalCount(kClassifyUrlThrottleStatusHistogramName, total);
+}
+
+void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
+  tester->ExpectTotalCount(kClassifiedEarlierThanContentResponseHistogramName,
+                           /*expected_count=*/0);
+  tester->ExpectTotalCount(kClassifiedLaterThanContentResponseHistogramName,
+                           /*expected_count=*/0);
+}
 
 class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
@@ -51,11 +71,15 @@ class ClassifyUrlNavigationThrottleTest
   void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
 
   std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
-      const GURL& initial_url,
-      std::initializer_list<GURL> redirects = {}) {
+      const std::vector<GURL> redirects) {
+    CHECK_GT(redirects.size(), 0U) << "At least one url is required";
+
+    redirects_ = redirects;
+    current_url_it_ = redirects_.begin();
+
     navigation_handle_ =
         std::make_unique<::testing::NiceMock<content::MockNavigationHandle>>(
-            initial_url, main_rfh());
+            *current_url_it_, main_rfh());
 
     // Note: this creates the throttle regardless the supervision status of the
     // user.
@@ -66,6 +90,30 @@ class ClassifyUrlNavigationThrottleTest
     throttle->set_resume_callback_for_testing(
         base::BindLambdaForTesting([&]() { resume_called_ = true; }));
     return throttle;
+  }
+
+  std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
+      const GURL& url) {
+    return CreateNavigationThrottle(std::vector<GURL>({url}));
+  }
+
+  // Advances the pointer of the current url internally and synchronizes the
+  // navigation_handle_ accordingly: updating both the url and the redirect
+  // chain that led to it.
+  void AdvanceRedirect() {
+    current_url_it_++;
+
+    // CHECK_NE doesn't support std::vector::iterator comparison.
+    CHECK_NE(redirects_.end() - current_url_it_, 0)
+        << "Can't advance past last redirect";
+
+    std::vector<GURL> redirect_chain;
+    for (auto it = redirects_.begin(); it != current_url_it_; ++it) {
+      redirect_chain.push_back(*it);
+    }
+
+    navigation_handle_->set_url(*current_url_it_);
+    navigation_handle_->set_redirect_chain(redirect_chain);
   }
 
   SupervisedUserURLFilter* GetSupervisedUserURLFilter() {
@@ -80,6 +128,9 @@ class ClassifyUrlNavigationThrottleTest
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
   base::HistogramTester histogram_tester_;
   bool resume_called_ = false;
+
+  std::vector<GURL> redirects_;
+  std::vector<GURL>::iterator current_url_it_;
 };
 
 TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
@@ -99,6 +150,11 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count(grew by)*/ 1);
+
+  // This throttle continued on request, and proceeded on response.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 1},
+                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -118,6 +174,13 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+
+  // Since this is not a success path, no latency metric is recorded.
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle immediately deferred and presented an interstitial.
+  ExpectThrottleStatus(
+      histogram_tester(),
+      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -132,6 +195,15 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+
+  // Since this is not a success path, no latency metric is recorded.
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle immediately deferred and presented an interstitial.
+  ExpectThrottleStatus(
+      histogram_tester(),
+      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
+  // As a result, the navigation is not resumed
+  EXPECT_FALSE(resume_called());
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -149,6 +221,10 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
                                     /*is_uncertain=*/false);
             return true;
           });
+  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                    GURL(kExampleURL), testing::_, false))
+      .Times(1);
+
   SupervisedUserServiceFactory::GetForProfile(profile())
       ->SetURLFilterForTesting(std::move(mock_url_filter));
 
@@ -159,9 +235,160 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+
+  // Since this is not a success path, no latency metric is recorded.
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle immediately deferred and presented an interstitial.
+  ExpectThrottleStatus(
+      histogram_tester(),
+      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
+  // As a result, the navigation is not resumed
+  EXPECT_FALSE(resume_called());
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
+  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
+  MockSupervisedUserURLFilter::FilteringBehaviorCallback check;
+  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&check](
+              const GURL& url,
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
+              bool skip_manual_parent_filter) {
+            check = std::move(callback);
+            return false;
+          });
+  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                    GURL(kExampleURL), testing::_, false))
+      .Times(1);
+
+  SupervisedUserServiceFactory::GetForProfile(profile())
+      ->SetURLFilterForTesting(std::move(mock_url_filter));
+
+  std::unique_ptr<content::NavigationThrottle> throttle =
+      CreateNavigationThrottle(GURL(kExampleURL));
+  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+
+  // Check is not completed yet
+  EXPECT_TRUE(check);
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 0);
+
+  // Before the throttle will be notified that the content is ready, complete
+  // the check
+  std::move(check).Run(FilteringBehavior::kAllow,
+                       FilteringBehaviorReason::ASYNC_CHECKER,
+                       /*is_uncertain=*/false);
+
+  // Throttle is not blocked
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillProcessResponse());
+
+  // As a result, the navigation hadn't had to be resumed
+  EXPECT_FALSE(resume_called());
+
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  // Since the throttle had to wait for checks to complete, it recorded a
+  // corresponding metric.
+  histogram_tester()->ExpectTotalCount(
+      kClassifiedEarlierThanContentResponseHistogramName,
+      /*grew_by=*/1);
+
+  // This throttle continued on request, and proceeded on response because the
+  // result was already there.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 1},
+                        {ClassifyUrlThrottleStatus::kProceed, 1}});
+}
+
+TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
+  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
+  MockSupervisedUserURLFilter::FilteringBehaviorCallback check;
+  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&check](
+              const GURL& url,
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
+              bool skip_manual_parent_filter) {
+            check = std::move(callback);
+            return false;
+          });
+  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                    GURL(kExampleURL), testing::_, false))
+      .Times(1);
+
+  SupervisedUserServiceFactory::GetForProfile(profile())
+      ->SetURLFilterForTesting(std::move(mock_url_filter));
+
+  std::unique_ptr<content::NavigationThrottle> throttle =
+      CreateNavigationThrottle(GURL(kExampleURL));
+
+  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+
+  // At this point, check was not completed.
+  EXPECT_TRUE(check);
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 0);
+
+  // But will block at process response because the check is still
+  // pending and no filtering was completed.
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillProcessResponse());
+
+  // Now complete the outstanding check
+  std::move(check).Run(FilteringBehavior::kAllow,
+                       FilteringBehaviorReason::ASYNC_CHECKER,
+                       /*is_uncertain=*/false);
+
+  // As a result, the navigation is resumed (and three checks registered)
+  EXPECT_TRUE(resume_called());
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  // Since the throttle had to wait for checks to complete, it recorded a
+  // corresponding metric.
+  histogram_tester()->ExpectTotalCount(
+      kClassifiedLaterThanContentResponseHistogramName,
+      /*grew_by=*/1);
+
+  // This throttle continued on request, and deferred on response because the
+  // result wasn't there. Then it resumed.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 1},
+                        {ClassifyUrlThrottleStatus::kDefer, 1},
+                        {ClassifyUrlThrottleStatus::kResume, 1}});
+}
+
+struct TestCase {
+  std::string name;
+  std::vector<std::string> redirect_chain;
+};
+
+class ClassifyUrlNavigationThrottleParallelizationTest
+    : public ClassifyUrlNavigationThrottleTest,
+      public testing::WithParamInterface<TestCase> {
+ protected:
+  static const std::vector<GURL> GetRedirectChain() {
+    CHECK_EQ(GetParam().redirect_chain.size(), 3U)
+        << "Tests assume one request and two redirects";
+    std::vector<GURL> urls;
+    for (const auto& redirect : GetParam().redirect_chain) {
+      urls.push_back(GURL(redirect));
+    }
+    return urls;
+  }
+};
+
+TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
+       ClassificationIsFasterThanHttp) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
@@ -177,7 +404,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
             return false;
           });
   EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, testing::_))
+                                    testing::_, testing::_, false))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -185,13 +412,14 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
-      CreateNavigationThrottle(GURL(kExampleURL),
-                               {GURL(kExampleURL), GURL(kExampleURL)});
+      CreateNavigationThrottle(GetRedirectChain());
 
   // It will allow request and two redirects to pass...
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
+  AdvanceRedirect();
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
 
@@ -224,9 +452,16 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*grew_by=*/1);
+
+  // This throttle continued on request and redirects and proceeded because
+  // verdict was ready.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 3},
+                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
+TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
+       OutOfOrderClassification) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
@@ -242,7 +477,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
             return false;
           });
   EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, testing::_))
+                                    testing::_, testing::_, false))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -250,13 +485,91 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
-      CreateNavigationThrottle(GURL(kExampleURL),
-                               {GURL(kExampleURL), GURL(kExampleURL)});
+      CreateNavigationThrottle(GetRedirectChain());
 
   // It will allow request and two redirects to pass...
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
+  AdvanceRedirect();
+  ASSERT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillRedirectRequest());
+
+  // No checks are completed yet
+  EXPECT_THAT(checks, testing::SizeIs(3));
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 0);
+
+  // Before the throttle will be notified that the content is ready, complete
+  // all checks but from the back.
+  for (auto it = checks.rbegin(); it != checks.rend(); ++it) {
+    std::move(*it).Run(FilteringBehavior::kAllow,
+                       FilteringBehaviorReason::ASYNC_CHECKER,
+                       /*is_uncertain=*/false);
+    // Classification still not complete.
+    histogram_tester()->ExpectTotalCount(
+        kClassifiedEarlierThanContentResponseHistogramName,
+        /*grew_by=*/0);
+  }
+
+  // Throttle is not blocked
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillProcessResponse());
+
+  // As a result, the navigation hadn't had to be resumed
+  EXPECT_FALSE(resume_called());
+
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 3);
+  // Since the throttle had to wait for checks to complete, it recorded a
+  // corresponding metric.
+  histogram_tester()->ExpectTotalCount(
+      kClassifiedEarlierThanContentResponseHistogramName,
+      /*grew_by=*/1);
+
+  // This throttle continued on request and redirects and then proceeded because
+  // verdict was ready.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 3},
+                        {ClassifyUrlThrottleStatus::kProceed, 1}});
+}
+
+TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
+       ClassificationIsSlowerThanHttp) {
+  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
+  std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
+  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&checks](
+              const GURL& url,
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
+              bool skip_manual_parent_filter) {
+            checks.push_back(std::move(callback));
+            // Asynchronous behavior all the time.
+            return false;
+          });
+  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                    testing::_, testing::_, false))
+      .Times(3);
+
+  SupervisedUserServiceFactory::GetForProfile(profile())
+      ->SetURLFilterForTesting(std::move(mock_url_filter));
+
+  // This navigation is a 3-piece redirect chain on the same URL:
+  std::unique_ptr<content::NavigationThrottle> throttle =
+      CreateNavigationThrottle(GetRedirectChain());
+
+  // It will allow request and two redirects to pass...
+  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
+  ASSERT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillRedirectRequest());
+  AdvanceRedirect();
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
 
@@ -300,23 +613,34 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
       /*grew_by=*/1);
+
+  // This throttle continued on request and redirects and then deferred because
+  // one check was outstanding. After it was completed, the throttle resumed.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 3},
+                        {ClassifyUrlThrottleStatus::kDefer, 1},
+                        {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest, ShortCircuitsSynchronousBlock) {
+TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
+       ShortCircuitsSynchronousBlock) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
 
-  std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
+  bool first_check = false;
   ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+                                testing::_, testing::_, false))
       .WillByDefault(
-          [&checks](
+          [&first_check](
               const GURL& url,
               MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
               bool skip_manual_parent_filter) {
-            if (checks.empty()) {
-              checks.push_back(std::move(callback));
-              return false;
+            if (!first_check) {
+              std::move(callback).Run(FilteringBehavior::kAllow,
+                                      FilteringBehaviorReason::ASYNC_CHECKER,
+                                      /*is_uncertain=*/false);
+              first_check = true;
+              return true;
             }
 
             // Subsequent checks are synchronous blocks.
@@ -334,16 +658,14 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ShortCircuitsSynchronousBlock) {
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
-      CreateNavigationThrottle(GURL(kExampleURL),
-                               {GURL(kExampleURL), GURL(kExampleURL)});
+      CreateNavigationThrottle(GetRedirectChain());
 
   // It will DEFER at 2nd request (1st redirect).
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
   ASSERT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillRedirectRequest());
 
-  // There will be one pending check
-  EXPECT_THAT(checks, testing::SizeIs(1));
   // And one completed block from safe-sites (async checker)
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
@@ -351,17 +673,17 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ShortCircuitsSynchronousBlock) {
 
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
-
   // Since this is not a success path, no latency metric is recorded.
-  histogram_tester()->ExpectTotalCount(
-      kClassifiedEarlierThanContentResponseHistogramName,
-      /*grew_by=*/0);
-  histogram_tester()->ExpectTotalCount(
-      kClassifiedLaterThanContentResponseHistogramName,
-      /*grew_by=*/0);
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle continued on first request deferred on second one.
+  ExpectThrottleStatus(
+      histogram_tester(),
+      {{ClassifyUrlThrottleStatus::kContinue, 1},
+       {ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest, HandlesLateAsynchronousBlock) {
+TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
+       HandlesLateAsynchronousBlock) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
 
@@ -388,7 +710,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest, HandlesLateAsynchronousBlock) {
           });
 
   EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, testing::_))
+                                    testing::_, testing::_, false))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -396,13 +718,16 @@ TEST_F(ClassifyUrlNavigationThrottleTest, HandlesLateAsynchronousBlock) {
 
   // This navigation is a 3-piece redirect chain on the same URL:
   std::unique_ptr<content::NavigationThrottle> throttle =
-      CreateNavigationThrottle(GURL(kExampleURL),
-                               {GURL(kExampleURL), GURL(kExampleURL)});
+      CreateNavigationThrottle(GetRedirectChain());
 
   // It proceed all three request/redirects.
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
+
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
+  AdvanceRedirect();
+
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest());
 
@@ -429,14 +754,25 @@ TEST_F(ClassifyUrlNavigationThrottleTest, HandlesLateAsynchronousBlock) {
 
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
-
   // Since this is not a success path, no latency metric is recorded.
-  histogram_tester()->ExpectTotalCount(
-      kClassifiedEarlierThanContentResponseHistogramName,
-      /*grew_by=*/0);
-  histogram_tester()->ExpectTotalCount(
-      kClassifiedLaterThanContentResponseHistogramName,
-      /*grew_by=*/0);
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle continued on request and redirects and deferred waiting for
+  // last classification.
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 3},
+                        {ClassifyUrlThrottleStatus::kDefer, 1}});
 }
 
+const TestCase kTestCases[] = {
+    {.name = "TwoRedirects",
+     .redirect_chain = {kExampleURL, kExample1URL, kExample2URL}},
+    {.name = "TwoIdenticalRedirects",
+     .redirect_chain = {kExampleURL, kExampleURL, kExampleURL}}};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ClassifyUrlNavigationThrottleParallelizationTest,
+                         testing::ValuesIn(kTestCases),
+                         [](const testing::TestParamInfo<TestCase>& info) {
+                           return info.param.name;
+                         });
 }  // namespace supervised_user
