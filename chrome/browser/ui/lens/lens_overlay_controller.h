@@ -641,6 +641,10 @@ class LensOverlayController : public LensSearchboxClient,
   void AddBoundingBoxesToInitializationData(
       const std::vector<gfx::Rect>& bounds);
 
+  // Enables/disables the background blur updating live. This should be used to
+  // save resources on blurring the background when not needed.
+  void SetLiveBlur(bool enabled);
+
   // Called when the UI needs to show the overlay via a view that is a child of
   // the tab contents view.
   void ShowOverlay();

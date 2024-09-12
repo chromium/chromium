@@ -1325,6 +1325,19 @@ void LensOverlayController::AddBoundingBoxesToInitializationData(
       std::move(significant_region_boxes);
 }
 
+void LensOverlayController::SetLiveBlur(bool enabled) {
+  if (!lens_overlay_blur_layer_delegate_) {
+    return;
+  }
+
+  if (enabled) {
+    lens_overlay_blur_layer_delegate_->StartBackgroundImageCapture();
+    return;
+  }
+
+  lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
+}
+
 void LensOverlayController::ShowOverlay() {
   // Listen to WebContents events
   tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
@@ -1341,6 +1354,9 @@ void LensOverlayController::ShowOverlay() {
     CHECK(!overlay_view_->GetVisible());
 
     overlay_view_->SetVisible(true);
+
+    // Restart the live blur since the view is visible again.
+    SetLiveBlur(true);
 
     // The overlay needs to be focused on show to immediately begin
     // receiving key events.
@@ -1372,6 +1388,7 @@ void LensOverlayController::ShowOverlay() {
 
 void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
+  SetLiveBlur(false);
   HidePreselectionBubble();
   CloseSearchBubble();
   // Re-enable mouse and keyboard events to the tab contents web view.
@@ -1631,6 +1648,13 @@ void LensOverlayController::OnFullscreenStateChanged() {
 
 void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(observed_view == overlay_view_->parent());
+
+  // We now want to start the live blur since the screenshot has resized to
+  // allow the blur to peek through.
+  if (IsOverlayShowing()) {
+    SetLiveBlur(true);
+  }
+
   gfx::Rect bounds = observed_view->GetLocalBounds();
   overlay_view_->SetBoundsRect(bounds);
 }

@@ -37,6 +37,18 @@ LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
 
   render_widget_host_observer_.Observe(background_view_host);
 
+  // Fetch the initial screenshot to be used for blurring.
+  FetchBackgroundImage();
+}
+
+LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
+
+void LensOverlayBlurLayerDelegate::StartBackgroundImageCapture() {
+  // If there is no background_view_host_, there is nothing to take a screenshot
+  // of, so we should exit early.
+  if (screenshot_timer_.IsRunning() || !background_view_host_) {
+    return;
+  }
   // Start taking screenshots to render on the layer.
   screenshot_timer_.Start(
       FROM_HERE,
@@ -45,7 +57,12 @@ LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
                           weak_factory_.GetWeakPtr()));
 }
 
-LensOverlayBlurLayerDelegate::~LensOverlayBlurLayerDelegate() = default;
+void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
+  if (!screenshot_timer_.IsRunning()) {
+    return;
+  }
+  screenshot_timer_.Stop();
+}
 
 void LensOverlayBlurLayerDelegate::OnPaintLayer(
     const ui::PaintContext& context) {
@@ -92,7 +109,7 @@ void LensOverlayBlurLayerDelegate::RenderWidgetHostDestroyed(
   render_widget_host_observer_.Reset();
   background_view_host_ = nullptr;
   // If the host view was destroyed, stop updating the background blur.
-  screenshot_timer_.Stop();
+  StopBackgroundImageCapture();
 }
 
 void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
