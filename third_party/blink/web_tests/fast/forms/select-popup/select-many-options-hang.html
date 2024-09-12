@@ -7,7 +7,7 @@
 <body>
 <script>
 const select = document.createElement('select');
-for (let i = 0; i < 6000; i++) {
+for (let i = 0; i < 10000; i++) {
   const option = document.createElement('option');
   option.textContent = i;
   select.appendChild(option);
@@ -22,5 +22,5 @@ promise_test(async () => {
   eventSender.keyDown('ArrowDown');
   eventSender.keyDown('Enter');
   assert_equals(select.value, '1', 'select.value after ArrowDown.');
-}, 'Selects with thousands of options should be usable.');
+}, 'Selects with 10000+ options should be usable.');
 </script>

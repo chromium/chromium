@@ -7843,6 +7843,9 @@ crbug.com/352455679 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-relayo
 crbug.com/352455679 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Failure Pass Timeout ]
 crbug.com/41490706 [ Linux ] external/wpt/touch-events/multi-touch-interfaces.html [ Failure Pass ]
 
+# Flaky on Linux and Windows
+crbug.com/353392059 fast/forms/select-popup/select-many-options-hang.html [ Pass Timeout ]
+
 # Flaky on Linux
 crbug.com/352481804 [ Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-image-only-for-print.html [ Failure Pass ]
 
