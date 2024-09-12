@@ -2,48 +2,60 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/android/modal_dialog_bridge.h"
+#include "ui/android/modal_dialog_wrapper.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
+#include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "ui/android/ui_android_jni_headers/ModalDialogBridge_jni.h"
+#include "ui/android/ui_android_jni_headers/ModalDialogWrapper_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace ui {
-namespace {
-static const int kDialogDismissalCause_DISMISSED_BY_NATIVE = 4;
-}
 
-// static
-void ModalDialogBridge::ShowTabModal(
+ModalDialogWrapper* g_dialog_ptr_for_testing = nullptr;
+
+// static:
+void ModalDialogWrapper::ShowTabModal(
     std::unique_ptr<ui::DialogModel> dialog_model,
-    ui::WindowAndroid* web_contents) {
-  ModalDialogBridge* delegate = new ModalDialogBridge(std::move(dialog_model));
-  delegate->BuildPropertyModel();
-  delegate->Show(web_contents);
-  // delegate will delete itself when dialog is dismissed.
+    ui::WindowAndroid* window) {
+  ModalDialogWrapper* tab_modal =
+      new ModalDialogWrapper(std::move(dialog_model), window);
+  g_dialog_ptr_for_testing = tab_modal;
+  tab_modal->BuildPropertyModel();
+  auto* dialog_manager = window->GetModalDialogManagerBridge();
+  CHECK(dialog_manager);
+  dialog_manager->ShowDialog(tab_modal->java_obj_,
+                             ModalDialogManagerBridge::ModalDialogType::kTab);
+  // `tab_modal` will delete itself when dialog is dismissed.
 }
 
-ModalDialogBridge::ModalDialogBridge(std::unique_ptr<DialogModel> dialog_model)
-    : dialog_model_(std::move(dialog_model)) {
+// static:
+ModalDialogWrapper* ModalDialogWrapper::GetDialogForTesting() {
+  return g_dialog_ptr_for_testing;
+}
+
+// private:
+ModalDialogWrapper::ModalDialogWrapper(
+    std::unique_ptr<DialogModel> dialog_model,
+    ui::WindowAndroid* window_android)
+    : dialog_model_(std::move(dialog_model)), window_android_(window_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_ =
-      Java_ModalDialogBridge_create(env, reinterpret_cast<uintptr_t>(this));
+  java_obj_ = Java_ModalDialogWrapper_create(
+      env, reinterpret_cast<uintptr_t>(this), window_android_->GetJavaObject());
 }
 
-ModalDialogBridge::~ModalDialogBridge() = default;
+ModalDialogWrapper::~ModalDialogWrapper() = default;
 
-void ModalDialogBridge::BuildPropertyModel() {
+void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title = ConvertUTF16ToJavaString(
       env, dialog_model_->title(DialogModelHost::GetPassKey()));
@@ -64,7 +76,7 @@ void ModalDialogBridge::BuildPropertyModel() {
                  : cancel_button->label());
   }
 
-  Java_ModalDialogBridge_withTitleAndButtons(
+  Java_ModalDialogWrapper_withTitleAndButtons(
       env, java_obj_, title, ok_button_label, cancel_button_label);
 
   int paragraph_count = 0;
@@ -88,7 +100,7 @@ void ModalDialogBridge::BuildPropertyModel() {
           text = l10n_util::GetStringFUTF16(label.message_id(),
                                             string_replacements, nullptr);
         }
-        Java_ModalDialogBridge_withParagraph1(
+        Java_ModalDialogWrapper_withParagraph1(
             env, java_obj_, ConvertUTF16ToJavaString(env, text));
         break;
       }
@@ -100,37 +112,29 @@ void ModalDialogBridge::BuildPropertyModel() {
   }
 }
 
-void ModalDialogBridge::Show(ui::WindowAndroid* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ModalDialogBridge_showTabModal(env, java_obj_,
-                                      web_contents->GetJavaObject());
-}
-
-void ModalDialogBridge::Dismiss(int dismissalCause) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ModalDialogBridge_onDismiss(env, java_obj_, nullptr, dismissalCause);
-}
-
-void ModalDialogBridge::PositiveButtonClicked(JNIEnv* env) {
+void ModalDialogWrapper::PositiveButtonClicked(JNIEnv* env) {
   dialog_model_->OnDialogAcceptAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogBridge::NegativeButtonClicked(JNIEnv* env) {
+void ModalDialogWrapper::NegativeButtonClicked(JNIEnv* env) {
   dialog_model_->OnDialogCancelAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogBridge::Dismissed(JNIEnv* env) {
+void ModalDialogWrapper::Dismissed(JNIEnv* env) {
   dialog_model_->OnDialogCloseAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogBridge::Destroy(JNIEnv* env) {
+void ModalDialogWrapper::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void ModalDialogBridge::Close() {
-  Dismiss(kDialogDismissalCause_DISMISSED_BY_NATIVE);
+void ModalDialogWrapper::Close() {
+  auto* dialog_manager = window_android_->GetModalDialogManagerBridge();
+  CHECK(dialog_manager) << "The destruction of the ModalDialogManager.java "
+                           "should also destroy this dialog wrapper.";
+  dialog_manager->DismissDialog(java_obj_);
 }
 
-void ModalDialogBridge::OnDialogButtonChanged() {}
+void ModalDialogWrapper::OnDialogButtonChanged() {}
 
 }  // namespace ui

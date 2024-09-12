@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ANDROID_MODAL_DIALOG_BRIDGE_H_
-#define UI_ANDROID_MODAL_DIALOG_BRIDGE_H_
+#ifndef UI_ANDROID_MODAL_DIALOG_WRAPPER_H_
+#define UI_ANDROID_MODAL_DIALOG_WRAPPER_H_
 
 #include <memory>
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/base/models/dialog_model_host.h"
 
@@ -28,16 +30,16 @@ namespace ui {
 // if labels are not specified.
 // Replacements (if any) are performed in paragraph text, but any emphasis is
 // not included since it is not supported in android dialogs.
-class UI_ANDROID_EXPORT ModalDialogBridge : public ui::DialogModelHost {
+class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost {
  public:
-  // Shows a tab modal dialog based on `dialog_model`.
   static void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
-                           ui::WindowAndroid* web_contents);
+                           ui::WindowAndroid* window);
 
-  explicit ModalDialogBridge(std::unique_ptr<ui::DialogModel> dialog_model);
-  ModalDialogBridge(const ModalDialogBridge&) = delete;
-  ModalDialogBridge& operator=(const ModalDialogBridge&) = delete;
-  virtual ~ModalDialogBridge();
+  static ModalDialogWrapper* GetDialogForTesting();
+
+  ModalDialogWrapper(const ModalDialogWrapper&) = delete;
+  ModalDialogWrapper& operator=(const ModalDialogWrapper&) = delete;
+  virtual ~ModalDialogWrapper();
 
   // JNI methods.
   void PositiveButtonClicked(JNIEnv* env);
@@ -46,23 +48,25 @@ class UI_ANDROID_EXPORT ModalDialogBridge : public ui::DialogModelHost {
   void Destroy(JNIEnv* env);
 
  private:
-  // ui::DialogModelHost:
+  FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest, CloseDialogFromNative);
+
+  ModalDialogWrapper(std::unique_ptr<ui::DialogModel> dialog_model,
+                     ui::WindowAndroid* window_android);
+
+  // `DialogModelHost`:
   void Close() override;
   void OnDialogButtonChanged() override;
 
   // Build java PropertyModel from ui::DialogModel.
   void BuildPropertyModel();
 
-  // Show the dialog. This object will destroy itself when it is dismissed.
-  void Show(ui::WindowAndroid* web_contents);
+  const std::unique_ptr<ui::DialogModel> dialog_model_;
 
-  // Call to java ModalDialogBridge#onDismiss(DialogDismissalCause);
-  void Dismiss(int dismissalCause);
+  const raw_ptr<WindowAndroid> window_android_;
 
-  std::unique_ptr<ui::DialogModel> dialog_model_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 
 }  // namespace ui
 
-#endif  // UI_ANDROID_MODAL_DIALOG_BRIDGE_H_
+#endif  // UI_ANDROID_MODAL_DIALOG_WRAPPER_H_

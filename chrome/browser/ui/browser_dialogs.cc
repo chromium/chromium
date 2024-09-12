@@ -15,7 +15,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/web_contents.h"
-#include "ui/android/modal_dialog_bridge.h"
+#include "ui/android/modal_dialog_wrapper.h"
+#include "ui/android/window_android.h"
 #endif
 
 namespace chrome {
@@ -39,8 +40,8 @@ void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
 #elif BUILDFLAG(IS_ANDROID)
 void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
                   content::WebContents* web_contents) {
-  ui::ModalDialogBridge::ShowTabModal(std::move(dialog_model),
-                                      web_contents->GetTopLevelNativeWindow());
+  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
+  ui::ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window);
 }
 #endif
 

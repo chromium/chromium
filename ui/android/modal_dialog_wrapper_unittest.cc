@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/android/modal_dialog_bridge.h"
+#include "ui/android/modal_dialog_wrapper.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -20,9 +20,7 @@
 
 namespace ui {
 
-using ModalDialogBridgeTest = testing::Test;
-
-TEST_F(ModalDialogBridgeTest, ShowTabModal) {
+TEST(ModalDialogWrapperTest, ShowTabModal) {
   bool ok_called = false;
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(u"title")
@@ -40,11 +38,33 @@ TEST_F(ModalDialogBridgeTest, ShowTabModal) {
       Java_FakeModalDialogManager_createForTab(env);
   window->SetModalDialogManager(fake_modal_dialog_manager);
 
-  ModalDialogBridge::ShowTabModal(dialog_builder.Build(), window->get());
-
+  ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
   Java_FakeModalDialogManager_clickPositiveButton(env,
                                                   fake_modal_dialog_manager);
   EXPECT_TRUE(ok_called);
+}
+
+TEST(ModalDialogWrapperTest, CloseDialogFromNative) {
+  bool closed = false;
+  ui::DialogModel::Builder dialog_builder;
+  dialog_builder.SetTitle(u"title")
+      .AddParagraph(ui::DialogModelLabel(u"paragraph"))
+      .AddOkButton(base::DoNothing(),
+                   ui::DialogModel::Button::Params().SetLabel(u"ok"))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetLabel(u"cancel"))
+      .SetCloseActionCallback(
+          base::BindLambdaForTesting([&closed]() { closed = true; }));
+
+  auto window = ui::WindowAndroid::CreateForTesting();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> fake_modal_dialog_manager =
+      Java_FakeModalDialogManager_createForTab(env);
+  window->SetModalDialogManager(fake_modal_dialog_manager);
+
+  ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
+  ModalDialogWrapper::GetDialogForTesting()->Close();
+  EXPECT_TRUE(closed);
 }
 
 }  // namespace ui

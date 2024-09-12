@@ -215,6 +215,10 @@ public class ModalDialogManager {
     /** True if the current dialog is in the process of being dismissed. */
     private boolean mDismissingCurrentDialog;
 
+    private ModalDialogManagerBridge mModalDialogManagerBridge;
+
+    private boolean mDestroyed;
+
     /** Observers of this manager. */
     private final ObserverList<ModalDialogManagerObserver> mObserverList = new ObserverList<>();
 
@@ -253,6 +257,11 @@ public class ModalDialogManager {
     public void destroy() {
         dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
         mObserverList.clear();
+        if (mModalDialogManagerBridge != null) {
+            mModalDialogManagerBridge.destroyNative();
+            mModalDialogManagerBridge = null;
+        }
+        mDestroyed = true;
     }
 
     /**
@@ -559,8 +568,19 @@ public class ModalDialogManager {
         mTokenHolders.get(dialogType).releaseToken(token);
     }
 
+    public long getOrCreateNativeBridge() {
+        // Prevents the bridge gets recreated after `destroy()` is called.
+        if (mDestroyed) return 0;
+
+        if (mModalDialogManagerBridge == null) {
+            mModalDialogManagerBridge = new ModalDialogManagerBridge(this);
+        }
+        return mModalDialogManagerBridge.getNativePtr();
+    }
+
     /**
      * Actually resumes showing the type of dialog after all tokens are released.
+     *
      * @param dialogType The specified type of dialogs to be resumed.
      */
     private void resumeTypeInternal(@ModalDialogType int dialogType) {

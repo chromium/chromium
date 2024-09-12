@@ -15,23 +15,29 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @JNINamespace("ui")
-public class ModalDialogBridge implements ModalDialogProperties.Controller {
+public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     /** The native-side counterpart of this class */
-    private long mNativeDelegatePtr;
+    private final long mNativeDelegatePtr;
 
-    private PropertyModel.Builder mPropertyModelBuilder;
-    private ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
+
+    private final PropertyModel.Builder mPropertyModelBuilder;
 
     @CalledByNative
-    private static ModalDialogBridge create(long nativeDelegatePtr) {
-        return new ModalDialogBridge(nativeDelegatePtr);
+    private static ModalDialogWrapper create(long nativeDelegatePtr, WindowAndroid window) {
+        return new ModalDialogWrapper(nativeDelegatePtr, window);
     }
 
-    private ModalDialogBridge(long nativeDelegatePtr) {
+    private ModalDialogWrapper(long nativeDelegatePtr, WindowAndroid window) {
         mNativeDelegatePtr = nativeDelegatePtr;
+        mModalDialogManager = window.getModalDialogManager();
         mPropertyModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this);
+    }
+
+    public PropertyModel getPropertyModel() {
+        return mPropertyModelBuilder.build();
     }
 
     @CalledByNative
@@ -47,13 +53,6 @@ public class ModalDialogBridge implements ModalDialogProperties.Controller {
         mPropertyModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, text);
     }
 
-    @CalledByNative
-    private void showTabModal(WindowAndroid window) {
-        mModalDialogManager = window.getModalDialogManager();
-        mModalDialogManager.showDialog(
-                mPropertyModelBuilder.build(), ModalDialogManager.ModalDialogType.TAB);
-    }
-
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
@@ -64,30 +63,29 @@ public class ModalDialogBridge implements ModalDialogProperties.Controller {
     }
 
     @Override
-    @CalledByNative
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                ModalDialogBridgeJni.get().positiveButtonClicked(mNativeDelegatePtr);
+                ModalDialogWrapperJni.get().positiveButtonClicked(mNativeDelegatePtr);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
-                ModalDialogBridgeJni.get().negativeButtonClicked(mNativeDelegatePtr);
+                ModalDialogWrapperJni.get().negativeButtonClicked(mNativeDelegatePtr);
                 break;
             default:
-                ModalDialogBridgeJni.get().dismissed(mNativeDelegatePtr);
+                ModalDialogWrapperJni.get().dismissed(mNativeDelegatePtr);
                 break;
         }
-        ModalDialogBridgeJni.get().destroy(mNativeDelegatePtr);
+        ModalDialogWrapperJni.get().destroy(mNativeDelegatePtr);
     }
 
     @NativeMethods
     interface Natives {
-        void positiveButtonClicked(long nativeModalDialogBridge);
+        void positiveButtonClicked(long nativeModalDialogWrapper);
 
-        void negativeButtonClicked(long nativeModalDialogBridge);
+        void negativeButtonClicked(long nativeModalDialogWrapper);
 
-        void dismissed(long nativeModalDialogBridge);
+        void dismissed(long nativeModalDialogWrapper);
 
-        void destroy(long nativeModalDialogBridge);
+        void destroy(long nativeModalDialogWrapper);
     }
 }

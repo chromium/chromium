@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // what goes into a dialog, not how it shows.
 //
 // DialogModel is supported in views, and android. See
-// //ui/android/modal_dialog_bridge.h for limitations of android support.
+// //ui/android/modal_dialog_wrapper.h for limitations of android support.
 //
 // Example usage (with views as an example DialogModelHost implementation). Note
 // that visual presentation (except order of elements) is entirely up to
