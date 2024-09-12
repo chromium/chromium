@@ -658,8 +658,8 @@ class AndroidReleaseBuildTest(AndroidBuildTest):
   @patch('bisect-builds.InstallOnAndroid')
   def test_install_revision(self, mock_InstallOnAndroid):
     options, args = bisect_builds.ParseCommandLine([
-        '-r', '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
-        'chrome'
+        '-r', '-a', 'android-arm64', '-g', '127.0.6533.76', '-b',
+        '127.0.6533.79', '--apk', 'chrome'
     ])
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
@@ -669,8 +669,8 @@ class AndroidReleaseBuildTest(AndroidBuildTest):
   @patch('bisect-builds.LaunchOnAndroid')
   def test_launch_revision(self, mock_LaunchOnAndroid):
     options, args = bisect_builds.ParseCommandLine([
-        '-r', '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
-        'chrome'
+        '-r', '-a', 'android-arm64', '-g', '127.0.6533.76', '-b',
+        '127.0.6533.79', '--apk', 'chrome'
     ])
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
@@ -1084,6 +1084,65 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
         call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', ANY]),
         call(['xcrun', 'simctl', 'launch', '321', 'stdout'])
     ])
+
+
+class MaybeSwitchBuildTypeTest(BisectTestCase):
+
+  def test_generate_new_command_without_cache(self):
+    command_line = [
+        '-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88'
+    ]
+    options, args = bisect_builds.ParseCommandLine(command_line)
+    with patch('sys.argv', ['bisect-builds.py', *command_line]):
+      new_cmd = bisect_builds.MaybeSwitchBuildType(
+          options, bisect_builds.LooseVersion('127.0.6533.74'),
+          bisect_builds.LooseVersion('127.0.6533.88'))
+      self.assertEqual(new_cmd[1:], [
+          '-o', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88',
+          '--verify-range'
+      ])
+
+  def test_android_signed_with_args(self):
+    command_line = [
+        '-r', '--archive=android-arm64-high', '--good=127.0.6533.74', '-b',
+        '127.0.6533.88', '--apk=chrome', '--signed', '--', 'args1', '--args2'
+    ]
+    options, args = bisect_builds.ParseCommandLine(command_line)
+    with patch('sys.argv', ['bisect-builds.py', *command_line]):
+      new_cmd = bisect_builds.MaybeSwitchBuildType(options, '127.0.6533.74',
+                                                   '127.0.6533.88')
+      self.assertEqual(new_cmd[1:], [
+          '-o', '-a', 'android-arm64-high', '-g', '127.0.6533.74', '-b',
+          '127.0.6533.88', '--verify-range', '--apk=chrome', '--', 'args1',
+          '--args2'
+      ])
+
+  def test_no_official_build(self):
+    command_line = [
+        '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
+        '127.0.6533.74', '-b', '127.0.6533.78'
+    ]
+    options, args = bisect_builds.ParseCommandLine(command_line)
+    with patch('sys.argv', ['bisect-builds.py', *command_line]):
+      new_cmd = bisect_builds.MaybeSwitchBuildType(options, '127.0.6533.74',
+                                                   '127.0.6533.88')
+      self.assertEqual(new_cmd, None)
+
+  @patch('bisect-builds.ArchiveBuild.get_rev_list', return_value=list(range(3)))
+  def test_generate_suggestion_with_cache(self, mock_get_rev_list):
+    command_line = [
+        '-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88',
+        '--use-local-cache'
+    ]
+    options, args = bisect_builds.ParseCommandLine(command_line)
+    with patch('sys.argv', ['bisect-builds.py', *command_line]):
+      new_cmd = bisect_builds.MaybeSwitchBuildType(options, '127.0.6533.74',
+                                                   '127.0.6533.88')
+      self.assertEqual(new_cmd[1:], [
+          '-o', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88',
+          '--verify-range', '--use-local-cache'
+      ])
+      mock_get_rev_list.assert_called()
 
 
 if __name__ == '__main__':

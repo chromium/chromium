@@ -13,7 +13,9 @@ it will ask you whether it is good or bad before continuing the search.
 """
 
 import abc
+import argparse
 import base64
+import copy
 import glob
 import importlib
 import json
@@ -1670,7 +1672,7 @@ def Bisect(archive_build,
       print('You have %d revisions with about %d steps left.' %
             (len(rev_list), (len(rev_list).bit_length() - 1)))
       print('Bisecting range [%s (bad), %s (good)].' %
-            (rev_list[0], rev_list[-1]))
+            (rev_list[-1], rev_list[0]))
       # clean prefetch to keep only the valid fetches
       for key in list(prefetch.keys()):
         if key not in rev_list:
@@ -2134,7 +2136,120 @@ def ParseCommandLine(args=None):
       raise NotImplementedError(
           'Do not yet support bisecting release ASAN builds.')
 
+  if not opts.good:
+    print('Please specify a good version.')
+    exit(1)
+
+  if opts.release_builds:
+    if not opts.bad:
+      print('Please specify a bad version.')
+      exit(1)
+    if not IsVersionNumber(opts.good) or not IsVersionNumber(opts.bad):
+      print('For release, you can only use chrome version to bisect.')
+      exit(1)
+
+  if opts.blink:
+    raise BisectException("Blink is no longer supported.")
+
+  if opts.release_builds:
+    if opts.archive.startswith('android-'):
+      # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
+      # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
+      # instead of an error since older archives might have non-channel builds.
+      if '_' not in opts.apk:
+        print('WARNING: Android release typically only uploads channel builds, '
+              f'so you will often see "Found 0 builds" with --apk={opts.apk}'
+              '. Switch to using --apk=chrome_stable or one of the other '
+              'channels if you see `[Bisect Exception]: Could not found enough'
+              'revisions for Android chrome release channel.\n')
+
+  if opts.times < 1:
+    print(('Number of times to run (%d) must be greater than or equal to 1.' %
+           opts.times))
+    parser.print_help()
+    exit(1)
+
   return opts, args
+
+
+def GenerateCommandLine(opts):
+  """Generate a command line for bisect options.
+
+  Args:
+    opts: The new bisect options to generate the command line for.
+
+  This generates prompts for the suggestion to use another build type
+  (MaybeSwitchBuildType). Not all options are supported when generating the new
+  command, however the remaining unsupported args would be copied from sys.argv.
+  """
+  # Using a parser to remove the arguments (key and value) that we are going to
+  # generate based on the opts and appending the remaining args as is in command
+  # line.
+  parser_to_remove_known_options = argparse.ArgumentParser()
+  parser_to_remove_known_options.add_argument('-a', '--archive', '-g', '--good',
+                                              '-b', '--bad')
+  parser_to_remove_known_options.add_argument('-r',
+                                              '-o',
+                                              '--signed',
+                                              action='store_true')
+  _, remaining_args = parser_to_remove_known_options.parse_known_args()
+  args = []
+  if opts.release_builds:
+    args.append('-r')
+  elif opts.official_builds:
+    args.append('-o')
+  if opts.archive:
+    args.extend(['-a', opts.archive])
+  if opts.signed:
+    args.append('--signed')
+  if opts.good:
+    args.extend(['-g', opts.good])
+  if opts.bad:
+    args.extend(['-b', opts.bad])
+  if opts.verify_range:
+    args.append('--verify-range')
+  return ['./%s' % os.path.relpath(__file__)] + args + remaining_args
+
+
+def MaybeSwitchBuildType(opts, good, bad):
+  """Generate and print suggestions to use official build to bisect for a more
+  precise range when possible."""
+  if not opts.release_builds:
+    return
+  if opts.archive not in PATH_CONTEXT['official']:
+    return
+  new_opts = copy.deepcopy(opts)
+  new_opts.release_builds = False
+  new_opts.signed = False  # --signed is only supported by release builds
+  new_opts.official_builds = True
+  new_opts.verify_range = True  # always verify_range when switching the build
+  new_opts.good = str(good)  # good could be LooseVersion
+  new_opts.bad = str(bad)  # bad could be LooseVersion
+  rev_list = None
+  if opts.use_local_cache:
+    print('Checking available official builds (-o) for %s.' % new_opts.archive)
+    archive_build = create_archive_build(new_opts)
+    try:
+      rev_list = archive_build.get_rev_list()
+    except BisectException as e:
+      # We don't have enough builds from official builder, skip suggesting.
+      print("But we don't have more builds from official builder.")
+      return
+    if len(rev_list) <= 2:
+      print("But we don't have more builds from official builder.")
+      return
+  if rev_list:
+    print(
+        "There are %d revisions between %s and %s from the continuous official "
+        "build (-o). You could try to get a more precise culprit range using "
+        "the following command:" % (len(rev_list), *sorted([good, bad])))
+  else:
+    print(
+        "You could try to get a more precise culprit range with the continuous "
+        "official build (-o) using the following command:")
+  command_line = GenerateCommandLine(new_opts)
+  print(" ".join(command_line))
+  return command_line
 
 
 def UpdateScript():
@@ -2153,21 +2268,6 @@ def UpdateScript():
 def main():
   opts, args = ParseCommandLine()
 
-  if not opts.good:
-    print('Please specify a good version.')
-    return 1
-
-  if opts.release_builds:
-    if not opts.bad:
-      print('Please specify a bad version.')
-      return 1
-    if not IsVersionNumber(opts.good) or not IsVersionNumber(opts.bad):
-      print('For release, you can only use chrome version to bisect.')
-      return 1
-
-  if opts.blink:
-    raise BisectException("Blink is no longer supported.")
-
   try:
     SetupEnvironment(opts)
   except BisectException as e:
@@ -2176,24 +2276,6 @@ def main():
 
   # Create the AbstractBuild object.
   archive_build = create_archive_build(opts)
-
-  if opts.release_builds:
-    if opts.archive.startswith('android-'):
-      # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
-      # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
-      # instead of an error since older archives might have non-channel builds.
-      if '_' not in opts.apk:
-        print('WARNING: Android release typically only uploads channel builds, '
-              f'so you will often see "Found 0 builds" with --apk={opts.apk}'
-              '. Switch to using --apk=chrome_stable or one of the other '
-              'channels if you see `[Bisect Exception]: Could not found enough'
-              'revisions for Android chrome release channel.\n')
-
-  if opts.times < 1:
-    print(('Number of times to run (%d) must be greater than or equal to 1.' %
-           opts.times))
-    parser.print_help()
-    return 1
 
   if opts.not_interactive:
     evaluator = DidCommandSucceed
@@ -2215,13 +2297,16 @@ def main():
   if good_rev > bad_rev:
     print(DONE_MESSAGE_GOOD_MAX %
           (str(min_chromium_rev), str(max_chromium_rev)))
+    good_rev, bad_rev = max_chromium_rev, min_chromium_rev
   else:
     print(DONE_MESSAGE_GOOD_MIN %
           (str(min_chromium_rev), str(max_chromium_rev)))
+    good_rev, bad_rev = min_chromium_rev, max_chromium_rev
 
   print('CHANGELOG URL:')
   if opts.release_builds:
     print(RELEASE_CHANGELOG_URL % (min_chromium_rev, max_chromium_rev))
+    MaybeSwitchBuildType(opts, good=good_rev, bad=bad_rev)
   else:
     if opts.official_builds:
       print('The script might not always return single CL as suspect '
