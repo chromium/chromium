@@ -15,8 +15,10 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -33,55 +35,68 @@ namespace ip_protection {
 // This class is responsible for using the retriever to get the proxy config,
 // retrying if necessary, and creating the corresponding ProxyChain list and
 // GeoHint.
-class IpProtectionProxyConfigDirectFetcher {
+class IpProtectionProxyConfigDirectFetcher
+    : public IpProtectionProxyConfigFetcher {
  public:
+  // Callback made when an AuthenticateCallback is done. The callback's boolean
+  // parameter is true on success, and false if the request should not be made.
+  // The `ResourceRequest` is the request passed to `AuthenticateCallback`,
+  // possibly modified to include authentication information.
+  using AuthenticateDoneCallback =
+      base::OnceCallback<void(bool, std::unique_ptr<network::ResourceRequest>)>;
+
+  // A callback to add any necessary authentication information to the given
+  // `ResourceRequest` and invoke the given callback. The ResourceRequest
+  // remains valid until the donecallback is invoked. If AuthenticateCallback is
+  // null, the request will be made with no authentication information.
+  using AuthenticateCallback =
+      base::RepeatingCallback<void(std::unique_ptr<network::ResourceRequest>,
+                                   AuthenticateDoneCallback)>;
+
   // Retrieve proxy config from an HTTP server, abstracted to ease testing of
   // the fetcher.
   class Retriever {
    public:
     explicit Retriever(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        std::string type,
-        std::string api_key);
+        std::string service_type,
+        AuthenticateCallback authenticate_callback);
     virtual ~Retriever();
-    using GetProxyConfigCallback = base::OnceCallback<void(
+    using RetrieveCallback = base::OnceCallback<void(
         base::expected<ip_protection::GetProxyConfigResponse, std::string>)>;
-    virtual void GetProxyConfig(std::optional<std::string> oauth_token,
-                                GetProxyConfigCallback callback,
-                                bool for_testing = false);
+    virtual void RetrieveProxyConfig(RetrieveCallback callback);
 
    private:
+    void OnAuthenticatedResourceRequest(
+        RetrieveCallback callback,
+        bool success,
+        std::unique_ptr<network::ResourceRequest> resource_request);
+
     void OnGetProxyConfigCompleted(
         std::unique_ptr<network::SimpleURLLoader> url_loader,
-        GetProxyConfigCallback callback,
+        RetrieveCallback callback,
         std::unique_ptr<std::string> response);
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
     const GURL ip_protection_server_url_;
     const std::string ip_protection_server_get_proxy_config_path_;
     const std::string service_type_;
-    const std::string api_key_;
+    AuthenticateCallback authenticate_callback_;
     base::WeakPtrFactory<Retriever> weak_ptr_factory_{this};
   };
 
-  using GetProxyListCallback = base::OnceCallback<void(
-      const std::optional<std::vector<::net::ProxyChain>>&,
-      const std::optional<ip_protection::GeoHint>&)>;
-
   explicit IpProtectionProxyConfigDirectFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string type,
-      std::string api_key);
+      std::string service_type,
+      AuthenticateCallback authenticate_callback);
 
   explicit IpProtectionProxyConfigDirectFetcher(
-      std::unique_ptr<Retriever> ip_protection_proxy_config_retriever);
+      std::unique_ptr<Retriever> retriever);
 
-  ~IpProtectionProxyConfigDirectFetcher();
+  ~IpProtectionProxyConfigDirectFetcher() override;
 
-  // Get proxy configuration that is necessary for IP Protection from the
-  // server.
-  void CallGetProxyConfig(GetProxyListCallback callback,
-                          std::optional<std::string> oauth_token);
+  // IpProtectionProxyConfigFetcher implementation.
+  void GetProxyConfig(GetProxyConfigCallback callback) override;
 
   // Shortcut to create a ProxyChain from hostnames for unit tests.
   static net::ProxyChain MakeChainForTesting(
@@ -92,9 +107,6 @@ class IpProtectionProxyConfigDirectFetcher {
     return no_get_proxy_config_until_;
   }
 
-  void SetUpForTesting(
-      std::unique_ptr<Retriever> ip_protection_proxy_config_retriever);
-
   // Timeout for failures from GetProxyConfig. This is doubled for
   // each subsequent failure.
   static constexpr base::TimeDelta kGetProxyConfigFailureTimeout =
@@ -102,7 +114,7 @@ class IpProtectionProxyConfigDirectFetcher {
 
  private:
   void OnGetProxyConfigCompleted(
-      GetProxyListCallback callback,
+      GetProxyConfigCallback callback,
       base::expected<ip_protection::GetProxyConfigResponse, std::string>
           response);
 

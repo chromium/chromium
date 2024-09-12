@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -34,6 +35,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -86,17 +88,17 @@ void IpProtectionCoreHost::SetUp() {
         std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             url_loader_factory_.get(),
             ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
-            google_apis::GetAPIKey(chrome::GetChannel()));
+            base::BindRepeating(&IpProtectionCoreHost::AuthenticateCallback,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void IpProtectionCoreHost::SetUpForTesting(
-    std::unique_ptr<
-        ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
-        ip_protection_proxy_config_retriever,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for_testing_ = true;
+
   // Carefully destroy any existing values in the correct order.
   ip_protection_proxy_config_fetcher_ = nullptr;
   ip_protection_token_direct_fetcher_.Reset();
@@ -108,7 +110,10 @@ void IpProtectionCoreHost::SetUpForTesting(
           std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
-          std::move(ip_protection_proxy_config_retriever));
+          std::move(url_loader_factory),
+          ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
+          base::BindRepeating(&IpProtectionCoreHost::AuthenticateCallback,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 IpProtectionCoreHost::~IpProtectionCoreHost() = default;
@@ -169,6 +174,15 @@ void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
   CHECK(!is_shutting_down_);
   SetUp();
 
+  // Neither the API key nor the OAuth token will be available to
+  // non-Chrome-branded builds, so unless we are testing, bail out.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!for_testing_) {
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   // If IP Protection is disabled via user settings then don't attempt to get a
   // proxy list.
   // TODO(crbug.com/41494110): We don't currently prevent GetProxyList
@@ -192,22 +206,31 @@ void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
     return;
   }
 
-  // This feature flag is false by default.
-  if (!net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
-    ip_protection_proxy_config_fetcher_->CallGetProxyConfig(std::move(callback),
-                                                            std::nullopt);
-    return;
-  }
+  ip_protection_proxy_config_fetcher_->GetProxyConfig(std::move(callback));
+}
 
-  if (!CanRequestOAuthToken()) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
-    return;
-  }
-  auto request_token_callback = base::BindOnce(
-      &IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+void IpProtectionCoreHost::AuthenticateCallback(
+    std::unique_ptr<network::ResourceRequest> resource_request,
+    ip_protection::IpProtectionProxyConfigDirectFetcher::
+        AuthenticateDoneCallback callback) {
+  // Apply either an OAuth token (which must be fetched) or an API key to the
+  // request.
+  if (net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
+    if (!CanRequestOAuthToken()) {
+      std::move(callback).Run(false, std::move(resource_request));
+      return;
+    }
+    auto request_token_callback = base::BindOnce(
+        &IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig,
+        weak_ptr_factory_.GetWeakPtr(), std::move(resource_request),
+        std::move(callback));
 
-  RequestOAuthToken(std::move(request_token_callback));
+    RequestOAuthToken(std::move(request_token_callback));
+  } else {
+    google_apis::AddAPIKeyToRequest(
+        *resource_request, google_apis::GetAPIKey(chrome::GetChannel()));
+    std::move(callback).Run(true, std::move(resource_request));
+  }
 }
 
 void IpProtectionCoreHost::RequestOAuthToken(
@@ -282,17 +305,21 @@ void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForTryGetAuthTokens(
 }
 
 void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig(
-    GetProxyListCallback callback,
+    std::unique_ptr<network::ResourceRequest> resource_request,
+    ip_protection::IpProtectionProxyConfigDirectFetcher::
+        AuthenticateDoneCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompletedForGetProxyConfig failed: "
             << static_cast<int>(error.state());
-    std::move(callback).Run(std::nullopt, std::nullopt);
+    std::move(callback).Run(false, std::move(resource_request));
     return;
   }
-  ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
-      std::move(callback), access_token_info.token);
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({"Bearer ", access_token_info.token}));
+  std::move(callback).Run(true, std::move(resource_request));
 }
 
 void IpProtectionCoreHost::FetchBlindSignedToken(

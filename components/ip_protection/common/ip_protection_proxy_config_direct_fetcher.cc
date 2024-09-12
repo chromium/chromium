@@ -13,10 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "build/branding_buildflags.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
-#include "google_apis/common/api_key_request_util.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -73,35 +70,31 @@ constexpr char kProtobufContentType[] = "application/x-protobuf";
 
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string type,
-    std::string api_key) {
+    std::string service_type,
+    AuthenticateCallback authenticate_callback) {
   CHECK(url_loader_factory);
   ip_protection_proxy_config_retriever_ =
       std::make_unique<IpProtectionProxyConfigDirectFetcher::Retriever>(
-          url_loader_factory, type, api_key);
+          url_loader_factory, service_type, std::move(authenticate_callback));
 }
 
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
-    std::unique_ptr<IpProtectionProxyConfigDirectFetcher::Retriever>
-        ip_protection_proxy_config_retriever)
-    : ip_protection_proxy_config_retriever_(
-          std::move(ip_protection_proxy_config_retriever)) {}
+    std::unique_ptr<Retriever> retriever) {
+  ip_protection_proxy_config_retriever_ = std::move(retriever);
+}
 
 IpProtectionProxyConfigDirectFetcher::~IpProtectionProxyConfigDirectFetcher() =
     default;
 
-void IpProtectionProxyConfigDirectFetcher::CallGetProxyConfig(
-    GetProxyListCallback callback,
-    std::optional<std::string> oauth_token) {
-  ip_protection_proxy_config_retriever_->GetProxyConfig(
-      oauth_token,
-      base::BindOnce(
-          &IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted,
-          base::Unretained(this), std::move(callback)));
+void IpProtectionProxyConfigDirectFetcher::GetProxyConfig(
+    GetProxyConfigCallback callback) {
+  ip_protection_proxy_config_retriever_->RetrieveProxyConfig(base::BindOnce(
+      &IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted,
+      base::Unretained(this), std::move(callback)));
 }
 
 void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
-    GetProxyListCallback callback,
+    GetProxyConfigCallback callback,
     base::expected<ip_protection::GetProxyConfigResponse, std::string>
         response) {
   // If either there is an empty response or no geo hint present, it should be
@@ -219,15 +212,6 @@ IpProtectionProxyConfigDirectFetcher::GetGeoHintFromProxyConfigResponse(
        .city_name = response.geo_hint().city_name()});
 }
 
-void IpProtectionProxyConfigDirectFetcher::SetUpForTesting(
-    std::unique_ptr<IpProtectionProxyConfigDirectFetcher::Retriever>
-        ip_protection_proxy_config_retriever) {
-  ip_protection_proxy_config_retriever_ = nullptr;
-
-  ip_protection_proxy_config_retriever_ =
-      std::move(ip_protection_proxy_config_retriever);
-}
-
 net::ProxyChain IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
     std::vector<std::string> hostnames,
     int chain_id) {
@@ -241,30 +225,43 @@ net::ProxyChain IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
 
 IpProtectionProxyConfigDirectFetcher::Retriever::Retriever(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string type,
-    std::string api_key)
+    std::string service_type,
+    AuthenticateCallback authenticate_callback)
     : url_loader_factory_(std::move(url_loader_factory)),
       ip_protection_server_url_(net::features::kIpPrivacyTokenServer.Get()),
       ip_protection_server_get_proxy_config_path_(
           net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()),
-      service_type_(std::move(type)),
-      api_key_(std::move(api_key)) {
+      service_type_(std::move(service_type)),
+      authenticate_callback_(std::move(authenticate_callback)) {
   CHECK(url_loader_factory_);
 }
 
 IpProtectionProxyConfigDirectFetcher::Retriever::~Retriever() = default;
 
-void IpProtectionProxyConfigDirectFetcher::Retriever::GetProxyConfig(
-    std::optional<std::string> oauth_token,
-    GetProxyConfigCallback callback,
-    bool for_testing) {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!for_testing) {
-    std::move(callback).Run(
-        base::unexpected("GetProxyConfig is only supported in Chrome builds"));
+void IpProtectionProxyConfigDirectFetcher::Retriever::RetrieveProxyConfig(
+    RetrieveCallback callback) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  if (authenticate_callback_) {
+    authenticate_callback_.Run(
+        std::move(resource_request),
+        base::BindOnce(&IpProtectionProxyConfigDirectFetcher::Retriever::
+                           OnAuthenticatedResourceRequest,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    OnAuthenticatedResourceRequest(std::move(callback), true,
+                                   std::move(resource_request));
+  }
+}
+
+void IpProtectionProxyConfigDirectFetcher::Retriever::
+    OnAuthenticatedResourceRequest(
+        RetrieveCallback callback,
+        bool success,
+        std::unique_ptr<network::ResourceRequest> resource_request) {
+  if (!success) {
+    std::move(callback).Run(base::unexpected("Failed to authenticate request"));
     return;
   }
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GURL::Replacements replacements;
   replacements.SetPathStr(ip_protection_server_get_proxy_config_path_);
   GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);
@@ -280,21 +277,11 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::GetProxyConfig(
   std::string body;
   get_proxy_config_request.SerializeToString(&body);
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(request_url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
-  // Set the OAuth token if it's available or otherwise fallback to sending the
-  // Google API key.
-  if (oauth_token.has_value()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({"Bearer ", oauth_token.value()}));
-  } else {
-    google_apis::AddAPIKeyToRequest(*resource_request, api_key_);
-  }
   int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
   if (experiment_arm != 0) {
     resource_request->headers.SetHeader("Ip-Protection-Debug-Experiment-Arm",
@@ -323,7 +310,7 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::GetProxyConfig(
 
 void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    GetProxyConfigCallback callback,
+    RetrieveCallback callback,
     std::unique_ptr<std::string> response) {
   if (!response) {
     std::move(callback).Run(base::unexpected("Failed GetProxyConfig request"));

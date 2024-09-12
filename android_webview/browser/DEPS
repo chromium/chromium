@@ -169,5 +169,6 @@ include_rules = [
   # For Android WebView Media Integrity
   "+third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h",
   # For Chrome's API keys in WebView.
+  "+google_apis/common/api_key_request_util.h",
   "+google_apis/google_api_keys.h",
 ]

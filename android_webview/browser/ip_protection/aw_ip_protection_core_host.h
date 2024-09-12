@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -95,9 +96,7 @@ class AwIpProtectionCoreHost
   // `bsa` is moved onto a separate sequence when initializing
   // `ip_protection_token_ipc_fetcher_`.
   void SetUpForTesting(
-      std::unique_ptr<
-          ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
-          ip_protection_proxy_config_retriever,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
@@ -130,6 +129,11 @@ class AwIpProtectionCoreHost
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(
       ip_protection::TryGetAuthTokensAndroidResult result);
+
+  void AuthenticateCallback(
+      std::unique_ptr<network::ResourceRequest>,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::
+          AuthenticateDoneCallback);
 
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;
@@ -168,6 +172,9 @@ class AwIpProtectionCoreHost
   // Similar to `receivers_`, but containing remotes for all existing
   // IpProtectionProxyDelegates.
   mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+
+  // True if this class is being tested.
+  bool for_testing_ = false;
 
   // This must be the last member in this class.
   base::WeakPtrFactory<AwIpProtectionCoreHost> weak_ptr_factory_{this};

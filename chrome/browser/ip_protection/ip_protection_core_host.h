@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -103,9 +104,6 @@ class IpProtectionCoreHost
   // `bsa` is moved onto a separate sequence when initializing
   // `ip_protection_token_direct_fetcher_`.
   void SetUpForTesting(
-      std::unique_ptr<
-          ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
-          ip_protection_proxy_config_retriever,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
@@ -152,6 +150,11 @@ class IpProtectionCoreHost
   std::optional<base::TimeDelta> CalculateBackoff(
       ip_protection::TryGetAuthTokensResult result);
 
+  void AuthenticateCallback(
+      std::unique_ptr<network::ResourceRequest>,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::
+          AuthenticateDoneCallback);
+
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyList()`.
   using RequestOAuthTokenCallback =
@@ -179,7 +182,9 @@ class IpProtectionCoreHost
       signin::AccessTokenInfo access_token_info);
 
   void OnRequestOAuthTokenCompletedForGetProxyConfig(
-      GetProxyListCallback callback,
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::
+          AuthenticateDoneCallback callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -268,6 +273,9 @@ class IpProtectionCoreHost
   // The `mojo::RemoteSetElementId` of the most recently added `mojo::Remote`,
   // for testing.
   mojo::RemoteSetElementId remote_id_for_testing_;
+
+  // True if this class is being tested.
+  bool for_testing_ = false;
 
   // This must be the last member in this class.
   base::WeakPtrFactory<IpProtectionCoreHost> weak_ptr_factory_{this};

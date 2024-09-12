@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -34,7 +35,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -53,46 +55,6 @@ constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
 constexpr char kTestEmail[] = "test@example.com";
-
-class MockIpProtectionProxyConfigRetriever
-    : public ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever {
- public:
-  using MockGetProxyConfig = base::RepeatingCallback<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>()>;
-  // Construct a mock retriever that will call the given closure for each call
-  // to GetProxyConfig.
-  explicit MockIpProtectionProxyConfigRetriever(
-      MockGetProxyConfig get_proxy_config)
-      : ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever(
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-            "test_service_type",
-            "test_api_key"),
-        get_proxy_config_(get_proxy_config) {}
-
-  // Construct a mock retriever that always returns the same response.
-  explicit MockIpProtectionProxyConfigRetriever(
-      std::optional<ip_protection::GetProxyConfigResponse>
-          proxy_config_response)
-      : MockIpProtectionProxyConfigRetriever(base::BindLambdaForTesting(
-            [proxy_config_response = std::move(proxy_config_response)]()
-                -> base::expected<ip_protection::GetProxyConfigResponse,
-                                  std::string> {
-              if (!proxy_config_response.has_value()) {
-                return base::unexpected("uhoh");
-              }
-              return base::ok(*proxy_config_response);
-            })) {}
-
-  void GetProxyConfig(std::optional<std::string> oauth_token,
-                      ip_protection::IpProtectionProxyConfigDirectFetcher::
-                          Retriever::GetProxyConfigCallback callback,
-                      bool for_testing = false) override {
-    std::move(callback).Run(get_proxy_config_.Run());
-  }
-
- private:
-  MockGetProxyConfig get_proxy_config_;
-};
 
 enum class PrimaryAccountBehavior {
   // Primary account not set.
@@ -144,9 +106,14 @@ class IpProtectionCoreHostTest : public testing::Test {
         IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
     getter_->SetUpForTesting(
-        std::make_unique<MockIpProtectionProxyConfigRetriever>(std::nullopt),
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_),
         std::move(bsa));
+
+    token_server_get_proxy_config_url_ = GURL(base::StrCat(
+        {net::features::kIpPrivacyTokenServer.Get(),
+         net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
+    ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
   }
 
   void TearDown() override {
@@ -219,14 +186,6 @@ class IpProtectionCoreHostTest : public testing::Test {
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
   }
 
-  void GetProxyListWithOAuthToken() {
-    SetupAccount();
-
-    getter_->GetProxyList(proxy_list_future_.GetCallback());
-
-    RespondToAccessTokenRequest();
-  }
-
   // Set the CanUseChromeIpProtection account capability. The capability tribool
   // defaults to `kUnknown`.
   void SetCanUseChromeIpProtectionCapability(bool enabled) {
@@ -273,6 +232,12 @@ class IpProtectionCoreHostTest : public testing::Test {
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
                          const std::optional<GeoHint>&>
       proxy_list_future_;
+
+  // URL loader factory used for all fetchers.
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  // URL at which getProxyConfig is invoked.
+  GURL token_server_get_proxy_config_url_;
 
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
@@ -749,6 +714,104 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
         true);
 }
 
+TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+           "false"},
+      });
+  std::vector<net::ProxyChain> response_proxy_list = {
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxyA", "proxyB"}),
+  };
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxyA");
+  chain->set_proxy_b("proxyB");
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        EXPECT_TRUE(request.headers.HasHeader("X-Goog-Api-Key"));
+        EXPECT_FALSE(request.headers.HasHeader("Authentication"));
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            token_server_get_proxy_config_url_, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(),
+              testing::ElementsAreArray(response_proxy_list));
+
+  ASSERT_TRUE(geo_hint.has_value());  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
+}
+
+TEST_F(IpProtectionCoreHostTest, GetProxyListWithOAuthToken) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+           "true"},
+      });
+  std::vector<net::ProxyChain> response_proxy_list = {
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxyA", "proxyB"}),
+  };
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxyA");
+  chain->set_proxy_b("proxyB");
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        EXPECT_FALSE(request.headers.HasHeader("X-Goog-Api-Key"));
+        EXPECT_TRUE(request.headers.HasHeader("Authorization"));
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            token_server_get_proxy_config_url_, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  SetupAccount();
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+  RespondToAccessTokenRequest();
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+
+  // Extract tuple elements for individual comparison.
+  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
+
+  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
+  EXPECT_THAT(proxy_list.value(),
+              testing::ElementsAreArray(response_proxy_list));
+
+  ASSERT_TRUE(geo_hint.has_value());  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
+}
+
 TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
       ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
@@ -778,13 +841,11 @@ TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
   response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
   response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
+  std::string response_str = response.SerializeAsString();
 
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_.spec(), response_str);
+
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
 
@@ -803,26 +864,22 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   // Count each call to the retriever's GetProxyConfig and return an error.
   int get_proxy_config_calls = 0;
   bool get_proxy_config_fails = true;
-  MockIpProtectionProxyConfigRetriever::MockGetProxyConfig
-      mock_get_proxy_config = base::BindLambdaForTesting(
-          [&]() -> base::expected<ip_protection::GetProxyConfigResponse,
-                                  std::string> {
-            get_proxy_config_calls++;
-            if (get_proxy_config_fails) {
-              return base::unexpected("uhoh");
-            } else {
-              ip_protection::GetProxyConfigResponse response;
-              return base::ok(response);
-            }
-          });
-
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(
-          mock_get_proxy_config),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_proxy_config_url_);
+        get_proxy_config_calls++;
+        if (get_proxy_config_fails) {
+          test_url_loader_factory_.AddResponse(
+              token_server_get_proxy_config_url_.spec(), "",
+              net::HTTP_INTERNAL_SERVER_ERROR);
+        } else {
+          ip_protection::GetProxyConfigResponse response;
+          test_url_loader_factory_.AddResponse(
+              token_server_get_proxy_config_url_.spec(),
+              response.SerializeAsString());
+        }
+      }));
 
   auto call_get_proxy_list = [this](bool expect_success) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
@@ -895,23 +952,6 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
 TEST_F(IpProtectionCoreHostTest, GetProxyList_IpProtectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
-
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain->set_chain_id(1);
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
-
-  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-      std::move(bsa));
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 

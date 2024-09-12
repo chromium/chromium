@@ -327,6 +327,7 @@ source_set("browser") {
     "//components/webdata/common",
     "//content/public/browser",
     "//google_apis:google_apis",
+    "//google_apis/common:request_util",
     "//media/mojo:buildflags",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/base:protobuf_support",
