@@ -180,6 +180,23 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   sys.exit(1)
 
 
+def GitCherryPick(git_repository, git_remote, commit):
+  print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
+  git_cmd = ['git', '-C', git_repository]
+  RunCommand(git_cmd + ['remote', 'add', 'github', git_remote], fail_hard=False)
+  RunCommand(git_cmd + ['fetch', '--recurse-submodules=no', 'github', commit])
+  is_ancestor = RunCommand(git_cmd +
+                           ['merge-base', '--is-ancestor', commit, 'HEAD'],
+                           fail_hard=False)
+  if is_ancestor:
+    print('Commit already an ancestor; skipping.')
+    return
+  RunCommand([
+      'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
+      commit
+  ])
+
+
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
   main = json.loads(
@@ -724,6 +741,13 @@ def main():
 
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
+
+    # Apply https://github.com/zmodem/llvm-project/commit/6dd3f98719bf2 which
+    # adds printfs to the win/asan runtime which get printed at high verbosity
+    # level or on errors such as CHECK failure.
+    # TODO(crbug.com/341936875): Remove once debugging is done.
+    GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                  '6dd3f98719bf29c03031746dee37e10e7570cb5a')
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
