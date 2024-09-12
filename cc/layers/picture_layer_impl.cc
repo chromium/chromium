@@ -1065,12 +1065,6 @@ bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_default_raster_scale_ > 0.f;
 }
 
-void PictureLayerImpl::OnAllTilesDoneCleared() {
-  // This is called when a PictureLayerTiling's |all_tiles_done_| is cleared.
-  // We need to clear the PictureLayerTilingSet's |all_tiles_done_|.
-  tilings_->set_all_tiles_done(false);
-}
-
 std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(
     const gfx::Rect& rect) const {
   return discardable_image_map_->GetDiscardableImagesInRect(rect);

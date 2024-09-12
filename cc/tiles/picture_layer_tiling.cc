@@ -157,6 +157,9 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
     pending_twin->tiles_.erase(pending_iter);
   }
 
+  if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
+    all_tiles_done_ = false;
+  }
   ComputeTilePriorityRects(
       pending_twin->current_visible_rect_in_layer_space_,
       pending_twin->current_skewport_rect_in_layer_space_,
@@ -164,11 +167,6 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
       pending_twin->current_eventually_rect_in_layer_space_,
       pending_twin->current_content_to_screen_scale_ * contents_scale_key(),
       pending_twin->current_occlusion_in_layer_space_);
-
-  if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
-    all_tiles_done_ = false;
-    client_->OnAllTilesDoneCleared();
-  }
 
   DCHECK(pending_twin->tiles_.empty());
   pending_twin->all_tiles_done_ = true;
@@ -472,7 +470,7 @@ void PictureLayerTiling::ComputeTilePriorityRects(
   // we reiterate the tiles for rasterization.
   if (occlusion_in_layer_space.HasOcclusion() ||
       current_occlusion_in_layer_space_.HasOcclusion()) {
-    set_all_tiles_done(false);
+    all_tiles_done_ = false;
   }
 
   TileMemoryLimitPolicy memory_limit_policy =
@@ -620,8 +618,10 @@ void PictureLayerTiling::SetLiveTilesRect(
       }
     }
   }
-
   live_tiles_rect_ = new_live_tiles_rect;
+  if (tiles_.size() == 0) {
+    all_tiles_done_ = true;
+  }
   VerifyTiles();
 }
 

@@ -135,10 +135,6 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->GetPaintWorkletRecords();
   }
 
-  void OnAllTilesDoneCleared() override {
-    base_client_->OnAllTilesDoneCleared();
-  }
-
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override {
     return base_client_->GetDiscardableImagesInRect(rect);
