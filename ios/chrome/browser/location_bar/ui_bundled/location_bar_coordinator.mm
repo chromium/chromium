@@ -659,7 +659,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)openLensOverlay {
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensOverlayCommands)
       createAndShowLensUI:YES
-               entrypoint:LensOverlayEntrypoint::kLocationBar];
+               entrypoint:LensOverlayEntrypoint::kLocationBar
+               completion:nil];
 }
 
 @end

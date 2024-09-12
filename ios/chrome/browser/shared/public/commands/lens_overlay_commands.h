@@ -13,7 +13,8 @@ enum class LensOverlayEntrypoint { kLocationBar, kOverflowMenu };
 /// Creates a new Lens UI. Automatically destroys any existing Lens UI as only
 /// one instance of it per BVC is supported.
 - (void)createAndShowLensUI:(BOOL)animated
-                 entrypoint:(LensOverlayEntrypoint)entrypoint;
+                 entrypoint:(LensOverlayEntrypoint)entrypoint
+                 completion:(void (^)(BOOL))completion;
 
 /// Display the lens overlay, if it exists.
 - (void)showLensUI:(BOOL)animated;

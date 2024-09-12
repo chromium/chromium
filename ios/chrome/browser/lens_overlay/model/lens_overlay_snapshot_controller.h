@@ -49,6 +49,11 @@ class LensOverlaySnapshotController final
   // Returns the dimensions for the inset area of the lens overlay snapshot.
   UIEdgeInsets GetSnapshotInsets();
 
+  // Sets whether the current web state is of a PDF document or not.
+  void SetIsPDFDocument(bool is_pdf_document) {
+    is_pdf_document_ = is_pdf_document;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -61,6 +66,7 @@ class LensOverlaySnapshotController final
 
   std::vector<SnapshotCallback> pending_snapshot_callbacks_;
   bool is_capturing_ = false;
+  bool is_pdf_document_ = false;
   base::WeakPtrFactory<LensOverlaySnapshotController> weak_ptr_factory_{this};
 
   void FullscreenDidAnimate(FullscreenController* controller,
@@ -69,6 +75,8 @@ class LensOverlaySnapshotController final
   void OnSnapshotCallbackRecorded(SnapshotCallback);
 
   void OnFullscreenStateSettled();
+
+  void OnSnapshotCaptured(UIImage*);
 
   void BeginCapturing();
 

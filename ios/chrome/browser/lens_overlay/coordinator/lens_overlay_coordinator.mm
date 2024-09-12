@@ -228,7 +228,8 @@ const CGFloat kMenuSymbolSize = 18;
 #pragma mark - LensOverlayCommands
 
 - (void)createAndShowLensUI:(BOOL)animated
-                 entrypoint:(LensOverlayEntrypoint)entrypoint {
+                 entrypoint:(LensOverlayEntrypoint)entrypoint
+                 completion:(void (^)(BOOL))completion {
   if ([self isUICreated]) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -245,22 +246,32 @@ const CGFloat kMenuSymbolSize = 18;
 
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
-    __typeof(self) strongSelf = weakSelf;
-    if (!weakSelf) {
-      return;
-    }
-    if (snapshot == nil) {
-      return;
-    }
-
-    BOOL success = [strongSelf createUIWithSnapshot:snapshot
-                                         entrypoint:entrypoint];
-    if (success) {
-      [strongSelf showLensUI:animated];
-    } else {
-      [strongSelf destroyLensUI:NO];
-    }
+    [weakSelf onSnapshotCaptured:snapshot
+                      entrypoint:entrypoint
+                        animated:animated
+                      completion:completion];
   }];
+}
+
+- (void)onSnapshotCaptured:(UIImage*)snapshot
+                entrypoint:(LensOverlayEntrypoint)entrypoint
+                  animated:(BOOL)animated
+                completion:(void (^)(BOOL))completion {
+  if (!snapshot) {
+    completion(NO);
+    return;
+  }
+
+  BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
+  if (success) {
+    [self showLensUI:animated];
+  } else {
+    [self destroyLensUI:NO];
+  }
+
+  if (completion) {
+    completion(success);
+  }
 }
 
 - (void)showLensUI:(BOOL)animated {

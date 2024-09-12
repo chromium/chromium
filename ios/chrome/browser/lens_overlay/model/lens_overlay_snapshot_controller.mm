@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 
+#import "base/task/bind_post_task.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -58,6 +59,8 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
     return;
   }
 
+  BeginCapturing();
+
   // If fullscreen is already enabled directly take the screenshot.
   bool is_already_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
   if (is_already_fullscreen) {
@@ -66,7 +69,6 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
   }
 
   // Register as observer and request fullscreen.
-  BeginCapturing();
   fullscreen_controller_->AddObserver(this);
   if (fullscreen_controller_->IsEnabled()) {
     // Enter fullscreen and rely on the update from the fullscreen controller.
@@ -111,7 +113,30 @@ void LensOverlaySnapshotController::OnFullscreenStateSettled() {
     return;
   }
 
-  UIImage* snapshot = snapshot_tab_helper_->GenerateSnapshotWithoutOverlays();
+  // Use Webkit-based asynchronous API only for PDF pages where the UIKit
+  // counterpart would otherwise fail.
+  if (is_pdf_document_) {
+    base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
+        base::BindOnce(&LensOverlaySnapshotController::OnSnapshotCaptured,
+                       weak_ptr_factory_.GetWeakPtr());
+
+    auto callbackOnWorkingSequence = base::BindPostTask(
+        task_runner_.get(), std::move(snapshotCapturedCallback));
+
+    // TODO(crbug.com/365732763): Replace call to `UpdateSnapshotWithCallback`
+    // once the new API method is exposed.
+    snapshot_tab_helper_->UpdateSnapshotWithCallback(
+        base::CallbackToBlock(std::move(callbackOnWorkingSequence)));
+  } else {
+    UIImage* snapshot = snapshot_tab_helper_->GenerateSnapshotWithoutOverlays();
+    OnSnapshotCaptured(snapshot);
+  }
+}
+
+void LensOverlaySnapshotController::OnSnapshotCaptured(UIImage* snapshot) {
+  if (!is_capturing_) {
+    return;
+  }
 
   // The snapshot taken was only of the visible content on the screen. To make
   // it appear fullscreen, add a solid color fill at the top and bottom of the
