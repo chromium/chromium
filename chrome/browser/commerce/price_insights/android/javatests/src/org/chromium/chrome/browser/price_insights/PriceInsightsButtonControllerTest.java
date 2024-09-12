@@ -24,7 +24,11 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -50,6 +54,7 @@ public class PriceInsightsButtonControllerTest {
     @Mock private SnackbarManager mMockSnackbarManager;
     @Mock private PriceInsightsBottomSheetCoordinator mMockPriceInsightsBottomSheetCoordinator;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private CommerceBottomSheetContentController mMockCommerceBottomSheetContentController;
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -74,10 +79,12 @@ public class PriceInsightsButtonControllerTest {
                 mMockBottomSheetController,
                 mMockSnackbarManager,
                 mMockPriceInsightsDelegate,
-                mock(Drawable.class));
+                mock(Drawable.class),
+                () -> mMockCommerceBottomSheetContentController);
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_DISCOUNT_INFO_API)
     public void testPriceInsightsButtonControllerOnClick() {
         PriceInsightsButtonController buttonController = createButtonController();
         buttonController.setPriceInsightsBottomSheetCoordinatorForTesting(
@@ -97,6 +104,7 @@ public class PriceInsightsButtonControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_DISCOUNT_INFO_API)
     public void testPriceInsightsButtonControllerDestroy() {
         PriceInsightsButtonController buttonController = createButtonController();
         buttonController.setPriceInsightsBottomSheetCoordinatorForTesting(
@@ -121,5 +129,13 @@ public class PriceInsightsButtonControllerTest {
         verify(mMockPriceInsightsBottomSheetCoordinator, times(1)).closeContent();
         verify(mMockBottomSheetController).removeObserver(mBottomSheetObserverCaptor.capture());
         assertTrue(buttonData.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_DISCOUNT_INFO_API)
+    public void testPriceInsightsButtonControllerOnClick_withCommerceBottomSheet() {
+        PriceInsightsButtonController buttonController = createButtonController();
+        buttonController.onClick(null);
+        verify(mMockCommerceBottomSheetContentController, times(1)).requestShowContent();
     }
 }

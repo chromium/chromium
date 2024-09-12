@@ -9,10 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":shopping_service_jni" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentBinder.java",
-    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentCoordinator.java",
-    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentMediator.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentController.java",
     "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentProperties.java",
     "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentProvider.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceNotificationSettingsFragment.java",
@@ -53,6 +50,27 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.commerce"
 }
 
+android_library("commerce_bottom_sheet_content_java") {
+  resources_package = "org.chromium.chrome.browser.commerce"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentBinder.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentCoordinator.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentMediator.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_java",
+  ]
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/commerce_content_item_container_background.xml",
@@ -79,6 +97,7 @@ android_library("javatests") {
   ]
 
   deps = [
+    ":commerce_bottom_sheet_content_java",
     ":java",
     ":java_resources",
     "//base:base_java",
@@ -123,6 +142,7 @@ robolectric_library("junit") {
   sources = [ "junit/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentMediatorUnitTest.java" ]
 
   deps = [
+    ":commerce_bottom_sheet_content_java",
     ":java",
     "//base:base_junit_test_support",
     "//components/browser_ui/bottomsheet/android:java",

@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -352,6 +354,7 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable View mBaseChromeLayout;
+    private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -1411,7 +1414,8 @@ public class RootUiCoordinator
                             new PriceInsightsDelegateImpl(
                                     mActivity, mCurrentTabPriceTrackingStateSupplier),
                             AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.ic_trending_down_24dp));
+                                    mActivity, R.drawable.ic_trending_down_24dp),
+                            this::getCommerceBottomSheetContentController);
             PriceTrackingButtonController priceTrackingButtonController =
                     new PriceTrackingButtonController(
                             mActivity,
@@ -1650,6 +1654,17 @@ public class RootUiCoordinator
             }
             mToolbarManagerOneshotSupplier.set(mToolbarManager);
         }
+    }
+
+    @Nullable
+    private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
+        if (mCommerceBottomSheetContentCoordinator == null
+                && ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+            mCommerceBottomSheetContentCoordinator =
+                    new CommerceBottomSheetContentCoordinator(mActivity, mBottomSheetController);
+        }
+
+        return mCommerceBottomSheetContentCoordinator;
     }
 
     /**

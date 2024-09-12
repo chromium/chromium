@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for building a commerce bottom sheet content. */
-public class CommerceBottomSheetContentCoordinator {
+public class CommerceBottomSheetContentCoordinator implements CommerceBottomSheetContentController {
     private static final long CONTENT_PROVIDER_TIMEOUT_MS = 200;
 
     /** Supported content types, the content is prioritized based on this order. */
@@ -92,9 +92,10 @@ public class CommerceBottomSheetContentCoordinator {
                         mContentProviders.size(),
                         bottomSheetController,
                         mCommerceBottomSheetContentContainer);
+        initContentProviders();
     }
 
-    /** Request to show the bottom sheet. */
+    @Override
     public void requestShowContent() {
         mCallbackController = new CallbackController();
         for (CommerceBottomSheetContentProvider provider : mContentProviders) {
@@ -107,6 +108,10 @@ public class CommerceBottomSheetContentCoordinator {
                     mMediator.timeOut();
                 },
                 CONTENT_PROVIDER_TIMEOUT_MS);
+    }
+
+    private void initContentProviders() {
+        // TODO(b/362360807): Instantiate all the CommerceBottomSheetContentProvider here.
     }
 
     public RecyclerView getRecyclerViewForTesting() {
