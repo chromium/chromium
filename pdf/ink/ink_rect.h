@@ -9,10 +9,15 @@ namespace chrome_pdf {
 
 // A simpler version of Ink's Rect class.
 struct InkRect {
-  float x_min;
-  float y_min;
-  float x_max;
-  float y_max;
+  constexpr InkRect() = default;
+  constexpr InkRect(float x_min, float y_min, float x_max, float y_max)
+      : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max) {}
+  ~InkRect() = default;
+
+  float x_min = 0;
+  float y_min = 0;
+  float x_max = 0;
+  float y_max = 0;
 };
 
 }  // namespace chrome_pdf
