@@ -38,6 +38,7 @@ build_webui("build") {
     "data_sharing.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",
+    "data_sharing_sdk_types.ts",
   ]
 
   if (is_chrome_branded) {

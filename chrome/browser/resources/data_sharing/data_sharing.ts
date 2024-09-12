@@ -15,6 +15,8 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {$} from 'chrome-untrusted://resources/js/util.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {Code} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
 // chrome/browser/ui/views/data_sharing/data_sharing_utils.cc.
@@ -32,13 +34,15 @@ enum FlowValues {
 }
 
 let initialized: boolean = false;
+let dataSharingSdk: DataSharingSdk;
 
 function onDOMContentLoaded() {
   ColorChangeUpdater.forDocument().start();
+  dataSharingSdk = window.data_sharing_sdk.buildDataSharingSdk();
   const browserProxy: BrowserProxy = BrowserProxy.getInstance();
   browserProxy.callbackRouter.onAccessTokenFetched.addListener(
       (accessToken: string) => {
-        window.data_sharing_sdk.setOauthAccessToken({accessToken});
+        dataSharingSdk.setOauthAccessToken({accessToken});
         if (!initialized) {
           initialize();
           processUrl(browserProxy);
@@ -74,26 +78,26 @@ function processUrl(browserProxy: BrowserProxy) {
 
   switch (flow) {
     case FlowValues.SHARE:
-      window.data_sharing_sdk.runInviteFlow({
-        getShareLink: (options: {groupId: string, tokenSecret?: string}):
+      dataSharingSdk.runInviteFlow({
+        getShareLink: (params: DataSharingSdkGetLinkParams):
             Promise<string> => {
-              makeTabGroupShared(options);
-              return getShareLink(options);
+              makeTabGroupShared(params);
+              return getShareLink(params);
             },
       });
       break;
     case FlowValues.JOIN:
       // group_id and token_secret cannot be null for join flow.
-      window.data_sharing_sdk.runJoinFlow(
+      dataSharingSdk.runJoinFlow(
           {groupId: groupId!, tokenSecret: tokenSecret!});
       break;
     case FlowValues.MANAGE:
       // group_id cannot be null for manage flow.
-      window.data_sharing_sdk.runManageFlow({
+      dataSharingSdk.runManageFlow({
         groupId: groupId!,
-        getShareLink: (options: {groupId: string, tokenSecret?: string}):
+        getShareLink: (params: DataSharingSdkGetLinkParams):
             Promise<string> => {
-              return getShareLink(options);
+              return getShareLink(params);
             },
       });
       break;
@@ -131,7 +135,7 @@ function maybeRunIfGroupId(
 }
 
 export function setOauthAccessToken(accessToken: string) {
-  window.data_sharing_sdk.setOauthAccessToken({accessToken});
+  dataSharingSdk.setOauthAccessToken({accessToken});
 }
 
 async function initialize() {
@@ -140,7 +144,7 @@ async function initialize() {
   );
   joinFlowButton?.addEventListener('click', () => {
     maybeRunIfGroupId(
-        (options: {groupId: string}) => window.data_sharing_sdk.runJoinFlow({
+        (options: {groupId: string}) => dataSharingSdk.runJoinFlow({
           groupId: options.groupId,
           tokenSecret: getTokenSecret() || '',
         }),
@@ -149,12 +153,12 @@ async function initialize() {
 
   const inviteFlowButton = document.getElementById('create-invite-flow-button');
   inviteFlowButton?.addEventListener('click', () => {
-    window.data_sharing_sdk.runInviteFlow({});
+    dataSharingSdk.runInviteFlow({});
   });
 
   const manageFlowButton = document.getElementById('create-manage-flow-button');
   manageFlowButton?.addEventListener('click', () => {
-    maybeRunIfGroupId(window.data_sharing_sdk.runManageFlow);
+    maybeRunIfGroupId(dataSharingSdk.runManageFlow);
   });
 
   const groupIdElement = document.getElementById(
@@ -169,16 +173,24 @@ async function initialize() {
 
   const createGroupButton = document.getElementById('create-group-button');
   createGroupButton?.addEventListener('click', () => {
-    window.data_sharing_sdk.createGroup(/* options= */ {})
+    dataSharingSdk
+        .createGroup(/* options= */ {displayName: 'Test Display Name'})
         .then(
-            (group) => {
-              console.info(group);
-              if (groupIdElement) {
-                // Ease of testing
-                groupIdElement.value = group.id;
-                localStorage.setItem('group-id', group.id);
+            ({result, status}) => {
+              if (status === Code.OK) {
+                const groupData = result?.groupData;
+                console.info(groupData);
+                if (groupIdElement && groupData) {
+                  // Ease of testing
+                  groupIdElement.value = groupData.groupId;
+                  localStorage.setItem('group-id', groupData.groupId);
+                }
+              } else {
+                console.error(status);
+                throw status;
               }
             },
+            // Catchall for errors Data Sharing SDK doesn't catch.
             (err) => {
               console.error(err);
               throw err;
@@ -188,11 +200,18 @@ async function initialize() {
   const readGroupButton = document.getElementById('read-group-button');
   readGroupButton?.addEventListener('click', () => {
     maybeRunIfGroupId((params) => {
-      window.data_sharing_sdk.readGroups({groupIds: [params.groupId]})
+      dataSharingSdk.readGroups({groupIds: [params.groupId]})
           .then(
-              (group) => {
-                console.info(group);
+              ({result, status}) => {
+                if (status === Code.OK) {
+                  const groupData = result?.groupData;
+                  console.info(groupData);
+                } else {
+                  console.error(status);
+                  throw status;
+                }
               },
+              // Catchall for errors Data Sharing SDK doesn't catch.
               (err) => {
                 console.error(err);
                 throw err;
