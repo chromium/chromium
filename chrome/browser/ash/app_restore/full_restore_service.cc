@@ -919,7 +919,14 @@ void FullRestoreService::OnSessionInformationReceived(
   auto* contents_data = contents_data_
                             ? contents_data_.get()
                             : delegate_->GetInformedRestoreContentData();
-  CHECK(contents_data);
+
+  // It is possible the user clicks restore or cancel before fetching the
+  // session restore data is complete. In this case, there's no need to update
+  // anything so we can just bail out here. See http://b/365844258 for more
+  // details.
+  if (!contents_data) {
+    return;
+  }
 
   bool content_updated = false;
   for (auto& info : contents_data->apps_infos) {
