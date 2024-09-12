@@ -67,9 +67,9 @@ public class TabResumptionModuleEnablement {
                     && TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
         }
 
-        static boolean isV2EnabledWithLocalTabs() {
+        static boolean isV2EnabledWithHistory() {
             return isV2Enabled()
-                    && TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND.getValue();
+                    && TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.getValue();
         }
 
         static boolean shouldMakeProvider(Profile profile) {

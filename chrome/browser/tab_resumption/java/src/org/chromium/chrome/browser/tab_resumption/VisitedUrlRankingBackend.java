@@ -83,7 +83,6 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
                 .getRankedSuggestions(
                         mNativeVisitedUrlRankingBackend,
                         TabResumptionModuleUtils.getCurrentTimeMs(),
-                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND.getValue(),
                         mFetchHisotryEnabled,
                         suggestions,
                         callback);
@@ -150,7 +149,6 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
         void getRankedSuggestions(
                 long nativeVisitedUrlRankingBackend,
                 long beginTimeMs,
-                boolean fetchLocalTabs,
                 boolean fetchHistory,
                 List<SuggestionEntry> suggestions,
                 Callback<List<SuggestionEntry>> callback);

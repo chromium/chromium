@@ -76,7 +76,6 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                    JNIEnv* env,
                    jni_zero::ScopedJavaGlobalRef<jobject> jobj,
                    base::Time current_time,
-                   bool fetch_local_tabs,
                    bool fetch_history,
                    jni_zero::ScopedJavaGlobalRef<jobject> j_suggestions,
                    jni_zero::ScopedJavaGlobalRef<jobject> j_callback)
@@ -267,7 +266,6 @@ void VisitedUrlRankingBackend::TriggerUpdate(JNIEnv* env) {
 void VisitedUrlRankingBackend::GetRankedSuggestions(
     JNIEnv* env,
     jlong current_time_ms,
-    jboolean fetch_local_tabs,
     jboolean fetch_history,
     const jni_zero::JavaParamRef<jobject>& suggestions,
     const jni_zero::JavaParamRef<jobject>& callback) {
@@ -277,8 +275,8 @@ void VisitedUrlRankingBackend::GetRankedSuggestions(
   auto current_time =
       base::Time::FromMillisecondsSinceUnixEpoch(current_time_ms);
   scoped_refptr<FetchAndRankFlow> flow = base::MakeRefCounted<FetchAndRankFlow>(
-      profile_, env, jobj_, current_time, fetch_local_tabs, fetch_history,
-      j_suggestions, j_callback);
+      profile_, env, jobj_, current_time, fetch_history, j_suggestions,
+      j_callback);
 
   flow->RunFlow();
 }
