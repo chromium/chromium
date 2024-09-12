@@ -964,6 +964,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // a cache create by this instance. Which is used depends on the settings.
   class ImageDecodeCacheHolder;
 
+  // TODO(https://crbug.com/365813260): Remove once the bug is analyzed and
+  // solved.
+  void CrashWhenMaxTextureSizeIsUninitialized() const;
+
   void UpdateChildLocalSurfaceId();
 
   void CollectScrollbarUpdatesForCommit(

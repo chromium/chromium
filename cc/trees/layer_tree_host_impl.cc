@@ -4894,6 +4894,12 @@ void LayerTreeHostImpl::SetDebugState(
   SetFullViewportDamage();
 }
 
+// TODO(https://crbug.com/365813260): Remove once the bug is analyzed and
+// solved.
+void LayerTreeHostImpl::CrashWhenMaxTextureSizeIsUninitialized() const {
+  CHECK_GT(raster_caps().max_texture_size, 0);
+}
+
 void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                          const UIResourceBitmap& bitmap) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -4929,6 +4935,10 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   bool scaled = false;
   // UIResources are assumed to be rastered in SRGB.
   const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateSRGB();
+
+  // TODO(https://crbug.com/365813260): Remove once the bug is analyzed and
+  // solved.
+  CrashWhenMaxTextureSizeIsUninitialized();
 
   if (source_size.width() > raster_caps().max_texture_size ||
       source_size.height() > raster_caps().max_texture_size) {
