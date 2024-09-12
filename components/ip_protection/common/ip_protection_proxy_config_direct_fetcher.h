@@ -11,13 +11,19 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "url/gurl.h"
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace ip_protection {
 
@@ -29,6 +35,35 @@ namespace ip_protection {
 // GeoHint.
 class IpProtectionProxyConfigDirectFetcher {
  public:
+  // Retrieve proxy config from an HTTP server, abstracted to ease testing of
+  // the fetcher.
+  class Retriever {
+   public:
+    explicit Retriever(
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        std::string type,
+        std::string api_key);
+    virtual ~Retriever();
+    using GetProxyConfigCallback = base::OnceCallback<void(
+        base::expected<ip_protection::GetProxyConfigResponse, std::string>)>;
+    virtual void GetProxyConfig(std::optional<std::string> oauth_token,
+                                GetProxyConfigCallback callback,
+                                bool for_testing = false);
+
+   private:
+    void OnGetProxyConfigCompleted(
+        std::unique_ptr<network::SimpleURLLoader> url_loader,
+        GetProxyConfigCallback callback,
+        std::unique_ptr<std::string> response);
+
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+    const GURL ip_protection_server_url_;
+    const std::string ip_protection_server_get_proxy_config_path_;
+    const std::string service_type_;
+    const std::string api_key_;
+    base::WeakPtrFactory<Retriever> weak_ptr_factory_{this};
+  };
+
   using GetProxyListCallback = base::OnceCallback<void(
       const std::optional<std::vector<::net::ProxyChain>>&,
       const std::optional<ip_protection::GeoHint>&)>;
@@ -39,8 +74,7 @@ class IpProtectionProxyConfigDirectFetcher {
       std::string api_key);
 
   explicit IpProtectionProxyConfigDirectFetcher(
-      std::unique_ptr<IpProtectionProxyConfigRetriever>
-          ip_protection_proxy_config_retriever);
+      std::unique_ptr<Retriever> ip_protection_proxy_config_retriever);
 
   ~IpProtectionProxyConfigDirectFetcher();
 
@@ -58,8 +92,8 @@ class IpProtectionProxyConfigDirectFetcher {
     return no_get_proxy_config_until_;
   }
 
-  void SetUpForTesting(std::unique_ptr<IpProtectionProxyConfigRetriever>
-                           ip_protection_proxy_config_retriever);
+  void SetUpForTesting(
+      std::unique_ptr<Retriever> ip_protection_proxy_config_retriever);
 
   // Timeout for failures from GetProxyConfig. This is doubled for
   // each subsequent failure.
@@ -90,8 +124,7 @@ class IpProtectionProxyConfigDirectFetcher {
   std::optional<ip_protection::GeoHint> GetGeoHintFromProxyConfigResponse(
       ip_protection::GetProxyConfigResponse& response);
 
-  std::unique_ptr<IpProtectionProxyConfigRetriever>
-      ip_protection_proxy_config_retriever_;
+  std::unique_ptr<Retriever> ip_protection_proxy_config_retriever_;
 
   // The time before the retriever's GetProxyConfig should not be called, and
   // the exponential backoff to be applied next time such a call fails.

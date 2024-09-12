@@ -55,7 +55,7 @@ constexpr char kTokenBatchHistogram[] =
 constexpr char kTestEmail[] = "test@example.com";
 
 class MockIpProtectionProxyConfigRetriever
-    : public ip_protection::IpProtectionProxyConfigRetriever {
+    : public ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever {
  public:
   using MockGetProxyConfig = base::RepeatingCallback<
       base::expected<ip_protection::GetProxyConfigResponse, std::string>()>;
@@ -63,7 +63,7 @@ class MockIpProtectionProxyConfigRetriever
   // to GetProxyConfig.
   explicit MockIpProtectionProxyConfigRetriever(
       MockGetProxyConfig get_proxy_config)
-      : ip_protection::IpProtectionProxyConfigRetriever(
+      : ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
             "test_service_type",
             "test_api_key"),
@@ -83,10 +83,10 @@ class MockIpProtectionProxyConfigRetriever
               return base::ok(*proxy_config_response);
             })) {}
 
-  void GetProxyConfig(
-      std::optional<std::string> oauth_token,
-      IpProtectionProxyConfigRetriever::GetProxyConfigCallback callback,
-      bool for_testing = false) override {
+  void GetProxyConfig(std::optional<std::string> oauth_token,
+                      ip_protection::IpProtectionProxyConfigDirectFetcher::
+                          Retriever::GetProxyConfigCallback callback,
+                      bool for_testing = false) override {
     std::move(callback).Run(get_proxy_config_.Run());
   }
 

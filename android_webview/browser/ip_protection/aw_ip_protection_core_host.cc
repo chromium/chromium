@@ -81,7 +81,8 @@ void AwIpProtectionCoreHost::SetUp() {
 }
 
 void AwIpProtectionCoreHost::SetUpForTesting(
-    std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
+    std::unique_ptr<
+        ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
         ip_protection_proxy_config_retriever,
     std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {
   // Carefully destroy any existing values in the correct order.

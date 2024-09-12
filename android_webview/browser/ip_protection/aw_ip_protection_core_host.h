@@ -22,7 +22,6 @@
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -96,7 +95,8 @@ class AwIpProtectionCoreHost
   // `bsa` is moved onto a separate sequence when initializing
   // `ip_protection_token_ipc_fetcher_`.
   void SetUpForTesting(
-      std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
+      std::unique_ptr<
+          ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
           ip_protection_proxy_config_retriever,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 

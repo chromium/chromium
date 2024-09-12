@@ -91,7 +91,8 @@ void IpProtectionCoreHost::SetUp() {
 }
 
 void IpProtectionCoreHost::SetUpForTesting(
-    std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
+    std::unique_ptr<
+        ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever>
         ip_protection_proxy_config_retriever,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {

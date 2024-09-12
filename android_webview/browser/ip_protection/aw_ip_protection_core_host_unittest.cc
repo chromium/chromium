@@ -36,21 +36,21 @@ constexpr char kTokenBatchHistogram[] =
     "NetworkService.AwIpProtection.TokenBatchRequestTime";
 
 class MockIpProtectionProxyConfigRetriever
-    : public ip_protection::IpProtectionProxyConfigRetriever {
+    : public ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever {
  public:
   explicit MockIpProtectionProxyConfigRetriever(
       std::optional<ip_protection::GetProxyConfigResponse>
           proxy_config_response)
-      : ip_protection::IpProtectionProxyConfigRetriever(
+      : ip_protection::IpProtectionProxyConfigDirectFetcher::Retriever(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
             "test_service_type",
             "test_api_key"),
         proxy_config_response_(proxy_config_response) {}
 
-  void GetProxyConfig(
-      std::optional<std::string> oauth_token,
-      IpProtectionProxyConfigRetriever::GetProxyConfigCallback callback,
-      bool for_testing) override {
+  void GetProxyConfig(std::optional<std::string> oauth_token,
+                      ip_protection::IpProtectionProxyConfigDirectFetcher::
+                          Retriever::GetProxyConfigCallback callback,
+                      bool for_testing) override {
     if (!proxy_config_response_.has_value()) {
       std::move(callback).Run(base::unexpected("uhoh"));
       return;
