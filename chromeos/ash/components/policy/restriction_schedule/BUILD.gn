@@ -9,9 +9,15 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
 source_set("restriction_schedule") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
-  public = [ "device_restriction_schedule_controller.h" ]
+  public = [
+    "device_restriction_schedule_controller.h",
+    "device_restriction_schedule_controller_delegate_impl.h",
+  ]
 
-  sources = [ "device_restriction_schedule_controller.cc" ]
+  sources = [
+    "device_restriction_schedule_controller.cc",
+    "device_restriction_schedule_controller_delegate_impl.cc",
+  ]
 
   public_deps = [
     "//base",

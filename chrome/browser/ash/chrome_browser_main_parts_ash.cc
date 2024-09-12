@@ -1645,6 +1645,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the DeviceDisablingManager unregister itself as an observer of the
   // CrosSettings singleton before it is destroyed.
   g_browser_process->platform_part()->ShutdownDeviceDisablingManager();
+  g_browser_process->platform_part()
+      ->ShutdownDeviceRestrictionScheduleController();
 
   // Let the AutomaticRebootManager unregister itself as an observer of several
   // subsystems.

@@ -44,6 +44,8 @@ class SystemClock;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
+class DeviceRestrictionScheduleControllerDelegateImpl;
 }  // namespace policy
 
 namespace user_manager {
@@ -65,6 +67,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   void InitializeUserManager();
   void DestroyUserManager();
+
+  void InitializeDeviceRestrictionScheduleController();
+  void ShutdownDeviceRestrictionScheduleController();
 
   void InitializeDeviceDisablingManager();
   void ShutdownDeviceDisablingManager();
@@ -117,6 +122,11 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
+  }
+
+  policy::DeviceRestrictionScheduleController*
+  device_restriction_schedule_controller() {
+    return device_restriction_schedule_controller_.get();
   }
 
   ash::system::DeviceDisablingManager* device_disabling_manager() {
@@ -182,6 +192,11 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       profile_user_manager_controller_;
 
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
+
+  std::unique_ptr<policy::DeviceRestrictionScheduleControllerDelegateImpl>
+      device_restriction_schedule_controller_delegate_impl_;
+  std::unique_ptr<policy::DeviceRestrictionScheduleController>
+      device_restriction_schedule_controller_;
 
   std::unique_ptr<ash::system::DeviceDisablingManagerDefaultDelegate>
       device_disabling_manager_delegate_;
