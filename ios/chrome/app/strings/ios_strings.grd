@@ -174,7 +174,7 @@
         Choose an account
       </message>
       <message name="IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST" desc="In account menu, context menu entry. It opens the view to edit the list of accounts. [iOS only]">
-        Edit account list
+        Manage accounts on this device
       </message>
       <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
