@@ -9,6 +9,17 @@
 
 @protocol UIBlockerTarget;
 
+// Observer of UIBlockerManager.
+@protocol UIBlockerManagerObserver <NSObject>
+
+@optional
+
+// Called when the current UI blocker releases the screen. It is possible that
+// the screen is blocked again by the time this method is called.
+- (void)currentUIBlockerRemoved;
+
+@end
+
 // Manager in charge to block and unblock all UI.
 @protocol UIBlockerManager <NSObject>
 
@@ -25,6 +36,9 @@
 // `target` has to be the same value when `incrementBlockingUICounterForTarget:`
 // was called.
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target;
+
+- (void)addUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer;
+- (void)removeUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer;
 
 @end
 

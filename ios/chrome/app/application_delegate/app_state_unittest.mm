@@ -55,6 +55,7 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_task_traits.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
@@ -701,4 +702,26 @@ TEST_F(AppStateTest, AppAgentRetrieval) {
 
   TestAppAgent* retrievedAgent = [TestAppAgent agentFromApp:appState];
   EXPECT_EQ(retrievedAgent, agent);
+}
+
+// Tests observers for UIBlockerManager
+TEST_F(AppStateTest, AppAgentUIBlockerManagerObserver) {
+  AppState* appState = GetAppStateWithMock();
+
+  id<UIBlockerManagerObserver> observer =
+      [OCMockObject mockForProtocol:@protocol(UIBlockerManagerObserver)];
+  id<UIBlockerTarget> blocker_target =
+      [OCMockObject mockForProtocol:@protocol(UIBlockerTarget)];
+
+  [appState addUIBlockerManagerObserver:observer];
+  EXPECT_EQ(appState.currentUIBlocker, nil);
+
+  [appState incrementBlockingUICounterForTarget:blocker_target];
+  EXPECT_NSEQ(appState.currentUIBlocker, blocker_target);
+  EXPECT_OCMOCK_VERIFY(observer);
+
+  OCMExpect([observer currentUIBlockerRemoved]);
+  [appState decrementBlockingUICounterForTarget:blocker_target];
+  EXPECT_NSEQ(appState.currentUIBlocker, nil);
+  EXPECT_OCMOCK_VERIFY(observer);
 }

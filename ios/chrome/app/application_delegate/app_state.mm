@@ -113,12 +113,25 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 @implementation AppStateObserverList
 @end
 
+#pragma mark - AppStateObserverList
+
+@interface UIBlockerManagerObserverList
+    : CRBProtocolObservers <UIBlockerManagerObserver>
+@end
+
+@implementation UIBlockerManagerObserverList
+@end
+
 #pragma mark - AppState
 
 @interface AppState () <AppStateObserver>
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
+
+// Container for observers.
+@property(nonatomic, strong)
+    UIBlockerManagerObserverList* uiBlockerManagerObservers;
 
 // YES if cookies are currently being flushed to disk. Declared as a property
 // to allow modifying it in a block via a __weak pointer without checking if
@@ -184,6 +197,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   if (self) {
     _observers = [AppStateObserverList
         observersWithProtocol:@protocol(AppStateObserver)];
+    _uiBlockerManagerObservers = [UIBlockerManagerObserverList
+        observersWithProtocol:@protocol(UIBlockerManagerObserver)];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
@@ -693,11 +708,20 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   self.blockingUICounter--;
   if (self.blockingUICounter == 0) {
     self.uiBlockerTarget = nil;
+    [self.uiBlockerManagerObservers currentUIBlockerRemoved];
   }
 }
 
 - (id<UIBlockerTarget>)currentUIBlocker {
   return self.uiBlockerTarget;
+}
+
+- (void)addUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [self.uiBlockerManagerObservers addObserver:observer];
+}
+
+- (void)removeUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [self.uiBlockerManagerObservers removeObserver:observer];
 }
 
 #pragma mark - SceneStateObserver
