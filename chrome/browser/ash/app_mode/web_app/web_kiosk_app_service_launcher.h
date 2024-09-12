@@ -6,17 +6,18 @@
 #define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_SERVICE_LAUNCHER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
-#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -63,7 +64,8 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
 
   void GetInstallState(
       const GURL& url,
-      chromeos::WebKioskAppInstaller::InstallStateCallback callback);
+      crosapi::mojom::WebKioskInstaller::GetWebKioskInstallStateCallback
+          callback);
   void CheckWhetherNetworkIsRequired(crosapi::mojom::WebKioskInstallState state,
                                      const std::optional<webapps::AppId>& id);
   void InstallAppInAsh();
@@ -78,7 +80,6 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   std::string app_id_;
   KioskAppLauncher::ObserverList observers_;
 
-  std::unique_ptr<chromeos::WebKioskAppInstaller> app_installer_;
   std::unique_ptr<chromeos::KioskAppServiceLauncher> app_service_launcher_;
 
   base::WeakPtrFactory<WebKioskAppServiceLauncher> weak_ptr_factory_{this};

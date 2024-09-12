@@ -6,13 +6,14 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -20,18 +21,19 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
-#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
+#include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using chromeos::WebKioskAppInstaller;
+using crosapi::mojom::WebKioskInstaller;
 using crosapi::mojom::WebKioskInstallState;
 
 namespace {
@@ -100,14 +102,14 @@ void WebKioskAppServiceLauncher::OnWebAppInitialized() {
 
 void WebKioskAppServiceLauncher::GetInstallState(
     const GURL& install_url,
-    WebKioskAppInstaller::InstallStateCallback callback) {
+    WebKioskInstaller::GetWebKioskInstallStateCallback callback) {
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
     crosapi_web_kiosk_service().GetWebKioskInstallState(install_url,
                                                         std::move(callback));
   } else {
-    app_installer_ = std::make_unique<WebKioskAppInstaller>(
+    auto [state, app_id] = chromeos::GetKioskWebAppInstallState(
         CHECK_DEREF(profile_.get()), install_url);
-    app_installer_->GetInstallState(std::move(callback));
+    std::move(callback).Run(state, std::move(app_id));
   }
 }
 
@@ -137,7 +139,8 @@ void WebKioskAppServiceLauncher::InstallAppInAsh() {
   // updates being applied while launching can be handled.
   WebKioskAppManager::Get()->StartObservingAppUpdate(profile_, account_id_);
 
-  app_installer_->InstallApp(
+  chromeos::InstallKioskWebApp(
+      CHECK_DEREF(profile_.get()), GetCurrentApp()->install_url(),
       base::BindOnce(&WebKioskAppServiceLauncher::OnInstallComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
