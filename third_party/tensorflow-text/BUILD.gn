@@ -17,6 +17,8 @@ config("tensorflow-text-flags") {
 
 static_library("tensorflow-text") {
   sources = [
+    "src/tensorflow_text/core/kernels/disjoint_set_forest.h",
+    "src/tensorflow_text/core/kernels/mst_solver.h",
     "src/tensorflow_text/core/kernels/regex_split.cc",
     "src/tensorflow_text/core/kernels/regex_split.h",
     "src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc",

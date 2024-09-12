@@ -10,6 +10,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_op_resolver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h"
+#include "third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/quantization_util.h"
+#include "third_party/tflite/src/tensorflow/lite/string_util.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h"
 
 namespace {
@@ -107,13 +110,93 @@ int64_t DependencyParserModel::GetModelVersion() const {
   return 1;
 }
 
-std::vector<unsigned int> GetDependencyHeads(std::vector<std::string> input) {
-  // TODO(b/339037155): Implement the operations to get the dependency heads for
-  // each word in a sentence. This method performs the following operations:
-  // 1. Tokenizes the input string.
-  // 2. Processes the tokens (N tokens) using the TFLite model to generate a
-  // dependency probability matrix (NxN).
-  // 3. Utilizes a Minimum Spanning Tree (MST) algorithm to identify the
-  // dependency head for each word.
-  return std::vector<unsigned int>();
+std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
+    std::vector<std::string> input) {
+  DCHECK(IsAvailable());
+  base::ElapsedTimer timer;
+
+  // Perform the following operations to identify the dependency heads for each
+  // token:
+  // 1. Processes the input (tokenized string, length N) using the TFLite
+  // model to generate a dependency probability matrix (NxN).
+  // 2. Utilizes a Minimum Spanning Tree (MST) algorithm to identify the
+  // dependency head for each token.
+  auto* interpreter = dependency_parser_model_->interpreter();
+  interpreter->ResizeInputTensor(0, {1, static_cast<int>(input.size())});
+  TfLiteTensor* input_tensor = interpreter->input_tensor(0);
+  tflite::DynamicBuffer input_buffer;
+
+  for (absl::string_view token : input) {
+    tflite::StringRef string_ref;
+    string_ref.str = token.data();
+    string_ref.len = token.size();
+    input_buffer.AddString(string_ref);
+  }
+  // Populate tensors.
+  input_buffer.WriteToTensor(input_tensor, /*new_shape=*/nullptr);
+  interpreter->AllocateTensors();
+
+  interpreter->Invoke();
+  base::UmaHistogramTimes(
+      "Accessibility.DependencyParserModel.Inference.Duration",
+      timer.Elapsed());
+  base::UmaHistogramCounts1M(
+      "Accessibility.DependencyParserModel.Inference.LengthInTokens",
+      input.size());
+
+  const TfLiteTensor* output_tensor = interpreter->output_tensor(0);
+  if (output_tensor == nullptr) {
+    DLOG(ERROR) << "Error: output tensor is null.";
+    return std::vector<unsigned int>();
+  }
+  size_t size = output_tensor->dims->data[0];
+  base::UmaHistogramBoolean(
+      "Accessibility.DependencyParserModel.Inference.Succeed",
+      size == input.size());
+  if (size != input.size()) {
+    DLOG(ERROR) << "Error: output tensor size does not match input size.";
+    return std::vector<unsigned int>();
+  }
+
+  std::vector<std::vector<float>> dependency_graph;
+  dependency_graph.reserve(size);
+  for (size_t j = 0; j < size; j++) {
+    std::vector<float> dependency_graph_inner;
+    dependency_graph_inner.reserve(size);
+    for (size_t i = 0; i < size; i++) {
+      dependency_graph_inner.push_back(
+          seq_flow_lite::PodDequantize<uint8_t>(*output_tensor, j * size + i));
+    }
+    dependency_graph.emplace_back(dependency_graph_inner);
+  }
+
+  std::vector<unsigned int> dependency_heads =
+      SolveDependencies(dependency_graph);
+  return dependency_heads;
+}
+
+std::vector<unsigned int> DependencyParserModel::SolveDependencies(
+    base::span<const std::vector<float>> input) {
+  tensorflow::text::MstSolver<unsigned int, float> solver;
+  int size = input.size();
+  if (!solver.Init(/*forest=*/false, size).ok()) {
+    return {};
+  }
+
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      if (i == j) {
+        solver.AddRoot(i, input[i][j]);
+      } else {
+        solver.AddArc(j, i, input[i][j]);
+      }
+    }
+  }
+
+  std::vector<unsigned int> heads;
+  heads.resize(size);
+  if (!solver.Solve(&heads).ok()) {
+    return {};
+  }
+  return heads;
 }

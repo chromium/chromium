@@ -102,4 +102,41 @@ TEST_F(DependencyParserModelValidTest, ValidModelFileProvided) {
       "Accessibility.DependencyParserModel.Create.Duration", 1);
 }
 
+TEST_F(DependencyParserModelValidTest, GetDependencyHeads) {
+  // The dependency tree for the input string:
+  // # dessert(5)
+  // #   children:
+  // #     - cream(1)
+  // #       children:
+  // #         - ice(0)
+  // #     - is(2)
+  // #     - a(3)
+  // #     - frozen(4)
+  // #     - made(7)
+  // #       children:
+  // #         - typically(6)
+  // #         - milk(9)
+  // #           children:
+  // #             - from(8)
+  // #             - cream(11)
+  // #               children:
+  // #                 - or(10)
+  std::vector<std::string> input = {"Ice",    "cream",   "is",        "a",
+                                    "frozen", "dessert", "typically", "made",
+                                    "from",   "milk",    "or",        "cream"};
+  auto prediction = dependency_parser_model_->GetDependencyHeads(input);
+  std::vector<unsigned int> expected_result = {1, 5, 5, 5, 5,  5,
+                                               7, 5, 9, 7, 11, 9};
+  EXPECT_EQ(expected_result.size(), prediction.size());
+  EXPECT_EQ(expected_result, prediction);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Accessibility.DependencyParserModel.Inference.LengthInTokens",
+      input.size(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.DependencyParserModel.Inference.Duration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Accessibility.DependencyParserModel.Inference.Succeed", true, 1);
+}
+
 }  // namespace

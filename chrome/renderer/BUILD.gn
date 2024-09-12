@@ -422,6 +422,7 @@ static_library("renderer") {
       ]
 
       deps += [
+        "//third_party/tensorflow-text",
         "//third_party/tensorflow_models:tflite_custom_ops",
         "//third_party/tflite",
         "//third_party/tflite:buildflags",

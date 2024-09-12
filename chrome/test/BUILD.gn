@@ -8367,6 +8367,7 @@ test("unit_tests") {
       "//third_party/libaddressinput",
       "//third_party/lzma_sdk/google:unit_tests",
       "//third_party/omnibox_proto",
+      "//third_party/tensorflow-text",
       "//third_party/zxcvbn-cpp",
       "//ui/base/idle:test_support",
       "//ui/color",
