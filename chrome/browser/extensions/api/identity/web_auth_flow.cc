@@ -104,16 +104,6 @@ void WebAuthFlow::DetachDelegateAndDelete() {
                                                                 this);
 }
 
-void WebAuthFlow::Stop() {
-  if (web_contents()) {
-    web_contents()->Close();
-  }
-  WebContentsObserver::Observe(nullptr);
-  web_contents_.reset();
-  delegate_ = nullptr;
-  profile_ = nullptr;
-}
-
 void WebAuthFlow::DisplayInfoBar() {
   DCHECK(web_contents());
 

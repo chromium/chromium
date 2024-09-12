@@ -57,7 +57,6 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
 
   // Starts the flow by setting accounts in cookie.
   void Start();
-  void Stop();
 
   // Handles `consent_result` value when using either a Browser Tab or an App
   // Window to display the Auth page.
@@ -79,7 +78,7 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
   network::mojom::CookieManager* GetCookieManagerForPartition();
 
   const raw_ptr<Delegate> delegate_;
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const RemoteConsentResolutionData resolution_data_;
   const bool user_gesture_;
 

@@ -41,7 +41,6 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut;
     case WebAuthFlow::CANNOT_CREATE_WINDOW:
       return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
-
     default:
       NOTREACHED_IN_MIGRATION()
           << "Unexpected error from web auth flow: " << failure;
@@ -71,8 +70,6 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kCannotCreateWindow;
     case IdentityLaunchWebAuthFlowFunction::Error::kInvalidURLScheme:
       return identity_constants::kInvalidURLScheme;
-    case IdentityLaunchWebAuthFlowFunction::Error::kBrowserContextShutDown:
-      return identity_constants::kBrowserContextShutDown;
   }
 }
 
@@ -189,15 +186,6 @@ bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
   return true;
 }
 
-void IdentityLaunchWebAuthFlowFunction::OnBrowserContextShutdown() {
-  if (auth_flow_) {
-    auth_flow_->Stop();
-  }
-  RecordHistogramFunctionResult(Error::kBrowserContextShutDown);
-  CompleteAsyncRun(
-      ExtensionFunction::Error(ErrorToString(Error::kBrowserContextShutDown)));
-}
-
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLDomainsForTest(
     const std::string& extension_id) {
   InitFinalRedirectURLDomains(extension_id, nullptr);
@@ -226,7 +214,10 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
   Error error = WebAuthFlowFailureToError(failure);
 
   RecordHistogramFunctionResult(error);
-  CompleteAsyncRun(ExtensionFunction::Error(ErrorToString(error)));
+  RespondWithError(ErrorToString(error));
+  if (auth_flow_)
+    auth_flow_.release()->DetachDelegateAndDelete();
+  Release();  // Balanced in Run.
 }
 
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
@@ -236,16 +227,11 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
   }
   RecordHistogramFunctionResult(
       IdentityLaunchWebAuthFlowFunction::Error::kNone);
-  CompleteAsyncRun(WithArguments(redirect_url.spec()));
-}
-
-void IdentityLaunchWebAuthFlowFunction::CompleteAsyncRun(
-    ResponseValue response) {
-  Respond(std::move(response));
+  Respond(WithArguments(redirect_url.spec()));
   if (auth_flow_) {
     auth_flow_.release()->DetachDelegateAndDelete();
   }
-  Release();  // Balanced in Run.
+  Release();  // Balanced in RunAsync.
 }
 
 WebAuthFlow* IdentityLaunchWebAuthFlowFunction::GetWebAuthFlowForTesting() {

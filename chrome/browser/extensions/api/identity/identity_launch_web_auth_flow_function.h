@@ -40,8 +40,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kPageLoadTimedOut = 6,
     kCannotCreateWindow = 7,
     kInvalidURLScheme = 8,
-    kBrowserContextShutDown = 9,
-    kMaxValue = kBrowserContextShutDown,
+    kMaxValue = kInvalidURLScheme,
   };
 
   IdentityLaunchWebAuthFlowFunction();
@@ -59,8 +58,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;
   bool ShouldKeepWorkerAliveIndefinitely() override;
-  void OnBrowserContextShutdown() override;
-  void CompleteAsyncRun(ResponseValue response);
+
   void StartAuthFlow(Profile* profile,
                      GURL auth_url,
                      WebAuthFlow::Mode mode,
