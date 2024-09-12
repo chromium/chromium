@@ -54,6 +54,11 @@ Browser* AppWindowController::GetBrowser() const {
   return nullptr;
 }
 
+bool AppWindowController::IsDeleteScheduled() const {
+  // App windows don't have the complicated multiphase tear-down.
+  return false;
+}
+
 bool AppWindowController::GetActiveTab(content::WebContents** contents,
                                        int* optional_tab_id) const {
   DCHECK(contents);
@@ -67,6 +72,13 @@ bool AppWindowController::GetActiveTab(content::WebContents** contents,
   }
 
   return false;
+}
+
+bool AppWindowController::HasEditableTabStrip() const {
+  // There is no visible tab strip in app windows so we return true to
+  // indicate our tab strip animations are not blocking global
+  // operations (see WindowController::HasEditableTabStrip definition).
+  return true;
 }
 
 bool AppWindowController::IsVisibleToTabsAPIForExtension(

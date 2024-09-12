@@ -46,6 +46,7 @@
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -1516,14 +1517,17 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
             download_extension_errors::kOpenPermission, &error)) {
     return RespondNow(Error(std::move(error)));
   }
-  Browser* browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
-  if (Fault(!browser, download_extension_errors::kInvisibleContext, &error))
-    return RespondNow(Error(std::move(error)));
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (Fault(!web_contents, download_extension_errors::kInvisibleContext,
-            &error))
-    return RespondNow(Error(std::move(error)));
+
+  WindowController* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    return RespondNow(Error(download_extension_errors::kInvisibleContext));
+  }
+  content::WebContents* active_contents = nullptr;
+  if (!window_controller->GetActiveTab(&active_contents, nullptr)) {
+    return RespondNow(Error(download_extension_errors::kInvisibleContext));
+  }
+
   // Extensions with debugger permission could fake user gestures and should
   // not be trusted.
   if (GetSenderWebContents() &&
@@ -1539,7 +1543,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // to avoid showing the prompt.
   DownloadOpenPrompt* download_open_prompt =
       DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
-          web_contents, extension()->name(), download_item->GetFullPath(),
+          active_contents, extension()->name(), download_item->GetFullPath(),
           base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
                          params->download_id));
   if (on_prompt_created_cb_)
