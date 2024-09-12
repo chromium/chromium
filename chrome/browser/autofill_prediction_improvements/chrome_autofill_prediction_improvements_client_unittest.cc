@@ -60,4 +60,9 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
   client()->GetAXTree(callback.Get());
 }
 
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       GetUserAnnotationsService) {
+  EXPECT_TRUE(client()->GetUserAnnotationsService());
+}
+
 }  // namespace

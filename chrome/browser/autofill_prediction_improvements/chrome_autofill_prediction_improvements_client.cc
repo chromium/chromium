@@ -13,6 +13,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/compose/buildflags.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -88,6 +89,14 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
 
 const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
   return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+user_annotations::UserAnnotationsService*
+ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
+                 : nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

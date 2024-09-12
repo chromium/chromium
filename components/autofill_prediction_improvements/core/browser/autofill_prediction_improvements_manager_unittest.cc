@@ -55,6 +55,10 @@ class MockAutofillPredictionImprovementsClient
               (),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(user_annotations::UserAnnotationsService*,
+              GetUserAnnotationsService,
+              (),
+              (override));
 };
 
 class MockOptimizationGuideDecider

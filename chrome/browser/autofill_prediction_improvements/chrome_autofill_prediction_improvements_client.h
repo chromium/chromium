@@ -39,6 +39,8 @@ class ChromeAutofillPredictionImprovementsClient
   autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
   GetFillingEngine() override;
   const GURL& GetLastCommittedURL() override;
+  user_annotations::UserAnnotationsService* GetUserAnnotationsService()
+      override;
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(
