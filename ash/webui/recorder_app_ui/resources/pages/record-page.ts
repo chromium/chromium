@@ -605,16 +605,15 @@ export class RecordPage extends ReactiveLitElement {
       <audio-waveform .values=${session.progress.value.powers}>
       </audio-waveform>
       <cra-icon-button
+        buttonstyle="toggle"
+        class="with-filled-style"
         shape="circle"
         @click=${this.onToggleMuted}
-        aria-checked=${this.micMuted.value}
+        .selected=${this.micMuted.value}
         aria-label=${i18n.recordMuteButtonTooltip}
-        role="switch"
       >
-        <cra-icon
-          slot="icon"
-          .name=${this.micMuted.value ? 'mic_mute' : 'mic'}
-        ></cra-icon>
+        <cra-icon slot="icon" name="mic"></cra-icon>
+        <cra-icon slot="selectedIcon" name="mic_mute"></cra-icon>
       </cra-icon-button>
     `;
   }
