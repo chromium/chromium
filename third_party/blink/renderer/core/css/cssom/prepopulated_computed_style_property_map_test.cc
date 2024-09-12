@@ -62,31 +62,39 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, NativePropertyAccessors) {
           GetDocument(), element->ComputedStyleRef(), native_properties,
           empty_custom_properties);
 
-  DummyExceptionStateForTesting exception_state;
+  {
+    DummyExceptionStateForTesting exception_state;
 
-  map->get(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->get(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
 
-  map->has(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->has(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
 
-  map->getAll(GetDocument().GetExecutionContext(), "color", exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+    map->getAll(GetDocument().GetExecutionContext(), "color", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+  }
 
-  map->get(GetDocument().GetExecutionContext(), "align-contents",
-           exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->get(GetDocument().GetExecutionContext(), "align-contents",
+             exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  map->has(GetDocument().GetExecutionContext(), "align-contents",
-           exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->has(GetDocument().GetExecutionContext(), "align-contents",
+             exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  map->getAll(GetDocument().GetExecutionContext(), "align-contents",
-              exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  exception_state.ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    map->getAll(GetDocument().GetExecutionContext(), "align-contents",
+                exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 }
 
 TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {

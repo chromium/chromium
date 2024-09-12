@@ -147,19 +147,23 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   // The show()s will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
-  ScriptPromiseUntyped promise1 =
-      request->show(scope.GetScriptState(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ScriptPromiseUntyped promise1 =
+        request->show(scope.GetScriptState(), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+              exception_state.CodeAs<DOMExceptionCode>());
+  }
 
-  scope.GetExceptionState().ClearException();
-
-  ScriptPromiseUntyped promise2 =
-      request->show(scope.GetScriptState(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ScriptPromiseUntyped promise2 =
+        request->show(scope.GetScriptState(), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+              exception_state.CodeAs<DOMExceptionCode>());
+  }
 }
 
 TEST_F(PaymentRequestForInvalidOriginOrSslTest,

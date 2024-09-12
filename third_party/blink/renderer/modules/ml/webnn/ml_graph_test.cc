@@ -852,85 +852,83 @@ TEST_F(MLGraphTest, BuildTest) {
   MLContext* context = CreateContext(scope, MLContextOptions::Create());
   {
     // Test throwing exception if the named outputs is empty.
+    DummyExceptionStateForTesting exception_state;
     MLNamedOperands named_outputs;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, named_outputs);
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message, "At least one output needs to be provided.");
-    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if the named output is an input operand.
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* input = BuildInput(builder, "input", {3, 4, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
+    auto* input =
+        BuildInput(builder, "input", {3, 4, 5},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output", input}});
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message,
               "The operand with name \"output\" is not an output operand.");
-    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if the named output is a constant operand.
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
     auto* constant =
         BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                      scope.GetExceptionState());
+                      exception_state);
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output", constant}});
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message,
               "The operand with name \"output\" is not an output operand.");
-    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if the named outputs is a mix of input and
     // constant operands.
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* input = BuildInput(builder, "input", {3, 4, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
+    auto* input =
+        BuildInput(builder, "input", {3, 4, 5},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* constant =
         BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                      scope.GetExceptionState());
+                      exception_state);
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message,
               "The operand with name \"output1\" is not an output operand.");
-    scope.GetExceptionState().ClearException();
   }
   {
     // Test throwing exception if two inputs have the same name.
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* a =
-        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b =
-        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* a = BuildInput(builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* b = BuildInput(builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
     const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* c = builder->add(a, b, options, scope.GetExceptionState());
+    auto* c = builder->add(a, b, options, exception_state);
     ASSERT_THAT(c, testing::NotNull());
 
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"c", c}});
     EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(error_message, "The input name \"a\" is duplicated.");
-    scope.GetExceptionState().ClearException();
   }
   {
     // Test building a graph with an elementwise add operator that uses the same
@@ -941,14 +939,14 @@ TEST_F(MLGraphTest, BuildTest) {
     //   add
     //    |
     //   [b]
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* a =
-        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* a = BuildInput(builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
     const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* output = builder->add(a, a, options, scope.GetExceptionState());
+    auto* output = builder->add(a, a, options, exception_state);
     ASSERT_THAT(output, testing::NotNull());
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", output}});
@@ -967,16 +965,16 @@ TEST_F(MLGraphTest, BuildTest) {
     //  relu   sigmoid
     //    |      |
     //   [b]    [c]
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* a =
-        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* a = BuildInput(builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
     const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* b = builder->relu(a, options, scope.GetExceptionState());
+    auto* b = builder->relu(a, options, exception_state);
     ASSERT_THAT(b, testing::NotNull());
-    auto* c = builder->sigmoid(a, options, scope.GetExceptionState());
+    auto* c = builder->sigmoid(a, options, exception_state);
     ASSERT_THAT(c, testing::NotNull());
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", b}, {"c", c}});
@@ -992,15 +990,14 @@ TEST_F(MLGraphTest, BuildTest) {
   {
     // Test building a fake graph with two inputs, one gemm operation and one
     // output.
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
-    auto* a =
-        BuildInput(builder, "a", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b =
-        BuildInput(builder, "b", {4, 3}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
+    auto* a = BuildInput(builder, "a", {3, 4},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* b = BuildInput(builder, "b", {4, 3},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* c = BuildGemm(scope, builder, a, b);
 
     auto [graph, error_name, error_message] =
@@ -1015,24 +1012,24 @@ TEST_F(MLGraphTest, BuildTest) {
     EXPECT_EQ(*outputs.at("c"), c->Descriptor());
   }
   {
+    DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
+                                           exception_state);
     ASSERT_THAT(builder, testing::NotNull());
     // Test building a fake graph with conv2d, add and relu operations.
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
+    auto* input =
+        BuildInput(builder, "input", {1, 1, 5, 5},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* filter =
+        BuildConstant(builder, {1, 1, 3, 3},
+                      V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* conv2d = BuildConv2d(scope, builder, input, filter);
-    auto* bias =
-        BuildConstant(builder, {1}, V8MLOperandDataType::Enum::kFloat32,
-                      scope.GetExceptionState());
+    auto* bias = BuildConstant(
+        builder, {1}, V8MLOperandDataType::Enum::kFloat32, exception_state);
     const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* add = builder->add(conv2d, bias, options, scope.GetExceptionState());
+    auto* add = builder->add(conv2d, bias, options, exception_state);
     ASSERT_THAT(add, testing::NotNull());
-    auto* output = builder->relu(add, options, scope.GetExceptionState());
+    auto* output = builder->relu(add, options, exception_state);
     ASSERT_THAT(output, testing::NotNull());
 
     auto [graph, error_name, error_message] =

@@ -2808,42 +2808,47 @@ TEST_P(IntersectionObserverTest,
 
 TEST_P(IntersectionObserverV2Test, TrackVisibilityInit) {
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
-  DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
       LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-      exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(observer->trackVisibility());
 
   // This should fail because no delay is set.
-  observer_init->setTrackVisibility(true);
-  observer = IntersectionObserver::Create(
-      observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-      exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    observer_init->setTrackVisibility(true);
+    observer = IntersectionObserver::Create(
+        observer_init, *observer_delegate,
+        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
   // This should fail because the delay is < 100.
-  exception_state.ClearException();
-  observer_init->setDelay(99.9);
-  observer = IntersectionObserver::Create(
-      observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-      exception_state);
-  EXPECT_TRUE(exception_state.HadException());
+  {
+    DummyExceptionStateForTesting exception_state;
+    observer_init->setDelay(99.9);
+    observer = IntersectionObserver::Create(
+        observer_init, *observer_delegate,
+        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
-  exception_state.ClearException();
-  observer_init->setDelay(101.);
-  observer = IntersectionObserver::Create(
-      observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-      exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-  EXPECT_TRUE(observer->trackVisibility());
-  EXPECT_EQ(observer->delay(), 101.);
+  {
+    DummyExceptionStateForTesting exception_state;
+    observer_init->setDelay(101.);
+    observer = IntersectionObserver::Create(
+        observer_init, *observer_delegate,
+        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    EXPECT_TRUE(observer->trackVisibility());
+    EXPECT_EQ(observer->delay(), 101.);
+  }
 }
 
 TEST_P(IntersectionObserverV2Test, BasicOcclusion) {
