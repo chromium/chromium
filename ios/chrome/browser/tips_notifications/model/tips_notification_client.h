@@ -105,6 +105,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowDocking(Browser* browser);
   void ShowOmniboxPosition(Browser* browser);
   void ShowLensPromo(Browser* browser);
+  void ShowEnhancedSafeBrowsingPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

@@ -202,6 +202,7 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
@@ -602,6 +603,7 @@ enum class ToolbarKind {
   // Delete.
   QuickDeleteCoordinator* _quickDeleteCoordinator;
   LensPromoCoordinator* _lensPromoCoordinator;
+  EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -799,6 +801,7 @@ enum class ToolbarKind {
   _countryCodePickerCoordinator = nil;
 
   [self dismissLensPromo];
+  [self dismissEnhancedSafeBrowsingPromo];
 }
 
 #pragma mark - Private
@@ -1522,6 +1525,7 @@ enum class ToolbarKind {
   [self hideContextualSheet];
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
+  [self dismissEnhancedSafeBrowsingPromo];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2132,6 +2136,19 @@ enum class ToolbarKind {
   _lensPromoCoordinator = nil;
 }
 
+- (void)showEnhancedSafeBrowsingPromo {
+  [_enhancedSafeBrowsingPromoCoordinator stop];
+  _enhancedSafeBrowsingPromoCoordinator =
+      [[EnhancedSafeBrowsingPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [_enhancedSafeBrowsingPromoCoordinator start];
+}
+
+- (void)dismissEnhancedSafeBrowsingPromo {
+  [_enhancedSafeBrowsingPromoCoordinator stop];
+  _enhancedSafeBrowsingPromoCoordinator = nil;
+}
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {

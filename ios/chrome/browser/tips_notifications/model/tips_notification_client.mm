@@ -452,6 +452,8 @@ void TipsNotificationClient::ShowUIForNotificationType(
       ShowLensPromo(browser);
       break;
     case TipsNotificationType::kEnhancedSafeBrowsing:
+      ShowEnhancedSafeBrowsingPromo(browser);
+      break;
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -518,6 +520,13 @@ void TipsNotificationClient::ShowLensPromo(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(browser->GetCommandDispatcher(),
                       BrowserCoordinatorCommands) showLensPromo];
+}
+
+void TipsNotificationClient::ShowEnhancedSafeBrowsingPromo(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands)
+      showEnhancedSafeBrowsingPromo];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
