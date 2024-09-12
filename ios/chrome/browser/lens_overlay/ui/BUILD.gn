@@ -30,6 +30,7 @@ source_set("view_controller") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
@@ -42,6 +43,7 @@ source_set("view_controller") {
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
