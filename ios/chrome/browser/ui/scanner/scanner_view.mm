@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/scanner/preview_overlay_view.h"
 #import "ios/chrome/browser/ui/scanner/video_preview_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -66,6 +67,13 @@ const CGFloat kFlashDuration = 0.5;
   }
   DCHECK(delegate);
   _delegate = delegate;
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(maybeHideCaptions)];
+  }
+
   return self;
 }
 
@@ -181,11 +189,16 @@ const CGFloat kFlashDuration = 0.5;
   return @"";
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  _captionContainer.hidden =
-      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self maybeHideCaptions];
 }
+#endif
 
 #pragma mark - private methods
 
@@ -354,6 +367,13 @@ const CGFloat kFlashDuration = 0.5;
         constraintEqualToAnchor:[self centerYAnchor]],
     _overlaySquareConstraint, _overlayWidthConstraint, _overlayHeightConstraint
   ]];
+}
+
+// Hides the UIScrollView that contains the caption if the UI's vertical size is
+// compact.
+- (void)maybeHideCaptions {
+  _captionContainer.hidden =
+      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
 }
 
 @end
