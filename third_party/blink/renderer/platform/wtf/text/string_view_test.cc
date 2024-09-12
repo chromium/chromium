@@ -374,6 +374,16 @@ TEST(StringViewTest, ConstructionLiteral16) {
   EXPECT_EQ(String("12"), StringView(kChars16, 2u));
 }
 
+#if ENABLE_SECURITY_ASSERT
+TEST(StringViewTest, OverflowInConstructor) {
+  EXPECT_DEATH_IF_SUPPORTED(StringView(StringView("12"), 2, -1), "");
+}
+
+TEST(StringViewTest, OverflowInSet) {
+  EXPECT_DEATH_IF_SUPPORTED(StringView(String("12"), 2, -1), "");
+}
+#endif  // ENABLE_SECURITY_ASSERT
+
 TEST(StringViewTest, IsEmpty) {
   EXPECT_FALSE(StringView(kChars).empty());
   EXPECT_TRUE(StringView(kChars, 0).empty());
