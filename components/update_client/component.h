@@ -31,7 +31,6 @@
 
 namespace update_client {
 
-class ActionRunner;
 class Configurator;
 struct CrxUpdateItem;
 struct UpdateContext;
@@ -340,10 +339,6 @@ class Component {
     void DoHandle() override;
 
     void ActionRunComplete(bool succeeded, int error_code, int extra_code1);
-
-    // Runs the action referred by the |action_run_| member of the Component
-    // class.
-    std::unique_ptr<ActionRunner> action_runner_;
   };
 
   // Returns true is the update payload for this component can be downloaded

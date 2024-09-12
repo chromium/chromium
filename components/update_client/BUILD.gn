@@ -285,6 +285,7 @@ bundle_data("recovery_component_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "action_runner_unittest.cc",
     "cancellation_unittest.cc",
     "crx_cache_unittest.cc",
     "op_download_unittest.cc",

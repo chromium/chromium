@@ -980,8 +980,10 @@ void Component::StateRun::DoHandle() {
   const auto& component = State::component();
   CHECK(component.crx_component());
 
-  action_runner_ = std::make_unique<ActionRunner>(component);
-  action_runner_->Run(
+  RunAction(
+      component.crx_component()->action_handler,
+      component.crx_component()->installer, component.action_run(),
+      component.session_id(),
       base::BindOnce(&StateRun::ActionRunComplete, base::Unretained(this)));
 }
 

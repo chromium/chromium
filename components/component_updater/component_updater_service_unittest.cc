@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -57,8 +58,8 @@ class MockInstaller : public update_client::CrxInstaller {
                     std::unique_ptr<InstallParams> install_params,
                     ProgressCallback progress_callback,
                     Callback callback));
-  MOCK_METHOD2(GetInstalledFile,
-               bool(const std::string& file, base::FilePath* installed_file));
+  MOCK_METHOD1(GetInstalledFile,
+               std::optional<base::FilePath>(const std::string& file));
   MOCK_METHOD0(Uninstall, bool());
 
  private:

@@ -4,6 +4,7 @@
 
 #include "components/update_client/test_installer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -64,9 +65,9 @@ void TestInstaller::InstallComplete(Callback callback,
                          base::BindOnce(std::move(callback), result));
 }
 
-bool TestInstaller::GetInstalledFile(const std::string& file,
-                                     base::FilePath* installed_file) {
-  return false;
+std::optional<base::FilePath> TestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return std::nullopt;
 }
 
 bool TestInstaller::Uninstall() {
@@ -78,10 +79,9 @@ ReadOnlyTestInstaller::ReadOnlyTestInstaller(const base::FilePath& install_dir)
 
 ReadOnlyTestInstaller::~ReadOnlyTestInstaller() = default;
 
-bool ReadOnlyTestInstaller::GetInstalledFile(const std::string& file,
-                                             base::FilePath* installed_file) {
-  *installed_file = install_directory_.AppendASCII(file);
-  return true;
+std::optional<base::FilePath> ReadOnlyTestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return install_directory_.AppendASCII(file);
 }
 
 VersionedTestInstaller::VersionedTestInstaller() {
@@ -124,12 +124,10 @@ void VersionedTestInstaller::Install(
                   Result(InstallError::NONE));
 }
 
-bool VersionedTestInstaller::GetInstalledFile(const std::string& file,
-                                              base::FilePath* installed_file) {
-  const base::FilePath path =
-      install_directory_.AppendASCII(current_version_.GetString());
-  *installed_file = path.Append(base::FilePath::FromUTF8Unsafe(file));
-  return true;
+std::optional<base::FilePath> VersionedTestInstaller::GetInstalledFile(
+    const std::string& file) {
+  return install_directory_.AppendASCII(current_version_.GetString())
+      .AppendASCII(file);
 }
 
 }  // namespace update_client

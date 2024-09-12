@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -253,8 +254,8 @@ class RecoveryComponentInstaller : public update_client::CrxInstaller {
                ProgressCallback progress_callback,
                Callback callback) override;
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
 
   bool Uninstall() override;
 
@@ -464,10 +465,9 @@ bool RecoveryComponentInstaller::DoInstall(const base::FilePath& unpack_path) {
   return true;
 }
 
-bool RecoveryComponentInstaller::GetInstalledFile(
-    const std::string& file,
-    base::FilePath* installed_file) {
-  return false;
+std::optional<base::FilePath> RecoveryComponentInstaller::GetInstalledFile(
+    const std::string& file) {
+  return std::nullopt;
 }
 
 bool RecoveryComponentInstaller::Uninstall() {

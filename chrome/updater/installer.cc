@@ -4,6 +4,7 @@
 
 #include "chrome/updater/installer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -219,9 +220,9 @@ void Installer::Install(const base::FilePath& unpack_path,
                      std::move(callback)));
 }
 
-bool Installer::GetInstalledFile(const std::string& file,
-                                 base::FilePath* installed_file) {
-  return false;
+std::optional<base::FilePath> Installer::GetInstalledFile(
+    const std::string& file) {
+  return std::nullopt;
 }
 
 bool Installer::Uninstall() {

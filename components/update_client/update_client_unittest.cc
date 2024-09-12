@@ -1969,8 +1969,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
    public:
     MOCK_METHOD1(OnUpdateError, void(int error));
     MOCK_METHOD1(DoInstall, void(const base::FilePath& unpack_path));
-    MOCK_METHOD2(GetInstalledFile,
-                 bool(const std::string& file, base::FilePath* installed_file));
+    MOCK_METHOD1(GetInstalledFile,
+                 std::optional<base::FilePath>(const std::string& file));
     MOCK_METHOD0(Uninstall, bool());
 
     void Install(const base::FilePath& unpack_path,
@@ -2017,7 +2017,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
       EXPECT_CALL(*installer, OnUpdateError(_)).Times(0);
       EXPECT_CALL(*installer, DoInstall(_)).Times(1);
-      EXPECT_CALL(*installer, GetInstalledFile(_, _)).Times(0);
+      EXPECT_CALL(*installer, GetInstalledFile(_)).Times(0);
       EXPECT_CALL(*installer, Uninstall()).Times(0);
 
       CrxComponent crx;
