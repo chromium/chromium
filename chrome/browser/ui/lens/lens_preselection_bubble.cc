@@ -98,6 +98,18 @@ void LensPreselectionBubble::Init() {
   NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
+void LensPreselectionBubble::SetLabelText(int string_id) {
+  // If the bubble had offline state, we don't want to reset the text.
+  if (offline_) {
+    return;
+  }
+
+  const std::u16string new_toast_text = l10n_util::GetStringUTF16(string_id);
+  SetAccessibleTitle(new_toast_text);
+  label_->SetText(new_toast_text);
+  SizeToContents();
+}
+
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
   views::View* anchor_view = GetAnchorView();
   if (anchor_view) {

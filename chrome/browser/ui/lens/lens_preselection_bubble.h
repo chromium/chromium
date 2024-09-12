@@ -26,6 +26,11 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   void Init() override;
 
+  // Reset the label text on the preselection bubble to the new `string_id`.
+  // Also makes sure the bubble resizes and the accessible title is also
+  // changed.
+  void SetLabelText(int string_id);
+
  protected:
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;

@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -906,11 +907,28 @@ void LensOverlayController::IssueTranslateFullPageRequest(
   // Remove the selection thumbnail, if it exists.
   SetSearchboxThumbnail(std::string());
   ClearRegionSelection();
+  // Set the coachmark text.
+  if (preselection_widget_) {
+    // This cast is safe since we know the widget delegate will always be a
+    // `lens::LensPreselectionBubble`.
+    auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(
+        preselection_widget_->widget_delegate());
+    bubble_view->SetLabelText(
+        IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT);
+  }
   lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
                                                              target_language);
 }
 
 void LensOverlayController::IssueEndTranslateModeRequest() {
+  // Reset the coachmark text back to default.
+  if (preselection_widget_) {
+    // This cast is safe since we know the widget delegate will always be a
+    // `lens::LensPreselectionBubble`.
+    auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(
+        preselection_widget_->widget_delegate());
+    bubble_view->SetLabelText(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  }
   lens_overlay_query_controller_->SendEndTranslateModeQuery();
 }
 
