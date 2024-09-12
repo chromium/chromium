@@ -65,12 +65,6 @@
 namespace media {
 namespace {
 
-// Kill switch for using MultiPlaneFormat that prefers external sampler for
-// hardware planes when default SharedImageFormatType::Legacy is used.
-BASE_FEATURE(kUseMultiPlaneFormatForLegacySIFType,
-             "UseMultiPlaneFormatForLegacySIFType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool MediaSharedBitmapConversionEnabled() {
   return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage) &&
          base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);
@@ -101,59 +95,35 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     // The texture |target| can be 0 for Fuchsia.
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-    // Use viz::LegacyMultiPlaneFormat when default
-    // SharedImageFormatType::Legacy is used and
-    // kUseMultiPlaneFormatForLegacySIFType feature is NOT enabled.
-    if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy &&
-        !base::FeatureList::IsEnabled(kUseMultiPlaneFormatForLegacySIFType)) {
-      switch (format) {
-        case PIXEL_FORMAT_NV12:
-          si_format = viz::LegacyMultiPlaneFormat::kNV12;
-          break;
-        case PIXEL_FORMAT_YV12:
-          si_format = viz::LegacyMultiPlaneFormat::kYV12;
-          break;
-        case PIXEL_FORMAT_P010LE:
-          si_format = viz::LegacyMultiPlaneFormat::kP010;
-          break;
-        case PIXEL_FORMAT_NV12A:
-          si_format = viz::LegacyMultiPlaneFormat::kNV12A;
-          break;
-        default:
-          NOTREACHED();
-      }
-    } else {
 #if BUILDFLAG(IS_OZONE)
-      // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
-      // formats for which VideoFrame::RequiresExternalSampler() will return
-      // true.
-      switch (format) {
-        case PIXEL_FORMAT_NV12:
-          si_format = viz::MultiPlaneFormat::kNV12;
-          break;
-        case PIXEL_FORMAT_YV12:
-          si_format = viz::MultiPlaneFormat::kYV12;
-          break;
-        case PIXEL_FORMAT_P010LE:
-          si_format = viz::MultiPlaneFormat::kP010;
-          break;
-        case PIXEL_FORMAT_NV12A:
-          si_format = viz::MultiPlaneFormat::kNV12A;
-          break;
-        default:
-          NOTREACHED();
-      }
-      si_format.SetPrefersExternalSampler();
-#else
-      // MultiplanarSharedImage with external sampling is supported only on
-      // Ozone, and VideoFrames with external sampler should not be created on
-      // other platforms.
-      NOTREACHED();
-#endif
+    // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
+    // formats for which VideoFrame::RequiresExternalSampler() will return
+    // true.
+    switch (format) {
+      case PIXEL_FORMAT_NV12:
+        si_format = viz::MultiPlaneFormat::kNV12;
+        break;
+      case PIXEL_FORMAT_YV12:
+        si_format = viz::MultiPlaneFormat::kYV12;
+        break;
+      case PIXEL_FORMAT_P010LE:
+        si_format = viz::MultiPlaneFormat::kP010;
+        break;
+      case PIXEL_FORMAT_NV12A:
+        si_format = viz::MultiPlaneFormat::kNV12A;
+        break;
+      default:
+        NOTREACHED();
     }
-
+    si_format.SetPrefersExternalSampler();
     return format == PIXEL_FORMAT_NV12A ? VideoFrameResourceType::RGBA
                                         : VideoFrameResourceType::RGB;
+#else
+    // MultiplanarSharedImage with external sampling is supported only on
+    // Ozone, and VideoFrames with external sampler should not be created on
+    // other platforms.
+    NOTREACHED_NORETURN();
+#endif
   }
 
   CHECK(!frame.RequiresExternalSampler());
