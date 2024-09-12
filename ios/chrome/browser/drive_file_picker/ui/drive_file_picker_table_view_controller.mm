@@ -75,6 +75,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // A loading indocator displayed when the next page is being fetched.
   UIActivityIndicatorView* _loadingIndicator;
 
+  // A loading indocator displayed in the background while the items are being
+  // fetched.
+  UIActivityIndicatorView* _backgroundLoadingIndicator;
+
   // Next page availability.
   BOOL _nextPageAvailable;
 }
@@ -114,6 +118,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   self.navigationController.toolbarHidden = NO;
 
+  _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _backgroundLoadingIndicator.hidesWhenStopped = YES;
+  self.tableView.backgroundView = _backgroundLoadingIndicator;
+  [_backgroundLoadingIndicator startAnimating];
+
+  _loadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _loadingIndicator.hidesWhenStopped = YES;
+  self.tableView.tableFooterView = _loadingIndicator;
+
   __weak __typeof(self) weakSelf = self;
   auto cellProvider = ^UITableViewCell*(UITableView* tableView,
                                         NSIndexPath* indexPath,
@@ -129,11 +144,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
 
   [self.mutator fetchNextPage];
-
-  _loadingIndicator = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-  _loadingIndicator.hidesWhenStopped = YES;
-  self.tableView.tableFooterView = _loadingIndicator;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -435,6 +445,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   _nextPageAvailable = nextPageAvailable;
   [_loadingIndicator stopAnimating];
+  [_backgroundLoadingIndicator stopAnimating];
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
