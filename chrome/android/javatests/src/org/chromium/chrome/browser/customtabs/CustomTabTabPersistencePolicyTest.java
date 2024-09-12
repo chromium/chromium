@@ -521,7 +521,7 @@ public class CustomTabTabPersistencePolicyTest {
                 buildTestPersistencePolicy(),
                 ActivityType.CUSTOM_TAB,
                 AsyncTabParamsManagerSingleton.getInstance(),
-                CipherFactory.getInstance());
+                new CipherFactory());
         TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.DESTROYED);

@@ -63,34 +63,16 @@ public class CipherFactory {
         }
     }
 
-    /** Singleton holder for the class. */
-    private static class LazyHolder {
-        private static CipherFactory sInstance = new CipherFactory();
-    }
-
-    public static void resetInstanceForTesting() {
-        LazyHolder.sInstance = new CipherFactory();
-    }
-
-    public static void resetInstanceForTesting(CipherFactory cipherFactory) {
-        LazyHolder.sInstance = cipherFactory;
-    }
-
     /** Protects mData across threads. */
     private final Object mDataLock = new Object();
 
     /** Holds data for cipher generation. */
     private CipherData mData;
 
-    /** A list of observers for this class. */
-    private Runnable mTestCipherDataGeneratedCallback;
-
-    /** @return The Singleton instance. Creates it if it doesn't exist. */
-    public static CipherFactory getInstance() {
-        return LazyHolder.sInstance;
-    }
-
-    /** Constructor. Should only be called by {@link BaseCustomTabActivity}. */
+    /**
+     * Constructor for a new {@link CipherFactory}. Each CipherFactory will use different encryption
+     * keys.
+     */
     public CipherFactory() {}
 
     /**

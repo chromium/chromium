@@ -323,6 +323,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             "Android.MultiWindowMode.DraggedTabOpenedNewWindow";
 
     /**
+     * A {@link CipherFactory} instance that is shared among all {@link ChromeTabbedActivity}
+     * instances.
+     */
+    private static class CipherLazyHolder {
+        private static CipherFactory sCipherInstance = new CipherFactory();
+    }
+
+    /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
      */
     @IntDef({DispatchedBy.ON_CREATE, DispatchedBy.ON_NEW_INTENT})
@@ -541,7 +549,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         new IncognitoRestoreAppLaunchDrawBlockerFactory(
                                 this::getSavedInstanceState,
                                 getTabModelSelectorSupplier(),
-                                CipherFactory.getInstance()));
+                                CipherLazyHolder.sCipherInstance));
     }
 
     @Override
@@ -1194,7 +1202,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             if (mIncognitoCookiesFetcher == null) {
                                 mIncognitoCookiesFetcher =
                                         new CookiesFetcher(
-                                                profileProvider, CipherFactory.getInstance());
+                                                profileProvider, CipherLazyHolder.sCipherInstance);
                             }
                             IncognitoStartup.onResumeWithNative(
                                     profileProvider,
@@ -1522,7 +1530,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             Intent intent = getIntent();
 
             boolean hadCipherData =
-                    CipherFactory.getInstance().restoreFromBundle(getSavedInstanceState());
+                    CipherLazyHolder.sCipherInstance.restoreFromBundle(getSavedInstanceState());
 
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
@@ -2355,7 +2363,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mMultiInstanceManager != null && mMultiInstanceManager.isTabModelMergingEnabled();
         mTabModelOrchestrator =
                 new TabbedModeTabModelOrchestrator(
-                        tabMergingEnabled, getLifecycleDispatcher(), CipherFactory.getInstance());
+                        tabMergingEnabled,
+                        getLifecycleDispatcher(),
+                        CipherLazyHolder.sCipherInstance);
         if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
             mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
             mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
@@ -3278,7 +3288,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void onSaveInstanceState(Bundle outState) {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onSaveInstanceState")) {
             super.onSaveInstanceState(outState);
-            CipherFactory.getInstance().saveToBundle(outState);
+            CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             outState.putInt(
                     WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
             Boolean is_incognito = getCurrentTabModel().isIncognito();

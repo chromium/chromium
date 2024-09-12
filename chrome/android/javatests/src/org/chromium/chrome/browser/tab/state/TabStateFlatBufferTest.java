@@ -74,7 +74,7 @@ public class TabStateFlatBufferTest {
     @BeforeClass
     public static void beforeClass() {
         sTestServer = sActivityTestRule.getTestServer();
-        sCipherFactory = CipherFactory.getInstance();
+        sCipherFactory = new CipherFactory();
     }
 
     @Test

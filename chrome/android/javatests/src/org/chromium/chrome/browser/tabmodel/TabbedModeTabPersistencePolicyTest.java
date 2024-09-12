@@ -77,6 +77,7 @@ public class TabbedModeTabPersistencePolicyTest {
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -104,6 +105,8 @@ public class TabbedModeTabPersistencePolicyTest {
                         "TabbedModeTabPersistencePolicyTest",
                         TabStateDirectory.TABBED_MODE_DIRECTORY);
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
+
+        mCipherFactory = new CipherFactory();
 
         Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -157,9 +160,7 @@ public class TabbedModeTabPersistencePolicyTest {
                             profileProviderSupplier.set(mProfileProvider);
                             TabbedModeTabModelOrchestrator tmpOrchestrator =
                                     new TabbedModeTabModelOrchestrator(
-                                            false,
-                                            mActivityLifecycleDispatcher,
-                                            CipherFactory.getInstance());
+                                            false, mActivityLifecycleDispatcher, mCipherFactory);
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
                                     profileProviderSupplier,

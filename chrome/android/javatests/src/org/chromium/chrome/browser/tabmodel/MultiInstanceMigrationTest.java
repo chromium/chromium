@@ -49,6 +49,7 @@ public class MultiInstanceMigrationTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
@@ -62,6 +63,8 @@ public class MultiInstanceMigrationTest {
                                 .getTargetContext()
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
+
+        mCipherFactory = new CipherFactory();
 
         // Set the shared pref stating that the legacy file migration has occurred. The
         // multi-instance migration won't happen if the legacy path is taken.
@@ -98,7 +101,7 @@ public class MultiInstanceMigrationTest {
                                     selector,
                                     null,
                                     TabWindowManagerSingleton.getInstance(),
-                                    CipherFactory.getInstance());
+                                    mCipherFactory);
                     store.waitForMigrationToFinish();
                 });
     }

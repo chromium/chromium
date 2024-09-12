@@ -123,7 +123,7 @@ public class HomeSurfaceTestUtils {
 
             if (createStateFile) {
                 int rootId = rootIds == null ? tabIds[i] : rootIds[i];
-                saveTabState(tabIds[i], rootId, false);
+                saveTabState(tabIds[i], rootId);
             }
         }
         TabPersistentStore.TabModelMetadata incognitoInfo =
@@ -206,24 +206,24 @@ public class HomeSurfaceTestUtils {
      * Create a file so that a TabState can be restored later.
      *
      * @param tabId the Tab ID
-     * @param tabId the Root ID
-     * @param encrypted for Incognito mode
+     * @param rootId the Root ID
      */
-    private static void saveTabState(int tabId, int rootId, boolean encrypted) {
+    private static void saveTabState(int tabId, int rootId) {
         File file =
                 TabStateFileManager.getTabStateFile(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
-                        encrypted,
+                        /* encrypted= */ false,
                         /* isFlatBuffer= */ false);
         writeFile(file, M26_GOOGLE_COM.encodedTabState);
 
+        CipherFactory unusedCipherFactory = new CipherFactory();
         TabState tabState =
                 TabStateFileManager.restoreTabStateInternal(
-                        file, false, CipherFactory.getInstance());
+                        file, /* encrypted= */ false, unusedCipherFactory);
         tabState.rootId = rootId;
         TabStateFileManager.saveStateInternal(
-                file, tabState, encrypted, CipherFactory.getInstance());
+                file, tabState, /* encrypted= */ false, unusedCipherFactory);
     }
 
     private static void writeFile(File file, String data) {

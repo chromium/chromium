@@ -110,7 +110,7 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
         when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mIncognitoTabModelFilter);
 
-        mCipherFactory = CipherFactory.getInstance();
+        mCipherFactory = new CipherFactory();
     }
 
     @After

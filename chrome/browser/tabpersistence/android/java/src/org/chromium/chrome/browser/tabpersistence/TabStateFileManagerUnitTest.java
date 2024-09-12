@@ -65,7 +65,7 @@ public class TabStateFileManagerUnitTest {
 
     @Before
     public void setUp() {
-        mCipherFactory = CipherFactory.getInstance();
+        mCipherFactory = new CipherFactory();
     }
 
     @Test

@@ -130,7 +130,7 @@ public class TabPersistentStoreIntegrationTest {
                 new TabbedModeTabModelOrchestrator(
                         /* tabMergingEnabled= */ true,
                         mActivityLifecycleDispatcher,
-                        CipherFactory.getInstance());
+                        new CipherFactory());
         mOrchestrator.createTabModels(
                 mChromeActivity,
                 profileProviderSupplier,

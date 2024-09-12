@@ -31,9 +31,11 @@ public class TabStateTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private TestTabModelDirectory mTestTabModelDirectory;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
+        mCipherFactory = new CipherFactory();
         mTestTabModelDirectory =
                 new TestTabModelDirectory(
                         ApplicationProvider.getApplicationContext(), "TabStateTest", null);
@@ -49,8 +51,7 @@ public class TabStateTest {
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), info.filename);
         TabState tabState =
-                TabStateFileManager.restoreTabStateInternal(
-                        tabStateFile, false, CipherFactory.getInstance());
+                TabStateFileManager.restoreTabStateInternal(tabStateFile, false, mCipherFactory);
         Assert.assertNotNull(tabState);
         Assert.assertEquals(info.url, tabState.contentsState.getVirtualUrlFromState());
         Assert.assertEquals(info.title, tabState.contentsState.getDisplayTitleFromState());

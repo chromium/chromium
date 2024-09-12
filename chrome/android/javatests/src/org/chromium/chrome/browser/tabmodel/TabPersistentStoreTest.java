@@ -147,7 +147,6 @@ public class TabPersistentStoreTest {
     /** Used when testing interactions of TabPersistentStore with real {@link TabModelImpl}s. */
     static class TestTabModelSelector extends TabModelSelectorBase implements TabModelDelegate {
         final TabPersistentStore mTabPersistentStore;
-        final CipherFactory mCipherFactory;
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
@@ -162,7 +161,6 @@ public class TabPersistentStoreTest {
             // real object is not available from {@link ChromeActivity} due to the test structure.
             // {@link TabModelImpl} requires a non-null {@link TabContentManager} to initialize.
             mMockTabContentManager = Mockito.mock(TabContentManager.class);
-            mCipherFactory = CipherFactory.getInstance();
             mTabPersistentStore =
                     ThreadUtils.runOnUiThreadBlocking(
                             new Callable<TabPersistentStore>() {
@@ -178,7 +176,7 @@ public class TabPersistentStoreTest {
                                                     TestTabModelSelector.this,
                                                     getTabCreatorManager(),
                                                     TabWindowManagerSingleton.getInstance(),
-                                                    mCipherFactory);
+                                                    sCipherFactory);
                                     tabPersistentStore.addObserver(mTabPersistentStoreObserver);
                                     return tabPersistentStore;
                                 }
@@ -322,7 +320,7 @@ public class TabPersistentStoreTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
 
-        sCipherFactory = CipherFactory.getInstance();
+        sCipherFactory = new CipherFactory();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

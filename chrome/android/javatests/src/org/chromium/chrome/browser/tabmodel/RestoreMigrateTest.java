@@ -52,6 +52,7 @@ public class RestoreMigrateTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
         TabModelSelectorMetadata data =
@@ -92,6 +93,8 @@ public class RestoreMigrateTest {
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
         TabIdManager.resetInstanceForTesting();
+
+        mCipherFactory = new CipherFactory();
     }
 
     static class AdvancedMockContextWithTestDir extends AdvancedMockContext {
@@ -134,7 +137,7 @@ public class RestoreMigrateTest {
                                     selector,
                                     null,
                                     TabWindowManagerSingleton.getInstance(),
-                                    CipherFactory.getInstance());
+                                    mCipherFactory);
                     return store;
                 });
     }

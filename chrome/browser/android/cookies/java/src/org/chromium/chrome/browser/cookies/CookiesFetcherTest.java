@@ -103,7 +103,7 @@ public class CookiesFetcherTest {
                             }
                         });
 
-        mCipherFactory = CipherFactory.getInstance();
+        mCipherFactory = new CipherFactory();
 
         mCookie0 =
                 new CanonicalCookie(

@@ -67,7 +67,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mProfileProviderSupplier.set(mProfileProvider);
-        mCipherFactory = CipherFactory.getInstance();
+        mCipherFactory = new CipherFactory();
     }
 
     @After
