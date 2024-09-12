@@ -25,10 +25,12 @@ import {
 import {CraIconButton} from '../components/cra/cra-icon-button.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
+import {OnboardingDialog} from '../components/onboarding-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
 import {AudioPlayerController} from '../core/audio_player_controller.js';
+import {focusToBody} from '../core/focus.js';
 import {i18n} from '../core/i18n.js';
 import {
   useMicrophoneManager,
@@ -154,6 +156,8 @@ export class MainPage extends ReactiveLitElement {
   private readonly currentPlayingId = signal<string|null>(null);
 
   private readonly actionsContainerRef = createRef<HTMLElement>();
+
+  private readonly onboardingDialogRef = createRef<OnboardingDialog>();
 
   private readonly currentPlayingRecordingLength = computed(() => {
     const id = this.currentPlayingId.value;
@@ -312,18 +316,25 @@ export class MainPage extends ReactiveLitElement {
     </secondary-button>`;
   }
 
+  private onOnboardingDone() {
+    settings.mutate((s) => {
+      s.onboardingDone = true;
+    });
+    const onboardingDialog = assertExists(this.onboardingDialogRef.value);
+    // Focus back to body after the dialog is closed.
+    onboardingDialog.updateComplete.then(() => {
+      focusToBody();
+    });
+  }
+
   override render(): RenderResult {
     const onboarding = settings.value.onboardingDone !== true;
-    function onOnboardingDone() {
-      settings.mutate((s) => {
-        s.onboardingDone = true;
-      });
-    }
 
     return html`
       <onboarding-dialog
         ?open=${onboarding}
-        @close=${onOnboardingDone}
+        @close=${this.onOnboardingDone}
+        ${ref(this.onboardingDialogRef)}
       ></onboarding-dialog>
       <delete-recording-dialog
         ${ref(this.deleteRecordingDialog)}

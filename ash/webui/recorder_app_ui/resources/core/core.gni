@@ -7,6 +7,7 @@ core_files = [
   "audio_player_controller.ts",
   "data_dir.ts",
   "events_sender.ts",
+  "focus.ts",
   "i18n.ts",
   "init.ts",
   "lit/context.ts",
