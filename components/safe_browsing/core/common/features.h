@@ -217,6 +217,13 @@ BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables sync checker to check allowlist first on Chrome on Android. This is
+// an optimization to improve the speed of Safe Browsing checks.
+// See go/skip-sync-hpd-allowlist-android for details.
+BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
+#endif
+
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 

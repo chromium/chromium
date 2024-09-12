@@ -233,6 +233,11 @@ struct WillStartRequestOptionalArgs {
   int load_flags = 0;
 };
 
+struct SetUpTestOptionalArgs {
+  bool url_real_time_lookup_enabled = false;
+  bool should_sync_checker_check_allowlist = false;
+};
+
 }  // namespace
 
 class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
@@ -245,8 +250,9 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     return url_checker_delegate_;
   }
 
-  void SetUpTest(bool async_check_enabled,
-                 bool url_real_time_lookup_enabled = false) {
+  void SetUpTest(
+      bool async_check_enabled,
+      SetUpTestOptionalArgs optional_args = SetUpTestOptionalArgs()) {
     auto url_checker_delegate_getter = base::BindRepeating(
         [](SBBrowserUrlLoaderThrottleTestBase* test) {
           return test->GetUrlCheckerDelegate();
@@ -255,18 +261,21 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     EXPECT_CALL(mock_web_contents_getter_, Run())
         .WillRepeatedly(::testing::Return(web_contents_));
     ui_manager_ = base::MakeRefCounted<BaseUIManager>();
-    async_check_tracker_ = async_check_enabled
-                               ? base::WrapUnique(new AsyncCheckTracker(
-                                     web_contents_, ui_manager_.get()))
-                               : nullptr;
+    async_check_tracker_ =
+        async_check_enabled
+            ? base::WrapUnique(new AsyncCheckTracker(
+                  web_contents_, ui_manager_.get(),
+                  optional_args.should_sync_checker_check_allowlist))
+            : nullptr;
     std::optional<int64_t> navigation_id =
         async_check_enabled ? std::optional<int64_t>(1u) : std::nullopt;
 
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter_.Get(),
         content::FrameTreeNodeId(), navigation_id,
-        url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
-                                     : nullptr,
+        optional_args.url_real_time_lookup_enabled
+            ? url_lookup_service_->GetWeakPtr()
+            : nullptr,
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         async_check_enabled
@@ -283,7 +292,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter_.Get(), UnsafeResource::kNoRenderProcessId,
             /*render_frame_token=*/std::nullopt, content::FrameTreeNodeId(),
-            navigation_id, url_real_time_lookup_enabled,
+            navigation_id, optional_args.url_real_time_lookup_enabled,
             /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,
             /*url_lookup_service_metric_suffix=*/"",
@@ -305,7 +314,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               mock_web_contents_getter_.Get(),
               UnsafeResource::kNoRenderProcessId,
               /*render_frame_token=*/std::nullopt, content::FrameTreeNodeId(),
-              /*navigation_id=*/0, url_real_time_lookup_enabled,
+              /*navigation_id=*/0, optional_args.url_real_time_lookup_enabled,
               /*can_check_db=*/true,
               /*can_check_high_confidence_allowlist=*/true,
               /*url_lookup_service_metric_suffix=*/"",
@@ -436,8 +445,10 @@ class SBBrowserUrlLoaderThrottleTest
       bool url_real_time_lookup_enabled,
       std::string expected_histogram) {
     bool async_check_enabled = GetParam();
-    SBBrowserUrlLoaderThrottleTestBase::SetUpTest(async_check_enabled,
-                                                  url_real_time_lookup_enabled);
+    SBBrowserUrlLoaderThrottleTestBase::SetUpTest(
+        async_check_enabled,
+        /*optional_args=*/{.url_real_time_lookup_enabled =
+                               url_real_time_lookup_enabled});
     base::HistogramTester histograms;
     AddCallbackInfo(/*should_proceed=*/true,
                     /*should_show_interstitial=*/false,
@@ -815,8 +826,10 @@ TEST_P(SBBrowserUrlLoaderThrottleTest,
 class SBBrowserUrlLoaderThrottleAsyncCheckTest
     : public SBBrowserUrlLoaderThrottleTestBase {
  protected:
-  void SetUpTest() {
-    SBBrowserUrlLoaderThrottleTestBase::SetUpTest(/*async_check_enabled=*/true);
+  void SetUpTest(
+      SetUpTestOptionalArgs optional_args = SetUpTestOptionalArgs()) {
+    SBBrowserUrlLoaderThrottleTestBase::SetUpTest(/*async_check_enabled=*/true,
+                                                  optional_args);
   }
 
   void AddSyncCallbackInfo(bool should_proceed, bool should_delay_callback) {
@@ -870,10 +883,29 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyCheckerParams) {
       throttle_->GetSyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
   EXPECT_FALSE(
       throttle_->GetSyncSBCheckerForTesting()->IsAsyncCheckForTesting());
+  EXPECT_FALSE(throttle_->GetSyncSBCheckerForTesting()
+                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsAsyncCheckForTesting());
+  EXPECT_FALSE(throttle_->GetSyncSBCheckerForTesting()
+                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
+       VerifyCheckerParams_WithSyncCheckerCheckAllowlistEnabled) {
+  SetUpTest(/*optional_args=*/{.should_sync_checker_check_allowlist = true});
+  EXPECT_EQ(throttle_->GetSyncSBCheckerForTesting(), nullptr);
+  EXPECT_EQ(throttle_->GetAsyncSBCheckerForTesting(), nullptr);
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/false);
+  CallWillStartRequest();
+  EXPECT_TRUE(throttle_->GetSyncSBCheckerForTesting()
+                  ->IsCheckAllowlistBeforeHashDatabaseForTesting());
+  EXPECT_FALSE(throttle_->GetAsyncSBCheckerForTesting()
+                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
 }
 
 // Sync check completed -> WillProcessResponse called -> async check completed.

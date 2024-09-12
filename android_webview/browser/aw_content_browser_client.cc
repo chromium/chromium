@@ -198,9 +198,12 @@ base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     return nullptr;
   }
 
+  // Setting should_sync_checker_check_allowlist to false since the allowlist
+  // is not available on WebView.
   return AsyncCheckTracker::GetOrCreateForWebContents(
              web_contents,
-             AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager())
+             AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager(),
+             /*should_sync_checker_check_allowlist=*/false)
       ->GetWeakPtr();
 }
 

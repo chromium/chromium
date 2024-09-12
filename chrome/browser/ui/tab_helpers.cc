@@ -515,7 +515,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           safe_browsing::kSafeBrowsingAsyncRealTimeCheck) &&
       g_browser_process->safe_browsing_service()) {
     safe_browsing::AsyncCheckTracker::CreateForWebContents(
-        web_contents, g_browser_process->safe_browsing_service()->ui_manager());
+        web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
+        safe_browsing::AsyncCheckTracker::
+            IsPlatformEligibleForSyncCheckerCheckAllowlist());
   }
   // SafeBrowsingTabObserver creates a ClientSideDetectionHost, which observes
   // events from PermissionRequestManager and AsyncCheckTracker in its

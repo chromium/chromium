@@ -82,6 +82,7 @@ class UrlCheckerHolder final {
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check,
+      bool check_allowlist_before_hash_database,
       SessionID tab_id);
 
   ~UrlCheckerHolder();
@@ -106,6 +107,8 @@ class UrlCheckerHolder final {
   bool IsRealTimeCheckForTesting();
 
   bool IsAsyncCheckForTesting();
+
+  bool IsCheckAllowlistBeforeHashDatabaseForTesting();
 
   void AddUrlInRedirectChainForTesting(const GURL& url);
 
@@ -144,6 +147,7 @@ class UrlCheckerHolder final {
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;
   bool is_async_check_ = false;
+  bool check_allowlist_before_hash_database_ = false;
   SessionID tab_id_;
   base::WeakPtrFactory<UrlCheckerHolder> weak_factory_{this};
 };

@@ -644,7 +644,8 @@ class SafeBrowsingBlockingPageTestHelper {
       bool wait_for_load_stop) {
     AsyncCheckTracker* tracker =
         safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
-            web_contents, std::move(ui_manager));
+            web_contents, std::move(ui_manager),
+            /*should_sync_checker_check_allowlist=*/false);
     // If all pending async checks are already resolved or were never created,
     // don't wait for the tracker to say the checkers size reached 0, because
     // that will never occur.
@@ -3538,7 +3539,8 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     AsyncCheckTracker* tracker =
         safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents(),
-            factory_.test_safe_browsing_service()->ui_manager().get());
+            factory_.test_safe_browsing_service()->ui_manager().get(),
+            /*should_sync_checker_check_allowlist=*/false);
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
     GURL interstitial_url;
@@ -3601,7 +3603,8 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     AsyncCheckTracker* tracker =
         safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents(),
-            factory_.test_safe_browsing_service()->ui_manager().get());
+            factory_.test_safe_browsing_service()->ui_manager().get(),
+            /*should_sync_checker_check_allowlist=*/false);
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
     for (const auto& url_and_server_redirect : url_and_server_redirects) {
