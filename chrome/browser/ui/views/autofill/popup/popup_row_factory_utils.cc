@@ -575,7 +575,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
 
 // Creates the row for creating a plus address inline.
 // TODO(crbug.com/362445807): Add pixel tests once the layout is complete.
-std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
+std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
@@ -596,6 +596,13 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
       /*description_label=*/nullptr,
       CreateSubtextViews(*view, kSuggestion, FillingProduct::kPlusAddresses),
       popup_cell_utils::GetIconImageView(kSuggestion), *view);
+
+  // If no refresh is offered, we can just use a "normal" `PopupRowView`.
+  if (!kSuggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
+    return std::make_unique<PopupRowView>(a11y_selection_delegate,
+                                          selection_delegate, controller,
+                                          line_number, std::move(view));
+  }
 
   base::RepeatingClosure action = base::BindRepeating(
       &AutofillPopupController::PerformButtonActionForSuggestion, controller,
