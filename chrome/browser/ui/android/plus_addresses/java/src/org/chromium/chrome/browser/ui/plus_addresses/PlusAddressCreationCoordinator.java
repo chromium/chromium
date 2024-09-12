@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.NORMAL_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
@@ -47,10 +48,9 @@ public class PlusAddressCreationCoordinator {
                         tabModel,
                         tabModelSelector,
                         bridge);
-        PropertyModel model =
-                createDefaultModel(mMediator, !info.getNotice().isEmpty(), refreshSupported);
+        PropertyModel model = createDefaultModel(info, mMediator, refreshSupported);
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(activity, bottomSheetController, info);
+                new PlusAddressCreationBottomSheetContent(activity, bottomSheetController);
 
         mMediator.setModel(model);
         mMediator.setBottomSheetContent(bottomSheetContent);
@@ -93,10 +93,12 @@ public class PlusAddressCreationCoordinator {
     }
 
     static PropertyModel createDefaultModel(
+            PlusAddressCreationNormalStateInfo normalStateInfo,
             PlusAddressCreationDelegate delegate,
-            boolean showOnboardingNotice,
             boolean refreshSupported) {
+        final boolean showOnboardingNotice = !normalStateInfo.getNotice().isEmpty();
         return new PropertyModel.Builder(ALL_KEYS)
+                .with(NORMAL_STATE_INFO, normalStateInfo)
                 .with(DELEGATE, delegate)
                 .with(SHOW_ONBOARDING_NOTICE, showOnboardingNotice)
                 .with(VISIBLE, false)

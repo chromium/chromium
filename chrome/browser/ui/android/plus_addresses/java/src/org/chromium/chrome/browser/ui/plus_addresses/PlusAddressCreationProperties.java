@@ -12,6 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Defines the data model for the {@code PlusAddressCreationView}. */
 class PlusAddressCreationProperties {
+    static final ReadableObjectPropertyKey<PlusAddressCreationNormalStateInfo> NORMAL_STATE_INFO =
+            new ReadableObjectPropertyKey<>("normal_state_info");
     static final ReadableObjectPropertyKey<PlusAddressCreationDelegate> DELEGATE =
             new ReadableObjectPropertyKey<>("delegate");
     static final ReadableBooleanPropertyKey SHOW_ONBOARDING_NOTICE =
@@ -31,6 +33,7 @@ class PlusAddressCreationProperties {
             new WritableBooleanPropertyKey("cancel_button_visible");
 
     static final PropertyKey[] ALL_KEYS = {
+        NORMAL_STATE_INFO,
         DELEGATE,
         SHOW_ONBOARDING_NOTICE,
         VISIBLE,

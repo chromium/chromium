@@ -27,6 +27,7 @@ class PlusAddressCreationNormalStateInfo {
     // The cancel button is not shown if the notice message is empty. The cancel text is empty in
     // this case.
     private final String mCancelText;
+    // TODO: crbug.com/354881207 - Remove once enhanced error handling is launched.
     private final String mErrorReportInstruction;
     private final GURL mLearnMoreUrl;
     private final GURL mErrorReportUrl;

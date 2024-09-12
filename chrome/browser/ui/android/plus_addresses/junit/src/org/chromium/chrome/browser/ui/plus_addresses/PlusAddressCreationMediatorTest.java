@@ -44,7 +44,17 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class PlusAddressCreationMediatorTest {
-
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
     private static final String PLUS_ADDRESS = "foo@bar.com";
@@ -69,7 +79,7 @@ public final class PlusAddressCreationMediatorTest {
         Activity activity = Robolectric.setupActivity(TestActivity.class);
         mModel =
                 PlusAddressCreationCoordinator.createDefaultModel(
-                        mDelegate, /* showOnboardingNotice= */ true, /* refreshSupported= */ true);
+                        FIRST_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
                         activity,
