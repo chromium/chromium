@@ -386,7 +386,8 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 
   // When done loading the for-you feed, try to refresh the web-feed if there's
   // no unread content.
-  if (IsWebFeedEnabled() && result.load_type != LoadType::kManualRefresh &&
+  if (IsWebFeedEnabled() && IsSignedIn() &&
+      result.load_type != LoadType::kManualRefresh &&
       result.stream_type.IsForYou() && chained_web_feed_refresh_enabled_) {
     // Checking for users without follows.
     // TODO(b/229143375) - We should rate limit fetches if the server side is
