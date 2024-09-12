@@ -11,7 +11,8 @@ namespace {
 
 // Constants used by tests.
 const char kProfileName[] = "Profile";
-const char kGaiaId[] = "Gaia";
+const char kGaiaId1[] = "Gaia1";
+const char kGaiaId2[] = "Gaia2";
 const char kUserName[] = "email@example.com";
 
 }  // namespace
@@ -32,14 +33,27 @@ TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
   EXPECT_FALSE(attributes.HasAuthenticationError());
   EXPECT_FALSE(attributes.IsAuthenticated());
 
-  attributes.SetAuthenticationInfo(kGaiaId, kUserName);
-  EXPECT_EQ(attributes.GetGaiaId(), kGaiaId);
+  attributes.SetAuthenticationInfo(kGaiaId1, kUserName);
+  EXPECT_EQ(attributes.GetGaiaId(), kGaiaId1);
   EXPECT_EQ(attributes.GetUserName(), kUserName);
   EXPECT_FALSE(attributes.HasAuthenticationError());
   EXPECT_TRUE(attributes.IsAuthenticated());
 
   attributes.SetHasAuthenticationError(true);
   EXPECT_TRUE(attributes.HasAuthenticationError());
+}
+
+// Tests that setting and reading the attached gaia ids.
+TEST_F(ProfileAttributesIOSTest, GetSetAttachedGaiaIds) {
+  ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+
+  EXPECT_EQ(attributes.GetAttachedGaiaIds().size(), 0ul);
+  ProfileAttributesIOS::GaiaIdSet gaia_ids;
+  gaia_ids.insert(kGaiaId1);
+  gaia_ids.insert(kGaiaId2);
+  ASSERT_EQ(gaia_ids.size(), 2u);
+  attributes.SetAttachedGaiaIds(gaia_ids);
+  EXPECT_EQ(attributes.GetAttachedGaiaIds(), gaia_ids);
 }
 
 // Tests that setting and reading the last activation time works.
@@ -62,7 +76,7 @@ TEST_F(ProfileAttributesIOSTest, GetStorage) {
 
   {
     ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
-    attributes.SetAuthenticationInfo(kGaiaId, kUserName);
+    attributes.SetAuthenticationInfo(kGaiaId1, kUserName);
     attributes.SetLastActiveTime(base::Time::Now());
     attributes.SetHasAuthenticationError(false);
     EXPECT_EQ(std::move(attributes).GetStorage().size(), 4u);
