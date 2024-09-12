@@ -100,7 +100,7 @@ bool CSSPropertyParser::ParseValue(
   return parse_success;
 }
 
-// NOTE: “range” cannot include !important; this is for setting properties
+// NOTE: “stream” cannot include !important; this is for setting properties
 // from CSSOM or similar.
 const CSSValue* CSSPropertyParser::ParseSingleValue(
     CSSPropertyID property,

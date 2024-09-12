@@ -269,9 +269,9 @@ class CORE_EXPORT CSSParserTokenStream {
   //  - The next token is of any of the given types, except if it occurs
   //    within a block.
   //
-  // The range of tokens that we consume is returned. So e.g., if we ask
+  // The tokens that we consume are discarded. So e.g., if we ask
   // to stop at semicolons, and the rest of the input looks like
-  // “.foo { color; } bar ; baz”, we would return “.foo { color; } bar ”
+  // “.foo { color; } bar ; baz”, we would skip “.foo { color; } bar ”
   // and stop there (the semicolon would remain in the lookahead slot).
   template <CSSParserTokenType... Types>
   void SkipUntilPeekedTypeIs() {

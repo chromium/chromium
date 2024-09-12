@@ -570,7 +570,7 @@ String CSSParserImpl::ParseCustomPropertyName(StringView name_text) {
 bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   DCHECK(parsed_properties_.empty());
   // Even though we might use an observer here, this is just to test if we
-  // successfully parse the range, so we can temporarily remove the observer.
+  // successfully parse the stream, so we can temporarily remove the observer.
   CSSParserObserver* observer_copy = observer_;
   observer_ = nullptr;
   ConsumeDeclaration(stream, StyleRule::kStyle);
