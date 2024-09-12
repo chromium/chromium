@@ -84,11 +84,12 @@ class ASH_PUBLIC_EXPORT CoralCluster {
   ~CoralCluster();
 
   const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
 
  private:
   std::u16string title_;
   // Tab/app content keys sorted by relevance to the cluster.
-  std::vector<ContentKey> content_keys;
+  std::vector<ContentKey> content_keys_;
 };
 
 // `CoralResponse` contains 0-2 `CoralCluster`s in order of relevance.

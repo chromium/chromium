@@ -11,6 +11,8 @@
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/coral_delegate.h"
+#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -20,6 +22,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/time_formatting.h"
@@ -1027,6 +1031,24 @@ void BirchCoralItem::PerformAction() {
   // TODO(yulunwu) restore all applicable items in group to active desk.
   // Open all related tabs in the same window with the default window bounds.
   // Open related app(s) in its last used window state.
+
+  // TODO(http://b/365839465): Handle post-login case.
+  // TODO(http://b/365839564): Handle save for later case.
+  // TODO(sammiequon): Remove hardcoded cluster.
+  coral_util::CoralCluster temp_cluster;
+  temp_cluster.set_title(u"Coral desk");
+
+  DesksController* desks_controller = DesksController::Get();
+  if (!desks_controller->CanCreateDesks()) {
+    return;
+  }
+
+  desks_controller->NewDesk(DesksCreationRemovalSource::kCoral,
+                            temp_cluster.title());
+  desks_controller->ActivateDesk(desks_controller->desks().back().get(),
+                                 DesksSwitchSource::kCoral);
+  Shell::Get()->coral_delegate()->OpenNewDeskWithCluster(
+      std::move(temp_cluster));
 }
 
 void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {

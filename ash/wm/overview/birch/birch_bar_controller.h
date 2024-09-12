@@ -101,7 +101,6 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
  private:
   friend class BirchBarMenuTest;
-  friend class TapAppSelectionViewTest;
 
   // Fetches data from birch model if there is no fetching in progress.
   void MaybeFetchDataFromModel();

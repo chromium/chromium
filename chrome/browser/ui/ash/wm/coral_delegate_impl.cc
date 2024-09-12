@@ -8,7 +8,6 @@ CoralDelegateImpl::CoralDelegateImpl() = default;
 
 CoralDelegateImpl::~CoralDelegateImpl() = default;
 
-// ash::CoralDelegateImpl:
 void CoralDelegateImpl::LaunchPostLoginCluster(
     const ash::coral_util::CoralCluster& cluster) {}
 

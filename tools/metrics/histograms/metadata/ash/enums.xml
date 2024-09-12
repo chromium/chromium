@@ -608,6 +608,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="7" label="Create a new desk to ensure the default desk exists"/>
   <int value="8" label="Desk Floating Workspace"/>
   <int value="9" label="Button pressed on desk button desk bar"/>
+  <int value="10" label="Coral button on birch bar pressed"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">
@@ -641,6 +642,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
       label="Desk switch by clicking on a mini view in the desk button desk
              bar"/>
   <int value="16" label="Desk switch due to session restore"/>
+  <int value="17" label="Coral button on birch bar pressed"/>
 </enum>
 
 <enum name="DisclaimerViewAction">

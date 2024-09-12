@@ -123,6 +123,22 @@ source_set("unit_tests") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "birch_test_util.cc",
+    "birch_test_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
 
@@ -135,6 +151,7 @@ source_set("browser_tests") {
 
   deps = [
     ":birch",
+    ":test_support",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
