@@ -1153,69 +1153,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SplitCacheContentBrowserTestPlzDedicatedWorker,
                          ::testing::Values(true, false));
 
-class ScopeBlinkMemoryCachePerContext : public SplitCacheContentBrowserTest {
- public:
-  ScopeBlinkMemoryCachePerContext() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    enabled_features.push_back(blink::features::kScopeMemoryCachePerContext);
-
-    feature_list.InitWithFeatures(enabled_features, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list;
-};
-
-// TODO(crbug.com/40892607): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(ScopeBlinkMemoryCachePerContext, DISABLED_CheckFeature) {
-  base::HistogramTester histograms;
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      blink::features::kScopeMemoryCachePerContext));
-
-  // This page fetches the same script resource twice.
-  GURL page_url_1(embedded_test_server()->GetURL(
-      "/page_with_multiple_cached_subresources.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), page_url_1));
-
-  content::FetchHistogramsFromChildProcesses();
-
-  // The script is preloaded.
-  histograms.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script", 2);
-  histograms.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script",
-      3 /* RevalidationPolicy::kLoad */, 1);
-  histograms.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script",
-      0 /* RevalidationPolicy::kUse */, 1);
-
-  // Since the script is loaded twice, kUse bucket should have 2.
-  histograms.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Script", 2);
-  histograms.ExpectBucketCount("Blink.MemoryCache.RevalidationPolicy.Script",
-                               0 /* RevalidationPolicy::kUse */, 2);
-
-  // Loading again should not serve the request out of the in-memory cache since
-  // this is a new document.
-  // This page fetches the same script resource once.
-  GURL page_url_2(
-      embedded_test_server()->GetURL("/page_with_cached_subresource.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), page_url_2));
-
-  content::FetchHistogramsFromChildProcesses();
-  histograms.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script", 3);
-  histograms.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script",
-      3 /* RevalidationPolicy::kLoad */, 2);
-  histograms.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Script",
-      0 /* RevalidationPolicy::kUse */, 1);
-  histograms.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Script", 3);
-  histograms.ExpectBucketCount("Blink.MemoryCache.RevalidationPolicy.Script",
-                               0 /* RevalidationPolicy::kUse */, 3);
-}
-
 class SplitCacheByIncludeCredentialsTest : public ContentBrowserTest {
  public:
   SplitCacheByIncludeCredentialsTest()

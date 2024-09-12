@@ -1407,13 +1407,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       // found, we may need to make it block the onload event.
       MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
     } else if (IsMainThread()) {
-      if (base::FeatureList::IsEnabled(features::kScopeMemoryCachePerContext) &&
-          !in_cached_resources_map) {
-        resource = nullptr;
-      } else {
-        resource = MemoryCache::Get()->ResourceForURL(
-            params.Url(), GetCacheIdentifier(params.Url()));
-      }
+      resource = MemoryCache::Get()->ResourceForURL(
+          params.Url(), GetCacheIdentifier(params.Url()));
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
@@ -1725,12 +1720,9 @@ Resource* ResourceFetcher::CreateResourceForLoading(
     const ResourceFactory& factory) {
   const String cache_identifier =
       GetCacheIdentifier(params.GetResourceRequest().Url());
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kScopeMemoryCachePerContext)) {
-    DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
-           !MemoryCache::Get()->ResourceForURL(
-               params.GetResourceRequest().Url(), cache_identifier));
-  }
+  DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
+         !MemoryCache::Get()->ResourceForURL(params.GetResourceRequest().Url(),
+                                             cache_identifier));
 
   RESOURCE_LOADING_DVLOG(1) << "Loading Resource for "
                             << params.GetResourceRequest().Url().ElidedString();
