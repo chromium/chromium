@@ -291,18 +291,8 @@ std::optional<std::string> Encryptor::DecryptData(
     }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
         // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
-    if (!provider_for_encryption_.empty()) {
-      // Subtle: `is_os_crypt_sync_compatible_` is not transferred over mojo
-      // so will always be false in a non-browser process. However, this CHECK
-      // exists for correctness of provider registration so it does not matter
-      // if it never fires in these processes, as it will fire in browser
-      // first.
-      CHECK(!keys_.at(provider_for_encryption_).is_os_crypt_sync_compatible_)
-          << "A provider marked itself as OSCrypt Sync compatible but did not "
-             "decrypt OSCrypt Sync data.";
-      if (flags) {
-        flags->should_reencrypt = true;
-      }
+    if (!provider_for_encryption_.empty() && flags) {
+      flags->should_reencrypt = true;
     }
     return plaintext;
   }
