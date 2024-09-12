@@ -366,7 +366,7 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
     return bar_view;
   }
 
-  // OverviewFocusCyclerOldTest:
+  // OverviewFocusCyclerTest:
   void SetUp() override {
     OverviewFocusCyclerTest::SetUp();
 
