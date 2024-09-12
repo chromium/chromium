@@ -10,13 +10,11 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_features.h"
@@ -30,6 +28,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
@@ -771,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   base::RunLoop().RunUntilIdle();
   // Verify the profile is destroyed.
   EXPECT_FALSE(
-      g_browser_process->profile_manager()->IsValidProfile(incognito_profile));
+      ExtensionsBrowserClient::Get()->IsValidContext(incognito_profile));
   // The test succeeds if there are no crashes. There's nothing left to verify
   // for keepalives, since the profile is gone.
 }
@@ -918,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   base::RunLoop().RunUntilIdle();
   // Verify the profile is destroyed.
   EXPECT_FALSE(
-      g_browser_process->profile_manager()->IsValidProfile(incognito_profile));
+      ExtensionsBrowserClient::Get()->IsValidContext(incognito_profile));
   // The test succeeds if there are no crashes. There's nothing left to verify
   // for keepalives, since the profile is gone.
 }
@@ -1083,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify the profile is destroyed.
   EXPECT_FALSE(
-      g_browser_process->profile_manager()->IsValidProfile(incognito_profile));
+      ExtensionsBrowserClient::Get()->IsValidContext(incognito_profile));
 
   // Verify that all keepalives have been removed, since the message port was
   // closed as part of the incognito profile shutdown. (We can't verify
