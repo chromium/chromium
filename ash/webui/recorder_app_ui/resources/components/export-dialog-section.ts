@@ -32,6 +32,11 @@ interface DropdownOption {
 }
 
 export class ExportDialogSection extends ReactiveLitElement {
+  static override shadowRootOptions: ShadowRootInit = {
+    ...ReactiveLitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   static override styles: CSSResultGroup = css`
     :host {
       display: contents;
