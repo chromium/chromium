@@ -2005,7 +2005,6 @@ const char kMutationEventsDescription[] =
 const char kKeyboardFocusableScrollersName[] =
     "Enables keyboard focusable scrollers";
 const char kKeyboardFocusableScrollersDescription[] =
-    "Scrollers are click-focusable and programmatically-focusable by default. "
     "Scrollers without focusable children are keyboard-focusable by default.";
 
 const char kFillOnAccountSelectName[] = "Fill passwords on account selection";

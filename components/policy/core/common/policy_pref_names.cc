@@ -132,8 +132,7 @@ const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 
 // A boolean indicating whether scrollers should be focusable. If true, then
-// 1. Scrollers are click-focusable and programmatically-focusable by default.
-// 2. Scrollers without focusable children are keyboard-focusable by default.
+// scrollers without focusable children are keyboard-focusable by default.
 const char kKeyboardFocusableScrollersEnabled[] =
     "policy.keyboard_focusable_scrollers_enabled";
 
