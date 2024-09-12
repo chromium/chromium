@@ -4,6 +4,8 @@
 
 #include "net/base/schemeful_site.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -113,7 +115,7 @@ void SchemefulSite::ConvertWebSocketToHttp() {
 }
 
 // static
-SchemefulSite SchemefulSite::Deserialize(const std::string& value) {
+SchemefulSite SchemefulSite::Deserialize(std::string_view value) {
   return SchemefulSite(GURL(value));
 }
 
@@ -159,13 +161,13 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 // static
 std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     base::PassKey<NetworkAnonymizationKey>,
-    const std::string& value) {
+    std::string_view value) {
   return DeserializeWithNonce(value);
 }
 
 // static
 std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
-    const std::string& value) {
+    std::string_view value) {
   std::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
     return std::nullopt;

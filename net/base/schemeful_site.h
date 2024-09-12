@@ -8,6 +8,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
@@ -96,7 +97,7 @@ class NET_EXPORT SchemefulSite {
 
   // Deserializes a string obtained from `Serialize()` to a `SchemefulSite`.
   // Returns an opaque `SchemefulSite` if the value was invalid in any way.
-  static SchemefulSite Deserialize(const std::string& value);
+  static SchemefulSite Deserialize(std::string_view value);
 
   // Returns a serialized version of `site_as_origin_`. If the underlying origin
   // is invalid, returns an empty string. If serialization of opaque origins
@@ -119,7 +120,7 @@ class NET_EXPORT SchemefulSite {
   // `SchemefulSite`. Returns nullopt if the value was invalid in any way.
   static std::optional<SchemefulSite> DeserializeWithNonce(
       base::PassKey<NetworkAnonymizationKey>,
-      const std::string& value);
+      std::string_view value);
 
   // Returns a serialized version of `site_as_origin_`. For an opaque
   // `site_as_origin_`, this serializes with the nonce.  See
@@ -191,7 +192,7 @@ class NET_EXPORT SchemefulSite {
   // Deserializes a string obtained from `SerializeWithNonce()` to a
   // `SchemefulSite`. Returns nullopt if the value was invalid in any way.
   static std::optional<SchemefulSite> DeserializeWithNonce(
-      const std::string& value);
+      std::string_view value);
 
   // Returns a serialized version of `site_as_origin_`. For an opaque
   // `site_as_origin_`, this serializes with the nonce.  See
