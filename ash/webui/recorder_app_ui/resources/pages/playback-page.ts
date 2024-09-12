@@ -738,6 +738,9 @@ export class PlaybackPage extends ReactiveLitElement {
       this.playbackSpeedMenu.value?.toggle();
     };
 
+    const classes = {
+      selected: this.playbackSpeedMenuOpened.value,
+    };
     return html`
       <cra-menu
         ${ref(this.playbackSpeedMenu)}
@@ -749,15 +752,14 @@ export class PlaybackPage extends ReactiveLitElement {
         ${menuItems}
       </cra-menu>
       <cra-icon-button
-        buttonstyle="toggle"
+        buttonstyle="filled"
+        class="with-toggle-style ${classMap(classes)}"
         id="show-speed-menu"
         @click=${togglePlaybackSpeedMenu}
-        .selected=${live(this.playbackSpeedMenuOpened.value)}
         aria-haspopup="true"
         aria-label=${i18n.playbackSpeedButtonTooltip}
       >
         <cra-icon slot="icon" .name=${iconName}></cra-icon>
-        <cra-icon slot="selectedIcon" .name=${iconName}></cra-icon>
       </cra-icon-button>
     `;
   }

@@ -116,6 +116,33 @@ export class CraIconButton extends IconButton {
           --cros-sys-ripple_neutral_on_subtle
         );
       }
+
+      :host([buttonstyle="filled"].with-toggle-style)
+        md-filled-tonal-icon-button {
+        --md-filled-tonal-icon-button-container-color: #0000;
+        --md-filled-tonal-icon-button-pressed-state-layer-color: var(
+          --cros-sys-ripple_primary
+        );
+      }
+
+      :host([buttonstyle="filled"].selected.with-toggle-style)
+        md-filled-tonal-icon-button {
+        --md-filled-tonal-icon-button-container-color: var(
+          --cros-sys-primary_container
+        );
+        --md-filled-tonal-icon-button-focus-icon-color: var(
+          --cros-sys-on_primary_container
+        );
+        --md-filled-tonal-icon-button-hover-icon-color: var(
+          --cros-sys-on_primary_container
+        );
+        --md-filled-tonal-icon-button-icon-color: var(
+          --cros-sys-on_primary_container
+        );
+        --md-filled-tonal-icon-button-pressed-state-layer-color: var(
+          --cros-sys-ripple_primary
+        );
+      }
     `,
   ];
 

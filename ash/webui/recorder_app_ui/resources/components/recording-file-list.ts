@@ -17,10 +17,10 @@ import './recording-file-list-item.js';
 import './recording-search-box.js';
 
 import {
+  classMap,
   createRef,
   css,
   html,
-  live,
   PropertyDeclarations,
   ref,
   repeat,
@@ -229,6 +229,9 @@ export class RecordingFileList extends ReactiveLitElement {
       this.searchQuery.value = ev.detail;
     };
 
+    const classes = {
+      selected: this.sortMenuOpened.value,
+    };
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
         <recording-search-box
@@ -239,13 +242,12 @@ export class RecordingFileList extends ReactiveLitElement {
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
-          buttonstyle="toggle"
+          buttonstyle="filled"
+          class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
-          .selected=${live(this.sortMenuOpened.value)}
           aria-label=${i18n.recordingListSortButtonTooltip}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
-          <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
         </cra-icon-button>
       </div>
       ${this.renderSortMenu()}`;
