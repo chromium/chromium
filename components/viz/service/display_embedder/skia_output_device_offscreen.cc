@@ -16,10 +16,13 @@
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
+#endif
 
 namespace viz {
 
