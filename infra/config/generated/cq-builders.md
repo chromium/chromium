@@ -453,6 +453,7 @@ builder.
 
   Location filters:
   * [`//components/headless/.+`](https://cs.chromium.org/chromium/src/components/headless/)
+  * [`//dbus/.+`](https://cs.chromium.org/chromium/src/dbus/)
   * [`//headless/.+`](https://cs.chromium.org/chromium/src/headless/)
 
 * [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))

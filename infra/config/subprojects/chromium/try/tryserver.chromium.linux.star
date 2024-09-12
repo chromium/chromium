@@ -203,6 +203,7 @@ try_.builder(
     tryjob = try_.job(
         location_filters = [
             "components/headless/.+",
+            "dbus/.+",
             "headless/.+",
         ],
     ),
