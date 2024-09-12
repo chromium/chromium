@@ -3513,9 +3513,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer toggle under the input section in audio settings subpage.">
     Studio-style mic
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_BADGE" desc="In Device Settings, the badge of the style transfer toggle under the input section in audio settings subpage.">
-    Experimental
-  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
     Apply noise cancellation and audio improvements.
   </message>

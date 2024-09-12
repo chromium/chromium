@@ -1024,8 +1024,6 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
       {"audioInputStyleTransferTitle",
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE},
-      {"audioInputStyleTransferBadge",
-       IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_BADGE},
       {"audioInputStyleTransferDescription",
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
