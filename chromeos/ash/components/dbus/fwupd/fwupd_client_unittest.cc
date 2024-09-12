@@ -795,6 +795,30 @@ TEST_F(FwupdClientTest, NoTrustedReports) {
   run_loop_.Run();
 }
 
+// Test that updates lacking the trusted report flag are allowed if the
+// UpstreamTrustedReportsFirmware is disabled.
+TEST_F(FwupdClientTest, UpstreamTrustedReportsFirmwareDisabled) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(
+      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+
+  DisableFeatureFlag(features::kUpstreamTrustedReportsFirmware);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
 TEST_F(FwupdClientTest, Install) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
