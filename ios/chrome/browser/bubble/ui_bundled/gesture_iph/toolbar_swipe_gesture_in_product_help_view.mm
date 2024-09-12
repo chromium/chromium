@@ -55,25 +55,28 @@ const int kBidirectionalAnimationRepeatCount = 4;
       _bidirectional = NO;
       _animationRepeatCount = [super animationRepeatCount];
     }
+    if (@available(iOS 17, *)) {
+      [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                        @[ UITraitVerticalSizeClass.self ])
+                         withAction:@selector(updateUIOnTraitChange)];
+    }
   }
   return self;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    [self.bubbleView removeFromSuperview];
-    [self setInitialBubbleViewWithDirection:
-              (BubbleArrowDirection)0 /* this value is not used */
-                               boundingSize:self.bounds.size];
-    [NSLayoutConstraint deactivateConstraints:_dismissButtonConstraints];
-    _dismissButtonConstraints = [self dismissButtonConstraints];
-    [NSLayoutConstraint activateConstraints:_dismissButtonConstraints];
-    self.topConstraintForBottomEdgeSwipe.active = [self shouldSwipeBottomEdge];
-    self.topConstraintForTopEdgeSwipe.active = ![self shouldSwipeBottomEdge];
+    [self updateUIOnTraitChange];
   }
-  [super traitCollectionDidChange:previousTraitCollection];
 }
+#endif
 
 - (void)setInitialBubbleViewWithDirection:(BubbleArrowDirection)direction
                              boundingSize:(CGSize)boundingSize {
@@ -154,6 +157,20 @@ const int kBidirectionalAnimationRepeatCount = 4;
 // Whether the use should swipe the bottom edge, instead of the top.
 - (BOOL)shouldSwipeBottomEdge {
   return IsSplitToolbarMode(self.traitCollection);
+}
+
+// Updates the view's constraints and resets the `bubbleView`.
+- (void)updateUIOnTraitChange {
+  [self.bubbleView removeFromSuperview];
+  [self
+      setInitialBubbleViewWithDirection:(BubbleArrowDirection)0 /* this value is
+                                                                   not used */
+                           boundingSize:self.bounds.size];
+  [NSLayoutConstraint deactivateConstraints:_dismissButtonConstraints];
+  _dismissButtonConstraints = [self dismissButtonConstraints];
+  [NSLayoutConstraint activateConstraints:_dismissButtonConstraints];
+  self.topConstraintForBottomEdgeSwipe.active = [self shouldSwipeBottomEdge];
+  self.topConstraintForTopEdgeSwipe.active = ![self shouldSwipeBottomEdge];
 }
 
 @end
