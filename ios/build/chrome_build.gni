@@ -13,9 +13,9 @@ import("//build/config/ios/ios_sdk.gni")
 assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
 
 declare_args() {
-  # Enable notification center widget extensions.
-  ios_enable_content_widget_extension = true
-  ios_enable_search_widget_extension = true
+  # Disable notification center widget extensions.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
 
   # Enable share extension.
   ios_enable_share_extension = true
