@@ -3861,6 +3861,34 @@ function testSerialDisabled() {
   document.body.appendChild(webview);
 }
 
+// Before this test runs, the browser-side test code has a tab paired to a
+// Bluetooth device for the same origin used in the webview. We confirm that the
+// webview cannot request the device.
+function testBluetoothDisabled() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    const getBluetoothDeviceName = async () => {
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{services: ['heart_rate']}]
+      });
+      return device.name;
+    };
+
+    try {
+      const name = await evalInWebView(webview, getBluetoothDeviceName, []);
+      // Expecting the bluetooth request to throw, therefore test would fail if
+      // it reaches here.
+      embedder.test.fail();
+    } catch (e) {
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -4008,6 +4036,7 @@ embedder.test.testList = {
   'testCannotReuseUsbPairedInTab': testCannotReuseUsbPairedInTab,
   'testCannotRequestFonts': testCannotRequestFonts,
   'testSerialDisabled': testSerialDisabled,
+  'testBluetoothDisabled': testBluetoothDisabled,
 };
 
 onload = function() {

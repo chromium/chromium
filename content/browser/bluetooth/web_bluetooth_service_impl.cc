@@ -454,6 +454,12 @@ WebBluetoothServiceImpl::GetBluetoothAllowed() {
   // frames are disallowed.
   DCHECK(!render_frame_host().IsNestedWithinFencedFrame());
 
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  if (!delegate || !delegate->MayUseBluetooth(&render_frame_host())) {
+    return blink::mojom::WebBluetoothResult::WEB_BLUETOOTH_NOT_SUPPORTED;
+  }
+
   // Check if Web Bluetooth is allowed by Permissions Policy.
   if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kBluetooth)) {

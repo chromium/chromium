@@ -82,10 +82,6 @@ class IsolationInfo;
 class SiteForCookies;
 }  // namespace net
 
-namespace permissions {
-class BluetoothDelegateImpl;
-}  // namespace permissions
-
 namespace safe_browsing {
 class AsyncCheckTracker;
 class RealTimeUrlLookupServiceBase;
@@ -121,6 +117,7 @@ class ChromeDirectSocketsDelegate;
 class ChromeHidDelegate;
 class ChromePrivateNetworkDeviceDelegate;
 class ChromeSerialDelegate;
+class ChromeBluetoothDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 class HttpAuthCoordinator;
@@ -1236,7 +1233,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeDirectSocketsDelegate> direct_sockets_delegate_;
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
-  std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
+  std::unique_ptr<ChromeBluetoothDelegate> bluetooth_delegate_;
   std::unique_ptr<ChromeUsbDelegate> usb_delegate_;
   std::unique_ptr<ChromePrivateNetworkDeviceDelegate>
       private_network_device_delegate_;

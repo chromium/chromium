@@ -2615,6 +2615,8 @@ if (!is_android) {
       "../browser/banners/app_banner_manager_desktop_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
       "../browser/bluetooth/web_bluetooth_browsertest.cc",
+      "../browser/bluetooth/web_bluetooth_test_utils.cc",
+      "../browser/bluetooth/web_bluetooth_test_utils.h",
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/browsing_data_model_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest.cc",

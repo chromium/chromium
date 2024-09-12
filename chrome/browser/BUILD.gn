@@ -201,6 +201,8 @@ static_library("browser") {
     "battery/battery_saver.h",
     "bluetooth/bluetooth_chooser_context_factory.cc",
     "bluetooth/bluetooth_chooser_context_factory.h",
+    "bluetooth/chrome_bluetooth_delegate.cc",
+    "bluetooth/chrome_bluetooth_delegate.h",
     "bluetooth/chrome_bluetooth_delegate_impl_client.cc",
     "bluetooth/chrome_bluetooth_delegate_impl_client.h",
     "bookmarks/bookmark_model_factory.cc",

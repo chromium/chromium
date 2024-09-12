@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -13,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -31,6 +33,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -78,6 +81,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -95,6 +99,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/bluetooth_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
@@ -199,6 +204,7 @@ using task_manager::browsertest_util::MatchApp;
 using task_manager::browsertest_util::MatchBackground;
 using task_manager::browsertest_util::MatchWebView;
 using task_manager::browsertest_util::WaitForTaskManagerRows;
+using testing::Return;
 using ui::MenuModel;
 
 namespace {
@@ -208,6 +214,11 @@ const char kUserAgentRedirectResponsePath[] = "/detect-user-agent";
 const char kCacheResponsePath[] = "/cache-control-response";
 const char kRedirectResponseFullPath[] =
     "/extensions/platform_apps/web_view/shim/guest_redirect.html";
+
+// Web Bluetooth
+constexpr char kFakeBluetoothDeviceName[] = "Test Device";
+constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
+constexpr char kHeartRateUUIDString[] = "0000180d-0000-1000-8000-00805f9b34fb";
 
 class RenderWidgetHostVisibilityObserver
     : public content::RenderWidgetHostObserver {
@@ -7177,4 +7188,95 @@ IN_PROC_BROWSER_TEST_F(WebViewSerialTest,
   // Have the embedder create a webview which navigates to the same origin and
   // attempts to use serial.
   TestHelper("testSerialDisabled", "web_view/shim", NO_TEST_SERVER);
+}
+
+class WebViewBluetoothTest : public WebViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+    // Hook up the test bluetooth delegate.
+    SetFakeBlueboothAdapter();
+    old_browser_client_ = content::SetBrowserClientForTesting(&browser_client_);
+  }
+
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(old_browser_client_);
+    WebViewTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets up the blink runtime feature for accessing to navigator.bluetooth.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    WebViewTest::SetUpCommandLine(command_line);
+  }
+
+  void SetFakeBlueboothAdapter() {
+    adapter_ = new FakeBluetoothAdapter();
+    EXPECT_CALL(*adapter_, IsPresent()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*adapter_, IsPowered()).WillRepeatedly(Return(true));
+    content::SetBluetoothAdapter(adapter_);
+  }
+
+  void AddFakeDevice(const std::string& device_address) {
+    const device::BluetoothUUID kHeartRateUUID(kHeartRateUUIDString);
+    auto fake_device =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            adapter_.get(), /*bluetooth_class=*/0u, kFakeBluetoothDeviceName,
+            device_address,
+            /*paired=*/true,
+            /*connected=*/true);
+    fake_device->AddUUID(kHeartRateUUID);
+    fake_device->AddMockService(
+        std::make_unique<testing::NiceMock<device::MockBluetoothGattService>>(
+            fake_device.get(), kHeartRateUUIDString, kHeartRateUUID,
+            /*is_primary=*/true));
+    adapter_->AddMockDevice(std::move(fake_device));
+  }
+
+  void SetDeviceToSelect(const std::string& device_address) {
+    browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
+  }
+
+ private:
+  scoped_refptr<FakeBluetoothAdapter> adapter_;
+  BluetoothTestContentBrowserClient browser_client_;
+  raw_ptr<content::ContentBrowserClient> old_browser_client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewBluetoothTest,
+                       Shim_TestEnabledInTabButNotInWebView) {
+  // We start the test server here, instead of in TestHelper, because we
+  // need to know the origin used in the tab.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  // Test that Bluetooth works in a tab.
+  constexpr char kBluetoothTestScript[] = R"(
+(async () => {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{services: ['heart_rate']}]
+    });
+    return device.name;
+  } catch (e) {
+    return e.name + ': ' + e.message;
+  }
+})();
+  )";
+  EXPECT_EQ(kFakeBluetoothDeviceName,
+            EvalJs(tab_web_contents, kBluetoothTestScript));
+
+  // Have the embedder create a webview which navigates to the same origin
+  // and attempts to use Bluetooth.
+  TestHelper("testBluetoothDisabled", "web_view/shim", NO_TEST_SERVER);
 }
