@@ -156,10 +156,15 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mDelegate = delegate;
     }
 
+    void setLegacyErrorReportingInstructionVisible(boolean visible) {
+        mContentView
+                .findViewById(R.id.proposed_plus_address_container)
+                .setVisibility(visible ? View.GONE : View.VISIBLE);
+        mPlusAddressErrorReportView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     /** Adjusts the UI to show the loading state for confirming the proposed plus address. */
     public void showConfirmationLoadingState() {
-        mPlusAddressCancelButton.setVisibility(View.GONE);
-
         showLoadingIndicator();
     }
 
@@ -172,11 +177,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
      */
     public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
         if (errorStateInfo == null) {
-            mContentView
-                    .findViewById(R.id.proposed_plus_address_container)
-                    .setVisibility(View.GONE);
-            mPlusAddressErrorReportView.setVisibility(View.VISIBLE);
-
             hideLoadingIndicator();
 
             return;

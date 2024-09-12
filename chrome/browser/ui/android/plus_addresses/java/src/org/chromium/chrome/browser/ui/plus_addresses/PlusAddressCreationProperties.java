@@ -32,6 +32,10 @@ class PlusAddressCreationProperties {
     static final WritableBooleanPropertyKey CANCEL_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey("cancel_button_visible");
 
+    // TODO: crbug.com/354881207 - Remove once enhanced error handling is launched.
+    static final WritableBooleanPropertyKey LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE =
+            new WritableBooleanPropertyKey("legacy_error_reporting_instruction_visible");
+
     static final PropertyKey[] ALL_KEYS = {
         NORMAL_STATE_INFO,
         DELEGATE,
@@ -43,6 +47,7 @@ class PlusAddressCreationProperties {
         CONFIRM_BUTTON_ENABLED,
         CONFIRM_BUTTON_VISIBLE,
         CANCEL_BUTTON_VISIBLE,
+        LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE,
     };
 
     private PlusAddressCreationProperties() {}

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
@@ -116,6 +117,7 @@ import org.chromium.url.GURL;
             if (mModel.get(SHOW_ONBOARDING_NOTICE)) {
                 mModel.set(CANCEL_BUTTON_VISIBLE, true);
             }
+            mModel.set(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE, true);
         }
         mBottomSheetContent.showError(errorStateInfo);
     }

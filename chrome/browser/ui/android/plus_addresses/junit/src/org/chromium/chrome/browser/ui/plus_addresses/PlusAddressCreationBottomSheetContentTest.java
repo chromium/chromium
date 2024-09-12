@@ -126,6 +126,7 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
 
         mBottomSheetContent.showError(/* errorStateInfo= */ null);
+        mBottomSheetContent.setLegacyErrorReportingInstructionVisible(true);
         assertEquals(
                 mBottomSheetContent
                         .getContentView()
