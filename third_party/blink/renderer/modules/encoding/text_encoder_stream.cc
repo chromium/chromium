@@ -34,7 +34,7 @@ namespace blink {
 class TextEncoderStream::Transformer final : public TransformStreamTransformer {
  public:
   explicit Transformer(ScriptState* script_state)
-      : encoder_(NewTextCodec(WTF::TextEncoding("utf-8"))),
+      : encoder_(NewTextCodec(WTF::UTF8Encoding())),
         script_state_(script_state) {}
 
   Transformer(const Transformer&) = delete;

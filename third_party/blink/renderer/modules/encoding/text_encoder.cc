@@ -46,8 +46,7 @@ BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
                                  ExceptionState& exception_state) {
-  WTF::TextEncoding encoding("UTF-8");
-  return MakeGarbageCollected<TextEncoder>(encoding);
+  return MakeGarbageCollected<TextEncoder>(UTF8Encoding());
 }
 
 TextEncoder::TextEncoder(const WTF::TextEncoding& encoding)
