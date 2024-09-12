@@ -130,6 +130,7 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
+  void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 

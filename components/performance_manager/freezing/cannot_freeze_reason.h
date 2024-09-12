@@ -25,6 +25,7 @@ enum class CannotFreezeReason {
   kBeingMirrored,
   kCapturingWindow,
   kCapturingDisplay,
+  kWebRTC,
   kLoading,
 };
 

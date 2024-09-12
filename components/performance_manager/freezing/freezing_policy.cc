@@ -363,6 +363,11 @@ void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
                              CannotFreezeReason::kHoldingWebLock);
 }
 
+void FreezingPolicy::OnPageUsesWebRTCChanged(const PageNode* page_node) {
+  OnCannotFreezeReasonChange(page_node, /*add=*/page_node->UsesWebRTC(),
+                             CannotFreezeReason::kWebRTC);
+}
+
 void FreezingPolicy::OnPageIsHoldingIndexedDBLockChanged(
     const PageNode* page_node) {
   OnCannotFreezeReasonChange(page_node,

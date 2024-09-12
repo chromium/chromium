@@ -173,6 +173,8 @@ class PageNodeImpl
     SetIsHoldingIndexedDBLock(is_holding_weblock);
   }
 
+  void SetUsesWebRTCForTesting(bool uses_webrtc) { SetUsesWebRTC(uses_webrtc); }
+
   void SetHadFormInteractionForTesting(bool had_form_interaction) {
     SetHadFormInteraction(had_form_interaction);
   }

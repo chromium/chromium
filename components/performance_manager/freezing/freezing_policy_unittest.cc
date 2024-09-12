@@ -624,6 +624,28 @@ TEST_F(FreezingPolicyTest, StartsCapturingDisplayWhenFrozen) {
   VerifyFreezerExpectations();
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWhenUsingWebRTC) {
+  page_node()->SetUsesWebRTCForTesting(true);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing after stopping capture.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  page_node()->SetUsesWebRTCForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, StartsUsingWebRTCWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  page_node()->SetUsesWebRTCForTesting(true);
+  VerifyFreezerExpectations();
+}
+
 TEST_F(FreezingPolicyTest, FreezeVoteWhenLoading) {
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
 
