@@ -22,6 +22,7 @@ inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 }
 #endif
 
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(
@@ -39,10 +40,12 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleProxyEdgeCases_
     jclass jcaller,
     jobject a,
     jobject b);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
+JNI_POSSIBLE_BOUNDARY_EXPORT void
+    Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
     jclass jcaller,
     jobject arg);
@@ -66,6 +69,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_native
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller);
+
 
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
     JNIEnv* env,
@@ -119,4 +123,6 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
         }
 }
 
+
 #endif  // TEMP_DIR_HEADER_
+

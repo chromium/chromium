@@ -10,6 +10,8 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
+
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
@@ -19,6 +21,8 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
     JNIEnv* env,
     jclass jcaller);
+
+
 // Method declarations.
 
 
@@ -30,7 +34,7 @@ static const JNINativeMethod kMethods_J_module_1N[] = {
 
 namespace {
 
-bool RegisterNative_J_module_1N(JNIEnv* env) {
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_J_module_1N(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_J_module_1N);
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
@@ -52,7 +56,7 @@ bool RegisterNative_J_module_1N(JNIEnv* env) {
 
 // Registration function.
 
-namespace {
+namespace  {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -60,9 +64,12 @@ bool RegisterNatives(JNIEnv* env) {
     return false;
   }
 
+
   return true;
 }
 
-}  // namespace
+}  // namespace 
+
 
 #endif  // TEMP_DIR_HEADER_
+
