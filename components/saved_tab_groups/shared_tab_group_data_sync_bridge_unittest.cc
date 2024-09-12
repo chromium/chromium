@@ -51,6 +51,8 @@ void PrintTo(const SavedTabGroupTab& tab, std::ostream* os) {
 namespace {
 
 using base::test::EqualsProto;
+using tab_groups::test::HasSharedGroupMetadata;
+using tab_groups::test::HasTabMetadata;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -61,15 +63,6 @@ using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
-
-MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
-  return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
-         arg.collaboration_id() == collaboration_id;
-}
-
-MATCHER_P2(HasTabMetadata, title, url, "") {
-  return base::UTF16ToUTF8(arg.title()) == title && arg.url() == GURL(url);
-}
 
 MATCHER_P(HasTabUrl, url, "") {
   return arg.url() == GURL(url);

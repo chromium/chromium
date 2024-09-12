@@ -241,6 +241,7 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     if (!collaboration_id.empty()) {
       groups.emplace_back(
           SpecificsToSharedTabGroup(specifics, collaboration_id));
+      // TODO(crbug.com/364910060): resolve duplicate GUIDs.
       group_guids.emplace(specifics.guid());
     } else {
       DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;

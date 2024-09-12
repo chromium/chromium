@@ -81,8 +81,6 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
                                    std::vector<SavedTabGroupTab> tabs);
   void OnSharedGroupsWithTabsLoaded(std::vector<SavedTabGroup> groups,
                                     std::vector<SavedTabGroupTab> tabs);
-  void AddGroupsWithTabsImpl(std::vector<SavedTabGroup> groups,
-                             std::vector<SavedTabGroupTab> tabs);
 
   raw_ptr<SavedTabGroupModel> model_;
 
@@ -98,8 +96,10 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
 
   // Temporary storage of groups and tabs loaded from the disk for both saved
   // and shared tab groups. Empty once the model is initialized.
-  std::vector<SavedTabGroup> loaded_groups_;
-  std::vector<SavedTabGroupTab> loaded_tabs_;
+  std::vector<SavedTabGroup> loaded_saved_groups_;
+  std::vector<SavedTabGroupTab> loaded_saved_tabs_;
+  std::vector<SavedTabGroup> loaded_shared_groups_;
+  std::vector<SavedTabGroupTab> loaded_shared_tabs_;
   bool saved_tab_groups_loaded_ = false;
   bool shared_tab_groups_loaded_ = false;
 };
