@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -77,9 +78,19 @@ float GetSensitivityThreshold() {
 }
 
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
-    BackoffLevelProvider* backoff_level_provider) {
+    BackoffLevelProvider* backoff_level_provider,
+    Profile* profile) {
   if (features::KTabOrganizationTriggerDemoMode.Get()) {
     return std::make_unique<DemoTriggerPolicy>();
+  }
+
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  if (!base::FeatureList::IsEnabled(
+          features::kTabOrganizationEnableNudgeForEnterprise) &&
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
+      management_service && management_service->IsManaged()) {
+    return std::make_unique<NeverTriggerPolicy>();
   }
 
   return std::make_unique<TargetFrequencyTriggerPolicy>(
@@ -90,8 +101,9 @@ std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
 }
 
 std::unique_ptr<TabOrganizationTrigger> MakeTrigger(
-    BackoffLevelProvider* backoff_level_provider) {
+    BackoffLevelProvider* backoff_level_provider,
+    Profile* profile) {
   return std::make_unique<TabOrganizationTrigger>(
       GetTriggerScoringFunction(), GetTriggerScoreThreshold(),
-      GetTriggerPolicy(backoff_level_provider));
+      GetTriggerPolicy(backoff_level_provider, profile));
 }

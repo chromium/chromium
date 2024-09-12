@@ -214,6 +214,8 @@ BASE_DECLARE_FEATURE(kTabReorganizationDivider);
 
 BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
+BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);
+
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.
 extern const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod;
