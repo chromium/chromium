@@ -300,8 +300,15 @@ SessionsGetDevicesFunction::CreateWindowModel(
 
   std::vector<api::tabs::Tab> tabs;
   for (size_t i = 0; i < tabs_in_window.size(); ++i) {
-    tabs.push_back(CreateTabModel(session_tag, *tabs_in_window[i], i,
-                                  window.selected_tab_index == (int)i));
+    bool is_active = false;
+    if (window.selected_tab_index != -1) {
+      SessionID selected_tab_id =
+          window.tabs[window.selected_tab_index]->tab_id;
+      SessionID current_tab_id = tabs_in_window[i]->tab_id;
+      is_active = selected_tab_id == current_tab_id;
+    }
+    tabs.push_back(
+        CreateTabModel(session_tag, *tabs_in_window[i], i, is_active));
   }
 
   std::string session_id =
