@@ -22,7 +22,6 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -140,9 +139,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
         https_server_.GetURL(third_party_site, relative_url));
   }
 
-  void WaitForMetadataIssueAndCheck(const std::vector<std::string>& sites,
-                                    uint32_t opt_out_percentage,
-                                    bool is_opt_out_top_level) {
+  void WaitForIssueAndCheck(const std::vector<std::string>& sites,
+                            uint32_t opt_out_percentage,
+                            bool is_opt_out_top_level) {
     auto is_metadata_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -188,42 +187,10 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     ClearNotifications();
   }
 
-  void WaitForCookieIssueAndCheck(std::string_view third_party_site,
-                                  std::string_view warning) {
-    auto is_cookie_issue = [](const base::Value::Dict& params) {
-      const std::string* issue_code =
-          params.FindStringByDottedPath("issue.code");
-      return issue_code && *issue_code == "CookieIssue";
-    };
-
-    // Wait for notification of a Cookie Issue.
-    base::Value::Dict params = WaitForMatchingNotification(
-        "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
-
-    std::string partial_expected =
-        content::JsReplace(R"({
-            "cookie": {
-               "domain": $1,
-               "name": "name",
-               "path": "/"
-            },
-            "cookieWarningReasons": [ $2 ],
-            "operation": "ReadCookie",
-         })",
-                           third_party_site, warning);
-
-    // Find relevant fields from cookieIssueDetails
-    ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
-                testing::Pointee(base::test::DictionaryHasValues(
-                    base::test::ParseJsonDict(partial_expected))));
-
-    ClearNotifications();
-  }
-
   void CheckNoAddedIssue() {
     ReportDummyIssue();
 
-    WaitForMetadataIssueAndCheck({"dummy.test"}, 0u, false);
+    WaitForIssueAndCheck({"dummy.test"}, 0u, false);
   }
 
  private:
@@ -255,10 +222,10 @@ class TpcdMetadataDevtoolsObserverBrowserTest
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
                        EmitsDevtoolsIssues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
+  WaitForIssueAndCheck({"b.test"}, 0u, true);
 
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForMetadataIssueAndCheck({"c.test"}, 0u, false);
+  WaitForIssueAndCheck({"c.test"}, 0u, false);
 }
 
 // Setting the DTRP values in the issue needs to be tested with the flag off.
@@ -276,19 +243,10 @@ class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest,
                        EmitsDevtoolsIssuesWithDtrpValues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForMetadataIssueAndCheck({"b.test"}, 50u, true);
+  WaitForIssueAndCheck({"b.test"}, 50u, true);
 
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForMetadataIssueAndCheck({"c.test"}, 20u, false);
-}
-
-IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       EmitsDevtoolsIssuesForExemption) {
-  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForCookieIssueAndCheck("b.test", {"WarnDeprecationTrialMetadata"});
-
-  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForCookieIssueAndCheck("c.test", {"WarnDeprecationTrialMetadata"});
+  WaitForIssueAndCheck({"c.test"}, 20u, false);
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
