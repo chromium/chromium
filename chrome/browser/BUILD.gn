@@ -3325,6 +3325,8 @@ static_library("browser") {
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/digital_credentials",
+      "//chrome/browser/ui/fast_checkout",
+      "//chrome/browser/ui/fast_checkout:impl",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",
       "//chrome/common:non_code_constants",
@@ -3449,11 +3451,17 @@ static_library("browser") {
       "//url",
     ]
 
-    # TODO(crbug.com/335257259): Resolve circular deps caused by including
-    # `IdentityManagerFactory` in facilitated payments.
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
-    allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/335257259): Resolve circular deps caused by including
+      # `IdentityManagerFactory` in facilitated payments.
+      "//chrome/browser/facilitated_payments",
+
+      # "TODO(crbug.com:365919643): Remove this circular dependency when
+      # //c/b/android/preferences/autofill/settings_launcher_helper.h" get modularized.
+      "//chrome/browser/ui/fast_checkout:impl",
+    ]
 
     if (safe_browsing_mode == 2) {
       sources += [
