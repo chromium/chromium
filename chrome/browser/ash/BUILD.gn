@@ -1827,51 +1827,10 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
+group("browser_tests") {
   testonly = true
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "first_web_contents_profiler_ash_browsertest.cc" ]
-
   deps = [
-    ":ash",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/app_restore",
-    "//chrome/browser/ash/app_restore:test_support",
-    "//chrome/browser/ash/input_method",
-    "//chrome/browser/ash/login:test_support",
-    "//chrome/browser/ash/login/lock",
-    "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ash/login/saml:test_support",
-    "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ash/policy/core:test_support",
-    "//chrome/browser/ash/settings",
-    "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/ui",
-    "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//chromeos/ash/components/dbus/shill",
-    "//components/account_id",
-    "//components/language/core/browser",
-    "//components/session_manager/core",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/mojom",
-    "//testing/gtest",
-    "//ui/events:test_support",
-    "//url",
-
     # Gather browser tests from subdirectories.
     "//chrome/browser/ash/accessibility:browser_tests",
     "//chrome/browser/ash/account_manager:browser_tests",
