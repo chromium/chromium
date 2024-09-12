@@ -62,8 +62,10 @@ class OnTaskBlocklist {
 
   // Sets the url restrictions for the given `url` with `restriction_level`.
   // This is different from `SetParentURLRestrictionLevel` since this can be
-  // called on newly navigated urls not sent by the boca producer.
-  void SetURLRestrictionLevel(
+  // called on newly navigated urls not sent by the boca producer. True
+  // represents we are able to set the restrictions for the tab, false
+  // otherwise. It should only be true if it's a new tab.
+  bool MaybeSetURLRestrictionLevel(
       content::WebContents* tab,
       OnTaskBlocklist::RestrictionLevel restriction_level);
 
@@ -82,24 +84,34 @@ class OnTaskBlocklist {
 
   void CleanupBlocklist();
 
+  // Returns true if the `tab` is a parent tab. A parent tab is any tab that was
+  // sent as part of a session bundle. Any other tab created (either via
+  // ctrl+left click or a link click that sets itself to open in a new window)
+  // during the session by the user is a child tab. Parent tabs should not
+  // be closed during any point of an ongoing session.
+  bool IsParentTab(content::WebContents* tab);
+
+  content::WebContents* previous_tab();
+
   const policy::URLBlocklistManager* url_blocklist_manager();
   std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
   parent_tab_to_nav_filters();
   std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
   child_tab_to_nav_filters();
-  std::map<SessionID, bool> has_performed_one_level_deep();
+  std::map<SessionID, GURL> one_level_deep_original_url();
   OnTaskBlocklist::RestrictionLevel current_page_restriction_level();
 
  private:
   OnTaskBlocklist::RestrictionLevel current_page_restriction_level_ =
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
+  raw_ptr<content::WebContents> previous_tab_;
   GURL previous_url_;
   bool first_time_popup_ = true;
   std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
       parent_tab_to_nav_filters_;
   std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
       child_tab_to_nav_filters_;
-  std::map<SessionID, bool> has_performed_one_level_deep_;
+  std::map<SessionID, GURL> one_level_deep_original_url_;
   const std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;
   base::WeakPtrFactory<OnTaskBlocklist> weak_pointer_factory_{this};
 };

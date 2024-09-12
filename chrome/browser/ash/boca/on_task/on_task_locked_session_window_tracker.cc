@@ -19,7 +19,23 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
+
+// static
+Browser* LockedSessionWindowTracker::GetBrowserWithTab(
+    content::WebContents* tab) {
+  BrowserList* const browser_list = BrowserList::GetInstance();
+  for (auto browser_iterator =
+           browser_list->begin_browsers_ordered_by_activation();
+       browser_iterator != browser_list->end_browsers_ordered_by_activation();
+       ++browser_iterator) {
+    Browser* const browser = *browser_iterator;
+    if (browser && browser->tab_strip_model()->GetIndexOfWebContents(tab) !=
+                       TabStripModel::kNoTab) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
 
 LockedSessionWindowTracker::LockedSessionWindowTracker(
     std::unique_ptr<OnTaskBlocklist> on_task_blocklist)
@@ -34,7 +50,7 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
   if (browser_ && browser_ != browser) {
     CleanupWindowTracker();
   }
-  if (!browser) {
+  if (!browser || browser == browser_) {
     return;
   }
   browser_ = browser;
@@ -59,13 +75,34 @@ void LockedSessionWindowTracker::RefreshUrlBlocklist() {
 
 void LockedSessionWindowTracker::MaybeCloseBrowser(
     base::WeakPtr<Browser> weak_browser_ptr) {
-  Browser* browser = weak_browser_ptr.get();
-  if (!browser) {
+  Browser* const browser = weak_browser_ptr.get();
+  // We may need to explicitly close a browser when either a new window is
+  // opened from the OnTask SWA that is blocked, but is not closed or when an
+  // OAuth is completed, but since OnTask prevents windows from closing, we need
+  // to manually close that window when the OAuth is completed.
+  if (!browser || browser == browser_ || (browser->is_type_app_popup())) {
     return;
   }
-  if (browser != browser_) {
-    browser->window()->Close();
+  browser->window()->Close();
+}
+
+void LockedSessionWindowTracker::MaybeCloseWebContents(
+    base::WeakPtr<content::WebContents> weak_tab_ptr) {
+  content::WebContents* const tab = weak_tab_ptr.get();
+  if (browser_->tab_strip_model()->count() > 1) {
+    int index = browser_->tab_strip_model()->GetIndexOfWebContents(tab);
+    if (index == TabStripModel::kNoTab) {
+      return;
+    }
+    on_task_blocklist()->RemoveChildFilter(tab);
+    browser_->tab_strip_model()->CloseWebContentsAt(index,
+                                                    TabCloseTypes::CLOSE_NONE);
   }
+}
+
+void LockedSessionWindowTracker::ObserveWebContents(
+    content::WebContents* web_content) {
+  Observe(web_content);
 }
 
 OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
@@ -76,8 +113,8 @@ Browser* LockedSessionWindowTracker::browser() {
   return browser_;
 }
 
-bool LockedSessionWindowTracker::IsFirstTimePopup() {
-  return first_time_popup_;
+bool LockedSessionWindowTracker::CanProcessPopup() {
+  return can_process_popup_;
 }
 
 void LockedSessionWindowTracker::CleanupWindowTracker() {
@@ -87,7 +124,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   }
   on_task_blocklist_->CleanupBlocklist();
   browser_ = nullptr;
-  first_time_popup_ = false;
+  can_process_popup_ = true;
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()
         ->screen_pinning_controller()
@@ -122,7 +159,7 @@ void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
     ash::Shell::Get()
         ->screen_pinning_controller()
         ->SetAllowWindowStackingWithPinnedWindow(true);
-    first_time_popup_ = false;
+    can_process_popup_ = true;
   }
 }
 
@@ -139,14 +176,39 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
         ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                  ash::kShellWindowId_AlwaysOnTopContainer);
     top_container->StackChildAtTop(browser->window()->GetNativeWindow());
-    if (!first_time_popup_) {
-      first_time_popup_ = true;
-    }
+    can_process_popup_ = false;
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&LockedSessionWindowTracker::MaybeCloseBrowser,
                        weak_pointer_factory_.GetWeakPtr(),
                        browser->AsWeakPtr()));
+  }
+}
+
+// content::WebContentsObserver Impl
+void LockedSessionWindowTracker::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  Browser* const browser =
+      GetBrowserWithTab(navigation_handle->GetWebContents());
+  if (!browser || !browser_) {
+    return;
+  }
+  if (browser != browser_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseBrowser,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       browser->AsWeakPtr()));
+  } else {
+    content::WebContents* const tab = navigation_handle->GetWebContents();
+    if (!tab || tab->GetLastCommittedURL().is_valid() ||
+        on_task_blocklist()->IsParentTab(tab)) {
+      return;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
+                       weak_pointer_factory_.GetWeakPtr(), tab->GetWeakPtr()));
   }
 }

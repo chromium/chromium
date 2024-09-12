@@ -13,6 +13,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Browser;
 class BrowserList;
@@ -28,8 +31,11 @@ class BrowserList;
 // are. All of these calls should be called from the main thread.
 class LockedSessionWindowTracker : public KeyedService,
                                    public TabStripModelObserver,
-                                   public BrowserListObserver {
+                                   public BrowserListObserver,
+                                   public content::WebContentsObserver {
  public:
+  static Browser* GetBrowserWithTab(content::WebContents* tab);
+
   explicit LockedSessionWindowTracker(
       std::unique_ptr<OnTaskBlocklist> on_task_blocklist);
   LockedSessionWindowTracker(const LockedSessionWindowTracker&) = delete;
@@ -50,7 +56,11 @@ class LockedSessionWindowTracker : public KeyedService,
   // Checks to make sure this is the first time an OAuth popup has occurred.
   // This is to make sure popup retries don't try to reopen windows while older
   // popups are still open.
-  bool IsFirstTimePopup();
+  bool CanProcessPopup();
+
+  // Observe the web contents so that we can close any unintended popup windows
+  // or new tabs that are opened when a navigation
+  void ObserveWebContents(content::WebContents* web_content);
 
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();
@@ -69,10 +79,16 @@ class LockedSessionWindowTracker : public KeyedService,
   void OnBrowserClosing(Browser* browser) override;
   void OnBrowserAdded(Browser* browser) override;
 
+  // content::WebContentsObserver Impl
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  void MaybeCloseWebContents(base::WeakPtr<content::WebContents> weak_tab_ptr);
   void MaybeCloseBrowser(base::WeakPtr<Browser> weak_browser_ptr);
+
   void CleanupWindowTracker();
 
-  bool first_time_popup_ = true;
+  bool can_process_popup_ = true;
   const std::unique_ptr<OnTaskBlocklist> on_task_blocklist_;
   raw_ptr<Browser> browser_ = nullptr;
 
