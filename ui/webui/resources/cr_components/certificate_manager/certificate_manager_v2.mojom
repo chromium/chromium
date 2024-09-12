@@ -115,6 +115,9 @@ interface CertificateManagerPageHandler {
   // actually imports both a certificate and a private key.
   ImportCertificate(CertificateSource source) => (ImportResult? result);
 
+  // Begin a client certificate import and bind the private key to the TPM.
+  ImportAndBindCertificate(CertificateSource source) => (ImportResult? result);
+
   // Show the platform's native certificate management UI.
   [EnableIf=native_cert_management]
   ShowNativeManageCertificates();

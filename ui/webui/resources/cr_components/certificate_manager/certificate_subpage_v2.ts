@@ -38,6 +38,7 @@ export class SubpageCertificateList {
   hideExport: boolean;
   certSource: CertificateSource;
   showImport: boolean;
+  showImportAndBind: boolean;
   hideIfEmpty: boolean;
   hideHeader: boolean;
 }

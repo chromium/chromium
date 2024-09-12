@@ -362,6 +362,22 @@ class CrosClientCertSource : public ClientCertSource,
       base::WeakPtr<content::WebContents> web_contents,
       CertificateManagerPageHandler::ImportCertificateCallback callback)
       override {
+    BeginImportCertificate(/*hardware_backed=*/false, std::move(web_contents),
+                           std::move(callback));
+  }
+
+  void ImportAndBindCertificate(
+      base::WeakPtr<content::WebContents> web_contents,
+      CertificateManagerPageHandler::ImportCertificateCallback callback)
+      override {
+    BeginImportCertificate(/*hardware_backed=*/true, std::move(web_contents),
+                           std::move(callback));
+  }
+
+  void BeginImportCertificate(
+      bool hardware_backed,
+      base::WeakPtr<content::WebContents> web_contents,
+      CertificateManagerPageHandler::ImportCertificateCallback callback) {
     // Containing web contents went away (e.g. user navigated away) or dialog
     // is already open. Don't try to open the dialog.
     if (!web_contents || select_file_dialog_) {
@@ -369,6 +385,7 @@ class CrosClientCertSource : public ClientCertSource,
       return;
     }
 
+    import_hardware_backed_ = hardware_backed;
     import_callback_ = std::move(callback);
 
     select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -444,7 +461,7 @@ class CrosClientCertSource : public ClientCertSource,
                 ->CreateNSSCertDatabaseGetterForIOThread(),
             base::BindOnce(
                 &CrosClientCertSource::GotNSSCertDatabaseOnIOThread,
-                std::move(file_bytes), *password,
+                import_hardware_backed_, std::move(file_bytes), *password,
                 base::BindOnce(&CrosClientCertSource::FinishedNSSImport,
                                weak_ptr_factory_.GetWeakPtr()))));
   }
@@ -466,18 +483,15 @@ class CrosClientCertSource : public ClientCertSource,
   }
 
   static void GotNSSCertDatabaseOnIOThread(
+      bool use_hardware_backed,
       std::vector<uint8_t> file_bytes,
       std::string password,
       base::OnceCallback<void(std::vector<uint8_t> file_bytes,
                               std::string password,
-                              bool use_hardware_backed,
                               int nss_import_result)> finished_import_callback,
       net::NSSCertDatabase* cert_db) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    // TODO(crbug.com/40928765): Add "Import and Bind" button which imports
-    // with use_hardware_backed=true.
-    bool use_hardware_backed = false;
     crypto::ScopedPK11Slot slot;
     if (use_hardware_backed) {
       slot = cert_db->GetPrivateSlot();
@@ -495,25 +509,24 @@ class CrosClientCertSource : public ClientCertSource,
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(finished_import_callback),
                                   std::move(file_bytes), std::move(password),
-                                  use_hardware_backed, nss_import_result));
+                                  nss_import_result));
   }
 
   void FinishedNSSImport(std::vector<uint8_t> file_bytes,
                          std::string password,
-                         bool use_hardware_backed,
                          int nss_import_result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     if (nss_import_result == net::OK) {
       kcer::RecordPkcs12MigrationUmaEvent(
           kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
-      // `use_hardware_backed` == false indicates that the cert came from the
-      // "Import" button. By default it's imported into the software NSS
+      // `import_hardware_backed_` == false indicates that the cert came from
+      // the "Import" button. By default it's imported into the software NSS
       // database (aka public slot). With the experiment enabled it should also
-      // be imported into Chaps. `use_hardware_backed` == true means that the
-      // cert came from the "Import and Bind" button and it's import into Chaps
-      // by default.
-      if (!use_hardware_backed &&
+      // be imported into Chaps. `import_hardware_backed_` == true means that
+      // the cert came from the "Import and Bind" button and it's import into
+      // Chaps by default.
+      if (!import_hardware_backed_ &&
           chromeos::features::IsPkcs12ToChapsDualWriteEnabled()) {
         // Record the dual-write event. Even if the import fails, it's
         // theoretically possible that some related objects are still created
@@ -525,7 +538,7 @@ class CrosClientCertSource : public ClientCertSource,
           return kcer->ImportPkcs12Cert(
               kcer::Token::kUser, kcer::Pkcs12Blob(std::move(file_bytes)),
               std::move(password),
-              /*hardware_backed=*/use_hardware_backed,
+              /*hardware_backed=*/import_hardware_backed_,
               /*mark_as_migrated=*/true,
               base::BindOnce(&CrosClientCertSource::FinishedKcerImport,
                              weak_ptr_factory_.GetWeakPtr(),
@@ -581,6 +594,7 @@ class CrosClientCertSource : public ClientCertSource,
   }
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  bool import_hardware_backed_;
   CertificateManagerPageHandler::ImportCertificateCallback import_callback_;
   raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
       remote_client_;

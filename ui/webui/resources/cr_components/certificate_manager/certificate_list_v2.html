@@ -28,7 +28,11 @@
         <!-- TODO(crbug.com/40928765): localize -->
         Import
       </cr-button>
-      <!-- TODO(crbug.com/40928765): button for "import and bind" -->
+      <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
+          on-click="onImportAndBindCertClick_">
+        <!-- TODO(crbug.com/40928765): localize -->
+        Import and bind
+      </cr-button>
       <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
           aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">

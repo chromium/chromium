@@ -32,6 +32,9 @@ class CertificateManagerPageHandler
     virtual void ImportCertificate(
         base::WeakPtr<content::WebContents> web_contents,
         CertificateManagerPageHandler::ImportCertificateCallback callback);
+    virtual void ImportAndBindCertificate(
+        base::WeakPtr<content::WebContents> web_contents,
+        CertificateManagerPageHandler::ImportCertificateCallback callback);
     virtual void ExportCertificates(
         base::WeakPtr<content::WebContents> web_contents) {}
   };
@@ -58,6 +61,9 @@ class CertificateManagerPageHandler
       certificate_manager_v2::mojom::CertificateSource source_id,
       const std::string& sha256hash_hex) override;
   void ImportCertificate(
+      certificate_manager_v2::mojom::CertificateSource source_id,
+      ImportCertificateCallback callback) override;
+  void ImportAndBindCertificate(
       certificate_manager_v2::mojom::CertificateSource source_id,
       ImportCertificateCallback callback) override;
   void ExportCertificates(

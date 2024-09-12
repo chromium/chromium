@@ -25,6 +25,13 @@ class FakePageHandler extends TestBrowserProxy implements
     return {result: {error: 'default implementation called'}};
   };
 
+  private importAndBindCertificateCallback_: (source: CertificateSource) => {
+    result:
+      ImportResult,
+  } = (_) => {
+    return {result: {error: 'default implementation called'}};
+  };
+
   private metadata_: CertManagementMetadata = {
     includeSystemTrustStore: true,
     numUserAddedSystemCerts: 0,
@@ -39,6 +46,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'viewCertificate',
       'exportCertificates',
       'importCertificate',
+      'importAndBindCertificate',
       'showNativeManageCertificates',
     ]);
   }
@@ -65,6 +73,11 @@ class FakePageHandler extends TestBrowserProxy implements
   importCertificate(source: CertificateSource) {
     this.methodCalled('importCertificate', source);
     return Promise.resolve(this.importCertificateCallback_(source));
+  }
+
+  importAndBindCertificate(source: CertificateSource) {
+    this.methodCalled('importAndBindCertificate', source);
+    return Promise.resolve(this.importAndBindCertificateCallback_(source));
   }
 
   setCertificatesCallback(callbackFn: (source: CertificateSource) => {

@@ -86,7 +86,7 @@ class FakeCertificateManagerPage
 
 class ClientCertSourceAshUnitTest
     : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   void SetUp() override {
     ASSERT_TRUE(test_nss_user_.constructed_successfully());
@@ -130,9 +130,21 @@ class ClientCertSourceAshUnitTest
 
   bool dual_write_enabled() const { return std::get<0>(GetParam()); }
   bool kcer_enabled() const { return std::get<1>(GetParam()); }
+  bool use_hardware_backed() const { return std::get<2>(GetParam()); }
 
   std::string username_hash() const {
     return user_manager::FakeUserManager::GetFakeUsernameHash(account_);
+  }
+
+  void DoImport(
+      CertificateManagerPageHandler::ImportCertificateCallback callback) {
+    if (use_hardware_backed()) {
+      cert_source_->ImportAndBindCertificate(web_contents()->GetWeakPtr(),
+                                             std::move(callback));
+    } else {
+      cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
+                                      std::move(callback));
+    }
   }
 
  protected:
@@ -153,15 +165,15 @@ class ClientCertSourceAshUnitTest
   std::unique_ptr<CertificateManagerPageHandler::CertSource> cert_source_;
 };
 
-// Test ImportFromPKCS12 with dual-write enabled and disabled.
+// Test importing from a PKCS #12 file with the combinations of dual-write
+// enabled/disabled, KCER client cert store enabled/disabled, and
+// hardware/software-backed private key.
 TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist));
 
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
-
-  // TODO(crbug.com/40928765): test hardware-backed import as well.
 
   // The SHA256 hash of the certificate in client.p12, as a hex string.
   constexpr char kTestClientCertHashHex[] =
@@ -182,9 +194,6 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
     }
   }
 
-  // Software backed certs should be imported to NSS and if dual-write is
-  // enabled should also be written to Chaps and should set the preference that
-  // tracks whether a dual-write has occurred.
   {
     // The correct password for the client.p12 file.
     fake_page_->set_mocked_import_password("12345");
@@ -195,8 +204,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
 
     base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
         import_waiter;
-    cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
-                                    import_waiter.GetCallback());
+    DoImport(import_waiter.GetCallback());
     EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
     ui::FakeSelectFileDialog* fake_file_select_dialog =
         factory->GetLastDialog();
@@ -208,9 +216,12 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
         import_waiter.Take();
     ASSERT_TRUE(import_result);
     EXPECT_TRUE(import_result->is_success());
+    // The cert should be dual written only if dual-write feature is enabled
+    // and the import was not hardware backed (if it's hardware backed it
+    // already gets imported to Chaps so the dual write isn't needed.)
     EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
                   prefs::kNssChapsDualWrittenCertsExist),
-              dual_write_enabled());
+              dual_write_enabled() && !use_hardware_backed());
   }
 
   EXPECT_TRUE(SlotContainsCertWithHash(
@@ -247,8 +258,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
       import_waiter;
-  cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
-                                  import_waiter.GetCallback());
+  DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
@@ -276,8 +286,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
       import_waiter;
-  cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
-                                  import_waiter.GetCallback());
+  DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
@@ -299,8 +308,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
       import_waiter;
-  cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
-                                  import_waiter.GetCallback());
+  DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
@@ -324,8 +332,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
       import_waiter;
-  cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
-                                  import_waiter.GetCallback());
+  DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
@@ -338,4 +345,6 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
 
 INSTANTIATE_TEST_SUITE_P(Foo,
                          ClientCertSourceAshUnitTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));

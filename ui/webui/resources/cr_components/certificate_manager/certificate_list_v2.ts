@@ -35,6 +35,7 @@ export interface CertificateListV2Element {
     certs: CrCollapseElement,
     exportCerts: HTMLElement,
     importCert: HTMLElement,
+    importAndBindCert: HTMLElement,
     noCertsRow: HTMLElement,
     listHeader: HTMLElement,
     expandButton: HTMLElement,
@@ -55,6 +56,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       certSource: Number,
       headerText: String,
       showImport: Boolean,
+      showImportAndBind: Boolean,
 
       // True if the list should not be collapsible.
       // Empty lists will always not be collapsible.
@@ -89,6 +91,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   certSource: CertificateSource;
   headerText: string;
   showImport: boolean = false;
+  showImportAndBind: boolean = false;
   hideExport: boolean = false;
   hideHeader: boolean = false;
   inSubpage: boolean = false;
@@ -131,15 +134,25 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     e.stopPropagation();
     CertificatesV2BrowserProxy.getInstance()
         .handler.importCertificate(this.certSource)
-        .then((value: {result: ImportResult|null}) => {
-          if (value.result !== null && value.result.success !== undefined) {
-            // On successful import, refresh the certificate list.
-            this.refreshCertificates();
-          }
-          this.dispatchEvent(new CustomEvent(
-              'import-result',
-              {composed: true, bubbles: true, detail: value.result}));
-        });
+        .then(this.handleImportResult.bind(this));
+  }
+
+  private onImportAndBindCertClick_(e: Event) {
+    // Import button click shouldn't collapse the list as well.
+    e.stopPropagation();
+    CertificatesV2BrowserProxy.getInstance()
+        .handler.importAndBindCertificate(this.certSource)
+        .then(this.handleImportResult.bind(this));
+  }
+
+  private handleImportResult(value: {result: ImportResult|null}) {
+    if (value.result !== null && value.result.success !== undefined) {
+      // On successful import, refresh the certificate list.
+      this.refreshCertificates();
+    }
+    this.dispatchEvent(new CustomEvent(
+        'import-result',
+        {composed: true, bubbles: true, detail: value.result}));
   }
 
   private computeHasCerts_(): boolean {
