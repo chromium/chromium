@@ -176,16 +176,10 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "android_15_emulator_gtests",
+    name = "android_15_emulator_fyi_gtests",
     basic_suites = {
-        "android_emulator_specific_chrome_public_tests": None,
-        "android_trichrome_smoke_tests": None,
-        "android_smoke_tests": None,
         "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
         "chromium_gtests": None,
-        "chromium_gtests_for_devices_with_graphical_output": None,
-        "linux_flavor_specific_chromium_gtests": None,
-        "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
         "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
@@ -193,6 +187,18 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "webview_trichrome_64_cts_tests_no_field_trial_suite": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "android_15_emulator_gtests",
+    basic_suites = {
+        "android_emulator_specific_chrome_public_tests": None,
+        "android_trichrome_smoke_tests": None,
+        "android_smoke_tests": None,
+        "chromium_gtests_for_devices_with_graphical_output": None,
+        "linux_flavor_specific_chromium_gtests": None,
+        "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
         "webview_ui_instrumentation_tests": None,
     },
 )

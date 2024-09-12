@@ -585,6 +585,22 @@
           'gtest_tests': 'android_14_emulator_gtests',
         }
       },
+      'android-15-x64-rel': {
+        'mixins': [
+          '15-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'args': [
+            '--emulator-debug-tags=all,-qemud,-sensors',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_15_emulator_gtests',
+        }
+      },
       'android-oreo-x86-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -749,7 +765,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_15_emulator_gtests',
+          'gtest_tests': 'android_15_emulator_fyi_gtests',
         }
       },
       'android-annotator-rel': {

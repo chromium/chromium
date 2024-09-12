@@ -1308,7 +1308,7 @@
           'shards': 40,
         },
       },
-      'android-15-x64-fyi-rel': {
+      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter',
         ],
@@ -1411,7 +1411,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_unit_test_apk.filter',
         ],
       },
-      'android-15-x64-fyi-rel': {
+      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter',
         ],
@@ -2366,7 +2366,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
         ],
       },
-      'android-15-x64-fyi-rel': {
+      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
         ],
@@ -4360,7 +4360,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter',
         ],
       },
-      'android-15-x64-fyi-rel': {
+      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter',
         ],
