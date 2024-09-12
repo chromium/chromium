@@ -8982,11 +8982,6 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::
              kIncrementLocalSurfaceIdForMainframeSameDocNavigation)},
 
-    {"show-performance-metrics-hud",
-     flag_descriptions::kShowPerformanceMetricsHudName,
-     flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kHudDisplayForPerformanceMetrics)},
-
     {"enable-speculation-rules-prerendering-target-hint",
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintName,
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintDescription,

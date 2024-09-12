@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
@@ -26,7 +25,6 @@
 namespace cc {
 class LayerTreeFrameSink;
 struct BeginMainFrameMetrics;
-struct WebVitalMetrics;
 }  // namespace cc
 
 namespace blink {
@@ -77,10 +75,6 @@ class WidgetBaseClient {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<cc::BeginMainFrameMetrics>
   GetBeginMainFrameMetrics() {
-    return nullptr;
-  }
-
-  virtual std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() {
     return nullptr;
   }
 

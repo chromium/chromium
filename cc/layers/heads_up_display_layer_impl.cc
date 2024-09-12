@@ -98,12 +98,6 @@ class DummyImageProvider : public ImageProvider {
   }
 };
 
-std::string ToStringTwoDecimalPrecision(double input) {
-  std::stringstream stream;
-  stream << std::fixed << std::setprecision(2) << input;
-  return stream.str();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 struct MetricsDrawSizes {
   const int kTopPadding = 35;
@@ -124,11 +118,6 @@ struct MetricsDrawSizes {
 } constexpr metrics_sizes;
 #endif
 
-constexpr int ComputeTotalHeight(int num_of_lines) {
-  int num_of_spaces = std::max(0, num_of_lines - 1);
-  return num_of_lines * metrics_sizes.kFontHeight +
-         num_of_spaces * metrics_sizes.kPadding + 2 * metrics_sizes.kTopPadding;
-}
 }  // namespace
 
 HeadsUpDisplayLayerImpl::HeadsUpDisplayLayerImpl(
@@ -562,11 +551,6 @@ void HeadsUpDisplayLayerImpl::ClearLayoutShiftRects() {
   layout_shift_rects_.clear();
 }
 
-void HeadsUpDisplayLayerImpl::SetWebVitalMetrics(
-    std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
-  web_vital_metrics_ = std::move(web_vital_metrics);
-}
-
 void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
 
@@ -576,8 +560,6 @@ void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetHUDTypeface(typeface_);
   layer_impl->SetLayoutShiftRects(layout_shift_rects_);
   layout_shift_rects_.clear();
-  if (web_vital_metrics_ && web_vital_metrics_->HasValue())
-    layer_impl->SetWebVitalMetrics(std::move(web_vital_metrics_));
 }
 
 void HeadsUpDisplayLayerImpl::UpdateHudContents() {
@@ -657,20 +639,6 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
     double scale_to_bounds = static_cast<double>(bounds_width_in_dips()) /
                              static_cast<double>(metrics_sizes.kWidth);
     canvas->scale(scale_to_bounds, scale_to_bounds);
-  }
-  SkRect metrics_area = SkRect::MakeXYWH(
-      std::max<SkScalar>(0, bounds_width_in_dips() - metrics_sizes.kWidth), 0,
-      metrics_sizes.kWidth, 0);
-  if (debug_state.show_web_vital_metrics) {
-    metrics_area = DrawWebVitalMetrics(
-        canvas, metrics_area.left(), metrics_area.bottom(),
-        std::max<SkScalar>(metrics_area.width(), metrics_sizes.kWidth));
-  }
-
-  if (debug_state.show_smoothness_metrics) {
-    metrics_area = DrawSmoothnessMetrics(
-        canvas, metrics_area.left(), metrics_area.bottom(),
-        std::max<SkScalar>(metrics_area.width(), metrics_sizes.kWidth));
   }
 
   canvas->restore();
@@ -1150,184 +1118,6 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
           DebugColors::LayoutShiftRectBorderWidth(), "");
     }
   }
-}
-
-int HeadsUpDisplayLayerImpl::DrawSingleMetric(
-    PaintCanvas* canvas,
-    int left,
-    int right,
-    int top,
-    std::string name,
-    const WebVitalMetrics::MetricsInfo& info,
-    bool has_value,
-    double value) const {
-  std::string value_str = "-";
-  SkColor4f metrics_color = DebugColors::HUDTitleColor();
-  SkColor4f badge_color = SkColors::kGreen;
-  if (has_value) {
-    value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
-    if (value < info.green_threshold) {
-      metrics_color = SkColors::kGreen;
-    } else if (value < info.yellow_threshold) {
-      metrics_color = SkColors::kYellow;
-      badge_color = SkColors::kYellow;
-    } else {
-      metrics_color = SkColors::kRed;
-      badge_color = SkColors::kRed;
-    }
-  }
-
-  // Draw the badge for this metric.
-  PaintFlags badge_flags;
-  badge_flags.setColor(badge_color);
-  badge_flags.setStyle(PaintFlags::kFill_Style);
-  badge_flags.setAntiAlias(true);
-  if (badge_color == SkColors::kGreen) {
-    constexpr int kRadius = 6;
-    int x = left + metrics_sizes.kSidePadding + kRadius;
-    int y = top - kRadius - 2;
-    SkPath circle = SkPath::Circle(x, y, kRadius);
-    canvas->drawPath(circle, badge_flags);
-  } else if (badge_color == SkColors::kYellow) {
-    constexpr int kSquareSize = 12;
-    int x = left + metrics_sizes.kSidePadding;
-    int y = top - kSquareSize - 2;
-    SkPath square =
-        SkPath::Rect(SkRect::MakeXYWH(x, y, kSquareSize, kSquareSize));
-    canvas->drawPath(square, badge_flags);
-  } else {
-    constexpr int kTriangleSize = 16;
-    int top_x = left + metrics_sizes.kSidePadding + kTriangleSize / 2;
-    int top_y = top - kTriangleSize;
-    int bottom_y = top_y + kTriangleSize;
-    SkPath triangle =
-        SkPath::Polygon({SkPoint::Make(top_x, top_y),
-                         SkPoint::Make(top_x - kTriangleSize / 2, bottom_y),
-                         SkPoint::Make(top_x + kTriangleSize / 2, bottom_y)},
-                        true);
-    canvas->drawPath(triangle, badge_flags);
-  }
-
-  // Draw the label and values of the metric.
-  PaintFlags flags;
-  flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);
-  flags.setColor(metrics_color);
-  DrawText(canvas, flags, value_str, TextAlign::kRight,
-           metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
-
-  return top + metrics_sizes.kFontHeight + metrics_sizes.kPadding;
-}
-
-SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
-                                                    int left,
-                                                    int top,
-                                                    int width) const {
-  const int height = ComputeTotalHeight(5);
-  const SkRect area = SkRect::MakeXYWH(left, top, width, height);
-
-  PaintFlags flags;
-  DrawGraphBackground(canvas, &flags, area);
-
-  int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
-
-  // Add a deprecation notice
-  flags.setColor(DebugColors::PlatformLayerTreeTextColor());
-  std::string line1 = "This overlay is deprecated. Use the";
-  DrawText(canvas, flags, line1, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding, current_top);
-  current_top += metrics_sizes.kFontHeight * 1.2;
-  std::string line2 = "Web Vitals Extension: goo.gle/wve";
-  DrawText(canvas, flags, line2, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding, current_top);
-  current_top += metrics_sizes.kTopPadding;
-
-  double metric_value = 0.f;
-  bool has_lcp = web_vital_metrics_ && web_vital_metrics_->has_lcp;
-  if (has_lcp)
-    metric_value = web_vital_metrics_->largest_contentful_paint.InSecondsF();
-  current_top = DrawSingleMetric(
-      canvas, left, left + width, current_top, "Largest Contentful Paint",
-      WebVitalMetrics::lcp_info, has_lcp, metric_value);
-
-  bool has_fid = web_vital_metrics_ && web_vital_metrics_->has_fid;
-  if (has_fid)
-    metric_value = web_vital_metrics_->first_input_delay.InMillisecondsF();
-  current_top = DrawSingleMetric(canvas, left, left + width, current_top,
-                                 "First Input Delay", WebVitalMetrics::fid_info,
-                                 has_fid, metric_value);
-
-  bool has_layout_shift = web_vital_metrics_ && web_vital_metrics_->has_cls;
-  if (has_layout_shift)
-    metric_value = web_vital_metrics_->layout_shift;
-  current_top = DrawSingleMetric(
-      canvas, left, left + width, current_top, "Cumulative Layout Shift",
-      WebVitalMetrics::cls_info, has_layout_shift, metric_value);
-
-  return area;
-}
-
-int HeadsUpDisplayLayerImpl::DrawSinglePercentageMetric(PaintCanvas* canvas,
-                                                        int left,
-                                                        int right,
-                                                        int top,
-                                                        std::string name,
-                                                        double value) const {
-  std::string value_str = "-";
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  SkColor metrics_color = DebugColors::HUDTitleColor().toSkColor();
-  value_str = ToStringTwoDecimalPrecision(value) + "%";
-
-  PaintFlags flags;
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::HUDTitleColor().toSkColor());
-  DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);
-  flags.setColor(metrics_color);
-  DrawText(canvas, flags, value_str, TextAlign::kRight,
-           metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
-
-  return top + metrics_sizes.kFontHeight + metrics_sizes.kPadding;
-}
-
-SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
-                                                      int left,
-                                                      int top,
-                                                      int width) const {
-  const int height = ComputeTotalHeight(3);
-  const SkRect area = SkRect::MakeXYWH(left, top, width, height);
-
-  PaintFlags flags;
-  DrawGraphBackground(canvas, &flags, area);
-  if (top != 0) {
-    // There are metrics drawn before this.
-    SkRect separator =
-        SkRect::MakeXYWH(area.x(), area.y(), area.width(), area.height());
-    DrawSeparatorLine(canvas, &flags, separator);
-  }
-
-  int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
-  double avg_smoothness = layer_tree_impl()
-                              ->dropped_frame_counter()
-                              ->GetMostRecentAverageSmoothness();
-  current_top =
-      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
-                                 "Average Dropped Frame", avg_smoothness);
-  double worst_smoothness = layer_tree_impl()
-                                ->dropped_frame_counter()
-                                ->sliding_window_max_percent_dropped();
-  current_top =
-      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
-                                 "Max Dropped Frame", worst_smoothness);
-  double percentile_smoothness = layer_tree_impl()
-                                     ->dropped_frame_counter()
-                                     ->GetMostRecent95PercentileSmoothness();
-  current_top =
-      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
-                                 "95th Percentile DF", percentile_smoothness);
-
-  return area;
 }
 
 void HeadsUpDisplayLayerImpl::AsValueInto(

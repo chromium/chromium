@@ -38,7 +38,6 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/features.h"
@@ -822,10 +821,6 @@ Compositor::GetBeginMainFrameMetrics() {
 #else
   return nullptr;
 #endif
-}
-
-std::unique_ptr<cc::WebVitalMetrics> Compositor::GetWebVitalMetrics() {
-  return nullptr;
 }
 
 void Compositor::NotifyThroughputTrackerResults(

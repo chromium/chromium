@@ -3477,11 +3477,6 @@ const char kShowFeaturedEnterpriseSiteSearchIPHDescription[] =
     "engines created by the SiteSearchSettings policy. ";
 #endif
 
-const char kShowPerformanceMetricsHudName[] = "Show performance metrics in HUD";
-const char kShowPerformanceMetricsHudDescription[] =
-    "Display the performance metrics of current page in a heads up display on "
-    "the page.";
-
 const char kShowOverdrawFeedbackName[] = "Show overdraw feedback";
 const char kShowOverdrawFeedbackDescription[] =
     "Visualize overdraw by color-coding elements based on if they have other "

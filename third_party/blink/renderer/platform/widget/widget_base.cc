@@ -952,10 +952,6 @@ WidgetBase::GetBeginMainFrameMetrics() {
   return client_->GetBeginMainFrameMetrics();
 }
 
-std::unique_ptr<cc::WebVitalMetrics> WidgetBase::GetWebVitalMetrics() {
-  return client_->GetWebVitalMetrics();
-}
-
 void WidgetBase::BeginUpdateLayers() {
   client_->BeginUpdateLayers();
 }

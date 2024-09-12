@@ -223,8 +223,6 @@ cc_component("cc") {
     "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
     "metrics/video_playback_roughness_reporter.h",
-    "metrics/web_vital_metrics.cc",
-    "metrics/web_vital_metrics.h",
     "raster/bitmap_raster_buffer_provider.cc",
     "raster/bitmap_raster_buffer_provider.h",
     "raster/categorized_worker_pool.cc",

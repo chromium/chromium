@@ -376,20 +376,6 @@ void DroppedFrameCounter::ReportFramesOnEveryFrameForUI() {
       *sliding_window_current_percent_dropped_);
 }
 
-double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {
-  if (ukm_smoothness_data_)
-    return ukm_smoothness_data_->data.avg_smoothness;
-
-  return -1.f;
-}
-
-double DroppedFrameCounter::GetMostRecent95PercentileSmoothness() const {
-  if (ukm_smoothness_data_)
-    return ukm_smoothness_data_->data.percentile_95;
-
-  return -1.f;
-}
-
 void DroppedFrameCounter::SetUkmSmoothnessDestination(
     UkmSmoothnessDataShared* smoothness_data) {
   ukm_smoothness_data_ = smoothness_data;

@@ -46,9 +46,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapPreferCloserCovering);
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
 
-// When enabled, cc will show blink's Web-Vital metrics inside its heads up
-// display.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 
 // Whether RenderSurface::common_ancestor_clip_id() is used to clip to the
 // common ancestor clip when any contributing layer escapes the clip of the

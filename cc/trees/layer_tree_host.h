@@ -50,7 +50,6 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "cc/paint/node_id.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/trees/browser_controls_params.h"

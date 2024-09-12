@@ -36,7 +36,6 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void RecordEndOfFrameMetrics(base::TimeTicks,
                                ActiveFrameSequenceTrackers) override {}
   std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() override;
-  std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() override;
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}

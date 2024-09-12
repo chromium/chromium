@@ -1780,16 +1780,6 @@ void LayerTreeHost::UpdateHudLayer(bool show_hud_info) {
     hud_layer()->UpdateLocationAndSize(
         pending_commit_state()->device_viewport_rect.size(),
         pending_commit_state()->device_scale_factor);
-    if (pending_commit_state()->debug_state.show_web_vital_metrics) {
-      // This WebVitalMetrics is filled by the main frame, which is equivalent
-      // to WebPerf's numbers. The main frame's number doesn't include any
-      // iframes. UMA/UKM records metrics for the entire page aggregating all
-      // the frames. The page metrics are in the browser process.
-      // TODO(weiliangc): Get the page metrics for display.
-      auto metrics = client_->GetWebVitalMetrics();
-      if (metrics && metrics->HasValue())
-        hud_layer()->UpdateWebVitalMetrics(std::move(metrics));
-    }
   } else if (hud_layer()) {
     hud_layer()->RemoveFromParent();
     hud_layer_ = nullptr;
