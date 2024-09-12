@@ -16,7 +16,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -191,8 +190,7 @@ public class LocaleManagerDelegate {
                     } else {
                         @SearchEnginePromoType int promoType = getSearchEnginePromoShowType();
                         if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                                || promoType == SearchEnginePromoType.SHOW_NEW
-                                || promoType == SearchEnginePromoType.SHOW_WAFFLE) {
+                                || promoType == SearchEnginePromoType.SHOW_NEW) {
                             onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
                         }
                     }
@@ -230,10 +228,6 @@ public class LocaleManagerDelegate {
                                                 finalizeInternalCallback)
                                         .show();
                 break;
-            case SearchEnginePromoType.SHOW_WAFFLE:
-                assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);
-                // TODO(b/31689558): Remove this switch path.
-                // fall through
             default:
                 assert false;
                 finalizeInternalCallback.onResult(true);

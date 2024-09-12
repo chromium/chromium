@@ -77,11 +77,6 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the search engine choice feature for existing users.
-// TODO(b/316859558): Not used for shipping purposes, remove this feature.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchEngineChoice);
-
 // Enables the blocking dialog that directs users to complete their choice of
 // default apps (for Browser & Search) in Android.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

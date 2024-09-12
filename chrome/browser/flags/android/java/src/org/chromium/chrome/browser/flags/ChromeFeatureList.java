@@ -450,7 +450,6 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
             "SearchInCCTAlternateTapHandling";
-    public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SETTINGS_SINGLE_ACTIVITY = "SettingsSingleActivity";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
@@ -674,7 +673,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSafetyHubMagicStack =
             newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
-    public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sSearchInCCTAlternateTapHandling =
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
@@ -800,7 +798,6 @@ public abstract class ChromeFeatureList {
                     sPrefetchBrowserInitiatedTriggers,
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafetyHubMagicStack,
-                    sSearchEngineChoice,
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
                     sSettingsSingleActivity,

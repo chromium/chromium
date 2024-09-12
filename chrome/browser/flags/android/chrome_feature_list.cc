@@ -55,7 +55,6 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/saved_tab_groups/features.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -374,7 +373,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &supervised_user::kKidFriendlyContentFeed,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
-    &switches::kSearchEngineChoice,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kEnableBatchUploadFromSettings,
     &syncer::kEnablePasswordsAccountStorageForNonSyncingUsers,

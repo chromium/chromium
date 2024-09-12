@@ -533,7 +533,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdPrefAlreadyWritten) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
+// On Android, internal device APIs are used to get the current country.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdDefault) {
   // Remove the command line flag set by the test.
@@ -544,11 +544,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdDefault) {
   EXPECT_EQ(search_engine_choice_service().GetCountryId(),
             country_codes::GetCurrentCountryID());
 }
-#endif
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdFromPrefs) {
   // Remove the command line flag set by the test.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -559,11 +555,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdFromPrefs) {
                              kBelgiumCountryId);
   EXPECT_EQ(search_engine_choice_service().GetCountryId(), kBelgiumCountryId);
 }
-#endif
 
-// On Android, Play API is used when kSearchEngineChoice is enabled.
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GetCountryIdChangesAfterReading) {
   // Remove the command line flag set by the test.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -580,7 +572,7 @@ TEST_F(SearchEngineChoiceServiceTest, GetCountryIdChangesAfterReading) {
   // The value returned by `GetCountryId` shouldn't change.
   EXPECT_EQ(search_engine_choice_service().GetCountryId(), kBelgiumCountryId);
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SearchEngineChoiceServiceTest, ChoiceScreenConditions_SkipFor3p) {
   // First, check the state with Google as the default search engine
