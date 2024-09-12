@@ -691,6 +691,10 @@ const char kNewNTPOmniboxLayoutDescription[] =
     "Enables the new NTP omnibox layout with leading-edge aligned hint label "
     "and magnifying glass icon.";
 
+const char kNewSyncOptInIllustrationName[] = "New sync opt-in illustration";
+const char kNewSyncOptInIllustrationDescription[] =
+    "Uses the new illustration in the sync opt-in promotion view.";
+
 const char kOverflowMenuCustomizationName[] = "Overflow Menu Customization";
 const char kOverflowMenuCustomizationDescription[] =
     "Allow users to customize the order of the overflow menu";

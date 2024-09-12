@@ -601,6 +601,11 @@ extern const char kNativeFindInPageDescription[];
 extern const char kNewNTPOmniboxLayoutName[];
 extern const char kNewNTPOmniboxLayoutDescription[];
 
+// Title and description for the new illustration in the sync opt-in promotion
+// view.
+extern const char kNewSyncOptInIllustrationName[];
+extern const char kNewSyncOptInIllustrationDescription[];
+
 // Title and description for the flag to enable overflow menu customization
 extern const char kOverflowMenuCustomizationName[];
 extern const char kOverflowMenuCustomizationDescription[];

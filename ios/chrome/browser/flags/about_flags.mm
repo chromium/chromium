@@ -1968,6 +1968,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
              kSegmentationPlatformEphemeralCardRanker,
          kEphemeralCardRankerCardOverrideOptions,
          "SegmentationPlatformEphemeralCardRanker")},
+    {"new-sync-opt-in-illustration",
+     flag_descriptions::kNewSyncOptInIllustrationName,
+     flag_descriptions::kNewSyncOptInIllustrationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNewSyncOptInIllustration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

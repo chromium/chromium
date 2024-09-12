@@ -6206,6 +6206,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "new-sync-opt-in-illustration",
+    "owners": [ "asamidoi@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 126
