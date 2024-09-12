@@ -20,8 +20,8 @@ import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/select
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
-const TAP_REGION_WIDTH = 300;
-const TAP_REGION_HEIGHT = 300;
+const TAP_REGION_WIDTH = 200;
+const TAP_REGION_HEIGHT = 200;
 
 suite('ManualRegionSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
@@ -63,6 +63,9 @@ suite('ManualRegionSelection', function() {
 
     metrics = fakeMetricsPrivate();
 
+    // Wait for the flash animation to finish to avoid racing against the
+    // selection overlay setting the canvas size.
+    await waitForEvent('initial-flash-animation-end');
     // The first frame triggers our resize handler. Wait another frame for us
     // the changes made by our resize handler to take effect.
     await waitAfterNextRender(selectionOverlayElement);
@@ -232,10 +235,11 @@ suite('ManualRegionSelection', function() {
   test('ClickShowsRegionWhenTapRegionLargerThanOverlay', async () => {
     const imageBounds = getImageBoundingRect(selectionOverlayElement);
     // Reset load time values to represent a region larger than our current
-    // bounds.
+    // bounds. Load time data verifies these numbers are always an integer so
+    // we should floor them in case the image bounding rect is not an integer.
     loadTimeData.overrideValues({
-      ['tapRegionWidth']: imageBounds.width + 1,
-      ['tapRegionHeight']: imageBounds.height + 1,
+      ['tapRegionWidth']: Math.floor(imageBounds.width + 1),
+      ['tapRegionHeight']: Math.floor(imageBounds.height + 1),
     });
     await flushTasks();
 
@@ -456,10 +460,6 @@ suite('ManualRegionSelection', function() {
       });
 
   test('verify canvas resizes', async () => {
-    // Wait for the flash animation to finish to avoid racing against the
-    // selection overlay setting the canvas size.
-    await waitForEvent('initial-flash-animation-end');
-
     selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(50, 50);
     await waitAfterNextRender(selectionOverlayElement.$.regionSelectionLayer);
     assertEquals(
