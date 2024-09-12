@@ -415,6 +415,33 @@ TEST_F(OSCryptAsyncTest, TestOSCryptAsyncInterface) {
     // Verify that the key used by the encryptor returned from the testing
     // instance indicates compatibility with OSCrypt Sync. This avoids all tests
     // having to install the OSCrypt mocker in every fixture.
+    const auto os_crypt_compat_encryptor =
+        GetInstanceSync(*os_crypt, Encryptor::Option::kEncryptSyncCompat);
+    {
+      Encryptor::DecryptFlags flags;
+      const auto decrypted =
+          os_crypt_compat_encryptor.DecryptData(*ciphertext, &flags);
+      ASSERT_TRUE(decrypted);
+      // Switching from kNone to kEncryptSyncCompat should result in the data
+      // needing to be re-encrypted.
+      EXPECT_TRUE(flags.should_reencrypt);
+      EXPECT_EQ(*decrypted, "testsecrets");
+    }
+    {
+      // Encrypt with the OSCrypt Sync compat one, then decrypt with the new
+      // one, which should signal again that the data needs to be re-encrypted.
+      const auto os_crypt_compat_ciphertext =
+          os_crypt_compat_encryptor.EncryptString("moresecret");
+      ASSERT_TRUE(os_crypt_compat_ciphertext);
+      Encryptor::DecryptFlags flags;
+      const auto decrypted =
+          encryptor.DecryptData(*os_crypt_compat_ciphertext, &flags);
+      ASSERT_TRUE(decrypted);
+      EXPECT_TRUE(flags.should_reencrypt);
+      EXPECT_EQ(*decrypted, "moresecret");
+    }
+  }
+  {
     auto another_encryptor =
         GetInstanceSync(*os_crypt, Encryptor::Option::kEncryptSyncCompat);
     auto decrypted = another_encryptor.DecryptData(*ciphertext);
