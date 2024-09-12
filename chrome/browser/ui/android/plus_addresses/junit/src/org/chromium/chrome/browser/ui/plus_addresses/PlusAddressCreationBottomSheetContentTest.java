@@ -125,7 +125,6 @@ public class PlusAddressCreationBottomSheetContentTest {
                         .findViewById(R.id.plus_address_modal_error_report);
         assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
 
-        mBottomSheetContent.showError(/* errorStateInfo= */ null);
         mBottomSheetContent.setLegacyErrorReportingInstructionVisible(true);
         assertEquals(
                 mBottomSheetContent
@@ -143,7 +142,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testReserveError() {
         View contentView = mBottomSheetContent.getContentView();
 
-        mBottomSheetContent.showError(RESERVE_ERROR_STATE);
+        mBottomSheetContent.setErrorStateInfo(RESERVE_ERROR_STATE);
         assertEquals(
                 contentView.findViewById(R.id.plus_address_content).getVisibility(), View.GONE);
         assertEquals(

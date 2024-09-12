@@ -55,7 +55,6 @@ public class PlusAddressCreationCoordinator {
                 new PlusAddressCreationBottomSheetContent(activity, bottomSheetController);
 
         mMediator.setModel(model);
-        mMediator.setBottomSheetContent(bottomSheetContent);
 
         PropertyModelChangeProcessor.create(
                 model,

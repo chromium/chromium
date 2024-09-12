@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.NORMAL_STATE_INFO;
@@ -52,6 +53,8 @@ class PlusAddressCreationViewBinder {
                     model.get(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE));
         } else if (propertyKey == LOADING_INDICATOR_VISIBLE) {
             view.setLoadingIndicatorVisible(model.get(LOADING_INDICATOR_VISIBLE));
+        } else if (propertyKey == ERROR_STATE_INFO) {
+            view.setErrorStateInfo(model.get(ERROR_STATE_INFO));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

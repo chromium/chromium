@@ -38,6 +38,9 @@ class PlusAddressCreationProperties {
     static final WritableBooleanPropertyKey LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE =
             new WritableBooleanPropertyKey("legacy_error_reporting_instruction_visible");
 
+    static final WritableObjectPropertyKey<PlusAddressCreationErrorStateInfo> ERROR_STATE_INFO =
+            new WritableObjectPropertyKey<>("error_state_info");
+
     static final PropertyKey[] ALL_KEYS = {
         NORMAL_STATE_INFO,
         DELEGATE,
@@ -49,8 +52,9 @@ class PlusAddressCreationProperties {
         CONFIRM_BUTTON_ENABLED,
         CONFIRM_BUTTON_VISIBLE,
         CANCEL_BUTTON_VISIBLE,
-        LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE,
         LOADING_INDICATOR_VISIBLE,
+        LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE,
+        ERROR_STATE_INFO,
     };
 
     private PlusAddressCreationProperties() {}

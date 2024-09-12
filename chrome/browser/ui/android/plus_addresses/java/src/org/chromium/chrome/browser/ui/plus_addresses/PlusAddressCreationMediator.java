@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CANCEL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
@@ -54,7 +55,6 @@ import org.chromium.url.GURL;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
     private PropertyModel mModel;
-    private PlusAddressCreationBottomSheetContent mBottomSheetContent;
 
     /**
      * Creates the mediator.
@@ -91,15 +91,6 @@ import org.chromium.url.GURL;
         mModel = model;
     }
 
-    /**
-     * TODO: crbug.com/364181540 - Remove dependency on the View component.
-     *
-     * @param bottomSheetContent - The UI surface this mediator manages.
-     */
-    void setBottomSheetContent(PlusAddressCreationBottomSheetContent bottomSheetContent) {
-        mBottomSheetContent = bottomSheetContent;
-    }
-
     /** Requests to show the bottom sheet content. */
     void requestShowContent() {
         mModel.set(VISIBLE, true);
@@ -120,8 +111,9 @@ import org.chromium.url.GURL;
             }
             mModel.set(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE, true);
             mModel.set(LOADING_INDICATOR_VISIBLE, false);
+            return;
         }
-        mBottomSheetContent.showError(errorStateInfo);
+        mModel.set(ERROR_STATE_INFO, errorStateInfo);
     }
 
     void hideRefreshButton() {

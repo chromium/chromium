@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
@@ -90,7 +90,6 @@ public final class PlusAddressCreationMediatorTest {
                         mBridge);
 
         mMediator.setModel(mModel);
-        mMediator.setBottomSheetContent(mBottomSheetContent);
     }
 
     @Test
@@ -117,7 +116,7 @@ public final class PlusAddressCreationMediatorTest {
     @Test
     public void testShowError_callsBottomSheetShowError() {
         mMediator.showError(ERROR_STATE);
-        verify(mBottomSheetContent).showError(eq(ERROR_STATE));
+        assertEquals(mModel.get(ERROR_STATE_INFO), ERROR_STATE);
     }
 
     public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {

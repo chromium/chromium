@@ -174,18 +174,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         }
     }
 
-    /**
-     * Shows error message UI to the user.
-     *
-     * @param errorStateInfo necassary UI information to show a meaningful error message to the
-     *     user. This is {@code null} if the enhanced error UI is not enabled, otherwise this is
-     *     always not {@code null}.
-     */
-    public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
-        if (errorStateInfo == null) {
-            return;
-        }
-
+    void setErrorStateInfo(PlusAddressCreationErrorStateInfo errorStateInfo) {
         View plusAddressContent = mContentView.findViewById(R.id.plus_address_content);
         plusAddressContent.setVisibility(View.GONE);
 
