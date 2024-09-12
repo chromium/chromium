@@ -819,6 +819,33 @@ TEST_F(FwupdClientTest, UpstreamTrustedReportsFirmwareDisabled) {
   run_loop_.Run();
 }
 
+// Test that updates lacking the trusted report flag are allowed if
+// Flex firmware updates are enabled.
+TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(
+      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
 TEST_F(FwupdClientTest, Install) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
