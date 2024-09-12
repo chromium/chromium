@@ -131,8 +131,7 @@ class FakeDownloadItem : public download::DownloadItem {
       download::DownloadInterruptReason reason) override;
   void ValidateDangerousDownload() override;
   void ValidateInsecureDownload() override;
-  void StealDangerousDownload(bool delete_file_afterward,
-                              AcquireFileCallback callback) override;
+  void CopyDownload(AcquireFileCallback callback) override;
   void Rename(const base::FilePath& name,
               RenameDownloadCallback callback) override;
   void OnAsyncScanningCompleted(

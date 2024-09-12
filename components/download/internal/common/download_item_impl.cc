@@ -588,26 +588,13 @@ void DownloadItemImpl::ValidateInsecureDownload() {
   MaybeCompleteDownload();
 }
 
-void DownloadItemImpl::StealDangerousDownload(bool delete_file_afterward,
-                                              AcquireFileCallback callback) {
+void DownloadItemImpl::CopyDownload(AcquireFileCallback callback) {
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(IsDangerous());
   DCHECK(AllDataSaved());
 
-  if (delete_file_afterward) {
-    if (download_file_) {
-      GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&DownloadFileDetach, std::move(download_file_)),
-          std::move(callback));
-    } else {
-      std::move(callback).Run(GetFullPath());
-    }
-    destination_info_.current_path.clear();
-    Remove();
-    // Download item has now been deleted.
-  } else if (download_file_) {
+  if (download_file_) {
     GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&MakeCopyOfDownloadFile, download_file_.get()),

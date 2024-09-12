@@ -229,10 +229,9 @@ TEST_F(DownloadFeedbackServiceTest, SingleFeedbackComplete) {
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
   EXPECT_CALL(item, GetReceivedBytes()).WillRepeatedly(Return(1000));
-  EXPECT_CALL(item,
-              StealDangerousDownload(false /*delete_file_after_feedback*/, _))
+  EXPECT_CALL(item, CopyDownload(_))
       .WillOnce([&download_discarded_callback](
-                    bool _, download::DownloadItem::AcquireFileCallback arg) {
+                    download::DownloadItem::AcquireFileCallback arg) {
         download_discarded_callback = std::move(arg);
       });
 
@@ -275,9 +274,9 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
         .WillRepeatedly(
             Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
     EXPECT_CALL(item[i], GetReceivedBytes()).WillRepeatedly(Return(1000));
-    EXPECT_CALL(item[i], StealDangerousDownload(false, _))
-        .WillOnce([&download_discarded_callback, i](
-                      bool _, download::DownloadItem::AcquireFileCallback arg) {
+    EXPECT_CALL(item[i], CopyDownload(_))
+        .WillOnce([&download_discarded_callback,
+                   i](download::DownloadItem::AcquireFileCallback arg) {
           download_discarded_callback[i] = std::move(arg);
         });
     DownloadFeedbackService::MaybeStorePingsForDownload(
@@ -348,9 +347,9 @@ TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
         .WillRepeatedly(
             Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));
     EXPECT_CALL(item[i], GetReceivedBytes()).WillRepeatedly(Return(1000));
-    EXPECT_CALL(item[i], StealDangerousDownload(true, _))
-        .WillOnce([&download_discarded_callback, i](
-                      bool _, download::DownloadItem::AcquireFileCallback arg) {
+    EXPECT_CALL(item[i], CopyDownload(_))
+        .WillOnce([&download_discarded_callback,
+                   i](download::DownloadItem::AcquireFileCallback arg) {
           download_discarded_callback[i] = std::move(arg);
         });
     DownloadFeedbackService::MaybeStorePingsForDownload(

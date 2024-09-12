@@ -2018,29 +2018,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
 }
 
-TEST_F(DownloadItemTest, StealDangerousDownloadAndDiscard) {
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  ASSERT_TRUE(item->IsDangerous());
-  base::FilePath full_path(FILE_PATH_LITERAL("foo.txt"));
-  base::FilePath returned_path;
-
-  EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
-  EXPECT_CALL(*download_file, Detach());
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true,  // delete_file_after_feedback
-      base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                 weak_ptr_factory.GetWeakPtr(),
-                 base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(full_path, returned_path);
-}
-
-TEST_F(DownloadItemTest, StealDangerousDownloadAndKeep) {
+TEST_F(DownloadItemTest, CopyDownload) {
   DownloadItemImpl* item = CreateDownloadItem();
   MockDownloadFile* download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
@@ -2050,61 +2028,12 @@ TEST_F(DownloadItemTest, StealDangerousDownloadAndKeep) {
   EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
   base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
   item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      false,  // delete_file_after_feedback
-      base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                 weak_ptr_factory.GetWeakPtr(),
-                 base::Unretained(&returned_path)));
+  item->CopyDownload(base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
+                                    weak_ptr_factory.GetWeakPtr(),
+                                    base::Unretained(&returned_path)));
   task_environment_.RunUntilIdle();
   EXPECT_NE(full_path, returned_path);
   CleanupItem(item, download_file, DownloadItem::IN_PROGRESS);
-}
-
-TEST_F(DownloadItemTest, StealInterruptedContinuableDangerousDownload) {
-  base::FilePath returned_path;
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  base::FilePath full_path = item->GetFullPath();
-  EXPECT_FALSE(full_path.empty());
-  EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
-  EXPECT_CALL(*download_file, Detach());
-  item->DestinationObserverAsWeakPtr()->DestinationError(
-      DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, 1,
-      std::unique_ptr<crypto::SecureHash>());
-  ASSERT_TRUE(item->IsDangerous());
-
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true, base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                       weak_ptr_factory.GetWeakPtr(),
-                       base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(full_path, returned_path);
-}
-
-TEST_F(DownloadItemTest, StealInterruptedNonContinuableDangerousDownload) {
-  base::FilePath returned_path;
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  EXPECT_CALL(*download_file, Cancel());
-  item->DestinationObserverAsWeakPtr()->DestinationError(
-      DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, 1,
-      std::unique_ptr<crypto::SecureHash>());
-  ASSERT_TRUE(item->IsDangerous());
-
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true, base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                       weak_ptr_factory.GetWeakPtr(),
-                       base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(returned_path.empty());
 }
 
 // Tests that for an incognito download, the target file is annotated with an

@@ -286,8 +286,7 @@ void FakeDownloadItem::ValidateInsecureDownload() {
   NOTREACHED_IN_MIGRATION();
 }
 
-void FakeDownloadItem::StealDangerousDownload(bool delete_file_afterward,
-                                              AcquireFileCallback callback) {
+void FakeDownloadItem::CopyDownload(AcquireFileCallback callback) {
   NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(base::FilePath());
 }

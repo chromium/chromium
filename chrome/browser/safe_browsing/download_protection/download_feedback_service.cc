@@ -135,13 +135,11 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
   DownloadFeedbackPings* pings = DownloadFeedbackPings::FromDownload(*download);
   DCHECK(pings);
 
-  download->StealDangerousDownload(
-      /*delete_file_afterward=*/false,
-      base::BindOnce(
-          &DownloadFeedbackService::BeginFeedbackOrDeleteFile,
-          file_task_runner_, weak_ptr_factory_.GetWeakPtr(), profile,
-          pings->ping_request(), pings->ping_response(),
-          base::checked_cast<uint64_t>(download->GetReceivedBytes())));
+  download->CopyDownload(base::BindOnce(
+      &DownloadFeedbackService::BeginFeedbackOrDeleteFile, file_task_runner_,
+      weak_ptr_factory_.GetWeakPtr(), profile, pings->ping_request(),
+      pings->ping_response(),
+      base::checked_cast<uint64_t>(download->GetReceivedBytes())));
 }
 
 // static
