@@ -78,5 +78,18 @@ TEST(DownloadUtilsTest, CreateResourceRequest) {
   VerifyRangeHeader(params.get(), "bytes=-195");
 }
 
+TEST(DownloadUtilsTest, IsContentDispositionAttachmentInHead) {
+  network::mojom::URLResponseHead response_head;
+  EXPECT_FALSE(IsContentDispositionAttachmentInHead(response_head));
+
+  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+  response_head.headers = builder.Build();
+  EXPECT_FALSE(IsContentDispositionAttachmentInHead(response_head));
+
+  builder.AddHeader("Content-Disposition", "attachment");
+  response_head.headers = builder.Build();
+  EXPECT_TRUE(IsContentDispositionAttachmentInHead(response_head));
+}
+
 }  // namespace
 }  // namespace download
