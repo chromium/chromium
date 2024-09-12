@@ -86,6 +86,11 @@ class FilePathWatcherChangeTracker {
   // The `ChangeInfo` of the last `FILE_ACTION_RENAMED_OLD_NAME` OS change that
   // was passed to `AddChange`. Used to coalesce the move into a single event.
   ChangeInfo last_move_change_;
+
+  // The `ChangeInfo` of the last `FILE_ACTION_REMOVED` OS change that was
+  // passed to `AddChange`. Used to coalesce the overwrites into a single move
+  // event.
+  std::optional<ChangeInfo> last_deleted_change_;
 };
 }  // namespace content
 

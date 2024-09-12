@@ -1321,10 +1321,6 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 
   // Move the directory into place, s.t. the watched file appears.
   base::Move(from_path, to_path);
-#if BUILDFLAG(IS_WIN)
-  // Windows reports a file being overwritten as a delete.
-  event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
-#endif
 
   // The move event.
   event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
