@@ -612,6 +612,7 @@ void ProactiveNudgeTracker::ComposeSessionCompleted(
     iter->second->ComposeSessionCompleted(session_close_reason, events);
     engagement_trackers_.erase(iter);
   }
+  ResetState();
 }
 
 void ProactiveNudgeTracker::OnUserDisabledNudge(bool single_site_only) {

@@ -5366,3 +5366,56 @@ TEST_F(ComposePopupAutofillDriverTest,
                                       kComposeDelayedProactiveNudge));
   ASSERT_FALSE(client().IsPopupTimerRunning());
 }
+
+TEST_F(ComposePopupAutofillDriverTest, TestCloseSessionResetsNudgeTracker) {
+  autofill::FormData form_data =
+      CreateTestFormData({autofill::test::CreateTestFormField(
+          "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
+  field_data.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  field_data.set_host_frame(form_data.host_frame());
+
+  autofill::ContentAutofillDriver* autofill_driver =
+      CreateAutofillDriver(form_data);
+
+  // The first call to ShouldTriggerPopup starts the nudge tracker timers.
+  ASSERT_FALSE(client().ShouldTriggerPopup(
+      form_data, field_data,
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+
+  task_environment()->FastForwardBy(base::Microseconds(8));
+
+  // The trigger will succeed since enough time passed.
+  ASSERT_TRUE(
+      client().ShouldTriggerPopup(form_data, field_data,
+                                  autofill::AutofillSuggestionTriggerSource::
+                                      kComposeDelayedProactiveNudge));
+  ASSERT_FALSE(client().IsPopupTimerRunning());
+
+  // Simiulate closing the session with the "X" button.
+  compose::ComposeSessionEvents events{};
+  client().OnSessionComplete(
+      field_data.global_id(),
+      compose::ComposeSessionCloseReason::kCloseButtonPressed, events);
+
+  // Signal that a the caret moved in the field with a valid selection.
+  field_data.set_selected_text(u"12345");
+  autofill_driver->GetAutofillManager().OnCaretMovedInFormField(
+      form_data, field_data.global_id(), /*caret_bounds=*/gfx::Rect());
+
+  // The timer should not be running since closing the session resets the nudge
+  // tracker.
+  task_environment()->FastForwardBy(base::Microseconds(3));
+  ASSERT_FALSE(client().IsPopupTimerRunning());
+
+  // Move forward until timer should expire.
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  ASSERT_FALSE(client().IsPopupTimerRunning());
+
+  // Should trigger will not succeed since the timer never started.
+  ASSERT_FALSE(
+      client().ShouldTriggerPopup(form_data, field_data,
+                                  autofill::AutofillSuggestionTriggerSource::
+                                      kComposeDelayedProactiveNudge));
+}
