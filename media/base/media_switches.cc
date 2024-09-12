@@ -892,7 +892,7 @@ BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
 // A hardware video encoder is allowed to drop a frame in WebRTC.
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
              "WebRTCHardwareVideoEncoderFrameDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Inform webrtc with correct video color space information whenever
 // possible.
