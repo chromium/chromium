@@ -324,6 +324,7 @@ mojom("mojom_platform") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/mojom",
     "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/events/mojom:event_latency_metadata_mojom",

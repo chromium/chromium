@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace app_restore {
 
@@ -28,7 +29,7 @@ std::string ToPrefixedString(std::optional<chromeos::WindowStateType> val,
   return ToPrefixedString(new_val, prefix);
 }
 
-std::string ToPrefixedString(std::optional<ui::WindowShowState> val,
+std::string ToPrefixedString(std::optional<ui::mojom::WindowShowState> val,
                              const std::string& prefix) {
   std::optional<int> new_val =
       val ? std::make_optional(static_cast<int32_t>(*val)) : std::nullopt;

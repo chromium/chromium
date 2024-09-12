@@ -42,6 +42,7 @@
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace sessions {
@@ -980,7 +981,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     } else {
       context = client_->CreateLiveTabContext(
           context, SessionWindow::TYPE_NORMAL, std::string(), gfx::Rect(),
-          ui::SHOW_STATE_NORMAL, std::string(), std::string(),
+          ui::mojom::WindowShowState::kNormal, std::string(), std::string(),
           std::map<std::string, std::string>());
       if (tab.browser_id) {
         UpdateTabBrowserIDs(tab.browser_id, context->GetSessionID());

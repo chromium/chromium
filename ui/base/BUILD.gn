@@ -123,6 +123,10 @@ source_set("types") {
   if (!is_ios) {
     sources += [ "ui_base_types.h" ]
   }
+
+  # Need to be removed once all clients of `MenuSourceType` have been migrated.
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [ "//build:chromeos_buildflags" ]
 }
 
@@ -538,6 +542,7 @@ component("base") {
   if (use_blink) {
     public_deps += [
       "//ui/base/clipboard:file_info",
+      "//ui/base/mojom:ui_base_types",
       "//ui/events:dom_keycode_converter",
       "//ui/events:events_base",
       "//ui/events/platform",
@@ -865,6 +870,11 @@ static_library("test_support") {
     ":base",
     "//ui/base/idle",
   ]
+
+  if (!is_ios) {
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+  }
+
   deps = [
     "//base",
     "//base/test:test_config",

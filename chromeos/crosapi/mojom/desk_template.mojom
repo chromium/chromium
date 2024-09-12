@@ -5,7 +5,7 @@
 module crosapi.mojom;
 
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/window_show_state.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "ui/gfx/image/mojom/image.mojom";

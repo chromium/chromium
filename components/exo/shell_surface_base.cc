@@ -55,6 +55,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
@@ -1720,7 +1721,7 @@ float ShellSurfaceBase::GetPendingScaleFactor() const {
 // ShellSurfaceBase, protected:
 
 void ShellSurfaceBase::CreateShellSurfaceWidget(
-    ui::WindowShowState show_state) {
+    ui::mojom::WindowShowState show_state) {
   DCHECK(GetEnabled());
   DCHECK(!widget_);
 

@@ -3195,8 +3195,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
   // Add our browser under test, this is the only way to launch an app
   // via the BrowserManager.
   crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {},
-      ui::WindowShowState::SHOW_STATE_DEFAULT,
+      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {}, ui::SHOW_STATE_DEFAULT,
       /*active_tab_index=*/0, /*first_non_pinned_tab_index=*/0, kTestAppName,
       kTestWindowId, /*lacros_profile_id=*/0);
   LacrosWindowWaiter waiter;

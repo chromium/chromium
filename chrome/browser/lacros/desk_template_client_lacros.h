@@ -11,6 +11,7 @@
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -26,7 +27,7 @@ class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
   // DeskTemplateClient:
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
-      const ui::WindowShowState show_state,
+      const ui::mojom::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state) override;
   void GetBrowserInformation(uint32_t serial,
                              const std::string& window_unique_id,

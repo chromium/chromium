@@ -19,6 +19,7 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -78,7 +79,7 @@ class SavedDeskGenericAppBuilder {
   SavedDeskGenericAppBuilder& SetWindowBound(gfx::Rect bounds);
   SavedDeskGenericAppBuilder& SetWindowState(chromeos::WindowStateType state);
   SavedDeskGenericAppBuilder& SetPreMinimizedWindowState(
-      ui::WindowShowState state);
+      ui::mojom::WindowShowState state);
   SavedDeskGenericAppBuilder& SetZIndex(int index);
   SavedDeskGenericAppBuilder& SetWindowId(int window_id);
   SavedDeskGenericAppBuilder& SetDisplayId(int64_t display_id);
@@ -101,7 +102,7 @@ class SavedDeskGenericAppBuilder {
   std::optional<std::string> app_id_;
   std::optional<gfx::Rect> window_bounds_;
   std::optional<chromeos::WindowStateType> window_show_state_;
-  std::optional<ui::WindowShowState> pre_minimized_window_show_state_;
+  std::optional<ui::mojom::WindowShowState> pre_minimized_window_show_state_;
   std::optional<int> z_index_;
   std::optional<int> window_id_;
   std::optional<int64_t> display_id_;

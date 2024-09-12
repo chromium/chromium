@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace app_restore {
 
@@ -216,10 +217,10 @@ std::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
              : std::nullopt;
 }
 
-std::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
+std::optional<ui::mojom::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
     const base::Value::Dict& dict) {
   return dict.Find(kPreMinimizedShowStateTypeKey)
-             ? std::make_optional(static_cast<ui::WindowShowState>(
+             ? std::make_optional(static_cast<ui::mojom::WindowShowState>(
                    dict.FindInt(kPreMinimizedShowStateTypeKey).value()))
              : std::nullopt;
 }

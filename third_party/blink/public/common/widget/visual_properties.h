@@ -111,8 +111,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   mojom::DisplayMode display_mode = mojom::DisplayMode::kUndefined;
 
   // The window show state. Defaults to `SHOW_STATE_DEFAULT`.
-  ui::WindowShowState window_show_state =
-      ui::WindowShowState::SHOW_STATE_DEFAULT;
+  ui::WindowShowState window_show_state = ui::SHOW_STATE_DEFAULT;
 
   // This represents the latest capture sequence number requested. When this is
   // incremented, that means the caller wants to synchronize surfaces which

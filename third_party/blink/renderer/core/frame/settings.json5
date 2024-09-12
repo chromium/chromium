@@ -543,7 +543,7 @@
     // Only used by web tests.
     {
       name: "windowShowState",
-      initial: "ui::WindowShowState::SHOW_STATE_DEFAULT",
+      initial: "ui::SHOW_STATE_DEFAULT",
       invalidate: ["MediaQuery"],
       type: "ui::WindowShowState",
       include_paths: ["ui/base/ui_base_types.h"],

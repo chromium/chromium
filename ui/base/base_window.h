@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE) BaseWindow {
   virtual gfx::Rect GetRestoredBounds() const = 0;
 
   // Returns the restore state for the window (platform dependent).
-  virtual ui::WindowShowState GetRestoredState() const = 0;
+  virtual ui::mojom::WindowShowState GetRestoredState() const = 0;
 
   // Retrieves the window's current bounds, including its window.
   // This will only differ from GetRestoredBounds() for maximized

@@ -324,7 +324,7 @@ class TestWindowObserver : public aura::WindowObserver {
  private:
   gfx::NativeWindow window_;
   int count_ = 0;
-  ui::WindowShowState state_ = ui::WindowShowState::SHOW_STATE_DEFAULT;
+  ui::WindowShowState state_ = ui::SHOW_STATE_DEFAULT;
 };
 
 // Tests that window transitions from normal to minimized and back do not
@@ -343,18 +343,18 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
   widget->Show();
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_EQ(0, observer->count());
-  EXPECT_EQ(ui::WindowShowState::SHOW_STATE_DEFAULT, observer->state());
+  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, observer->state());
 
   widget->Minimize();
   EXPECT_TRUE(widget->IsMinimized());
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::WindowShowState::SHOW_STATE_MINIMIZED, observer->state());
+  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, observer->state());
   observer->Reset();
 
   widget->Show();
   widget->Restore();
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::WindowShowState::SHOW_STATE_NORMAL, observer->state());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, observer->state());
 
   observer.reset();
   EXPECT_FALSE(widget->IsMinimized());

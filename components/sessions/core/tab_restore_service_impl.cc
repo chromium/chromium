@@ -38,6 +38,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #undef LoadBitmap
 
@@ -190,21 +191,21 @@ enum SerializedWindowShowState : int {
 
 // Converts a window show state to an integer. This function needs to be kept
 // up to date with the SerializedWindowShowState enum.
-int SerializeWindowShowState(ui::WindowShowState show_state) {
+int SerializeWindowShowState(ui::mojom::WindowShowState show_state) {
   switch (show_state) {
-    case ui::SHOW_STATE_DEFAULT:
+    case ui::mojom::WindowShowState::kDefault:
       return kSerializedShowStateDefault;
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       return kSerializedShowStateNormal;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return kSerializedShowStateMinimized;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return kSerializedShowStateMaximized;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       return kSerializedShowStateInactive;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return kSerializedShowStateFullscreen;
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kEnd:
       // This should never happen.
       NOTREACHED_IN_MIGRATION();
   }
@@ -215,25 +216,25 @@ int SerializeWindowShowState(ui::WindowShowState show_state) {
 // otherwise. This function needs to be kept up to date with the
 // SerializedWindowShowState enum.
 bool DeserializeWindowShowState(int show_state_int,
-                                ui::WindowShowState* show_state) {
+                                ui::mojom::WindowShowState* show_state) {
   switch (static_cast<SerializedWindowShowState>(show_state_int)) {
     case kSerializedShowStateDefault:
-      *show_state = ui::SHOW_STATE_DEFAULT;
+      *show_state = ui::mojom::WindowShowState::kDefault;
       return true;
     case kSerializedShowStateNormal:
-      *show_state = ui::SHOW_STATE_NORMAL;
+      *show_state = ui::mojom::WindowShowState::kNormal;
       return true;
     case kSerializedShowStateMinimized:
-      *show_state = ui::SHOW_STATE_MINIMIZED;
+      *show_state = ui::mojom::WindowShowState::kMinimized;
       return true;
     case kSerializedShowStateMaximized:
-      *show_state = ui::SHOW_STATE_MAXIMIZED;
+      *show_state = ui::mojom::WindowShowState::kMaximized;
       return true;
     case kSerializedShowStateInactive:
-      *show_state = ui::SHOW_STATE_INACTIVE;
+      *show_state = ui::mojom::WindowShowState::kInactive;
       return true;
     case kSerializedShowStateFullscreen:
-      *show_state = ui::SHOW_STATE_FULLSCREEN;
+      *show_state = ui::mojom::WindowShowState::kFullscreen;
       return true;
     case kSerializedShowStateInvalid:
     default:
@@ -291,7 +292,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
     SessionID* window_id,
     int32_t* num_tabs) {
   WindowCommandFields fields;
-  ui::WindowShowState show_state = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState show_state = ui::mojom::WindowShowState::kDefault;
   auto type = sessions::SessionWindow::TYPE_NORMAL;
 
   if (command->id() == kCommandWindow) {
@@ -541,7 +542,7 @@ class TabRestoreServiceImpl::PersistenceDelegate
       int selected_tab_index,
       int num_tabs,
       const gfx::Rect& bounds,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       const std::string& workspace,
       base::Time timestamp);
 
@@ -941,7 +942,7 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateWindowCommand(
     int selected_tab_index,
     int num_tabs,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state,
+    ui::mojom::WindowShowState show_state,
     const std::string& workspace,
     base::Time timestamp) {
   static_assert(sizeof(SessionID::id_type) == sizeof(int),

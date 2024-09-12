@@ -92,7 +92,7 @@ void AppWindowGeometryCacheTest::AddGeometryAndLoadExtension(
   value.Set("screen_bounds_y", screen_bounds.y());
   value.Set("screen_bounds_w", screen_bounds.width());
   value.Set("screen_bounds_h", screen_bounds.height());
-  value.Set("state", state);
+  value.Set("state", static_cast<int>(state));
   dict.Set(window_id, std::move(value));
   extension_prefs_->SetGeometryCache(extension_id, std::move(dict));
   LoadExtension(extension_id);
@@ -285,7 +285,8 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
             dict->FindIntByDottedPath(window_id + ".screen_bounds_w"));
   ASSERT_EQ(screen_bounds.height(),
             dict->FindIntByDottedPath(window_id + ".screen_bounds_h"));
-  ASSERT_EQ(state, dict->FindIntByDottedPath(window_id + ".state"));
+  ASSERT_EQ(static_cast<int>(state),
+            dict->FindIntByDottedPath(window_id + ".state"));
 
   // reload extension
   LoadExtension(extension_id);

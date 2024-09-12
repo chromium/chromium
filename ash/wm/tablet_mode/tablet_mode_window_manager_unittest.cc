@@ -534,7 +534,8 @@ TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
 // Create a string which consists of the bounds and the state for comparison.
 std::string GetPlacementString(const gfx::Rect& bounds,
                                ui::WindowShowState state) {
-  return bounds.ToString() + ' ' + base::NumberToString(state);
+  return bounds.ToString() + ' ' +
+         base::NumberToString(static_cast<int>(state));
 }
 
 // Retrieves the window's restore state override - if any - and returns it as a

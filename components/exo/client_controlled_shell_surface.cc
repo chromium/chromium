@@ -55,6 +55,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/compositor/layer.h"
@@ -175,19 +176,19 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
         break;
       case chromeos::WindowStateType::kFullscreen:
         switch (window->GetProperty(aura::client::kRestoreShowStateKey)) {
-          case ui::SHOW_STATE_DEFAULT:
-          case ui::SHOW_STATE_NORMAL:
+          case ui::mojom::WindowShowState::kDefault:
+          case ui::mojom::WindowShowState::kNormal:
             next_state = chromeos::WindowStateType::kNormal;
             break;
-          case ui::SHOW_STATE_MAXIMIZED:
+          case ui::mojom::WindowShowState::kMaximized:
             next_state = chromeos::WindowStateType::kMaximized;
             break;
-          case ui::SHOW_STATE_MINIMIZED:
+          case ui::mojom::WindowShowState::kMinimized:
             next_state = chromeos::WindowStateType::kMinimized;
             break;
-          case ui::SHOW_STATE_FULLSCREEN:
-          case ui::SHOW_STATE_INACTIVE:
-          case ui::SHOW_STATE_END:
+          case ui::mojom::WindowShowState::kFullscreen:
+          case ui::mojom::WindowShowState::kInactive:
+          case ui::mojom::WindowShowState::kEnd:
             DUMP_WILL_BE_NOTREACHED()
                 << " unknown state :"
                 << window->GetProperty(aura::client::kRestoreShowStateKey);
@@ -477,7 +478,7 @@ void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
                static_cast<int>(type));
 
   if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
+    CreateShellSurfaceWidget(ui::mojom::WindowShowState::kNormal);
 
   if (type == chromeos::WindowPinType::kNone) {
     // Set other window state mode will automatically cancelled pin mode.
@@ -494,7 +495,7 @@ void ClientControlledShellSurface::SetSystemUiVisibility(bool autohide) {
                "autohide", autohide);
 
   if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
+    CreateShellSurfaceWidget(ui::mojom::WindowShowState::kNormal);
 
   ash::window_util::SetAutoHideShelf(widget_->GetNativeWindow(), autohide);
 }
@@ -941,12 +942,12 @@ bool ClientControlledShellSurface::ShouldSaveWindowPlacement() const {
 
 void ClientControlledShellSurface::SaveWindowPlacement(
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state) {}
+    ui::mojom::WindowShowState show_state) {}
 
 bool ClientControlledShellSurface::GetSavedWindowPlacement(
     const views::Widget* widget,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   return false;
 }
 

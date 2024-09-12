@@ -19,6 +19,7 @@
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace sessions::tab_restore {
@@ -193,7 +194,7 @@ struct SESSIONS_EXPORT Window : public Entry {
 
   // Where and how the window is displayed.
   gfx::Rect bounds;
-  ui::WindowShowState show_state;
+  ui::mojom::WindowShowState show_state;
   std::string workspace;
 };
 

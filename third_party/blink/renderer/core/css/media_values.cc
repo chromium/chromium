@@ -315,7 +315,7 @@ ui::WindowShowState MediaValues::CalculateWindowShowState(LocalFrame* frame) {
       frame->GetPage()->GetSettings().GetWindowShowState();
   // Initial state set in /third_party/blink/renderer/core/frame/settings.json5
   // should match with this.
-  if (show_state != ui::WindowShowState::SHOW_STATE_DEFAULT) {
+  if (show_state != ui::SHOW_STATE_DEFAULT) {
     return show_state;
   }
 

@@ -68,8 +68,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     String media_type;
     mojom::blink::DisplayMode display_mode =
         mojom::blink::DisplayMode::kBrowser;
-    ui::WindowShowState window_show_state =
-        ui::WindowShowState::SHOW_STATE_DEFAULT;
+    ui::WindowShowState window_show_state = ui::SHOW_STATE_DEFAULT;
     bool resizable = true;
     ColorSpaceGamut color_gamut = ColorSpaceGamut::kUnknown;
     mojom::blink::PreferredColorScheme preferred_color_scheme =

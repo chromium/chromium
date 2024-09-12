@@ -8,6 +8,7 @@
 
 #include "components/sessions/core/session_command.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace sessions {
 
@@ -37,7 +38,7 @@ SessionWindow::SessionWindow()
       selected_tab_index(-1),
       type(TYPE_NORMAL),
       is_constrained(true),
-      show_state(ui::SHOW_STATE_DEFAULT) {}
+      show_state(ui::mojom::WindowShowState::kDefault) {}
 
 SessionWindow::~SessionWindow() {}
 

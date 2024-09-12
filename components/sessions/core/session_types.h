@@ -23,6 +23,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -202,7 +203,7 @@ struct SESSIONS_EXPORT SessionWindow {
   std::vector<std::unique_ptr<SessionTabGroup>> tab_groups;
 
   // Is the window maximized, minimized, or normal?
-  ui::WindowShowState show_state;
+  ui::mojom::WindowShowState show_state;
 
   std::string app_name;
 

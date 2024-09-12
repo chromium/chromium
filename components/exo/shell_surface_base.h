@@ -25,6 +25,7 @@
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -391,7 +392,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
-  void CreateShellSurfaceWidget(ui::WindowShowState show_state);
+  void CreateShellSurfaceWidget(ui::mojom::WindowShowState show_state);
 
   // Returns true if the window is the ShellSurface's widget's window.
   bool IsShellSurfaceWindow(const aura::Window* window) const;

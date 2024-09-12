@@ -92,7 +92,7 @@ blink::mojom::DisplayMode RenderWidgetHostDelegate::GetDisplayMode() const {
 }
 
 ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
-  return ui::WindowShowState::SHOW_STATE_DEFAULT;
+  return ui::SHOW_STATE_DEFAULT;
 }
 
 blink::mojom::DevicePostureProvider*

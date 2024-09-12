@@ -35,6 +35,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
@@ -251,9 +252,10 @@ void ShellSurface::Maximize() {
   TRACE_EVENT0("exo", "ShellSurface::Maximize");
 
   if (!widget_) {
-    if (initial_show_state_ != ui::SHOW_STATE_FULLSCREEN ||
-        ShouldExitFullscreenFromRestoreOrMaximized())
-      initial_show_state_ = ui::SHOW_STATE_MAXIMIZED;
+    if (initial_show_state_ != ui::mojom::WindowShowState::kFullscreen ||
+        ShouldExitFullscreenFromRestoreOrMaximized()) {
+      initial_show_state_ = ui::mojom::WindowShowState::kMaximized;
+    }
     return;
   }
 
@@ -270,7 +272,7 @@ void ShellSurface::Minimize() {
   TRACE_EVENT0("exo", "ShellSurface::Minimize");
 
   if (!widget_) {
-    initial_show_state_ = ui::SHOW_STATE_MINIMIZED;
+    initial_show_state_ = ui::mojom::WindowShowState::kMinimized;
     return;
   }
 
@@ -284,9 +286,10 @@ void ShellSurface::Restore() {
   TRACE_EVENT0("exo", "ShellSurface::Restore");
 
   if (!widget_) {
-    if (initial_show_state_ != ui::SHOW_STATE_FULLSCREEN ||
-        ShouldExitFullscreenFromRestoreOrMaximized())
-      initial_show_state_ = ui::SHOW_STATE_NORMAL;
+    if (initial_show_state_ != ui::mojom::WindowShowState::kFullscreen ||
+        ShouldExitFullscreenFromRestoreOrMaximized()) {
+      initial_show_state_ = ui::mojom::WindowShowState::kNormal;
+    }
     return;
   }
 
@@ -304,9 +307,9 @@ void ShellSurface::SetFullscreen(bool fullscreen, int64_t display_id) {
                "display_id", display_id);
   if (!widget_) {
     if (fullscreen) {
-      initial_show_state_ = ui::SHOW_STATE_FULLSCREEN;
-    } else if (initial_show_state_ == ui::SHOW_STATE_FULLSCREEN) {
-      initial_show_state_ = ui::SHOW_STATE_DEFAULT;
+      initial_show_state_ = ui::mojom::WindowShowState::kFullscreen;
+    } else if (initial_show_state_ == ui::mojom::WindowShowState::kFullscreen) {
+      initial_show_state_ = ui::mojom::WindowShowState::kDefault;
     }
     return;
   }
@@ -901,8 +904,9 @@ bool ShellSurface::OnPreWidgetCommit() {
         root_surface()->surface_hierarchy_content_bounds().IsEmpty()) {
       Configure();
 
-      if (initial_show_state_ != ui::SHOW_STATE_MINIMIZED)
+      if (initial_show_state_ != ui::mojom::WindowShowState::kMinimized) {
         needs_layout_on_show_ = true;
+      }
     }
 
     CreateShellSurfaceWidget(initial_show_state_);

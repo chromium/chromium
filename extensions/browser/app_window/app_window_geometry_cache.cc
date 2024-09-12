@@ -121,7 +121,7 @@ void AppWindowGeometryCache::SyncToStorage() {
       value.Set("screen_bounds_y", screen_bounds.y());
       value.Set("screen_bounds_w", screen_bounds.width());
       value.Set("screen_bounds_h", screen_bounds.height());
-      value.Set("state", data_it->second.window_state);
+      value.Set("state", static_cast<int>(data_it->second.window_state));
       value.Set("ts", base::TimeToValue(data_it->second.last_change));
       dict.Set(data_it->first, std::move(value));
 
