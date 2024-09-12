@@ -908,6 +908,38 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Middle Click"/>
 </enum>
 
+<enum name="DlcClientDlcBeginInstallResult">
+  <int value="0" label="Install successfully initiated"/>
+  <int value="1" label="Failed because D-Bus not connected"/>
+  <int value="2" label="Failed because DLC Service was busy too many times"/>
+  <int value="3" label="Will retry because DLC Service was busy"/>
+  <int value="4"
+      label="Failed because DLC Service returned an error code (see separate
+             DLC error code histogram)"/>
+  <int value="5" label="Failed because of an unknown DLC Service failure"/>
+</enum>
+
+<enum name="DlcClientDlcErrorCode">
+<!-- One entry for each kError{...} error code in
+  third_party/cros_system_api/dbus/dlcservice/dbus-constants.h -->
+
+  <int value="0" label="Unrecognized DLC error code"/>
+  <int value="1" label="NONE (No error)"/>
+  <int value="2" label="INTERNAL"/>
+  <int value="3" label="BUSY"/>
+  <int value="4" label="NEED_REBOOT"/>
+  <int value="5" label="INVALID_DLC"/>
+  <int value="6" label="ALLOCATION"/>
+  <int value="7" label="NO_IMAGE_FOUND"/>
+</enum>
+
+<enum name="DlcClientDlcFinalInstallResult">
+  <int value="0" label="Successful install"/>
+  <int value="1"
+      label="Failed because DLC Service returned an error code (see separate
+             DLC error code histogram)"/>
+</enum>
+
 <enum name="DpSuccessMetric">
   <int value="0" label="Success with HotPlug Detect(HPD)"/>
   <int value="1" label="Success without HotPlug Detect(HPD)"/>

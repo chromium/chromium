@@ -762,6 +762,60 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.MlCore.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the ML Core DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the ML
+    Core DLC by cros-camera. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the ML Core DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the ML Core DLC by cros-camera. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.MlCore.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the ML Core DLC by
+    cros-camera. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.ModuleID" enum="PopularCamPeriphModuleID"
     expires_after="2025-02-10">
   <owner>dorahkim@google.com</owner>
@@ -859,6 +913,60 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.SuperRes.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the super res DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the
+    super res DLC by cros-camera. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the super res DLC by cros-camera.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the super res DLC by cros-camera. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the super res DLC by
+    cros-camera. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.SuperRes.Error" enum="SuperResError"
     expires_after="2025-05-31">
   <owner>julianachang@google.com</owner>
@@ -877,6 +985,63 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <summary>
     Records the number of Super Resolution still capture shots taken in a camera
     session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.CameraDiag.BlurDetector.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the blur detector DLC by cros-camera-diagnostics.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the
+    blur detector DLC by cros-camera-diagnostics. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.CameraDiag.BlurDetector.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the blur detector DLC by cros-camera-diagnostics.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the blur detector DLC by
+    cros-camera-diagnostics. See the related histogram
+    .DlcFinalInstallDlcServiceError for detailed error codes returned from DLC
+    Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CameraDiag.BlurDetector.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the blur detector DLC by
+    cros-camera-diagnostics. Note that the buckets are cumulative: If e.g. 3
+    attempts are made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot;
+    buckets will all be incremented.
   </summary>
 </histogram>
 
@@ -2672,6 +2837,60 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     user opens the message center and scrolls by mouse then by key, only the
     mouse event is recorded. If the user closes and reopens the message center
     before the second event, both events are recorded.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcBeginInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the ML Core DLC by ml-core-cacher.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcBeginInstallResult"
+    enum="DlcClientDlcBeginInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the ML
+    Core DLC by ml-core-cacher. See the related histogram
+    .DlcBeginInstallDlcServiceError for detailed error codes returned.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcFinalInstallDlcServiceError"
+    enum="DlcClientDlcErrorCode" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the ML Core DLC by ml-core-cacher.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcFinalInstallResult"
+    enum="DlcClientDlcFinalInstallResult" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Final result of an attempt to install the ML Core DLC by ml-core-cacher. See
+    the related histogram .DlcFinalInstallDlcServiceError for detailed error
+    codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MlCoreCacher.MlCore.DlcInstallAttemptCount"
+    units="attempts" expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Indicates at least n attempts were made to install the ML Core DLC by
+    ml-core-cacher. Note that the buckets are cumulative: If e.g. 3 attempts are
+    made, then the &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will
+    all be incremented.
   </summary>
 </histogram>
 
