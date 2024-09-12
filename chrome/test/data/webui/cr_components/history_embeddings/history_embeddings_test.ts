@@ -330,4 +330,13 @@ suite('cr-history-embeddings', () => {
     assertEquals(21, numChars);
     assertEquals(1, handler.getCallCount('sendQualityLog'));
   });
+
+  test('ForceSupressesLogging', async () => {
+    element.forceSuppressLogging = true;
+    const resultsElements =
+        element.shadowRoot!.querySelectorAll('cr-url-list-item');
+    resultsElements[0]!.click();
+    window.dispatchEvent(new Event('beforeunload'));
+    assertEquals(0, handler.getCallCount('sendQualityLog'));
+  });
 });

@@ -23,6 +23,15 @@ suite('HistoryAppTest', function() {
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
 
+  // Force cr-history-embeddings to be in the DOM for testing.
+  async function forceHistoryEmbeddingsElement() {
+    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 0});
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'some fake input'}}));
+    return flushTasks();
+  }
+
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -288,12 +297,7 @@ suite('HistoryAppTest', function() {
   });
 
   test('CountsCharacters', async () => {
-    // Force cr-history-embeddings to be in the DOM for testing.
-    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 0});
-    element.dispatchEvent(new CustomEvent(
-        'change-query',
-        {bubbles: true, composed: true, detail: {search: 'some fake input'}}));
-    await flushTasks();
+    await forceHistoryEmbeddingsElement();
 
     function dispatchNativeInput(
         inputEvent: Partial<InputEvent>, inputValue: string) {
@@ -406,4 +410,24 @@ suite('HistoryAppTest', function() {
     assertEquals(2, element.$.toolbar.count);
   });
 
+  test('PassesDisclaimerLinkClicksToEmbeddings', async () => {
+    await forceHistoryEmbeddingsElement();
+    const historyEmbeddingsElement =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddingsElement);
+    assertFalse(historyEmbeddingsElement.forceSuppressLogging);
+    element.$.historyEmbeddingsDisclaimerLink.click();
+    assertTrue(historyEmbeddingsElement.forceSuppressLogging);
+  });
+
+  test('PassesDisclaimerLinkAuxClicksToEmbeddings', async () => {
+    await forceHistoryEmbeddingsElement();
+    const historyEmbeddingsElement =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddingsElement);
+    assertFalse(historyEmbeddingsElement.forceSuppressLogging);
+    element.$.historyEmbeddingsDisclaimerLink.dispatchEvent(
+        new MouseEvent('auxclick'));
+    assertTrue(historyEmbeddingsElement.forceSuppressLogging);
+  });
 });

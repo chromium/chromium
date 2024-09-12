@@ -139,6 +139,7 @@ export interface HistoryAppElement {
     tabsScrollContainer: HTMLElement,
     router: HistoryRouterElement,
     historyEmbeddingsContainer: HTMLElement,
+    historyEmbeddingsDisclaimerLink: HTMLElement,
   };
 }
 
@@ -312,6 +313,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private compareHistoryEnabled_: boolean =
       loadTimeData.getBoolean('compareHistoryEnabled');
   private historyEmbeddingsResizeObserver_?: ResizeObserver;
+  private historyEmbeddingsDisclaimerLinkClicked_ = false;
   private tabContentScrollOffset_: number = 0;
   private dataFromNativeBeforeInput_: string|null = null;
   private numCharsTypedInSearch_: number = 0;
@@ -879,6 +881,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
 
     return afterDate;
+  }
+
+  private onHistoryEmbeddingsDisclaimerLinkClick_() {
+    this.historyEmbeddingsDisclaimerLinkClicked_ = true;
   }
 
   private onHistoryEmbeddingsItemMoreFromSiteClick_(

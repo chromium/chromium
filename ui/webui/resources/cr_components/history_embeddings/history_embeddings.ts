@@ -74,6 +74,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   static get properties() {
     return {
       clickedIndices_: Array,
+      forceSuppressLogging: Boolean,
       numCharsForQuery: Number,
       feedbackState_: {
         type: String,
@@ -116,6 +117,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+  forceSuppressLogging: boolean;
   isEmpty: boolean;
   numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;
@@ -290,7 +292,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       this.browserProxy_.recordSearchResultsMetrics(nonEmptyResults, false);
     }
 
-    if (canLog) {
+    if (!this.forceSuppressLogging && canLog) {
       this.browserProxy_.sendQualityLog(
           Array.from(this.clickedIndices_), this.numCharsForLastResultQuery_);
     }
