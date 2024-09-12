@@ -12,6 +12,7 @@
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace optimization_guide {
@@ -37,6 +38,10 @@ class ChromeFacilitatedPaymentsClient
   // RiskDataLoader:
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
                         on_risk_data_loaded_callback) override;
+
+  payments::facilitated::ContentFacilitatedPaymentsDriver*
+  GetFacilitatedPaymentsDriverForFrame(
+      content::RenderFrameHost* render_frame_host);
 
   virtual void SetFacilitatedPaymentsControllerForTesting(
       std::unique_ptr<FacilitatedPaymentsController> controller);

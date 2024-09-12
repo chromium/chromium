@@ -42,6 +42,11 @@ class ContentFacilitatedPaymentsDriverFactory
       const ContentFacilitatedPaymentsDriverFactory&) = delete;
   ~ContentFacilitatedPaymentsDriverFactory() override;
 
+  // Gets or creates a dedicated `ContentFacilitatedPaymentsDriver` for the
+  // `render_frame_host`. Drivers are only created for the outermost main frame.
+  ContentFacilitatedPaymentsDriver& GetOrCreateForFrame(
+      content::RenderFrameHost* render_frame_host);
+
  private:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -56,11 +61,6 @@ class ContentFacilitatedPaymentsDriverFactory
                      const GURL& validated_url) override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
-
-  // Gets or creates a dedicated `ContentFacilitatedPaymentsDriver` for the
-  // `render_frame_host`. Drivers are only created for the outermost main frame.
-  ContentFacilitatedPaymentsDriver& GetOrCreateForFrame(
-      content::RenderFrameHost* render_frame_host);
 
   // Owns the drivers, one for each render frame host. Should be empty at
   // destruction time because its elements are erased in RenderFrameDeleted().

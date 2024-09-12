@@ -98,6 +98,12 @@ void ChromeFacilitatedPaymentsClient::DismissPrompt() {
   facilitated_payments_controller_->Dismiss();
 }
 
+payments::facilitated::ContentFacilitatedPaymentsDriver*
+ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
+    content::RenderFrameHost* render_frame_host) {
+  return &driver_factory_.GetOrCreateForFrame(render_frame_host);
+}
+
 void ChromeFacilitatedPaymentsClient::
     SetFacilitatedPaymentsControllerForTesting(
         std::unique_ptr<FacilitatedPaymentsController> mock_controller) {

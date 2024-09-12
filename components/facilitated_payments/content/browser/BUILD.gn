@@ -8,8 +8,6 @@ static_library("browser") {
     "content_facilitated_payments_driver.h",
     "content_facilitated_payments_driver_factory.cc",
     "content_facilitated_payments_driver_factory.h",
-    "content_payment_link_handler_impl.cc",
-    "content_payment_link_handler_impl.h",
     "facilitated_payments_api_client_factory.h",
   ]
 

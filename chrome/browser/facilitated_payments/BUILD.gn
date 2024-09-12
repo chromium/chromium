@@ -4,8 +4,8 @@
 
 static_library("facilitated_payments") {
   sources = [
-    "payment_link_handler_factory.cc",
-    "payment_link_handler_factory.h",
+    "payment_link_handler_binder.cc",
+    "payment_link_handler_binder.h",
     "ui/chrome_facilitated_payments_client.cc",
     "ui/chrome_facilitated_payments_client.h",
   ]

@@ -19,8 +19,6 @@ static_library("browser") {
     "network_api/facilitated_payments_initiate_payment_response_details.h",
     "network_api/facilitated_payments_network_interface.cc",
     "network_api/facilitated_payments_network_interface.h",
-    "payment_link_handler_impl.cc",
-    "payment_link_handler_impl.h",
   ]
 
   public_deps = [

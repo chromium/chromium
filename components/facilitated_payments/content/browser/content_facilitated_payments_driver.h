@@ -8,6 +8,8 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/facilitated_payments/payment_link_handler.mojom.h"
 
 namespace content {
 class RenderFrameHost;
@@ -26,7 +28,8 @@ class FacilitatedPaymentsClient;
 // Each `ContentFacilitatedPaymentsDriver` is associated with exactly one
 // `RenderFrameHost` and communicates with exactly one
 // `FacilitatedPaymentsAgent` throughout its entire lifetime.
-class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
+class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
+                                         public mojom::PaymentLinkHandler {
  public:
   ContentFacilitatedPaymentsDriver(
       FacilitatedPaymentsClient* client,
@@ -43,6 +46,12 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
       base::OnceCallback<void(mojom::PixCodeDetectionResult,
                               const std::string&)> callback) override;
 
+  // mojom::PaymentLinkHandler:
+  void HandlePaymentLink(const GURL& url) override;
+
+  void SetPaymentLinkHandlerReceiver(
+      mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver);
+
  private:
   // Lazily binds the agent to `render_frame_host`.
   const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& GetAgent(
@@ -52,6 +61,8 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   // The ID of the frame to which this driver is associated.
   const content::GlobalRenderFrameHostId render_frame_host_id_;
+
+  mojo::Receiver<mojom::PaymentLinkHandler> receiver_{this};
 };
 
 }  // namespace payments::facilitated
