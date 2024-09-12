@@ -16,6 +16,9 @@
 
 namespace media {
 
+static_assert(StreamParserBuffer::Type::TYPE_MAX < 4,
+              "StreamParserBuffer::type_ has a max storage size of two bits.");
+
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(
       new StreamParserBuffer(DecoderBufferType::kEndOfStream));
@@ -99,11 +102,8 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
           // TODO(crbug.com/40284755): Convert `StreamBufferParser` to
           // `size_t` and `base::span`.
           UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size)))),
-      decode_timestamp_(kNoDecodeTimestamp),
-      config_id_(kInvalidConfigId),
       type_(type),
-      track_id_(track_id),
-      is_duration_estimated_(false) {
+      track_id_(track_id) {
   // TODO(scherkus): Should DataBuffer constructor accept a timestamp and
   // duration to force clients to set them? Today they end up being zero which
   // is both a common and valid value and could lead to bugs.
@@ -116,7 +116,7 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
 }
 
 StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type)
-    : DecoderBuffer(decoder_buffer_type) {}
+    : DecoderBuffer(decoder_buffer_type), type_(Type::UNKNOWN), track_id_(-1) {}
 
 StreamParserBuffer::~StreamParserBuffer() = default;
 

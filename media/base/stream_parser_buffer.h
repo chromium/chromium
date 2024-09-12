@@ -163,7 +163,7 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
 
   // Gets the parser's media type associated with this buffer. Value is
   // meaningless for EOS buffers.
-  Type type() const { return type_; }
+  Type type() const { return static_cast<Type>(type_); }
   const char* GetTypeName() const;
 
   // Gets the parser's track ID associated with this buffer. Value is
@@ -214,12 +214,23 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   explicit StreamParserBuffer(DecoderBufferType decoder_buffer_type);
   ~StreamParserBuffer() override;
 
+  // ***************************************************************************
+  // WARNING: This is a highly allocated object. Care should be taken when
+  // adding any fields to make sure they are absolutely necessary. If a field
+  // must be added and can be optional, ensure it is heap allocated through the
+  // usage of something like std::unique_ptr.
+  // ***************************************************************************
+
+  // Note: This field is stored as a uint8_t instead of Type and uses
+  // static_cast<Type> in type() to avoid signed vs unsigned issues when Type
+  // is directly used as a bit-field.
+  const uint8_t type_ : 2;
+
+  bool is_duration_estimated_ : 1 = false;
   DecodeTimestamp decode_timestamp_ = kNoDecodeTimestamp;
   int config_id_ = kInvalidConfigId;
-  Type type_;
-  TrackId track_id_;
+  const TrackId track_id_;
   scoped_refptr<StreamParserBuffer> preroll_buffer_;
-  bool is_duration_estimated_ = false;
 };
 
 }  // namespace media
