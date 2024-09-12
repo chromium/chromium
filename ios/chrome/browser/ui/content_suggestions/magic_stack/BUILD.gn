@@ -75,6 +75,8 @@ source_set("cells") {
   sources = [
     "magic_stack_edit_button_cell.h",
     "magic_stack_edit_button_cell.mm",
+    "magic_stack_module_collection_view_cell.h",
+    "magic_stack_module_collection_view_cell.mm",
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
     "magic_stack_module_contents_factory.h",

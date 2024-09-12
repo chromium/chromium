@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_edit_button_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_layout_configurator.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_collection_view_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
 
@@ -240,12 +241,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   _collectionView.backgroundColor = [UIColor clearColor];
 
   __weak MagicStackCollectionViewController* weakSelf = self;
-  auto configureModuleCell = ^(MagicStackModuleContainer* cell,
+  auto configureModuleCell = ^(MagicStackModuleCollectionViewCell* cell,
                                NSIndexPath* indexPath, MagicStackModule* item) {
     [weakSelf configureCell:cell withItem:item atIndex:indexPath.item];
   };
   _moduleCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[MagicStackModuleContainer class]
+      registrationWithCellClass:[MagicStackModuleCollectionViewCell class]
            configurationHandler:configureModuleCell];
 
   auto configureEditButtonCell =
@@ -305,7 +306,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 }
 
 // Cell configuration handler helper.
-- (void)configureCell:(MagicStackModuleContainer*)cell
+- (void)configureCell:(MagicStackModuleCollectionViewCell*)cell
              withItem:(MagicStackModule*)item
               atIndex:(NSUInteger)index {
   cell.delegate = self.audience;
