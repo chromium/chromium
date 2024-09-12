@@ -119,7 +119,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."flate2:1.0.33"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."font-types:0.6.0"]
+[policy."font-types:0.7.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.15"]
@@ -200,7 +200,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."read-fonts:0.20.0"]
+[policy."read-fonts:0.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.7"]
@@ -257,7 +257,7 @@ criteria = []
 [policy."simd-adler32:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.20.0"]
+[policy."skrifa:0.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.2"]

@@ -164,7 +164,7 @@ content/browser 9 4
 content/browser/bluetooth 1 1
 content/browser/device_sensors 1 1
 content/browser/fenced_frame 2 2
-content/browser/indexed_db 1 1
+content/browser/indexed_db/instance 1 1
 content/browser/loader 1 1
 content/browser/preloading/prefetch 1 1
 content/browser/renderer_host 3 3
@@ -264,7 +264,6 @@ ppapi/c/documentation 1 1
 ppapi/cpp/documentation 1 1
 ppapi/generators 1 1
 ppapi/native_client 1 1
-remoting/host 1 1
 sandbox/linux/suid/client 1 1
 sandbox/policy/linux 1 1
 services/device/serial 4 1
@@ -695,7 +694,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.20.0/src/tables 2 1
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.22.0/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6/tests 7 6
@@ -722,7 +721,6 @@ third_party/rust/chromium_crates_io/vendor/serde_json-1.0.128 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.128/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1
 third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/skrifa-0.20.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0/src 2 1
 third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1
@@ -850,6 +848,7 @@ ui/events/x 7 2
 ui/file_manager/file_manager/definitions 1 1
 ui/gfx 2 1
 ui/gfx/geometry 1 1
+ui/gfx/x 1 1
 ui/gfx/x/generated_protos 6 2
 ui/gtk 2 1
 ui/ozone/platform/drm/common 2 2

@@ -1018,9 +1018,15 @@ notes = "No unsafe changes."
 
 [[audits.font-types]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-1"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.5.5 -> 0.6.0"
 notes = "This change comprises changes to understand larger GlyphId and compatibility with older Mac TrueType fonts. No unsafe code is introduced."
+
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.6.0 -> 0.7.1"
+notes = "No new unsafe, mostly changes about int24 as a new OpenType type, and moving Pen from Skrifa."
 
 [[audits.getrandom]]
 who = "danakj@chromium.org"
@@ -1436,7 +1442,7 @@ notes = "No unsafe."
 
 [[audits.read-fonts]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.3 -> 0.20.0"
 notes = """
 Contains changes for:
@@ -1447,6 +1453,12 @@ Contains changes for:
 * Closure computations for subsetting of COLR
 * large glyphId support.
 """
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.20.0 -> 0.22.0"
+notes = "Changes for incremental font transfer, Ankr, Feat tables, and support for getting access to the SVG document from the SVG table, as well as Avar2."
 
 [[audits.regex]]
 who = "danakj@chromium.org"
@@ -1941,9 +1953,15 @@ delta = "0.19.2 -> 0.19.3"
 
 [[audits.skrifa]]
 who = "Dominik Röttsches <drott@chromium.org>"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.3 -> 0.20.0"
 notes = "Contains mainly preparatory autohint changes and data tables."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.20.0 -> 0.22.0"
+notes = "Changes for adding autohinting support. Crates forbids unsafe code."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
