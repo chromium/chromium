@@ -482,7 +482,8 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
-
+# Mac ASAN Devtools Serialization crashes
+crbug.com/338574390 [ mac intel-0x3e9b asan angle-metal passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
