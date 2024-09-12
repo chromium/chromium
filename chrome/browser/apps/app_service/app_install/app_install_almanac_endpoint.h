@@ -13,15 +13,10 @@
 
 class GURL;
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace apps {
 
 class PackageId;
 struct AppInstallData;
-struct DeviceInfo;
 
 namespace app_install_almanac_endpoint {
 
@@ -29,21 +24,17 @@ namespace app_install_almanac_endpoint {
 // server.
 using GetAppInstallInfoCallback =
     base::OnceCallback<void(base::expected<AppInstallData, QueryError>)>;
-void GetAppInstallInfo(
-    PackageId package_id,
-    DeviceInfo device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppInstallInfoCallback callback);
+void GetAppInstallInfo(Profile* profile,
+                       PackageId package_id,
+                       GetAppInstallInfoCallback callback);
 
 // Fetches the app install URL from the app install endpoint of the Almanac
 // server.
 using GetAppInstallUrlCallback =
     base::OnceCallback<void(base::expected<GURL, QueryError>)>;
-void GetAppInstallUrl(
-    std::string serialized_package_id,
-    DeviceInfo device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppInstallUrlCallback callback);
+void GetAppInstallUrl(Profile* profile,
+                      std::string serialized_package_id,
+                      GetAppInstallUrlCallback callback);
 
 GURL GetEndpointUrlForTesting();
 

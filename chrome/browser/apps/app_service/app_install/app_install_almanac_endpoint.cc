@@ -57,16 +57,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
-std::string BuildRequestBody(const DeviceInfo& info,
-                             std::string serialized_package_id) {
-  proto::AppInstallRequest request_proto;
-  *request_proto.mutable_device_context() = info.ToDeviceContext();
-  *request_proto.mutable_user_context() = info.ToUserContext();
-  *request_proto.mutable_package_id() = std::move(serialized_package_id);
-
-  return request_proto.SerializeAsString();
-}
-
 std::optional<AppInstallData> ParseAppInstallResponseProto(
     const proto::AppInstallResponse& app_install_response) {
   if (!app_install_response.has_app_instance()) {
@@ -188,15 +178,16 @@ GURL GetEndpointUrlForTesting() {
   return GetAlmanacEndpointUrl(kAlmanacAppInstallEndpoint);
 }
 
-void GetAppInstallInfo(
-    PackageId package_id,
-    DeviceInfo device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppInstallInfoCallback callback) {
-  QueryAlmanacApi<proto::AppInstallResponse>(
-      url_loader_factory, kTrafficAnnotation,
-      BuildRequestBody(device_info, package_id.ToString()),
-      kAlmanacAppInstallEndpoint, kMaxResponseSizeInBytes,
+void GetAppInstallInfo(Profile* profile,
+                       PackageId package_id,
+                       GetAppInstallInfoCallback callback) {
+  proto::AppInstallRequest request;
+  request.set_package_id(package_id.ToString());
+
+  QueryAlmanacApiWithContext<proto::AppInstallRequest,
+                             proto::AppInstallResponse>(
+      profile, kAlmanacAppInstallEndpoint, std::move(request),
+      kTrafficAnnotation, kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
       base::BindOnce(&ConvertAppInstallResponseProto)
           .Then(std::move(callback)));
@@ -204,15 +195,16 @@ void GetAppInstallInfo(
 
 using GetAppInstallUrlCallback =
     base::OnceCallback<void(base::expected<GURL, QueryError>)>;
-void GetAppInstallUrl(
-    std::string serialized_package_id,
-    DeviceInfo device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppInstallUrlCallback callback) {
-  QueryAlmanacApi<proto::AppInstallResponse>(
-      url_loader_factory, kTrafficAnnotation,
-      BuildRequestBody(device_info, std::move(serialized_package_id)),
-      kAlmanacAppInstallEndpoint, kMaxResponseSizeInBytes,
+void GetAppInstallUrl(Profile* profile,
+                      std::string serialized_package_id,
+                      GetAppInstallUrlCallback callback) {
+  proto::AppInstallRequest request;
+  request.set_package_id(serialized_package_id);
+
+  QueryAlmanacApiWithContext<proto::AppInstallRequest,
+                             proto::AppInstallResponse>(
+      profile, kAlmanacAppInstallEndpoint, std::move(request),
+      kTrafficAnnotation, kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
       base::BindOnce(&ExtractAppInstallUrlFromResponseProto)
           .Then(std::move(callback)));

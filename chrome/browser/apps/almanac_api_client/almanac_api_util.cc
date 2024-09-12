@@ -115,12 +115,11 @@ namespace internal {
 void QueryAlmanacApiRaw(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& request_body,
     std::string_view endpoint_suffix,
     int max_response_size,
     std::optional<std::string> error_histogram_name,
-    base::OnceCallback<void(base::expected<std::string, QueryError>)>
-        callback) {
+    base::OnceCallback<void(base::expected<std::string, QueryError>)> callback,
+    const std::string& request_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = apps::GetAlmanacUrlLoader(
       traffic_annotation, request_body, endpoint_suffix);
 

@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
@@ -42,23 +45,31 @@ class AppInstallAlmanacEndpointTest : public testing::Test {
  public:
   AppInstallAlmanacEndpointTest() = default;
 
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = profile_builder.Build();
+  }
+
+  Profile* profile() { return profile_.get(); }
+
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoRequest) {
-  DeviceInfo device_info;
-  device_info.board = "brya";
-  device_info.user_type = "unmanaged";
-
   std::string method;
   std::optional<std::string> method_override_header;
   std::optional<std::string> content_type;
   std::string body;
 
+  base::RunLoop run_loop;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         content_type =
@@ -67,11 +78,13 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoRequest) {
             request.headers.GetHeader("X-HTTP-Method-Override");
         method = request.method;
         body = network::GetUploadData(request);
+        run_loop.Quit();
       }));
 
   app_install_almanac_endpoint::GetAppInstallInfo(
-      PackageId(PackageType::kWeb, "https://example.com/"), device_info,
-      test_url_loader_factory_.GetSafeWeakWrapper(), base::DoNothing());
+      profile(), PackageId(PackageType::kWeb, "https://example.com/"),
+      base::DoNothing());
+  run_loop.Run();
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -80,7 +93,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoRequest) {
   proto::AppInstallRequest request;
   ASSERT_TRUE(request.ParseFromString(body));
 
-  EXPECT_EQ(request.device_context().board(), "brya");
+  EXPECT_TRUE(request.has_device_context());
   EXPECT_EQ(request.user_context().user_type(),
             apps::proto::ClientUserContext::USERTYPE_UNMANAGED);
   EXPECT_EQ(request.package_id(), "web:https://example.com/");
@@ -131,9 +144,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_TRUE(response_future.Get().has_value());
 
   AppInstallData expected_data(
@@ -184,9 +195,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMinimalResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
 
   AppInstallData expected_data(PackageId(PackageType::kArc, "com.foo.app"));
   expected_data.name = "Example";
@@ -207,9 +216,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoIncompleteResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -220,9 +227,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMalformedResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -241,8 +246,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoWrongExtras) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      PackageId(PackageType::kWeb, "https://example.com/"), DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
+      profile(), PackageId(PackageType::kWeb, "https://example.com/"),
       response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
@@ -254,9 +258,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoServerError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -268,9 +270,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNetworkError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -283,9 +283,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNotFound) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      kTestPackageId, DeviceInfo(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      response_future.GetCallback());
+      profile(), kTestPackageId, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadRequest);
 }
 
