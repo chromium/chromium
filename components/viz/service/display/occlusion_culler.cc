@@ -124,23 +124,22 @@ gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
 // `complexity_limit`, false otherwise.
 bool ReduceComplexity(const cc::Region& region,
                       size_t complexity_limit,
-                      std::vector<gfx::Rect>* reduced_region) {
-  DCHECK(reduced_region);
-  reduced_region->clear();
+                      std::vector<gfx::Rect>& reduced_region) {
+  reduced_region.clear();
 
   for (gfx::Rect r : region) {
-    auto it = base::ranges::find_if(*reduced_region, [&r](const gfx::Rect& a) {
+    auto it = base::ranges::find_if(reduced_region, [&r](const gfx::Rect& a) {
       return a.SharesEdgeWith(r);
     });
 
-    if (it != reduced_region->end()) {
+    if (it != reduced_region.end()) {
       it->Union(r);
       continue;
     }
 
-    reduced_region->push_back(r);
+    reduced_region.push_back(r);
 
-    if (reduced_region->size() >= complexity_limit) {
+    if (reduced_region.size() >= complexity_limit) {
       return false;
     }
   }
@@ -343,22 +342,24 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame,
         visible_region.Subtract(occlusion_in_quad_content_space);
         quad->visible_rect = visible_region.bounds();
 
+        std::vector<gfx::Rect> reduced_visible_region;
+
         // Split quad into multiple draw quads when area can be reduce by
         // more than X fragments.
         const bool should_split_quads =
             !overlay_processor_->DisableSplittingQuads() &&
             !visible_region.Intersects(render_pass_quads_in_content_space) &&
             ReduceComplexity(visible_region, settings_.quad_split_limit,
-                             &cached_visible_region_) &&
-            CanSplitQuad(quad->material, cached_visible_region_,
+                             reduced_visible_region) &&
+            CanSplitQuad(quad->material, reduced_visible_region,
                          visible_region.bounds().size(),
                          settings_.minimum_fragments_reduced,
                          device_scale_factor);
         if (should_split_quads) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
-              quad, cached_visible_region_.size() - 1);
+              quad, reduced_visible_region.size() - 1);
 
-          for (const auto& visible_rect : cached_visible_region_) {
+          for (const auto& visible_rect : reduced_visible_region) {
             new_quad->visible_rect = visible_rect;
             ++new_quad;
           }
