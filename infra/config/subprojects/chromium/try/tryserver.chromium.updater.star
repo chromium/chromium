@@ -89,6 +89,8 @@ updater_mac_builder(
             "ci/mac-updater-builder-dbg",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
