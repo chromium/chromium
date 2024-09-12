@@ -1178,7 +1178,7 @@ void GLES2InterfaceStub::CopySharedImageToTextureINTERNAL(
     GLsizei /* height */,
     GLboolean /* flip_y */,
     const GLbyte* /* src_mailbox */) {}
-void GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
+GLboolean GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
     const GLbyte* /* mailbox */,
     const void* /* dst_color_space */,
     GLuint /* dst_color_space_size */,
@@ -1191,7 +1191,9 @@ void GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
     GLint /* src_x */,
     GLint /* src_y */,
     GLint /* plane_index */,
-    void* /* pixels */) {}
+    void* /* pixels */) {
+  return 0;
+}
 void GLES2InterfaceStub::WritePixelsYUVINTERNAL(
     const GLbyte* /* mailbox */,
     GLuint /* src_size_plane1 */,

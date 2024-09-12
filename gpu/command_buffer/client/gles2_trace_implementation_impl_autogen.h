@@ -2486,7 +2486,7 @@ void GLES2TraceImplementation::CopySharedImageToTextureINTERNAL(
                                         src_mailbox);
 }
 
-void GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(
+GLboolean GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(
     const GLbyte* mailbox,
     const void* dst_color_space,
     GLuint dst_color_space_size,
@@ -2502,7 +2502,7 @@ void GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(
     void* pixels) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::ReadbackARGBImagePixelsINTERNAL");
-  gl_->ReadbackARGBImagePixelsINTERNAL(
+  return gl_->ReadbackARGBImagePixelsINTERNAL(
       mailbox, dst_color_space, dst_color_space_size, dst_size, dst_width,
       dst_height, dst_color_type, dst_alpha_type, dst_row_bytes, src_x, src_y,
       plane_index, pixels);
