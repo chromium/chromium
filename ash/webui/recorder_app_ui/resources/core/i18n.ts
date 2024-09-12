@@ -19,6 +19,7 @@ function withArgs<Args extends I18nArgType[]>(): Args {
 }
 
 const noArgStringNames = [
+  'appName',
   'backToMainButtonAriaLabel',
   'backToMainButtonTooltip',
   'closeDialogButtonTooltip',

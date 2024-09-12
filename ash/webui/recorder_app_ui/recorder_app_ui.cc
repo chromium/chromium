@@ -129,7 +129,7 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   source->AddResourcePaths(
       base::make_span(kRecorderAppResources, kRecorderAppResourcesSize));
 
-  source->AddResourcePath("", IDR_STATIC_INDEX_HTML);
+  source->AddResourcePath("", IDR_RECORDER_APP_INDEX_HTML);
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

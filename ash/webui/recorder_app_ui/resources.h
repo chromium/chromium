@@ -11,6 +11,7 @@
 namespace ash {
 
 const webui::LocalizedString kLocalizedStrings[] = {
+    {"appName", IDS_RECORDER_APP_NAME},
     {"backToMainButtonAriaLabel", IDS_RECORDER_BACK_TO_MAIN_BUTTON_ARIA_LABEL},
     {"backToMainButtonTooltip", IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP},
     {"closeDialogButtonTooltip", IDS_RECORDER_CLOSE_DIALOG_BUTTON_TOOLTIP},
