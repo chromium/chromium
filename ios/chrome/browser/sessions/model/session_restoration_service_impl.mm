@@ -56,8 +56,7 @@ void DeleteUnknownContent(const base::FilePath& path,
 // Loads WebState storage from `web_state_dir` into `storage`.
 web::proto::WebStateStorage LoadWebStateStorage(const base::FilePath& path) {
   web::proto::WebStateStorage storage;
-  bool success = ios::sessions::ParseProto(path, storage);
-  DCHECK(success);
+  std::ignore = ios::sessions::ParseProto(path, storage);
   return storage;
 }
 
@@ -251,24 +250,6 @@ class SessionRestorationServiceImpl::WebStateListInfo {
   // Returns whether the Browser has an attached backup.
   bool has_backup() const { return backup_info_.get() != nullptr; }
 
-  // Adds `web_state_id` to the list of expected unrealized WebState. This
-  // correspond to a WebState created via `CreateUnrealizedWebState()`.
-  void add_expected_id(web::WebStateID web_state_id) {
-    expected_ids_.insert(web_state_id);
-  }
-
-  // Removes `web_state_id` from the list of expected unrealized WebState.
-  void remove_expected_id(web::WebStateID web_state_id) {
-    expected_ids_.erase(web_state_id);
-  }
-
-  // Returns whether `web_state_id` is in the list of expected unrealized
-  // WebState or not. This is used to determine whether the WebState should
-  // be adopted (i.e. its storage copied from another Browser) or not.
-  bool is_id_expected(web::WebStateID web_state_id) const {
-    return base::Contains(expected_ids_, web_state_id);
-  }
-
   // Returns the `observer`.
   SessionRestorationWebStateListObserver& observer() { return observer_; }
 
@@ -279,7 +260,6 @@ class SessionRestorationServiceImpl::WebStateListInfo {
   const std::string identifier_;
   WebStateMetadataMap metadata_map_;
   SessionRestorationWebStateListObserver observer_;
-  std::set<web::WebStateID> expected_ids_;
   bool can_load_synchronously_ = true;
   raw_ptr<WebStateListInfo> original_info_;
   raw_ptr<WebStateListInfo> backup_info_;
@@ -487,18 +467,65 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
     web::WebState* web_state,
     WebStateStorageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!web_state->IsRealized());
   auto iterator = infos_.find(browser->GetWebStateList());
   if (iterator == infos_.end()) {
     return;
   }
 
-  WebStateListInfo& info = *iterator->second;
+  // If there is any pending requests, schedule them immediately, as they may
+  // be pending requests to save the data for the WebState if it has just been
+  // created with CreateUnrealizedWebState(...).
+  if (!pending_requests_.empty()) {
+    ios::sessions::IORequestList requests;
+    std::swap(requests, pending_requests_);
+
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
+  }
+
+  // This method is usually called after a WebState has been detached. It may
+  // be called before the pending changes have been committed to disk thus it
+  // needs to partially replicate the logic from SaveDirtySessions(...) to
+  // track the location of the WebState data.
+  std::string session_id;
+
+  // First check whether any Browser has marked the WebState for adoption. If
+  // this is the case, then the data should be loaded in that Browser session
+  // directory.
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  for (WebStateList* web_state_list : dirty_web_state_lists_) {
+    DCHECK(base::Contains(infos_, web_state_list));
+    WebStateListInfo& info = *infos_[web_state_list];
+
+    const auto& detached_web_states = info.observer().detached_web_states();
+    if (base::Contains(detached_web_states, web_state_id)) {
+      DCHECK(session_id.empty());
+      session_id = info.identifier();
+    }
+  }
+
+  // If the WebState is not up for adoption, assume its data is available in
+  // `browser`. We cannot check whether it is in the Browser's WebStateList
+  // as this method is usually called after the WebState has been detached.
+  if (session_id.empty()) {
+    WebStateListInfo& info = *iterator->second;
+    const auto& inserted_web_states = info.observer().inserted_web_states();
+    DCHECK(!base::Contains(inserted_web_states, web_state_id));
+    session_id = info.identifier();
+  }
+
+  DCHECK(!session_id.empty());
+
   const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
-      storage_path_.Append(info.identifier()), web_state_id);
+      storage_path_.Append(session_id), web_state_id);
   const base::FilePath storage_path =
       web_state_dir.Append(kWebStateStorageFilename);
 
+  // Post the task to read the data from disk. It will execute after all the
+  // pending requests, so if the WebState has recently been created by calling
+  // CreateUnrealizedWebState(...), the data should be available.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&::LoadWebStateStorage, storage_path),
       std::move(callback));
@@ -558,11 +585,12 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   DCHECK(iterator != infos_.end());
 
   // Create the unique identifier for the new WebState and mark it as
-  // expected with the WebStateListInfo (since it cannot be adopted).
+  // expected with the SessionRestorationWebStateListObserver (since it
+  // cannot be adopted).
   const web::WebStateID web_state_id = web::WebStateID::NewUnique();
 
   WebStateListInfo& info = *iterator->second;
-  info.add_expected_id(web_state_id);
+  info.observer().AddExpectedWebState(web_state_id);
 
   // Schedule saving the storage and metadata for the created WebState
   // to disk before creating it, to ensure the data is available after
@@ -718,16 +746,9 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
       WebStateMetadataMap& metadata_map = info.metadata_map();
       for (const auto web_state_id : inserted_web_states) {
-        // Check whether the `web_state_id` is expected. If this is the case,
-        // then `CreateUnrealizedWebState()` took care of scheduling tasks to
-        // save its state to disk and there is nothing to do here.
-        if (info.is_id_expected(web_state_id)) {
-          info.remove_expected_id(web_state_id);
-          continue;
-        }
-
-        // If the `web_state_id` is not expected, then it must be adopted
-        // from another Browser, thus needs to be in the `orphaned_map`.
+        // The `web_state_id` must be adopted from another Browser, thus needs
+        // to be in the `orphaned_map` (the case of expected WebState is dealt
+        // entirely in SessionRestorationWebStateListObserver).
         DCHECK(base::Contains(orphaned_map, web_state_id));
         auto iter = orphaned_map.find(web_state_id);
         OrphanInfo& orphan_info = iter->second;

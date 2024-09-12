@@ -37,6 +37,7 @@
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_test_util.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -61,6 +62,7 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(1);
 // Identifier used for the Browser under test.
 const char kIdentifier0[] = "browser0";
 const char kIdentifier1[] = "browser1";
+const char kIdentifier2[] = "browser2";
 
 // List of URLs that are loaded in the session.
 constexpr std::string_view kURLs[] = {
@@ -1342,6 +1344,65 @@ TEST_F(SessionRestorationServiceImplTest, LoadWebStateData_Disconnected) {
 
   EXPECT_FALSE(wrapper.callback_called());
   EXPECT_TRUE(wrapper.callback_destroyed());
+}
+
+// Tests that LoadWebStateStorage(...) is able to load the data even if the
+// WebState is moved multiple times between Browsers.
+TEST_F(SessionRestorationServiceImplTest, LoadWebStateStorage_AfterMove) {
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser2 = TestBrowser(browser_state());
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+  service()->SetSessionID(&browser2, kIdentifier2);
+
+  const web::proto::WebStateStorage original_storage =
+      web::CreateWebStateStorage(
+          web::NavigationManager::WebLoadParams(GURL(kURL)), kTitle, false,
+          web::UserAgentType::MOBILE, base::Time::Now());
+
+  // Create an unrealized WebState in browser0 ....
+  std::unique_ptr<web::WebState> web_state =
+      service()->CreateUnrealizedWebState(&browser0, original_storage);
+  browser0.GetWebStateList()->InsertWebState(std::move(web_state));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser2.GetWebStateList()->count(), 0);
+
+  // ... then move it to browser1 ...
+  browser1.GetWebStateList()->InsertWebState(
+      browser0.GetWebStateList()->DetachWebStateAt(0));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser2.GetWebStateList()->count(), 0);
+
+  // ... then move it to browser2 ....
+  browser2.GetWebStateList()->InsertWebState(
+      browser1.GetWebStateList()->DetachWebStateAt(0));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser2.GetWebStateList()->count(), 1);
+
+  // ... and try to load the data from disk, this should succeed and load
+  // the data from browser0 (since the data has not been copied yet).
+  base::RunLoop run_loop;
+  web::proto::WebStateStorage storage;
+  service()->LoadWebStateStorage(
+      &browser2, browser2.GetWebStateList()->GetWebStateAt(0),
+      base::BindOnce(
+          [](web::proto::WebStateStorage* out_storage,
+             web::proto::WebStateStorage read_storage) {
+            *out_storage = std::move(read_storage);
+          },
+          &storage)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_EQ(storage, original_storage);
+
+  service()->Disconnect(&browser2);
+  service()->Disconnect(&browser1);
+  service()->Disconnect(&browser0);
 }
 
 // Tests that AttachBackup(...) correctly connects the backup Browser to

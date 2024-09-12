@@ -29,6 +29,11 @@ SessionRestorationWebStateListObserver::
   web_state_list_->RemoveObserver(this);
 }
 
+void SessionRestorationWebStateListObserver::AddExpectedWebState(
+    web::WebStateID expected_web_state_id) {
+  expected_web_states_.insert(expected_web_state_id);
+}
+
 void SessionRestorationWebStateListObserver::ClearDirty() {
   for (web::WebState* web_state : dirty_web_states_) {
     SessionRestorationWebStateObserver::FromWebState(web_state)->clear_dirty();
@@ -171,7 +176,12 @@ void SessionRestorationWebStateListObserver::AttachWebState(
   if (attached_web_state->IsRealized()) {
     MarkWebStateDirty(attached_web_state);
   } else {
-    inserted_web_states_.insert(attached_web_state->GetUniqueIdentifier());
+    const auto web_state_id = attached_web_state->GetUniqueIdentifier();
+    if (base::Contains(expected_web_states_, web_state_id)) {
+      expected_web_states_.erase(web_state_id);
+    } else {
+      inserted_web_states_.insert(web_state_id);
+    }
   }
 }
 

@@ -444,6 +444,7 @@ source_set("unit_tests") {
     "//ios/web/public/navigation",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_test_util",
     "//ios/web/public/session/proto:proto_util",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
