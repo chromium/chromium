@@ -195,6 +195,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -4263,10 +4264,10 @@ void WebContentsImpl::Restore() {
 }
 
 // TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
-// instead of `ui::WindowShowState`.
-ui::WindowShowState WebContentsImpl::GetWindowShowState() {
+// instead of `ui::mojom::WindowShowState`.
+ui::mojom::WindowShowState WebContentsImpl::GetWindowShowState() {
   return GetDelegate() ? GetDelegate()->GetWindowShowState()
-                       : ui::SHOW_STATE_DEFAULT;
+                       : ui::mojom::WindowShowState::kDefault;
 }
 
 blink::mojom::DevicePostureProvider*

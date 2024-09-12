@@ -24,6 +24,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -226,7 +227,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual blink::mojom::DisplayMode GetDisplayMode() const;
 
   // Returns the window show state.
-  virtual ui::WindowShowState GetWindowShowState();
+  virtual ui::mojom::WindowShowState GetWindowShowState();
 
   // Returns the device posture provider tracking the device posture.
   virtual blink::mojom::DevicePostureProvider* GetDevicePostureProvider();
