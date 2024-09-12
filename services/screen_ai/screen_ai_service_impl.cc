@@ -145,6 +145,15 @@ class ModelDataHolder {
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
     CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
+
+// TODO(crbug.com/361733242): Remove after the crash is fixed.
+#if BUILDFLAG(IS_WIN)
+    // `relative_file_path` is from `files_list_main_content_extraction.txt`
+    // or `files_list_ocr.txt` and under 100 characters long.
+    static crash_reporter::CrashKeyString<100> crash_info(
+        "last_loaded_screen_ai_file");
+    crash_info.Set(relative_file_path);
+#endif
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
