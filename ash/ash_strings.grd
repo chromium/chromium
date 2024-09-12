@@ -881,22 +881,22 @@ Style notes:
         Send feedback
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. Great job!
+        Great job!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. You did it!
+        You did it!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_2" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. You're on a roll!
+        You're on a roll!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_3" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        All done. Way to go!
+        Way to go!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_4" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        All done. Keep it up!
+        Keep it up!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_5" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
-        Time's up. Done and done!
+        Done and done!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" desc="The accessibility alert for the ending moment nudge.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
