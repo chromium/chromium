@@ -9,6 +9,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
@@ -73,6 +74,8 @@ int GetInternalTrackpadDeviceId() {
 bool IsFromInternalTrackpad(const ui::MouseEvent* event) {
   return event->source_device_id() == GetInternalTrackpadDeviceId();
 }
+
+constexpr base::TimeDelta kEnableTrackpadKeyPressWindow = base::Seconds(3);
 }  // namespace
 
 DisableTrackpadEventRewriter::DisableTrackpadEventRewriter() {
@@ -138,19 +141,39 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseEvent(
 }
 
 void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
-  // TODO(b/361611253): Make sure to check for control presses within a 10
-  // second window.
-  if (event->type() == ui::EventType::kKeyPressed) {
-    if (event->key_code() == ui::VKEY_CONTROL) {
-      ++control_press_count_;
-    } else {
-      control_press_count_ = 0;
-    }
+  // TODO(b/365813554): Prevent escape key from propagating to the system before
+  // a specified time window between escape key presses.
+  if (event->type() != ui::EventType::kKeyPressed) {
+    return;
+  }
+  event->key_code() == ui::VKEY_ESCAPE ? HandleEscapeKeyPress()
+                                       : ResetEscapeKeyPressTracking();
+}
+
+void DisableTrackpadEventRewriter::HandleEscapeKeyPress() {
+  if (escape_press_count_ == 0) {
+    first_escape_press_time_ = ui::EventTimeForNow();
   }
 
-  if (control_press_count_ >= 5) {
+  ++escape_press_count_;
+  base::TimeDelta elapsed_time =
+      ui::EventTimeForNow() - first_escape_press_time_;
+
+  if (elapsed_time > kEnableTrackpadKeyPressWindow) {
+    ResetEscapeKeyPressTracking();
+    return;
+  }
+
+  if (escape_press_count_ >= 5) {
     SetEnabled(false);
-    control_press_count_ = 0;
+    Shell::Get()->accessibility_controller()->EnableInternalTrackpad();
+    ResetEscapeKeyPressTracking();
   }
 }
+
+void DisableTrackpadEventRewriter::ResetEscapeKeyPressTracking() {
+  escape_press_count_ = 0;
+  first_escape_press_time_ = base::TimeTicks();
+}
+
 }  // namespace ash

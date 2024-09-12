@@ -356,6 +356,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
   void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
+  void EnableInternalTrackpad();
   DisableTrackpadMode GetDisableTrackpadMode();
   void SetFilterKeysEventRewriter(FilterKeysEventRewriter* rewriter);
   bool IsPointScanEnabled();

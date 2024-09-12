@@ -84,6 +84,11 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
       const DisableTrackpadEventRewriterTest&) = delete;
   ~DisableTrackpadEventRewriterTest() override = default;
 
+  void PressAndReleaseEscapeKey() {
+    generator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+    generator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  }
+
   void SetUp() override {
     AshTestBase::SetUp();
     event_rewriter_ = std::make_unique<DisableTrackpadEventRewriter>();
@@ -168,19 +173,67 @@ TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
   EXPECT_EQ(0U, event_recorder()->events().size());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveControlKeyPresses) {
+TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
   event_rewriter()->SetEnabled(true);
 
-  int controlKeyPressCount = 0;
+  int escapeKeyPressCount = 0;
 
-  // Simulate pressing and releasing the control key 5 times.
+  // Simulate pressing and releasing the escape key 5 times.
   for (int i = 0; i < 5; ++i) {
-    generator()->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
-    ++controlKeyPressCount;
-    generator()->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    PressAndReleaseEscapeKey();
+    generator()->AdvanceClock(base::Milliseconds(500));
+    ++escapeKeyPressCount;
 
     // After the 5th press, check if the rewriter is disabled.
-    if (controlKeyPressCount == 5) {
+    if (escapeKeyPressCount == 5) {
+      EXPECT_FALSE(event_rewriter()->IsEnabled());
+    } else {
+      EXPECT_TRUE(event_rewriter()->IsEnabled());
+    }
+  }
+}
+
+TEST_F(DisableTrackpadEventRewriterTest,
+       EscapePressesExceedTimeWindowStaysEnabled) {
+  event_rewriter()->SetEnabled(true);
+
+  // Simulate pressing and releasing the escape key 4 times.
+  for (int i = 0; i < 4; ++i) {
+    PressAndReleaseEscapeKey();
+    generator()->AdvanceClock(base::Milliseconds(500));
+    EXPECT_TRUE(event_rewriter()->IsEnabled());
+  }
+
+  // Exceed escape key time window on final key press.
+  generator()->AdvanceClock(base::Seconds(2));
+  PressAndReleaseEscapeKey();
+  EXPECT_TRUE(event_rewriter()->IsEnabled());
+}
+
+TEST_F(DisableTrackpadEventRewriterTest,
+       ResetEscapeKeyCountOnNonEscapeKeyPress) {
+  event_rewriter()->SetEnabled(true);
+
+  // Simulate pressing escape key and releasing the escape key 3 times.
+  for (int i = 0; i < 3; ++i) {
+    PressAndReleaseEscapeKey();
+    EXPECT_TRUE(event_rewriter()->IsEnabled());
+  }
+
+  // Press non escape key resets the escape key  count.
+  generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+
+  EXPECT_TRUE(event_rewriter()->IsEnabled());
+
+  int escapeKeyPressCount = 0;
+
+  for (int i = 0; i < 5; ++i) {
+    PressAndReleaseEscapeKey();
+    generator()->AdvanceClock(base::Milliseconds(500));
+    ++escapeKeyPressCount;
+
+    if (escapeKeyPressCount == 5) {
       EXPECT_FALSE(event_rewriter()->IsEnabled());
     } else {
       EXPECT_TRUE(event_rewriter()->IsEnabled());

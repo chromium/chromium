@@ -1952,6 +1952,11 @@ void AccessibilityController::SetDisableTrackpadEventRewriter(
   disable_trackpad_event_rewriter_ = rewriter;
 }
 
+void AccessibilityController::EnableInternalTrackpad() {
+  active_user_prefs_->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                                 static_cast<int>(DisableTrackpadMode::kNever));
+}
+
 void AccessibilityController::SetFilterKeysEventRewriter(
     FilterKeysEventRewriter* rewriter) {
   filter_keys_event_rewriter_ = rewriter;
