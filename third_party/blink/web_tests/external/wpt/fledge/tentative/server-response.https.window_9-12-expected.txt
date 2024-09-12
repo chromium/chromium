@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
+[FAIL] Basic B&A auction - Wrong authorization
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
+[FAIL] Basic B&A auction - Wrong seller
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
 [FAIL] Basic B&A auction - Wrong request Id
   promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
 Harness: the test ran to completion.
