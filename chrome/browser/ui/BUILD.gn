@@ -3182,6 +3182,8 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/chromeos/tablet_mode",
+      "//chrome/browser/lacros/account_manager",
+      "//chrome/browser/lacros/account_manager:impl",
       "//chrome/browser/policy:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
@@ -3191,7 +3193,10 @@ static_library("ui") {
       "//chromeos/ui/wm",
       "//ui/chromeos",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/chromeos/tablet_mode",
+      "//chrome/browser/lacros/account_manager:impl",
+    ]
   } else {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from +=

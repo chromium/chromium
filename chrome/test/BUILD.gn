@@ -1024,6 +1024,7 @@ static_library("test_support") {
       "//components/reporting/util:test_callbacks_support",
     ]
     deps += [
+      "//chrome/browser/lacros/account_manager",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
@@ -3758,6 +3759,7 @@ if (!is_android) {
         ":lacros_test_support_ui",
         "//chrome/browser/app_mode/test:test_support",
         "//chrome/browser/apps/browser_instance",
+        "//chrome/browser/lacros/account_manager:test_support_ui",
         "//chrome/browser/lacros/cros_apps:all_browser_tests",
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
@@ -5413,8 +5415,6 @@ if (is_chromeos_lacros) {
     testonly = true
 
     sources = [
-      "../browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.cc",
-      "../browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
     ]
@@ -5588,6 +5588,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/chromeos/printing/print_preview",
       "//chrome/browser/chromeos/smart_reader",
       "//chrome/browser/chromeos/video_conference",
+      "//chrome/browser/lacros/account_manager:test_support_ui",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
@@ -8830,11 +8831,6 @@ test("unit_tests") {
 
   if (is_chromeos_lacros) {
     sources += [
-      "../browser/lacros/account_manager/account_manager_util_unittest.cc",
-      "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
-      "../browser/lacros/account_manager/get_account_information_helper_unittest.cc",
-      "../browser/lacros/account_manager/profile_account_manager_unittest.cc",
-      "../browser/lacros/account_manager/signin_helper_lacros_unittest.cc",
       "../browser/lacros/app_mode/web_kiosk_installer_lacros_unittest.cc",
       "../browser/lacros/cert/client_cert_store_lacros_unittest.cc",
       "../browser/lacros/clipboard_history_lacros_unittest.cc",
@@ -8865,6 +8861,8 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/lacros/account_manager",
+      "//chrome/browser/lacros/account_manager:unit_tests",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
       "//chrome/browser/web_applications/app_service:test_support",
@@ -11417,6 +11415,9 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
         ]
         deps += [ "//chrome/browser/ui/chromeos" ]
+        if (is_chromeos_lacros) {
+          deps += [ "//chrome/browser/lacros/account_manager:test_support_ui" ]
+        }
       } else {
         deps += [ "//chrome/browser/ui/views/shortcuts:interactive_ui_tests" ]
       }

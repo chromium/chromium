@@ -1,0 +1,113 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_lacros)
+
+source_set("account_manager") {
+  sources = [
+    "account_cache.h",
+    "account_manager_util.h",
+    "account_profile_mapper.h",
+    "add_account_helper.h",
+    "get_account_information_helper.h",
+    "profile_account_manager.h",
+    "profile_account_manager_factory.h",
+    "signin_helper_lacros.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//components/account_manager_core",
+    "//components/keyed_service/core",
+    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//third_party/abseil-cpp:absl",
+    "//ui/gfx",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "account_cache.cc",
+    "account_manager_util.cc",
+    "account_profile_mapper.cc",
+    "add_account_helper.cc",
+    "get_account_information_helper.cc",
+    "profile_account_manager.cc",
+    "profile_account_manager_factory.cc",
+    "signin_helper_lacros.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lacros/account_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
+    "//components/account_manager_core",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//google_apis",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_manager_util_unittest.cc",
+    "account_profile_mapper_unittest.cc",
+    "get_account_information_helper_unittest.cc",
+    "profile_account_manager_unittest.cc",
+    "signin_helper_lacros_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lacros/account_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/account_manager_core",
+    "//components/account_manager_core:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/core/browser",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//google_apis",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support_ui") {
+  testonly = true
+  sources = [
+    "fake_account_manager_ui_dialog_waiter.cc",
+    "fake_account_manager_ui_dialog_waiter.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/account_manager_core:test_support",
+  ]
+}

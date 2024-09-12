@@ -5724,22 +5724,6 @@ static_library("browser") {
       "apps/digital_goods/digital_goods_lacros.h",
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
-      "lacros/account_manager/account_cache.cc",
-      "lacros/account_manager/account_cache.h",
-      "lacros/account_manager/account_manager_util.cc",
-      "lacros/account_manager/account_manager_util.h",
-      "lacros/account_manager/account_profile_mapper.cc",
-      "lacros/account_manager/account_profile_mapper.h",
-      "lacros/account_manager/add_account_helper.cc",
-      "lacros/account_manager/add_account_helper.h",
-      "lacros/account_manager/get_account_information_helper.cc",
-      "lacros/account_manager/get_account_information_helper.h",
-      "lacros/account_manager/profile_account_manager.cc",
-      "lacros/account_manager/profile_account_manager.h",
-      "lacros/account_manager/profile_account_manager_factory.cc",
-      "lacros/account_manager/profile_account_manager_factory.h",
-      "lacros/account_manager/signin_helper_lacros.cc",
-      "lacros/account_manager/signin_helper_lacros.h",
       "lacros/app_mode/chrome_kiosk_launch_controller_lacros.cc",
       "lacros/app_mode/chrome_kiosk_launch_controller_lacros.h",
       "lacros/app_mode/device_local_account_extension_installer_lacros.cc",
@@ -5949,6 +5933,8 @@ static_library("browser") {
       "//chrome/browser/chromeos/smart_reader",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
+      "//chrome/browser/lacros/account_manager",
+      "//chrome/browser/lacros/account_manager:impl",
       "//chrome/browser/lacros/cros_apps/api/diagnostics",
       "//chrome/browser/ui/aura/accessibility",
       "//chrome/common/chromeos/extensions",
@@ -5977,7 +5963,10 @@ static_library("browser") {
       "//ui/strings:ui_strings_grit",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/chromeos/tablet_mode",
+      "//chrome/browser/lacros/account_manager:impl",
+    ]
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
