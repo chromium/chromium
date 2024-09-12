@@ -13,8 +13,26 @@ covered by other licenses.
 ## Put the code in //third_party
 
 By default, all third party code should be checked into
-[//third_party](../third_party/),
-for the reasons given above. Other locations are only appropriate in a few
+[//third_party](../third_party/), for the reasons given above.
+
+There is one primary exception to this, which is that if a third_party
+dependency has its own dependencies *and* it can be built on its own (without
+Chromium), you can check its dependencies into its third_party. For example,
+Dawn is a project that is developed independently of Chromium, and
+it has a dependency on GLFW (which Chromium does not have). Dawn
+can check that dependency into its `//third_party/glfw`, and in a Chromium
+checkout, that will show up at `//third_party/dawn/third_party/glfw`.
+That is okay, but it'd be better if we could add GLFW to a Chromium
+checkout (in chromium/src's `third_party/glfw`) and configure Dawn
+to use that location when it is being built as part of Chromium.
+
+However, if that dependency is also needed by Chromium or another
+of Chromium's dependencies, then it must be checked out into Chromium's
+//third_party (i.e., now you have to use `//third_party/glfw`). This
+prevents us from possibly needing to use two different versions of a
+dependency.
+
+Apart from that, other locations are only appropriate in a few
 situations and need explicit approval; don't assume that because there's some
 other directory with third_party in the name it's okay to put new things
 there.
