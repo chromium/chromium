@@ -22,15 +22,20 @@ struct GlobalHasName {
 GlobalHasName globalNamedBufferButNotInline[4];
 
 void fct() {
-  // No expected rewrite
-  // Unnamed type is hard to add for std::array
-  // TODO(362644557) Handle this case.
+  // Expected rewrite
+  // struct FuncBuffer {
+  //   int val;
+  // };
+  // std::array<FuncBuffer, 4> func_buffer;
   struct {
     int val;
-  } funcBuffer[4];
-  // No expected rewrite:
-  // Inline definitions are to hard to add for std::array.
-  // TODO(362644557) Handle this case.
+  } func_buffer[4];
+
+  // Expected rewrite:
+  // struct funcHasName {
+  //   int val;
+  // };
+  // std::array<funcHasName, 4> funcNamedBuffer;
   struct funcHasName {
     int val;
   } funcNamedBuffer[4];
@@ -40,7 +45,7 @@ void fct() {
   funcHasName funcNamedBufferButNotInline[4];
 
   // Buffer accesses to trigger spanification.
-  funcBuffer[2].val = 3;
+  func_buffer[2].val = 3;
   globalBuffer[2].val = 3;
   funcNamedBuffer[2].val = 3;
   globalNamedBuffer[2].val = 3;

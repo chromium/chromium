@@ -4,6 +4,7 @@
 
 #include <assert.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <sstream>
@@ -111,7 +112,7 @@ class OutputHelper {
 
   void AddEdge(const Node& lhs, const Node& rhs) {
     node_pairs_.insert(
-        llvm::formatv("{0};{1}\n", lhs.ToString(), rhs.ToString()));
+        llvm::formatv("{0}@{1}\n", lhs.ToString(), rhs.ToString()));
   }
 
   void AddSingleNode(const Node& lhs) {
@@ -572,6 +573,25 @@ std::string getArraySize(const MatchFinder::MatchResult& result) {
   assert(false && "Unable to determine array size.");
 }
 
+// Takes in a copy of a variable assumed to be in snake_case and switches it
+// into CamelCase.
+std::string snakeCaseToCamelCase(std::string snake_case) {
+  // We want the first char to be capitalized so start with '_'.
+  char prev = '_';
+  for (char& c : snake_case) {
+    if (prev == '_') {
+      c = std::toupper(cur);
+    }
+    prev = c;
+  }
+  // Now we need to remove the '_'s from the string, recall std::remove moves
+  // everything to the end and then returns the first '_' (or end()). We then
+  // call erase from there to the end to actually remove.
+  snake_case.erase(std::remove(snake_case.begin(), snake_case.end(), '_'),
+                   snake_case.end());
+  return std::move(snake_case);
+}
+
 // Checks if the given array definition involves an unnamed struct type
 // or is declared inline within a struct/class definition.
 //
@@ -584,21 +604,30 @@ std::string getArraySize(const MatchFinder::MatchResult& result) {
 //   - Inline definition:
 //     `struct Point { int x, y; } inline_points[5];`
 //
-// Returns true if the definition is unnamed or inline, false otherwise.
-bool IsUnnamedOrInlinedDefinition(const std::string& element_type,
-                                  const std::string& variable_name,
-                                  const clang::SourceRange replacement_range,
-                                  const clang::SourceManager& source_manager,
-                                  const clang::ASTContext& ast_context) {
-  // Look for unnamed types. In future we could look for the ending ')' and
-  // replace it with a new type name if we determine how to split into two.
-  if (element_type.find("(unnamed struct") != std::string::npos) {
-    return true;
+// Returns the pair of a suggested type name (if unnamed struct, empty string
+// otherwise) and the inline definition with a semi-colon ';' added to split it
+// away from the declaration (empty string otherwise).
+// I.E.:
+//   - {"", ""} -> If this is not one of the problematic definitions above.
+//   - {"", "struct Point { int x, y; };"} -> for the inline definition case.
+//   - {"PointArray", "struct PointArray { ... };"} -> for the unnamed struct
+//     case.
+std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
+    const std::string& element_type,
+    const std::string& array_variable,
+    const clang::SourceRange replacement_range,
+    const clang::SourceManager& source_manager,
+    const clang::ASTContext& ast_context) {
+  // Look for unnamed types. If we find one we guess that the variable name is
+  // descriptive and use that with a capital first letter.
+  std::string unnamed_class;
+  if (element_type.find("(unnamed") != std::string::npos) {
+    unnamed_class = snakeCaseToCamelCase(array_variable);
   }
 
   // Extract the source code within the replacement range.
-  // If it contains the class/struct definition itself, we cannot perform the
-  // rewrite.
+  // If it contains the class/struct definition itself, we have to emit the
+  // class definition as well.
   const auto& lang_opts = ast_context.getLangOpts();
   std::string initial_text =
       clang::Lexer::getSourceText(
@@ -606,21 +635,37 @@ bool IsUnnamedOrInlinedDefinition(const std::string& element_type,
           source_manager, lang_opts)
           .str();
 
+  assert(initial_text.find(array_variable) != std::string::npos);
   // Recall that inline definitions are of the form:
   // struct TypeName { <body> } variable_name;
   // So below we see if the location of variable_name (which has to be in the
   // replacement_range) is after the first occurrence of a '}' bracket (if it
   // exists). This would mean we have a class/struct definition with an inline
-  // variable and we can't rewrite without breaking into two separate nodes.
-  assert(initial_text.find(variable_name) != std::string::npos);
+  // variable and we can't rewrite without adding a ';' between the variable and
+  // the class definition.
+  std::string class_definition;
   const size_t bracket_location = initial_text.find("}");
   if (bracket_location != std::string::npos &&
-      initial_text.find(variable_name) > bracket_location) {
+      initial_text.find(array_variable) > bracket_location) {
+    size_t open_bracket = initial_text.find("{");
+    assert(open_bracket < bracket_location);
+
     // The class definition is then:
-    // initial_text.substr(0, bracket_location + 1)
-    return true;
+    // initial_text.substr(0, bracket_location + 1), but if this is an unnamed
+    // struct we want to insert a name between `struct {`, if this isn't an
+    // unnamed struct then we'll just be adding an empty string here.
+    //
+    // I.E.
+    //   if unnamed_class == "" ->
+    //   class_definition = "struct Foo " + "" + "{ ... }" + ";"
+    //   else unnamed_class == "Bar" ->
+    //   class_definition = "struct " + "Bar" + "{ ... }" + ";"
+    class_definition =
+        initial_text.substr(0, open_bracket) + unnamed_class +
+        initial_text.substr(open_bracket, bracket_location + 1 - open_bracket) +
+        ";";
   }
-  return false;
+  return std::make_pair(unnamed_class, class_definition);
 }
 
 // Creates a replacement node for c-style arrays on which we invoke operator[].
@@ -649,21 +694,24 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       array_type_loc->getSourceRange().getBegin(),
       array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
-  if (IsUnnamedOrInlinedDefinition(element_type_as_string,
-                                   array_variable_as_string, replacement_range,
-                                   source_manager, ast_context)) {
-    // TODO(362644557): Handle unnamed types more reasonably, perhaps by
-    // inserting the variable name as the type but capitalized. Also figure out
-    // how to write a replacement that generates multiple output nodes.
-    // We've tried making the replacement emit the class definition with a
-    // semi-colon between to separate the inline definition but this hit an
-    // assertion node in extract_edits.
-    return Node{};
-  }
+  // Structs/classes can be defined alongside an option list of variable
+  // declarations.
+  //
+  // struct <OptionalName> { ... } var1[3];
+  //
+  // In this case we need the class_definition and in the case of unnamed types,
+  // we have to construct a name to use instead of the compiler generated one.
+  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
+      element_type_as_string, array_variable_as_string, replacement_range,
+      source_manager, ast_context);
 
-  std::string replacement_text =
-      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
-                    array_size_as_string, array_variable_as_string);
+  // If this isn't an inline declaration with a class_definition than both
+  // |unnamed_class| and |class_definition| will be empty strings and not change
+  // the below format.
+  std::string replacement_text = llvm::formatv(
+      "{0}std::array<{1},{2}>{3}", class_definition,
+      unnamed_class.empty() ? element_type_as_string : unnamed_class,
+      array_size_as_string, array_variable_as_string);
 
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range, replacement_text, source_manager, "array",
