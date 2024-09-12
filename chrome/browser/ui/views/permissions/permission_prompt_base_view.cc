@@ -90,6 +90,10 @@ bool PermissionPromptBaseView::ShouldIgnoreButtonPressedEventHandling(
 }
 
 void PermissionPromptBaseView::OnOcclusionStateChanged(bool occluded) {
+  // Protect from immediate input if the dialog has just become unoccluded.
+  if (occluded_by_picture_in_picture_ && !occluded) {
+    TriggerInputProtection();
+  }
   occluded_by_picture_in_picture_ = occluded;
 }
 
