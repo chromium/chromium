@@ -10,6 +10,7 @@ enum GPUPowerPreference {
 };
 
 dictionary GPURequestAdapterOptions {
+    any featureLevel;
     GPUPowerPreference powerPreference;
     boolean forceFallbackAdapter = false;
     [RuntimeEnabled=WebGPUExperimentalFeatures] boolean compatibilityMode = false;
