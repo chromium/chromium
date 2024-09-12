@@ -1965,10 +1965,15 @@ bool SwapChainPresenter::VideoProcessorBlt(
                               gfx::ColorSpace::CreateHDR10())
                         : output_dxgi_color_space;
 
-    if (SUCCEEDED(swap_chain3->SetColorSpace1(swap_dxgi_color_space))) {
-      context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
-                                                   output_dxgi_color_space);
+    // Can fail with E_INVALIDARG if the swap chain does not support the
+    // DXGI color space. We should still set the output color space as
+    // best effort.
+    HRESULT hr = swap_chain3->SetColorSpace1(swap_dxgi_color_space);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << " SetColorSpace1 failed with error: " << hr;
     }
+    context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
+                                                 output_dxgi_color_space);
   } else {
     // This can't handle as many different types of color spaces, so use it
     // only if ID3D11VideoContext1 isn't available.

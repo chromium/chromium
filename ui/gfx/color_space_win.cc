@@ -302,8 +302,8 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
       if (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL) {
         switch (color_space.GetTransferID()) {
           case gfx::ColorSpace::TransferID::PQ:
-            // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020
-            return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020;
+            // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020
+            return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020;
 
           case gfx::ColorSpace::TransferID::HLG:
             return DXGI_COLOR_SPACE_YCBCR_FULL_GHLG_TOPLEFT_P2020;
@@ -315,16 +315,16 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
       // RangeID::LIMITED handling.
       switch (color_space.GetTransferID()) {
         case gfx::ColorSpace::TransferID::PQ:
-          // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020
-          return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020;
+          // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020
+          return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020;
 
         case gfx::ColorSpace::TransferID::HLG:
           // Note: This may not always work. See https://crbug.com/1144260#c6.
           return DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020;
 
         default:
-          // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020.
-          return DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020;
+          // Could also be DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020.
+          return DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020;
       }
     } else if (color_space.GetPrimaryID() ==
                    gfx::ColorSpace::PrimaryID::BT470BG ||
