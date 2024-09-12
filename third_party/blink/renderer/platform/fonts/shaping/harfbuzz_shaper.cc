@@ -429,6 +429,12 @@ inline void HarfBuzzShaper::CheckTextLen(unsigned start,
   CHECK_LE(length, text_.length() - start);
 }
 
+inline void HarfBuzzShaper::CheckTextEnd(unsigned start, unsigned end) const {
+  CHECK_LE(start, end);
+  CHECK_LE(start, text_.length());
+  CHECK_LE(end, text_.length());
+}
+
 void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
                                   const SimpleFontData* current_font,
                                   UScriptCode current_run_script,
@@ -842,12 +848,13 @@ void HarfBuzzShaper::ShapeSegment(
 
     // Clamp the start and end offsets of the queue item to the offsets
     // representing the shaping window.
-    unsigned shape_start =
+    const unsigned shape_start =
         std::max(range_data->start, current_queue_item.start_index_);
-    unsigned shape_end =
+    const unsigned shape_end =
         std::min(range_data->end, current_queue_item.start_index_ +
                                       current_queue_item.num_characters_);
     DCHECK_GT(shape_end, shape_start);
+    CheckTextEnd(shape_start, shape_end);
 
     CaseMapIntend case_map_intend = CaseMapIntend::kKeepSameCase;
     if (needs_caps_handling) {
