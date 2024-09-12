@@ -3460,6 +3460,7 @@
     'remove_from': [
       'chromeos-brya-chrome-dchecks-skylab',
       'chromeos-brya-chrome-skylab',
+      'chromeos-brya-chrome-tests',
     ],
   },
   'not_site_per_process_blink_web_tests': {

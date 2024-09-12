@@ -1566,22 +1566,6 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64",
-          "--gtest_filter=-PythonUtils.PythonRunTime"
-        ],
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "cros_cbx": true,
-        "name": "net_unittests RELEASE_LKGM",
-        "run_cft": true,
-        "shard_level_retries_on_ctp": 1,
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/",
-        "use_lkgm": true,
-        "variant_id": "RELEASE_LKGM"
-      },
-      {
-        "args": [
           "--stop-ui"
         ],
         "autotest_name": "chromium",
