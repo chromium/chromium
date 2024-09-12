@@ -90,9 +90,8 @@ assert(
     !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
     "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
 
-assert(!use_allocator_shim || (is_android || is_apple || is_chromeos ||
-                                   is_fuchsia || is_linux || is_win),
-       "The allocator shim does not (yet) support the platform.")
+assert(!use_allocator_shim || !is_nacl,
+       "The allocator shim supports every platform, except nacl")
 
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component
@@ -216,12 +215,15 @@ declare_args() {
   # Enable the feature flag required to activate backup ref pointers. That is to
   # say `PartitionAllocBackupRefPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
   #
   # TODO(328104161): Remove this flag.
-  enable_backup_ref_ptr_feature_flag = false
+  enable_backup_ref_ptr_feature_flag =
+      enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl &&
+      # Platforms where BackupRefPtr hasn't shipped yet:
+      !is_castos && !is_ios
 
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
@@ -239,9 +241,9 @@ declare_args() {
   # Enable the feature flag required to check for dangling pointers. That is to
   # say `PartitionAllocDanglingPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
   #
   # TODO(328104161): Remove this flag.
   enable_dangling_raw_ptr_feature_flag = enable_dangling_raw_ptr_checks
