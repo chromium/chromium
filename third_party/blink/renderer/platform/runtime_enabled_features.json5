@@ -1282,6 +1282,11 @@
       status: "stable"
     },
     {
+      // Support the 'inert' keyword for the visibility property.
+      name: "CSSVisibilityInert",
+      status: "experimental",
+    },
+    {
       name: "CursorAnchorInfoMojoPipe",
       // No status as this will be controlled by the matching Chromium feature.
     },

@@ -56,12 +56,14 @@ bool IsFrameProbablyHidden(const gfx::RectF& bounding_client_rect,
 
   const ComputedStyle* style = element.GetComputedStyle();
   if (style) {
-    switch (style->Visibility()) {
+    switch (style->UsedVisibility()) {
       case EVisibility::kHidden:
       case EVisibility::kCollapse:
         return true;
       case EVisibility::kVisible:
         break;
+      case EVisibility::kInert:
+        NOTREACHED();
     }
   }
 

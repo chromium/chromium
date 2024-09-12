@@ -6002,7 +6002,7 @@
       interpolable: true,
       inherited: true,
       field_template: "keyword",
-      keywords: ["visible", "hidden", "collapse"],
+      keywords: ["visible", "hidden", "collapse", "inert"],
       typedom_types: ["Keyword"],
       default_value: "visible",
       valid_for_first_letter: true,
@@ -6011,6 +6011,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["paint", "visibility"],
+      computed_style_protected_functions: ["getter"],
     },
     {
       name: "x",

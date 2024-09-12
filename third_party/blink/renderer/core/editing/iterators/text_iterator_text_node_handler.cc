@@ -26,7 +26,7 @@ bool ShouldSkipInvisibleTextAt(const Text& text,
     return true;
   if (ignores_visibility)
     return false;
-  return layout_object->Style()->Visibility() != EVisibility::kVisible;
+  return layout_object->Style()->UsedVisibility() != EVisibility::kVisible;
 }
 
 String TextIgnoringCSSTextTransforms(const LayoutText& layout_text,

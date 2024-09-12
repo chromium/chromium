@@ -415,10 +415,12 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
   // TODO(tkent): We generate unnecessary "style: {\n},\n" even if no
   // additional style.
   PagePopupClient::AddString("style: {\n", data);
-  if (style->Visibility() == EVisibility::kHidden)
+  if (style->UsedVisibility() == EVisibility::kHidden) {
     AddProperty("visibility", String("hidden"), data);
-  if (style->Display() == EDisplay::kNone)
+  }
+  if (style->Display() == EDisplay::kNone) {
     AddProperty("display", String("none"), data);
+  }
   const ComputedStyle& base_style = context.BaseStyle();
   if (base_style.Direction() != style->Direction()) {
     AddProperty(

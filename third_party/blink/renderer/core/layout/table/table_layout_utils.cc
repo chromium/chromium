@@ -337,7 +337,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
       is_constrained,
       has_rowspan_start,
       /* is_collapsed */ is_section_collapsed ||
-          row.Style().Visibility() == EVisibility::kCollapse};
+          row.Style().UsedVisibility() == EVisibility::kCollapse};
 }
 
 // Computes inline constraints for COLGROUP/COLs.
@@ -1556,7 +1556,7 @@ void ComputeSectionMinimumRowBlockSizes(
         RowCountFunc, row, cell_percentage_inline_size,
         is_table_block_size_specified, column_locations, table_borders,
         start_row, current_row++, section_index,
-        /* is_section_collapsed */ section.Style().Visibility() ==
+        /* is_section_collapsed */ section.Style().UsedVisibility() ==
             EVisibility::kCollapse,
         cell_block_constraints, &rowspan_cells, &colspan_cell_tabulator);
     if (row_constraint.percent.has_value()) {

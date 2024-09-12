@@ -44,7 +44,7 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
                                          const PhysicalOffset& paint_offset,
                                          const CullRect& cull_rect) {
   const auto* box = scrollable_area_.GetLayoutBox();
-  DCHECK_EQ(box->StyleRef().Visibility(), EVisibility::kVisible);
+  DCHECK_EQ(box->StyleRef().UsedVisibility(), EVisibility::kVisible);
   if (!box->CanResize())
     return;
 
@@ -182,7 +182,7 @@ bool ScrollableAreaPainter::PaintOverflowControls(
   // Don't do anything if we have no overflow.
   const auto& box = *scrollable_area_.GetLayoutBox();
   CHECK(box.IsScrollContainer());
-  if (box.StyleRef().Visibility() != EVisibility::kVisible) {
+  if (box.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
   }
 

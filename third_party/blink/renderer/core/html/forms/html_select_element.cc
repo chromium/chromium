@@ -1508,7 +1508,7 @@ void HTMLSelectElement::AttachLayoutTree(AttachContext& context) {
   select_type_->UpdateTextStyle();
 
   if (const ComputedStyle* style = GetComputedStyle()) {
-    if (style->Visibility() != EVisibility::kHidden) {
+    if (style->UsedVisibility() != EVisibility::kHidden) {
       if (IsMultiple())
         UseCounter::Count(GetDocument(), WebFeature::kSelectElementMultiple);
       else

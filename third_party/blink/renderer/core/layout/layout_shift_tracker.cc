@@ -168,8 +168,9 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.StyleRef().Visibility() != EVisibility::kVisible)
+  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
 
   if (IsA<LayoutText>(object)) {
     if (!ContainingBlockScope::top_)

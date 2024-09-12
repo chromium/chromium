@@ -640,7 +640,7 @@ void SourceOrderTool::Draw(float scale) {
     // Don't draw if it's not rendered/would be ignored by a screen reader.
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->Display() == EDisplay::kNone ||
-          style->Visibility() == EVisibility::kHidden) {
+          style->UsedVisibility() == EVisibility::kHidden) {
         continue;
       }
     }

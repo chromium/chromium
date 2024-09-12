@@ -2885,7 +2885,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   }
 
   if (!IsLayoutNGObject() && old_style &&
-      old_style->Visibility() != style_->Visibility()) {
+      old_style->UsedVisibility() != style_->UsedVisibility()) {
     SetShouldDoFullPaintInvalidation();
   }
 
@@ -2970,7 +2970,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
                                    const ComputedStyle& new_style) {
   NOT_DESTROYED();
   if (style_) {
-    bool visibility_changed = style_->Visibility() != new_style.Visibility();
+    bool visibility_changed =
+        style_->UsedVisibility() != new_style.UsedVisibility();
     // If our z-index changes value or our visibility changes,
     // we need to dirty our stacking context's z-order list.
     if (visibility_changed ||
@@ -3871,8 +3872,8 @@ void LayoutObject::InsertedIntoTree() {
   // If |this| is visible but this object was not, tell the layer it has some
   // visible content that needs to be drawn and layer visibility optimization
   // can't be used
-  if (Parent()->StyleRef().Visibility() != EVisibility::kVisible &&
-      StyleRef().Visibility() == EVisibility::kVisible && !HasLayer()) {
+  if (Parent()->StyleRef().UsedVisibility() != EVisibility::kVisible &&
+      StyleRef().UsedVisibility() == EVisibility::kVisible && !HasLayer()) {
     if (!layer)
       layer = Parent()->EnclosingLayer();
     if (layer)
@@ -3934,8 +3935,8 @@ void LayoutObject::WillBeRemovedFromTree() {
   // If we remove a visible child from an invisible parent, we don't know the
   // layer visibility any more.
   PaintLayer* layer = nullptr;
-  if (Parent()->StyleRef().Visibility() != EVisibility::kVisible &&
-      StyleRef().Visibility() == EVisibility::kVisible && !HasLayer()) {
+  if (Parent()->StyleRef().UsedVisibility() != EVisibility::kVisible &&
+      StyleRef().UsedVisibility() == EVisibility::kVisible && !HasLayer()) {
     layer = Parent()->EnclosingLayer();
     if (layer)
       layer->DirtyVisibleContentStatus();
@@ -4350,11 +4351,12 @@ const ComputedStyle* LayoutObject::GetSelectionStyle() const {
 void LayoutObject::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.
-  if (StyleRef().Visibility() != EVisibility::kVisible || !IsBox())
+  if (StyleRef().UsedVisibility() != EVisibility::kVisible || !IsBox()) {
     return;
-
-  if (StyleRef().DraggableRegionMode() == EDraggableRegionMode::kNone)
+  }
+  if (StyleRef().DraggableRegionMode() == EDraggableRegionMode::kNone) {
     return;
+  }
 
   auto* box = To<LayoutBox>(this);
   PhysicalRect local_bounds = box->PhysicalBorderBoxRect();
@@ -4371,7 +4373,7 @@ bool LayoutObject::WillRenderImage() {
   NOT_DESTROYED();
   // Without visibility we won't render (and therefore don't care about
   // animation).
-  if (StyleRef().Visibility() != EVisibility::kVisible) {
+  if (StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
   }
   // We will not render a new image when ExecutionContext is paused
@@ -5037,7 +5039,8 @@ const LayoutObject* AssociatedLayoutObjectOf(const Node& node,
 
 bool LayoutObject::CanBeSelectionLeaf() const {
   NOT_DESTROYED();
-  if (SlowFirstChild() || StyleRef().Visibility() != EVisibility::kVisible ||
+  if (SlowFirstChild() ||
+      StyleRef().UsedVisibility() != EVisibility::kVisible ||
       DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
     return false;
   }

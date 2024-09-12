@@ -205,7 +205,7 @@ void LayoutText::StyleWillChange(StyleDifference diff,
 
   if (const ComputedStyle* current_style = Style()) {
     // Process accessibility for style changes that affect text.
-    if (current_style->Visibility() != new_style.Visibility() ||
+    if (current_style->UsedVisibility() != new_style.UsedVisibility() ||
         current_style->IsInert() != new_style.IsInert()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);

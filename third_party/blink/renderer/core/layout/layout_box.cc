@@ -2036,9 +2036,10 @@ static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
   if (child_box.HasLayer())
     return false;
   const ComputedStyle& child_style = child_box.StyleRef();
-  if (child_style.Visibility() != EVisibility::kVisible ||
-      child_style.ShapeOutside())
+  if (child_style.UsedVisibility() != EVisibility::kVisible ||
+      child_style.ShapeOutside()) {
     return false;
+  }
   if (child_box.Size().IsZero())
     return false;
   // A replaced element with border-radius always clips the content.

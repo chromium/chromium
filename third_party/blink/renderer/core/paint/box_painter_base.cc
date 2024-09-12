@@ -1385,8 +1385,9 @@ void BoxPainterBase::PaintMaskImages(
     const ImageResourceObserver& obj,
     const BoxBackgroundPaintContext& bg_paint_context,
     PhysicalBoxSides sides_to_include) {
-  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible)
+  if (!style_.HasMask() || style_.UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
                   paint_rect, bg_paint_context);

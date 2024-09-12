@@ -10,8 +10,9 @@
 namespace blink {
 
 bool HasPaintedOutline(const ComputedStyle& style, const Node* node) {
-  if (!style.HasOutline() || style.Visibility() != EVisibility::kVisible)
+  if (!style.HasOutline() || style.UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
   if (style.OutlineStyleIsAuto() &&
       !LayoutTheme::GetTheme().ShouldDrawDefaultFocusRing(node, style))
     return false;

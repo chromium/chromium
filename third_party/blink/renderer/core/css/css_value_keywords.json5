@@ -612,6 +612,7 @@
     "visible",
     //hidden
     "collapse",
+    "inert",
     //
     // white-space and its longhands (white-space-collapse and text-wrap)
     // https://w3c.github.io/csswg-drafts/css-text-4/#white-space-property

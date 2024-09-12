@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Display Test: visibility:inert support</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10711#issuecomment-2338834244">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<script src="/css/support/interpolation-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  // Parsing:
+  test_valid_value('visibility', 'inert');
+  test_invalid_value('visibility', 'visible inert');
+
+  // Computed style
+  test_computed_value('visibility', 'inert');
+
+</script>

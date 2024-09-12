@@ -1517,7 +1517,7 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
   if (new_style.ImageRendering() == EImageRendering::kPixelated)
     filter_quality = cc::PaintFlags::FilterQuality::kNone;
   SetFilterQuality(filter_quality);
-  style_is_visible_ = new_style.Visibility() == EVisibility::kVisible;
+  style_is_visible_ = new_style.UsedVisibility() == EVisibility::kVisible;
   bool is_displayed = GetLayoutObject() && style_is_visible_;
   SetIsDisplayed(is_displayed);
   if (context_) {

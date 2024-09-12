@@ -1419,7 +1419,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kCollapse;
+             value_id == CSSValueID::kCollapse ||
+             (RuntimeEnabledFeatures::CSSVisibilityInertEnabled() &&
+              value_id == CSSValueID::kInert);
     case CSSPropertyID::kAppRegion:
       return (value_id >= CSSValueID::kDrag &&
               value_id <= CSSValueID::kNoDrag) ||

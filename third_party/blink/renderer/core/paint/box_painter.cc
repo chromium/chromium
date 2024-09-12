@@ -43,7 +43,7 @@ void BoxPainter::RecordScrollHitTestData(
 
   // If an object is not visible, it does not scroll.
   const ComputedStyle& style = layout_box_.StyleRef();
-  if (style.Visibility() != EVisibility::kVisible) {
+  if (style.UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -57,7 +57,7 @@ void BoxPainter::RecordScrollHitTestData(
   // (which marks a region where composited scroll is not allowed) so
   // that we fall back to main thread hit testing for the entire box.
   //
-  // Note that if it is visibility: hidden, then the style.Visibility()
+  // Note that if it is visibility: hidden, then the style.UsedVisibility()
   // check above will fail and we will already have returned.
   if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
       !style.VisibleToHitTesting()) {
@@ -112,7 +112,7 @@ void BoxPainter::RecordScrollHitTestData(
 
 gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(!layout_box_.VisualRectRespectsVisibility() ||
-         layout_box_.StyleRef().Visibility() == EVisibility::kVisible);
+         layout_box_.StyleRef().UsedVisibility() == EVisibility::kVisible);
   PhysicalRect rect = layout_box_.SelfVisualOverflowRect();
   rect.Move(paint_offset);
   return ToEnclosingRect(rect);

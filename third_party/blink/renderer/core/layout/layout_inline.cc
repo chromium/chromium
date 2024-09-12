@@ -969,8 +969,9 @@ gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
 void LayoutInline::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.
-  if (StyleRef().Visibility() != EVisibility::kVisible)
+  if (StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   if (StyleRef().DraggableRegionMode() == EDraggableRegionMode::kNone)
     return;

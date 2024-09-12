@@ -475,14 +475,14 @@ void PaintLayer::UpdateDescendantDependentFlags() {
   }
 
   bool previously_has_visible_content = has_visible_content_;
-  if (GetLayoutObject().StyleRef().Visibility() == EVisibility::kVisible) {
+  if (GetLayoutObject().StyleRef().UsedVisibility() == EVisibility::kVisible) {
     has_visible_content_ = true;
   } else {
     // layer may be hidden but still have some visible content, check for this
     has_visible_content_ = false;
     LayoutObject* r = GetLayoutObject().SlowFirstChild();
     while (r) {
-      if (r->StyleRef().Visibility() == EVisibility::kVisible &&
+      if (r->StyleRef().UsedVisibility() == EVisibility::kVisible &&
           (!r->HasLayer() || !r->EnclosingLayer()->IsSelfPaintingLayer())) {
         has_visible_content_ = true;
         break;
@@ -720,8 +720,9 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     MarkAncestorChainForFlagsUpdate();
   }
 
-  if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)
+  if (GetLayoutObject().StyleRef().UsedVisibility() != EVisibility::kVisible) {
     DirtyVisibleContentStatus();
+  }
 
   old_child->SetPreviousSibling(nullptr);
   old_child->SetNextSibling(nullptr);

@@ -5056,14 +5056,16 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
     return false;
 
   if (!input->GetLayoutObject() ||
-      input->GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
+      input->GetLayoutObject()->Style()->UsedVisibility() !=
+          EVisibility::kVisible) {
     return false;
-
-  if (!input->IsCheckable())
+  }
+  if (!input->IsCheckable()) {
     return false;
-
-  if (!IsNameFromLabelElement(input))
+  }
+  if (!IsNameFromLabelElement(input)) {
     return false;
+  }
 
   DCHECK_NE(input->labels()->length(), 0U);
 

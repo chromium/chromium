@@ -10055,7 +10055,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   if ((options->checkVisibilityCSS() ||
        (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
         options->visibilityProperty())) &&
-      style->Visibility() != EVisibility::kVisible) {
+      style->UsedVisibility() != EVisibility::kVisible) {
     return false;
   }
 

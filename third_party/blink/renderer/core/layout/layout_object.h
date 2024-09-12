@@ -2528,9 +2528,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // SVG transforms instead.
   PhysicalRect LocalVisualRect() const {
     NOT_DESTROYED();
-    if (StyleRef().Visibility() != EVisibility::kVisible &&
-        VisualRectRespectsVisibility())
+    if (StyleRef().UsedVisibility() != EVisibility::kVisible &&
+        VisualRectRespectsVisibility()) {
       return PhysicalRect();
+    }
     return LocalVisualRectIgnoringVisibility();
   }
 
@@ -2705,7 +2706,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool VisibleToHitTestRequest(const HitTestRequest& request) const {
     NOT_DESTROYED();
-    return StyleRef().Visibility() == EVisibility::kVisible &&
+    return StyleRef().UsedVisibility() == EVisibility::kVisible &&
            (request.IgnorePointerEventsNone() ||
             StyleRef().UsedPointerEvents() != EPointerEvents::kNone);
   }
@@ -3093,7 +3094,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     void UpdatePreviousVisibilityVisible() {
       layout_object_.bitfields_.SetPreviousVisibilityVisible(
-          layout_object_.StyleRef().Visibility() == EVisibility::kVisible);
+          layout_object_.StyleRef().UsedVisibility() == EVisibility::kVisible);
     }
 
     // Same as LayoutObject::SetNeedsPaintPropertyUpdate(), but does not mark

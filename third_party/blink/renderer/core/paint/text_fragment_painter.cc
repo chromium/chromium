@@ -245,8 +245,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     return;
 
   const ComputedStyle& style = text_item.Style();
-  if (style.Visibility() != EVisibility::kVisible)
+  if (style.UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   const TextFragmentPaintInfo& fragment_paint_info =
       cursor_.Current()->TextPaintInfo(cursor_.Items());

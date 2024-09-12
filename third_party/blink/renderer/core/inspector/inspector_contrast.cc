@@ -343,8 +343,10 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
       continue;
 
     // If background elements are hidden, ignore their background colors.
-    if (element != top_element && style->Visibility() == EVisibility::kHidden)
+    if (element != top_element &&
+        style->UsedVisibility() == EVisibility::kHidden) {
       continue;
+    }
 
     Color background_color =
         style->VisitedDependentColor(GetCSSPropertyBackgroundColor());

@@ -201,8 +201,10 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
   PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgImageHitTesting,
                                   result.GetHitTestRequest(),
                                   style.UsedPointerEvents());
-  if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
+  if (hit_rules.require_visible &&
+      style.UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
 
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());

@@ -91,7 +91,7 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
                                          const PhysicalOffset& paint_offset) {
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
-  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible) {
+  if (!style_.HasMask() || style_.UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -146,9 +146,10 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
-  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
-      inline_box_fragment_.IsOpaque())
+  if (inline_box_fragment_.Style().UsedVisibility() != EVisibility::kVisible ||
+      inline_box_fragment_.IsOpaque()) {
     return;
+  }
 
   // You can use p::first-line to specify a background. If so, the direct child
   // inline boxes of line boxes may actually have to paint a background.
@@ -211,8 +212,9 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
-      line_style_.Visibility() != EVisibility::kVisible)
+      line_style_.UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   const DisplayItemClient& display_item_client = GetDisplayItemClient();
   if (DrawingRecorder::UseCachedDrawingIfPossible(
