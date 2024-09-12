@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"

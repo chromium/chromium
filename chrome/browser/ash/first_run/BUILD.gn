@@ -22,10 +22,10 @@ static_library("first_run") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",
     "//chromeos/ash/components/login/login_state",
@@ -47,6 +47,6 @@ static_library("first_run") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ui/ash/login",
   ]
 }

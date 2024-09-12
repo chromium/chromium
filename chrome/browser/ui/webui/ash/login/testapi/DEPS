@@ -14,12 +14,10 @@ include_rules = [
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/login/screens",
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ash/login",
   "+chrome/browser/ui/webui/ash/login",
 ]

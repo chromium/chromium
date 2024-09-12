@@ -38,6 +38,7 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/support_tool",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/support_tool",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",

@@ -29,7 +29,6 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",

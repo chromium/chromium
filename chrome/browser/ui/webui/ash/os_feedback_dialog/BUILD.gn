@@ -17,15 +17,15 @@ static_library("os_feedback_dialog") {
   deps = [
     "//ash/webui/os_feedback_ui:url_constants",
     "//base",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/os_feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//extensions/browser",
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/os_feedback",
+    "//chrome/browser/ui/ash/login",
   ]
 }

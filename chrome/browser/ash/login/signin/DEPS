@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/supervised_user",
   "+chrome/browser/sync",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_tabstrip.h",

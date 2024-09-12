@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/network_dropdown_handler.h"
 
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chromeos/ash/components/network/network_handler.h"

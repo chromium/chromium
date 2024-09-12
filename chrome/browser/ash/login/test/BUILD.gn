@@ -132,7 +132,6 @@ static_library("test_support") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/session:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",

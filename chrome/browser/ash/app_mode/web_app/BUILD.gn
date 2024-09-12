@@ -36,7 +36,6 @@ static_library("web_app") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/crosapi:browser_util",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/chromeos/app_mode",
@@ -49,10 +48,8 @@ static_library("web_app") {
     "//services/network/public/cpp",
     "//skia",
   ]
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/login/ui",
-    "//chrome/browser/ash/policy/remote_commands/crd",
-  ]
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/policy/remote_commands/crd" ]
 }
 
 source_set("unit_tests") {

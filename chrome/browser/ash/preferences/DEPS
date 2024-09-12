@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/prefs",
   # We don't want more dependencies on c/b/ui/ash.
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_features.h",

@@ -256,7 +256,6 @@ static_library("screens") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/smart_lock",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/multidevice_setup",
@@ -345,8 +344,8 @@ static_library("screens") {
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login/testapi",
   ]
 }
@@ -481,7 +480,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/screens/chromevox_hint",
     "//chrome/browser/ash/login/session:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/version_updater",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
@@ -492,6 +490,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

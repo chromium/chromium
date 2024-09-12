@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/login/lock/online_reauth",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
@@ -22,6 +21,7 @@ include_rules = [
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/webui/ash/internet",
   "+chrome/browser/ui/webui/ash/login",

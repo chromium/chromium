@@ -36,7 +36,6 @@ static_library("main_extra_parts") {
     "//chrome/browser/ash/input_device_settings",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/login/signin",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",

@@ -16,10 +16,10 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
 ]

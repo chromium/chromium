@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/grit",
   "+chrome/test/base",
