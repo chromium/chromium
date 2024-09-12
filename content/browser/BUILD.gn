@@ -1858,6 +1858,8 @@ source_set("browser") {
     "renderer_host/page_impl.h",
     "renderer_host/page_lifecycle_state_manager.cc",
     "renderer_host/page_lifecycle_state_manager.h",
+    "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.cc",
+    "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h",
     "renderer_host/policy_container_host.cc",
     "renderer_host/policy_container_host.h",
     "renderer_host/private_network_access_util.cc",
