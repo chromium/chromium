@@ -31,17 +31,16 @@ class ExternalSharedMemoryAdapter : public DecoderBuffer::ExternalMemory {
 }  // namespace
 
 DecoderBuffer::DecoderBuffer(size_t size)
-    : data_(base::HeapArray<uint8_t>::Uninit(size)), size_(size) {}
+    : data_(base::HeapArray<uint8_t>::Uninit(size)) {}
 
 DecoderBuffer::DecoderBuffer(base::span<const uint8_t> data)
-    : data_(base::HeapArray<uint8_t>::CopiedFrom(data)), size_(data.size()) {}
+    : data_(base::HeapArray<uint8_t>::CopiedFrom(data)) {}
 
 DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data)
-    : data_(std::move(data)), size_(data_.size()) {}
+    : data_(std::move(data)) {}
 
 DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
-    : size_(external_memory->Span().size()),
-      external_memory_(std::move(external_memory)) {}
+    : external_memory_(std::move(external_memory)) {}
 
 DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
     : is_end_of_stream_(decoder_buffer_type ==
@@ -137,10 +136,7 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
 
 base::span<const uint8_t> DecoderBuffer::AsSpan() const {
   DCHECK(!end_of_stream());
-  if (external_memory_) {
-    return external_memory_->Span().first(size_);
-  }
-  return data_.first(size_);
+  return external_memory_ ? external_memory_->Span() : data_;
 }
 
 void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
@@ -215,7 +211,7 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
   std::ostringstream s;
 
   s << "{timestamp=" << timestamp_.InMicroseconds()
-    << " duration=" << duration_.InMicroseconds() << " size=" << size_
+    << " duration=" << duration_.InMicroseconds() << " size=" << size()
     << " is_key_frame=" << is_key_frame_
     << " encrypted=" << (decrypt_config_ != nullptr);
 

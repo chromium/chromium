@@ -68,6 +68,8 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Allocates buffer with |size| > 0. |is_key_frame_| will default to false.
   // If size is 0, no buffer will be allocated.
+  // TODO(crbug.com/365814210): Remove this constructor. Clients should use the
+  // FromArray constructor instead asking for a writable DecoderBuffer.
   explicit DecoderBuffer(size_t size);
 
   DecoderBuffer(const DecoderBuffer&) = delete;
@@ -163,7 +165,7 @@ class MEDIA_EXPORT DecoderBuffer
   // The number of bytes in the buffer.
   size_t size() const {
     DCHECK(!end_of_stream());
-    return size_;
+    return external_memory_ ? external_memory_->Span().size() : data_.size();
   }
 
   // Prefer writable_span(), though it should also be removed.
@@ -182,7 +184,9 @@ class MEDIA_EXPORT DecoderBuffer
     return UNSAFE_TODO(base::span(writable_data(), size()));
   }
 
-  bool empty() const { return size() == 0u; }
+  bool empty() const {
+    return external_memory_ ? external_memory_->Span().empty() : data_.empty();
+  }
 
   // TODO(crbug.com/365814210): Remove this method and force callers to get it
   // through side_data().
@@ -286,9 +290,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Presentation duration of the frame.
   base::TimeDelta duration_;
-
-  // Size of the encoded data.
-  const size_t size_ = 0u;
 
   // Structured side data.
   std::unique_ptr<DecoderBufferSideData> side_data_;
