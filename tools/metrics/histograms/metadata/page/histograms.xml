@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupEnd.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-02-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1085,7 +1085,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupStart.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-02-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
