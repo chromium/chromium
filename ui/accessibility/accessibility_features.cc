@@ -415,7 +415,8 @@ BASE_FEATURE(kReadAnythingDocsIntegration,
              "ReadAnythingDocsIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingDocsIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingDocsIntegration);
+  return base::FeatureList::IsEnabled(
+      ax::mojom::features::kReadAnythingDocsIntegration);
 }
 
 BASE_FEATURE(kReadAnythingDocsLoadMoreButton,

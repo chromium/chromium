@@ -524,6 +524,21 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 }
 
+void ReadAnythingAppController::AccessibilityLocationChangesReceived(
+    const std::vector<ui::AXLocationChanges>& details) {
+  // Listen to location change notifications to update locations of the nodes
+  // accordingly.
+  for (auto& change : details) {
+    ui::AXNode* ax_node = model_.GetAXNode(change.id);
+    if (!ax_node) {
+      continue;
+    }
+    ax_node->SetLocation(change.new_location.offset_container_id,
+                         change.new_location.bounds,
+                         change.new_location.transform.get());
+  }
+}
+
 void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.

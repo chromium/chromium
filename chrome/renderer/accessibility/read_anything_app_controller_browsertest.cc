@@ -252,6 +252,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->AccessibilityEventReceived(tree_id, updates, events);
   }
 
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details) {
+    controller_->AccessibilityLocationChangesReceived(details);
+  }
+
   // Since a11y events happen asynchronously, they can come between the time
   // distillation finishes and pending updates are unserialized in
   // OnAXTreeDistilled. Thus we need to be able to set distillation progress
@@ -577,6 +582,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsPhraseHighlightingEnabled() {
     return controller_->IsPhraseHighlightingEnabled();
+  }
+
+  ui::AXNodeData GetNodeData(ui::AXNodeID ax_node_id) {
+    return controller_->model_.GetAXNode(ax_node_id)->data();
   }
 
   ui::AXTreeID tree_id_;
@@ -1663,6 +1672,43 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   EXPECT_EQ(u"Final update", GetTextContent(2));
   EXPECT_EQ(u"Node 3", GetTextContent(3));
   EXPECT_EQ(u"Node 4", GetTextContent(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, AccessibilityLocationChangesReceived) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  ui::AXRelativeBounds initial_bounds;
+  initial_bounds.bounds = gfx::RectF(1, 1, 100, 100);
+  initial_bounds.offset_container_id = 12345;
+  ui::AXNodeData node;
+  node.id = 2;
+  node.relative_bounds = initial_bounds;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({1});
+  OnActiveAXTreeIDChanged(id_1);
+
+  // Create a new bounding box that the node will update to have
+  ui::AXRelativeBounds location_update;
+  location_update.offset_container_id = 1;
+  location_update.bounds = gfx::RectF(5, 5, 100, 100);
+  ui::AXLocationChanges location_changes;
+  location_changes.id = 2;
+  location_changes.ax_tree_id = id_1;
+  location_changes.new_location = location_update;
+
+  // Test that the node data updates correctly
+  AccessibilityLocationChangesReceived({location_changes});
+  node = GetNodeData(2);
+  EXPECT_EQ(node.relative_bounds, location_update);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {

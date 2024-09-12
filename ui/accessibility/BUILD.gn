@@ -317,6 +317,7 @@ test("accessibility_unittests") {
     "mojom/ax_action_data_mojom_traits_unittest.cc",
     "mojom/ax_event_intent_mojom_traits_unittest.cc",
     "mojom/ax_event_mojom_traits_unittest.cc",
+    "mojom/ax_location_changes_mojom_traits_unittest.cc",
     "mojom/ax_mode_mojom_traits_unittest.cc",
     "mojom/ax_node_data_mojom_traits_unittest.cc",
     "mojom/ax_relative_bounds_mojom_traits_unittest.cc",

@@ -238,6 +238,11 @@ void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
   page_handler_->AccessibilityEventReceived(details);
 }
 
+void ReadAnythingWebContentsObserver::AccessibilityLocationChangesReceived(
+    const std::vector<ui::AXLocationChanges>& details) {
+  page_handler_->AccessibilityLocationChangesReceived(details);
+}
+
 void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
   page_handler_->PrimaryPageChanged();
 }
@@ -380,6 +385,13 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     const ui::AXUpdatesAndEvents& details) {
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
+}
+
+void ReadAnythingUntrustedPageHandler::AccessibilityLocationChangesReceived(
+    const std::vector<ui::AXLocationChanges>& details) {
+  if (features::IsReadAnythingDocsIntegrationEnabled()) {
+    page_->AccessibilityLocationChangesReceived(details);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

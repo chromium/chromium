@@ -56,6 +56,8 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) override;
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
@@ -99,6 +101,8 @@ class ReadAnythingUntrustedPageHandler :
   ~ReadAnythingUntrustedPageHandler() override;
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
+  void AccessibilityLocationChangesReceived(
+      const std::vector<ui::AXLocationChanges>& details);
   void PrimaryPageChanged();
   void WebContentsDestroyed();
 
