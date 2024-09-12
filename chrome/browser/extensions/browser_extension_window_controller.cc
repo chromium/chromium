@@ -81,20 +81,8 @@ bool BrowserExtensionWindowController::IsDeleteScheduled() const {
   return browser_->is_delete_scheduled();
 }
 
-bool BrowserExtensionWindowController::GetActiveTab(
-    content::WebContents** contents,
-    int* optional_tab_id) const {
-  DCHECK(contents);
-
-  *contents = browser_->tab_strip_model()->GetActiveWebContents();
-  if (*contents) {
-    if (optional_tab_id) {
-      *optional_tab_id = ExtensionTabUtil::GetTabId(*contents);
-    }
-    return true;
-  }
-
-  return false;
+content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
 bool BrowserExtensionWindowController::HasEditableTabStrip() const {

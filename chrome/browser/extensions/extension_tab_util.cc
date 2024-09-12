@@ -648,11 +648,8 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
   return false;
 }
 
-bool ExtensionTabUtil::GetActiveTab(Browser* browser,
-                                    WebContents** contents,
-                                    int* optional_tab_id) {
-  return WindowControllerFromBrowser(browser)->GetActiveTab(contents,
-                                                            optional_tab_id);
+content::WebContents* ExtensionTabUtil::GetActiveTab(Browser* browser) {
+  return WindowControllerFromBrowser(browser)->GetActiveTab();
 }
 
 // static

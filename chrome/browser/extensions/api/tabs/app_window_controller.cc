@@ -59,19 +59,8 @@ bool AppWindowController::IsDeleteScheduled() const {
   return false;
 }
 
-bool AppWindowController::GetActiveTab(content::WebContents** contents,
-                                       int* optional_tab_id) const {
-  DCHECK(contents);
-
-  *contents = app_window_->web_contents();
-  if (*contents) {
-    if (optional_tab_id) {
-      *optional_tab_id = -1;
-    }
-    return true;
-  }
-
-  return false;
+content::WebContents* AppWindowController::GetActiveTab() const {
+  return app_window_->web_contents();
 }
 
 bool AppWindowController::HasEditableTabStrip() const {
