@@ -9403,13 +9403,20 @@ void WebContentsImpl::RendererUnresponsive(
     return;
   }
 
+  bool visible = GetVisibility() == Visibility::VISIBLE;
+  base::UmaHistogramBoolean("Renderer.Unresponsive.Visibility", visible);
+
   // Do not report hangs (to task manager, to hang renderer dialog, etc.) for
   // invisible tabs (like extension background page, background tabs).  See
   // https://crbug.com/881812 for rationale and for choosing the visibility
   // (rather than process priority) as the signal here.
-  if (GetVisibility() != Visibility::VISIBLE) {
+  if (!visible) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      "Renderer.Unresponsive.PageVisible.WidgetVisibility",
+      !render_widget_host->is_hidden());
 
   if (!render_widget_host->renderer_initialized()) {
     return;

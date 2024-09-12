@@ -640,6 +640,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Unresponsive.PageVisible.WidgetVisibility"
+    enum="BooleanVisible" expires_after="2024-11-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the visibility of the RenderWidgetHost when a renderer is deemed
+    unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
+    recorded if the WebContents is visible.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Unresponsive.Visibility" enum="BooleanVisible"
+    expires_after="2024-11-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the visibility of the WebContents when a renderer is deemed
+    unresponsive (WebContentsImpl::RendererUnresponsive is called).
+  </summary>
+</histogram>
+
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"
     units="microseconds" expires_after="2025-03-09">
   <owner>szager@chromium.org</owner>
