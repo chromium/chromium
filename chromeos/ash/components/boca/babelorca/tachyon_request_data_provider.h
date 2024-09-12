@@ -18,7 +18,7 @@ class TachyonRequestDataProvider {
 
   virtual ~TachyonRequestDataProvider() = default;
 
-  virtual std::string client_uuid() = 0;
+  virtual std::string session_id() = 0;
   virtual std::string tachyon_token() = 0;
   virtual std::string group_id() = 0;
 

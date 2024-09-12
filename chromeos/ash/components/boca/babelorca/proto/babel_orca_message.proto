@@ -24,15 +24,16 @@ message TranscriptPart {
 
 // Message from sender to receiver.
 message BabelOrcaMessage {
-  // Sender generated UUID. Should be the same for all messages unless there is
-  // a device restart.
-  string sender_uuid = 1;
+  // BOCA session id.
+  string session_id = 1;
+  // Sender initialization timestamp.
+  int64 init_timestamp_ms = 2;
   // Order of the message with respect to the previously sent messages with the
-  // same `sender_uuid``.
-  int64 order = 2;
+  // same `init_timestamp_ms` and `session_id`.
+  int64 order = 3;
   // Transcription part of the previous transcript. Will not be set if there is
   // no previous transcript or if the max allowed overall text size is reached.
-  TranscriptPart previous_transcript = 3;
+  TranscriptPart previous_transcript = 4;
   // Transcription part of the current transcript.
-  TranscriptPart current_transcript = 4;
+  TranscriptPart current_transcript = 5;
 }

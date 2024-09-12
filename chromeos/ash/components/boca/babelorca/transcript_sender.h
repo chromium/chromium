@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -46,6 +47,7 @@ class TranscriptSender {
   TranscriptSender(
       TachyonAuthedClient* authed_client,
       TachyonRequestDataProvider* request_data_provider,
+      base::Time init_timestamp,
       std::string_view sender_email,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       Options options,
@@ -88,12 +90,11 @@ class TranscriptSender {
 
   const raw_ptr<TachyonAuthedClient> authed_client_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;
+  const int64_t init_timestamp_ms_;
   const std::string sender_email_;
   const net::NetworkTrafficAnnotationTag network_traffic_annotation_;
   const Options options_;
   base::OnceClosure failure_cb_;
-  const std::string sender_uuid_;
-
   size_t errors_num_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::WeakPtrFactory<TranscriptSender> weak_ptr_factory{this};
