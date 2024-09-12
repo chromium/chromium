@@ -212,12 +212,13 @@ export class ProfilePickerMainViewElement extends
   /**
    * Called when the user modifies 'Ask on startup' preference.
    */
-  protected onAskOnStartupChangedByUser_() {
+  protected onAskOnStartupChangedByUser_(e: CustomEvent<{value: boolean}>) {
     if (this.hideAskOnStartup_) {
       return;
     }
 
-    this.manageProfilesBrowserProxy_.askOnStartupChanged(this.askOnStartup_);
+    this.askOnStartup_ = e.detail.value;
+    this.manageProfilesBrowserProxy_.askOnStartupChanged(e.detail.value);
   }
 
   protected onAddProfileClick_() {
