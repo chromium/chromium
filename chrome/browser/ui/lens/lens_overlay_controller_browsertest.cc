@@ -968,9 +968,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Assert that the web view was created and loaded WebUI.
+  GURL webui_url(chrome::kChromeUILensUntrustedURL);
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  ASSERT_EQ(GetOverlayWebContents()->GetLastCommittedURL(),
-            GURL(chrome::kChromeUILensOverlayUntrustedURL));
+  ASSERT_EQ(GetOverlayWebContents()->GetLastCommittedURL(), webui_url);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
@@ -3589,7 +3589,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(
       lens::LensOverlayControllerGlue::FromWebContents(active_contents));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUILensOverlayUntrustedURL)));
+      browser(), GURL(chrome::kChromeUILensUntrustedURL)));
 }
 
 class LensOverlayControllerBrowserFullscreenDisabled

@@ -28,12 +28,11 @@ constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
 
-// TODO(crbug.com/365448173): Split overlay and side panel browser test into
-// different files.
 class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   LensWebUIBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
+    set_test_loader_host(chrome::kChromeUILensHost);
   }
 
   void SetUp() override {
@@ -67,7 +66,6 @@ class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
 class LensOverlayTest : public LensWebUIBrowserTest {
  protected:
   void RunOverlayTest(const std::string& file, const std::string& trigger) {
-    set_test_loader_host(chrome::kChromeUILensOverlayHost);
     WaitForPaint();
 
     // State should start in off.
@@ -92,11 +90,6 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     // Clean up (the searchbox handler will leave a dangling pointer if not
     // explicitly destroyed).
     controller->ResetSearchboxHandler();
-  }
-
-  void RunSidePanelTest(const std::string& file, const std::string& trigger) {
-    set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    RunTest(file, trigger);
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
@@ -181,15 +174,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslateButton) {
 
 using LensSidePanelTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
-  RunSidePanelTest("lens/side_panel/results_frame_test.js", "mocha.run()");
+  RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
-  RunSidePanelTest("lens/side_panel/searchbox_back_button_test.js",
-                   "mocha.run()");
+  RunOverlayTest("lens/side_panel/searchbox_back_button_test.js",
+                 "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ErrorPage) {
-  RunSidePanelTest("lens/side_panel/error_page_test.js", "mocha.run()");
+  RunOverlayTest("lens/side_panel/error_page_test.js", "mocha.run()");
 }
 }  // namespace

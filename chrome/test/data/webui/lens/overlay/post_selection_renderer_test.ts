@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
+import 'chrome-untrusted://lens/post_selection_renderer.js';
 
-import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
-import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
-import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
-import {CUTOUT_RADIUS_PX, MAX_CORNER_LENGTH_PX, MAX_CORNER_RADIUS_PX, MIN_BOX_SIZE_PX, PERIMETER_SELECTION_PADDING_PX} from 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
-import type {GestureEvent} from 'chrome-untrusted://lens-overlay/selection_utils.js';
-import {GestureState} from 'chrome-untrusted://lens-overlay/selection_utils.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens/post_selection_renderer.js';
+import {CUTOUT_RADIUS_PX, MAX_CORNER_LENGTH_PX, MAX_CORNER_RADIUS_PX, MIN_BOX_SIZE_PX, PERIMETER_SELECTION_PADDING_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
+import type {GestureEvent} from 'chrome-untrusted://lens/selection_utils.js';
+import {GestureState} from 'chrome-untrusted://lens/selection_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
+#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,13 +35,16 @@ namespace lens {
 // The number of times to show cursor tooltips.
 constexpr int kNumTimesToShowCursorTooltips = 5;
 
-LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
+LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
-  // Set up the chrome-untrusted://lens-overlay source.
+  // This code path is invoked for both the overlay WebUI and the sidepanel
+  // WebUI.
+
+  // Set up the chrome-untrusted://lens source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
-          chrome::kChromeUILensOverlayUntrustedURL);
+          chrome::kChromeUILensUntrustedURL);
   html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
   html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);
@@ -54,6 +57,10 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("dismiss",
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString("learnMore", IDS_LENS_OVERLAY_LEARN_MORE);
+  html_source->AddLocalizedString("initialToastLabel",
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL);
+  html_source->AddLocalizedString("initialToastMessage",
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   html_source->AddLocalizedString("moreOptions",
                                   IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL);
   html_source->AddLocalizedString("myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY);
@@ -116,6 +123,11 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           palette.at(lens::ColorId::kSelectionElement));
 
   // Add finch flags
+  html_source->AddString(
+      "resultsLoadingUrl",
+      lens::features::GetLensOverlayResultsSearchLoadingURL(
+          lens::LensOverlayShouldUseDarkMode(
+              ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui)))));
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
   html_source->AddBoolean("enableShimmer",
@@ -131,6 +143,10 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::GetLensOverlayTapRegionHeight());
   html_source->AddInteger("tapRegionWidth",
                           lens::features::GetLensOverlayTapRegionWidth());
+  html_source->AddBoolean(
+      "darkMode",
+      lens::LensOverlayShouldUseDarkMode(
+          ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
   html_source->AddDouble(
       "selectTextTriggerThreshold",
       lens::features::GetLensOverlaySelectTextOverRegionTriggerThreshold());
@@ -139,6 +155,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddDouble(
       "postSelectionComparisonThreshold",
       lens::features::GetLensOverlayPostSelectionComparisonThreshold());
+  html_source->AddBoolean("enableErrorPage",
+                          lens::features::GetLensOverlayEnableErrorPage());
   html_source->AddInteger(
       "segmentationMaskCornerRadius",
       lens::features::GetLensOverlaySegmentationMaskCornerRadius());
@@ -154,8 +172,13 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens::features::
           GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
 
-  // Controller doesn't exist in unsupported context but WebUI should still
-  // load.
+  // Two instances of LensUntrustedUI are constructed: one for the main overlay
+  // and one for the side panel. We cannot distinguish them at this time. As a
+  // hack, we try to look up the LensOverlayController, which will only be
+  // available for the main overlay, and use that to set state only used by the
+  // main overlay.
+  // TODO(b/354802414): Split this into 2 separate classes for overlay and
+  // side panel.
   if (auto* controller =
           LensOverlayController::GetControllerFromWebViewWebContents(
               web_ui->GetWebContents())) {
@@ -213,19 +236,38 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
 }
 
-void LensOverlayUntrustedUI::BindInterface(
+void LensUntrustedUI::BindInterface(
     mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver) {
   lens_page_factory_receiver_.reset();
   lens_page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void LensOverlayUntrustedUI::BindInterface(
+void LensUntrustedUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
+  auto handler = std::make_unique<RealboxHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents(),
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
+      /*omnibox_controller=*/nullptr);
+  controller->SetSearchboxHandler(std::move(handler));
+}
+
+void LensUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-void LensOverlayUntrustedUI::CreatePageHandler(
+void LensUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   LensOverlayController* controller =
@@ -242,8 +284,25 @@ void LensOverlayUntrustedUI::CreatePageHandler(
   controller->BindOverlay(std::move(receiver), std::move(page));
 }
 
-LensOverlayUntrustedUI::~LensOverlayUntrustedUI() = default;
+void LensUntrustedUI::CreateSidePanelPageHandler(
+    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  controller->BindSidePanel(std::move(receiver), std::move(page));
+}
 
-WEB_UI_CONTROLLER_TYPE_IMPL(LensOverlayUntrustedUI)
+LensUntrustedUI::~LensUntrustedUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(LensUntrustedUI)
 
 }  // namespace lens

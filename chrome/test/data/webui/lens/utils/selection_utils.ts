@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 function createPointerEvent(

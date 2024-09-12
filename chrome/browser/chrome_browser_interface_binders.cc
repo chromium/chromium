@@ -169,8 +169,7 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
-#include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
-#include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
+#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
@@ -1207,11 +1206,8 @@ void PopulateChromeWebUIFrameBinders(
       NewTabPageThirdPartyUI>(map);
 
   if (lens::features::IsLensOverlayEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        lens::mojom::LensSidePanelPageHandlerFactory,
-        lens::LensSidePanelUntrustedUI>(map);
     RegisterWebUIControllerInterfaceBinder<lens::mojom::LensPageHandlerFactory,
-                                           lens::LensOverlayUntrustedUI>(map);
+                                           lens::LensUntrustedUI>(map);
   }
 
   if (lens::features::IsLensOverlayEnabled() &&
@@ -1966,14 +1962,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 #if !BUILDFLAG(IS_ANDROID)
   if (lens::features::IsLensOverlayEnabled()) {
-    registry.ForWebUI<lens::LensSidePanelUntrustedUI>()
-        .Add<lens::mojom::LensSidePanelPageHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>()
-        .Add<color_change_listener::mojom::PageHandler>();
-  }
-  if (lens::features::IsLensOverlayEnabled()) {
-    registry.ForWebUI<lens::LensOverlayUntrustedUI>()
+    registry.ForWebUI<lens::LensUntrustedUI>()
         .Add<lens::mojom::LensPageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
   if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
