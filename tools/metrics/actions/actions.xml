@@ -36603,6 +36603,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromAddressBubble">
+  <owner>amelies@chromium.com</owner>
+  <description>
+    Recorded when showing sign in entry in the saving address bubble.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromAppsPageLink" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -37309,6 +37316,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromAddressBubble">
+  <owner>amelies@chromium.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE.
   </description>
 </action>
 

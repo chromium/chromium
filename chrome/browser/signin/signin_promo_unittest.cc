@@ -210,6 +210,13 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       DoNotShowPromoWithNonAutofillAccessPoint) {
+  EXPECT_FALSE(ShouldShowSignInPromo(
+      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS));
+}
+
+// TODO (crbug.com/319411636): Add the same test for addresses.
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
        DoNotShowPromoAfterFiveTimesShown) {
   EXPECT_TRUE(ShouldShowSignInPromo(
       *profile(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
@@ -220,7 +227,7 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
   EXPECT_FALSE(ShouldShowSignInPromo(
       *profile(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
   EXPECT_TRUE(ShouldShowSignInPromo(
-      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
@@ -228,7 +235,7 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
   EXPECT_TRUE(ShouldShowSignInPromo(
       *profile(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
   EXPECT_TRUE(ShouldShowSignInPromo(
-      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
 
   profile()->GetPrefs()->SetInteger(
       prefs::kAutofillSignInPromoDismissCountPerProfile, 2);
@@ -236,7 +243,7 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
   EXPECT_FALSE(ShouldShowSignInPromo(
       *profile(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
   EXPECT_FALSE(ShouldShowSignInPromo(
-      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
@@ -249,7 +256,7 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
   EXPECT_TRUE(ShouldShowSignInPromo(
       *profile(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
   EXPECT_TRUE(ShouldShowSignInPromo(
-      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      *profile(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

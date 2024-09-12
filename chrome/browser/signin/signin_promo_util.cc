@@ -119,6 +119,11 @@ bool ShouldShowSignInPromo(Profile& profile,
     return false;
   }
 
+  // Don't show promo if the access point is not for autofill types.
+  if (!IsAutofillSigninPromo(access_point)) {
+    return false;
+  }
+
   SignedInState signed_in_state = signin_util::GetSignedInState(
       IdentityManagerFactory::GetForProfile(&profile));
 
@@ -173,6 +178,13 @@ bool ShouldShowSignInPromo(Profile& profile,
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+}
+
+bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point) {
+  return access_point ==
+             signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE ||
+         access_point ==
+             signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE;
 }
 
 }  // namespace signin

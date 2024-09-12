@@ -45,6 +45,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     int text_style)
     : delegate_(delegate) {
   DCHECK(!profile->IsGuestSession());
+  bool is_autofill_promo = signin::IsAutofillSigninPromo(access_point);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account;
@@ -54,9 +55,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   }
 
   const views::LayoutOrientation orientation =
-      account.IsEmpty() &&
-              access_point !=
-                  signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE
+      account.IsEmpty() && !is_autofill_promo
           ? views::LayoutOrientation::kHorizontal
           : views::LayoutOrientation::kVertical;
 
@@ -77,8 +76,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   std::u16string accessibility_text = std::u16string();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (access_point ==
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE) {
+  if (is_autofill_promo) {
     SignedInState bubble_version =
         signin_util::GetSignedInState(identity_manager);
     switch (bubble_version) {
@@ -138,7 +136,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 
   if (account.IsEmpty()) {
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        std::move(callback), access_point, button_style,
+        std::move(callback), is_autofill_promo, button_style,
         std::move(button_text));
 
     views::View* button_parent = AddChildView(std::make_unique<views::View>());
@@ -167,7 +165,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        account, account_icon, std::move(callback), access_point,
+        account, account_icon, std::move(callback), is_autofill_promo,
         std::move(button_text), std::move(accessibility_text));
 
     signin_button_view_ = AddChildView(std::move(signin_button_pointer));

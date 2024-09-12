@@ -514,6 +514,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAccountMenuFailedSwitch"));
       break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -651,6 +655,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromProductSpecifications"));
+      break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromAddressBubble"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:

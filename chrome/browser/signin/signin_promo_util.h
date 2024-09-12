@@ -21,6 +21,9 @@ bool ShouldShowSyncPromo(Profile& profile);
 bool ShouldShowSignInPromo(Profile& profile,
                            signin_metrics::AccessPoint access_point);
 
+// Returns whether `access_point` has an equivalent autofill signin promo.
+bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point);
+
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_

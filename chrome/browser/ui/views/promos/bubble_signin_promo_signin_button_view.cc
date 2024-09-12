@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/profiles/badged_profile_photo.h"
@@ -36,7 +37,7 @@ constexpr base::TimeDelta kDoubleClickSignInPreventionDelay =
 
 BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     views::Button::PressedCallback callback,
-    signin_metrics::AccessPoint access_point,
+    bool is_autofill_promo,
     ui::ButtonStyle button_style,
     std::u16string button_text)
     : account_(std::nullopt) {
@@ -54,7 +55,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
 
   // Add the callback to the button with a delay if it is an autofill sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(access_point, text_button, callback);
+  AddOrDelayCallbackForSignInButton(text_button, callback, is_autofill_promo);
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
@@ -63,13 +64,10 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     const AccountInfo& account,
     const gfx::Image& account_icon,
     views::Button::PressedCallback callback,
-    signin_metrics::AccessPoint access_point,
+    bool is_autofill_promo,
     std::u16string button_text,
     std::u16string button_accessibility_text)
     : account_(account) {
-  bool is_autofill_promo =
-      access_point == signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE;
-
   DCHECK(!account_icon.IsEmpty());
   auto card_title = base::UTF8ToUTF16(account.full_name);
 
@@ -128,23 +126,22 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
 
   // Add the callback to the button with a delay if it is an autofill sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(access_point, text_button, callback);
+  AddOrDelayCallbackForSignInButton(text_button, callback, is_autofill_promo);
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
 
 void BubbleSignInPromoSignInButtonView::AddOrDelayCallbackForSignInButton(
-    signin_metrics::AccessPoint access_point,
     views::MdTextButton* text_button,
-    views::Button::PressedCallback& callback) {
+    views::Button::PressedCallback& callback,
+    bool is_autofill_promo) {
   // If the promo is triggered from an autofill bubble, ignore any interaction
   // with the sign in button at first, because the button for an autofill data
-  // save is in the same place as the sign in button. If a user double clicked
-  // on the save button, it would therefore sign them in directly, or redirect
-  // them to a sign in page. The delayed adding of the callback to the button
-  // avoids that.
-  if (access_point ==
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE) {
+  // save might be in the same place as the sign in button. If a user double
+  // clicked on the save button, it would therefore sign them in directly, or
+  // redirect them to a sign in page. The delayed adding of the callback to the
+  // button avoids that.
+  if (is_autofill_promo) {
     // Add the callback to the button after the delay.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

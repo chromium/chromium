@@ -568,6 +568,7 @@ chromium-metrics-reviews@google.com.
   <int value="67" label="Account menu"/>
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu failed switch"/>
+  <int value="70" label="Address bubble"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

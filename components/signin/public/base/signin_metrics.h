@@ -242,6 +242,8 @@ enum class AccessPoint : int {
   // The user is signed-back into their previous account after failing to switch
   // to a new one.
   ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH = 69,
+  // The user signs in from a sign in promo after an address save.
+  ACCESS_POINT_ADDRESS_BUBBLE = 70,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
