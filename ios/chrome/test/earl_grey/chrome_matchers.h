@@ -250,9 +250,6 @@ id<GREYMatcher> ClearBrowsingDataButton();
 // Returns a matcher for the clear browsing data view.
 id<GREYMatcher> ClearBrowsingDataView();
 
-// Returns a matcher for the clear browsing data action sheet item.
-id<GREYMatcher> ConfirmClearBrowsingDataButton();
-
 // Returns a matcher for the "Done" button in the settings' navigation bar.
 id<GREYMatcher> SettingsDoneButton();
 
@@ -393,6 +390,12 @@ id<GREYMatcher> VoiceSearchInputAccessoryButton();
 
 // Returns a matcher for the settings main menu view.
 id<GREYMatcher> SettingsCollectionView();
+
+// Returns the matcher for the quick delete browsing data button.
+id<GREYMatcher> BrowsingDataButtonMatcher();
+
+// Returns the matcher for the quick delete browsing data confirmation button.
+id<GREYMatcher> BrowsingDataConfirmButtonMatcher();
 
 // Returns a matcher for the clear browsing history cell on the clear browsing
 // data panel.

@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,10 +33,11 @@
 #import "net/test/embedded_test_server/http_response.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::DeleteButton;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
-using chrome_test_util::DeleteButton;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
@@ -122,7 +122,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-  config.features_disabled.push_back(kIOSQuickDelete);
+  config.features_enabled.push_back(kIOSQuickDelete);
   return config;
 }
 
@@ -546,21 +546,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   // Check that the TableView is presented.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe TableView down.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the TableView has been dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 }
 

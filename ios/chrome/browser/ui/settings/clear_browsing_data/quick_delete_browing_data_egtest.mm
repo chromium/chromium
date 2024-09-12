@@ -27,31 +27,20 @@
 
 namespace {
 
+using chrome_test_util::BrowsingDataButtonMatcher;
+using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
-
-// Returns a matcher for the title of the Quick Delete bottom sheet.
-id<GREYMatcher> quickDeleteTitleMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
-      grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
-      nil);
-}
-
-// Returns a matcher for the Quick Delete Browsing Data button on the main page.
-id<GREYMatcher> quickDeleteBrowsingDataButtonMatcher() {
-  return grey_accessibilityID(kQuickDeleteBrowsingDataButtonIdentifier);
-}
+using chrome_test_util::ClearAutofillButton;
+using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::ClearBrowsingHistoryButton;
+using chrome_test_util::ClearCacheButton;
+using chrome_test_util::ClearCookiesButton;
+using chrome_test_util::ClearSavedPasswordsButton;
 
 // Returns a matcher for the title of the Quick Delete Browsing Data page.
 id<GREYMatcher> quickDeleteBrowsingDataPageTitleMatcher() {
   return chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
       IDS_IOS_DELETE_BROWSING_DATA_TITLE);
-}
-
-// Returns a matcher for the confirm button on the navigation bar.
-id<GREYMatcher> navigationBarConfirmButtonMatcher() {
-  return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
 }
 
 // Returns matcher for an element with or without the
@@ -62,45 +51,10 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
              : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
 }
 
-// Returns a matcher for the passwords cell.
-id<GREYMatcher> historyCellMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataHistoryIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
 // Returns a matcher for the tabs cell.
 id<GREYMatcher> tabsCellMatcher() {
   return grey_allOf(
       grey_accessibilityID(kQuickDeleteBrowsingDataTabsIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the site data cell.
-id<GREYMatcher> siteDataCellMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataSiteDataIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the cache cell.
-id<GREYMatcher> cacheCellMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataCacheIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the passwords cell.
-id<GREYMatcher> passwordsCellMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the autofill cell.
-id<GREYMatcher> autofillCellMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -163,7 +117,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                        IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -181,7 +135,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowNumber,
       CGVectorMake(0.0, 0.0));
 
-  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -208,7 +162,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
   // still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -218,13 +172,13 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [self openQuickDeleteBrowsingDataPage];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the page is closed while quick delete bottom sheet is still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -248,15 +202,15 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [self openQuickDeleteBrowsingDataPage];
 
   // Check that the confirm button is disabled.
-  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Select a browsing data type.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
 
   // Check that the confirm button is enabled.
-  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       assertWithMatcher:grey_enabled()];
 }
 
@@ -279,45 +233,45 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [self openQuickDeleteBrowsingDataPage];
 
   // Assert all browsing data rows are not selected.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Tap on the browsing data cells to toggle the selection.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       performAction:grey_tap()];
 
   // Assert all browsing data rows are selected.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 
   // Tap cancel button.
@@ -329,7 +283,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
   // still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Assert that the pref remains false on cancel.
@@ -373,56 +327,56 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [self openQuickDeleteBrowsingDataPage];
 
   // Assert all browsing data rows are not selected.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Tap on the browsing data cells to toggle the selection.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       performAction:grey_tap()];
 
   // Assert all browsing data rows are selected.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
-  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the browsing data page is closed while quick delete bottom sheet is
   // still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
   // Assert that the pref was updated to true on confirm.
@@ -525,22 +479,22 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [self openQuickDeleteBrowsingDataPageInWindowWithNumber:1];
 
   // Assert history row is not selected in the second window.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Focus the first window for the subsequent interactions.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
                                                         WindowWithNumber(0)];
   // Assert history row is not selected in the first window.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Tap on the history cell to toggle the selection on the first window.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
 
   // Assert history row is selected in the first window.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 
   // Focus the first window for the subsequent interactions.
@@ -548,7 +502,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                                         WindowWithNumber(1)];
 
   // Assert history row remains not selected on the second window.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Focus the first window for the subsequent interactions.
@@ -556,7 +510,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                                         WindowWithNumber(0)];
 
   // Tap confirm button on the first window where the history cell is selected.
-  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Focus the second window for the subsequent interactions.
@@ -564,7 +518,7 @@ id<GREYMatcher> SignOutLinkMatcher() {
                                                         WindowWithNumber(1)];
 
   // Assert history row is selected in the second window after the pref update.
-  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 }
 

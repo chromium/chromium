@@ -315,10 +315,6 @@ id<GREYMatcher> ClearBrowsingDataView() {
   return [ChromeMatchersAppInterface clearBrowsingDataView];
 }
 
-id<GREYMatcher> ConfirmClearBrowsingDataButton() {
-  return [ChromeMatchersAppInterface confirmClearBrowsingDataButton];
-}
-
 id<GREYMatcher> SettingsDoneButton() {
   return [ChromeMatchersAppInterface settingsDoneButton];
 }
@@ -486,6 +482,14 @@ id<GREYMatcher> VoiceSearchInputAccessoryButton() {
 
 id<GREYMatcher> SettingsCollectionView() {
   return [ChromeMatchersAppInterface settingsCollectionView];
+}
+
+id<GREYMatcher> BrowsingDataButtonMatcher() {
+  return [ChromeMatchersAppInterface browsingDataButtonMatcher];
+}
+
+id<GREYMatcher> BrowsingDataConfirmButtonMatcher() {
+  return [ChromeMatchersAppInterface browsingDataConfirmButtonMatcher];
 }
 
 id<GREYMatcher> ClearBrowsingHistoryButton() {

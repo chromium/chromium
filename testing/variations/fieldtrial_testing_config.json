@@ -12142,6 +12142,21 @@
             ]
         }
     ],
+    "IOSQuickDelete": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kIOSQuickDelete"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToDrive": [
         {
             "platforms": [
