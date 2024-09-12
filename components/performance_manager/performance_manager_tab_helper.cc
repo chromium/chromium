@@ -534,8 +534,7 @@ void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
     content::WebContents* inner_web_contents,
-    content::RenderFrameHost* render_frame_host,
-    bool /* is_full_page */) {
+    content::RenderFrameHost* render_frame_host) {
   // Note that we sometimes learn of contents creation at this point (before
   // other helpers get a chance to attach), so we need to ensure our helper
   // exists.

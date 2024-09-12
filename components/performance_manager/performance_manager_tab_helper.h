@@ -87,9 +87,9 @@ class PerformanceManagerTabHelper
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override;
+  void InnerWebContentsAttached(
+      content::WebContents* inner_web_contents,
+      content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void DidUpdateFaviconURL(
       content::RenderFrameHost* render_frame_host,

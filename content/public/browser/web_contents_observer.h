@@ -692,8 +692,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // provided |render_frame_host|. By the time this is called the
   // |inner_web_contents| will have been added to the WebContents tree.
   virtual void InnerWebContentsAttached(WebContents* inner_web_contents,
-                                        RenderFrameHost* render_frame_host,
-                                        bool is_full_page) {}
+                                        RenderFrameHost* render_frame_host) {}
 
   // Invoked when WebContents::Clone() was used to clone a WebContents.
   virtual void DidCloneToNewWebContents(WebContents* old_web_contents,

@@ -487,15 +487,9 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
     owned_guest_contents->SetOwnerLocationForDebug(std::nullopt);
   }
 
-  // Since this inner WebContents is created from the browser side we do
-  // not have RemoteFrame mojo channels so we pass in
-  // NullAssociatedRemote/Receivers. New channels will be bound when the
-  // `CreateView` IPC is sent.
-  owner_web_contents()->AttachInnerWebContents(
-      std::move(owned_guest_contents), outer_contents_frame,
-      /*remote_frame=*/mojo::NullAssociatedRemote(),
-      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
-      is_full_page_plugin);
+  owner_web_contents()->AttachInnerWebContents(std::move(owned_guest_contents),
+                                               outer_contents_frame,
+                                               is_full_page_plugin);
 
   // We don't ACK until after AttachToOuterWebContentsFrame, so that
   // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame

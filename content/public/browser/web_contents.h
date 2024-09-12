@@ -924,9 +924,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void AttachInnerWebContents(
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
-      mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
-      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
-          remote_frame_host_receiver,
       bool is_full_page) = 0;
 
   // Returns whether this WebContents is an inner WebContents for a guest.

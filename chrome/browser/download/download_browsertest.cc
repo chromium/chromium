@@ -207,9 +207,9 @@ class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
   explicit InnerWebContentsAttachedWaiter(WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
-  void InnerWebContentsAttached(WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override {
+  void InnerWebContentsAttached(
+      WebContents* inner_web_contents,
+      content::RenderFrameHost* render_frame_host) override {
     run_loop_.Quit();
   }
 

@@ -210,8 +210,7 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void,
               InnerWebContentsAttached,
               (WebContents* inner_web_contents,
-               RenderFrameHost* render_frame_host,
-               bool is_full_page),
+               RenderFrameHost* render_frame_host),
               (override));
   MOCK_METHOD(void,
               DidCloneToNewWebContents,

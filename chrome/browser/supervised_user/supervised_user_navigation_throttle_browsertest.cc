@@ -152,41 +152,6 @@ void RenderFrameTracker::FrameDeleted(
   render_frame_hosts_.erase(frame_tree_node_id);
 }
 
-class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
- public:
-  explicit InnerWebContentsAttachedWaiter(content::WebContents* contents)
-      : content::WebContentsObserver(contents) {}
-  InnerWebContentsAttachedWaiter(const InnerWebContentsAttachedWaiter&) =
-      delete;
-  InnerWebContentsAttachedWaiter& operator=(
-      const InnerWebContentsAttachedWaiter&) = delete;
-  ~InnerWebContentsAttachedWaiter() override = default;
-
-  // content::WebContentsObserver:
-  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override;
-
-  void WaitForInnerWebContentsAttached();
-
- private:
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-};
-
-void InnerWebContentsAttachedWaiter::InnerWebContentsAttached(
-    content::WebContents* inner_web_contents,
-    content::RenderFrameHost* render_frame_host,
-    bool is_full_page) {
-  run_loop_.Quit();
-}
-
-void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
-  if (web_contents()->GetInnerWebContents().size() > 0u) {
-    return;
-  }
-  run_loop_.Run();
-}
-
 // Helper class to wait for a particular navigation in a particular render
 // frame in tests.
 class NavigationFinishedWaiter : public content::WebContentsObserver {
