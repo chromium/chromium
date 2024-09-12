@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/card/card.js';
-import 'chrome://resources/cros_components/menu/menu_item.js';
 import 'chrome://resources/mwc/@material/web/divider/divider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
@@ -13,6 +12,7 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-image.js';
 import './cra/cra-menu.js';
+import './cra/cra-menu-item.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
 
@@ -199,22 +199,24 @@ export class RecordingFileList extends ReactiveLitElement {
       @opened=${onMenuOpen}
       @closed=${onMenuClose}
     >
-      <cros-menu-item
+      <cra-menu-item
         headline=${i18n.recordingListSortByDateOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.DATE}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.DATE);
     }}
       >
-      </cros-menu-item>
-      <cros-menu-item
+      </cra-menu-item>
+      <cra-menu-item
         headline=${i18n.recordingListSortByNameOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.NAME}
+        data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
       this.onSortingTypeClick(RecordingSortType.NAME);
     }}
       >
-      </cros-menu-item>
+      </cra-menu-item>
     </cra-menu>`;
   }
 

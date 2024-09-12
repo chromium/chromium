@@ -724,6 +724,7 @@ export class PlaybackPage extends ReactiveLitElement {
         headline=${label}
         ?checked=${this.audioPlayer.playbackSpeed.value === speed}
         @cros-menu-item-triggered=${onClick}
+        data-role="menuitemradio"
       ></cra-menu-item>`;
     });
 
