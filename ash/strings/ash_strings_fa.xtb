@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2360398059912971776">باتری</translation>
 <translation id="2361210043495191221">‏روشن/خاموش کردن Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">جلوه‌های ظاهر</translation>
 <translation id="236574664504281623">ارسال‌شده از <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">‏نمی‌توان به سیستم Chromebook وارد شد</translation>
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">خاموش</translation>
 <translation id="3604801046548457007">میز <ph name="DESK_TITILE" /> ایجاد شد</translation>
 <translation id="3606978283550408104">نمایشگر بریل متصل شد.</translation>
+<translation id="3612634595000403645">اولویت‌های جلوه‌های ظاهر</translation>
 <translation id="3615926715408477684">فعال کردن داده تلفن همراه، بلوتوث را فعال می‌کند</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3616883743181209306">منو به گوشه چپ بالای صفحه منتقل شد.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">انتقال به انتهای کلمه بعدی</translation>
 <translation id="4146833061457621061">‏Play music (موسیقی پخش کن)</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
+<translation id="4151054805501931758">رتوش پرتره</translation>
 <translation id="4156293514828496577">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />).
 برخی‌از ویژگی‌ها برای افزایش عمر باتری محدود شده‌اند.</translation>
 <translation id="4160919062868802509">چند منبع صوتی شناسایی شد</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
 <translation id="482908187605862807">‏برنامه‌های موجود از «فروشگاه Play»</translation>
 <translation id="4831034276697007977">مطمئنید می‌خواهید کلیک‌های خودکار را خاموش کنید؟</translation>
+<translation id="4835677468087803981">پنهان کردن پین</translation>
 <translation id="4849058404725798627">برجسته کردن شیء با فوکوس صفحه‌کلید</translation>
 <translation id="485592688953820832">بی‌حرکت (مکث)</translation>
 <translation id="485634149294284819">وارد شدن به منوی صفحه‌کلید</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083035541015925118">مهار + دگرساز + بالابر</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
+<translation id="5091636240353511739">نمایش پین</translation>
 <translation id="5092436659250499817">روشن/ خاموش کردن نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="5094577350232361255">درباره</translation>
 <translation id="5095136268899496849">‫<ph name="PRODUCT_NAME" /> را در «تنظیمات» سفارشی‌سازی و شخصی‌سازی کنید. کاغذدیواری را عوض کنید یا محافظ صفحه تنظیم کنید.</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">دوربین به گوشه پایین سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="6605415194043280389">«تمرکز» روشن است.</translation>
+<translation id="660846213831377756">کلیدهای موشواره</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="6612802754306526077">حالت ضبط صفحه‌نمایش انتخاب شد</translation>
 <translation id="6612889377159412215">تکلیف فرعی</translation>
@@ -1968,6 +1974,7 @@
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7769299611924763557">‏فایل GIF شما به‌زودی آماده خواهد شد</translation>
 <translation id="7773536009433685931">‏روشن کردن Wi-Fi</translation>
+<translation id="77747521138552256">تلاش‌های ناموفق خیلی زیادی برای وارد کردن پین داشته‌اید. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره پین را وارد کنید، یا گذرواژه را وارد کنید تا بی‌درنگ به سیستم وارد شوید.</translation>
 <translation id="7780094051999721182">میان‌برها</translation>
 <translation id="7780159184141939021">چرخاندن صفحه</translation>
 <translation id="7781829728241885113">دیروز</translation>

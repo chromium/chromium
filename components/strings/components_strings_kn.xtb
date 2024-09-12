@@ -711,6 +711,7 @@
 <translation id="2265356434276802347">ಈ ನೀತಿಯು <ph name="MAX_ITEMS_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಫೀಚರ್ ಮಾಡಿದ ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ.</translation>
 <translation id="2267047181501709434">ನಿಮ್ಮ ಗುರುತನ್ನು ದೃಢೀಕರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2268044343513325586">ಪರಿಷ್ಕರಿಸು</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> ನಿಮಿಷದಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2270484714375784793">ಫೋನ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2276057643614339130">ಪ್ರಿಂಟ್ ಬೇಸ್</translation>
 <translation id="2277103315734023688">ಮುಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ...</translation>
 <translation id="306573536155379004">ಗೇಮ್ ಪ್ರಾರಂಭವಾಗಿದೆ.</translation>
 <translation id="3067505415088964188">ಕಡಿಮೆ ದರ</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ 1 ನಿಮಿಷದಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="3076865167425975822">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="3080254622891793721">ಗ್ರಾಫಿಕ್</translation>
 <translation id="3082007635241601060">ಲಭ್ಯವಿರುವ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">(<ph name="CAMERAS_COUNT" />) ಲಭ್ಯವಿರುವ ಕ್ಯಾಮರಾಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="3102312643185441063">ಉಳಿತಾಯ</translation>
 <translation id="3103188521861412364">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
+<translation id="3103535543639438037">ಒಂದೇ ರೀತಿಯ ಉತ್ಪನ್ನಗಳನ್ನು ಅಕ್ಕಪಕ್ಕದಲ್ಲಿ ಹೋಲಿಕೆ ಮಾಡಿ</translation>
 <translation id="3105172416063519923">ಅಸೆಟ್ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ಸುರಕ್ಷಿತ DNS ಕಾನ್ಫಿಗರೇಶನ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ಮಧ್ಯಭಾಗದ ಟ್ರೇ</translation>
@@ -1296,6 +1299,7 @@
 <translation id="3407789382767355356">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್</translation>
 <translation id="340924996148642843">ಹೋಲಿಕೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3409896703495473338">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> ಗಂಟೆಯಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="3414275587143250384">ಡಿಸ್ಟ್ರಿಬ್ಯೂಟೆಡ್ ಮತ್ತು ಕ್ಲೌಡ್ ಕಂಪ್ಯೂಟಿಂಗ್</translation>
 <translation id="3414952576877147120">ಗಾತ್ರ:</translation>
 <translation id="341513675006332771">Chrome Dino ಗೇಮ್ ಆಡಿ ಬಟನ್, Chrome ನಲ್ಲಿ Dino Run ಗೇಮ್ ಅನ್ನು ಆಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -1962,6 +1966,7 @@
 <translation id="4628678854894591460">ರಜೆ ಆಫರ್‌ಗಳು</translation>
 <translation id="4628948037717959914">ಫೋಟೋ</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡುವಿಕೆ <ph name="HOURS" /> ಗಂಟೆಗಳಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="4631649115723685955">ಕ್ಯಾಶ್‌ಬ್ಯಾಕ್ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4631881646528206880">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನೋಂದಣಿ</translation>
 <translation id="4635278307999235413">ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್‌ಗೆ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -2082,6 +2087,7 @@
 <translation id="484988093836683706">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4854853140771946034">Google Keep ನಲ್ಲಿ ಹೊಸ ಟಿಪ್ಪಣಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
+<translation id="4855395119669662878">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ <ph name="DATE_TIME" /> ರಂದು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸುತ್ತಾರೆ. ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಂಪರ್ಕದಲ್ಲಿರಿಸಿ. ಅಪ್‌ಲೋಡ್‌ ಮಾಡುವ ಸಮಯದಲ್ಲಿ, ನೀವು ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳನ್ನು ಮಾತ್ರ ಓದಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="485902285759009870">ಕೋಡ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4860260582253463350">YouTube ಗೆ ಮುಂದುವರಿಯಲು, ಇದು ನೀವೇ ಎಂದು ನಾವು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಬೇಕು. Family Link ನಲ್ಲಿ ನಿಮ್ಮ ಪೋಷಕರು ಸೆಟಪ್‌ ಮಾಡಿರುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="4864406669374375262">ಆವೃತ್ತಿಯ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
@@ -2137,6 +2143,7 @@
 <translation id="4933468175699107356">ಯಾವುದೇ ಫಾರ್ಮ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರು ಅಥವಾ ವಿಳಾಸದಂತಹ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4934780484581617878">ವಿಂಡೋ ನಿರ್ವಹಣೆ</translation>
 <translation id="4936134414789135531">ಸೇರಿಸಲಾದ <ph name="VALUE_NAME" /> ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ 1 ಗಂಟೆಯಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="4936675324097895694">ಹಣಕಾಸು</translation>
 <translation id="4943620199112228840">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
@@ -2310,6 +2317,7 @@
 <translation id="5269225904387178860">ಕೆಳಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ಗೆ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ಬೆಂಬಲಿತ ಸ್ಥಿತಿಯಲ್ಲ</translation>
 <translation id="5273658854610202413">ಎಚ್ಚರಿಕೆ: ಈ ಕಾರ್ಯನೀತಿಯನ್ನು PolicyDictionaryMultipleSourceMergeList ಕಾರ್ಯನೀತಿಯಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಿರುವಂತೆ ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ವಿಲೀನಗೊಳಿಸಬಹುದಾದ ನಿಘಂಟಿನ ಕಾರ್ಯನೀತಿಗಳ ಭಾಗವಾಗಿಲ್ಲ.</translation>
+<translation id="5278778426231952189">ಇದೀಗ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5279286380302340275">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ಡಾಕ್ಯುಮೆಂಟ್‌ ಗುಣಲಕ್ಷಣಗಳು</translation>
@@ -3733,6 +3741,7 @@
 <translation id="7887683347370398519">ನಿಮ್ಮ CVC ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7887885240995164102">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ಗೆ ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7888575728750733395">ಪ್ರಿಂಟ್ ಸಲ್ಲಿಕೆ ಉದ್ದೇಶ</translation>
+<translation id="7890748547282909375">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಸೇವ್‌ ಮಾಡಲು Microsoft OneDrive ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7894280532028510793">ಕಾಗುಣಿತ ಸರಿಯಾಗಿದ್ದರೆ, <ph name="BEGIN_LINK" />ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌‌ ರನ್ ಮಾಡಿ ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">ಎನ್ವಲಪ್ 7 x 9 ಇಂಚು</translation>
 <translation id="7905064834449738336">ಪಾಸ್‌ವರ್ಡ್ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟವಾಗಿದ್ದರೆ, ನೀವು ಅದನ್ನು ಬಳಸುವಾಗ Chromium ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. ಇದನ್ನು ಮಾಡುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
@@ -3811,6 +3820,7 @@
 <translation id="8030729864112325446">ವೃತ್ತಿಪರ ಮತ್ತು ನಿರಂತರ ವಿದ್ಯಾಭ್ಯಾಸ</translation>
 <translation id="8032546467100845887">ಪಾರದರ್ಶಕತೆ</translation>
 <translation id="8035152190676905274">ಪೆನ್</translation>
+<translation id="8035264638816032066">ನೀವು ಟೇಬಲ್‌ಗೆ ಸೇರಿಸುವ ಪುಟಗಳ ಟ್ಯಾಬ್ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="8037117624646282037">ಸಾಧನವನ್ನು ಇತ್ತೀಚೆಗೆ ಯಾರೆಲ್ಲಾ ಬಳಸಿದ್ದಾರೆ</translation>
 <translation id="8037357227543935929">ಕೇಳಿ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="803771048473350947">ಫೈಲ್</translation>
@@ -4111,6 +4121,7 @@
 <translation id="8564466070529550495">ವರ್ಚುವಲ್‌ ಕಾರ್ಡ್‌ ಇದೀಗ ಲಭ್ಯವಿಲ್ಲ, ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8564985650692024650">ನೀವು ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಿದ್ದಲ್ಲಿ ನಿಮ್ಮ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ಪಾಸವರ್ಡ್ ಅನ್ನು ಮರುಹೊಂದಿಸಲು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="8570895683659698018">ಹವ್ಯಾಸಗಳು ಮತ್ತು ವಿರಾಮ</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> ವರೆಗೆ ಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="8574841453995331336">ರೆಫ್ರಿಜರೇಟರ್‌ಗಳು ಮತ್ತು ಫ್ರೀಝರ್‌ಗಳು</translation>
 <translation id="8577192028579836704">ಎಲ್ಲಾ ಆಯ್ಕೆಗಳು ಸಾಮಾನ್ಯವಾಗಿ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -4133,6 +4144,7 @@
 <translation id="8617269623452051934">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
 <translation id="861775596732816396">ಗಾತ್ರ 4</translation>
 <translation id="8620276786115098679">ಎನ್ವಲಪ್ ಕಾಕು 7</translation>
+<translation id="8622864575115813231">ನಿಮ್ಮ ಹಣಕಾಸು ಸಂಸ್ಥೆಯನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8623885649813806493">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯಾಗುವಂತಹ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ. ಉಳಿಸಿದ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ.</translation>
 <translation id="8624354461147303341">ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="8634957317623797170">54 x 86 ಮಿಮೀ</translation>
@@ -4431,6 +4443,7 @@
 <translation id="9192361865877479444">ಲೋಹ (ಮ್ಯಾಟ್)</translation>
 <translation id="9192947025498305328">ಕ್ಲೀನ್ ಬ್ಯೂಟಿ</translation>
 <translation id="9199905725844810519">ಪ್ರಿಂಟಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="9204089334327209740">ಒಮ್ಮೆ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ನೀವು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಮಾರ್ಪಡಿಸಬಹುದು. ಟ್ರ್ಯಾಶ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="9205078245616868884">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="920643408853370361">ಪ್ರಯಾಣ ವಿಮೆ</translation>
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
@@ -4451,6 +4464,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:<ph name="END_BOLD" /> ನಿಮ್ಮ ಆ್ಯಡ್ ವಿಷಯವು ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸಿಕೊಂಡು ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಆಧರಿಸಿವೆ.</translation>
 <translation id="937885410143139026">ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್‌ಗೆ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡುವಿಕೆ <ph name="MINUTES" /> ನಿಮಿಷಗಳಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="944540589955480312">ನನ್ನ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="945646848072568856">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಕ್ಕೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ Chrome ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
 <translation id="945855313015696284">ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಯಾವುದೇ ಅಮಾನ್ಯ ಕಾರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>

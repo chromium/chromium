@@ -1109,6 +1109,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
 <translation id="482908187605862807">Aplikacje dostępne w Sklepie Play</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
+<translation id="4835677468087803981">Ukryj kod PIN</translation>
 <translation id="4849058404725798627">Podświetlaj obiekt wybrany za pomocą klawiatury</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
 <translation id="485634149294284819">Otwórz menu klawiatury</translation>
@@ -1191,6 +1192,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strzałka w górę</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
+<translation id="5091636240353511739">Pokaż kod PIN</translation>
 <translation id="5092436659250499817">Włącz/wyłącz podświetlenie klawiatury</translation>
 <translation id="5094577350232361255">informacje</translation>
 <translation id="5095136268899496849">Jeśli chcesz spersonalizować swoje urządzenie <ph name="PRODUCT_NAME" />, otwórz Ustawienia. Możesz na przykład zmienić tapetę albo ustawić wygaszacz ekranu.</translation>
@@ -1358,6 +1360,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
 <translation id="5632485077360054581">Pokaż jak</translation>
+<translation id="5633826232582408011">Gdy włączysz funkcje Pomóż mi pisać i Pomóż mi czytać, wpisany tekst, zawartość dokumentu i adres URL strony internetowej będą wysyłane na serwery AI od Google w celu generowania propozycji tekstu, tworzenia podsumowań, odpowiadania na pytania i ulepszania usługi, tak jak na to pozwalają <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="5648021990716966815">Gniazdo mikrofonu</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> wymaga Twojej reakcji.</translation>
 <translation id="5662075790140998213">Biurko 10</translation>
@@ -1643,6 +1646,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Podgląd z kamery został przyciągnięty do lewego dolnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="6605415194043280389">Tryb skupienia jest włączony</translation>
+<translation id="660846213831377756">Klawisze myszy</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6612802754306526077">Wybrano tryb nagrywania ekranu</translation>
 <translation id="6612889377159412215">zadanie podrzędne</translation>

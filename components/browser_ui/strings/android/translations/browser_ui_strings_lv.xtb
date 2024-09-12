@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Atļaut vietnēm izmantot JavaScript (ieteicams)</translation>
 <translation id="534295439873310000">NFC ierīces</translation>
 <translation id="5344522958567249764">Pārvaldīt reklāmu konfidencialitāti</translation>
+<translation id="5373874281522292782">Jūsu ciļņu grupas ir saglabātas</translation>
 <translation id="5389626883706033615">Vietnēm ir liegts lūgt atļauju izmantot informāciju, kas tajās ir saglabāta par jums</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(un vēl 1)}zero{(un vēl #)}one{(un vēl #)}other{(un vēl #)}}</translation>
 <translation id="5403592356182871684">Nosaukumi</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Aktīvas lejupielādes</translation>
 <translation id="6709432001666529933">Vaicāt, pirms atļaut vietnēm izsekot jūsu roku kustības (ieteicams)</translation>
 <translation id="6722828510648505498">Bloķēt identitātes pakalpojumu pierakstīšanās uzvednes.</translation>
+<translation id="6729704574271585059">Jūsu izveidotās grupas tiek saglabātas ciļņu grupu sadaļā un atjauninātas visās jūsu ierīcēs.</translation>
 <translation id="6746124502594467657">Pārvietot uz leju</translation>
 <translation id="6749077623962119521">Vai atiestatīt atļaujas?</translation>
 <translation id="6766622839693428701">Velciet uz leju, lai aizvērtu.</translation>

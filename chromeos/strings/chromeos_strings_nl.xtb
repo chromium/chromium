@@ -259,6 +259,7 @@
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
 <translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
+<translation id="2197185031095816179">Met een beveiligingsreset kun je ongewenste pop-ups verwijderen, netwerkproblemen oplossen en andere onverwachte problemen aanpakken.</translation>
 <translation id="2201758491318984023">fiets</translation>
 <translation id="2203272733515928691">warmwaterbron</translation>
 <translation id="2203642483788377106">klif</translation>
@@ -537,6 +538,7 @@
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="382043424867370667">Achtergrond Zonsondergang</translation>
 <translation id="3824259034819781947">Bestanden bijvoegen</translation>
+<translation id="3836587210832263413">Zet alleen extensies aan die je vertrouwt</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3845880861638660475">Druk op <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> om het dialoogvenster te sluiten.</translation>
 <translation id="3848280697030027394">toetsenbord donkerder maken</translation>
@@ -626,6 +628,7 @@
 <translation id="4251839292699800785">Stijlvol kantoor</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
 <translation id="4266143281602681663">garen</translation>
+<translation id="4269815121975886860">Startvoorkeuren</translation>
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Sneltoets wordt gebruikt voor <ph name="CONFLICT_ACCEL_NAME" />. Bewerk of verwijder dit om het conflict op te lossen.</translation>
@@ -760,6 +763,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware voor <ph name="DEVICE_NAME" /> is geüpdatet naar versie <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">boomtunnel</translation>
+<translation id="4965661459364092269">De beveiligingsreset is afgerond</translation>
 <translation id="4965703485264574128">Vermenigvuldig de waarde voor <ph name="CATEGORY_TEXT" /> met <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="4969079779290789265">Splitsen</translation>
 <translation id="4972592110715526173">modus wijzigen</translation>
@@ -820,6 +824,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">Een <ph name="SIMPLE_STYLE" /> boekenplank in een <ph name="SIMPLE_TONE" /> ruimte</translation>
 <translation id="5257811368506016604">Modus voor lichte kleuren aanzetten</translation>
+<translation id="5261479807286543505">Startinstellingen</translation>
 <translation id="5264277876637023664">CPU-test doen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN staat uit.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
 <translation id="6831043979455480757">Vertalen</translation>
+<translation id="6846843854964504403">Beveiligingsreset</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6862416241246624313">Feedback ingediend</translation>
 <translation id="6866732840889595464">madeliefje</translation>
@@ -1315,6 +1321,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7746357909584236306">bewerkbaar</translation>
 <translation id="7747039790905080783">Eerder gedeelde sleutel</translation>
 <translation id="7752963721013053477">Dageraad tot donker - exclusief</translation>
+<translation id="7760571082554155847">Homepage-instellingen</translation>
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
@@ -1355,6 +1362,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
 <translation id="7943516765291457328">Zet bluetooth aan om te scannen naar hotspots in de buurt</translation>
+<translation id="7944482598620888754">Sitecontent</translation>
 <translation id="7944562637040950644">achtergrondverlichting van toetsenbord aan- of uitzetten</translation>
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
@@ -1391,6 +1399,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
+<translation id="8135609423982943441">Je Chromebook is teruggezet naar veilige standaardinstellingen. Je kunt deze wijzigingen altijd aanpassen via Instellingen.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
 <translation id="8151185429379586178">Ontwikkelaarstools</translation>
@@ -1420,6 +1429,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8291967909914612644">Land thuisprovider</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
+<translation id="8308787307410010965">Instellingen voor sitecontent</translation>
 <translation id="8312330582793120272">media afspelen</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
 <translation id="8320910311642849813">bos</translation>
@@ -1618,6 +1628,8 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="951780398843003443">De stemmen in de hele opname vergelijken zodat het transcript aangeeft wat elke spreker heeft gezegd en wanneer</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
 <translation id="95718197892796296">klei</translation>
+<translation id="959792926760890141">De beveiligingsreset zet Chrome-browserextensies uit en zet netwerk- en andere instellingen terug naar veilige standaardwaarden.
+          Je standaardzoekmachine wordt gereset, maar je tabbladen, bestanden, cookies en geschiedenis worden niet gewijzigd.</translation>
 <translation id="960719561871045870">Operatorcode</translation>
 <translation id="965918541715156800">geel en groenblauw</translation>
 <translation id="966787709310836684">menu</translation>

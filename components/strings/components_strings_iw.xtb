@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">שתי כנפיים בקיפול</translation>
 <translation id="2891963978019740012">‏מנוע החיפוש שלך ב-Chrome</translation>
 <translation id="2893773853358652045">הגליל הרביעי</translation>
+<translation id="2894137550885451583">אלה המחירים ב-<ph name="CURRENCY" /> למוצר <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">יצירת אירוע</translation>
 <translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2903493209154104877">כתובות</translation>
@@ -1608,6 +1609,7 @@
 <translation id="3949601375789751990">היסטוריית הגלישה שלך מופיעה כאן</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">אין אמצעי תשלום שמורים</translation>
+<translation id="3950560191811267370">הגיליון התחתון של המסחר סגור</translation>
 <translation id="3950574001630941635">הפעלה מחדש של המדריך</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3953505489397572035">זהו המחיר הרגיל</translation>
@@ -2350,6 +2352,7 @@ Del</translation>
 <translation id="5331585574693522196">הגדרה כברירת המחדל</translation>
 <translation id="5332219387342487447">שיטת משלוח</translation>
 <translation id="5332769172018416402">בקשה בהודעה</translation>
+<translation id="533323551986281710">הגיליון התחתון של המסחר נפתח בגובה מלא</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5334145288572353250">לשמור את הכתובת?</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
@@ -2533,6 +2536,7 @@ Del</translation>
 <translation id="5675650730144413517">הדף הזה לא עובד</translation>
 <translation id="5675809467256309336">מוזיקת דאנס ומוזיקה אלקטרונית</translation>
 <translation id="5675959228867414813">הצגה לפי תאריך</translation>
+<translation id="567604591393105935">הגיליון התחתון של המסחר נפתח בחצי מגובה המסך</translation>
 <translation id="5677928146339483299">חסום</translation>
 <translation id="5678007133659493065">Foil</translation>
 <translation id="5680642791693447368">סרטי מתח, פשע ומסתורין</translation>
@@ -3440,6 +3444,7 @@ Del</translation>
 <translation id="7374733840632556089">‏הבעיה הזו מתרחשת בגלל אישור שהותקן במכשיר על ידך או על ידי מישהו אחר. האישור הזה מוכר כאישור שמשמש לצורך מעקב אחרי רשתות ויירוט נתונים מרשתות, והוא לא נחשב כמהימן על ידי Chrome. במקרים מסוימים מתבצע מעקב מסיבות לגיטימיות, כמו במוסדות חינוך או ברשתות של חברות, אך Chrome רוצה לוודא שהמעקב מתבצע בידיעתך גם אם אין לך אפשרות לעצור אותו. המעקב עשוי להתבצע בכל דפדפן או אפליקציה שניגשים לאינטרנט.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{אין אתרים עם הרשאה}=1{יש אתר אחד עם הרשאה}one{יש # אתרים עם הרשאה}two{יש # אתרים עם הרשאה}other{יש # אתרים עם הרשאה}}</translation>
 <translation id="7375818412732305729">מצורף קובץ</translation>
+<translation id="7376031331622621328">גיליון תחתון של מסחר</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">תעשיית המלונאות והאירוח</translation>
 <translation id="7378594059915113390">פקדי מדיה</translation>

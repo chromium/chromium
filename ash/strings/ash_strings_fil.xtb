@@ -374,6 +374,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360398059912971776">baterya</translation>
 <translation id="2361210043495191221">I-toggle ang Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Mga appearance effect</translation>
 <translation id="236574664504281623">Ipinadala mula sa <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Hindi makapag-sign in sa iyong Chromebook</translation>
 <translation id="2367972762794486313">Ipakita ang apps</translation>
@@ -734,6 +735,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3600061223661453002">I-off</translation>
 <translation id="3604801046548457007">Ginawa ang Desk <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Nagkonekta ng braille display.</translation>
+<translation id="3612634595000403645">Mga preference sa mga appearance effect</translation>
 <translation id="3615926715408477684">Kapag na-enable ang mobile data, mae-enable din ang Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Inilipat ang menu sa kanang sulok sa itaas ng screen.</translation>
@@ -894,6 +896,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4146671046252289537">Pumunta sa dulo ng susunod na salita</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4151054805501931758">Pag-touch up ng portrait</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% na lang ang baterya (humigit-kumulang <ph name="TIME_LEFT" />).
 Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4160919062868802509">Na-detect ang maraming source ng audio</translation>
@@ -1106,6 +1109,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
 <translation id="482908187605862807">Mga available na app mula sa Play Store</translation>
 <translation id="4831034276697007977">Sigurado ka bang gusto mong i-off ang mga awtomatikong pag-click?</translation>
+<translation id="4835677468087803981">I-hide ang PIN</translation>
 <translation id="4849058404725798627">I-highlight ang bagay sa pamamagitan ng pag-focus ng keyboard</translation>
 <translation id="485592688953820832">Walang pagkilos (i-pause)</translation>
 <translation id="485634149294284819">Menu na maglagay ng keyboard</translation>
@@ -1188,6 +1192,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + pataas na arrow</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
+<translation id="5091636240353511739">Ipakita ang PIN</translation>
 <translation id="5092436659250499817">I-on/i-off ang backlight ng keyboard</translation>
 <translation id="5094577350232361255">tungkol sa</translation>
 <translation id="5095136268899496849">I-customize at i-personalize ang iyong <ph name="PRODUCT_NAME" /> sa Mga Setting. Subukang palitan ang iyong wallpaper o magtakda ng screen saver.</translation>
@@ -1641,6 +1646,7 @@ Kaka-install lang</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Nag-snap ang camera sa kaliwang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
 <translation id="6605415194043280389">Naka-on ang Pag-focus</translation>
+<translation id="660846213831377756">Mga mouse key</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="6612802754306526077">Pinili ang screen recording mode</translation>
 <translation id="6612889377159412215">subtask</translation>
@@ -1967,6 +1973,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Handa na ang iyong GIF sa ilang sandali</translation>
 <translation id="7773536009433685931">I-on na lang ang WiFi</translation>
+<translation id="77747521138552256">Masyado nang maraming pagsubok sa PIN. Maghintay nang <ph name="TIME_LEFT" /> at subukan ulit ang PIN, o ilagay ang password para makapag-sign in kaagad.</translation>
 <translation id="7780094051999721182">mga shortcut</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
 <translation id="7781829728241885113">Kahapon</translation>

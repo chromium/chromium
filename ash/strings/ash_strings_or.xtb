@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ</translation>
 <translation id="482908187605862807">Play Storeରେ ଉପଲବ୍ଧ ଥିବା ଆପ୍ସ</translation>
 <translation id="4831034276697007977">ଆପଣ ସ୍ୱଚାଳିତ କ୍ଲିକ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
+<translation id="4835677468087803981">PIN ଲୁଚାନ୍ତୁ</translation>
 <translation id="4849058404725798627">କୀ'ବୋର୍ଡ ଫୋକସ୍ ମାଧ୍ୟମରେ ବସ୍ତୁକୁ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="485592688953820832">କୌଣସି ପଦକ୍ଷେପ ନାହିଁ (ବିରତ କରନ୍ତୁ)</translation>
 <translation id="485634149294284819">କୀବୋର୍ଡ ମେନୁରେ ଏଣ୍ଟର କରନ୍ତୁ</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
 <translation id="5083035541015925118">ctrl + alt + ଅପ ତୀର</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
+<translation id="5091636240353511739">PIN ଦେଖାନ୍ତୁ</translation>
 <translation id="5092436659250499817">କୀବୋର୍ଡ ବେକଲାଇଟକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5094577350232361255">ବିଷୟରେ</translation>
 <translation id="5095136268899496849">ସେଟିଂସରେ ଆପଣଙ୍କ <ph name="PRODUCT_NAME" />କୁ କଷ୍ଟମାଇଜ ଏବଂ ପର୍ସନାଲାଇଜ କରନ୍ତୁ। ଆପଣଙ୍କ ୱାଲପେପର ପରିବର୍ତ୍ତନ କରିବାକୁ କିମ୍ବା ଏକ ସ୍କ୍ରିନ ସେଭର ସେଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1640,6 +1642,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="6605415194043280389">ଫୋକସ ମୋଡ ଚାଲୁ ଅଛି</translation>
+<translation id="660846213831377756">ମାଉସ କୀଗୁଡ଼ିକ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="6612802754306526077">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6612889377159412215">ସବଟାସ୍କ</translation>
@@ -2299,6 +2302,7 @@
 <translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="8939855324412367560">ଇନପୁଟ ଅଡିଓ ହେଉଛି "<ph name="INPUT_DEVICE_NAME" />" ଏବଂ ଆଉଟପୁଟ ଅଡିଓ ହେଉଛି "<ph name="OUTPUT_DEVICE_NAME" />"। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="8940956008527784070">ବ୍ୟାଟେରୀ କମ୍ ଅଛି (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ଷ୍ଟୁଡିଓ-ଷ୍ଟାଇଲ ମାଇକ</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ଚେକବକ୍ସକୁ ଟିକ କରାଯାଇନାହିଁ।</translation>
 <translation id="8949925099261528566">କନେକ୍ଟ ହୋଇଛି, ଇଣ୍ଟରନେଟ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="8951539504029375108">ଆପଣଙ୍କ Chromebook ସହ କେବଳ ଅନୁମୋଦିତ Thunderbolt ଡିଭାଇସଗୁଡ଼ିକ ସୁସଙ୍ଗତ ଅଟେ</translation>

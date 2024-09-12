@@ -259,6 +259,7 @@
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2189104374785738357">APN-н дэлгэрэнгүйг засах</translation>
 <translation id="2195732836444333448">Ачаалалтай байна. Удахгүй эргэн ирээрэй.</translation>
+<translation id="2197185031095816179">Аюулгүй байдлын шинэчлэлт хүсээгүй попапыг хасах, сүлжээний асуудлыг засах болон бусад гэнэтийн асуудлыг шийдвэрлэхэд туслах боломжтой.</translation>
 <translation id="2201758491318984023">унадаг дугуй</translation>
 <translation id="2203272733515928691">халуун рашаан</translation>
 <translation id="2203642483788377106">цохио</translation>
@@ -537,6 +538,7 @@
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="382043424867370667">Нар жаргахыг харуулсан дэлгэцийн зураг</translation>
 <translation id="3824259034819781947">Файлууд хавсаргах</translation>
+<translation id="3836587210832263413">Зөвхөн итгэдэг өргөтгөлүүдээ асаана уу</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="3845880861638660475">Харилцах цонхыг хаахын тулд <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> дээр дарна уу.</translation>
 <translation id="3848280697030027394">гарыг бараан болгох</translation>
@@ -626,6 +628,7 @@
 <translation id="4251839292699800785">Загварлаг оффис</translation>
 <translation id="4258281355379922695">HTTP-н хоцролт</translation>
 <translation id="4266143281602681663">ноосон утас</translation>
+<translation id="4269815121975886860">Эхлэх сонголт</translation>
 <translation id="4271957103967917607">Бүтэн дэлгэцээр үзэх</translation>
 <translation id="4275663329226226506">Медиа</translation>
 <translation id="4278766082079064416">Товчлолыг "<ph name="CONFLICT_ACCEL_NAME" />"-д ашиглаж байна. Зөрчлийг шийдвэрлэхийн тулд засах эсвэл хасна уу.</translation>
@@ -760,6 +763,7 @@
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> жижиг программыг <ph name="VERSION" /> хувилбар луу шинэчилсэн байна</translation>
 <translation id="4950893758552030541">модон хонгил</translation>
+<translation id="4965661459364092269">Аюулгүй байдлын шинэчлэлтийг дуусгасан</translation>
 <translation id="4965703485264574128">Ойролцоо дүн гаргахын тулд <ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-р үржүүлнэ үү</translation>
 <translation id="4969079779290789265">Хуваах</translation>
 <translation id="4972592110715526173">горим өөрчлөх</translation>
@@ -820,6 +824,7 @@
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> өрөөн дэх <ph name="SIMPLE_STYLE" /> номын тавиур</translation>
 <translation id="5257811368506016604">Цайвар өнгөний горимыг идэвхжүүлэх</translation>
+<translation id="5261479807286543505">Эхлэх тохиргоо</translation>
 <translation id="5264277876637023664">Төв процессорын нэгжийн туршилтыг ажиллуулах</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN-г идэвхгүй болгосон.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
+<translation id="6846843854964504403">Аюулгүй байдлын шинэчлэлт</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6862416241246624313">Санал хүсэлт илгээсэн</translation>
 <translation id="6866732840889595464">хонин нүдэн цэцэг</translation>
@@ -1315,6 +1321,7 @@
 <translation id="7746357909584236306">засах боломжтой</translation>
 <translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7752963721013053477">Үүр цайхаас шөнө хүртэл - онцгой</translation>
+<translation id="7760571082554155847">Нүүр хуудасны тохиргоо</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943235353293548836">Тогтмол keepalive интервал</translation>
 <translation id="7943516765291457328">Ойролцоох сүлжээний цэгүүд байгаа эсэхийг скан хийхийн тулд Bluetooth-г асаана уу</translation>
+<translation id="7944482598620888754">Сайтын контент</translation>
 <translation id="7944562637040950644">гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="7953669802889559161">Оролт</translation>
 <translation id="7955587717700691983">Bluetooth гар</translation>
@@ -1391,6 +1399,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8132480444149501833">Ачаалал тоологчийн хүсэлт тавих</translation>
+<translation id="8135609423982943441">Таны Chromebook-г аюулгүй өгөгдмөл рүү шинэчилсэн. Та эдгээр өөрчлөлтийг Тохиргоонд хүссэн үедээ тохируулах боломжтой.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />-г сонгох</translation>
 <translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
@@ -1420,6 +1429,7 @@
 <translation id="8291967909914612644">Нүүр хуудас бэлтгэх хост</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
 <translation id="8302368968391049045">HTTPS галт хана</translation>
+<translation id="8308787307410010965">Сайтын контентын тохиргоо</translation>
 <translation id="8312330582793120272">медиаг тоглуулах</translation>
 <translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8320910311642849813">ой мод</translation>
@@ -1618,6 +1628,8 @@
 <translation id="951780398843003443">Бичлэгийн туршид дуу хоолойг харьцуулснаар яригч бүр хэзээ, юу гэж хэлснийг сийрүүлэгт тусгана</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="95718197892796296">шавар</translation>
+<translation id="959792926760890141">Аюулгүй байдлын шинэчлэлт Chrome хөтчийн өргөтгөлүүдийг унтрааж, сүлжээ болон бусад тохиргоог аюулгүй өгөгдмөл рүү шинэчилнэ.
+          Таны өгөгдмөл хайлтын системийг шинэчлэх хэдий ч таб, файл, күүки, түүхийг өөрчлөхгүй.</translation>
 <translation id="960719561871045870">Операторын код</translation>
 <translation id="965918541715156800">шар, усан цэнхэр</translation>
 <translation id="966787709310836684">цэс</translation>

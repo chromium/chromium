@@ -224,6 +224,7 @@
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium 是由「<ph name="MANAGER" />」管理</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
+<translation id="4470974262661801543">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請輸入通關密語</translation>
 <translation id="4493028449971051158">啟動錯誤：請以系統管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">安裝失敗，因為這個國家/地區設有存取限制。</translation>
 <translation id="4510853178268397146">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chromium 建議你移除。</translation>

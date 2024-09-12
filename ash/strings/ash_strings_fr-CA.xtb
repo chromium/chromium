@@ -374,6 +374,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360398059912971776">pile</translation>
 <translation id="2361210043495191221">Activer ou désactiver le Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Effets d'apparence</translation>
 <translation id="236574664504281623">Envoyé à partir de <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Impossible de se connecter à votre Chromebook</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
@@ -734,6 +735,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3600061223661453002">Désactivé</translation>
 <translation id="3604801046548457007">Bureau <ph name="DESK_TITILE" /> créé</translation>
 <translation id="3606978283550408104">L'afficheur braille est connecté.</translation>
+<translation id="3612634595000403645">Préférences des effets d'apparence</translation>
 <translation id="3615926715408477684">L'activation des données cellulaires activera le Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Le menu a été déplacé vers le coin supérieur droit de l'écran.</translation>
@@ -894,6 +896,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4146671046252289537">Aller à la fin du mot suivant</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4150201353443180367">Affichage</translation>
+<translation id="4151054805501931758">Retouche de portrait</translation>
 <translation id="4156293514828496577">Il reste <ph name="PERCENTAGE" /> % de pile (environ <ph name="TIME_LEFT" />). Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la pile.</translation>
 <translation id="4160919062868802509">Plusieurs sources audio détectées</translation>
 <translation id="4165275524535002941">Le câble peut ne pas être compatible avec les écrans</translation>
@@ -1105,6 +1108,7 @@ Un appareil connecté.</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="482908187605862807">Applications offertes dans la boutique Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
+<translation id="4835677468087803981">Masquer le NIP</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="485634149294284819">Entrez le clavier du menu</translation>
@@ -1187,6 +1191,7 @@ Un appareil connecté.</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083035541015925118">ctrl+alt+flèche vers le haut</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
+<translation id="5091636240353511739">Afficher le NIP</translation>
 <translation id="5092436659250499817">Activer ou désactiver le rétroéclairage du clavier</translation>
 <translation id="5094577350232361255">à propos de</translation>
 <translation id="5095136268899496849">Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Essayez de modifier votre fond d'écran ou de définir un écran de veille.</translation>
@@ -1640,6 +1645,7 @@ Nouvelle installation</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Caméra alignée sur le coin inférieur gauche. Conflit avec la surface du système.</translation>
 <translation id="6605415194043280389">Le mode Sans distractions est activé</translation>
+<translation id="660846213831377756">Touches de la souris</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistrement de l'écran sélectionné</translation>
 <translation id="6612889377159412215">sous-tâche</translation>
@@ -1967,6 +1973,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7773536009433685931">Activez plutôt le Wi-Fi</translation>
+<translation id="77747521138552256">Trop de tentatives de saisie du NIP. Attendez <ph name="TIME_LEFT" /> et réessayez de saisir le NIP, ou saisissez le mot de passe pour vous connecter immédiatement.</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7781829728241885113">Hier</translation>

@@ -3472,6 +3472,7 @@ Si estableces esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Inhabilitar los informes de la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por app</translation>
+<translation id="3546260240984542017">Conservar espacios en blanco para todos los tipos de MIME</translation>
 <translation id="3546271546272655966">Se puede usar <ph name="DBSC_FEATURE_NAME" /> según el proceso de lanzamiento de la función.</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3548064438634502368">Cerrar navegadores</translation>
@@ -4279,6 +4280,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4140646780789794190">Inhabilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
 <translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Hacer que el Modo de escritorio unificado esté disponible para el usuario</translation>
+<translation id="4146319954420095470">(Advertencia: Pronto se descartará esta dependencia, comienza a usar <ph name="GLS_POLICY_NAME" /> en su lugar). Si estableces esta política como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps para Android y los servicios del sistema <ph name="PRODUCT_OS_NAME" /> no podrán acceder a la información de ubicación. Si estableces esta política con cualquier otro valor o no la estableces, el usuario deberá dar su consentimiento cada vez que una app para Android quiera acceder a la información de ubicación.</translation>
 <translation id="4147818922357566987">Habilitar solo variaciones relacionadas con correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4154221011709068799">Inhabilitar dispositivos de almacenamiento externo</translation>
@@ -8463,6 +8465,7 @@ administrador de contraseñas integrado.
 Esta política no afecta a los administradores de contraseñas de terceros que usan
 APIs de accesibilidad.</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
+<translation id="7115684775550072082">Solo conservar espacios en blanco para los tipos de MIME de texto y XML</translation>
 <translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
       Permite que el usuario acceda a <ph name="PRODUCT_NAME" />.
@@ -8788,6 +8791,13 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 <translation id="7358359585412734876">Habilitar <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo usuarios</translation>
 <translation id="736486789939370545">Permitir la instalación de extensiones externas</translation>
+<translation id="7364975417585163622">Esta política permite inhabilitar temporalmente los cambios en la forma en que Chrome maneja los espacios en blanco en las URLs de <ph name="DATA_URL_SCHEME" />.
+Anteriormente, los espacios en blanco se conservaban solo si el tipo de medio de nivel superior era <ph name="TEXT_MEDIA_TYPE" /> o contenía la cadena de tipo de medio <ph name="XML" />.
+Ahora, se conservarán los espacios en blanco en todas las URLs de datos, independientemente del tipo de medio.
+
+Si no estableces esta política o la estableces como verdadera, se habilitará el nuevo comportamiento.
+
+Si la estableces como falsa, se habilitará el comportamiento anterior.</translation>
 <translation id="7366948865469126526">Inhabilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="7367734504783638685">Sincronización de contraseñas entre dispositivos Chrome y proveedores de SSO de terceros</translation>
 <translation id="7372831798009983116">Habilita la función de accesibilidad de clic automático</translation>
@@ -10945,6 +10955,7 @@ A diferencia de otras políticas, si estableces esta política a nivel del perfi
 <translation id="9015759770696099204">La configuración de F11/F12 está inhabilitada</translation>
 <translation id="9015952763003753868">Hacer que las coincidencias de <ph name="ACAM_HEADER_NAME" /> en la especificación de solicitud preliminar <ph name="CORS" /> sean compatibles</translation>
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
+<translation id="9025912013525357598">Conservación de espacios en blanco de DataURL para todos los tipos de medio</translation>
 <translation id="9026905189580734497">Esta política controla la configuración de la función Ayúdame a leer para <ph name="PRODUCT_OS_NAME" />.
 
 0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.

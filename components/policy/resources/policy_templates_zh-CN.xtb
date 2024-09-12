@@ -4083,6 +4083,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4140646780789794190">禁止向 PluginVm 共享诊断数据</translation>
 <translation id="4144417751555442768">生成式 AI</translation>
 <translation id="4145383150978634398">为用户提供统一桌面模式选项</translation>
+<translation id="4146319954420095470">（警告！此依赖项很快将被舍弃，请开始改用 <ph name="GLS_POLICY_NAME" />）如果此政策设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，<ph name="PRODUCT_OS_NAME" /> 系统服务和 Android 应用将无法使用位置信息。如果此政策设为任何其他值或未设置，则当 Android 应用想要使用位置信息时，系统会请求用户允许使用。</translation>
 <translation id="4147818922357566987">仅启用与重要修复程序有关的变体</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4154221011709068799">禁止使用外部存储设备</translation>
@@ -6050,6 +6051,29 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5622590774455244290">Android 应用可能会主动选择采纳该列表，但您无法强制它们这样做。</translation>
 <translation id="5622924058222112599">启用默认 CECPQ2 发布流程</translation>
 <translation id="5623304306796942802">有多份证书匹配时发出提示</translation>
+<translation id="5624334866248253262">配置一系列数据控制规则，防止数据泄露。
+
+      每个规则均包含以下内容：
+      - 触发该规则的条件字段。只有当某项用户操作与其 <ph name="DATA_CONTROLS_SOURCES" />、<ph name="DATA_CONTROLS_DESTINATIONS" />、<ph name="DATA_CONTROLS_AND" />、<ph name="DATA_CONTROLS_OR" /> 和 <ph name="DATA_CONTROLS_NOT" /> 字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 要应用的限制条件列表。可能只有<ph name="DATA_CONTROLS_SOURCES" />或<ph name="DATA_CONTROLS_DESTINATIONS" />条件可用，具体取决于限制。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 根据来源标签页控制屏蔽屏幕截图。
+
+      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
+      限制级别可设为 BLOCK、WARN 或 REPORT。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 WARN，用户将收到警告消息，并且可选择是继续还是取消该操作。
+      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
+
+      注意：
+      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
+      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
+
+      如果未设置此政策，系统将不会应用任何限制。
+
+      只有分配了 Chrome 企业进阶版许可的用户才能使用此政策。</translation>
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>

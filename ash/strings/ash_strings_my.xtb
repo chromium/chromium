@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2360398059912971776">ဘက်ထရီ</translation>
 <translation id="2361210043495191221">Wi-Fi ပိတ်/ဖွင့်ရန်။ <ph name="STATE" />။</translation>
+<translation id="2364710166605611987">အသွင်အပြင် အထူးပြုလုပ်ချက်</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> မှ ပို့ထားသည်</translation>
 <translation id="2367186422933365202">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="2367972762794486313">အက်ပ်များကို ပြပေးရန်</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">ပိတ်</translation>
 <translation id="3604801046548457007">'မြင်ကွင်း <ph name="DESK_TITILE" />' ကို ပြုလုပ်လိုက်သည်</translation>
 <translation id="3606978283550408104">မျက်မမြင်စာ ဖော်ပြချက် ချိတ်ဆက်ထားသည်။</translation>
+<translation id="3612634595000403645">အသွင်အပြင် အထူးပြုလုပ်ချက်ဆိုင်ရာ သတ်မှတ်ချက်</translation>
 <translation id="3615926715408477684">မိုဘိုင်းဒေတာဖွင့်ပါက ဘလူးတုသ်ကို ဖွင့်ပါမည်</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3616883743181209306">မီနူးကို ဖန်သားပြင်၏ ညာဘက်ထိပ်ထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">လာမည့်စကားလုံးအဆုံးသို့ ရွှေ့ရန်</translation>
 <translation id="4146833061457621061">တေးဂီတ ဖွင့်ပါ</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
+<translation id="4151054805501931758">အလှပုံ ခြယ်မှုန်းရန်</translation>
 <translation id="4156293514828496577">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="4160919062868802509">အသံရင်းမြစ်များစွာ တွေ့ရှိထားသည်</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="482908187605862807">Play Store မှ ရနိုင်သောအက်ပ်များ</translation>
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
+<translation id="4835677468087803981">ပင်နံပါတ် ဖျောက်ရန်</translation>
 <translation id="4849058404725798627">အရာဝတ္ထုကို ကီးဘုတ်ခလုတ်ဖြင့် မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="485592688953820832">မည်သည့်အရာမျှ လုပ်ဆောင်ရန်မလို (ခေတ္တရပ်ရန်)</translation>
 <translation id="485634149294284819">ကီးဘုတ်မီနူးသို့ ဝင်ရန်</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083035541015925118">Ctrl + Alt + အပေါ်ညွှန်မြား</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
+<translation id="5091636240353511739">ပင်နံပါတ်ပြပါ</translation>
 <translation id="5092436659250499817">ကီးဘုတ်နောက်ခံအလင်းရောင် ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="5094577350232361255">အကြောင်း</translation>
 <translation id="5095136268899496849">ဆက်တင်များတွင် သင့် <ph name="PRODUCT_NAME" /> ကို စိတ်ကြိုက်လုပ်ပြီး ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။ သင့်နောက်ခံကို ပြောင်းကြည့်ပါ (သို့) စခရင်နားချိန်ပုံကို သတ်မှတ်ကြည့်ပါ။</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />၊ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="6605415194043280389">အထူးပြသမှု ဖွင့်ထားသည်</translation>
+<translation id="660846213831377756">မောက်စ်ကီးများ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင်၏ 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="6612802754306526077">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ် ရွေးထားသည်</translation>
 <translation id="6612889377159412215">လုပ်ဆောင်စရာ အပိုင်းခွဲ</translation>
@@ -1968,6 +1974,7 @@
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7769299611924763557">သင်၏ GIF မကြာမီ အသင့်ဖြစ်ပါမည်</translation>
 <translation id="7773536009433685931">၎င်းအစား WiFi ဖွင့်ရန်</translation>
+<translation id="77747521138552256">ပင်နံပါတ် ထည့်သွင်းသည့်အကြိမ်ရေ များလွန်းသည်။ <ph name="TIME_LEFT" /> စောင့်ပြီး ပင်နံပါတ် ထပ်ထည့်ကြည့်ပါ (သို့) ချက်ချင်းလက်မှတ်ထိုးဝင်ရန် စကားဝှက်ထည့်ပါ။</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
 <translation id="7781829728241885113">မနေ့က</translation>

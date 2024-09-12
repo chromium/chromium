@@ -283,6 +283,7 @@
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
 <translation id="119330003005586565">既読のページ</translation>
 <translation id="1193927020065025187">このサイトは、ユーザーをだまして煩わしい通知を許可させようとする可能性があります</translation>
+<translation id="11947597112837849">メールアドレス</translation>
 <translation id="1195210374336998651">アプリの設定に移動</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1195558154361252544">許可したサイトを除くすべてのサイトで通知を自動的にブロックします</translation>
@@ -684,6 +685,7 @@
 <translation id="1486486872607808064"><ph name="APP_NAME" /> のパスキーを作成するデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="1486616492435615702">下書きを作成したり、既存の文章を手直ししたりできます。</translation>
 <translation id="1487335504823219454">オン - カスタム設定</translation>
+<translation id="1487905215557235729">あなたの組織は仕事用プロフィールの閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> を待機しています...</translation>
 <translation id="1494349716233667318">サイトがデバイスにインストールされたフォントの使用を要求できるようにする</translation>
 <translation id="1494429729245089920">仮想マシン「<ph name="VM_NAME" />」は存在しますが、有効な <ph name="APP_NAME" /> 仮想マシンではないようです。管理者にお問い合わせください。</translation>
@@ -1201,9 +1203,11 @@
 <translation id="1838374766361614909">検索をクリア</translation>
 <translation id="1839021455997460752">メールアドレス</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> で表示</translation>
+<translation id="184050083485873615">確認して閉じる</translation>
 <translation id="1841616161104323629">デバイスレコードがありません。</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> が無効になりました</translation>
 <translation id="184183613002882946">1 つのスイッチをそのまま使用する</translation>
+<translation id="1842681835432895345">ミラーモードでこのディスプレイを除外する</translation>
 <translation id="184273675144259287">Linux のアプリとファイルを以前のバックアップで置き換えます</translation>
 <translation id="1842766183094193446">デモモードを有効にしてもよろしいですか？</translation>
 <translation id="1843048149176045210">ダウンロード リンクをコピー</translation>
@@ -1403,6 +1407,7 @@
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
 <translation id="1980168597243156">宇宙ステーション</translation>
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
+<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}、{field_2}}other{{field_1}、{field_2}、{field_3}}}</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
@@ -1573,6 +1578,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
 <translation id="2108204112555497972">前回の確認: <ph name="NUM_DAYS_HOURS_MINUTES" /> 前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
+<translation id="2109384632594340939">プロフィール写真</translation>
 <translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
@@ -1708,6 +1714,7 @@
 <translation id="2204168219363024184">Google パスワード マネージャーでこのパスキーを作成するには、本人確認を行ってください</translation>
 <translation id="2204387456724731099">このテキストを翻訳できませんでした</translation>
 <translation id="2207116775853792104">この拡張機能を残す</translation>
+<translation id="2209841631181508629">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
 <translation id="2211043920024403606">プロフィール情報</translation>
 <translation id="2211245494465528624">同期オプションを管理</translation>
@@ -2188,6 +2195,7 @@
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2526619973349913024">アップデートを確認</translation>
 <translation id="2527167509808613699">あらゆる種類の接続</translation>
+<translation id="2529459639389641691">{NUM_TABS,plural, =0{使用していないタブはありません}=1{使用していない 1 個のタブを閉じる}other{使用していない # 個のタブを閉じる}}</translation>
 <translation id="2529887123641260401">設定はいつでも変更できます。スイッチ アクセスの設定から設定ガイドを開くこともできます。</translation>
 <translation id="2530166226437958497">トラブルシューティング</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
@@ -3477,6 +3485,7 @@
 <translation id="3484869148456018791">新しい証明書を取得</translation>
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="3487649228420469005">スキャンが完了しました</translation>
+<translation id="3488199663160411179">名前</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="3491678231052507920">多くのサイトは、VR セッションに参加するためにバーチャル リアリティ デバイスとデータを使用します。</translation>
@@ -3790,6 +3799,7 @@
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
 <translation id="3709244229496787112">ダウンロードの完了前に、ブラウザがシャットダウンされました。</translation>
+<translation id="3710501561113687889">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。</translation>
 <translation id="3711931198657368127">貼り付けて <ph name="URL" /> に移動</translation>
 <translation id="3711945201266135623">プリント サーバーで <ph name="NUM_PRINTERS" /> 個のプリンタが見つかりました</translation>
 <translation id="3712050472459130149">アカウントの更新が必要です</translation>
@@ -6111,6 +6121,7 @@
 <translation id="5414566801737831689">アクセスしたウェブサイトのアイコンの読み取り</translation>
 <translation id="5414836363063783498">確認しています…</translation>
 <translation id="5415328625985164836">これはベータ版プログラムです。Chromebook で Steam を使用して、一部のゲームをプレイできるようになりました。</translation>
+<translation id="5415497281076257439">語句</translation>
 <translation id="5417312524372586921">ブラウザのテーマ</translation>
 <translation id="541737483547792035">画面の拡大</translation>
 <translation id="541822678830750798">このサイトの読み取りと変更をリクエストしています</translation>
@@ -6488,6 +6499,7 @@
 <translation id="5680050361008726776">「<ph name="ESIM_PROFILE_NAME" />」を削除しますか？</translation>
 <translation id="5681586175480958839">ファイルはすでに開かれています</translation>
 <translation id="5682010570533120226">Chrome のデータを削除しました。Chrome を改善するため、ご意見をお聞かせください。</translation>
+<translation id="5682660502190512219">提案を見る</translation>
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
@@ -6708,6 +6720,7 @@
 <translation id="5854066326260337683">LBS は現在無効になっています。LBS を有効にするには、<ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> ポリシーを設定します。</translation>
 <translation id="5854912040170951372">スライス</translation>
 <translation id="5855267860608268405">既知の Wi-Fi ネットワーク</translation>
+<translation id="5855375823365231964">このプロフィールについて</translation>
 <translation id="5855643921295613558">0.6秒</translation>
 <translation id="5856721540245522153">デバッグ機能を有効にする</translation>
 <translation id="5857090052475505287">新しいフォルダ</translation>
@@ -6920,6 +6933,7 @@
 <translation id="6005045517426700202">レンガ造りの建物</translation>
 <translation id="6006392003290068688"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を削除しました</translation>
 <translation id="6006484371116297560">クラシック</translation>
+<translation id="6007053304250788613">ミラーモードで除外できるディスプレイは 1 つだけです</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
 <translation id="6010651352520077187">Google 翻訳をオンにすると、指定した言語でサイトを翻訳するかを確認するメッセージが表示されます。また、サイトを自動的に翻訳することもできます。</translation>
 <translation id="6011193465932186973">指紋</translation>
@@ -7983,6 +7997,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" />（<ph name="OID" />）</translation>
 <translation id="6803766346203101854">このサイトでは、デバイスへのデータの保存が許可されています。</translation>
 <translation id="680488281839478944">VM「<ph name="DEFAULT_VM_NAME" />」は存在しません</translation>
+<translation id="6805236548654699520">設定を安全なデフォルトにリセットして、不要なポップアップを削除したり、ネットワークの問題を修正したりできます。</translation>
 <translation id="6805478749741295868">これは試験運用版の AI 機能です。常に適切な結果が得られるとは限りません。</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> からクライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> での RLZ トラッキングを有効にする。</translation>
@@ -8066,6 +8081,7 @@
 <translation id="6845038076637626672">最大化して開く</translation>
 <translation id="6845231585063669905">昇順</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」が <ph name="PRINTER_NAME" /> での <ph name="FILE_NAME" /> の印刷をリクエストしています。</translation>
+<translation id="6846843854964504403">セーフティ リセット</translation>
 <translation id="6847125920277401289">続行するには容量を空けてください</translation>
 <translation id="6848388270925200958">現在、このデバイスでのみ使用できるカードがいくつかあります</translation>
 <translation id="6848716236260083778">指紋を設定するには、お子様に指紋認証センサーをタッチしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
@@ -9781,7 +9797,6 @@
 <translation id="8090513782447872344">またいつでもご確認いただけます</translation>
 <translation id="8090579562279016251">パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます</translation>
 <translation id="8090686009202681725">AI を使用してテーマを作成</translation>
-<translation id="8091655032047076676">試験運用機能</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
 <translation id="8094536695728193970">アプリコット</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。<ph name="END_PARAGRAPH1" />
@@ -10738,6 +10753,7 @@
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
 <translation id="8776294611668764629">このファイルはセキュリティ チェックを受けるには大きすぎるため、組織でブロックされました。開けるファイルは 50 MB までです。</translation>
+<translation id="8776420827344913317">このプロフィールは組織によって管理されており、組織は特定の種類の情報を見ることができます</translation>
 <translation id="8777509665768981163">タブレットのボタンを追加または指定する</translation>
 <translation id="8777628254805677039">ルート パスワード</translation>
 <translation id="877985182522063539">A4</translation>
@@ -11254,6 +11270,7 @@
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9129562557082598582"><ph name="CERT_GROUP" /> をすべてエクスポート</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
+<translation id="9130135798965366513">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="9130208109420587135">グループ名 <ph name="NAME" /> を編集</translation>
 <translation id="9130364135697530260">このサイトの埋め込みコンテンツでは、保存したあなたに関する情報を使用できます</translation>
 <translation id="9131209053278896908">ブロック中のサイトがここに表示されます</translation>
@@ -11318,6 +11335,7 @@
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
 <translation id="9174401638287877180">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth デバイスに接続されています</translation>
+<translation id="9177859716483578738">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="9178061802301856367">ログインデータの削除</translation>
 <translation id="9179243438030184085">カードの下部にある [共有] ボタンを使用すると、ファミリー グループのメンバーとパスワードのコピーを共有できます</translation>
 <translation id="9179524979050048593">ログイン画面のユーザー名</translation>

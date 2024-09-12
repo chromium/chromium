@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1444443021901415601">Chrome saglabā interešu tēmas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi.</translation>
 <translation id="2252052615723281030">Ja esat pierakstījies pārlūkā Chrome, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chrome tiek noteikts, ka kādā vietnē, iespējams, jūs izseko, daļa jūsu datplūsmas var tikt sūtīta, izmantojot konfidencialitātes serverus.</translation>
+<translation id="2793385791865768072">Chromium saglabā interešu tēmas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi.</translation>
 <translation id="33479675708419823">Ja esat pierakstījies pārlūkā Chrome, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chrome tiek noteikts, ka kāda saite, iespējams, jūs izseko, daļa jūsu datplūsmas tiks nosūtīta, izmantojot konfidencialitātes serverus. Uzziniet vairāk par to, <ph name="LINK_BEGIN" />kā darbojas IP aizsardzība<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Uzzināt vairāk par IP adreses paslēpšanu</translation>
+<translation id="4041687306270459969">Reklāmu tēmas, kas ir vecākas par četrām nedēļām, tiek automātiski dzēstas. Var būt ietvertas šādas tēmas: “Sports”, “Apģērbs” u. c.</translation>
+<translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="4301151630239508244">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK_1" />reklāmu konfidencialitātes pārvaldību<ph name="END_LINK_1" />.</translation>
+<translation id="453692855554576066">Varat skatīt savas reklāmu tēmas Chromium iestatījumos un bloķēt tās tēmas, kuras nevēlaties atklāt vietnēm.</translation>
 <translation id="4598427486995631491">Paslēpt IP adresi</translation>
+<translation id="4692439979815346597">Varat skatīt savas reklāmu tēmas Chrome iestatījumos un bloķēt tās tēmas, kuras nevēlaties atklāt vietnēm.</translation>
+<translation id="5413586988657235240">Jūsu apmeklētās vietnes var lūgt pārlūkam Chromium informāciju par tēmām, lai rādītu jums atbilstošas reklāmas, vienlaikus aizsargājot jūsu pārlūkošanas vēsturi un identitāti.</translation>
+<translation id="6186536480878693792">Jūsu apmeklētās vietnes var lūgt pārlūkam Chrome informāciju par tēmām, lai rādītu jums atbilstošas reklāmas, vienlaikus aizsargājot jūsu pārlūkošanas vēsturi un identitāti.</translation>
 <translation id="6371812158043974664">Ja esat pierakstījies pārlūkā Chromium, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chromium tiek noteikts, ka kāda saite, iespējams, jūs izseko, daļa jūsu datplūsmas tiks nosūtīta, izmantojot konfidencialitātes serverus. Uzziniet vairāk par to, <ph name="LINK_BEGIN" />kā darbojas IP aizsardzība<ph name="LINK_END" />.</translation>
 <translation id="7040031291654706261">Uzziniet, <ph name="BEGIN_LINK" />kā darbojas IP adreses aizsardzība<ph name="END_LINK" />.</translation>
+<translation id="7475768947023614021">Reklāmu tēmu iestatījuma pārskatīšana</translation>
 </translationbundle>

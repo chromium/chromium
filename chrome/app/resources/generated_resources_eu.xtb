@@ -1111,6 +1111,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1780273119488802839">Laster-markak inportatzen…</translation>
 <translation id="1780572199786401845">Salatu iraingarria edo ez-segurua dela.</translation>
 <translation id="178092663238929451">Inguruko jendearen fitxategiak jasotzeko eta haiei fitxategiak bidaltzeko, konfiguratu Nearby Share</translation>
+<translation id="1781164264587898620">Aplikatu zarata-murrizketa eta audio-hobekuntzak.</translation>
 <translation id="1781291988450150470">Oraingo PINa</translation>
 <translation id="1781502536226964113">Ireki fitxa berriaren orria</translation>
 <translation id="1781553166608855614">Hitz egiteko hizkuntza</translation>
@@ -9789,7 +9790,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8090513782447872344">Geroago itzul zaitezke beste begiratu bat emateko</translation>
 <translation id="8090579562279016251">Errendimendua gutxitzen du, baina V8 erasoen aurrean indartzen du</translation>
 <translation id="8090686009202681725">Sortu gai bat AA bidez</translation>
-<translation id="8091655032047076676">Esperimentala</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> pluginak ez du erantzuten</translation>
 <translation id="8094536695728193970">Abrikota</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Egin babeskopiak Google Drive-n; horrela, errazagoa izango da datuak leheneratzea edo beste gailu batera eramatea. Aplikazioetako datuak ere sartzen dira babeskopietan.<ph name="END_PARAGRAPH1" />
@@ -10278,6 +10278,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8440630305826533614">Linux aplikazioak</translation>
 <translation id="844063558976952706">Beti webgune honetan</translation>
 <translation id="8441313165929432954">Gaitu/desgaitu konexioa partekatzeko aukera</translation>
+<translation id="8443542808381875261">Itxi erabili gabeko fitxak</translation>
 <translation id="8443986842926457191">URLak 2048 karaktere baino gehiago ditu</translation>
 <translation id="8445281870900174108">Fitxa hau kamera erabiltzen ari da</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
@@ -10979,6 +10980,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 
 Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="8945274638472141382">Ikonoaren tamaina</translation>
+<translation id="8945508919180478719">Estudio-estiloko mikrofonoa</translation>
 <translation id="8946359700442089734">Arazketa-eginbideak ez dira guztiz gaitu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailu honetan.</translation>
 <translation id="8946954897220903437">Tolestu helbide-barrako eskaera guztiak</translation>
 <translation id="894763922177556086">ona</translation>

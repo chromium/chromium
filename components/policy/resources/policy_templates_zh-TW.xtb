@@ -4011,6 +4011,7 @@
 <translation id="4140646780789794190">停用將診斷資料共用至 PluginVm</translation>
 <translation id="4144417751555442768">生成式 AI</translation>
 <translation id="4145383150978634398">允許使用者使用整合桌面模式</translation>
+<translation id="4146319954420095470">(警告！這個依附元件即將停用，請改用 <ph name="GLS_POLICY_NAME" />) 如果這項政策設為 <ph name="BLOCK_GEOLOCATION_SETTING" />，<ph name="PRODUCT_OS_NAME" /> 系統服務和 Android 應用程式將無法存取位置資訊。如果將這項政策設為其他值或不設定，Android 應用程式要存取位置資訊時，會要求使用者授予存取權。</translation>
 <translation id="4147818922357566987">僅啟用與重大修正項目相關的變化版本</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4154221011709068799">不允許外部儲存空間</translation>

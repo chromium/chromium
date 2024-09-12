@@ -1106,6 +1106,7 @@ One device connected.</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="482908187605862807">Available apps from the Play Store</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
+<translation id="4835677468087803981">Hide PIN</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
 <translation id="485592688953820832">No action (pause)</translation>
 <translation id="485634149294284819">Enter keyboard menu</translation>
@@ -1188,6 +1189,7 @@ One device connected.</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
+<translation id="5091636240353511739">Show PIN</translation>
 <translation id="5092436659250499817">Turn on/off keyboard backlight</translation>
 <translation id="5094577350232361255">about</translation>
 <translation id="5095136268899496849">Customise and personalise your <ph name="PRODUCT_NAME" /> in settings. Try changing your wallpaper or setting a screen saver.</translation>
@@ -1641,6 +1643,7 @@ New install</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
 <translation id="6605415194043280389">Focus is on</translation>
+<translation id="660846213831377756">Mouse keys</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6612889377159412215">subtask</translation>

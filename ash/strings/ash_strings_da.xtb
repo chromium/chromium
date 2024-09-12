@@ -1106,6 +1106,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4826588772550366629">kameraet og mikrofonen</translation>
 <translation id="482908187605862807">Tilgængelige apps fra Play Butik</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
+<translation id="4835677468087803981">Skjul pinkode</translation>
 <translation id="4849058404725798627">Fremhæv element med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="485634149294284819">Åbn tastaturmenuen</translation>
@@ -1188,6 +1189,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083035541015925118">Ctrl + Alt + pil op</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
+<translation id="5091636240353511739">Vis pinkode</translation>
 <translation id="5092436659250499817">Slå tastaturets baggrundslys til/fra</translation>
 <translation id="5094577350232361255">om</translation>
 <translation id="5095136268899496849">Tilpas din <ph name="PRODUCT_NAME" /> under Indstillinger. Prøv at ændre din baggrund eller vælge en pauseskærm.</translation>
@@ -1641,6 +1643,7 @@ Installeret for nylig</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er fastgjort til hjørnet nederst til venstre. Dette er i strid med systemfladen.</translation>
 <translation id="6605415194043280389">Fokus er aktiveret</translation>
+<translation id="660846213831377756">Musetaster</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6612802754306526077">Skærmoptagelsestilstand er valgt</translation>
 <translation id="6612889377159412215">underopgave</translation>
@@ -2300,6 +2303,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8938800817013097409">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="8939855324412367560">Inputlyden er "<ph name="INPUT_DEVICE_NAME" />", og outputlyden er "<ph name="OUTPUT_DEVICE_NAME" />". Gå til Indstillinger for at ændre det.</translation>
 <translation id="8940956008527784070">Batteriniveauet er lavt (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Studiemikrofon</translation>
 <translation id="894774083269346314">Afkrydsningsfeltet <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> er ikke markeret.</translation>
 <translation id="8949925099261528566">Forbundet – intet internet</translation>
 <translation id="8951539504029375108">Det er kun godkendte Thunderbolt-enheder, der er kompatible med din Chromebook</translation>

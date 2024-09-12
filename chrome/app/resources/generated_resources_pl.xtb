@@ -9794,7 +9794,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8090513782447872344">Zawsze możesz tu wrócić, aby sprawdzić te informacje jeszcze raz</translation>
 <translation id="8090579562279016251">Zmniejsza wydajność, ale sprawia, że mechanizm V8 jest bardziej odporny na ataki</translation>
 <translation id="8090686009202681725">Utwórz motyw za pomocą AI</translation>
-<translation id="8091655032047076676">Funkcja eksperymentalna</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nie odpowiada</translation>
 <translation id="8094536695728193970">Morela</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Zapisuj kopie zapasowe na Dysku Google, by móc łatwo i wygodnie przywrócić dane lub zmienić urządzenie. Kopie zapasowe zawierają dane aplikacji.<ph name="END_PARAGRAPH1" />
@@ -10283,6 +10282,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
 <translation id="844063558976952706">Zawsze w tej witrynie</translation>
 <translation id="8441313165929432954">Włącz/wyłącz tethering</translation>
+<translation id="8443542808381875261">Zamknij nieużywane karty</translation>
 <translation id="8443986842926457191">URL zawiera więcej niż 2048 znaków</translation>
 <translation id="8445281870900174108">Ta karta używa Twojej kamery</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>

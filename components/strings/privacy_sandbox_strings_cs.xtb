@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1444443021901415601">Chrome zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají</translation>
 <translation id="2252052615723281030">Když jste do prohlížeče Chrome přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chrome podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí.</translation>
+<translation id="2793385791865768072">Chromium zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají</translation>
 <translation id="33479675708419823">Když jste do prohlížeče Chrome přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chrome podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí. <ph name="LINK_BEGIN" />Jak ochrana IP adresy funguje<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Další informace o skrytí IP adresy</translation>
+<translation id="4041687306270459969">Témata reklam starší než čyři týdny se automaticky mažou. Témata zahrnují věci jako sport, oblečení a podobně</translation>
+<translation id="4177501066905053472">Témata reklam</translation>
 <translation id="4301151630239508244">Témata reklam jsou jen jednou z mnoha věcí, které web může použít k personalizaci reklam. Weby vám mohou reklamy zobrazovat i bez témat reklam, ale mohou být méně přizpůsobené. <ph name="BEGIN_LINK_1" />Další informace o správě ochrany soukromí v reklamách<ph name="END_LINK_1" /></translation>
+<translation id="453692855554576066">Témata reklam si můžete zobrazit v nastavení prohlížeče Chromium a ta, které s weby nechcete sdílet, můžete zablokovat</translation>
 <translation id="4598427486995631491">Skrýt IP adresu</translation>
+<translation id="4692439979815346597">Témata reklam si můžete zobrazit v nastavení Chromu a ta, které s weby nechcete sdílet, můžete zablokovat</translation>
+<translation id="5413586988657235240">Navštívené weby můžou Chromium žádat o témata, aby vám mohly zobrazovat relevantní reklamy a zároveň byla chráněna vaše historie procházení a identita</translation>
+<translation id="6186536480878693792">Navštívené weby můžou Chrome žádat o témata, aby vám mohly zobrazovat relevantní reklamy a zároveň byla chráněna vaše historie procházení a identita</translation>
 <translation id="6371812158043974664">Když jste do prohlížeče Chromium přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chromium podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí. <ph name="LINK_BEGIN" />Jak ochrana IP adresy funguje<ph name="LINK_END" /></translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />Jak ochrana IP adresy funguje<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Zkontrolujte nastavení témat reklam</translation>
 </translationbundle>

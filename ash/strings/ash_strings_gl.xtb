@@ -374,6 +374,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">batería</translation>
 <translation id="2361210043495191221">Activar/Desactivar wifi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efectos de aparencia</translation>
 <translation id="236574664504281623">Invitación enviada desde <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Non se puido iniciar sesión no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicacións</translation>
@@ -734,6 +735,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3600061223661453002">Desactivado</translation>
 <translation id="3604801046548457007">Creouse o escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">A liña braille está conectada.</translation>
+<translation id="3612634595000403645">Preferencias de efectos de aparencia</translation>
 <translation id="3615926715408477684">Ao activar os datos móbiles habilitarase o Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">O menú moveuse á esquina superior dereita da pantalla.</translation>
@@ -895,6 +897,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4146671046252289537">Móvese ao final da seguinte palabra</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4151054805501931758">Retoque facial</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />.
 Limitáronse algunhas funcións para ampliar a duración da batería.</translation>
 <translation id="4160919062868802509">Detectáronse varias fontes de audio</translation>
@@ -1107,6 +1110,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
 <translation id="482908187605862807">Aplicacións dispoñibles en Play Store</translation>
 <translation id="4831034276697007977">Seguro que queres desactivar os clics automáticos?</translation>
+<translation id="4835677468087803981">Ocultar o PIN</translation>
 <translation id="4849058404725798627">Destacar obxecto co enfoque do teclado</translation>
 <translation id="485592688953820832">Ningunha acción (pausa)</translation>
 <translation id="485634149294284819">Abrir menú de teclado</translation>
@@ -1189,6 +1193,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083035541015925118">control + alt + frecha arriba</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
+<translation id="5091636240353511739">Mostrar o PIN</translation>
 <translation id="5092436659250499817">Activar ou desactivar a retroiluminación do teclado</translation>
 <translation id="5094577350232361255">acerca de</translation>
 <translation id="5095136268899496849">Personaliza o teu dispositivo <ph name="PRODUCT_NAME" /> en Configuración. Proba a cambiar o fondo de pantalla ou a configurar un protector de pantalla.</translation>
@@ -1642,6 +1647,7 @@ Nova instalación</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara axustada á esquina inferior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="6605415194043280389">Modo Sen distraccións activado</translation>
+<translation id="660846213831377756">Teclas do rato</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6612802754306526077">Seleccionouse o modo de gravación da pantalla</translation>
 <translation id="6612889377159412215">subtarefa</translation>
@@ -1969,6 +1975,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
 <translation id="7773536009433685931">Activar wifi</translation>
+<translation id="77747521138552256">Tentaches poñer o PIN demasiadas veces. Espera <ph name="TIME_LEFT" /> e téntao de novo. Tamén podes meter o contrasinal para iniciar sesión inmediatamente.</translation>
 <translation id="7780094051999721182">atallos</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7781829728241885113">Onte</translation>

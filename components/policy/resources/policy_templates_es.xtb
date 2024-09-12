@@ -3359,6 +3359,7 @@ Si se establece esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NA
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Inhabilitar los informes sobre la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por aplicación</translation>
+<translation id="3546260240984542017">Mantener espacios para todos los tipos de MIME</translation>
 <translation id="3546271546272655966"><ph name="DBSC_FEATURE_NAME" /> se podrá usar en función del proceso de lanzamiento de la función.</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3548064438634502368">Cerrar navegadores</translation>
@@ -8141,6 +8142,7 @@ Si se le asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> siem
 
 Esta política no afecta a los gestores de contraseñas de terceros que usan APIs de accesibilidad.</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
+<translation id="7115684775550072082">Solo conservar espacios en los tipos de MIME de texto y XML</translation>
 <translation id="7121046543122812054">Esta política está obsoleta. Te recomendamos que uses <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
       Permite que el usuario inicie sesión en <ph name="PRODUCT_NAME" />.
@@ -8467,6 +8469,12 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
 <translation id="7358359585412734876">Habilitar <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo el usuario</translation>
 <translation id="736486789939370545">Permitir la instalación de extensiones externas</translation>
+<translation id="7364975417585163622">Esta política inhabilita temporalmente los cambios en la forma en que Chrome gestiona los espacios en las URLs de <ph name="DATA_URL_SCHEME" />. Anteriormente, los espacios se conservaban solo si el tipo de contenido de nivel superior era <ph name="TEXT_MEDIA_TYPE" /> o contenía la cadena de tipo de contenido <ph name="XML" />.
+Ahora los espacios se conservarán en todas las URLs de datos, independientemente del tipo de contenido.
+
+Si no se define esta política o se le asigna el valor True, se habilitará el nuevo comportamiento.
+
+Si se le asigna el valor False, se habilitará el comportamiento anterior.</translation>
 <translation id="7366948865469126526">Inhabilitar conversión de unidades de Respuestas rápidas</translation>
 <translation id="7367734504783638685">Sincronización de contraseñas entre proveedores de SSO externos y dispositivos Chrome</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
@@ -10553,6 +10561,7 @@ A diferencia de otras políticas, esta política definida a nivel de perfil tien
 <translation id="9015759770696099204">Los ajustes de F11/F12 están inhabilitados</translation>
 <translation id="9015952763003753868">Hacer que los <ph name="ACAM_HEADER_NAME" /> que coinciden en la solicitud preparatoria de <ph name="CORS" /> cumplan las especificaciones</translation>
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
+<translation id="9025912013525357598">Conservación de espacios en las URLs de datos de todos los tipos de contenido</translation>
 <translation id="9026905189580734497">Esta política controla la configuración de la función Ayúdame a leer de <ph name="PRODUCT_OS_NAME" />.
 
 Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.

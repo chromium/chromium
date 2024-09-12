@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2360398059912971776">بیٹری</translation>
 <translation id="2361210043495191221">‏Wi-Fi کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
+<translation id="2364710166605611987">ہئیت کے اثرات</translation>
 <translation id="236574664504281623">‫<ph name="SESSION_NAME" /> سے بھیجا گیا</translation>
 <translation id="2367186422933365202">‏اپنے Chromebook میں سائن ان نہیں کر سکتے</translation>
 <translation id="2367972762794486313">ایپس دکھائیں</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">آف کریں</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ڈیسک تخلیق کر دی گئی ہے</translation>
 <translation id="3606978283550408104">بریل ڈسپلے منسلک ہو گیا۔</translation>
+<translation id="3612634595000403645">ہئیت کے اثرات کی ترجیحات</translation>
 <translation id="3615926715408477684">موبائل ڈیٹا فعال کرنے سے بلوٹوتھ فعال ہو جائے گا</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3616883743181209306">مینیو کو اسکرین کے اوپر دائیں کونے میں منتقل کر دیا گیا۔</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">اگلے لفظ کے آخر میں جائیں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
+<translation id="4151054805501931758">پورٹریٹ ٹچ اپ</translation>
 <translation id="4156293514828496577">‏<ph name="PERCENTAGE" />فیصد بیٹری باقی ہے left (تقریباََ <ph name="TIME_LEFT" />)۔
 کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="4160919062868802509">متعدد آڈیو ذرائع کا پتہ چلا</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
 <translation id="482908187605862807">‏Play اسٹور سے دستیاب ایپس</translation>
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
+<translation id="4835677468087803981">‏‫PIN چھپائیں</translation>
 <translation id="4849058404725798627">کی بورڈ فوکس کی مدد سے آبجیکٹ کو نمایاں کریں</translation>
 <translation id="485592688953820832">کوئی کارروائی نہیں (موقوف کریں)</translation>
 <translation id="485634149294284819">کی بورڈ مینیو درج کریں</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083035541015925118">‏ctrl + alt + اوپر تیر کا نشان</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
+<translation id="5091636240353511739">‏‫PIN دکھائیں</translation>
 <translation id="5092436659250499817">کی بورڈ کی بیک لائٹ آن/آف کریں</translation>
 <translation id="5094577350232361255">تقریباً</translation>
 <translation id="5095136268899496849">ترتیبات میں اپنے <ph name="PRODUCT_NAME" /> کو حسب ضرورت اور ذاتی نوعیت کا بنائیں۔ اپنا وال پیپر تبدیل کرنے یا اسکرین سیور سیٹ کرنے کی کوشش کریں۔</translation>
@@ -1640,6 +1645,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">کیمرا نیچے بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="6605415194043280389">فوکس آن ہے</translation>
+<translation id="660846213831377756">ماؤس کیز</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6612802754306526077">اسکرین ریکارڈنگ موڈ کا انتخاب کیا گیا</translation>
 <translation id="6612889377159412215">ذیلی ٹاسک</translation>
@@ -1967,6 +1973,7 @@
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7769299611924763557">‏آپ کا GIF جلد ہی تیار ہو جائے گا</translation>
 <translation id="7773536009433685931">‏اس کے بجائے WiFi آن کریں</translation>
+<translation id="77747521138552256">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ PIN کی کوشش کریں، یا فوری طور پر سائن ان کرنے کے لیے پاسورڈ درج کریں۔</translation>
 <translation id="7780094051999721182">شارٹ کٹس</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
@@ -2299,6 +2306,7 @@
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
 <translation id="8939855324412367560">ان پٹ آڈیو "<ph name="INPUT_DEVICE_NAME" />" ہے اور آؤٹ پٹ آڈیو "<ph name="OUTPUT_DEVICE_NAME" />" ہے۔ تبدیل کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="8940956008527784070">‏بیٹری کم ہے (‎<ph name="PERCENTAGE" />%‎)</translation>
+<translation id="8945508919180478719">اسٹوڈیو طرز کا مائیک</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> چیک باکس کو نشان زد نہیں کیا گیا۔</translation>
 <translation id="8949925099261528566">منسلک، انٹرنیٹ نہیں ہے</translation>
 <translation id="8951539504029375108">‏صرف منظور شدہ Thunderbolt آلات آپ کی Chromebook کے ساتھ موافق ہیں</translation>

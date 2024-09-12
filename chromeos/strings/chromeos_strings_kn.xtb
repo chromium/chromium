@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">ವೆಬ್‌ಕ್ಯಾಮ್ ವೀಡಿಯೊ ಫೀಡ್</translation>
 <translation id="1676557873873341166">ವೀಡಿಯೊ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1684279041537802716">ಆ್ಯಕ್ಸೆಂಟ್ ಬಣ್ಣ</translation>
+<translation id="1697278726914783200">ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ರೀಸಾಲ್ವರ್ ಅಸ್ತಿತ್ವ</translation>
 <translation id="1708602061922134366">Google‌ ನೀಲಿ</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2195732836444333448">ಪ್ರಸ್ತುತ ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
+<translation id="2197185031095816179">ಅನಗತ್ಯ ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲು, ನೆಟ್‌ವರ್ಕ್ ಸಮಸ್ಯೆಗಳನ್ನು ಸರಿಪಡಿಸಲು ಮತ್ತು ಇತರ ಅನಿರೀಕ್ಷಿತ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಸುರಕ್ಷತಾ ರೀಸೆಟ್ ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="2201758491318984023">ಬೈಸಿಕಲ್</translation>
 <translation id="2203272733515928691">ಬಿಸಿನೀರಿನ ಬುಗ್ಗೆ</translation>
 <translation id="2203642483788377106">ಕ್ಲಿಫ್</translation>
@@ -542,6 +544,7 @@
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
 <translation id="382043424867370667">ಸೂರ್ಯಾಸ್ತದ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="3824259034819781947">ಫೈಲ್‌ಗಳನ್ನು ಲಗತ್ತಿಸಿ</translation>
+<translation id="3836587210832263413">ನೀವು ನಂಬುವ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಮಾತ್ರ ಆನ್ ಮಾಡಿ</translation>
 <translation id="3838338534323494292">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="3845880861638660475">ಡೈಲಾಗ್ ಅನ್ನು ಮುಚ್ಚಲು <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="3848280697030027394">ಕೀಬೋರ್ಡ್ ಗಾಢವಾಗಿಸಿ</translation>
@@ -632,6 +635,7 @@
 <translation id="4251839292699800785">ಸ್ಟೈಲಿಶ್ ಆಫೀಸ್</translation>
 <translation id="4258281355379922695">HTTP ವಿಳಂಬ</translation>
 <translation id="4266143281602681663">ನೂಲು</translation>
+<translation id="4269815121975886860">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ಆದ್ಯತೆಗಳು</translation>
 <translation id="4271957103967917607">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="4275663329226226506">ಮಾದ್ಯಮ</translation>
 <translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" ಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ. ಸಂಘರ್ಷವನ್ನು ಪರಿಹರಿಸಲು ಎಡಿಟ್ ಮಾಡಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ.</translation>
@@ -700,6 +704,7 @@
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4594021849294327751">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
+<translation id="4602266091140407479">ಮೈಕ್‌</translation>
 <translation id="4607282946861182308">ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್ ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ರಲ್ಲಿ <ph name="PRINTED_PAGE_NUMBER" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4950314376641394653">ಫರ್ಮ್‌‌ವೇರ್‌‌ <ph name="DEVICE_NAME" /> ಅನ್ನು <ph name="VERSION" /> ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4950893758552030541">ಟ್ರೀ ಟನಲ್</translation>
+<translation id="4965661459364092269">ಸುರಕ್ಷತಾ ರೀಸೆಟ್ ಮಾಡುವಿಕೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4965703485264574128">ಅಂದಾಜು ಫಲಿತಾಂಶಕ್ಕಾಗಿ, <ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಗುಣಿಸಿ</translation>
 <translation id="4969079779290789265">ವಿಭಜಿಸಿ</translation>
 <translation id="4972592110715526173">ಮೋಡ್ ಬದಲಾಯಿಸಿ</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">ರೋಮಿಂಗ್</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> ರೂಂನಲ್ಲಿ <ph name="SIMPLE_STYLE" /> ಪುಸ್ತಕಕಪಾಟು</translation>
 <translation id="5257811368506016604">ತಿಳಿ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="5261479807286543505">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5264277876637023664">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -1006,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
+<translation id="6189987971574353264">ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="6196607555925437199">ಪುನಃ ರಚಿಸಿ</translation>
 <translation id="6205145102504628069">ಕ್ಲೌಡ್ ಫ್ಲೋ</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">ಕೀ</translation>
 <translation id="6816797338148849397">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಲಭ್ಯವಿದೆ. ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು, ಅಪ್ ಆ್ಯರೋ ಬಳಸಿ.</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6846843854964504403">ಸುರಕ್ಷತಾ ರೀಸೆಟ್</translation>
 <translation id="6853312040151791195">ಡಿಸ್‌ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="6862416241246624313">ಫೀಡ್‌ಬ್ಯಾಕ್ ಸಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6866732840889595464">ಡೈಸಿ</translation>
@@ -1325,6 +1334,7 @@
 <translation id="7746357909584236306">ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="7747039790905080783">ಪೂರ್ವ-ಹಂಚಿಕೆಯ ಕೀ</translation>
 <translation id="7752963721013053477">ಡಾನ್ ಟು ಡಾರ್ಕ್ - ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
+<translation id="7760571082554155847">ಹೋಮ್ ಪೇಜ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7762130827864645708">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆಯು ಯಶಸ್ವಿಯಾಗಿದೆ. ಈಗಿನಿಂದ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ.</translation>
 <translation id="7763470514545477072">ಡೊಮೇನ್ ಸಫಿಕ್ಸ್ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="7769672763586021400">ಮಾಡೆಲ್ ಐಡಿ</translation>
@@ -1366,6 +1376,7 @@
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7943235353293548836">ನಿರಂತರ ಕೀಪ್-ಅಲೈವ್ ಇಂಟರ್‌ವಲ್</translation>
 <translation id="7943516765291457328">ಸಮೀಪದ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
+<translation id="7944482598620888754">ಸೈಟ್ ಕಂಟೆಂಟ್</translation>
 <translation id="7944562637040950644">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="7953669802889559161">ಇನ್‌ಪುಟ್‌ಗಳು</translation>
 <translation id="7955587717700691983">ಬ್ಲೂಟೂತ್ ಕೀಬೋರ್ಡ್</translation>
@@ -1402,6 +1413,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>
+<translation id="8135609423982943441">ನಿಮ್ಮ Chromebook ಅನ್ನು ಸುರಕ್ಷಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಈ ಬದಲಾವಣೆಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಹೊಂದಿಸಬಹುದು.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8151185429379586178">ಡೆವಲಪರ್ ಟೂಲ್‌ಗಳು</translation>
@@ -1432,6 +1444,7 @@
 <translation id="8291967909914612644">Home ಪೂರೈಕೆದಾರರ ರಾಷ್ಟ್ರ</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
 <translation id="8302368968391049045">HTTPS ಫೈರ್‌ವಾಲ್</translation>
+<translation id="8308787307410010965">ಸೈಟ್ ಕಂಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8312330582793120272">ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="8318753676953949627">ಯಾವುದೇ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="8320910311642849813">ಕಾಡು</translation>
@@ -1632,6 +1645,8 @@
 <translation id="951780398843003443">ಇಡೀ ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿರುವ ಧ್ವನಿಗಳನ್ನು ಹೋಲಿಕೆ ಮಾಡಿ, ಇದರಿಂದ ಪ್ರತಿಯೊಬ್ಬ ಸ್ಪೀಕರ್ ಏನು ಮತ್ತು ಯಾವಾಗ ಹೇಳಿದರು ಎಂಬುದನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="95718197892796296">ಜೇಡಿ ಮಣ್ಣು</translation>
+<translation id="959792926760890141">ಸುರಕ್ಷತಾ ರೀಸೆಟ್ Chrome ಬ್ರೌಸರ್ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಸುರಕ್ಷಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ನೆಟ್‌ವರ್ಕ್ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ.
+          ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಫೈಲ್‌ಗಳು, ಕುಕೀಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>
 <translation id="965918541715156800">ಹಳದಿ ಮತ್ತು ಟೀಲ್</translation>
 <translation id="966787709310836684">ಮೆನು</translation>

@@ -283,6 +283,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
 <translation id="119330003005586565">您已读过的页面</translation>
 <translation id="1193927020065025187">此网站可能正试图诱骗您允许显示侵扰性通知</translation>
+<translation id="11947597112837849">电子邮件地址</translation>
 <translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
@@ -682,6 +683,7 @@
 <translation id="1486486872607808064">只需使用设备上的摄像头扫描此二维码，即可为 <ph name="APP_NAME" /> 创建通行密钥</translation>
 <translation id="1486616492435615702">撰写草稿或润色现有作品。</translation>
 <translation id="1487335504823219454">开启 - 自定义设置</translation>
+<translation id="1487905215557235729">贵组织可以查看和管理您工作资料中的浏览数据（例如您的书签、历史记录和密码）</translation>
 <translation id="1493892686965953381">正在等待<ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">网站可以询问能否使用您设备上安装的字体</translation>
 <translation id="1494429729245089920">虚拟机“<ph name="VM_NAME" />”已存在，但似乎不是有效的 <ph name="APP_NAME" /> 虚拟机。请与您的管理员联系。</translation>
@@ -1197,9 +1199,11 @@
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839021455997460752">您的电子邮件地址</translation>
 <translation id="1839540115464516994">在“<ph name="LOCATION" />”中显示</translation>
+<translation id="184050083485873615">查看并决定</translation>
 <translation id="1841616161104323629">找不到设备记录。</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> 已被禁用</translation>
 <translation id="184183613002882946">不，仅使用 1 个开关</translation>
+<translation id="1842681835432895345">在镜像模式下排除此显示屏</translation>
 <translation id="184273675144259287">以先前的备份替换您的 Linux 应用和文件</translation>
 <translation id="1842766183094193446">确定要启用演示模式吗？</translation>
 <translation id="1843048149176045210">复制下载链接</translation>
@@ -1399,6 +1403,7 @@
 <translation id="197989455406964291">KDC 不支持加密类型</translation>
 <translation id="1980168597243156">空间站</translation>
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
+<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986836014090708999">高级位置信息设置</translation>
 <translation id="1987317783729300807">账号</translation>
@@ -1569,6 +1574,7 @@
 <translation id="2105809836724866556">已隐藏<ph name="MODULE_TITLE" /></translation>
 <translation id="2108204112555497972">上次检查时间：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
+<translation id="2109384632594340939">个人资料照片</translation>
 <translation id="2110941575868943054">可以寻找蓝牙设备</translation>
 <translation id="211144231511833662">清除类型</translation>
 <translation id="2111670510994270194">在右侧新增标签页</translation>
@@ -1704,6 +1710,7 @@
 <translation id="2204168219363024184">如要使用 Google 密码管理工具创建此通行密钥，请验证您的身份</translation>
 <translation id="2204387456724731099">无法翻译所选内容</translation>
 <translation id="2207116775853792104">保留此扩展程序</translation>
+<translation id="2209841631181508629">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
 <translation id="2211043920024403606">个人资料信息</translation>
 <translation id="2211245494465528624">管理同步选项</translation>
@@ -2186,6 +2193,7 @@
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
+<translation id="2529459639389641691">{NUM_TABS,plural, =0{没有未使用的标签页}=1{关闭 1 个未使用的标签页}other{关闭 # 个未使用的标签页}}</translation>
 <translation id="2529887123641260401">您随时可从“开关控制”设置中更改自己的设置或再次打开设置指南。</translation>
 <translation id="2530166226437958497">问题排查</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
@@ -3475,6 +3483,7 @@
 <translation id="3484869148456018791">获取新的证书</translation>
 <translation id="3487007233252413104">匿名函数</translation>
 <translation id="3487649228420469005">扫描完毕</translation>
+<translation id="3488199663160411179">名称</translation>
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您孩子的账号尚未设置 Family Link 家长控制功能。完成设置后，即可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3491678231052507920">网站通常会使用您的虚拟现实设备和数据以让您进入 VR 会话</translation>
@@ -3789,6 +3798,7 @@
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709244229496787112">浏览器已在下载完成前关闭。</translation>
+<translation id="3710501561113687889">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。</translation>
 <translation id="3711931198657368127">粘贴并转到 <ph name="URL" /></translation>
 <translation id="3711945201266135623">通过打印服务器找到了 <ph name="NUM_PRINTERS" /> 台打印机</translation>
 <translation id="3712050472459130149">需要进行账号更新</translation>
@@ -6113,6 +6123,7 @@
 <translation id="5414566801737831689">读取您访问过的网站对应的图标</translation>
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5415328625985164836">这是一项 Beta 版计划。现在，您可以在 Chromebook 上使用 Steam 玩某些游戏了。</translation>
+<translation id="5415497281076257439">词组</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
 <translation id="541737483547792035">放大屏幕</translation>
 <translation id="541822678830750798">请求读取和更改此网站</translation>
@@ -6488,6 +6499,7 @@
 <translation id="5680050361008726776">移除“<ph name="ESIM_PROFILE_NAME" />”？</translation>
 <translation id="5681586175480958839">已经正在打开此文件</translation>
 <translation id="5682010570533120226">您刚刚在 Chrome 中删除了数据。我们非常希望了解您的使用体验，以便改进 Chrome。</translation>
+<translation id="5682660502190512219">查看建议</translation>
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5684950556880280580">您的密码已更新</translation>
@@ -6708,6 +6720,7 @@
 <translation id="5854066326260337683">LBS 已停用。您可通过设置 <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> 政策来启用 LBS。</translation>
 <translation id="5854912040170951372">比萨</translation>
 <translation id="5855267860608268405">已知的 WLAN 网络</translation>
+<translation id="5855375823365231964">关于此个人资料</translation>
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5857090052475505287">新文件夹</translation>
@@ -6919,6 +6932,7 @@
 <translation id="6005045517426700202">砖砌建筑</translation>
 <translation id="6006392003290068688">已撤消<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />使用权</translation>
 <translation id="6006484371116297560">经典</translation>
+<translation id="6007053304250788613">在镜像模式下只能排除一个显示屏</translation>
 <translation id="6007240208646052708">不支持使用您所用的语言执行语音搜索。</translation>
 <translation id="6010651352520077187">当此功能处于开启状态时，“Google 翻译”会询问您是否要将网站翻译成您的首选语言。它还可以自动翻译网站。</translation>
 <translation id="6011193465932186973">指纹</translation>
@@ -9786,7 +9800,6 @@
 <translation id="8090513782447872344">日后您可随时回来查看</translation>
 <translation id="8090579562279016251">降低性能，但提高 V8 防范攻击的能力</translation>
 <translation id="8090686009202681725">利用 AI 创建主题</translation>
-<translation id="8091655032047076676">实验性</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
 <translation id="8094536695728193970">杏黄</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据。<ph name="END_PARAGRAPH1" />
@@ -10743,6 +10756,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}other{系统将在 # 秒后自动锁定您的 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
 <translation id="8776294611668764629">贵组织屏蔽了此文件，因为它过大，无法接受安全检查。您只能打开不超过 50 MB 的文件。</translation>
+<translation id="8776420827344913317">此个人资料由贵组织管理，贵组织可以查看某些类型的信息</translation>
 <translation id="8777509665768981163">添加或寻找平板电脑按钮</translation>
 <translation id="8777628254805677039">根密码</translation>
 <translation id="877985182522063539">A4</translation>
@@ -11259,6 +11273,7 @@
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9129562557082598582">导出全部<ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">输入的模式无效。</translation>
+<translation id="9130135798965366513">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9130208109420587135">修改分组名称“<ph name="NAME" />”</translation>
 <translation id="9130364135697530260">此网站上的嵌入式内容可以使用它们保存的与您相关的信息</translation>
 <translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>
@@ -11323,6 +11338,7 @@
 <translation id="917350715406657904">您已达到您家长为“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9174401638287877180">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已连接蓝牙设备</translation>
+<translation id="9177859716483578738">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />。</translation>
 <translation id="9178061802301856367">删除登录数据</translation>
 <translation id="9179243438030184085">使用卡片底部的“分享”按钮可将您的密码分享给家人群组成员</translation>
 <translation id="9179524979050048593">在登录屏幕上显示用户名</translation>

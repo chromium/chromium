@@ -1106,6 +1106,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
 <translation id="482908187605862807">Tilgjengelige apper fra Play-butikken</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
+<translation id="4835677468087803981">Skjul PIN-koden</translation>
 <translation id="4849058404725798627">Fremhev objektet med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="485634149294284819">Åpne skrivebordsmenyen</translation>
@@ -1188,6 +1189,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083035541015925118">ctrl + alt + oppoverpil</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
+<translation id="5091636240353511739">Vis PIN-koden</translation>
 <translation id="5092436659250499817">Slå tastaturets bakgrunnsbelysning av eller på</translation>
 <translation id="5094577350232361255">omtrent</translation>
 <translation id="5095136268899496849">Tilpass og gi <ph name="PRODUCT_NAME" /> personlig preg i innstillingene. Prøv å endre bakgrunnen eller angi en skjermsparer.</translation>
@@ -1641,6 +1643,7 @@ Nylig installert</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er festet til nedre venstre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="6605415194043280389">Fokus er på</translation>
+<translation id="660846213831377756">Museknapper</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6612889377159412215">underoppgave</translation>
@@ -2300,6 +2303,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8939855324412367560">Innenheten for lyd er «<ph name="INPUT_DEVICE_NAME" />», og utenheten for lyd er «<ph name="OUTPUT_DEVICE_NAME" />». Gå til innstillingene for å endre dette.</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Mikrofon i studiostil</translation>
 <translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>

@@ -271,6 +271,7 @@
 <translation id="5335288049665977812">Povoliť webom spúšťať JavaScript (odporúča sa)</translation>
 <translation id="534295439873310000">Zariadenia NFC</translation>
 <translation id="5344522958567249764">Spravovať ochranu súkromia pri reklamách</translation>
+<translation id="5373874281522292782">Vaše skupiny kariet sú uložené</translation>
 <translation id="5389626883706033615">Weby majú zablokované žiadať vás o používanie informácií, ktoré o vás uložili</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
@@ -368,6 +369,7 @@
 <translation id="6697925417670533197">Práve sťahované položky</translation>
 <translation id="6709432001666529933">Pýtať sa, či chcete povoliť webom sledovať vaše ruky (odporúčané)</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
+<translation id="6729704574271585059">Skupiny, ktoré ste vytvorili, sa ukladajú v sekcii skupín kariet a aktualizujú sa vo vašich zariadeniach</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
 <translation id="6766622839693428701">Zatvorte potiahnutím dole.</translation>

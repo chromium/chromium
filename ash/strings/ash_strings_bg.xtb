@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2360398059912971776">батерия</translation>
 <translation id="2361210043495191221">Превключване на Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Ефекти за външния вид</translation>
 <translation id="236574664504281623">Изпратено от <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Не можете да влезете в своя Chromebook</translation>
 <translation id="2367972762794486313">Показване на приложенията</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">Изкл.</translation>
 <translation id="3604801046548457007">Работен кът <ph name="DESK_TITILE" /> е създаден</translation>
 <translation id="3606978283550408104">Брайловият дисплей е свързан.</translation>
+<translation id="3612634595000403645">Предпочитания за ефектите за външния вид</translation>
 <translation id="3615926715408477684">Активирането на мобилните данни ще включи Bluetooth</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Менюто е преместено в горния десен ъгъл на екрана.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">Преместване в края на следващата дума</translation>
 <translation id="4146833061457621061">„Play music“ („Пусни музика“)</translation>
 <translation id="4150201353443180367">Екран</translation>
+<translation id="4151054805501931758">Ретуширане на лицето</translation>
 <translation id="4156293514828496577">Оставащият заряд на батерията е <ph name="PERCENTAGE" />% (около <ph name="TIME_LEFT" />).
 Някои функции са ограничени с цел удължаване на живота ѝ.</translation>
 <translation id="4160919062868802509">Открити са няколко аудиоизточника</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
 <translation id="482908187605862807">Приложения, налични в Google Play Магазин</translation>
 <translation id="4831034276697007977">Наистина ли искате да изключите автоматичните кликвания?</translation>
+<translation id="4835677468087803981">Скриване на ПИН кода</translation>
 <translation id="4849058404725798627">Открояване на обекта, върху който е фокусът от клавиатурата</translation>
 <translation id="485592688953820832">Без действие (пауза)</translation>
 <translation id="485634149294284819">Отваряне на менюто с клавиатури</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083035541015925118">Ctrl + Alt + стрелката за нагоре</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
+<translation id="5091636240353511739">Показване на ПИН кода</translation>
 <translation id="5092436659250499817">Включване/изключване на фоновото осветление на клавиатурата</translation>
 <translation id="5094577350232361255">информация</translation>
 <translation id="5095136268899496849">Персонализирайте своя <ph name="PRODUCT_NAME" /> от настройките. Променете тапета или задайте скрийнсейвър.</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Картината от камерата е прилепена към долния ляв ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="6605415194043280389">Режимът за концентрация е включен</translation>
+<translation id="660846213831377756">Бутони на мишката</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6612802754306526077">Избран е режимът за записване на екрана</translation>
 <translation id="6612889377159412215">подзадача</translation>
@@ -1968,6 +1974,7 @@
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7769299611924763557">GIF файлът ви ще бъде готов скоро</translation>
 <translation id="7773536009433685931">Включване на Wi-Fi вместо това</translation>
+<translation id="77747521138552256">Твърде много опити за въвеждане на ПИН кода. Изчакайте <ph name="TIME_LEFT" /> и въведете ПИН кода отново или въведете паролата, за да влезете незабавно.</translation>
 <translation id="7780094051999721182">преки пътища</translation>
 <translation id="7780159184141939021">Завъртане на екрана</translation>
 <translation id="7781829728241885113">Вчера</translation>

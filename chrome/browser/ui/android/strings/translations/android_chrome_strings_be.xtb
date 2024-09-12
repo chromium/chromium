@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">Увайсці ў Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="3293181007446299124">Ваша гісторыя прагляду сайтаў пры гэтым захоўваецца прыватна на вашай прыладзе, а справаздачы адпраўляюцца з затрымкай, каб прадухіліць раскрыццё вашай асобы.</translation>
+<translation id="3302615849591357577">Аднавіць групу ўкладак "<ph name="TITLE_OF_GROUP" />", колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.</translation>
 <translation id="3303414029551471755">Перайсці да спампоўкі змесціва?</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3305130791745726624">Адправіць на прылады</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Аднавіць групу з <ph name="TAB_COUNT_ONE" /> укладкі, колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}one{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}few{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}many{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}other{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}}</translation>
 <translation id="4837753911714442426">Адкрыць параметры друку старонкі</translation>
 <translation id="4842092870884894799">Паказана выплыўное акно для стварэння пароля</translation>
 <translation id="4844633725025837809">Дзеля дадатковай бяспекі зашыфроўвайце паролі на прыладзе, перш чым захоўваць іх у Менеджары пароляў Google</translation>
@@ -849,6 +851,7 @@
 <translation id="5016205925109358554">З засечкамі</translation>
 <translation id="5017529052065664584">За апошнія 15 хвілін</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> укладка - <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> укладак - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="504456571576643789">Інфармацыя для разгляду</translation>
@@ -1068,6 +1071,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дадатковая інфармацыя<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Элемент выдалены</translation>
 <translation id="6130303040046284160">Згарнуць укладку</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="6137022273846704445">Мова праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="6138832295072039549">Тут можна змяніць налады сайта</translation>
 <translation id="6140912465461743537">Краіна або рэгіён</translation>
@@ -1171,6 +1175,7 @@
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6565959834589222080">Калі сетка Wi-Fi даступная, будзе выкарыстоўвацца яна</translation>
 <translation id="6569373978618239158">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="SITE_NAME" />". Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
+<translation id="6570116402456758630">Зводка па старонцы</translation>
 <translation id="6573096386450695060">Заўсёды дазваляць</translation>
 <translation id="6573431926118603307">Тут з’явяцца ўкладкі, адкрытыя вамі ў браўзеры Chrome на іншых прыладах.</translation>
 <translation id="6583199322650523874">Дадаць бягучую старонку ў закладкі</translation>
@@ -1180,6 +1185,7 @@
 <translation id="6593061639179217415">Версія для ПК</translation>
 <translation id="6594347733515723558">Сартаванне і паказ</translation>
 <translation id="6595046016124923392">Відарысы перасылаюцца ў Google з мэтай паляпшэння апісанняў для вас.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Аднавіць групу з <ph name="TAB_COUNT_ONE" /> укладкі як новую фонавую групу ўкладак.}one{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />) як новую фонавую групу ўкладак.}few{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />) як новую фонавую групу ўкладак.}many{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />) як новую фонавую групу ўкладак.}other{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />) як новую фонавую групу ўкладак.}}</translation>
 <translation id="6604931690954120417">Калі вы ўвайшлі ў Chrome, захаваныя паролі будуць дадавацца ў ваш Уліковы запіс Google. Выключыць гэту функцыю можна ў <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце.</translation>
 <translation id="6621391692573306628">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце ў Chrome з абедзвюх прылад</translation>
@@ -1204,6 +1210,7 @@
 <translation id="6674571176963658787">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>
 <translation id="6676927815633975364">Будзе выкананы ўваход на сайт і ў Chrome</translation>
 <translation id="6684809838922667136">Зрабіце браўзер Chrome лепшым</translation>
+<translation id="6704048624334633734">Экспартаваць і выдаліць паролі</translation>
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
@@ -1665,6 +1672,7 @@
 <translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Персаналізуйце выкарыстанне Chrome</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Спампоўка заблакіравана вашай арганізацыяй}one{# спампоўка заблакіравана вашай арганізацыяй}few{# спампоўкі заблакіраваны вашай арганізацыяй}many{# спамповак заблакіравана вашай арганізацыяй}other{# спампоўкі заблакіраваны вашай арганізацыяй}}</translation>
 <translation id="8672883760227492369">Некаторыя паролі на гэтай прыладзе неўзабаве перастануць працаваць. Вы можаце перамясціць іх у Менеджар пароляў Google.</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="8676789164135894283">Спраўджанне ўваходу</translation>

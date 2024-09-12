@@ -1107,6 +1107,7 @@
 <translation id="4826588772550366629">камер, микрофон</translation>
 <translation id="482908187605862807">Play Store-с авах боломжтой аппууд</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
+<translation id="4835677468087803981">ПИН-г нуух</translation>
 <translation id="4849058404725798627">Объектыг гарын фокусаар тодруулах</translation>
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
 <translation id="485634149294284819">Гарын цэсийг оруулна уу</translation>
@@ -1189,6 +1190,7 @@
 <translation id="5078796286268621944">ПИН код буруу байна</translation>
 <translation id="5083035541015925118">ctrl + alt + дээш сум</translation>
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
+<translation id="5091636240353511739">ПИН харуулах</translation>
 <translation id="5092436659250499817">Гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="5094577350232361255">тухай</translation>
 <translation id="5095136268899496849">Тохиргоонд өөрийн <ph name="PRODUCT_NAME" />-г өөрчилж, хувийн болгоно уу. Дэлгэцийн зургаа өөрчлөх эсвэл дэлгэц амраагч тохируулж үзнэ үү.</translation>
@@ -1642,6 +1644,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерыг зүүн доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="6605415194043280389">Төвлөрөх горим асаалттай байна</translation>
+<translation id="660846213831377756">Хулганын товч</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="6612802754306526077">Дэлгэцийн үйлдэл бичих горимыг сонгосон</translation>
 <translation id="6612889377159412215">дэд ажил</translation>
@@ -2302,6 +2305,7 @@
 <translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>
 <translation id="8939855324412367560">Аудио оролт нь "<ph name="INPUT_DEVICE_NAME" />" бол гаралт нь "<ph name="OUTPUT_DEVICE_NAME" />" юм. Өөрчлөхийн тулд Тохиргоо руу очно уу.</translation>
 <translation id="8940956008527784070">Цэнэг бага байна ( <ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Студийн загвартай микрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Тэмдэглэх нүдийг тэмдэглээгүй.</translation>
 <translation id="8949925099261528566">Холбогдсон хэдий ч интернэт алга</translation>
 <translation id="8951539504029375108">Зөвхөн зөвшөөрөлтэй Thunderbolt төхөөрөмжүүд таны Chromebook-тэй тохиромжтой</translation>

@@ -1010,6 +1010,7 @@
 <translation id="2882949212241984732">డబుల్-గేట్ ఫోల్డ్</translation>
 <translation id="2891963978019740012">Chromeలో మీ సెర్చ్ ఇంజిన్</translation>
 <translation id="2893773853358652045">ఫోర్త్ రోల్</translation>
+<translation id="2894137550885451583">ఇవి <ph name="PRODUCT" /> ప్రోడక్ట్‌కు సంబంధించిన <ph name="CURRENCY" /> ధరలు</translation>
 <translation id="2900528713135656174">ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2903493209154104877">అడ్రస్‌లు</translation>
@@ -1607,6 +1608,7 @@
 <translation id="3949601375789751990">మీ బ్రౌజింగ్ హిస్టరీ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">సేవ్ చేసిన చెల్లింపు పద్ధతులేవీ లేవు</translation>
+<translation id="3950560191811267370">దిగువున ఉన్న కామర్స్ షీట్ మూసివేయబడింది</translation>
 <translation id="3950574001630941635">ట్యుటోరియల్‌ను రీస్టార్ట్ చేయండి</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3953505489397572035">ఈ ధర సాధారణంగా ఉంది</translation>
@@ -2349,6 +2351,7 @@
 <translation id="5331585574693522196">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయండి</translation>
 <translation id="5332219387342487447">షిప్పింగ్ పద్ధతి</translation>
 <translation id="5332769172018416402">మెసేజ్‌లో అడగండి</translation>
+<translation id="533323551986281710">దిగువున ఉన్న కామర్స్ షీట్ పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="5334013548165032829">వివరణాత్మక సిస్టమ్ లాగ్‌లు</translation>
 <translation id="5334145288572353250">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5340250774223869109">యాప్ బ్లాక్ చేయబడింది</translation>
@@ -2531,6 +2534,7 @@
 <translation id="5675650730144413517">ఈ పేజీ పని చేయడం లేదు</translation>
 <translation id="5675809467256309336">డ్యాన్స్ &amp; ఎలక్ట్రానిక్ మ్యూజిక్</translation>
 <translation id="5675959228867414813">తేదీ వారీగా చూడండి</translation>
+<translation id="567604591393105935">దిగువున ఉన్న కామర్స్ షీట్ సగం ఎత్తులో తెరవబడింది</translation>
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
 <translation id="5678007133659493065">ఫాయిల్</translation>
 <translation id="5680642791693447368">థ్రిల్లర్, క్రైమ్ &amp; మిస్టరీ సినిమాలు</translation>
@@ -3438,6 +3442,7 @@
 <translation id="7374733840632556089">మీ పరికరంలో మీరు లేదా మరొకరు ఇన్‌స్టాల్ చేసిన సర్టిఫికేట్ కారణంగా ఈ సమస్య తలెత్తుతుంది. నెట్‌వర్క్‌లను పర్యవేక్షించడానికి మరియు అడ్డగించడానికి సర్టిఫికెట్ ఉపయోగించబడుతుంది, ఇది Chrome ద్వారా విశ్వసించబడదు. పర్యవేక్షణ కోసం కొన్ని చట్టబద్ధమైన కేసులు ఉన్నప్పటికీ, పాఠశాల లేదా కంపెనీ నెట్‌వర్క్‌లో మాదిరిగా, మీరు దీన్ని ఆపలేక పోయినప్పటికీ, ఇది జరుగుతున్నట్లు మీకు తెలుసని Chrome నిర్ధారించుకోవాలనుకుంటుంది. వెబ్‌ను యాక్సెస్ చేసే ఏదైనా బ్రౌజర్ లేదా యాప్‌లో పర్యవేక్షణ జరగవచ్చు.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{ఏ సైట్‌లు అనుమతించలేదు}=1{1 సైట్ అనుమతించింది}other{# సైట్‌లు అనుమతించాయి}}</translation>
 <translation id="7375818412732305729">ఫైల్‌ను జోడించినప్పుడు</translation>
+<translation id="7376031331622621328">దిగువున ఉన్న కామర్స్ షీట్</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">ఆతిథ్య పరిశ్రమ</translation>
 <translation id="7378594059915113390">మీడియా నియంత్రణలు</translation>

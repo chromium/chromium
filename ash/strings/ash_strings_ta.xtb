@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
 <translation id="482908187605862807">Play Storeரில் உள்ள கிடைக்கக்கூடிய ஆப்ஸ்</translation>
 <translation id="4831034276697007977">தானாகக் கிளிக் செய்யும் அம்சத்தை ஆஃப் செய்ய விரும்புகிறீர்களா?</translation>
+<translation id="4835677468087803981">பின்னை மறைக்கும்</translation>
 <translation id="4849058404725798627">கீபோர்டு ஃபோகஸ் மூலம் ஆப்ஜெக்ட்டைத் தனிப்படுத்து</translation>
 <translation id="485592688953820832">எந்தச் செயலும் இல்லை (இடைநிறுத்தும்)</translation>
 <translation id="485634149294284819">கீபோர்டைத் தேர்ந்தெடுப்பதற்கான மெனு</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
+<translation id="5091636240353511739">பின்னைக் காட்டும்</translation>
 <translation id="5092436659250499817">கீபோர்டு பேக்லைட்டை இயக்கு/முடக்கு</translation>
 <translation id="5094577350232361255">அறிமுகம்</translation>
 <translation id="5095136268899496849">அமைப்புகளுக்குச் சென்று உங்கள் <ph name="PRODUCT_NAME" /> சாதனத்தைப் பிரத்தியேகமாக்கலாம். வால்பேப்பரை மாற்றலாம் அல்லது ஸ்கிரீன் சேவரை அமைக்கலாம்.</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">கேமரா மாதிரிக்காட்சி கீழ் இடது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="6605415194043280389">ஃபோகஸ் பயன்முறை இயக்கப்பட்டுள்ளது</translation>
+<translation id="660846213831377756">மவுஸ் பட்டன்கள்</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="6612802754306526077">ஸ்கிரீன் ரெக்கார்டிங் பயன்முறை தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6612889377159412215">உட்பணி</translation>
@@ -2300,6 +2303,7 @@
 <translation id="8938800817013097409">USB-C சாதனம் (பின்பக்கம் உள்ள வலது போர்ட்)</translation>
 <translation id="8939855324412367560">ஆடியோ இன்புட்: "<ph name="INPUT_DEVICE_NAME" />" மற்றும் ஆடியோ அவுட்புட்: "<ph name="OUTPUT_DEVICE_NAME" />". அமைப்புகளுக்குச் சென்று மாற்றவும்.</translation>
 <translation id="8940956008527784070">பேட்டரி குறைவு (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ஸ்டுடியோ தரத்திலான மைக்</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> செக்பாக்ஸ் தேர்வுசெய்யப்படவில்லை.</translation>
 <translation id="8949925099261528566">இணைக்கப்பட்டுள்ளது, ஆனால் இணைய இணைப்பு இல்லை</translation>
 <translation id="8951539504029375108">அங்கீகரிக்கப்பட்ட Thunderbolt சாதனங்கள் மட்டுமே உங்கள் Chromebook சாதனத்தில் ஆதரிக்கப்படும்</translation>

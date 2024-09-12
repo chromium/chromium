@@ -712,6 +712,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2265356434276802347">V tem pravilniku je lahko največ toliko izpostavljenih vnosov: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Preverjanje vaše identitete …</translation>
 <translation id="2268044343513325586">Izboljšaj iskanje</translation>
+<translation id="2268966938956566076">Naloži čez <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Telefonska številka</translation>
 <translation id="2276057643614339130">Osnova za tiskanje</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
@@ -1110,6 +1111,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3062655045399308513">Izbriši podatke brskanja …</translation>
 <translation id="306573536155379004">Igra se je začela.</translation>
 <translation id="3067505415088964188">Cena je nizka</translation>
+<translation id="3068118691172921711">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 minuto</translation>
 <translation id="3076865167425975822">Operacijski sistemi</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
 <translation id="3082007635241601060">Naj Google uporabi vaše nakupovalne vozičke za iskanje osebno prilagojenih popustov, ko so na voljo</translation>
@@ -1121,6 +1123,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3099619114405539473">Uporabljati razpoložljive kamere (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Varčevalni račun</translation>
 <translation id="3103188521861412364">Delnice in obveznice</translation>
+<translation id="3103535543639438037">Vzporedna primerjava podobnih izdelkov</translation>
 <translation id="3105172416063519923">ID sredstva:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Preveriti konfiguracijo varnega strežnika DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Srednji pladenj</translation>
@@ -1298,6 +1301,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3407789382767355356">prijava prek zunanjih ponudnikov</translation>
 <translation id="340924996148642843">Primerjanje trenutno ni na voljo</translation>
 <translation id="3409896703495473338">Upravljanje varnostnih nastavitev</translation>
+<translation id="3411091017011773343">Naloži čez <ph name="HOURS" /> h</translation>
 <translation id="3414275587143250384">Porazdeljeno računalništvo in računalništvo v oblaku</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="341513675006332771">Gumb za igranje igre Dino za Chrome, aktivirajte, če želite igrati igro Dino Run v Chromu</translation>
@@ -1965,6 +1969,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4628678854894591460">Počitniške ponudbe</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez <ph name="HOURS" /> h</translation>
 <translation id="4631649115723685955">Vključuje vračilo gotovine</translation>
 <translation id="4631881646528206880">Včlanitev navidezne kartice</translation>
 <translation id="4635278307999235413">Pošiljanje podatkov v skrbniško konzolo</translation>
@@ -2085,6 +2090,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="484988093836683706">Uporabi odklepanje naprave</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
+<translation id="4855395119669662878">Skrbnik bo začel nalagati datoteke v storitev <ph name="CLOUD_PROVIDER" /> ob tem času: <ph name="DATE_TIME" />. Naprava naj ostane povezana, dokler nalaganje datotek ni končano. Med nalaganjem boste lahko brali samo lokalne datoteke.</translation>
 <translation id="485902285759009870">Preverjanje kode …</translation>
 <translation id="4860260582253463350">Če želiš nadaljevati na YouTube, se moramo prepričati, da si to res ti. Uporabljal/-a boš nastavitve, ki jih je tvoj starš ali skrbnik nastavil v storitvi Family Link.</translation>
 <translation id="4864406669374375262">Niz različice je kopiran v odložišče</translation>
@@ -2140,6 +2146,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4933468175699107356">Z desnim gumbom kliknite za samodejno izpolnjevanje shranjenih podatkov, denimo imena ali naslova, v katerem koli obrazcu</translation>
 <translation id="4934780484581617878">Upravljanje oken</translation>
 <translation id="4936134414789135531">Vstavljenega elementa <ph name="VALUE_NAME" /> ni bilo mogoče najti.</translation>
+<translation id="4936573216809994970">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 uro</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4943620199112228840">Uporaba mikrofonov</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
@@ -2313,6 +2320,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5269225904387178860">Četverno luknjanje spodaj</translation>
 <translation id="5271381225185906340">»<ph name="DATA_CONTROLS_ATTRIBUTE" />« ni podprt pogoj za element »<ph name="DATA_CONTROLS_RESTRICTION" />«</translation>
 <translation id="5273658854610202413">Opozorilo: ta pravilnik ni bil združen, kot je določeno v pravilniku PolicyDictionaryMultipleSourceMergeList, ker ne sodi k pravilnikom o slovarjih, ki jih je mogoče združiti.</translation>
+<translation id="5278778426231952189">Naloži zdaj</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Lastnosti dokumenta</translation>
@@ -3816,6 +3824,7 @@ Dodatne podrobnosti:
 <translation id="8030729864112325446">Poklicno in vseživljenjsko izobraževanje</translation>
 <translation id="8032546467100845887">Transparency</translation>
 <translation id="8035152190676905274">Pisalo</translation>
+<translation id="8035264638816032066">Naslovi zavihkov in URL-ji strani, ki jih dodate v tabelo, se pošljejo Googlu</translation>
 <translation id="8037117624646282037">Kdo je nedavno uporabljal napravo</translation>
 <translation id="8037357227543935929">Zahteva (privzeto)</translation>
 <translation id="803771048473350947">Datoteka</translation>
@@ -4009,6 +4018,7 @@ Dodatne podrobnosti:
 <translation id="8381674639488873545">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Samodejni celozaslonski način</translation>
 <translation id="838307841291975086">Karavani</translation>
+<translation id="8388286357548915205">Uporabi za vse goste</translation>
 <translation id="8389532092404711541">Običajno <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vozila po meri in visoko zmogljiva vozila</translation>
 <translation id="8390725133630534698">Deljenje iz vira <ph name="ORIGIN_NAME" /> v navidezni računalnik <ph name="VM_NAME" /> je blokiral pravilnik skrbnika.</translation>
@@ -4115,6 +4125,7 @@ Dodatne podrobnosti:
 <translation id="8564466070529550495">Virtualna kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="8564985650692024650">Chromium priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="8570895683659698018">Hobiji in prosti čas</translation>
+<translation id="8572792595597115856">Veljavno do: <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Hladilniki in zamrzovalniki</translation>
 <translation id="8577192028579836704">Vse možnosti običajno stanejo <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>
@@ -4136,6 +4147,7 @@ Dodatne podrobnosti:
 <translation id="8617269623452051934">podatke o napravi uporabe</translation>
 <translation id="861775596732816396">Velikost 4</translation>
 <translation id="8620276786115098679">Kuverta Kaku 7</translation>
+<translation id="8622864575115813231">Vzpostavljanje stika z vašo finančno ustanovo …</translation>
 <translation id="8623885649813806493">Ni gesel, ki bi se ujemala. Prikaži vsa shranjena gesla.</translation>
 <translation id="8624354461147303341">Prejmite popuste</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4435,6 +4447,7 @@ Dodatne podrobnosti:
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">Čistilna kozmetika</translation>
 <translation id="9199905725844810519">Tiskanje je blokirano</translation>
+<translation id="9204089334327209740">Ko je nalaganje končano, lahko datoteke spreminjate v storitvi <ph name="CLOUD_PROVIDER" />. Lokalna shramba, vključno z datotekami v smetnjaku, bo samodejno odstranjena.</translation>
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="920643408853370361">Potovalno zavarovanje</translation>
 <translation id="9207861905230894330">Članka ni bilo mogoče dodati.</translation>
@@ -4455,6 +4468,7 @@ Dodatne podrobnosti:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Teme oglasov temeljijo na nedavni zgodovini brskanja, seznamu spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="937885410143139026">Podatki so poslani v skrbniško konzolo</translation>
 <translation id="939736085109172342">Nova mapa</translation>
+<translation id="940524522703752213">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez <ph name="MINUTES" /> min</translation>
 <translation id="944540589955480312">Uporaba gesel in ključev za dostop, shranjenih v računu Google</translation>
 <translation id="945646848072568856">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem.</translation>
 <translation id="945855313015696284">Preverite spodnje podatke in izbrišite neveljavne kartice</translation>

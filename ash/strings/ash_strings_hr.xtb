@@ -1109,6 +1109,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="482908187605862807">Dostupne aplikacije iz Trgovine Play</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
+<translation id="4835677468087803981">Sakrij PIN</translation>
 <translation id="4849058404725798627">Istakni objekt fokusom na tipkovnici</translation>
 <translation id="485592688953820832">Nema radnje (pauza)</translation>
 <translation id="485634149294284819">Otvorite izbornik tipkovnice</translation>
@@ -1191,6 +1192,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strelica prema gore</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
+<translation id="5091636240353511739">Prikaži PIN</translation>
 <translation id="5092436659250499817">Uključivanje/isključivanje pozadinskog osvjetljenja tipkovnice</translation>
 <translation id="5094577350232361255">informacije</translation>
 <translation id="5095136268899496849">Prilagodite i personalizirajte <ph name="PRODUCT_NAME" /> u postavkama. Pokušajte promijeniti pozadinu ili postaviti čuvar zaslona.</translation>
@@ -1358,6 +1360,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vaš identitet nije potvrđen. Pokušajte ponovo.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
+<translation id="5633826232582408011">Kad uključite pomoć pri pisanju i pomoć s čitanjem, tekst unosa, sadržaj dokumenta i URL web-stranice šalju se poslužiteljima Googleovog AI-ja radi generiranja prijedloga i sažetaka, odgovaranja na pitanja i poboljšanja proizvoda, u skladu s dokumentom <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.</translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
 <translation id="5652575806481723716">Aplikacija <ph name="FOCUSED_APP_NAME" /> zahtijeva vašu pažnju.</translation>
 <translation id="5662075790140998213">Radna površina 10</translation>
@@ -1644,6 +1647,7 @@ Novo instaliranje</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera je poravnata s donjim lijevim kutom. Došlo je do sukoba s površinom sustava.</translation>
 <translation id="6605415194043280389">Način rada za koncentraciju je uključen</translation>
+<translation id="660846213831377756">Tipke miša</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6612802754306526077">Odabran je način snimanja zaslona</translation>
 <translation id="6612889377159412215">podzadatak</translation>

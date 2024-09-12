@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
 <translation id="1676557873873341166">Nahráva sa video</translation>
 <translation id="1684279041537802716">Zvýrazňujúca farba</translation>
+<translation id="1697278726914783200">Nahrávať</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
 <translation id="1708602061922134366">Modrá Google</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
 <translation id="2189104374785738357">Úprava podrobností názvu prístupového bodu (APN)</translation>
 <translation id="2195732836444333448">Služba je momentálne vyťažená. Vráťte sa o chvíľu.</translation>
+<translation id="2197185031095816179">Bezpečnostný reset môže pomôcť odstrániť nechcené vyskakovacie okná, opraviť problémy so sieťou a vyriešiť ďalšie neočakávané problémy.</translation>
 <translation id="2201758491318984023">bicykel</translation>
 <translation id="2203272733515928691">termálny prameň</translation>
 <translation id="2203642483788377106">útesu</translation>
@@ -542,6 +544,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="382043424867370667">Tapeta so západom slnka</translation>
 <translation id="3824259034819781947">Priložiť súbory</translation>
+<translation id="3836587210832263413">Zapnite iba rozšírenia, ktorým dôverujete</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3845880861638660475">Stlačením klávesov <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> zatvorte dialógové okno.</translation>
 <translation id="3848280697030027394">stmavenie klávesnice</translation>
@@ -632,6 +635,7 @@
 <translation id="4251839292699800785">Štýlová kancelária</translation>
 <translation id="4258281355379922695">Latencia protokolu HTTP</translation>
 <translation id="4266143281602681663">priadza</translation>
+<translation id="4269815121975886860">Predvoľby pri spustení</translation>
 <translation id="4271957103967917607">Zobraziť na celú obrazovku</translation>
 <translation id="4275663329226226506">Médiá</translation>
 <translation id="4278766082079064416">Skratka sa používa na tento účel: <ph name="CONFLICT_ACCEL_NAME" />. Konflikt vyriešite upravením alebo odstránením.</translation>
@@ -700,6 +704,7 @@
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4594021849294327751">Vytvoriť prepis</translation>
+<translation id="4602266091140407479">Mikrofón</translation>
 <translation id="4607282946861182308">Obrázky tohto sa nedajú vytvoriť. Vyskúšajte iný pokyn.</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4950314376641394653">Firmvér zariadenia <ph name="DEVICE_NAME" /> bol aktualizovaný na verziu <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel stromov</translation>
+<translation id="4965661459364092269">Bezpečnostný reset bol dokončený</translation>
 <translation id="4965703485264574128">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> vynásobíte číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Rozdeliť</translation>
 <translation id="4972592110715526173">zmena režimu</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">Polička v štýle <ph name="SIMPLE_STYLE" /> v miestnosti <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Povoliť svetlý farebný režim</translation>
+<translation id="5261479807286543505">Nastavenia spustenia</translation>
 <translation id="5264277876637023664">Spustiť test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Názov prístupového bodu je zakázaný.</translation>
@@ -1006,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Vytvorené: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
+<translation id="6189987971574353264">Prehrať</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
 <translation id="6196607555925437199">Znova vytvoriť</translation>
 <translation id="6205145102504628069">Tok oblakov</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
 <translation id="6831043979455480757">Preložiť</translation>
+<translation id="6846843854964504403">Bezpečnostný reset</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6862416241246624313">Spätná väzba bola odoslaná</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
@@ -1325,6 +1334,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7746357909584236306">upraviteľné</translation>
 <translation id="7747039790905080783">Predzdieľaný kľúč</translation>
 <translation id="7752963721013053477">Od úsvitu do tmy – exkluzívne</translation>
+<translation id="7760571082554155847">Nastavenia domovskej stránky</translation>
 <translation id="7762130827864645708">Zmena hesla bola úspešná. Odteraz používajte nové heslo.</translation>
 <translation id="7763470514545477072">Zhoda prípony domény</translation>
 <translation id="7769672763586021400">ID modelu</translation>
@@ -1366,6 +1376,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Pretrvávajúci interval keepalive</translation>
 <translation id="7943516765291457328">Ak chcete vyhľadávať hotspoty v okolí, zapnite Bluetooth</translation>
+<translation id="7944482598620888754">Obsah webu</translation>
 <translation id="7944562637040950644">prepnutie podsvietenia klávesnice</translation>
 <translation id="7953669802889559161">Vstupy</translation>
 <translation id="7955587717700691983">Klávesnica s rozhraním Bluetooth</translation>
@@ -1402,6 +1413,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8132480444149501833">Požiadať o údaje počítadiel návštevnosti</translation>
+<translation id="8135609423982943441">Váš Chromebook bol resetovaný na bezpečné predvolené hodnoty. Tieto zmeny môžete kedykoľvek upraviť v Nastaveniach.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vyberte <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Nástroje pre vývojárov</translation>
@@ -1432,6 +1444,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8291967909914612644">Krajina poskytovateľa domácej siete</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8308787307410010965">Nastavenia obsahu webu</translation>
 <translation id="8312330582793120272">prehratie médií</translation>
 <translation id="8318753676953949627">Žiadne obrázky</translation>
 <translation id="8320910311642849813">lesa</translation>
@@ -1632,6 +1645,8 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="951780398843003443">porovnať hlasy v nahrávke, aby prepis zodpovedal tomu, čo a kedy každý hovoriaci povedal.</translation>
 <translation id="952992212772159698">Neaktivované</translation>
 <translation id="95718197892796296">hlina</translation>
+<translation id="959792926760890141">Bezpečnostný reset vypne rozšírenia prehliadača Chrome a resetuje sieť a ďalšie nastavenia na bezpečné predvolené hodnoty.
+          Predvolený vyhľadávač bude resetovaný, ale karty, súbory (aj cookie) a história zostanú nezmenené.</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="965918541715156800">žltá a modrozelená</translation>
 <translation id="966787709310836684">ponuka</translation>

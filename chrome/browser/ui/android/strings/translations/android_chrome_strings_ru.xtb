@@ -75,6 +75,7 @@
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1320912611264252795">Страница сохранения закладки, открытая на весь экран</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
+<translation id="1328235593824723509">Новая или обновленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
 <translation id="1332501820983677155">Функции Google Chrome</translation>
 <translation id="1333491156693005331">Проверено недавно</translation>
@@ -1589,6 +1590,7 @@
 <translation id="8265018477030547118">Будет сохранен только на этом устройстве.</translation>
 <translation id="8266753737658117282">Продолжите с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Расположение скачиваемых файлов</translation>
+<translation id="8279945625179116733">Защиту обеспечивает <ph name="APP_NAME" />.</translation>
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>

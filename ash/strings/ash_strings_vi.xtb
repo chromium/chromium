@@ -1106,6 +1106,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
 <translation id="482908187605862807">Ứng dụng hiện có trên Cửa hàng Play</translation>
 <translation id="4831034276697007977">Bạn có chắc chắn muốn tắt tính năng tự động nhấp không?</translation>
+<translation id="4835677468087803981">Ẩn mã PIN</translation>
 <translation id="4849058404725798627">Đánh dấu đối tượng bằng tiêu điểm bàn phím</translation>
 <translation id="485592688953820832">Không có hành động nào (tạm dừng)</translation>
 <translation id="485634149294284819">Nhập trình đơn bàn phím</translation>
@@ -1188,6 +1189,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5083035541015925118">ctrl + alt + mũi tên lên</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
+<translation id="5091636240353511739">Hiện mã PIN</translation>
 <translation id="5092436659250499817">Bật/tắt đèn nền bàn phím</translation>
 <translation id="5094577350232361255">giới thiệu</translation>
 <translation id="5095136268899496849">Tuỳ chỉnh và cá nhân hoá <ph name="PRODUCT_NAME" /> trong phần Cài đặt. Hãy thử thay đổi hình nền hoặc thiết lập trình bảo vệ màn hình.</translation>
@@ -1641,6 +1643,7 @@ Mới cài đặt</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Máy ảnh đang bám theo góc dưới bên trái. Xung đột với khu vực hệ thống.</translation>
 <translation id="6605415194043280389">Chế độ Tập trung đang bật</translation>
+<translation id="660846213831377756">Phím chuột</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6612802754306526077">Đã chọn chế độ ghi màn hình</translation>
 <translation id="6612889377159412215">việc phụ cần làm</translation>

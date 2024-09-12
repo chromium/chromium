@@ -712,6 +712,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2265356434276802347">Questo criterio non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci in primo piano.</translation>
 <translation id="2267047181501709434">Verifica della tua identità…</translation>
 <translation id="2268044343513325586">Perfeziona</translation>
+<translation id="2268966938956566076">Carica tra <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Numero di telefono</translation>
 <translation id="2276057643614339130">Base di stampa</translation>
 <translation id="2277103315734023688">Vai avanti</translation>
@@ -1110,6 +1111,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3062655045399308513">Elimina dati di navigazione…</translation>
 <translation id="306573536155379004">Gioco iniziato.</translation>
 <translation id="3067505415088964188">Prezzo basso</translation>
+<translation id="3068118691172921711">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra 1 minuto</translation>
 <translation id="3076865167425975822">Sistemi operativi</translation>
 <translation id="3080254622891793721">Grafico</translation>
 <translation id="3082007635241601060">Consenti a Google di usare i tuoi carrelli per trovare sconti personalizzati, quando sono disponibili</translation>
@@ -1121,6 +1123,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3099619114405539473">Utilizza le videocamere disponibili (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Conto di risparmio</translation>
 <translation id="3103188521861412364">Azioni e obbligazioni</translation>
+<translation id="3103535543639438037">Confronta prodotti simili uno di fianco all'altro</translation>
 <translation id="3105172416063519923">ID asset:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Controllare la configurazione del sistema DNS sicuro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Vassoio centrale</translation>
@@ -1295,6 +1298,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3407789382767355356">accesso di terze parti</translation>
 <translation id="340924996148642843">La funzionalità di confronto non è al momento disponibile</translation>
 <translation id="3409896703495473338">Gestisci le impostazioni di sicurezza</translation>
+<translation id="3411091017011773343">Carica tra <ph name="HOURS" /> h</translation>
 <translation id="3414275587143250384">Sistemi distribuiti e cloud computing</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="341513675006332771">Pulsante Gioca a Dino di Chrome, attiva per giocare a Dino in Chrome</translation>
@@ -1962,6 +1966,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4628678854894591460">Offerte di pacchetti vacanza</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra <ph name="HOURS" /> ore</translation>
 <translation id="4631649115723685955">Rimborso collegato</translation>
 <translation id="4631881646528206880">Registrazione della carta virtuale</translation>
 <translation id="4635278307999235413">Invio dei dati alla Console di amministrazionein corso…</translation>
@@ -2082,6 +2087,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="484988093836683706">Usa sblocco dispositivo</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4854853140771946034">Crea rapidamente una nuova nota in Google Keep</translation>
+<translation id="4855395119669662878">L'amministratore inizierà a caricare i tuoi file su <ph name="CLOUD_PROVIDER" /> il giorno <ph name="DATE_TIME" />. Mantieni il dispositivo connesso finché il caricamento del file non è completo. Durante il caricamento, potrai leggere solo i file locali.</translation>
 <translation id="485902285759009870">Verifica del codice in corso…</translation>
 <translation id="4860260582253463350">Per continuare su YouTube, dobbiamo verificare la tua identità. Avrai le impostazioni configurate da un genitore o tutore in Family Link.</translation>
 <translation id="4864406669374375262">Stringa di versione copiata negli appunti</translation>
@@ -2137,6 +2143,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4933468175699107356">Fai clic con il tasto destro del mouse per compilare automaticamente le informazioni salvate, come il tuo nome o il tuo indirizzo, in qualsiasi modulo</translation>
 <translation id="4934780484581617878">Gestione delle finestre</translation>
 <translation id="4936134414789135531">Impossibile trovare l'elemento <ph name="VALUE_NAME" /> inserito.</translation>
+<translation id="4936573216809994970">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra 1 ora</translation>
 <translation id="4936675324097895694">Finanza</translation>
 <translation id="4943620199112228840">Utilizzare i microfoni</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
@@ -2310,6 +2317,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5269225904387178860">Perforatura quadrupla in basso</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" non è una condizione supportata per "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Avviso: questo criterio non è stato unito come specificato nel criterio PolicyDictionaryMultipleSourceMergeList perché non fa parte dei criteri del dizionario che possono essere uniti.</translation>
+<translation id="5278778426231952189">Carica ora</translation>
 <translation id="5279286380302340275">Gestisci i download</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Proprietà documento</translation>
@@ -3812,6 +3820,7 @@ Ulteriori dettagli:
 <translation id="8030729864112325446">Corsi di formazione e aggiornamento</translation>
 <translation id="8032546467100845887">Trasparenza</translation>
 <translation id="8035152190676905274">Penna</translation>
+<translation id="8035264638816032066">I titoli e gli URL delle schede delle pagine che aggiungi alla tabella vengono inviati a Google</translation>
 <translation id="8037117624646282037">Utenti che hanno usato il dispositivo di recente</translation>
 <translation id="8037357227543935929">Chiedi (predefinita)</translation>
 <translation id="803771048473350947">Archivio</translation>
@@ -4112,6 +4121,7 @@ Ulteriori dettagli:
 <translation id="8564466070529550495">La carta virtuale non è al momento disponibile. Riprova più tardi.</translation>
 <translation id="8564985650692024650">Chromium ti consiglia di reimpostare la password di <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, se l'hai utilizzata su altri siti.</translation>
 <translation id="8570895683659698018">Hobby e tempo libero</translation>
+<translation id="8572792595597115856">Sconto valido fino al giorno <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Frigoriferi e congelatori</translation>
 <translation id="8577192028579836704">Tutte le opzioni in genere <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carta virtuale non disponibile</translation>
@@ -4133,6 +4143,7 @@ Ulteriori dettagli:
 <translation id="8617269623452051934">utilizzo del tuo dispositivo</translation>
 <translation id="861775596732816396">Dimensione 4</translation>
 <translation id="8620276786115098679">Busta Kaku 7</translation>
+<translation id="8622864575115813231">Contatto dell'istituto finanziario in corso…</translation>
 <translation id="8623885649813806493">Nessuna password corrispondente. Mostra tutte le password salvate.</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4431,6 +4442,7 @@ Ulteriori dettagli:
 <translation id="9192361865877479444">Metallo (opaco)</translation>
 <translation id="9192947025498305328">Prodotti di bellezza ecosostenibili</translation>
 <translation id="9199905725844810519">La stampa è bloccata</translation>
+<translation id="9204089334327209740">Al termine del caricamento, puoi modificare i file in <ph name="CLOUD_PROVIDER" />. Lo spazio di archiviazione locale, inclusi i file nel cestino, verrà rimosso automaticamente.</translation>
 <translation id="9205078245616868884">I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="920643408853370361">Assicurazione per viaggi</translation>
 <translation id="9207861905230894330">Impossibile aggiungere l'articolo.</translation>
@@ -4451,6 +4463,7 @@ Ulteriori dettagli:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quali dati vengono usati:<ph name="END_BOLD" /> gli argomenti degli annunci sono basati sulla tua cronologia di navigazione recente, ossia un elenco di siti che hai visitato usando Chrome su questo dispositivo.</translation>
 <translation id="937885410143139026">Dati inviati alla Console di amministrazione</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
+<translation id="940524522703752213">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra <ph name="MINUTES" /> minuti</translation>
 <translation id="944540589955480312">Usa password e passkey salvate nel tuo Account Google</translation>
 <translation id="945646848072568856">Chrome impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione.</translation>
 <translation id="945855313015696284">Controlla le informazioni riportate di seguito ed elimina le schede non valide</translation>

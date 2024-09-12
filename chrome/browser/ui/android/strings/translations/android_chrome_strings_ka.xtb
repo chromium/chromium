@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — გამოგზავნილია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="1320912611264252795">სანიშნეების შენახვის ნაკადის საქაღალდეები გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="1327257854815634930">ნავიგაციის ისტორია გახსნილია</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ახალი ან განახლებული ჩანართი</translation>
 <translation id="1331212799747679585">Chrome-ის განახლება ვერ მოხერხდა. დამატებითი ვარიანტები</translation>
 <translation id="1332501820983677155">Google Chrome-ის ფუნქციების მალსახმობები</translation>
 <translation id="1333491156693005331">ახლახან შემოწმდა</translation>
@@ -851,6 +852,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">ბოლო 15 წუთი</translation>
 <translation id="5032430150487044192">QR კოდის შექმნა ვერ მოხერხდა</translation>
+<translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი — <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ჩანართი — <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5040262127954254034">კონფიდენციალურობა</translation>
 <translation id="504456571576643789">გასათვალისწინებელი საკითხები</translation>
@@ -1070,6 +1072,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
+<translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />-ის ენა</translation>
 <translation id="6138832295072039549">შეინახეთ თქვენი საიტის პარამეტრები აქ</translation>
 <translation id="6140912465461743537">ქვეყანა/რეგიონი</translation>
@@ -1173,6 +1176,7 @@
 <translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6565959834589222080">ხელმისაწვდომობის მიხედვით გამოიყენება Wi-Fi</translation>
 <translation id="6569373978618239158">ამიერიდან, ახალი ჩანართის გახსნისას, იხილავთ ამბებს <ph name="SITE_NAME" />-დან. თქვენ მიერ თვალმიდევნებული საიტები შეინახება თქვენს Google ანგარიშში. მათი მართვა Discover-ის პარამეტრებიდან შეგიძლიათ.</translation>
+<translation id="6570116402456758630">გვერდის შეჯამება</translation>
 <translation id="6573096386450695060">ყოველთვის დაშვება</translation>
 <translation id="6573431926118603307">სხვა მოწყობილობებზე თქვენ მიერ Chrome-ით გახსნილი ჩანართები აქ გამოჩნდება.</translation>
 <translation id="6583199322650523874">მიმდინარე გვერდის სანიშნეებში დამატება</translation>
@@ -1586,6 +1590,7 @@
 <translation id="8265018477030547118">მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით გაგრძელება</translation>
 <translation id="8266862848225348053">ჩამოტვირთვის მდებარეობა</translation>
+<translation id="8279945625179116733">უზრუნველყოფს <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8282297628636750033">საიტებზე მუქი თემის გამოყენება (შეძლებისდაგვარად)</translation>
 <translation id="8282950411412455249">უსაფრთხოების პარამეტრებზე გადასვლა</translation>

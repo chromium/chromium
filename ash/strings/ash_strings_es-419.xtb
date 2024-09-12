@@ -374,6 +374,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">batería</translation>
 <translation id="2361210043495191221">Activa o desactiva la red Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efectos de apariencia</translation>
 <translation id="236574664504281623">Se envió desde <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">No se puede acceder a la Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
@@ -734,6 +735,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3600061223661453002">No</translation>
 <translation id="3604801046548457007">Se creó el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Dispositivo braille conectado</translation>
+<translation id="3612634595000403645">Preferencias de efectos de apariencia</translation>
 <translation id="3615926715408477684">Si habilitas los datos móviles, se habilitará la conexión Bluetooth.</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Se movió el menú a la esquina superior derecha de la pantalla.</translation>
@@ -895,6 +897,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4146671046252289537">Ir al final de la siguiente palabra</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4151054805501931758">Retoque de retrato</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% restante de batería (aproximadamente <ph name="TIME_LEFT" />).
 Algunas funciones están limitadas para aumentar la duración de la batería.</translation>
 <translation id="4160919062868802509">Se detectaron varias fuentes de audio</translation>
@@ -1107,6 +1110,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
 <translation id="482908187605862807">Apps disponibles en Play Store</translation>
 <translation id="4831034276697007977">¿Confirmas que quieres desactivar los clics automáticos?</translation>
+<translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4849058404725798627">Resaltar el objeto con el enfoque del teclado</translation>
 <translation id="485592688953820832">No es necesaria ninguna acción (pausa)</translation>
 <translation id="485634149294284819">Ingresar al menú de teclados</translation>
@@ -1189,6 +1193,7 @@ Se conectó un dispositivo.</translation>
 <translation id="5078796286268621944">Número de PIN incorrecto</translation>
 <translation id="5083035541015925118">Ctrl + Alt + flecha hacia arriba</translation>
 <translation id="5083553833479578423">Desbloquea más funciones del Asistente.</translation>
+<translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5092436659250499817">Activar o desactivar la retroiluminación del teclado</translation>
 <translation id="5094577350232361255">información</translation>
 <translation id="5095136268899496849">Personaliza tu <ph name="PRODUCT_NAME" /> en Configuración. Intenta cambiar el fondo de pantalla o configurar un protector de pantalla.</translation>
@@ -1642,6 +1647,7 @@ Nueva instalación</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Se ajustó la cámara a la esquina inferior izquierda. Entra en conflicto con la superficie del sistema.</translation>
 <translation id="6605415194043280389">El Modo sin distracciones está activado</translation>
+<translation id="660846213831377756">Teclas del mouse</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="6612802754306526077">Se seleccionó el modo de grabación de pantalla</translation>
 <translation id="6612889377159412215">subtarea</translation>
@@ -1969,6 +1975,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar el Wi-Fi</translation>
+<translation id="77747521138552256">Intentaste ingresar el PIN demasiadas veces. Espera <ph name="TIME_LEFT" /> y vuelve a intentarlo con el PIN, o bien ingresa la contraseña para acceder de inmediato.</translation>
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7781829728241885113">Ayer</translation>

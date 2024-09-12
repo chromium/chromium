@@ -253,6 +253,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
+<translation id="2154460308960858308">Очистить строку поиска</translation>
 <translation id="2156072344042480449">Видны два ваших последних запроса. Их можно использовать только на этой странице.</translation>
 <translation id="2157660087437850958">окно выбора эмодзи</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
 <translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
+<translation id="2197185031095816179">Сброс может помочь, если вы хотите убрать нежелательные всплывающие окна, исправить проблемы с сетевым подключением и устранить другие неполадки.</translation>
 <translation id="2201758491318984023">велосипед</translation>
 <translation id="2203272733515928691">горячий источник</translation>
 <translation id="2203642483788377106">утес</translation>
@@ -498,6 +500,7 @@
 <translation id="3557205324756024651">Локальное удостоверение (необязательно)</translation>
 <translation id="3565064564551103223">Разрешенные IP-адреса</translation>
 <translation id="3569407787324516067">Заставка</translation>
+<translation id="3571184524500629183">Закрыть поиск</translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
 <translation id="357889014807611375">Wi-Fi с тарификацией</translation>
 <translation id="3583278742022654445">Слабый сигнал Wi-Fi. Попробуйте разместить устройство ближе к источнику сигнала.</translation>
@@ -542,6 +545,7 @@
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="382043424867370667">Обои с закатом</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
+<translation id="3836587210832263413">Включайте только те расширения, которым вы доверяете</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">клавиатура уменьшение яркости</translation>
@@ -632,6 +636,7 @@
 <translation id="4251839292699800785">Стильный офис</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4266143281602681663">пряжа</translation>
+<translation id="4269815121975886860">Параметры запуска</translation>
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
 <translation id="4275663329226226506">Камера и микрофон </translation>
 <translation id="4278766082079064416">Это сочетание клавиш используется для действия <ph name="CONFLICT_ACCEL_NAME" />. Чтобы устранить конфликт, измените или удалите сочетание.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
 <translation id="4950893758552030541">аллея деревьев</translation>
+<translation id="4965661459364092269">Настройки сброшены до безопасных</translation>
 <translation id="4965703485264574128">Чтобы получить приблизительный результат, умножьте значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Окна одного размера</translation>
 <translation id="4972592110715526173">сменить режим</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5254600740122644523">Изображение книжной полки: стиль – <ph name="SIMPLE_STYLE" />, тип комнаты: <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Включить режим светлых цветов</translation>
+<translation id="5261479807286543505">Настройки запуска</translation>
 <translation id="5264277876637023664">Запустить проверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Точка доступа отключена.</translation>
@@ -938,6 +945,7 @@
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5876385649737594562">Включите, чтобы изменить настройки</translation>
+<translation id="5877503382465267833">Приостановить воспроизведение записи "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5893975327266416093">Нажмите клавишу, чтобы назначить действие</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
 <translation id="6831043979455480757">Перевести</translation>
+<translation id="6846843854964504403">Сброс до безопасных настроек</translation>
 <translation id="6853312040151791195">Скорость разрядки</translation>
 <translation id="6862416241246624313">Отзыв отправлен</translation>
 <translation id="6866732840889595464">маргаритка</translation>
@@ -1153,6 +1162,7 @@
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
 <translation id="6910845598686542904">создавать образцы распознанных на записи голосов с помощью вычислительных методов;</translation>
 <translation id="6911383237894364323">Не удалось подключиться к медиасерверам.</translation>
+<translation id="6927968682840110570">Название записи</translation>
 <translation id="6930242544192836755">Продолжительность</translation>
 <translation id="6930597342185648547">О фоне</translation>
 <translation id="6939667434404433010">Поиск по названию записи</translation>
@@ -1265,6 +1275,7 @@
 <translation id="7378170410161264436">Диктофон может преобразовывать записи с речью в текст.
 Для этого скачайте модель расшифровки (до 100 МБ).</translation>
 <translation id="7384004438856720753">дворец</translation>
+<translation id="7388345524791662148">Другие действия с записью "<ph name="RECORDING_NAME" />"</translation>
 <translation id="7388959671917308825">Встроенная сенсорная панель</translation>
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="7401543881546089382">Удалить ярлык</translation>
@@ -1286,6 +1297,7 @@
 <translation id="7513770521371759388">снизу</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Воспроизвести запись "<ph name="RECORDING_NAME" />"</translation>
 <translation id="7525067979554623046">Создать</translation>
 <translation id="7528507600602050979">Справочный контент недоступен</translation>
 <translation id="7535791657097741517">Включить светлую тему</translation>
@@ -1325,6 +1337,7 @@
 <translation id="7746357909584236306">доступно для редактирования</translation>
 <translation id="7747039790905080783">Общий ключ</translation>
 <translation id="7752963721013053477">От рассвета до заката (эксклюзивно)</translation>
+<translation id="7760571082554155847">Настройки главной страницы</translation>
 <translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
 <translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
@@ -1361,11 +1374,13 @@
 <translation id="7897043345768902965">тротуар</translation>
 <translation id="7902285181767404769">Отключить звук уведомлений во время записи</translation>
 <translation id="7903695460270716054">Выбрать произведения искусства и красивые фото</translation>
+<translation id="7912005977894000746">Вернуться на главную страницу</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943235353293548836">Постоянный интервал keepalive</translation>
 <translation id="7943516765291457328">Включите Bluetooth, чтобы начать поиск точек доступа поблизости.</translation>
+<translation id="7944482598620888754">Контент сайтов</translation>
 <translation id="7944562637040950644">включить или отключить подсветку клавиатуры</translation>
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7955587717700691983">Клавиатура Bluetooth</translation>
@@ -1402,6 +1417,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
+<translation id="8135609423982943441">На устройстве Chromebook были восстановлены безопасные параметры. Вы в любой момент можете изменить их в настройках.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8151185429379586178">Инструменты разработчика</translation>
@@ -1432,6 +1448,7 @@
 <translation id="8291967909914612644">Страна провайдера</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8302368968391049045">Брандмауэр HTTPS</translation>
+<translation id="8308787307410010965">Настройки контента</translation>
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8320910311642849813">лес</translation>
@@ -1632,6 +1649,8 @@
 <translation id="951780398843003443">сравнивать голоса на протяжении всей записи, чтобы в расшифровке было видно, что и когда сказал каждый говорящий.</translation>
 <translation id="952992212772159698">Не активировано</translation>
 <translation id="95718197892796296">глина</translation>
+<translation id="959792926760890141">Расширения браузера Chrome будут отключены, а сетевые и другие настройки (в том числе поисковой системы по умолчанию) – сброшены.
+          На файлы cookie, вкладки, историю и ваши личные файлы это не повлияет.</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="965918541715156800">желтый и сине-зеленый</translation>
 <translation id="966787709310836684">меню</translation>

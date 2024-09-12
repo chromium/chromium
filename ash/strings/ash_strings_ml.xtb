@@ -1109,6 +1109,7 @@
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="482908187605862807">Play Store-ൽ നിന്ന് ലഭ്യമായ ആപ്പുകൾ</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
+<translation id="4835677468087803981">പിൻ മറയ്ക്കുക</translation>
 <translation id="4849058404725798627">കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഒബ്‌ജക്‌റ്റിനെ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="485592688953820832">പ്രവർത്തനമൊന്നും വേണ്ട (താൽക്കാലികമായി നിർത്തുക)</translation>
 <translation id="485634149294284819">കീബോർഡ് മെനുവിൽ പ്രവേശിക്കുക</translation>
@@ -1191,6 +1192,7 @@
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
+<translation id="5091636240353511739">പിൻ കാണിക്കുക</translation>
 <translation id="5092436659250499817">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="5094577350232361255">വിവരം</translation>
 <translation id="5095136268899496849">ക്രമീകരണത്തിൽ നിങ്ങളുടെ <ph name="PRODUCT_NAME" /> ഇഷ്‌ടാനുസൃതമാക്കുക, വ്യക്തിപരമാക്കുക. നിങ്ങളുടെ വാൾപേപ്പർ മാറ്റാനോ സ്ക്രീൻ സേവർ സജ്ജീകരിക്കാനോ ശ്രമിക്കുക.</translation>
@@ -1644,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">താഴെ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="6605415194043280389">ഫോക്കസ് ഓണാണ്</translation>
+<translation id="660846213831377756">മൗസ് കീകൾ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6612802754306526077">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ് തിരഞ്ഞെടുത്തു</translation>
 <translation id="6612889377159412215">ഉപടാസ്‌ക്</translation>
@@ -2305,6 +2308,7 @@
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8939855324412367560">ഇൻപുട്ട് ഓഡിയോ "<ph name="INPUT_DEVICE_NAME" />" എന്നതും ഔട്ട്പുട്ട് വീഡിയോ "<ph name="OUTPUT_DEVICE_NAME" />" എന്നതുമാണ്. മാറ്റാൻ ക്രമീകരണത്തിൽ പോകുക.</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">സ്റ്റുഡിയോ സ്റ്റൈൽ മൈക്ക്</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> ചെക്ക്‌ബോക്‌സിൽ ചെക്ക് മാർക്കിട്ടിട്ടില്ല.</translation>
 <translation id="8949925099261528566">കണക്റ്റ് ചെയ്തു, എന്നാൽ ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="8951539504029375108">അംഗീകൃത Thunderbolt ഉപകരണങ്ങൾ മാത്രമേ നിങ്ങളുടെ Chromebook-ന് അനുയോജ്യമാകൂ</translation>

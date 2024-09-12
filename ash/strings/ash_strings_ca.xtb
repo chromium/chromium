@@ -1106,6 +1106,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
 <translation id="482908187605862807">Aplicacions disponibles a Play Store</translation>
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
+<translation id="4835677468087803981">Amaga el PIN</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
 <translation id="485634149294284819">Menú per seleccionar el teclat</translation>
@@ -1188,6 +1189,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083035541015925118">Ctrl+Alt+fletxa amunt</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
+<translation id="5091636240353511739">Mostra el PIN</translation>
 <translation id="5092436659250499817">Activa/desactiva la retroil·luminació del teclat</translation>
 <translation id="5094577350232361255">informació</translation>
 <translation id="5095136268899496849">Personalitza el teu <ph name="PRODUCT_NAME" /> a Configuració. Prova de canviar el fons de pantalla o d'establir un estalvi de pantalla.</translation>
@@ -1641,6 +1643,7 @@ Instal·lació nova</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">La càmera s'ha ajustat a l'extrem inferior esquerre. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="6605415194043280389">El mode Sense distraccions està activat</translation>
+<translation id="660846213831377756">Tecles del ratolí</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="6612802754306526077">S'ha seleccionat el mode de gravació de pantalla</translation>
 <translation id="6612889377159412215">subtasca</translation>

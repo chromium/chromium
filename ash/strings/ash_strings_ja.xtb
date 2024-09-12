@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360398059912971776">バッテリー</translation>
 <translation id="2361210043495191221">Wi-Fi のオンとオフを切り替える。<ph name="STATE" />。</translation>
+<translation id="2364710166605611987">デザイン効果</translation>
 <translation id="236574664504281623">送信元: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Chromebook にログインできません</translation>
 <translation id="2367972762794486313">アプリを表示</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">オフ</translation>
 <translation id="3604801046548457007">デスク <ph name="DESK_TITILE" /> が作成されました</translation>
 <translation id="3606978283550408104">ブライユ点字ディスプレイが接続されています。</translation>
+<translation id="3612634595000403645">デザイン効果の設定</translation>
 <translation id="3615926715408477684">モバイルデータ通信を有効にすると、Bluetooth も有効になります</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3616883743181209306">メニューは画面右上に移動しました。</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
+<translation id="4151054805501931758">ポートレート レタッチ</translation>
 <translation id="4156293514828496577">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。
 バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="4160919062868802509">複数のオーディオ ソースが検出されました</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">カメラとマイク</translation>
 <translation id="482908187605862807">Google Play ストアから入手可能なアプリ</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
+<translation id="4835677468087803981">PIN を非表示</translation>
 <translation id="4849058404725798627">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="485634149294284819">キーボード メニューを入力してください</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083035541015925118">Ctrl+Alt+上矢印</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
+<translation id="5091636240353511739">PIN を表示</translation>
 <translation id="5092436659250499817">キーボード バックライトのオン / オフを切り替える</translation>
 <translation id="5094577350232361255">基本情報</translation>
 <translation id="5095136268899496849">[設定] で <ph name="PRODUCT_NAME" /> をカスタマイズできます。壁紙を変更したり、スクリーン セーバーを設定したりしてみてください。</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />、<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">カメラは左下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="6605415194043280389">フォーカス モードがオンです</translation>
+<translation id="660846213831377756">マウスキー</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="6612802754306526077">画面の録画モードを選択しました</translation>
 <translation id="6612889377159412215">サブタスク</translation>
@@ -1969,6 +1975,7 @@
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
 <translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
+<translation id="77747521138552256">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> 待ってから PIN をもう一度お試しください。パスワードを入力すれば、すぐにログインできます。</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7781829728241885113">昨日</translation>

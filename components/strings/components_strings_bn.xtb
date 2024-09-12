@@ -713,6 +713,7 @@
 <translation id="2265356434276802347">এই নীতিতে <ph name="MAX_ITEMS_LIMIT" />টির বেশি ফিচার করা এন্ট্রি রাখা যাবে না।</translation>
 <translation id="2267047181501709434">আপনার পরিচয় যাচাই করা হচ্ছে...</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> মিনিটে আপলোড করুন</translation>
 <translation id="2270484714375784793">ফোন নম্বর</translation>
 <translation id="2276057643614339130">প্রিন্ট বেস</translation>
 <translation id="2277103315734023688">এগিয়ে যান</translation>
@@ -1111,6 +1112,7 @@
 <translation id="3062655045399308513">ব্রাউজ করা ডেটা মুছে দিন...</translation>
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3067505415088964188">দাম কম</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ মিনিটে শুরু হবে</translation>
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3082007635241601060">উপলভ্য হলে পছন্দমতো ডিসকাউন্ট খুঁজে পেতে Google-কে আপনার কার্ট ব্যবহার করতে দিন</translation>
@@ -1122,6 +1124,7 @@
 <translation id="3099619114405539473">উপলভ্য ক্যামেরা ব্যবহার করুন (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">সেভিংস</translation>
 <translation id="3103188521861412364">স্টক ও বন্ড</translation>
+<translation id="3103535543639438037">একই ধরনের প্রোডাক্ট পাশাপাশি তুলনা করুন</translation>
 <translation id="3105172416063519923">সম্পদ আইডি:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />নিরাপদ DNS কনফিগারেশন চেক করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাঝের ট্রে</translation>
@@ -1299,6 +1302,7 @@
 <translation id="3407789382767355356">থার্ড-পার্টির সাইন-ইন</translation>
 <translation id="340924996148642843">এই মুহুর্তে তুলনা করার সুবিধা উপলভ্য নয়</translation>
 <translation id="3409896703495473338">আপনার নিরাপত্তা সেটিংস ম্যানেজ করুন</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> ঘণ্টায় আপলোড করুন</translation>
 <translation id="3414275587143250384">ডিস্ট্রিবিউট করা হয়েছে এবং ক্লাউড কম্পিউটিং</translation>
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="341513675006332771">'Chrome ডাইনো গেম খেলুন' বোতাম, Chrome-এ Dino Run গেম খেলতে এটি চালু করুন</translation>
@@ -1966,6 +1970,7 @@
 <translation id="4628678854894591460">হলিডের জন্য অফার</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড <ph name="HOURS" /> ঘণ্টায় শুরু হবে</translation>
 <translation id="4631649115723685955">ক্যাশব্যাক অফার লিঙ্ক করা হয়েছে</translation>
 <translation id="4631881646528206880">ভার্চুয়াল কার্ড এনরোলমেন্ট</translation>
 <translation id="4635278307999235413">অ্যাডমিন কনসোলে ডেটা পাঠানো হচ্ছে</translation>
@@ -2086,6 +2091,7 @@
 <translation id="484988093836683706">ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
+<translation id="4855395119669662878">আপনার অ্যাডমিনিস্ট্রেটর <ph name="DATE_TIME" />-এ আপনার ফাইল <ph name="CLOUD_PROVIDER" />-এ আপলোড করা শুরু করবেন। ফাইল আপলোড করার প্রসেস শেষ না হওয়া পর্যন্ত আপনার ডিভাইস কানেক্টেড রাখুন। আপলোড প্রসেস চলাকালীন, আপনি শুধু লোকাল ফাইল দেখতে পারবেন।</translation>
 <translation id="485902285759009870">কোড যাচাই করা হচ্ছে…</translation>
 <translation id="4860260582253463350">YouTube-এ চালিয়ে যেতে, আমাদের নিশ্চিত করতে হবে যে তুমিই এটি ব্যবহার করছ কিনা। তোমার মা-বাবা অথবা অভিভাবক Family Link-এ যে সেটিংস সেট-আপ করেছেন, তোমার জন্য সেগুলিই প্রযোজ্য হবে।</translation>
 <translation id="4864406669374375262">ক্লিপবোর্ডে ভার্সন স্ট্রিং কপি করা হয়েছে</translation>
@@ -2141,6 +2147,7 @@
 <translation id="4933468175699107356">আপনার নাম বা ঠিকানার মতো যেকোনও ফর্মে সেভ করা তথ্য অটোফিল করতে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="4934780484581617878">উইন্ডো ম্যানেজমেন্ট</translation>
 <translation id="4936134414789135531">যোগ করা <ph name="VALUE_NAME" /> পাওয়া যায়নি।</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ ঘণ্টায় শুরু হবে</translation>
 <translation id="4936675324097895694">ফাইন্যান্স</translation>
 <translation id="4943620199112228840">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
@@ -2314,6 +2321,7 @@
 <translation id="5269225904387178860">নিচে কোয়াড পাঞ্চ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />"-এর জন্য "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ব্যবহারের কন্ডিশনে নেই</translation>
 <translation id="5273658854610202413">সতর্কতা: এই নীতি ডিকশনারি নীতির অংশ নয় বলে এটিকে PolicyDictionaryMultipleSourceMergeList নীতি অনুযায়ী মার্জ করা হয়নি।</translation>
+<translation id="5278778426231952189">এখনই আপলোড করুন</translation>
 <translation id="5279286380302340275">ডাউনলোড ম্যানেজ করুন</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ডকুমেন্ট প্রপার্টি</translation>
@@ -3816,6 +3824,7 @@
 <translation id="8030729864112325446">ভোকেশনাল ও কনটিনিউয়িং এডুকেশন</translation>
 <translation id="8032546467100845887">ট্রান্সপারেন্সি</translation>
 <translation id="8035152190676905274">কলম</translation>
+<translation id="8035264638816032066">টেবিলে আপনার যোগ করা ট্যাবের নাম ও URL, Google-এর কাছে পাঠানো হবে</translation>
 <translation id="8037117624646282037">সম্প্রতি ডিভাইসটি কে ব্যবহার করেছেন</translation>
 <translation id="8037357227543935929">জিজ্ঞাসা করুন (ডিফল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>
@@ -4115,6 +4124,7 @@
 <translation id="8564466070529550495">এই মুহূর্তে ভার্চুয়াল কার্ড উপলভ্য নয়, পরে আবার চেষ্টা করুন।</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="8570895683659698018">শখ এবং অবকাশ</translation>
+<translation id="8572792595597115856"><ph name="DATE" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="8574841453995331336">রেফ্রিজারেটর ও ফ্রিজ</translation>
 <translation id="8577192028579836704">সব বিকল্প সাধারণত <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ভার্চুয়াল কার্ড উপলভ্য নেই</translation>
@@ -4136,6 +4146,7 @@
 <translation id="8617269623452051934">আপনার ডিভাইসের ব্যবহার</translation>
 <translation id="861775596732816396">সাইজ ৪</translation>
 <translation id="8620276786115098679">এনভেলপ কাকু ৭</translation>
+<translation id="8622864575115813231">আপনার আর্থিক সংস্থার সাথে যোগাযোগ করা হচ্ছে...</translation>
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8624354461147303341">ছাড় পান</translation>
 <translation id="8634957317623797170">৫৪ x ৮৬ মিমি</translation>
@@ -4435,6 +4446,7 @@
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>
 <translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
+<translation id="9204089334327209740">আপলোড করা হয়ে গেলে, আপনি <ph name="CLOUD_PROVIDER" />-এ নিজের ফাইল মডিফাই করতে পারবেন। ট্র্যাশে থাকা সব ফাইল সহ লোকাল স্টোরেজ অটোমেটিক সরিয়ে দেওয়া হবে।</translation>
 <translation id="9205078245616868884">আপনার ডেটা আপনার সিঙ্ক পাসফ্রেজ দিয়ে এনক্রিপ্ট করা হয়েছে। সিঙ্ক শুরু করার জন্য এটি লিখুন।</translation>
 <translation id="920643408853370361">ভ্রমণ বীমা</translation>
 <translation id="9207861905230894330">নিবন্ধ যোগ করতে ব্যর্থ হয়েছে৷</translation>
@@ -4455,6 +4467,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> বিজ্ঞাপনের বিষয়গুলি আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে বেছে নেওয়া হয়। এক্ষেত্রে তা হল, ডিভাইসে Chrome ব্যবহার করে আপনি যেসব সাইট ভিজিট করেছেন তার একটি তালিকা।</translation>
 <translation id="937885410143139026">অ্যাডমিন কনসোলে ডেটা পাঠানো হয়েছে</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড <ph name="MINUTES" /> মিনিটে শুরু হবে</translation>
 <translation id="944540589955480312">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ও পাসকী ব্যবহার করুন</translation>
 <translation id="945646848072568856">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়।</translation>
 <translation id="945855313015696284">নিচে দেওয়া তথ্য পরীক্ষা করুন এবং কোনও ভুল কার্ড থাকলে তা মুছে ফেলুন</translation>

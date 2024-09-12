@@ -1106,6 +1106,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4826588772550366629">kameru un mikrofonu</translation>
 <translation id="482908187605862807">Play veikalā pieejamās lietotnes</translation>
 <translation id="4831034276697007977">Vai tiešām vēlaties izslēgt automātiskos klikšķus?</translation>
+<translation id="4835677468087803981">Slēpt PIN</translation>
 <translation id="4849058404725798627">Izcelt objektu ar tastatūras fokusu</translation>
 <translation id="485592688953820832">Neveikt darbību (pārtraukt)</translation>
 <translation id="485634149294284819">Atvērt tastatūru izvēlni</translation>
@@ -1188,6 +1189,7 @@ Pievienota viena ierīce.</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + augšupvērstā bultiņa</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
+<translation id="5091636240353511739">Rādīt PIN</translation>
 <translation id="5092436659250499817">Ieslēgt/izslēgt tastatūras fona apgaismojumu</translation>
 <translation id="5094577350232361255">par</translation>
 <translation id="5095136268899496849">Iestatījumos varat pielāgot un personalizēt savu ierīci (<ph name="PRODUCT_NAME" />). Mainiet fona tapeti vai iestatiet ekrānsaudzētāju.</translation>
@@ -1641,6 +1643,7 @@ Jauna instalācija</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera pārnesta uz kreiso apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="6605415194043280389">Fokusa režīms ir ieslēgts</translation>
+<translation id="660846213831377756">Peles taustiņi</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="6612802754306526077">Atlasīts ekrāna ierakstīšanas režīms</translation>
 <translation id="6612889377159412215">apakšuzdevums</translation>
@@ -2300,6 +2303,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>
 <translation id="8939855324412367560">Ieejas audio ierīce ir <ph name="INPUT_DEVICE_NAME" />, un izvades audio ierīce ir <ph name="OUTPUT_DEVICE_NAME" />. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studijas stila mikrofons</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> izvēles rūtiņa nav atzīmēta</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8951539504029375108">Ar jūsu Chromebook datoru ir saderīgas tikai apstiprinātas Thunderbolt ierīces</translation>

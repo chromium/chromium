@@ -1109,6 +1109,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4826588772550366629">câmara e microfone</translation>
 <translation id="482908187605862807">Apps disponíveis na Play Store</translation>
 <translation id="4831034276697007977">Tem a certeza de que quer desativar os cliques automáticos?</translation>
+<translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4849058404725798627">Realçar objeto com foco do teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Aceder ao menu do teclado</translation>
@@ -1191,6 +1192,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083035541015925118">ctrl + alt + seta para cima</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
+<translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5092436659250499817">Ativar/desativar a retroiluminação do teclado</translation>
 <translation id="5094577350232361255">sobre</translation>
 <translation id="5095136268899496849">Personalize o <ph name="PRODUCT_NAME" /> nas Definições. Experimente alterar a imagem de fundo ou definir uma proteção de ecrã.</translation>
@@ -1358,6 +1360,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível validar a sua palavra-passe. Tente novamente.</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
+<translation id="5633826232582408011">Quando ativa as funcionalidades Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido, o conteúdo do documento e o URL da página Web são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716">A app <ph name="FOCUSED_APP_NAME" /> solicita a sua atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1644,6 +1647,7 @@ Nova instalação</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Câmara ajustada ao canto inferior esquerdo. Há um conflito com a superfície do sistema.</translation>
 <translation id="6605415194043280389">O Modo sem distrações está ativado</translation>
+<translation id="660846213831377756">Teclas do rato</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="6612802754306526077">Modo de gravação de ecrã selecionado</translation>
 <translation id="6612889377159412215">subtarefa</translation>

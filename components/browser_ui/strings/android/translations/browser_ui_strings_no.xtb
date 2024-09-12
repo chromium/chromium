@@ -269,6 +269,7 @@
 <translation id="5335288049665977812">Tillat nettsteder å kjøre JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344522958567249764">Administrer annonsepersonvern</translation>
+<translation id="5373874281522292782">Fanegruppene dine er lagret</translation>
 <translation id="5389626883706033615">Nettsteder blokkeres fra å be deg om å bruke informasjon de har lagret om deg</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
@@ -366,6 +367,7 @@
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
 <translation id="6709432001666529933">Spør før nettsteder får spore hendene dine (anbefales)</translation>
 <translation id="6722828510648505498">Blokker påloggingsforespørsler fra identitetstjenester.</translation>
+<translation id="6729704574271585059">Gruppene du har opprettet, er lagret i fanegruppedelen og oppdateres på alle enhetene dine</translation>
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
 <translation id="6766622839693428701">Sveip ned for å lukke.</translation>

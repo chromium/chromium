@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ఫోటోలు</translation>
+<translation id="2154460308960858308">సెర్చ్‌ను క్లియర్ చేయండి</translation>
 <translation id="2156072344042480449">అత్యంత ఇటీవలి మీ 2 ప్రాంప్ట్‌లు. మీరు ఈ పేజీలో ఉన్నప్పుడు మాత్రమే ఈ ప్రాంప్ట్‌లను ఉపయోగించగలరు.</translation>
 <translation id="2157660087437850958">ఎమోజి సెలెక్టర్</translation>
 <translation id="2157959690810728433">క్యూలో ఉంచబడింది</translation>
@@ -265,6 +266,7 @@
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2189104374785738357">APN వివరాలను ఎడిట్ చేయండి</translation>
 <translation id="2195732836444333448">ప్రస్తుతం కెపాసిటీని మించిపోయింది. త్వరగా తిరిగి రండి.</translation>
+<translation id="2197185031095816179">అవాంఛిత పాప్-అప్‌లను తీసివేయడంలో, నెట్‌వర్క్ సమస్యలను పరిష్కరించడంలో, అలాగే ఊహించని ఇతర సమస్యలను పరిష్కరించడంలో సేఫ్టీ రీసెట్ సహాయపడగలదు.</translation>
 <translation id="2201758491318984023">సైకిల్</translation>
 <translation id="2203272733515928691">హాట్ స్ప్రింగ్</translation>
 <translation id="2203642483788377106">శిఖరం</translation>
@@ -499,6 +501,7 @@
 <translation id="3557205324756024651">లోకల్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="3565064564551103223">అనుమతించబడిన IPలు</translation>
 <translation id="3569407787324516067">స్క్రీన్ సేవర్</translation>
+<translation id="3571184524500629183">సెర్చ్‌ను మూసివేయండి</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
 <translation id="3583278742022654445">సిగ్నల్ సామర్థ్యం బలహీనంగా ఉంది. Wi-Fi సిగ్నల్ సోర్స్‌కు కొద్దిగా దగ్గరగా వెళ్ళడానికి ట్రై చేయండి.</translation>
@@ -543,6 +546,7 @@
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="382043424867370667">'సూర్యాస్తమయం' వాల్‌పేపర్</translation>
 <translation id="3824259034819781947">ఫైల్స్‌ను జోడించండి</translation>
+<translation id="3836587210832263413">మీరు నమ్మే ఎక్స్‌టెన్షన్‌లను మాత్రమే ఆన్ చేయండి</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
 <translation id="3845880861638660475">డైలాగ్‌ను మూసివేయడానికి <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />ను నొక్కండి.</translation>
 <translation id="3848280697030027394">కీబోర్డ్ బ్రైట్‌నెస్ తగ్గించండి</translation>
@@ -633,6 +637,7 @@
 <translation id="4251839292699800785">స్టైలిష్ ఆఫీస్</translation>
 <translation id="4258281355379922695">HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="4266143281602681663">నూలు</translation>
+<translation id="4269815121975886860">స్టార్టప్ ప్రాధాన్యతలు</translation>
 <translation id="4271957103967917607">ఫుల్ స్క్రీన్‌లో చూడండి</translation>
 <translation id="4275663329226226506">మీడియా</translation>
 <translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />"కు ఒక షార్ట్‌కట్ ఉపయోగించబడుతోంది. వైరుధ్యం లేకుండా చేయడానికి ఎడిట్ చేయండి లేదా తీసివేయండి.</translation>
@@ -769,6 +774,7 @@
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" />, <ph name="VERSION" /> వెర్షన్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="4950893758552030541">చెట్టు తొర్ర</translation>
+<translation id="4965661459364092269">సేఫ్టీ రీసెట్ పూర్తి అయ్యింది</translation>
 <translation id="4965703485264574128">సమీప ఫలితం కోసం, <ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో గుణించండి</translation>
 <translation id="4969079779290789265">స్ప్లిట్ చేయండి</translation>
 <translation id="4972592110715526173">మోడ్‌ను మారుస్తుంది</translation>
@@ -831,6 +837,7 @@
 <translation id="5252456968953390977">రోమింగ్</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> రూమ్‌లో <ph name="SIMPLE_STYLE" /> పుస్తక అల్మారా</translation>
 <translation id="5257811368506016604">లేత రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="5261479807286543505">స్టార్టప్ సెట్టింగ్‌లు</translation>
 <translation id="5264277876637023664">CPU పరీక్షను రన్ చేయండి</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN డిజేబుల్ చేయబడింది.</translation>
@@ -940,6 +947,7 @@
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5876385649737594562">ఆప్షన్‌లను ఎంచుకోవడానికి ఆన్ చేయండి</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" />‌ను పాజ్ చేయండి</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
 <translation id="5893975327266416093">కేటాయించడానికి కీబోర్డ్ కీపై ట్యాప్ చేయండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
@@ -1144,6 +1152,7 @@
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
+<translation id="6846843854964504403">సేఫ్టీ రీసెట్</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
 <translation id="6862416241246624313">ఫీడ్‌బ్యాక్‌ను సమర్పించారు</translation>
 <translation id="6866732840889595464">డైసీ</translation>
@@ -1156,6 +1165,7 @@
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6910845598686542904">రికార్డింగ్‌లో కనుగొనబడిన వాయిస్‌ల మోడల్స్‌ను గణిస్తుంది</translation>
 <translation id="6911383237894364323">మీడియా సర్వర్‌లకు కనెక్ట్ చేయడం సాధ్యం కాలేదు</translation>
+<translation id="6927968682840110570">రికార్డింగ్ పేరు</translation>
 <translation id="6930242544192836755">వ్యవధి</translation>
 <translation id="6930597342185648547">బ్యాక్‌గ్రౌండ్ గురించి వివరాలు</translation>
 <translation id="6939667434404433010">రికార్డింగ్ పేరును సెర్చ్ చేయండి</translation>
@@ -1268,6 +1278,7 @@
 <translation id="7378170410161264436">Recorder స్పీచ్‌తో ఉన్న రికార్డింగ్‌ల కోసం మాటల టైపింగ్‌లను క్రియేట్ చేయగలదు.
 ఈ మాటల టైపింగ్‌లను పొందడానికి మాటల టైపింగ్ మోడల్‌ను (100MB వరకు) డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="7384004438856720753">రాజభవనం</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="7388959671917308825">బిల్ట్-ఇన్ టచ్‌ప్యాడ్</translation>
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
 <translation id="7401543881546089382">షార్ట్‌కట్‌ను తొలగించండి</translation>
@@ -1289,6 +1300,7 @@
 <translation id="7513770521371759388">దిగువ</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" />‌ను ప్లే చేయండి</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7528507600602050979">సహాయక కంటెంట్ అందుబాటులో లేదు</translation>
 <translation id="7535791657097741517">లేత రంగు రూపాన్ని ఆన్ చేయండి</translation>
@@ -1328,6 +1340,7 @@
 <translation id="7746357909584236306">ఎడిట్ చేయదగినది</translation>
 <translation id="7747039790905080783">ముందే షేర్ చేసిన కీ</translation>
 <translation id="7752963721013053477">ఉదయం నుండి సాయంత్రం వరకు - ప్రత్యేకం</translation>
+<translation id="7760571082554155847">హోమ్ పేజీ సెట్టింగ్‌లు</translation>
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
@@ -1364,11 +1377,13 @@
 <translation id="7897043345768902965">కాలిబాట</translation>
 <translation id="7902285181767404769">రికార్డింగ్ చేస్తున్నప్పుడు నోటిఫికేషన్‌లను మ్యూట్ చేయండి</translation>
 <translation id="7903695460270716054">సేకరించబడిన పోస్టర్ ఇమేజ్‌ను, ఇమేజ్‌లను ఎంచుకోండి</translation>
+<translation id="7912005977894000746">ప్రధాన పేజీకి తిరిగి వెళ్లండి</translation>
 <translation id="7915220255123750251">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ను ఏర్పరుస్తాయి.</translation>
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943235353293548836">నిరంతర ఎక్స్‌టెన్షన్ యాక్టివిటీకీ సంబంధించిన ఇంట‌ర్‌వెల్</translation>
 <translation id="7943516765291457328">సమీపంలోని హాట్‌స్పాట్‌ల కోసం స్కాన్ చేయడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
+<translation id="7944482598620888754">సైట్ కంటెంట్</translation>
 <translation id="7944562637040950644">కీబోర్డ్ బ్యాక్‌లైట్‌ను టోగుల్ చేస్తుంది</translation>
 <translation id="7953669802889559161">ఇన్‌పుట్‌లు</translation>
 <translation id="7955587717700691983">బ్లూటూత్ కీబోర్డ్</translation>
@@ -1405,6 +1420,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>
+<translation id="8135609423982943441">మీ Chromebook సురక్షిత ఆటోమేటిక్ సెట్టింగ్‌లకు రీసెట్ చేయబడింది. ఈ మార్పులను సెట్టింగ్‌లలో ఏ సమయంలోనైనా మీరు సర్దుబాటు చేయవచ్చు.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ని ఎంచుకోండి</translation>
 <translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
@@ -1435,6 +1451,7 @@
 <translation id="8291967909914612644">స్వస్థల నెట్‌వర్క్ ప్రదాత దేశం</translation>
 <translation id="8294431847097064396">సోర్స్</translation>
 <translation id="8302368968391049045">HTTPS ఫైర్‌వాల్</translation>
+<translation id="8308787307410010965">సైట్ కంటెంట్ సెట్టింగ్‌లు</translation>
 <translation id="8312330582793120272">మీడియాను ప్లే చేస్తుంది</translation>
 <translation id="8318753676953949627">ఇమేజ్‌లు లేవు</translation>
 <translation id="8320910311642849813">అడవి</translation>
@@ -1635,6 +1652,8 @@
 <translation id="951780398843003443">రికార్డింగ్ అంతటా వాయిస్‌లను సరిపోల్చండి, తద్వారా టైప్ చేసిన మాటల ఫైల్ ప్రతి వాయిస్ ఏమి చెప్పింది, ఎప్పుడు చెప్పింది అనే విషయాన్ని ప్రతిబింబిస్తుంది</translation>
 <translation id="952992212772159698">సక్రియం చేయబడలేదు</translation>
 <translation id="95718197892796296">బంక మట్టి</translation>
+<translation id="959792926760890141">Chrome బ్రౌజర్ ఎక్స్‌టెన్షన్‌లను సేఫ్టీ రీసెట్ ఆఫ్ చేసి, నెట్‌వర్క్ ఇంకా ఇతర సెట్టింగ్‌లను సురక్షిత ఆటోమేటిక్ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది.
+          మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ రీసెట్ చేయబడుతుంది, కానీ మీ ట్యాబ్‌లు, ఫైల్స్, కుక్కీలు, హిస్టరీ మార్చబడవు.</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>
 <translation id="965918541715156800">పసుపు రంగు, టీల్</translation>
 <translation id="966787709310836684">మెనూ</translation>

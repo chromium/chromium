@@ -259,6 +259,7 @@
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
 <translation id="2189104374785738357">Endre APN-detaljene</translation>
 <translation id="2195732836444333448">Full kapasitet akkurat nå. Kom tilbake senere.</translation>
+<translation id="2197185031095816179">Sikkerhetstilbakestilling kan bidra til å fjerne uønskede forgrunnsvinduer, korrigere nettverksproblemer og løse andre uventede problemer.</translation>
 <translation id="2201758491318984023">sykkel</translation>
 <translation id="2203272733515928691">varm kilde</translation>
 <translation id="2203642483788377106">klippe</translation>
@@ -537,6 +538,7 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="382043424867370667">Bakgrunn: Solnedgang</translation>
 <translation id="3824259034819781947">Legg ved filer</translation>
+<translation id="3836587210832263413">Slå bare på utvidelser du stoler på</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="3845880861638660475">Trykk på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> for å lukke dialogboksen.</translation>
 <translation id="3848280697030027394">tastatur gjør mørkere</translation>
@@ -626,6 +628,7 @@
 <translation id="4251839292699800785">Stilig kontor</translation>
 <translation id="4258281355379922695">HTTP-tidsforsinkelse</translation>
 <translation id="4266143281602681663">garn</translation>
+<translation id="4269815121975886860">Preferanser for oppstart</translation>
 <translation id="4271957103967917607">Vis i fullskjerm</translation>
 <translation id="4275663329226226506">Medier</translation>
 <translation id="4278766082079064416">Hurtigtasten brukes til «<ph name="CONFLICT_ACCEL_NAME" />». Rediger eller fjern den for å løse konflikten.</translation>
@@ -760,6 +763,7 @@
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4950314376641394653">Fastvaren for <ph name="DEVICE_NAME" /> er oppdatert til versjon <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tretunnel</translation>
+<translation id="4965661459364092269">Sikkerhetstilbakestillingen er fullført</translation>
 <translation id="4965703485264574128">Multipliser <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /> for å få et omtrentlig svar</translation>
 <translation id="4969079779290789265">Del opp</translation>
 <translation id="4972592110715526173">modusendring</translation>
@@ -820,6 +824,7 @@
 <translation id="5252456968953390977">Datastreifing</translation>
 <translation id="5254600740122644523">En <ph name="SIMPLE_STYLE" /> bokhylle i et <ph name="SIMPLE_TONE" /> rom</translation>
 <translation id="5257811368506016604">Slå på modus for lyse farger</translation>
+<translation id="5261479807286543505">Innstillinger for oppstart</translation>
 <translation id="5264277876637023664">Kjør prosessortest</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN er deaktivert.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="680983167891198932">Nøkkel</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
 <translation id="6831043979455480757">Oversett</translation>
+<translation id="6846843854964504403">Sikkerhetstilbakestilling</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
 <translation id="6862416241246624313">Tilbakemeldingen er sendt</translation>
 <translation id="6866732840889595464">tusenfryd</translation>
@@ -1315,6 +1321,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7746357909584236306">kan endres</translation>
 <translation id="7747039790905080783">Forhåndsdelt nøkkel</translation>
 <translation id="7752963721013053477">Fra morgen til kveld – eksklusiv</translation>
+<translation id="7760571082554155847">Innstillinger for startsiden</translation>
 <translation id="7762130827864645708">Passordendringen var vellykket. Bruk det nye passordet fra nå av.</translation>
 <translation id="7763470514545477072">Samsvarende domenesuffiks</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
@@ -1355,6 +1362,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Vedvarende keepalive-intervall</translation>
 <translation id="7943516765291457328">Slå på Bluetooth for å søke etter wifi-soner i nærheten</translation>
+<translation id="7944482598620888754">Nettstedinnhold</translation>
 <translation id="7944562637040950644">slå av/på tastaturets baklys</translation>
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
@@ -1391,6 +1399,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
+<translation id="8135609423982943441">Chromebooken er tilbakestilt til trygge standardinnstillinger. Du kan justere disse endringene når som helst i innstillingene.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Utviklerverktøy</translation>
@@ -1420,6 +1429,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8291967909914612644">Land for leverandøren av hjemmeenheten</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
+<translation id="8308787307410010965">Innstillinger for nettstedinnhold</translation>
 <translation id="8312330582793120272">spill av medieinnhold</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8320910311642849813">skog</translation>
@@ -1618,6 +1628,8 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="951780398843003443">sammenligne stemmene i opptaket, slik at transkripsjonen gjenspeiler hva hver enkelt person sier, og når</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>
 <translation id="95718197892796296">leire</translation>
+<translation id="959792926760890141">Sikkerhetstilbakestilling slår av Chrome-nettleserutvidelser og tilbakestiller nettverksinnstillinger og andre innstillinger til trygge standardverdier.
+          Standardsøkemotoren din blir tilbakestilt, men faner, filer, informasjonskapsler og loggen blir ikke endret.</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="965918541715156800">gul og blågrønn</translation>
 <translation id="966787709310836684">meny</translation>

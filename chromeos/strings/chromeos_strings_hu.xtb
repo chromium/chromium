@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
 <translation id="1207734034680156868">A javaslatok a leíráson alapulnak</translation>
 <translation id="121090498480012229">médiatartalom lejátszása vagy szüneteltetése</translation>
+<translation id="1216675364136048456">Bezárás</translation>
 <translation id="1223498995510244364">Összegzés</translation>
 <translation id="123124571410524056">Portál valószínűsíthető</translation>
 <translation id="1232610416724362657">vízesés</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1593528591614229756">Gondoskodjon arról, hogy a mobilszolgáltató vagy a rendszergazda által biztosított APN-ek legyenek kiválasztva. Az APN kiválasztásával letiltja az egyéni APN-eket. Az érvénytelen APN-ek megzavarhatják a mobilkapcsolatot. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="1604959087182679653">Átirat elrejtése</translation>
 <translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1611649489706141841">következő</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Háttérkép módosítása naponta</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1651925268237749928">Egy megosztott albumot választott ki. Mások is módosíthatják a benne lévő fotókat, illetve hozzáadhatnak újakat. Háttérképként olyan fotók is megjelenhetnek, amelyek jelenleg nem találhatók meg ebben az albumban.</translation>
+<translation id="1661512400125589646">Szüneteltetés</translation>
 <translation id="1661865805917886535">A Google megkaphat bizonyos adatokat a fiókról és a rendszerről. Ezeket az adatokat a technikai problémák kezelésére és szolgáltatásaink fejlesztésére használjuk az adatvédelmi irányelveinknek (<ph name="PRIVACYPOLICYURL" />) és az Általános Szerződési Feltételeknek (<ph name="TERMSOFSERVICEURL" />) megfelelően. Tartalommódosítás kéréséhez lépjen a Jogi súgóba (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
@@ -173,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Átirat</translation>
 <translation id="1765169783255151332">Gyors billentyűváltás</translation>
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1776228893584526149">Háttérkép tónusa</translation>
@@ -217,6 +221,7 @@
 <translation id="1954818433534793392">épület</translation>
 <translation id="1962550982027027473">Szükség van alapértelmezett APN-re</translation>
 <translation id="1967860190218310525">Új APN létrehozása</translation>
+<translation id="1967917622327567355">Átirat megjelenítése</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">hagyományos</translation>
 <translation id="1977994649430373166">Google-profilfotó</translation>
@@ -598,6 +603,7 @@
 <translation id="4111761024568264522">USB-érintőpad</translation>
 <translation id="4113067922640381334">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> férhet hozzá</translation>
 <translation id="4117637339509843559">Sötét mód</translation>
+<translation id="4126551873361000548">Vissza 10 másodpercet</translation>
 <translation id="4130035430755296270">További elrendezési lehetőségekért mozgassa tovább az egérmutatót</translation>
 <translation id="4130750466177569591">Elfogadom</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
@@ -678,6 +684,7 @@
 <translation id="4507392511610824664">fényerő növelése</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
+<translation id="4516323842122524821">Hangerő</translation>
 <translation id="4521826082652183069">Tárgy alternatív neve – egyezés</translation>
 <translation id="4522570452068850558">Részletek</translation>
 <translation id="4536864596629708641">IP-konfiguráció</translation>
@@ -782,6 +789,7 @@
 <translation id="5049856988445523908">SIM zárolva (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Csoport neve</translation>
 <translation id="5051044138948155788">Ez az egy oldal van csak. A művelet végrehajtása esetén a beolvasás indítóképernyőjére jut.</translation>
+<translation id="5053233795640754917">Szüneteltetés</translation>
 <translation id="5078711626843651677">A hangminták ideiglenesen az eszközön maradnak, amíg be nem fejeződik a beszélők megcímkézése. Ezt bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="5078983345702708852">futurista</translation>
 <translation id="5087864757604726239">vissza</translation>
@@ -789,6 +797,7 @@
 <translation id="5089810972385038852">Állam</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét, majd csatlakoztassa újra a frissítési folyamat folytatásához</translation>
+<translation id="5095864667399748231">Némítás be-/kikapcsolása</translation>
 <translation id="5099354524039520280">felfelé</translation>
 <translation id="5107243100836678918">A(z) <ph name="META_KEY" /> billentyű nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a(z) <ph name="KEY" /> billentyű használatával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Rokon értelmű:</translation>
@@ -934,6 +943,7 @@
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5893975327266416093">Koppintson egy billentyűre a hozzárendeléshez</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5896602941605730551">Lejátszás</translation>
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5903200662178656908">Az eszközhöz billentyűzet és egér is tartozik.</translation>
 <translation id="5904994456462260490">Új APN hozzáadása</translation>
@@ -1321,6 +1331,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7762130827864645708">A jelszómódosítás sikeres volt. Mostantól használja az új jelszót.</translation>
 <translation id="7763470514545477072">Domainvégződés – egyezés</translation>
 <translation id="7769672763586021400">Modellazonosító</translation>
+<translation id="7774759755755950354">Vissza</translation>
 <translation id="7778717409420828014">Visszajelzését áttekinti csapatunk, így segíthet a Chromebook által nyújtott élmény javításában. A jelentések nagy száma miatt nem tudunk válaszolni.</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7784116172884276937">Nincsenek beállítva DNS-szerverek</translation>
@@ -1411,6 +1422,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8227488649450500937">Próbálkozzon a következő utasítások valamelyikével, vagy tekintse meg az <ph name="BEGIN_LINK_PROMPTING_GUIDE" />utasításírási útmutatót<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
+<translation id="8236972776513018241">Átirat</translation>
 <translation id="8238771987802558562">Válasszon APN-t</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8250926778281121244">rozsdaszínű</translation>
@@ -1513,6 +1525,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Előfordulhat, hogy a hálózat hitelesítési portállal rendelkezik</translation>
+<translation id="8797082062139985406">Név létrehozása a Google AI használatával</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8798441408945964110">Szolgáltató neve</translation>
 <translation id="8808828119384186784">A Chrome beállításai</translation>
@@ -1533,6 +1546,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8864415976656252616">Nincsenek javasolt tartalmak. Megtekintheti a legnépszerűbb súgótartalmakat.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Az eszköz egy táblagép.</translation>
+<translation id="8878117140814294155">Mikrofon némítása vagy némításának feloldása</translation>
 <translation id="8881098542468797602">Sikeres tesztelés</translation>
 <translation id="8882789155418924367">baglyok</translation>
 <translation id="8892443466059986410">Gyorsparancs szerkesztésének visszavonása</translation>

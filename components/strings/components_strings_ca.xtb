@@ -712,6 +712,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2265356434276802347">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades destacades.</translation>
 <translation id="2267047181501709434">S'està verificant la teva identitat...</translation>
 <translation id="2268044343513325586">Refina</translation>
+<translation id="2268966938956566076">Penja d'aquí a <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Número de telèfon</translation>
 <translation id="2276057643614339130">Base d'impressió</translation>
 <translation id="2277103315734023688">Avança</translation>
@@ -1110,6 +1111,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3062655045399308513">Suprimeix les dades de navegació...</translation>
 <translation id="306573536155379004">S'ha iniciat el joc.</translation>
 <translation id="3067505415088964188">El preu és baix</translation>
+<translation id="3068118691172921711">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 minut</translation>
 <translation id="3076865167425975822">Sistemes operatius</translation>
 <translation id="3080254622891793721">Gràfic</translation>
 <translation id="3082007635241601060">Deixa que Google utilitzi els teus carretons per trobar descomptes personalitzats quan n'hi hagi de disponibles</translation>
@@ -1121,6 +1123,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3099619114405539473">Utilitza les càmeres disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Estalvis</translation>
 <translation id="3103188521861412364">Accions i bons</translation>
+<translation id="3103535543639438037">Compara productes similars en paral·lel</translation>
 <translation id="3105172416063519923">Identificador de l'element:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprova la configuració de DNS segur<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Safata central</translation>
@@ -1298,6 +1301,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3407789382767355356">inici de sessió de tercers</translation>
 <translation id="340924996148642843">Compare no està disponible en aquests moments</translation>
 <translation id="3409896703495473338">Gestiona la configuració de seguretat</translation>
+<translation id="3411091017011773343">Penja d'aquí a <ph name="HOURS" /> h</translation>
 <translation id="3414275587143250384">Informàtica distribuïda i al núvol</translation>
 <translation id="3414952576877147120">Mida:</translation>
 <translation id="341513675006332771">Botó Juga al joc El dinosaure de Chrome: activa'l per jugar al joc del dinosaure de Chrome</translation>
@@ -1965,6 +1969,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4628678854894591460">Ofertes de vacances</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a <ph name="HOURS" /> hores</translation>
 <translation id="4631649115723685955">Devolució de diners associada</translation>
 <translation id="4631881646528206880">Inscripció de targetes virtuals</translation>
 <translation id="4635278307999235413">S'estan enviant dades a la consola d'administració</translation>
@@ -2085,6 +2090,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="484988093836683706">Utilitza el desbloqueig del dispositiu</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854853140771946034">Crea una nota nova a Google Keep ràpidament</translation>
+<translation id="4855395119669662878">L'administrador començarà a penjar els fitxers a <ph name="CLOUD_PROVIDER" /> el dia <ph name="DATE_TIME" />. Mantén el dispositiu connectat fins que la pujada de fitxers s'hagi completat. Durant la pujada, només podràs llegir els fitxers locals.</translation>
 <translation id="485902285759009870">S'està verificant el codi...</translation>
 <translation id="4860260582253463350">Per continuar cap a YouTube, hem de comprovar que ets tu. Obtindràs la configuració que el teu pare, mare o tutor hagi establert a Family Link.</translation>
 <translation id="4864406669374375262">S'ha copiat la cadena de versió al porta-retalls</translation>
@@ -2140,6 +2146,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4933468175699107356">Fes clic amb el botó dret per emplenar automàticament la informació desada, com ara el teu nom o la teva adreça, en qualsevol formulari</translation>
 <translation id="4934780484581617878">Gestió de finestres</translation>
 <translation id="4936134414789135531">No s'ha pogut trobar el valor <ph name="VALUE_NAME" /> inserit.</translation>
+<translation id="4936573216809994970">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 hora</translation>
 <translation id="4936675324097895694">Finances</translation>
 <translation id="4943620199112228840">Utilitzar els micròfons</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
@@ -2313,6 +2320,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5269225904387178860">Encunyació quàdruple a la part inferior</translation>
 <translation id="5271381225185906340">La condició "<ph name="DATA_CONTROLS_ATTRIBUTE" />" no s'admet per a "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Advertiment: aquesta política no s'ha combinat segons el que s'especifica a la política PolicyDictionaryMultipleSourceMergeList perquè no forma part de les polítiques de diccionari que es poden combinar.</translation>
+<translation id="5278778426231952189">Penja ara</translation>
 <translation id="5279286380302340275">Gestiona les baixades</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propietats del document</translation>
@@ -3816,6 +3824,7 @@ Detalls addicionals:
 <translation id="8030729864112325446">Formació professional i continuada</translation>
 <translation id="8032546467100845887">Transparència</translation>
 <translation id="8035152190676905274">Bolígraf</translation>
+<translation id="8035264638816032066">Els títols de les pestanyes i els URL de les pàgines que afegeixes a la taula s'envien a Google</translation>
 <translation id="8037117624646282037">Qui ha utilitzat el dispositiu recentment</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>
@@ -4115,6 +4124,7 @@ Detalls addicionals:
 <translation id="8564466070529550495">La targeta virtual no està disponible en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="8564985650692024650">Chromium et recomana que restableixis la contrasenya per a <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si l'has fet servir en altres llocs web.</translation>
 <translation id="8570895683659698018">Aficions i oci</translation>
+<translation id="8572792595597115856">Vàlid fins al dia <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Refrigeradors i congeladors</translation>
 <translation id="8577192028579836704">Preu habitual de totes les opcions: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">La targeta virtual no està disponible</translation>
@@ -4136,6 +4146,7 @@ Detalls addicionals:
 <translation id="8617269623452051934">l'ús que fas del dispositiu</translation>
 <translation id="861775596732816396">Mida 4</translation>
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
+<translation id="8622864575115813231">S'està contactant amb la teva entitat financera...</translation>
 <translation id="8623885649813806493">No hi ha cap contrasenya que coincideixi. Mostra totes les contrasenyes desades.</translation>
 <translation id="8624354461147303341">Obtén descomptes</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4434,6 +4445,7 @@ Detalls addicionals:
 <translation id="9192361865877479444">Metall (mat)</translation>
 <translation id="9192947025498305328">Cosmètica ètica i sostenible</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
+<translation id="9204089334327209740">Un cop s'hagi completat la pujada, podràs modificar els fitxers a <ph name="CLOUD_PROVIDER" />. L'emmagatzematge local, inclosos els fitxers de la paperera, se suprimirà automàticament.</translation>
 <translation id="9205078245616868884">Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincronització. Introduïu-la per començar la sincronització.</translation>
 <translation id="920643408853370361">Assegurança de viatges</translation>
 <translation id="9207861905230894330">No s'ha pogut afegir l'article.</translation>
@@ -4454,6 +4466,7 @@ Detalls addicionals:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: els temes d'anunci es basen en el teu historial de navegació recent, que és una llista dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="937885410143139026">S'han enviat dades a la consola d'administració</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
+<translation id="940524522703752213">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a <ph name="MINUTES" /> minuts</translation>
 <translation id="944540589955480312">Utilitza les contrasenyes i les claus d'accés desades al teu Compte de Google</translation>
 <translation id="945646848072568856">Chrome bloqueja els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues.</translation>
 <translation id="945855313015696284">Consulta la informació següent i suprimeix les targetes que no siguin vàlides</translation>

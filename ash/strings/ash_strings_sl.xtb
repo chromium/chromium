@@ -374,6 +374,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2360398059912971776">baterija</translation>
 <translation id="2361210043495191221">Preklop povezave Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Učinki videza</translation>
 <translation id="236574664504281623">Poslano iz naprave <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Prijava v Chromebook ni mogoča.</translation>
 <translation id="2367972762794486313">Pokaži aplikacije</translation>
@@ -734,6 +735,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3600061223661453002">Izklop</translation>
 <translation id="3604801046548457007">Namizje <ph name="DESK_TITILE" /> je bilo ustvarjeno</translation>
 <translation id="3606978283550408104">Povezava z braillovo vrstico je vzpostavljena.</translation>
+<translation id="3612634595000403645">Nastavitve učinkov videza</translation>
 <translation id="3615926715408477684">Če omogočite prenos podatkov v mobilnem omrežju, bo omogočen Bluetooth.</translation>
 <translation id="3616113530831147358">Zvok</translation>
 <translation id="3616883743181209306">Meni je bil premaknjen v zgornji desni kot zaslona.</translation>
@@ -894,6 +896,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4146671046252289537">Premik na konec naslednje besede</translation>
 <translation id="4146833061457621061">Predvajaj glasbo</translation>
 <translation id="4150201353443180367">Prikaz</translation>
+<translation id="4151054805501931758">Izboljšanje portreta</translation>
 <translation id="4156293514828496577">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />).
 Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translation>
 <translation id="4160919062868802509">Zaznanih je več virov zvoka</translation>
@@ -1106,6 +1109,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4826588772550366629">kamero in mikrofon</translation>
 <translation id="482908187605862807">Razpoložljive aplikacije iz Trgovine Play</translation>
 <translation id="4831034276697007977">Ali ste prepričani, da želite izklopiti samodejne klike?</translation>
+<translation id="4835677468087803981">Skrivanje kode PIN</translation>
 <translation id="4849058404725798627">Označitev predmeta s fokusom na tipkovnici</translation>
 <translation id="485592688953820832">Brez dejanj (zaustavitev)</translation>
 <translation id="485634149294284819">Odpiranje menija za tipkovnico</translation>
@@ -1188,6 +1192,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + puščica gor</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
+<translation id="5091636240353511739">Prikaz kode PIN</translation>
 <translation id="5092436659250499817">Vklop/izklop osvetlitve tipkovnice</translation>
 <translation id="5094577350232361255">vizitka</translation>
 <translation id="5095136268899496849">Prilagodite in osebno prilagodite napravo <ph name="PRODUCT_NAME" /> v nastavitvah. Poskusite spremeniti zaslonsko ozadje ali nastaviti ohranjevalnik zaslona.</translation>
@@ -1641,6 +1646,7 @@ Nova namestitev</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Fotoaparat je pripet v spodnji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="6605415194043280389">Osredotočenost je vklopljena</translation>
+<translation id="660846213831377756">Tipke miške</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6612802754306526077">Način snemanja zaslona je izbran</translation>
 <translation id="6612889377159412215">podpravilo</translation>
@@ -1968,6 +1974,7 @@ Nova namestitev</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
 <translation id="7773536009433685931">Vklopi Wi-Fi</translation>
+<translation id="77747521138552256">Preveč poskusov vnosa kode PIN. Počakajte <ph name="TIME_LEFT" /> in znova poskusite vnesti kodo PIN ali vnesite geslo, če se želite takoj prijaviti.</translation>
 <translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7781829728241885113">Včeraj</translation>

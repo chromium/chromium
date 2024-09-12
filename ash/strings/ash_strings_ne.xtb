@@ -1109,6 +1109,7 @@
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
 <translation id="482908187605862807">Play स्टोरमा उपलब्ध एपहरू</translation>
 <translation id="4831034276697007977">तपाईंले स्वचालित क्लिक सुविधा निष्क्रिय पार्न चाहनुभएकै हो?</translation>
+<translation id="4835677468087803981">PIN लुकाउनुहोस्</translation>
 <translation id="4849058404725798627">किबोर्डको फोकसमार्फत वस्तुलाई हाइलाइट</translation>
 <translation id="485592688953820832">कुनै कारबाही नगर्नुहोस् (पज गर्नुहोस्)</translation>
 <translation id="485634149294284819">किबोर्डसम्बन्धी मेनु खोल्नुहोस्</translation>
@@ -1191,6 +1192,7 @@
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + अप एरो</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
+<translation id="5091636240353511739">PIN देखाउनुहोस्</translation>
 <translation id="5092436659250499817">किबोर्डको ब्याकलाइट अन/अफ गर्नुहोस्</translation>
 <translation id="5094577350232361255">यस बारेमा</translation>
 <translation id="5095136268899496849">सेटिङमा गई <ph name="PRODUCT_NAME" /> कस्टमाइज तथा पर्सनलाइज गर्नुहोस्। आफ्नो वालपेपर परिवर्तन गरी वा स्क्रिन सेभर सेटअप गरी हेर्नुहोस्।</translation>
@@ -1644,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="6605415194043280389">फोकस मोड अन छ</translation>
+<translation id="660846213831377756">माउस की सुविधा</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
 <translation id="6612889377159412215">उपकार्य</translation>

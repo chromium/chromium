@@ -374,6 +374,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2360398059912971776">akku</translation>
 <translation id="2361210043495191221">Laita Wi-Fi päälle tai pois päältä. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Ulkonäköefektit</translation>
 <translation id="236574664504281623">Lähetetty laitteelta <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Chromebookiin kirjautuminen ei onnistu</translation>
 <translation id="2367972762794486313">Näytä sovellukset</translation>
@@ -734,6 +735,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3600061223661453002">Pois</translation>
 <translation id="3604801046548457007">Työpöytä <ph name="DESK_TITILE" /> luotu</translation>
 <translation id="3606978283550408104">Pistekirjoitusnäyttö on yhdistetty.</translation>
+<translation id="3612634595000403645">Ulkonäköefektien asetukset</translation>
 <translation id="3615926715408477684">Mobiilidatan käyttöönotto ottaa käyttöön Bluetoothin</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3616883743181209306">Valikko siirretty näytön oikeaan ylänurkkaan</translation>
@@ -894,6 +896,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4146671046252289537">Siirry seuraavan sanan loppuun</translation>
 <translation id="4146833061457621061">Soita musiikkia</translation>
 <translation id="4150201353443180367">Näyttö</translation>
+<translation id="4151054805501931758">Muotokuvan parannus</translation>
 <translation id="4156293514828496577">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />).
 Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4160919062868802509">Useita äänilähteitä havaittu</translation>
@@ -1106,6 +1109,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="482908187605862807">Play Kaupassa saatavilla olevat sovellukset</translation>
 <translation id="4831034276697007977">Haluatko varmasti lopettaa automaattisen klikkaamisen?</translation>
+<translation id="4835677468087803981">Piilota PIN-koodi</translation>
 <translation id="4849058404725798627">Korosta tekstin syöttökohde</translation>
 <translation id="485592688953820832">Ei toimenpiteitä (keskeytä)</translation>
 <translation id="485634149294284819">Avaa näppäimistövalikko</translation>
@@ -1188,6 +1192,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5083035541015925118">ctrl + alt + ylänuoli</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
+<translation id="5091636240353511739">Näytä PIN-koodi</translation>
 <translation id="5092436659250499817">Laita näppäimistön taustavalo päälle tai pois päältä</translation>
 <translation id="5094577350232361255">noin</translation>
 <translation id="5095136268899496849"><ph name="PRODUCT_NAME" /> on itsesi näköinen, kun muokkaat ja personoit sitä asetusten kautta. Kokeile vaihtaa taustakuva tai lisätä näytönsäästäjä.</translation>
@@ -1641,6 +1646,7 @@ Uusi asennus</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera kohdistettu vasempaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="6605415194043280389">Keskittymistila on päällä</translation>
+<translation id="660846213831377756">Hiiren painikkeet</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6612802754306526077">Näytön tallentajatila valittu</translation>
 <translation id="6612889377159412215">alatehtävä</translation>
@@ -1968,6 +1974,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7768784765476638775">Teksti puhuttuna</translation>
 <translation id="7769299611924763557">GIF on valmis pian</translation>
 <translation id="7773536009433685931">Laita Wi-Fi-yhteys päälle</translation>
+<translation id="77747521138552256">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä PIN-koodin lisäämistä uudelleen. Jos haluat kirjautua sisään heti, käytä salasanaa.</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7781829728241885113">Eilen</translation>

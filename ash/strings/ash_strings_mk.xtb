@@ -1107,6 +1107,7 @@
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="482908187605862807">Достапни апликации од Play Store</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
+<translation id="4835677468087803981">Скриј го PIN-кодот</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="485634149294284819">Влезете во менито за тастатура</translation>
@@ -1189,6 +1190,7 @@
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + стрелка нагоре</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
+<translation id="5091636240353511739">Прикажи го PIN-кодот</translation>
 <translation id="5092436659250499817">Вклучување/Исклучување заднинско светло на тастатура</translation>
 <translation id="5094577350232361255">за</translation>
 <translation id="5095136268899496849">Приспособете и персонализирајте го вашиот уред <ph name="PRODUCT_NAME" /> во „Поставки“. Обидете се со променување на тапетот или поставување штедач на екран.</translation>
@@ -1642,6 +1644,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="6605415194043280389">„Режимот за концентрација“ е вклучен</translation>
+<translation id="660846213831377756">Копчиња на глувчето</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6612889377159412215">подзадача</translation>
@@ -2301,6 +2304,7 @@
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8939855324412367560">Влезот за аудио е „<ph name="INPUT_DEVICE_NAME" />“, а излезот за аудио е „<ph name="OUTPUT_DEVICE_NAME" />“. Одете во „Поставки“ за да промените.</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Студиски микрофон</translation>
 <translation id="894774083269346314">Полето за избор на <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> не е штиклирано.</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
 <translation id="8951539504029375108">Само одобрените уреди Thunderbolt се компатибилни со вашиот Chromebook</translation>

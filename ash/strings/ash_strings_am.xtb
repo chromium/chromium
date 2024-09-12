@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2360398059912971776">ባትሪ</translation>
 <translation id="2361210043495191221">Wi-Fiን ቀያይር። <ph name="STATE" />።</translation>
+<translation id="2364710166605611987">የዕይታ ተጽዕኖዎች</translation>
 <translation id="236574664504281623">ከ<ph name="SESSION_NAME" /> የተላከ</translation>
 <translation id="2367186422933365202">ወደ የእርስዎ Chromebook መግባት አልተቻለም</translation>
 <translation id="2367972762794486313">መተግበሪያዎችን አሳይ</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">ጠፍቷል</translation>
 <translation id="3604801046548457007">ዴስክ <ph name="DESK_TITILE" /> ተፈጥሯል</translation>
 <translation id="3606978283550408104">የብሬይል ማሳያ ተገናኝቷል።</translation>
+<translation id="3612634595000403645">የዕይታ ተጽዕኖዎች ምርጫዎች</translation>
 <translation id="3615926715408477684">የተንቀሳቃሽ ስልክ ውሂብን ማንቃት ብሉቱዝን ያነቃል</translation>
 <translation id="3616113530831147358">ድምፅ</translation>
 <translation id="3616883743181209306">ምናሌ ወደ ማያ ገጹ የላይኛው ቀኝ ጥግ ተወስዷል።</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">ወደ ቀጣዩ ቃል መጨረሻ ይንቀሳቀሱ</translation>
 <translation id="4146833061457621061">Play ሙዚቃ</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
+<translation id="4151054805501931758">የቁም ፎቶ ማሳመሪያ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ባትሪ ይቀራል (<ph name="TIME_LEFT" /> አካባቢ)።
 የባትሪ ዕድሜን ለመጨመር አንዳንድ ባህሪዎች ተገድበዋል።</translation>
 <translation id="4160919062868802509">በርካታ የኦዲዮ ምንጮች ተገኝተዋል</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
 <translation id="482908187605862807">ከPlay መደብር የሚገኙ መተግበሪያዎች</translation>
 <translation id="4831034276697007977">ራስሰር ጠቅ ማድረጎችን ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
+<translation id="4835677468087803981">ፒን ደብቅ</translation>
 <translation id="4849058404725798627">ነገርየውን ከቁልፍ ሰሌዳ ትኩረት ጋር አድምቅ</translation>
 <translation id="485592688953820832">ምንም እርምጃ የለም (ባለበት አቁም)</translation>
 <translation id="485634149294284819">የቁልፍ ሰሌዳ ምናሌን አስገባ</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083035541015925118">ctrl + alt + የላይ ቀስት</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
+<translation id="5091636240353511739">ፒን አሳይ</translation>
 <translation id="5092436659250499817">የቁልፍ ሰሌዳ የጀርባ ብርሀንን አብራ/አጥፋ</translation>
 <translation id="5094577350232361255">ስለ</translation>
 <translation id="5095136268899496849">በቅንብሮች ውስጥ የእርስዎን <ph name="PRODUCT_NAME" /> ያብጁ እና ግላዊነት ያላብሱ። ልጣፍዎን መለወጥ ወይም ማያ ገጽ ቆጣቢን ማቀናበርን ይሞክሩ።</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />፣ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ካሜራ ታችኛው ግራ ጥግ ላይ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
 <translation id="6605415194043280389">ትኩረት በርቷል</translation>
+<translation id="660846213831377756">የመዳፊት ቁልፎች</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>
 <translation id="6612802754306526077">የማያ ገፅ ቀረጻ ሁነታ ተመርጧል</translation>
 <translation id="6612889377159412215">ንዑስ ተግባር</translation>
@@ -1969,6 +1975,7 @@
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7769299611924763557">የእርስዎ GIF በቅርቡ ዝግጁ ይሆናል</translation>
 <translation id="7773536009433685931">በምትኩ WiFiን ያብሩ</translation>
+<translation id="77747521138552256">በጣም ብዙ የፒን ሙከራዎች። <ph name="TIME_LEFT" /> ይቆዩ እና ፒን እንደገና ይሞክሩ ወይም ወዲያው ለመግባት የይለፍ ቃል ያስገቡ።</translation>
 <translation id="7780094051999721182">አቋራጮች</translation>
 <translation id="7780159184141939021">ማያ ገጹን አሽከርክር</translation>
 <translation id="7781829728241885113">ትናንት</translation>

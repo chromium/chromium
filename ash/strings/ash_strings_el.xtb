@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="482908187605862807">Διαθέσιμες εφαρμογές από το Play Store</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
+<translation id="4835677468087803981">Απόκρυψη PIN</translation>
 <translation id="4849058404725798627">Επισήμανση αντικειμένου με εστίαση στο πληκτρολόγιο</translation>
 <translation id="485592688953820832">Καμία ενέργεια (παύση)</translation>
 <translation id="485634149294284819">Άνοιγμα του μενού πληκτρολογίου</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + πάνω βέλος</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
+<translation id="5091636240353511739">Εμφάνιση PIN</translation>
 <translation id="5092436659250499817">Ενεργοποίηση/απενεργοποίηση οπίσθιου φωτισμού πληκτρολογίου</translation>
 <translation id="5094577350232361255">σχετικά με</translation>
 <translation id="5095136268899496849">Προσαρμόστε και εξατομικεύστε το <ph name="PRODUCT_NAME" /> σας στις Ρυθμίσεις. Δοκιμάστε να αλλάξετε την ταπετσαρία ή να ορίσετε μια προστασία οθόνης.</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω αριστερή γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
 <translation id="6605415194043280389">Η λειτουργία συγκέντρωσης είναι ενεργοποιημένη</translation>
+<translation id="660846213831377756">Πλήκτρα ποντικιού</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="6612802754306526077">Επιλέχτηκε η λειτουργία εγγραφής οθόνης.</translation>
 <translation id="6612889377159412215">δευτερεύουσα εργασία</translation>

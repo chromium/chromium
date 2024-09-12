@@ -3349,6 +3349,7 @@ Si cette règle est configurée, la règle <ph name="DEVELOPER_TOOLS_AVAILABILIT
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Désactiver les rapports sur l'interface réseau de l'appareil</translation>
 <translation id="3540935459049973317">Restrictions temporelles spécifiques à chaque application</translation>
+<translation id="3546260240984542017">Conserver les espaces blancs pour tous les types MIME</translation>
 <translation id="3546271546272655966"><ph name="DBSC_FEATURE_NAME" /> peut être utilisé, selon le processus de lancement de la fonctionnalité.</translation>
 <translation id="3547954654003013442">Paramètres de proxy</translation>
 <translation id="3548064438634502368">Fermer les navigateurs</translation>
@@ -8087,6 +8088,7 @@ Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> utilisera t
 
 Cette règle ne concerne pas les gestionnaires de mots de passe tiers qui utilisent des API d'accessibilité.</translation>
 <translation id="7114169791477667553">Désactiver le moteur de recherche par défaut</translation>
+<translation id="7115684775550072082">Ne conserver les espaces blancs que pour les types MIME texte et XML</translation>
 <translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
 
       Permet à l'utilisateur de se connecter à <ph name="PRODUCT_NAME" />.
@@ -8411,6 +8413,13 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7358359585412734876">Activer <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Utilisateur uniquement</translation>
 <translation id="736486789939370545">Autoriser l'installation d'extensions externes</translation>
+<translation id="7364975417585163622">Cette règle permet de désactiver temporairement les modifications apportées à la façon dont Chrome traite les espaces blancs dans les URL de <ph name="DATA_URL_SCHEME" />.
+Auparavant, les espaces blancs n'étaient conservés que si le type de contenu de niveau supérieur était <ph name="TEXT_MEDIA_TYPE" /> ou qu'il contenait la chaîne de type de contenu <ph name="XML" />.
+Les espaces blancs sont désormais conservés dans toutes les URL de données, quel que soit le type de contenu.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur "True", le nouveau comportement est activé.
+
+Si elle est définie sur "False", l'ancien comportement est activé.</translation>
 <translation id="7366948865469126526">Désactiver la conversion d'unités pour Réponses rapides</translation>
 <translation id="7367734504783638685">Synchronisation des mots de passe entre les fournisseurs SSO tiers et les appareils Google Chrome</translation>
 <translation id="7372831798009983116">Activer la fonctionnalité d'accessibilité de clic automatique</translation>
@@ -10464,6 +10473,7 @@ Contrairement aux autres règles, si celle-ci est définie au niveau du profil, 
 <translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
+<translation id="9025912013525357598">Conservation des espaces blancs dans les URL de données pour tous les types de contenus</translation>
 <translation id="9026905189580734497">Cette règle contrôle les paramètres de la fonctionnalité M'aider à lire pour <ph name="PRODUCT_OS_NAME" />.
 
 0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.

@@ -1106,6 +1106,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4826588772550366629">a câmera e o microfone</translation>
 <translation id="482908187605862807">Apps disponíveis na Play Store</translation>
 <translation id="4831034276697007977">Tem certeza de que você quer desativar os cliques automáticos?</translation>
+<translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4849058404725798627">Destacar objeto com o foco de teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Menu "Informar teclado"</translation>
@@ -1188,6 +1189,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083035541015925118">ctrl + alt + seta para cima</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
+<translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5092436659250499817">Ativar/desativar a luz de fundo do teclado</translation>
 <translation id="5094577350232361255">sobre</translation>
 <translation id="5095136268899496849">Personalize o <ph name="PRODUCT_NAME" /> nas Configurações. Tente mudar o plano de fundo ou definir um protetor de tela.</translation>
@@ -1641,6 +1643,7 @@ Nova instalação</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />: <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Câmera alinhada ao canto esquerdo de baixo. Conflito com a superfície do sistema.</translation>
 <translation id="6605415194043280389">O Foco está ativado</translation>
+<translation id="660846213831377756">Teclas do mouse</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="6612802754306526077">Modo de gravação de tela selecionado</translation>
 <translation id="6612889377159412215">subtarefa</translation>
@@ -2300,6 +2303,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="8939855324412367560">O áudio de entrada vem do dispositivo "<ph name="INPUT_DEVICE_NAME" />" e o de saída vem de "<ph name="OUTPUT_DEVICE_NAME" />". Acesse as Configurações para mudar.</translation>
 <translation id="8940956008527784070">Nível de bateria baixo (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="894774083269346314">Caixa de seleção <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> não marcada.</translation>
 <translation id="8949925099261528566">Conectada, sem Internet</translation>
 <translation id="8951539504029375108">Apenas dispositivos Thunderbolt aprovados são compatíveis com seu Chromebook</translation>

@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Feed video della webcam</translation>
 <translation id="1676557873873341166">Acquisizione video in corso…</translation>
 <translation id="1684279041537802716">Colore intenso</translation>
+<translation id="1697278726914783200">Registra</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS presente</translation>
 <translation id="1708602061922134366">Blu Google</translation>
@@ -693,6 +694,7 @@
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
+<translation id="4602266091140407479">Microfono</translation>
 <translation id="4607282946861182308">Impossibile creare immagini di quanto richiesto. Prova un altro comando.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
@@ -996,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Creato il giorno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
+<translation id="6189987971574353264">Riproduci</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
 <translation id="6196607555925437199">Ricrea</translation>
 <translation id="6205145102504628069">Flusso cloud</translation>

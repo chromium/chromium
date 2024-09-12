@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="1207734034680156868">系統是根據您的描述提供建議</translation>
 <translation id="121090498480012229">播或者暫停播媒體</translation>
+<translation id="1216675364136048456">關閉</translation>
 <translation id="1223498995510244364">總結</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
 <translation id="1232610416724362657">瀑布</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">正常</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1593528591614229756">請務必選取由流動服務供應商或管理員提供的 APN。選取 APN 後，系統便會停用任何自訂 APN。無效的 APN 可能會干擾流動網絡連線。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">隱藏轉錄文字</translation>
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">向前</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">每日變更桌布圖片</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1651925268237749928">您已選取共享相簿。其他人可以加入或變更相片。桌布可能會使用目前不在此相簿中的相片。</translation>
+<translation id="1661512400125589646">暫停</translation>
 <translation id="1661865805917886535">部分帳戶及系統資料可能會傳送予 Google。我們會根據《私隱權政策》(<ph name="PRIVACYPOLICYURL" />) 和《服務條款》 (<ph name="TERMSOFSERVICEURL" />) 使用這些資料，解決技術問題及改善服務品質。如要提出內容變更要求，請前往法律說明中心 (<ph name="LEGALHELPPAGEURL" />)。</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1664796644829245314">預覽「<ph name="PREVIEW_OBJECT" />」</translation>
@@ -172,6 +175,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">轉錄文字</translation>
 <translation id="1765169783255151332">快速切換按鍵</translation>
 <translation id="1768959921651994223">驗證類型</translation>
 <translation id="1776228893584526149">桌布色調</translation>
@@ -216,6 +220,7 @@
 <translation id="1954818433534793392">建築物</translation>
 <translation id="1962550982027027473">需要預設 APN</translation>
 <translation id="1967860190218310525">建立新的 APN</translation>
+<translation id="1967917622327567355">顯示轉錄文字</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">傳統</translation>
 <translation id="1977994649430373166">Google 個人檔案相片</translation>
@@ -259,6 +264,7 @@
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
 <translation id="2189104374785738357">編輯 APN 詳情</translation>
 <translation id="2195732836444333448">目前已達資源上限，請稍後再回來。</translation>
+<translation id="2197185031095816179">安全重設可以協助移除不必要的彈出式視窗、修正網絡問題，以及處理其他非預期問題。</translation>
 <translation id="2201758491318984023">單車</translation>
 <translation id="2203272733515928691">溫泉</translation>
 <translation id="2203642483788377106">懸崖</translation>
@@ -537,6 +543,7 @@
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="382043424867370667">日落桌布</translation>
 <translation id="3824259034819781947">附加檔案</translation>
+<translation id="3836587210832263413">只開啟你信任的擴充程式</translation>
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3845880861638660475">按下 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 鍵，即可關閉對話框。</translation>
 <translation id="3848280697030027394">降低鍵盤亮度</translation>
@@ -597,6 +604,7 @@
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4113067922640381334">您現可使用全新<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">暗光模式</translation>
+<translation id="4126551873361000548">向後 10 秒</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
@@ -626,6 +634,7 @@
 <translation id="4251839292699800785">優雅的辦公室</translation>
 <translation id="4258281355379922695">HTTP 延遲時間</translation>
 <translation id="4266143281602681663">紗線</translation>
+<translation id="4269815121975886860">啟動偏好設定</translation>
 <translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
 <translation id="4275663329226226506">媒體</translation>
 <translation id="4278766082079064416">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。如要解決衝突情況，請編輯或移除快速鍵。</translation>
@@ -677,6 +686,7 @@
 <translation id="4507392511610824664">校光</translation>
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4513946894732546136">意見反映</translation>
+<translation id="4516323842122524821">音量</translation>
 <translation id="4521826082652183069">主體替代名稱相符</translation>
 <translation id="4522570452068850558">詳情</translation>
 <translation id="4536864596629708641">IP 設定</translation>
@@ -760,6 +770,7 @@
 <translation id="4932733599132424254">日期</translation>
 <translation id="4950314376641394653">韌體「<ph name="DEVICE_NAME" />」已更新至 <ph name="VERSION" /> 版本</translation>
 <translation id="4950893758552030541">樹隧道</translation>
+<translation id="4965661459364092269">安全重設已完成</translation>
 <translation id="4965703485264574128">如要計算約數，請將<ph name="CATEGORY_TEXT" />的數值乘以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">改變模式</translation>
@@ -780,6 +791,7 @@
 <translation id="5049856988445523908">SIM 卡已鎖定 (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">群組名稱</translation>
 <translation id="5051044138948155788">這是唯一的頁面。系統將導向掃瞄開始頁面。</translation>
+<translation id="5053233795640754917">暫停</translation>
 <translation id="5078711626843651677">語音模型會暫時儲存在裝置上，直至完成加入講者標籤。你可隨時在「設定」中關閉此功能。</translation>
 <translation id="5078983345702708852">未來主義</translation>
 <translation id="5087864757604726239">返回</translation>
@@ -787,6 +799,7 @@
 <translation id="5089810972385038852">州</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">請拔除「<ph name="DEVICE_NAME" />」USB 線，然後重新插上以繼續更新程序</translation>
+<translation id="5095864667399748231">靜音開關</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近義詞：</translation>
@@ -820,6 +833,7 @@
 <translation id="5252456968953390977">漫遊中</translation>
 <translation id="5254600740122644523">在<ph name="SIMPLE_TONE" />房間中的<ph name="SIMPLE_STYLE" />書架</translation>
 <translation id="5257811368506016604">啟用淺色模式</translation>
+<translation id="5261479807286543505">啟動設定</translation>
 <translation id="5264277876637023664">執行 CPU 測試</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">停用咗 APN。</translation>
@@ -932,6 +946,7 @@
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5893975327266416093">㩒一下要指派嘅鍵盤按鍵</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="5896602941605730551">播放</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903200662178656908">裝置係鍵盤同滑鼠組合。</translation>
 <translation id="5904994456462260490">新增 VPN</translation>
@@ -1131,6 +1146,7 @@
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="6846843854964504403">安全重設</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6862416241246624313">已提交意見</translation>
 <translation id="6866732840889595464">雛菊</translation>
@@ -1315,9 +1331,11 @@
 <translation id="7746357909584236306">可以編輯</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7752963721013053477">黎明到黑夜 - 獨家</translation>
+<translation id="7760571082554155847">首頁設定</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
+<translation id="7774759755755950354">返回</translation>
 <translation id="7778717409420828014">您的意見有助於我們改善 Chromebook 體驗，並將經由我們的團隊審核。由於報告數量眾多，我們將不會逐一回覆。</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7784116172884276937">沒有設定 DNS 伺服器</translation>
@@ -1355,6 +1373,7 @@
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943235353293548836">持續 keepalive 間隔</translation>
 <translation id="7943516765291457328">開啟藍牙即可掃瞄附近的熱點</translation>
+<translation id="7944482598620888754">網站內容</translation>
 <translation id="7944562637040950644">轉換鍵盤背光</translation>
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7955587717700691983">藍牙鍵盤</translation>
@@ -1391,6 +1410,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
+<translation id="8135609423982943441">Chromebook 已重設為安全預設值。你可以隨時在「設定」調整這些變更。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">揀「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
@@ -1408,6 +1428,7 @@
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8227488649450500937">嘗試以下其中一項提示，或參閱<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
+<translation id="8236972776513018241">轉錄文字</translation>
 <translation id="8238771987802558562">選取 APN</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="8250926778281121244">鐵銹色</translation>
@@ -1420,6 +1441,7 @@
 <translation id="8291967909914612644">家庭網絡供應商的國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>
+<translation id="8308787307410010965">網站內容設定</translation>
 <translation id="8312330582793120272">播媒體</translation>
 <translation id="8318753676953949627">沒有圖片</translation>
 <translation id="8320910311642849813">森林</translation>
@@ -1510,6 +1532,7 @@
 <translation id="8775713578693478175">數據機 APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此網絡可能有強制網絡入口</translation>
+<translation id="8797082062139985406">使用 Google AI 命名</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">供應商名稱</translation>
 <translation id="8808828119384186784">Chrome 設定</translation>
@@ -1530,6 +1553,7 @@
 <translation id="8864415976656252616">沒有建議內容。請查看熱門說明內容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型係平板電腦。</translation>
+<translation id="8878117140814294155">麥克風靜音開關</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8882789155418924367">貓頭鷹</translation>
 <translation id="8892443466059986410">取消編輯快速鍵</translation>
@@ -1618,6 +1642,8 @@
 <translation id="951780398843003443">比較整段錄音中的語音，讓轉錄文字反映每位講者的講話內容和時間</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="95718197892796296">黏土</translation>
+<translation id="959792926760890141">「安全重設」會關閉 Chrome 瀏覽器擴充程式，並將網絡和其他設定重設為安全預設值。
+          你的預設搜尋引擎將會重設，但分頁、檔案、Cookie 和記錄會保持不變。</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="965918541715156800">黃色和深藍綠色</translation>
 <translation id="966787709310836684">選單</translation>

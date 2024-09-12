@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">关门再对折</translation>
 <translation id="2891963978019740012">您在 Chrome 中使用的搜索引擎</translation>
 <translation id="2893773853358652045">第 4 卷</translation>
+<translation id="2894137550885451583">这些是商品<ph name="PRODUCT" />的<ph name="CURRENCY" />价格</translation>
 <translation id="2900528713135656174">创建活动</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2903493209154104877">地址</translation>
@@ -1604,6 +1605,7 @@
 <translation id="3949601375789751990">您的浏览记录会显示在此处</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未保存任何付款方式</translation>
+<translation id="3950560191811267370">商务底部动作条已关闭</translation>
 <translation id="3950574001630941635">重启教程</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3953505489397572035">此价格即是一般价格</translation>
@@ -2342,6 +2344,7 @@
 <translation id="5331585574693522196">设为默认</translation>
 <translation id="5332219387342487447">送货方式</translation>
 <translation id="5332769172018416402">发消息请求</translation>
+<translation id="533323551986281710">商务底部动作条已全屏打开</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
@@ -2524,6 +2527,7 @@
 <translation id="5675650730144413517">该网页无法正常运作</translation>
 <translation id="5675809467256309336">舞曲与电子音乐</translation>
 <translation id="5675959228867414813">按日期显示</translation>
+<translation id="567604591393105935">商务底部动作条已半屏打开</translation>
 <translation id="5677928146339483299">已阻止</translation>
 <translation id="5678007133659493065">箔</translation>
 <translation id="5680642791693447368">惊悚片、犯罪片与悬疑片</translation>
@@ -3430,6 +3434,7 @@
 <translation id="7374733840632556089">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chrome 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chrome 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{没有允许任何网站}=1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="7375818412732305729">附加文件</translation>
+<translation id="7376031331622621328">商务底部动作条</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">招待行业</translation>
 <translation id="7378594059915113390">媒体控件</translation>
@@ -4004,6 +4009,7 @@
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">自动全屏</translation>
 <translation id="838307841291975086">旅行车</translation>
+<translation id="8388286357548915205">用于所有访客</translation>
 <translation id="8389532092404711541">一般价格为 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">定制车与高性能车</translation>
 <translation id="8390725133630534698">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容分享给 <ph name="VM_NAME" /></translation>

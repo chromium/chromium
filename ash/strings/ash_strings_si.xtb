@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
 <translation id="482908187605862807">Play Store වෙතින් ලබා ගත හැකි යෙදුම්</translation>
 <translation id="4831034276697007977">ඔබට ස්වයංක්‍රීය ක්ලික් කිරීම් අක්‍රිය කළ යුතු බව ඔබට තහවුරුද?</translation>
+<translation id="4835677468087803981">PIN සඟවන්න</translation>
 <translation id="4849058404725798627">යතුරු පුවරුවේ කේන්ද්‍රය සමඟ වස්තුව ඉස්මතු කරන්න</translation>
 <translation id="485592688953820832">ක්‍රියා කිසිවක් නැත (විරාම ගන්වන්න)</translation>
 <translation id="485634149294284819">යතුරු පුවරු මෙනුව ඇතුළු කරන්න</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">වැරදි PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + ඉහළට ඊතලය</translation>
 <translation id="5083553833479578423">තව සහායක අංග අගුලු හරින්න</translation>
+<translation id="5091636240353511739">PIN පෙන්වන්න</translation>
 <translation id="5092436659250499817">යතුරු පුවරු පසුතල ආලෝකය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5094577350232361255">පිළිබඳව</translation>
 <translation id="5095136268899496849">සැකසීම් තුළ ඔබේ <ph name="PRODUCT_NAME" /> අභිරුචි සහ පුද්ගලායන කරන්න. ඔබේ බිතුපත වෙනස් කිරීමට හෝ තිර සුරැකුමක් සැකසීමට උත්සාහ කරන්න.</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">කැමරාව පහළ වම් කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
 <translation id="6605415194043280389">අවධානය සක්‍රීයයි</translation>
+<translation id="660846213831377756">මූසික යතුරු</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="6612802754306526077">තිර පටිගත කිරීම් ප්‍රකාරය තෝරන ලදි</translation>
 <translation id="6612889377159412215">උප කාර්යය</translation>
@@ -2300,6 +2303,7 @@
 <translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>
 <translation id="8939855324412367560">ආදාන ශ්‍රව්‍ය "<ph name="INPUT_DEVICE_NAME" />" වන අතර ප්‍රතිදාන ශ්‍රව්‍ය "<ph name="OUTPUT_DEVICE_NAME" />" වේ. වෙනස් කිරීමට සැකසීම් වෙත යන්න.</translation>
 <translation id="8940956008527784070">බැටරි බලය අඩුය (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ස්ටූඩියෝ-විලාස මයික්</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> සලකුණු කොටුව සලකුණු කර නැත.</translation>
 <translation id="8949925099261528566">සම්බන්ධයි, අන්තර්ජාලය නැත</translation>
 <translation id="8951539504029375108">ඔබගේ Chromebook සමඟ අනුකූල වන්නේ අනුමත කළ Thunderbolt උපාංග පමණි</translation>

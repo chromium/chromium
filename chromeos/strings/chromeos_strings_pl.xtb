@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Przekaz z kamery internetowej</translation>
 <translation id="1676557873873341166">Nagrywam obraz</translation>
 <translation id="1684279041537802716">Kolor uzupełniający</translation>
+<translation id="1697278726914783200">Nagraj</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1708602061922134366">Niebieski Google</translation>
@@ -253,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
+<translation id="2154460308960858308">Wyczyść wyszukiwanie</translation>
 <translation id="2156072344042480449">2 ostatnie prompty. Możesz ich używać tylko na tej stronie.</translation>
 <translation id="2157660087437850958">selektor emotikonów</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
@@ -499,6 +501,7 @@
 <translation id="3557205324756024651">Tożsamość lokalna (opcjonalnie)</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
 <translation id="3569407787324516067">Wygaszacz ekranu</translation>
+<translation id="3571184524500629183">Zamknij wyszukiwanie</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3583278742022654445">Słaby sygnał. Zbliż się do źródła sygnału Wi-Fi.</translation>
@@ -703,6 +706,7 @@
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Nie udało się utworzyć obrazów. Użyj innego promptu.</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
@@ -943,6 +947,7 @@
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5876385649737594562">Włącz, aby wybrać opcje</translation>
+<translation id="5877503382465267833">Wstrzymaj: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5893975327266416093">Naciśnij klawisz na klawiaturze, aby go przypisać</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -1011,6 +1016,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Utworzono <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
+<translation id="6189987971574353264">Odtwórz</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
 <translation id="6196607555925437199">Powtórz</translation>
 <translation id="6205145102504628069">Chmury</translation>
@@ -1159,6 +1165,7 @@
 <translation id="6910312834584889076">Pokrywa skanera jest otwarta. Zamknij ją i spróbuj ponownie.</translation>
 <translation id="6910845598686542904">tworzyć modele głosów wykrywanych w nagraniach;</translation>
 <translation id="6911383237894364323">Nie udało się połączyć z serwerami multimediów</translation>
+<translation id="6927968682840110570">Nazwa nagrania</translation>
 <translation id="6930242544192836755">Czas trwania</translation>
 <translation id="6930597342185648547">Informacje o tle</translation>
 <translation id="6939667434404433010">Wyszukaj nazwę nagrania</translation>
@@ -1268,6 +1275,7 @@
 <translation id="7378170410161264436">Dyktafon może tworzyć transkrypcje nagrań z mową.
 Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</translation>
 <translation id="7384004438856720753">pałacu</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> – więcej opcji</translation>
 <translation id="7388959671917308825">Touchpad wbudowany</translation>
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
 <translation id="7401543881546089382">Usuń skrót</translation>
@@ -1289,6 +1297,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7513770521371759388">dół</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Odtwórz: <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Utwórz</translation>
 <translation id="7528507600602050979">Treść pomocy jest niedostępna</translation>
 <translation id="7535791657097741517">Włącz jasny motyw</translation>
@@ -1365,6 +1374,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7897043345768902965">chodnik</translation>
 <translation id="7902285181767404769">Wyciszaj powiadomienia podczas nagrywania</translation>
 <translation id="7903695460270716054">Wybierz wyselekcjonowane obrazy i zdjęcia</translation>
+<translation id="7912005977894000746">Powrót na stronę główną</translation>
 <translation id="7915220255123750251">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem.</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>

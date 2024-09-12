@@ -1106,6 +1106,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
 <translation id="482908187605862807">Dostupné aplikace z Obchodu Play</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
+<translation id="4835677468087803981">Skrýt PIN</translation>
 <translation id="4849058404725798627">Zvýraznit objekt se zaměřením pro zadávání</translation>
 <translation id="485592688953820832">Žádná akce (pozastavit)</translation>
 <translation id="485634149294284819">Otevřít nabídky výběru klávesnice</translation>
@@ -1188,6 +1189,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + šipka nahoru</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
+<translation id="5091636240353511739">Zobrazit PIN</translation>
 <translation id="5092436659250499817">Zapnout/vypnout podsvícení klávesnice</translation>
 <translation id="5094577350232361255">verze</translation>
 <translation id="5095136268899496849">V Nastavení si <ph name="PRODUCT_NAME" /> můžete přizpůsobit. Zkuste změnit tapetu nebo nastavit spořič obrazovky.</translation>
@@ -1641,6 +1643,7 @@ Nová instalace</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera byla připnuta do levého dolního rohu Konflikt s platformou systému.</translation>
 <translation id="6605415194043280389">Soustředění je zapnuté</translation>
+<translation id="660846213831377756">Klávesy myši</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6612802754306526077">Je vybrán režim nahrávání obrazovky</translation>
 <translation id="6612889377159412215">dílčí úkol</translation>

@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
 <translation id="482908187605862807">Play Խանութում հասանելի հավելվածներ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
+<translation id="4835677468087803981">Թաքցնել PIN կոդը</translation>
 <translation id="4849058404725798627">Ընդգծել ստեղնաշարի միջոցով ընտրված օբյեկտները</translation>
 <translation id="485592688953820832">Ոչ մի գործողություն (դադար)</translation>
 <translation id="485634149294284819">Բացել ստեղնաշարի պատուհանը</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083035541015925118">ctrl + alt + վերև սլաք</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
+<translation id="5091636240353511739">Ցուցադրել PIN կոդը</translation>
 <translation id="5092436659250499817">Միացնել/անջատել ստեղնաշարի հետնալույսը</translation>
 <translation id="5094577350232361255">տեղեկություններ</translation>
 <translation id="5095136268899496849">Հարմարեցրեք և անհատականացրեք <ph name="PRODUCT_NAME" />-ը կարգավորումներում։ Օրինակ՝ փոխեք պաստառը կամ կարգավորեք էկրանապահ։</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Տեսախցիկի պատկերն ամրացված է ներքևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="6605415194043280389">Առանց շեղումների ռեժիմը միացված է</translation>
+<translation id="660846213831377756">Մկնիկի ստեղներ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6612802754306526077">Ընտրված է էկրանի տեսագրման ռեժիմը</translation>
 <translation id="6612889377159412215">ենթաառաջադրանք</translation>
@@ -2300,6 +2303,7 @@
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8939855324412367560">Աուդիոյի ներածման համար ընտրված է «<ph name="INPUT_DEVICE_NAME" />» սարքը, իսկ արտածման համար՝ «<ph name="OUTPUT_DEVICE_NAME" />» սարքը։ Փոխելու համար անցեք Կարգավորումներ։</translation>
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Ձայնագրման ստուդիայի խոսափող</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), նշավանդակը նշված չէ։</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8951539504029375108">Միայն հաստատված Thunderbolt սարքերն են համատեղելի ձեր Chromebook-ի հետ</translation>

@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">이 정책의 추천 제공업체는 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
 <translation id="2267047181501709434">본인 확인 중...</translation>
 <translation id="2268044343513325586">상세검색</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" />분 후 업로드</translation>
 <translation id="2270484714375784793">전화번호</translation>
 <translation id="2276057643614339130">인쇄 베이스</translation>
 <translation id="2277103315734023688">앞으로 탐색</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">인터넷 사용 기록 삭제…</translation>
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
 <translation id="3067505415088964188">가격이 저렴함</translation>
+<translation id="3068118691172921711">1분 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
 <translation id="3076865167425975822">운영체제</translation>
 <translation id="3080254622891793721">그래픽</translation>
 <translation id="3082007635241601060">Google이 내 장바구니를 사용하여 나에게 맞는 할인을 찾을 수 있도록 허용합니다.</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">이용 가능한 카메라 사용(<ph name="CAMERAS_COUNT" />개)</translation>
 <translation id="3102312643185441063">저축예금</translation>
 <translation id="3103188521861412364">주식 및 채권</translation>
+<translation id="3103535543639438037">비슷한 제품을 나란히 놓고 비교하기</translation>
 <translation id="3105172416063519923">애셋 ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />보안 DNS 구성 확인<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">중간 트레이</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">서드 파티 로그인</translation>
 <translation id="340924996148642843">지금은 비교 기능을 사용할 수 없습니다</translation>
 <translation id="3409896703495473338">보안 설정 관리</translation>
+<translation id="3411091017011773343"><ph name="HOURS" />시간 후 업로드</translation>
 <translation id="3414275587143250384">분산 및 클라우드 컴퓨팅</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="341513675006332771">Chrome 공룡 게임 플레이 버튼, Chrome에서 공룡 게임을 플레이하려면 활성화하세요.</translation>
@@ -1965,6 +1969,7 @@
 <translation id="4628678854894591460">휴양 상품</translation>
 <translation id="4628948037717959914">사진</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="HOURS" />시간 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
 <translation id="4631649115723685955">캐시백 연결됨</translation>
 <translation id="4631881646528206880">가상 카드 등록</translation>
 <translation id="4635278307999235413">관리 콘솔로 데이터 전송 중</translation>
@@ -2085,6 +2090,7 @@
 <translation id="484988093836683706">기기 잠금 해제 사용</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
+<translation id="4855395119669662878"><ph name="DATE_TIME" />에 관리자가 파일을 <ph name="CLOUD_PROVIDER" />에 업로드하기 시작합니다. 파일 업로드가 완료될 때까지 기기를 연결된 상태로 유지하세요. 업로드하는 동안에는 로컬 파일을 읽는 것만 가능합니다.</translation>
 <translation id="485902285759009870">코드 인증 중...</translation>
 <translation id="4860260582253463350">YouTube로 계속 진행하려면 본인 인증을 진행해야 합니다. 부모 또는 보호자가 Family Link에서 설정한 설정이 적용됩니다.</translation>
 <translation id="4864406669374375262">버전 문자열이 클립보드에 복사되었습니다.</translation>
@@ -2140,6 +2146,7 @@
 <translation id="4933468175699107356">양식에서 이름, 주소 등 저장된 정보를 마우스 오른쪽 버튼으로 클릭하여 자동 완성하세요.</translation>
 <translation id="4934780484581617878">창 관리</translation>
 <translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
+<translation id="4936573216809994970">1시간 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
 <translation id="4936675324097895694">금융</translation>
 <translation id="4943620199112228840">마이크 사용</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
@@ -2313,6 +2320,7 @@
 <translation id="5269225904387178860">하단 4공 펀칭</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />"은(는) "<ph name="DATA_CONTROLS_RESTRICTION" />"에 지원되는 조건이 아닙니다.</translation>
 <translation id="5273658854610202413">경고: 이 정책은 병합 가능한 사전 정책의 일부가 아니므로 PolicyDictionaryMultipleSourceMergeList 정책에 명시된 대로 병합되지 않았습니다.</translation>
+<translation id="5278778426231952189">지금 업로드</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">문서 속성</translation>
@@ -3815,6 +3823,7 @@
 <translation id="8030729864112325446">직업 및 평생 교육</translation>
 <translation id="8032546467100845887">투명</translation>
 <translation id="8035152190676905274">펜</translation>
+<translation id="8035264638816032066">표에 추가하는 페이지의 탭 제목과 URL은 Google로 전송됩니다.</translation>
 <translation id="8037117624646282037">최근에 기기를 사용한 사용자</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>
@@ -4008,6 +4017,7 @@
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">자동 전체 화면</translation>
 <translation id="838307841291975086">스테이션 왜건</translation>
+<translation id="8388286357548915205">모든 게스트에 사용</translation>
 <translation id="8389532092404711541">보통 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">맞춤 제작 및 고성능 차량</translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
@@ -4114,6 +4124,7 @@
 <translation id="8564466070529550495">현재 가상 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="8570895683659698018">취미 및 레저</translation>
+<translation id="8572792595597115856">유효 기한: <ph name="DATE" /></translation>
 <translation id="8574841453995331336">냉장고 및 냉동고</translation>
 <translation id="8577192028579836704">모든 옵션은 일반적으로 <ph name="TYPICAL_PRICE" />입니다</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
@@ -4135,6 +4146,7 @@
 <translation id="8617269623452051934">기기 사용 여부</translation>
 <translation id="861775596732816396">크기 4</translation>
 <translation id="8620276786115098679">봉투 Kaku 7</translation>
+<translation id="8622864575115813231">금융 기관에 문의 중…</translation>
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
 <translation id="8624354461147303341">할인받기</translation>
 <translation id="8634957317623797170">54x86mm</translation>
@@ -4433,6 +4445,7 @@
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9192947025498305328">클린 뷰티</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>
+<translation id="9204089334327209740">업로드가 완료되면 <ph name="CLOUD_PROVIDER" />에서 파일을 수정할 수 있습니다. 휴지통에 있는 파일을 포함한 로컬 저장용량이 자동으로 삭제됩니다.</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="920643408853370361">여행자 보험</translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
@@ -4453,6 +4466,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 광고 주제는 내가 이 기기에서 Chrome을 사용하여 방문한 사이트의 목록인 최근 방문 기록을 기반으로 합니다.</translation>
 <translation id="937885410143139026">관리 콘솔로 전송된 데이터</translation>
 <translation id="939736085109172342">새 폴더</translation>
+<translation id="940524522703752213"><ph name="MINUTES" />분 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
 <translation id="944540589955480312">Google 계정에 저장된 비밀번호 및 패스키 사용</translation>
 <translation id="945646848072568856">Chrome에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 사이트를 차단합니다.</translation>
 <translation id="945855313015696284">아래 정보를 확인하고 잘못된 카드를 삭제하세요.</translation>

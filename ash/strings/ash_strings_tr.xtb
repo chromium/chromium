@@ -1106,6 +1106,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4826588772550366629">kamera ve mikrofon</translation>
 <translation id="482908187605862807">Play Store'daki mevcut uygulamalar</translation>
 <translation id="4831034276697007977">Otomatik tıklamaları kapatmak istediğinizden emin misiniz?</translation>
+<translation id="4835677468087803981">PIN'i gizle</translation>
 <translation id="4849058404725798627">Klavye odağının olduğu nesneyi vurgula</translation>
 <translation id="485592688953820832">İşlem yok (duraklat)</translation>
 <translation id="485634149294284819">Klavye menüsüne gir</translation>
@@ -1188,6 +1189,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + yukarı ok</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
+<translation id="5091636240353511739">PIN'i göster</translation>
 <translation id="5092436659250499817">Klavye arka ışığını açın/kapatın</translation>
 <translation id="5094577350232361255">hakkında</translation>
 <translation id="5095136268899496849">Ayarlar'a giderek <ph name="PRODUCT_NAME" /> cihazınızı özelleştirin ve kişiselleştirin. Duvar kağıdınızı değiştirmeyi veya ekran koruyucu ayarlamayı deneyin.</translation>
@@ -1641,6 +1643,7 @@ Yeni yüklenmiş</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera sol alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="6605415194043280389">Odaklanma açık</translation>
+<translation id="660846213831377756">Fare tuşları</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="6612802754306526077">Ekran kaydetme modu seçildi</translation>
 <translation id="6612889377159412215">alt görev</translation>
@@ -2300,6 +2303,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
 <translation id="8939855324412367560">Giriş sesi "<ph name="INPUT_DEVICE_NAME" />", çıkış sesi "<ph name="OUTPUT_DEVICE_NAME" />". Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="8940956008527784070">Pil gücü az (%<ph name="PERCENTAGE" />)</translation>
+<translation id="8945508919180478719">Stüdyo tipi mikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Onay kutusu işaretli değil.</translation>
 <translation id="8949925099261528566">Bağlı, internet yok</translation>
 <translation id="8951539504029375108">Yalnızca onaylı Thunderbolt cihazlar Chromebook'unuzla uyumludur</translation>

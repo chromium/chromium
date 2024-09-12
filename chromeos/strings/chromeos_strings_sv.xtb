@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Videoflöde från webbkameran</translation>
 <translation id="1676557873873341166">Spelar in video</translation>
 <translation id="1684279041537802716">Accentfärg</translation>
+<translation id="1697278726914783200">Spela in</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver finns</translation>
 <translation id="1708602061922134366">Google-blå</translation>
@@ -259,6 +260,7 @@
 <translation id="2180197493692062006">Något gick fel. Testa att öppna appen igen.</translation>
 <translation id="2189104374785738357">Redigera APN-information</translation>
 <translation id="2195732836444333448">Jag kan inte göra det just nu. Testa igen om ett tag.</translation>
+<translation id="2197185031095816179">Med säkerhetsåterställningen kan du ta bort oönskade popup-fönster, åtgärda nätverksproblem och andra oväntade problem.</translation>
 <translation id="2201758491318984023">cykel</translation>
 <translation id="2203272733515928691">varm källa</translation>
 <translation id="2203642483788377106">en klippa</translation>
@@ -537,6 +539,7 @@
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="382043424867370667">Bakgrund med solnedgång</translation>
 <translation id="3824259034819781947">Bifoga filer</translation>
+<translation id="3836587210832263413">Aktivera endast tillägg som du litar på</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
 <translation id="3848280697030027394">mörkare tangentbord</translation>
@@ -626,6 +629,7 @@
 <translation id="4251839292699800785">Elegant kontor</translation>
 <translation id="4258281355379922695">HTTP-latens</translation>
 <translation id="4266143281602681663">garn</translation>
+<translation id="4269815121975886860">Startinställningar</translation>
 <translation id="4271957103967917607">Visa helskärm</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Kortkommandot används för <ph name="CONFLICT_ACCEL_NAME" />. Redigera eller ta bort det för att lösa konflikten.</translation>
@@ -693,6 +697,7 @@
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4594021849294327751">Skapa transkription</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Det går inte att skapa bilder av detta. Testa en annan prompt.</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
@@ -760,6 +765,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware på <ph name="DEVICE_NAME" /> har uppdaterats till version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">trädtunnel</translation>
+<translation id="4965661459364092269">Säkerhetsåterställningen har slutförts</translation>
 <translation id="4965703485264574128">Om du vill ha ett ungefärlig resultat multiplicerar du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Dela</translation>
 <translation id="4972592110715526173">lägesändring</translation>
@@ -820,6 +826,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">En bokhylla i <ph name="SIMPLE_STYLE" /> i ett rum i <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Aktivera ljust färgläge</translation>
+<translation id="5261479807286543505">Startinställningar</translation>
 <translation id="5264277876637023664">Kör CPU-test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN har inaktiverats.</translation>
@@ -996,6 +1003,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
+<translation id="6189987971574353264">Spela upp</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
 <translation id="6196607555925437199">Återskapa</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
@@ -1131,6 +1139,7 @@
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6831043979455480757">Översätt</translation>
+<translation id="6846843854964504403">Säkerhetsåterställning</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
 <translation id="6862416241246624313">Feedback skickad</translation>
 <translation id="6866732840889595464">prästkrage</translation>
@@ -1315,6 +1324,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7746357909584236306">redigerbar</translation>
 <translation id="7747039790905080783">I förväg delad nyckel</translation>
 <translation id="7752963721013053477">Morgon till kväll – exklusivt</translation>
+<translation id="7760571082554155847">Inställningar för startsida</translation>
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
@@ -1355,6 +1365,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943235353293548836">Beständigt keepalive-intervall</translation>
 <translation id="7943516765291457328">Aktivera Bluetooth om du vill söka efter surfzoner i närheten</translation>
+<translation id="7944482598620888754">Webbplatsinnehåll</translation>
 <translation id="7944562637040950644">aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="7953669802889559161">Inmatningar</translation>
 <translation id="7955587717700691983">Bluetooth-tangentbord</translation>
@@ -1391,6 +1402,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8132480444149501833">Begär trafikräknare</translation>
+<translation id="8135609423982943441">Din Chromebook har återställts till säkra standardinställningar. Du kan anpassa ändringarna när du vill i inställningarna.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Välj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Verktyg för utvecklare</translation>
@@ -1420,6 +1432,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8291967909914612644">Hemleverantörens land</translation>
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8302368968391049045">HTTPS-brandvägg</translation>
+<translation id="8308787307410010965">Inställningar för webbplatsinnehåll</translation>
 <translation id="8312330582793120272">spela upp media</translation>
 <translation id="8318753676953949627">Inga bilder</translation>
 <translation id="8320910311642849813">en skog</translation>
@@ -1618,6 +1631,8 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="951780398843003443">Jämför röster i hela inspelningen så att transkriptionen återspeglar vad varje talare sa och när</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="95718197892796296">lera</translation>
+<translation id="959792926760890141">Säkerhetsåterställning inaktiverar tillägg i webbläsaren Chrome och återställer nätverk och andra inställningar till säkra standardinställningar.
+          Din standardsökmotor återställs, men dina flikar, filer, cookies och historik ändras inte.</translation>
 <translation id="960719561871045870">Operatörskod</translation>
 <translation id="965918541715156800">gult och blågrönt</translation>
 <translation id="966787709310836684">meny</translation>

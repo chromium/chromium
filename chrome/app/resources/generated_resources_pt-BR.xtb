@@ -1121,6 +1121,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1780273119488802839">Importando favoritos...</translation>
 <translation id="1780572199786401845">Denunciar conteúdo ofensivo/não seguro.</translation>
 <translation id="178092663238929451">Ative o Compartilhar por proximidade para receber e enviar arquivos para pessoas à sua volta</translation>
+<translation id="1781164264587898620">Aplique o cancelamento de ruído e as melhorias de áudio.</translation>
 <translation id="1781291988450150470">PIN atual</translation>
 <translation id="1781502536226964113">Abrir Nova guia</translation>
 <translation id="1781553166608855614">Idioma falado</translation>
@@ -9816,7 +9817,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8090513782447872344">Volte pode voltar e revisar este guia sempre que quiser</translation>
 <translation id="8090579562279016251">Reduz o desempenho, mas torna o V8 mais resistente a ataques</translation>
 <translation id="8090686009202681725">Criar um tema com IA</translation>
-<translation id="8091655032047076676">Experimental</translation>
 <translation id="8093359998839330381">O plug-in <ph name="PLUGIN_NAME" /> não está respondendo</translation>
 <translation id="8094536695728193970">Damasco</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Fazer backup no Google Drive. Restaure seus dados com facilidade ou troque de dispositivo a qualquer momento. O backup inclui dados de apps.<ph name="END_PARAGRAPH1" />
@@ -11007,6 +11007,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 
 As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Tamanho do ícone</translation>
+<translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="8946359700442089734">Os recursos de depuração não foram completamente ativados neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Fechar todas as solicitações na barra de endereço</translation>
 <translation id="894763922177556086">Boa</translation>

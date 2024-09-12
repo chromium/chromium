@@ -1112,6 +1112,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1780273119488802839">Importation des favoris...</translation>
 <translation id="1780572199786401845">Signaler comme choquant/dangereux.</translation>
 <translation id="178092663238929451">Configurez "Partage à proximité" pour échanger des fichiers avec des personnes à proximité</translation>
+<translation id="1781164264587898620">Appliquer la suppression du bruit et des améliorations audio.</translation>
 <translation id="1781291988450150470">Code actuel</translation>
 <translation id="1781502536226964113">Ouvrir la page "Nouvel onglet"</translation>
 <translation id="1781553166608855614">Langue parlée</translation>
@@ -9799,7 +9800,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8090513782447872344">Vous pourrez revenir à tout moment pour relire le guide</translation>
 <translation id="8090579562279016251">Réduit les performances, mais rend V8 plus résistant aux attaques</translation>
 <translation id="8090686009202681725">Créer un thème avec l'IA</translation>
-<translation id="8091655032047076676">Fonctionnalités expérimentales</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ne répond pas</translation>
 <translation id="8094536695728193970">Abricot</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications.<ph name="END_PARAGRAPH1" />
@@ -10990,6 +10990,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 
 Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Taille des icônes</translation>
+<translation id="8945508919180478719">Micro de style studio</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage n'ont pas été complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Réduire toutes les demandes dans la barre d'adresse</translation>
 <translation id="894763922177556086">Bonne</translation>

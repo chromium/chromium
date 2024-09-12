@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Videofeed web-kamere</translation>
 <translation id="1676557873873341166">Snimanje videozapisa</translation>
 <translation id="1684279041537802716">Boja isticanja</translation>
+<translation id="1697278726914783200">Snimaj</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutnost DNS prevoditelja</translation>
 <translation id="1708602061922134366">Googleova plava</translation>
@@ -253,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2152882202543497059">Broj fotografija: <ph name="NUMBER" /></translation>
+<translation id="2154460308960858308">Izbrišite pretraživanje</translation>
 <translation id="2156072344042480449">Vaša dva najnovija upita. Te obavijesti možete upotrebljavati samo dok ste na ovoj stranici.</translation>
 <translation id="2157660087437850958">alat za odabir emojija</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
@@ -499,6 +501,7 @@
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dopušteni IP-jevi</translation>
 <translation id="3569407787324516067">Čuvar zaslona</translation>
+<translation id="3571184524500629183">Zatvorite pretraživanje</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
 <translation id="357889014807611375">Wi-Fi s ograničenim prometom</translation>
 <translation id="3583278742022654445">Signal je slab. Pokušajte se približiti izvoru Wi-Fi signala.</translation>
@@ -703,6 +706,7 @@
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Ne mogu se izraditi slike tog sadržaja. Isprobajte drugi prompt.</translation>
 <translation id="4609350030397390689">Smanjivanje svjetline tipkovnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
@@ -943,6 +947,7 @@
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876385649737594562">Uključite da biste odabrali opcije</translation>
+<translation id="5877503382465267833">Pauzirajte snimku <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Puni zaslon</translation>
 <translation id="5893975327266416093">Dodirnite tipku tipkovnice da biste je dodijelili</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
@@ -1011,6 +1016,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Izrađeno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapacitet baterije smanjuje se zbog upotrebe</translation>
+<translation id="6189987971574353264">Reproduciraj</translation>
 <translation id="6191293864534840972">Pogrešni poslužitelji naziva</translation>
 <translation id="6196607555925437199">Izradi ponovo</translation>
 <translation id="6205145102504628069">Protok oblaka</translation>
@@ -1159,6 +1165,7 @@
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6910845598686542904">izračunao modele glasova otkrivenih na snimci</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim poslužiteljima nije uspjelo</translation>
+<translation id="6927968682840110570">Naziv snimke</translation>
 <translation id="6930242544192836755">Trajanje</translation>
 <translation id="6930597342185648547">O pozadini</translation>
 <translation id="6939667434404433010">Pretražite naziv snimke</translation>
@@ -1271,6 +1278,7 @@
 <translation id="7378170410161264436">Snimač može izrađivati prijepise za snimke s govorom.
 Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translation>
 <translation id="7384004438856720753">Palača</translation>
+<translation id="7388345524791662148">Više opcija za snimku <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ugrađena dodirna podloga</translation>
 <translation id="7397270852490618635">Isključivanje svijetle teme</translation>
 <translation id="7401543881546089382">Izbriši prečac</translation>
@@ -1292,6 +1300,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="7513770521371759388">na dnu</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Pokrenite reprodukciju snimke <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Stvori</translation>
 <translation id="7528507600602050979">Sadržaj pomoći nije dostupan</translation>
 <translation id="7535791657097741517">Uključivanje svijetle teme</translation>
@@ -1368,6 +1377,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="7897043345768902965">nogostup</translation>
 <translation id="7902285181767404769">Utišaj obavijesti tijekom snimanja</translation>
 <translation id="7903695460270716054">Odaberite birana umjetnička djela i slike</translation>
+<translation id="7912005977894000746">Natrag na glavnu stranicu</translation>
 <translation id="7915220255123750251">Upravljajte postavkama APN-a mreže. APN-ovi uspostavljaju vezu između mobilne mreže i interneta.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="7942349550061667556">Crvena</translation>

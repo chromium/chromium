@@ -712,6 +712,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2265356434276802347">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> hyrje të veçuara.</translation>
 <translation id="2267047181501709434">Po verifikon identitetin tënd...</translation>
 <translation id="2268044343513325586">Ripërpuno</translation>
+<translation id="2268966938956566076">Ngarko pas <ph name="MINUTES" /> min.</translation>
 <translation id="2270484714375784793">Numër telefoni</translation>
 <translation id="2276057643614339130">Baza e printimit</translation>
 <translation id="2277103315734023688">Kërko përpara</translation>
@@ -1110,6 +1111,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3062655045399308513">Fshi të dhënat e shfletimit…</translation>
 <translation id="306573536155379004">Loja filloi.</translation>
 <translation id="3067505415088964188">Çmimi është i ulët</translation>
+<translation id="3068118691172921711">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 minute</translation>
 <translation id="3076865167425975822">Sistemet operative</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Lejo që Google të përdorë grumbujt e tu të artikujve për të gjetur zbritje të personalizuara kur ato ofrohen</translation>
@@ -1121,6 +1123,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3099619114405539473">Të përdorë kamerat e disponueshme (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Kursimi</translation>
 <translation id="3103188521861412364">Aksionet dhe obligacionet</translation>
+<translation id="3103535543639438037">Krahaso produkte të ngjashme krah për krah</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabakaja e mesit</translation>
@@ -1298,6 +1301,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3407789382767355356">identifikimi i palëve të treta</translation>
 <translation id="340924996148642843">Krahasimi nuk ofrohet për momentin</translation>
 <translation id="3409896703495473338">Menaxho cilësimet e sigurisë</translation>
+<translation id="3411091017011773343">Ngarko për <ph name="HOURS" /> orë</translation>
 <translation id="3414275587143250384">Shërbimet kompjuterike të shpërndara dhe në renë kompjuterike</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
 <translation id="341513675006332771">Butoni "Luaj lojën Chrome Dino". Aktivizoje për të luajtur lojën Dino Run në Chrome</translation>
@@ -1965,6 +1969,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4628678854894591460">Oferta për pushime</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas <ph name="HOURS" /> orësh</translation>
 <translation id="4631649115723685955">Oferta e kthimit të parave është e lidhur</translation>
 <translation id="4631881646528206880">Regjistrimi i kartës virtuale</translation>
 <translation id="4635278307999235413">Të dhënat po dërgohen te paneli i administratorit</translation>
@@ -2085,6 +2090,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="484988093836683706">Përdor shkyçjen e pajisjes</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
+<translation id="4855395119669662878">Administratori yt do të fillojë ngarkimin e skedarëve të tu në <ph name="CLOUD_PROVIDER" /> më <ph name="DATE_TIME" />. Mbaje pajisjen të lidhur derisa ngarkimi i skedarit të përfundojë. Gjatë ngarkimit, do të mund të lexosh vetëm skedarët lokalë.</translation>
 <translation id="485902285759009870">Po verifikon kodin...</translation>
 <translation id="4860260582253463350">Për të vazhduar në YouTube, duhet të sigurohemi që je ti. Do të marrësh cilësimet që prindi ose kujdestari yt ka konfiguruar në Family Link.</translation>
 <translation id="4864406669374375262">Vargu i versionit u kopjua te kujtesa e fragmenteve</translation>
@@ -2140,6 +2146,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4933468175699107356">Kliko me butonin djathtas për të plotësuar automatikisht informacionet e ruajtura, si p.sh. emrin ose adresën tënde, në çdo formular</translation>
 <translation id="4934780484581617878">Menaxhimi i dritareve</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> që është futur nuk mund të gjendej.</translation>
+<translation id="4936573216809994970">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 ore</translation>
 <translation id="4936675324097895694">Financa</translation>
 <translation id="4943620199112228840">Të përdorë mikrofonat e tu</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
@@ -2313,6 +2320,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5269225904387178860">Katër shpime poshtë</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" nuk është një kusht i mbështetur për "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Paralajmërim: Kjo politikë nuk është bashkuar siç specifikohet në politikën PolicyDictionaryMultipleSourceMergeList sepse nuk është pjesë e politikave të fjalorit që mund të bashkohen.</translation>
+<translation id="5278778426231952189">Ngarko tani</translation>
 <translation id="5279286380302340275">Menaxho shkarkimet</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
@@ -3735,6 +3743,7 @@ Detaje shtesë:
 <translation id="7887683347370398519">Kontrollo CVC-në tënde dhe provo përsëri</translation>
 <translation id="7887885240995164102">Hyr në veçorinë "figurë brenda figurës"</translation>
 <translation id="7888575728750733395">Synimi i paraqitjes për printimin</translation>
+<translation id="7890748547282909375">Identifikohu në Microsoft OneDrive për të ruajtur pamjen e ekranit</translation>
 <translation id="7894280532028510793">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit"<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zarf 7 x 9 inç</translation>
 <translation id="7905064834449738336">Kur përdor një fjalëkalim, Chromium të paralajmëron nëse ai është publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
@@ -3813,6 +3822,7 @@ Detaje shtesë:
 <translation id="8030729864112325446">Arsimi profesional dhe i vazhdueshëm</translation>
 <translation id="8032546467100845887">Fletë transparente</translation>
 <translation id="8035152190676905274">Pena</translation>
+<translation id="8035264638816032066">Titujt e skedave dhe URL-të e faqeve që ti shton në tabelë dërgohen te Google</translation>
 <translation id="8037117624646282037">Kush e ka përdorur pajisjen së fundi</translation>
 <translation id="8037357227543935929">Pyet (parazgjedhja)</translation>
 <translation id="803771048473350947">Skedar</translation>
@@ -4006,6 +4016,7 @@ Detaje shtesë:
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Ekrani i plotë automatik</translation>
 <translation id="838307841291975086">Automjete me portobagazh</translation>
+<translation id="8388286357548915205">Përdor për të gjithë vizitorët</translation>
 <translation id="8389532092404711541">Zakonisht <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Automjete të personalizuara dhe të performancës</translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>
@@ -4112,6 +4123,7 @@ Detaje shtesë:
 <translation id="8564466070529550495">Karta virtuale nuk ofrohet për momentin. Provo përsëri më vonë.</translation>
 <translation id="8564985650692024650">Chromium rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="8570895683659698018">Hobi dhe koha e lirë</translation>
+<translation id="8572792595597115856">E vlefshme deri më <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Frigoriferë dhe ngrirës</translation>
 <translation id="8577192028579836704">Të gjitha opsionet zakonisht <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Karta virtuale nuk ofrohet</translation>
@@ -4133,6 +4145,7 @@ Detaje shtesë:
 <translation id="8617269623452051934">përdorimi i pajisjes sate</translation>
 <translation id="861775596732816396">Madhësia 4</translation>
 <translation id="8620276786115098679">Zarf Kaku 7</translation>
+<translation id="8622864575115813231">Po kontaktohet me institucionin tënd financiar...</translation>
 <translation id="8623885649813806493">Nuk ka asnjë fjalëkalim që përputhet. Shfaq të gjitha fjalëkalimet e ruajtura.</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4432,6 +4445,7 @@ Detaje shtesë:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Estetikë e pastër</translation>
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
+<translation id="9204089334327209740">Pasi ngarkimi të ketë përfunduar, mund të modifikosh skedarët në <ph name="CLOUD_PROVIDER" />. Hapësira ruajtëse lokale, duke përfshirë çdo skedar te "Koshi", do të hiqet automatikisht.</translation>
 <translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="920643408853370361">Sigurimi i udhëtimit</translation>
 <translation id="9207861905230894330">Dështoi në shtimin e artikullit.</translation>
@@ -4452,6 +4466,7 @@ Detaje shtesë:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Temat e tua të reklamave bazohen në historikun tënd të shfletimit së fundi, një listë sajtesh që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="937885410143139026">Të dhënat u dërguan te paneli i administratorit</translation>
 <translation id="939736085109172342">Dosje e re</translation>
+<translation id="940524522703752213">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas <ph name="MINUTES" /> minutash</translation>
 <translation id="944540589955480312">Përdor fjalëkalimet ose çelësat e kalimit të ruajtur në "Llogarinë tënde të Google"</translation>
 <translation id="945646848072568856">Chrome i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton.</translation>
 <translation id="945855313015696284">Kontrollo informacionin më poshtë dhe fshi çdo kartë të pavlefshme</translation>

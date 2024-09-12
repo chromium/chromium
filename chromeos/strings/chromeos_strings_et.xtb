@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Veebikaamera videovoog</translation>
 <translation id="1676557873873341166">Video jäädvustamine</translation>
 <translation id="1684279041537802716">Aktsentvärv</translation>
+<translation id="1697278726914783200">Salvesta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
 <translation id="1708602061922134366">Google'i sinine</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
 <translation id="2189104374785738357">APN-i üksikasjade muutmine</translation>
 <translation id="2195732836444333448">Maht on praegu täis. Tulge varsti tagasi.</translation>
+<translation id="2197185031095816179">Ohutuseesmärgil lähtestamine aitab teil eemaldada soovimatuid hüpikaknaid, lahendada võrguprobleeme ja tegeleda muude ootamatute probleemidega.</translation>
 <translation id="2201758491318984023">jalgratas</translation>
 <translation id="2203272733515928691">kuumaveeallikas</translation>
 <translation id="2203642483788377106">kalju</translation>
@@ -542,6 +544,7 @@
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="382043424867370667">Päikeseloojangu taustapilt</translation>
 <translation id="3824259034819781947">Failide manustamine</translation>
+<translation id="3836587210832263413">Lülitage sisse ainult usaldusväärsed laiendused</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="3845880861638660475">Dialoogi sulgemiseks vajutage korraga klahve <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">klaviatuuri tumendamine</translation>
@@ -632,6 +635,7 @@
 <translation id="4251839292699800785">Stiilne kontor</translation>
 <translation id="4258281355379922695">HTTP latentsusaeg</translation>
 <translation id="4266143281602681663">lõngast</translation>
+<translation id="4269815121975886860">Käivitamise eelistused</translation>
 <translation id="4271957103967917607">Kuva täisekraanil</translation>
 <translation id="4275663329226226506">Meedia</translation>
 <translation id="4278766082079064416">Otseteed kasutatakse käsu „<ph name="CONFLICT_ACCEL_NAME" />“ jaoks. Vastuolu lahendamiseks tuleb see muuta või eemaldada.</translation>
@@ -700,6 +704,7 @@
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4950314376641394653">Seadme <ph name="DEVICE_NAME" /> püsivara on värskendatud versioonile <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">allee</translation>
+<translation id="4965661459364092269">Ohutuseesmärgil lähtestamine on lõpule viidud</translation>
 <translation id="4965703485264574128">Umbkaudse tulemuse saamiseks korrutage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Jagatud</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">Rändlus</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_STYLE" /> raamaturiiul ruumis, mis on <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Luba hele värvirežiim</translation>
+<translation id="5261479807286543505">Käivitamise seaded</translation>
 <translation id="5264277876637023664">Käita protsessori test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN on keelatud.</translation>
@@ -1006,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Loodi kuupäeval <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Aku maht väheneb kasutuse käigus</translation>
+<translation id="6189987971574353264">Esita</translation>
 <translation id="6191293864534840972">Vigased nimeserverid</translation>
 <translation id="6196607555925437199">Loo uuesti</translation>
 <translation id="6205145102504628069">Pilvevool</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">Võti</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
+<translation id="6846843854964504403">Ohutuseesmärgil lähtestamine</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
 <translation id="6862416241246624313">Tagasiside on saadetud</translation>
 <translation id="6866732840889595464">karikakar</translation>
@@ -1325,6 +1334,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7746357909584236306">muudetav</translation>
 <translation id="7747039790905080783">Eeljagatud võti</translation>
 <translation id="7752963721013053477">Päikesetõusust päikeseloojanguni – eksklusiivne</translation>
+<translation id="7760571082554155847">Avalehe seaded</translation>
 <translation id="7762130827864645708">Parooli muutmine õnnestus. Edaspidi kasutage uut parooli.</translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
@@ -1366,6 +1376,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7943235353293548836">Püsiva säilitamissõnumi intervall</translation>
 <translation id="7943516765291457328">Lülitage Bluetooth sisse, et otsida läheduses asuvaid kuumkohti</translation>
+<translation id="7944482598620888754">Saidi sisu</translation>
 <translation id="7944562637040950644">lülitab klaviatuuri taustavalguse sisse/välja</translation>
 <translation id="7953669802889559161">Sisestusmeetodid</translation>
 <translation id="7955587717700691983">Bluetooth-klaviatuur</translation>
@@ -1402,6 +1413,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
+<translation id="8135609423982943441">Teie Chromebook lähtestati turvalistele vaikeseadetele. Saate neid muudatusi menüüs Seaded alati kohandada.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vali „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”</translation>
 <translation id="8151185429379586178">Arendaja tööriistad</translation>
@@ -1432,6 +1444,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8291967909914612644">Koduteenuse pakkuja riik</translation>
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8302368968391049045">HTTPS-i tulemüür</translation>
+<translation id="8308787307410010965">Saidi sisu seaded</translation>
 <translation id="8312330582793120272">esitab meediat</translation>
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8320910311642849813">mets</translation>
@@ -1632,6 +1645,8 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="951780398843003443">Häälte võrdlemine kogu salvestise jooksul, et transkriptsioon kajastaks seda, mida iga kõneleja ütles ja millal</translation>
 <translation id="952992212772159698">Aktiveerimata</translation>
 <translation id="95718197892796296">savist</translation>
+<translation id="959792926760890141">Ohutuseesmärgil lähtestamine lülitab välja Chrome'i brauseri laiendused ning lähtestab võrgu- ja muud seaded turvalistele vaikeseadetele.
+          Teie vaikeotsingumootor lähtestatakse, kuid teie vahelehti, faile, küpsiseid ja ajalugu ei muudeta.</translation>
 <translation id="960719561871045870">Operaatori kood</translation>
 <translation id="965918541715156800">kollane ja sinakasroheline</translation>
 <translation id="966787709310836684">menüü</translation>

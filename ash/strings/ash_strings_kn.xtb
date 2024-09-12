@@ -1109,6 +1109,7 @@
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="482908187605862807">Play Store ನಿಂದ ಲಭ್ಯವಿರುವ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4831034276697007977">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಆಫ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
+<translation id="4835677468087803981">ಪಿನ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4849058404725798627">ಕೀಬೋರ್ಡ್‌ ಫೋಕಸ್‌ ಮೂಲಕ ವಿಷಯವನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="485592688953820832">ಯಾವುದೇ ಕ್ರಮ ಕೈಗೊಳ್ಳಬೇಡಿ (ವಿರಾಮಗೊಳಿಸಿ)</translation>
 <translation id="485634149294284819">ಕೀಬೋರ್ಡ್ ಮೆನುವನ್ನು ನಮೂದಿಸಿ</translation>
@@ -1191,6 +1192,7 @@
 <translation id="5078796286268621944">ತಪ್ಪಾದ PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="5083553833479578423">ಇನ್ನಷ್ಟು ಅಸಿಸ್ಟೆಂಟ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ.</translation>
+<translation id="5091636240353511739">ಪಿನ್ ತೋರಿಸಿ</translation>
 <translation id="5092436659250499817">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5094577350232361255">ಕುರಿತು</translation>
 <translation id="5095136268899496849">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ <ph name="PRODUCT_NAME" /> ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಿ. ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಅಥವಾ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1644,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ಕ್ಯಾಮರಾವನ್ನು ಕೆಳಗಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮೇಲ್ಮೈ ಜೊತೆಗೆ ಸಂಘರ್ಷ.</translation>
 <translation id="6605415194043280389">ಫೋಕಸ್ ಆನ್ ಆಗಿದೆ</translation>
+<translation id="660846213831377756">ಮೌಸ್ ಕೀಗಳು</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="6612802754306526077">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6612889377159412215">ಉಪಕಾರ್ಯ</translation>
@@ -2304,6 +2307,7 @@
 <translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>
 <translation id="8939855324412367560">ಇನ್‌ಪುಟ್ ಆಡಿಯೋ "<ph name="INPUT_DEVICE_NAME" />" ಮತ್ತು ಔಟ್‌ಪುಟ್ ಆಡಿಯೋ "<ph name="OUTPUT_DEVICE_NAME" />" ಆಗಿದೆ. ಬದಲಾಯಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="8940956008527784070">ಬ್ಯಾಟರಿ ಕಡಿಮೆ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ಸ್ಟುಡಿಯೋ-ಸ್ಟೈಲ್ ಮೈಕ್</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ಚೆಕ್ ಬಾಕ್ಸ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="8949925099261528566">ಕನೆಕ್ಟ್ ಆಗಿದೆ, ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
 <translation id="8951539504029375108">ನಿಮ್ಮ Chromebook ಜೊತೆಗೆ ಅನುಮೋದಿತ Thunderbolt ಸಾಧನಗಳು ಮಾತ್ರ ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತವೆ</translation>

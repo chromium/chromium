@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360398059912971776">电池</translation>
 <translation id="2361210043495191221">开启/关闭 Wi-Fi。<ph name="STATE" />。</translation>
+<translation id="2364710166605611987">外观效果</translation>
 <translation id="236574664504281623">来自 <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2367972762794486313">显示应用</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">关闭</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
 <translation id="3606978283550408104">已连接盲文显示屏。</translation>
+<translation id="3612634595000403645">外观效果偏好设置</translation>
 <translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3616883743181209306">菜单已移至屏幕的右上角。</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">移动到下一个字词的末尾</translation>
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4150201353443180367">显示</translation>
+<translation id="4151054805501931758">人像美化</translation>
 <translation id="4156293514828496577">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。为了延长电池续航时间，部分功能会受到限制。</translation>
 <translation id="4160919062868802509">检测到多个音频源</translation>
 <translation id="4165275524535002941">数据线可能不支持显示屏</translation>
@@ -1105,6 +1108,7 @@
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="482908187605862807">Play 商店提供的应用</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
+<translation id="4835677468087803981">隐藏 PIN 码</translation>
 <translation id="4849058404725798627">突出显示键盘焦点所在对象</translation>
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
 <translation id="485634149294284819">进入键盘菜单</translation>
@@ -1187,6 +1191,7 @@
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上键</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
+<translation id="5091636240353511739">显示 PIN 码</translation>
 <translation id="5092436659250499817">开启/关闭键盘背光</translation>
 <translation id="5094577350232361255">简介</translation>
 <translation id="5095136268899496849">您可在“设置”中对 <ph name="PRODUCT_NAME" /> 进行自定义和个性化设置。不妨尝试更换壁纸或设置屏保。</translation>
@@ -1353,6 +1358,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
+<translation id="5633826232582408011">开启“帮我写”和“帮我读”功能后，系统会将输入文本、文档内容和网页网址发送到 Google AI 服务器，以根据 <ph name="LINK_TO_SERVICE_TERMS" />生成写作建议、总结内容、回答问题并改进产品。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1639,6 +1645,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="6605415194043280389">专注模式已开启</translation>
+<translation id="660846213831377756">鼠标按键</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
 <translation id="6612889377159412215">子任务</translation>
@@ -1966,6 +1973,7 @@
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>
+<translation id="77747521138552256">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />后再尝试输入 PIN 码，或者立即输入密码登录。</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7781829728241885113">昨天</translation>

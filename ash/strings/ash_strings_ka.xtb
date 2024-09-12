@@ -1109,6 +1109,7 @@
 <translation id="4826588772550366629">კამერა და მიკროფონი</translation>
 <translation id="482908187605862807">ხელმისაწვდომი აპები Play Store-იდან</translation>
 <translation id="4831034276697007977">ნამდვილად გსურთ, გამორთოთ ავტომატური დაწკაპუნებები?</translation>
+<translation id="4835677468087803981">PIN-კოდის დამალვა</translation>
 <translation id="4849058404725798627">კლავიატურის მეშვეობით არჩეული ობიექტის გამოყოფა</translation>
 <translation id="485592688953820832">ქმედების გარეშე (პაუზა)</translation>
 <translation id="485634149294284819">კლავიატურის მენიუში შესვლა</translation>
@@ -1191,6 +1192,7 @@
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083035541015925118">ctrl + alt + ზემოთ მიმართული ისარი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
+<translation id="5091636240353511739">PIN-კოდის ჩვენება</translation>
 <translation id="5092436659250499817">კლავიატურის შენათების ჩართვა/გამორთვა</translation>
 <translation id="5094577350232361255">შესახებ</translation>
 <translation id="5095136268899496849">თქვენი <ph name="PRODUCT_NAME" />-ის მორგება და პერსონალიზება პარამეტრებიდან შეგიძლიათ. ცადეთ ფონის შეცვლა ან ეკრანმზოგის დაყენება.</translation>
@@ -1358,6 +1360,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">თქვენი პაროლი ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="5632485077360054581">ინსტრუქციის ნახვა</translation>
+<translation id="5633826232582408011">როცა ტექსტის შემქმნელი და წაკითხვაში დახმარება ჩართულია, შეტანილი ტექსტი, დოკუმენტის კონტენტი და ვებგვერდის URL ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რათა დაგენერირდეს ტექსტური შეთავაზებები, შეჯამებები, კითხვებზე პასუხები და გაუმჯობესდეს პროდუქტი, როგორც ამას მოითხოვს <ph name="LINK_TO_SERVICE_TERMS" />. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
@@ -1644,6 +1647,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">კამერა მიზიდულია ქვედა მარცხენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="6605415194043280389">ფოკუსირების რეჟიმი ჩართულია</translation>
+<translation id="660846213831377756">მაუსის კლავიშები</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6612802754306526077">ეკრანის ჩაწერის რეჟიმი არჩეულია</translation>
 <translation id="6612889377159412215">ქვეამოცანა</translation>

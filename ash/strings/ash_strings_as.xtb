@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2360398059912971776">বেটাৰী</translation>
 <translation id="2361210043495191221">ৱাই-ফাই ট’গল কৰক। <ph name="STATE" />।</translation>
+<translation id="2364710166605611987">ৰূপৰ ইফেক্ট</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" />ৰ পৰা পঠিওৱা</translation>
 <translation id="2367186422933365202">আপোনাৰ Chromebookত ছাইন ইন কৰিব পৰা নাই</translation>
 <translation id="2367972762794486313">এপ্‌সমূহ দেখুৱাওক</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">অফ কৰক</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ডেস্কখন সৃষ্টি কৰা হ’ল</translation>
 <translation id="3606978283550408104">ব্ৰেইল ডিছপ্লে’ সংযোগ কৰা হৈছে।</translation>
+<translation id="3612634595000403645">ৰূপে অগ্ৰাধিকাৰত ইফেক্ট কৰে</translation>
 <translation id="3615926715408477684">ম’বাইল ডেটা সক্ষম কৰিলে ব্লুটুথ সক্ষম হ’ব</translation>
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3616883743181209306">স্ক্ৰীনখনৰ ওপৰৰ সোঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">পৰৱৰ্তী শব্দটোৰ শেষলৈ যাওক</translation>
 <translation id="4146833061457621061">সংগীত প্লে’ কৰক</translation>
 <translation id="4150201353443180367">ডিছপ্লে’</translation>
+<translation id="4151054805501931758">প’ৰ্ট্ৰেইট সম্পাদনা কৰা</translation>
 <translation id="4156293514828496577">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)।
 বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰিবলৈ কিছুমান সুবিধা সীমিত কৰা হৈছে।</translation>
 <translation id="4160919062868802509">একাধিক অডিঅ’ৰ উৎস চিনাক্ত কৰা হৈছে</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
 <translation id="482908187605862807">Play Storeৰ পৰা উপলব্ধ এপ্</translation>
 <translation id="4831034276697007977">আপুনি স্বয়ংক্ৰিয়ভাৱে ক্লিক অফ কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
+<translation id="4835677468087803981">পিন লুকুৱাওক</translation>
 <translation id="4849058404725798627">কীব’ৰ্ডৰ ফ’কাছেৰে বস্তু হাইলাইট কৰক</translation>
 <translation id="485592688953820832">কোনো কাৰ্য নাই (পজ)</translation>
 <translation id="485634149294284819">কীব'র্ডৰ মেনু খোলক</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083035541015925118">ctrl + alt + উপৰমুৱা কাঁড়</translation>
 <translation id="5083553833479578423">Assistantৰ অন্যান্য সুবিধাসমূহ ব্যৱহাৰ কৰক।</translation>
+<translation id="5091636240353511739">পিন দেখুৱাওক</translation>
 <translation id="5092436659250499817">কীব’ৰ্ডৰ বেকলাইট অন/অফ কৰক</translation>
 <translation id="5094577350232361255">ইয়াৰ বিষয়ে</translation>
 <translation id="5095136268899496849">ছেটিঙত আপোনাৰ <ph name="PRODUCT_NAME" /> কাষ্টমাইজ আৰু ব্যক্তিগতকৰণ কৰক। আপোনাৰ ৱালপেপাৰ সলনি কৰি বা এটা স্ক্ৰীন ছেভাৰ ছেট কৰি চাওক।</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">কেমেৰা তলৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে। ছিষ্টেম ছাৰ্ফেচৰ সৈতে সংঘাত।</translation>
 <translation id="6605415194043280389">ফ’কাছ অন আছে</translation>
+<translation id="660846213831377756">মাউছ কীসমূহ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6612802754306526077">স্ক্ৰীন ৰেকৰ্ডিঙৰ ম'ডটো বাছনি কৰা হ'ল</translation>
 <translation id="6612889377159412215">সহায়ক কাৰ্য</translation>
@@ -1968,6 +1974,7 @@
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="7769299611924763557">আপোনাৰ GIF সোনকালেই সাজু হ’ব</translation>
 <translation id="7773536009433685931">তাৰ পৰিৱৰ্তে ৱাইফাই অন কৰক</translation>
+<translation id="77747521138552256">অতি বেছিসংখ্যক পিনৰ প্ৰয়াস। <ph name="TIME_LEFT" /> সময় অপেক্ষা কৰি পুনৰ পিনটো দি চাওক বা লগে লগে ছাইন ইন কৰিবলৈ পাছৱৰ্ডটো দিয়ক।</translation>
 <translation id="7780094051999721182">শ্বৰ্টকাট</translation>
 <translation id="7780159184141939021">স্ক্ৰীন ঘূৰাওক</translation>
 <translation id="7781829728241885113">কালি</translation>

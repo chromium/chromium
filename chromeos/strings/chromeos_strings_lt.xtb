@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Žiniatinklio kameros vaizdo įrašo sklaidos kanalas</translation>
 <translation id="1676557873873341166">Fiksuojamas vaizdo įrašas</translation>
 <translation id="1684279041537802716">Paryškinimo spalva</translation>
+<translation id="1697278726914783200">Įrašyti</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
 <translation id="1708602061922134366">„Google“ mėlyna</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
 <translation id="2189104374785738357">APN išsamios informacijos redagavimas</translation>
 <translation id="2195732836444333448">Šiuo metu esame užimti. Pabandykite vėliau.</translation>
+<translation id="2197185031095816179">Iš naujo nustatant Saugos programą gali būti pašalinti nepageidaujami iššokantieji langai, išspręstos tinklo ir kitos nenumatytos problemos.</translation>
 <translation id="2201758491318984023">dviratis</translation>
 <translation id="2203272733515928691">karšto vandens šaltinis</translation>
 <translation id="2203642483788377106">uola</translation>
@@ -542,6 +544,7 @@
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="382043424867370667">Saulėlydžio ekrano fonas</translation>
 <translation id="3824259034819781947">Pridėti failų</translation>
+<translation id="3836587210832263413">Įjunkite tik tuos plėtinius, kuriais pasitikite</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
 <translation id="3845880861638660475">Paspauskite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, kad uždarytumėte dialogo langą.</translation>
 <translation id="3848280697030027394">klaviatūros tamsinimas</translation>
@@ -632,6 +635,7 @@
 <translation id="4251839292699800785">Stilingas biuras</translation>
 <translation id="4258281355379922695">HTTP delsa</translation>
 <translation id="4266143281602681663">siūlų</translation>
+<translation id="4269815121975886860">Paleidimo nuostatos</translation>
 <translation id="4271957103967917607">Peržiūrėti per visą ekraną</translation>
 <translation id="4275663329226226506">Medija</translation>
 <translation id="4278766082079064416">Naudojamas „<ph name="CONFLICT_ACCEL_NAME" />“ spartusis klavišas. Redaguokite arba pašalinkite, kad panaikintumėte nesuderinamumą.</translation>
@@ -700,6 +704,7 @@
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4594021849294327751">Sukurti transkribuotą tekstą</translation>
+<translation id="4602266091140407479">Mikrofonas</translation>
 <translation id="4607282946861182308">Negalima sukurti vaizdų. Bandykite kitą užklausą.</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Įrenginio „<ph name="DEVICE_NAME" />“ programinė aparatinė įranga atnaujinta į <ph name="VERSION" /> versiją</translation>
 <translation id="4950893758552030541">medžių tunelis</translation>
+<translation id="4965661459364092269">Saugumo programos nustatymas iš naujo baigtas</translation>
 <translation id="4965703485264574128">Norint apytiksliai apskaičiuoti rezultatą, reikia padauginti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Padalyti</translation>
 <translation id="4972592110715526173">keisti režimą</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">Tarptinklinis ryšys</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_STYLE" /> knygų lentyna <ph name="SIMPLE_TONE" /> kambaryje</translation>
 <translation id="5257811368506016604">Įgalinti šviesių spalvų režimą</translation>
+<translation id="5261479807286543505">Paleidimo nustatymai</translation>
 <translation id="5264277876637023664">Vykdyti centrinio procesoriaus bandymą</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN išjungtas.</translation>
@@ -1006,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Sukurta <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Akumuliatoriaus galia mažėja jį naudojant</translation>
+<translation id="6189987971574353264">Leisti</translation>
 <translation id="6191293864534840972">Netinkamai sukonfigūruoti domenų pavadinimų serveriai</translation>
 <translation id="6196607555925437199">Sukurti iš naujo</translation>
 <translation id="6205145102504628069">Debesies srautas</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
+<translation id="6846843854964504403">Saugumo programos nustatymas iš naujo</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
 <translation id="6862416241246624313">Atsiliepimas pateiktas</translation>
 <translation id="6866732840889595464">ramunė</translation>
@@ -1325,6 +1334,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7746357909584236306">redaguotina</translation>
 <translation id="7747039790905080783">Paruoštas bendrinti raktas</translation>
 <translation id="7752963721013053477">Nuo aušros iki sutemų – išskirtinis</translation>
+<translation id="7760571082554155847">Pagrindinio puslapio nustatymai</translation>
 <translation id="7762130827864645708">Slaptažodis sėkmingai pakeistas. Nuo šiol naudokite naują slaptažodį.</translation>
 <translation id="7763470514545477072">Domeno plėtinio atitiktis</translation>
 <translation id="7769672763586021400">Modelio ID</translation>
@@ -1366,6 +1376,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7942349550061667556">Raudona</translation>
 <translation id="7943235353293548836">Nuolatinio palaikymo intervalas</translation>
 <translation id="7943516765291457328">Įjunkite „Bluetooth“, kad būtų galima nuskaityti viešosios interneto prieigos taškus netoliese</translation>
+<translation id="7944482598620888754">Svetainės turinys</translation>
 <translation id="7944562637040950644">perjungti klaviatūros apšvietimą</translation>
 <translation id="7953669802889559161">Įvestys</translation>
 <translation id="7955587717700691983">„Bluetooth“ klaviatūra</translation>
@@ -1402,6 +1413,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8132480444149501833">Pateikti srauto skaitiklių užklausą</translation>
+<translation id="8135609423982943441">„Chromebook“ buvo iš naujo nustatyti saugūs numatytieji nustatymai. Šiuos pakeitimus galite bet kada koreguoti skiltyje „Nustatymai“.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pasirinkite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Kūrėjo įrankiai</translation>
@@ -1432,6 +1444,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
 <translation id="8302368968391049045">HTTPS užkarda</translation>
+<translation id="8308787307410010965">Svetainės turinio nustatymai</translation>
 <translation id="8312330582793120272">leisti mediją</translation>
 <translation id="8318753676953949627">Vaizdų nėra</translation>
 <translation id="8320910311642849813">miškas</translation>
@@ -1632,6 +1645,8 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="951780398843003443">Palyginti įrašo balsus, kad transkribuotame tekste atsispindėtų, ką ir kada pasakė kiekvienas kalbantysis</translation>
 <translation id="952992212772159698">Nesuaktyvinta</translation>
 <translation id="95718197892796296">molio</translation>
+<translation id="959792926760890141">Iš naujo nustatant Saugumo programą išjungiami naršyklės „Chrome“ plėtiniai ir iš naujo nustatomi tinklo bei kiti nustatymai į saugius numatytuosius.
+          Numatytasis paieškos variklis bus nustatytas iš naujo, bet skirtukai, failai, slapukai ir istorija nebus pakeisti.</translation>
 <translation id="960719561871045870">Operacijos ženklo kodas</translation>
 <translation id="965918541715156800">geltonos ir žalsvai mėlynos spalvų</translation>
 <translation id="966787709310836684">meniu</translation>

@@ -1106,6 +1106,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
 <translation id="482908187605862807">Applis disponibles sur le Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
+<translation id="4835677468087803981">Masquer le code</translation>
 <translation id="4849058404725798627">Mettre l'objet sélectionné au clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="485634149294284819">Ouvrir le menu du clavier</translation>
@@ -1188,6 +1189,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083035541015925118">Ctrl+Alt+Flèche vers le haut</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
+<translation id="5091636240353511739">Afficher le code</translation>
 <translation id="5092436659250499817">Activer/Désactiver le rétroéclairage du clavier</translation>
 <translation id="5094577350232361255">à propos de</translation>
 <translation id="5095136268899496849">Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Modifiez votre fond d'écran ou configurez un économiseur d'écran.</translation>
@@ -1641,6 +1643,7 @@ Nouvelle installation</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Appareil photo aligné sur l'angle inférieur gauche. Conflit avec la surface du système.</translation>
 <translation id="6605415194043280389">Le mode Sans distractions est activé</translation>
+<translation id="660846213831377756">Boutons de la souris</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6612889377159412215">tâche secondaire</translation>
@@ -2300,6 +2303,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8938800817013097409">Appareil USB de type C (port situé sur l'arrière de l'appareil, à droite)</translation>
 <translation id="8939855324412367560">L'entrée audio est "<ph name="INPUT_DEVICE_NAME" />" et la sortie audio est "<ph name="OUTPUT_DEVICE_NAME" />". Pour les modifier, accédez aux paramètres.</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8945508919180478719">Micro de style studio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, case non cochée.</translation>
 <translation id="8949925099261528566">Connecté, aucun accès à Internet</translation>
 <translation id="8951539504029375108">Seuls les appareils Thunderbolt approuvés sont compatibles avec votre Chromebook</translation>

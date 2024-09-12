@@ -735,7 +735,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3600061223661453002">Isključeno</translation>
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je kreirana</translation>
 <translation id="3606978283550408104">Brailleov ekran je povezan.</translation>
-<translation id="3612634595000403645">Preferencije za efekte izgleda</translation>
+<translation id="3612634595000403645">Postavke efekata izgleda</translation>
 <translation id="3615926715408477684">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3616883743181209306">Meni je pomjeren u gornji desni ugao ekrana.</translation>
@@ -896,7 +896,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4146671046252289537">Premjesti na kraj sljedeće riječi</translation>
 <translation id="4146833061457621061">Pokreni muziku</translation>
 <translation id="4150201353443180367">Ekran</translation>
-<translation id="4151054805501931758">Uređivanje portreta</translation>
+<translation id="4151054805501931758">Dotjerivanje portreta</translation>
 <translation id="4156293514828496577">Preostalo je <ph name="PERCENTAGE" />% baterije (otprilike <ph name="TIME_LEFT" />).
 Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translation>
 <translation id="4160919062868802509">Otkriveno je više izvora zvuka</translation>
@@ -1109,6 +1109,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="482908187605862807">Aplikacije dostupne u Play trgovini</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
+<translation id="4835677468087803981">Sakrivanje PIN-a</translation>
 <translation id="4849058404725798627">Istakni objekat fokusom tastature</translation>
 <translation id="485592688953820832">Nema radnje (pauza)</translation>
 <translation id="485634149294284819">Otvaranje menija tastature</translation>
@@ -1191,6 +1192,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="5078796286268621944">Pogrešan PIN</translation>
 <translation id="5083035541015925118">Ctrl i Alt i strelica nagore</translation>
 <translation id="5083553833479578423">Otključajte više funkcija Asistenta.</translation>
+<translation id="5091636240353511739">Prikaz PIN-a</translation>
 <translation id="5092436659250499817">Uključivane/isključivanje pozadinskog osvjetljenja tastature</translation>
 <translation id="5094577350232361255">informacije</translation>
 <translation id="5095136268899496849">Prilagodite i personalizirajte <ph name="PRODUCT_NAME" /> u Postavkama. Pokušajte promijeniti pozadinsku sliku ili postaviti čuvar ekrana.</translation>
@@ -1358,6 +1360,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Potvrđivanje lozinke nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
+<translation id="5633826232582408011">Kad uključite pomoć pri pisanju i pomoć s čitanjem, tekst unosa, sadržaj dokumenta i URL web-stranice šalju se poslužiteljima Googleovog AI-ja radi generiranja prijedloga i sažetaka, odgovaranja na pitanja i poboljšanja proizvoda, u skladu s dokumentom <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.</translation>
 <translation id="5648021990716966815">Priključak za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> traži da reagirate.</translation>
 <translation id="5662075790140998213">10. radna površina</translation>
@@ -1644,6 +1647,7 @@ Nova instalacija</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera se uklopila u donji lijevi ugao. Došlo je do konflikta s površinom sistema.</translation>
 <translation id="6605415194043280389">Fokusiranje je uključeno</translation>
+<translation id="660846213831377756">Tipke miša</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="6612802754306526077">Odabran je način rada za snimanje ekrana</translation>
 <translation id="6612889377159412215">podzadatak</translation>
@@ -1971,7 +1975,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>
-<translation id="77747521138552256">Pokušali ste unijeti PIN previše puta. Pričekajte <ph name="TIME_LEFT" /> i pokušajte ponovo unijeti PIN ili unesite zaporku da biste se odmah prijavili.</translation>
+<translation id="77747521138552256">Previše pokušaja unosa PIN-a. Pričekajte <ph name="TIME_LEFT" /> i ponovo pokušajte unijeti PIN ili unesite lozinku da se odmah prijavite.</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7781829728241885113">Jučer</translation>
@@ -2304,7 +2308,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8938800817013097409">USB-C uređaj (desni priključak na stražnjoj strani)</translation>
 <translation id="8939855324412367560">Ulazni izvor zvuka je "<ph name="INPUT_DEVICE_NAME" />", a izlazni "<ph name="OUTPUT_DEVICE_NAME" />". Idite u Postavke da promijenite.</translation>
 <translation id="8940956008527784070">Baterija je slaba (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8945508919180478719">Studijski mikrofon</translation>
+<translation id="8945508919180478719">Mikrofon u studijskom stilu</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, polje za potvrdu nije označeno.</translation>
 <translation id="8949925099261528566">Povezano, nema internetske veze</translation>
 <translation id="8951539504029375108">Samo su odobreni Thunderbolt uređaji kompatibilni s vašim Chromebookom</translation>

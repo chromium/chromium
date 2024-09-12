@@ -1106,6 +1106,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4826588772550366629">myndavél og hljóðnema</translation>
 <translation id="482908187605862807">Tiltæk forrit frá Play Store</translation>
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
+<translation id="4835677468087803981">Fela PIN-númer</translation>
 <translation id="4849058404725798627">Auðkenna hlut með lyklaborðsfókus</translation>
 <translation id="485592688953820832">Engin aðgerð (hlé)</translation>
 <translation id="485634149294284819">Opna lyklaborðsvalmynd</translation>
@@ -1188,6 +1189,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083035541015925118">ctrl + alt + ör upp</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
+<translation id="5091636240353511739">Sýna PIN-númer</translation>
 <translation id="5092436659250499817">Kveikja/slökkva á baklýsingu lyklaborðs</translation>
 <translation id="5094577350232361255">um</translation>
 <translation id="5095136268899496849">Sérsníddu <ph name="PRODUCT_NAME" />-tækið þitt í stillingunum. Prófaðu að skipta um veggfóður eða stilla skjávara.</translation>
@@ -1641,6 +1643,7 @@ Ný uppsetning</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Myndavél fest við neðra horn vinstra megin. Skörun við vettvang kerfis.</translation>
 <translation id="6605415194043280389">Einbeitingarlota í gangi</translation>
+<translation id="660846213831377756">Músarhnappar</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />, stjórnað af kerfisstjóra</translation>
 <translation id="6612802754306526077">Skjáupptökustilling valin</translation>
 <translation id="6612889377159412215">undirverkefni</translation>
@@ -2300,6 +2303,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8939855324412367560">Inntakshljóð er „<ph name="INPUT_DEVICE_NAME" />“ og úttakshljóð er „<ph name="OUTPUT_DEVICE_NAME" />“. Farðu í stillingar til að breyta þessu.</translation>
 <translation id="8940956008527784070">Rafhlaða að tæmast (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Stúdíóhljóðnemi</translation>
 <translation id="894774083269346314">Ekki er merkt við gátreitinn „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“</translation>
 <translation id="8949925099261528566">Tengt, enginn netaðgangur</translation>
 <translation id="8951539504029375108">Aðeins samþykkt Thunderbolt-tæki eru samhæf Chromebook</translation>

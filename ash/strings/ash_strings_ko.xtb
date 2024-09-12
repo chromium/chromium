@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2360398059912971776">배터리</translation>
 <translation id="2361210043495191221">Wi-Fi를 전환합니다. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">외모 효과</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" />에서 전송</translation>
 <translation id="2367186422933365202">Chromebook에 로그인할 수 없음</translation>
 <translation id="2367972762794486313">앱 표시</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">사용 설정</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> 데스크가 생성되었습니다.</translation>
 <translation id="3606978283550408104">점자 디스플레이가 연결되었습니다.</translation>
+<translation id="3612634595000403645">외모 효과 환경설정</translation>
 <translation id="3615926715408477684">모바일 데이터를 사용 설정하면 블루투스가 사용 설정됩니다.</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3616883743181209306">메뉴가 화면 오른쪽 상단으로 이동했습니다.</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">다음 단어의 끝으로 이동</translation>
 <translation id="4146833061457621061">음악을 틀어 줘</translation>
 <translation id="4150201353443180367">디스플레이</translation>
+<translation id="4151054805501931758">인물 보정</translation>
 <translation id="4156293514828496577">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />).
 배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
 <translation id="4160919062868802509">여러 오디오 소스가 감지되었습니다</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">카메라 및 마이크</translation>
 <translation id="482908187605862807">Play 스토어에서 사용 가능한 앱</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
+<translation id="4835677468087803981">PIN 숨기기</translation>
 <translation id="4849058404725798627">키보드 포커스로 개체 강조표시</translation>
 <translation id="485592688953820832">작업 없음(일시중지)</translation>
 <translation id="485634149294284819">키보드 선택 메뉴</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + 위쪽 화살표</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
+<translation id="5091636240353511739">PIN 표시</translation>
 <translation id="5092436659250499817">키보드 백라이트 켜기/끄기</translation>
 <translation id="5094577350232361255">정보</translation>
 <translation id="5095136268899496849">설정에서 <ph name="PRODUCT_NAME" />을 맞춤설정할 수 있습니다. 배경화면을 변경하거나 화면 보호기를 설정해 보세요.</translation>
@@ -1641,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="6605415194043280389">집중 모드 사용 중</translation>
+<translation id="660846213831377756">마우스 키</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="6612802754306526077">화면 녹화 모드 선택됨</translation>
 <translation id="6612889377159412215">하위 할 일</translation>
@@ -1968,6 +1974,7 @@
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
 <translation id="7773536009433685931">대신 Wi-Fi 사용 설정하기</translation>
+<translation id="77747521138552256">PIN 입력 횟수 한도를 초과했습니다. <ph name="TIME_LEFT" /> 후에 PIN을 다시 입력하거나 비밀번호를 입력하여 즉시 로그인하세요.</translation>
 <translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7781829728241885113">어제</translation>

@@ -224,6 +224,7 @@
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" />负责管理 Chromium</translation>
 <translation id="4447409407328223819">关于 Chrome for Testing</translation>
+<translation id="4470974262661801543">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请输入口令</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
 <translation id="4510853178268397146">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chromium 建议您移除它。</translation>

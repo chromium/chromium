@@ -1110,6 +1110,7 @@
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="482908187605862807">Доступне апликације из Play продавнице</translation>
 <translation id="4831034276697007977">Желите ли стварно да искључите аутоматске кликове?</translation>
+<translation id="4835677468087803981">Сакриј PIN</translation>
 <translation id="4849058404725798627">Истакни објекат помоћу фокуса тастатуре</translation>
 <translation id="485592688953820832">Ништа се не предузима (паузирање)</translation>
 <translation id="485634149294284819">Уђите у мени за тастатуру</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5078796286268621944">Нетачан PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + стрелица нагоре</translation>
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
+<translation id="5091636240353511739">Прикажи PIN</translation>
 <translation id="5092436659250499817">Укључи/искључи позадинско осветљење тастатуре</translation>
 <translation id="5094577350232361255">основни подаци</translation>
 <translation id="5095136268899496849">Прилагодите и персонализујте <ph name="PRODUCT_NAME" /> у Подешавањима. Пробајте да промените позадину или подесите чувар екрана.</translation>
@@ -1646,6 +1648,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера је уклопљена у доњи леви угао. Неусаглашеност са површином система.</translation>
 <translation id="6605415194043280389">Фокус је укључен</translation>
+<translation id="660846213831377756">Тастери миша</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6612802754306526077">Режим снимања екрана је изабран</translation>
 <translation id="6612889377159412215">подзадатак</translation>

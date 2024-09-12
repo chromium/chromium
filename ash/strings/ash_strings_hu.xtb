@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2360398059912971776">akkumulátor</translation>
 <translation id="2361210043495191221">Wi-Fi be-/kikapcsolása. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Megjelenési effektusok</translation>
 <translation id="236574664504281623">A(z) <ph name="SESSION_NAME" /> eszközről</translation>
 <translation id="2367186422933365202">Nem lehet bejelentkezni a Chromebookra</translation>
 <translation id="2367972762794486313">Alkalmazások megjelenítése</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">Ki</translation>
 <translation id="3604801046548457007">Létrehozta a(z) „<ph name="DESK_TITILE" />” asztalt</translation>
 <translation id="3606978283550408104">Braille-kijelző csatlakoztatva.</translation>
+<translation id="3612634595000403645">Megjelenési effektusok beállításai</translation>
 <translation id="3615926715408477684">A mobiladat-kapcsolat engedélyezésével a Bluetooth is bekapcsol.</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">A menü a képernyő jobb felső sarkába került.</translation>
@@ -895,6 +897,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4146671046252289537">Ugrás a következő szó végére</translation>
 <translation id="4146833061457621061">Zenelejátszás</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>
+<translation id="4151054805501931758">Portré retusálása</translation>
 <translation id="4156293514828496577">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />% (körülbelül <ph name="TIME_LEFT" />).
 Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozottan használhatók.</translation>
 <translation id="4160919062868802509">Több hangforrás észlelve</translation>
@@ -1107,6 +1110,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4826588772550366629">kamera és mikrofon</translation>
 <translation id="482908187605862807">A Play Áruházból rendelkezésre álló alkalmazások</translation>
 <translation id="4831034276697007977">Biztosan kikapcsolja az automatikus kattintásokat?</translation>
+<translation id="4835677468087803981">PIN-kód elrejtése</translation>
 <translation id="4849058404725798627">Objektum kiemelése billentyűzetfókusszal</translation>
 <translation id="485592688953820832">Nincs művelet (szünet)</translation>
 <translation id="485634149294284819">Billentyűzet menü megnyitása</translation>
@@ -1189,6 +1193,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083035541015925118">ctrl + alt + felfelé nyíl</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
+<translation id="5091636240353511739">PIN-kód megjelenítése</translation>
 <translation id="5092436659250499817">A billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="5094577350232361255">névjegy</translation>
 <translation id="5095136268899496849">A Beállításokban személyre szabhatja <ph name="PRODUCT_NAME" /> eszközét. Próbálja ki a háttér módosítását vagy a képernyőkímélő beállítását.</translation>
@@ -1642,6 +1647,7 @@ Frissen telepítve</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera a bal alsó sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="6605415194043280389">Összpontosítási üzemmód bekapcsolva</translation>
+<translation id="660846213831377756">Egérgombok</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="6612802754306526077">Képernyőrögzítés mód kiválasztva</translation>
 <translation id="6612889377159412215">részfeladat</translation>
@@ -1969,6 +1975,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
 <translation id="7773536009433685931">Helyette Wi-Fi bekapcsolása</translation>
+<translation id="77747521138552256">Túl sokszor próbálkozott a PIN-kód megadásával. <ph name="TIME_LEFT" /> várakozás után próbálja meg újra megadni a PIN-kódot, vagy adja meg a jelszót az azonnali bejelentkezéshez.</translation>
 <translation id="7780094051999721182">billentyűparancsok</translation>
 <translation id="7780159184141939021">Képernyő elforgatása</translation>
 <translation id="7781829728241885113">Tegnap</translation>

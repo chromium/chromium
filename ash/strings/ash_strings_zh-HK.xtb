@@ -374,6 +374,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360398059912971776">電池</translation>
 <translation id="2361210043495191221">切換 Wi-Fi。<ph name="STATE" />。</translation>
+<translation id="2364710166605611987">外觀效果</translation>
 <translation id="236574664504281623">來自 <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
@@ -734,6 +735,7 @@
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
+<translation id="3612634595000403645">外觀效果偏好設定</translation>
 <translation id="3615926715408477684">如果您啟用流動數據，藍牙亦會隨之開啟</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3616883743181209306">已經將選單移去螢幕右上角。</translation>
@@ -894,6 +896,7 @@
 <translation id="4146671046252289537">移至下一個字詞的結尾</translation>
 <translation id="4146833061457621061">播音樂</translation>
 <translation id="4150201353443180367">顯示屏</translation>
+<translation id="4151054805501931758">人像修飾</translation>
 <translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (大約 <ph name="TIME_LEFT" />)。
 為延長電池壽命，部分功能會受限制。</translation>
 <translation id="4160919062868802509">偵測到多個音訊來源</translation>
@@ -1106,6 +1109,7 @@
 <translation id="4826588772550366629">相機和麥克風</translation>
 <translation id="482908187605862807">「Play 商店」提供的應用程式</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
+<translation id="4835677468087803981">隱藏 PIN</translation>
 <translation id="4849058404725798627">突顯鍵盤焦點所在的物件</translation>
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
 <translation id="485634149294284819">輸入鍵盤選單</translation>
@@ -1187,6 +1191,7 @@
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083035541015925118">Ctrl 鍵 + Alt 鍵 + 向上箭咀鍵</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
+<translation id="5091636240353511739">顯示 PIN</translation>
 <translation id="5092436659250499817">開啟/關閉鍵盤背光</translation>
 <translation id="5094577350232361255">關於</translation>
 <translation id="5095136268899496849">你可在「設定」中自訂並個人化 <ph name="PRODUCT_NAME" />，嘗試變更桌布或設定螢幕保護程式。</translation>
@@ -1639,6 +1644,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">攝錄機已經對齊左下角，同系統平台有衝突。</translation>
 <translation id="6605415194043280389">「專注模式」已開啟</translation>
+<translation id="660846213831377756">滑鼠按鍵</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6612889377159412215">子工作</translation>
@@ -1966,6 +1972,7 @@
 <translation id="7768784765476638775">揀選朗讀內容</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
+<translation id="77747521138552256">嘗試輸入 PIN 的次數過多。請等候 <ph name="TIME_LEFT" />再嘗試輸入 PIN，或輸入密碼以立即登入。</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7781829728241885113">昨天</translation>

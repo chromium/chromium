@@ -224,6 +224,7 @@
 <translation id="4434353761996769206">インストーラー エラー: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="4447409407328223819">Chrome for Testing について</translation>
+<translation id="4470974262661801543">Google アカウントで Chromium データを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="4493028449971051158">起動エラー: 管理者としてインストーラを実行してください。</translation>
 <translation id="4501471624619070934">お住まいの国ではアクセスが制限されているため、インストールに失敗しました。</translation>
 <translation id="4510853178268397146">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>

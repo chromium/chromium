@@ -1116,6 +1116,7 @@
 <translation id="1780273119488802839">Хавчуургануудыг импорт хийж байна...</translation>
 <translation id="1780572199786401845">Доромжилсон/аюултай контент мэдээлнэ үү.</translation>
 <translation id="178092663238929451">Эргэн тойрныхоо хүмүүсээс файл хүлээн авч, тэдэнд илгээхийн тулд Ойролцоо хуваалцах онцлогийг тохируулна уу</translation>
+<translation id="1781164264587898620">Орчны шуугианыг хаах болон аудио сайжруулалтыг ашиглана уу.</translation>
 <translation id="1781291988450150470">Одоогийн ПИН</translation>
 <translation id="1781502536226964113">Шинэ цонхыг нээ</translation>
 <translation id="1781553166608855614">Текстээс яриа</translation>
@@ -8007,6 +8008,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> ( <ph name="OID" /> )</translation>
 <translation id="6803766346203101854">Tаны төхөөрөмжид өгөгдөл хадгалахыг энэ сайтад зөвшөөрсөн.</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" ашиглалтад байна</translation>
+<translation id="6805236548654699520">Тохиргоогоо аюулгүй өгөгдмөл рүү сэргээснээр хүсээгүй попапыг хасаж, сүлжээний асуудлыг засаж мөн илүү ихийг хийгээрэй.</translation>
 <translation id="6805478749741295868">Энэ нь туршилтын ХОУ-ы онцлог бөгөөд үүнийг үргэлж зөв хийхгүй.</translation>
 <translation id="6805647936811177813">Үйлчлүүлэгчийн гэрчилгээг <ph name="HOST_NAME" />-ээс импортлох зорилгоор <ph name="TOKEN_NAME" /> руу нэвтэрч орно уу.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />-д мөрдөх RLZ-ийг идэвхжүүлэх.</translation>
@@ -8090,6 +8092,7 @@
 <translation id="6845038076637626672">Томоор нээ</translation>
 <translation id="6845231585063669905">A-с Z руу</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="FILE_NAME" />-г <ph name="PRINTER_NAME" />-р хэвлэхийг хүсэж байна.</translation>
+<translation id="6846843854964504403">Аюулгүй байдлын шинэчлэлт</translation>
 <translation id="6847125920277401289">Үргэлжлүүлэхийн тулд сул зай гаргана уу</translation>
 <translation id="6848388270925200958">Танд одоогоор зөвхөн энэ төхөөрөмж дээр ашиглах боломжтой зарим карт байна.</translation>
 <translation id="6848716236260083778">Хурууны хээ тохируулахын тулд хүүхдээ хурууны хээ мэдрэгчид хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
@@ -9803,7 +9806,6 @@
 <translation id="8090513782447872344">Та хүссэн үедээ буцан ирж дахин харах боломжтой</translation>
 <translation id="8090579562279016251">Гүйцэтгэлийг багасгах хэдий ч V8-г халдлагуудад илүү тэсвэртэй болгоно</translation>
 <translation id="8090686009202681725">ХОУ-аар загвар үүсгэх</translation>
-<translation id="8091655032047076676">Туршилтын</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> хариу өгөхгүй байна</translation>
 <translation id="8094536695728193970">Гүйлс</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Драйвт нөөцлөх. Өгөгдлөө хялбархнаар сэргээж эсвэл төхөөрөмжийг хүссэн үедээ сэлгээрэй. Таны нөөцлөлтөд аппын өгөгдөл багтдаг.<ph name="END_PARAGRAPH1" />
@@ -10991,6 +10993,7 @@
 
 Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж магадгүй. Та Google Бүртгэлүүдээ <ph name="SETTINGS_LINK_BEGIN" />Тохиргоо<ph name="SETTINGS_LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="8945274638472141382">Дүрс тэмдгийн хэмжээ</translation>
+<translation id="8945508919180478719">Студийн загвартай микрофон</translation>
 <translation id="8946359700442089734">Энэ <ph name="IDS_SHORT_PRODUCT_NAME" /> төхөөрөмж дээр алдаа засах тохиргоог бүрэн идэвхжүүлээгүй байна.</translation>
 <translation id="8946954897220903437">Хаяг оруулах хэсгийн бүх хүсэлтийг хураах</translation>
 <translation id="894763922177556086">Сайн</translation>

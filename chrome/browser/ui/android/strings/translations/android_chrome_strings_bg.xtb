@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="3293181007446299124">Историята ви на сърфиране остава частна на устройството ви, а отчетите се изпращат със закъснение, за да защитим самоличността ви.</translation>
+<translation id="3302615849591357577">Възстановяване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят като нова група на заден план.</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3305130791745726624">Изпращане до устройства</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
 <translation id="4834250788637067901">Начини на плащане, оферти и адреси посредством Google Pay</translation>
 <translation id="4835385943915508971">Chrome няма достъп до заявения ресурс.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_ONE" /> раздел, като нова група на заден план.}other{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_MANY" /> раздела, като нова група на заден план.}}</translation>
 <translation id="4837753911714442426">Отваряне на опциите за отпечатване на страницата</translation>
 <translation id="4842092870884894799">Изскачащият прозорец за генериране на пароли е показан</translation>
 <translation id="4844633725025837809">За допълнителна сигурност шифровайте паролите на устройството си, преди да бъдат запазени в мениджъра на паролите в Google</translation>
@@ -1183,6 +1185,7 @@
 <translation id="6593061639179217415">Настолен сайт</translation>
 <translation id="6594347733515723558">Сорт./преглед на опциите</translation>
 <translation id="6595046016124923392">Изображенията се изпращат до Google с цел подобряване на описанията за вас.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Възстановяване на група, в която има <ph name="TAB_COUNT_ONE" /> раздел, като нова група на заден план.}other{Възстановяване на група, в която има <ph name="TAB_COUNT_MANY" /> раздела, като нова група на заден план.}}</translation>
 <translation id="6604931690954120417">Когато сте влезли в Chrome, паролите, които запазвате, ще се съхраняват в профила ви в Google. За да изключите тази функция, <ph name="BEGIN_LINK" />отворете настройките<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Подобрява сигурността за вас и всички потребители в мрежата.</translation>
 <translation id="6621391692573306628">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome и на двете устройства</translation>
@@ -1207,6 +1210,7 @@
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="6676927815633975364">Влезте в профила си в този сайт и в Chrome</translation>
 <translation id="6684809838922667136">Подобряване на Chrome</translation>
+<translation id="6704048624334633734">Експортиране и изтриване на паролите</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
@@ -1668,6 +1672,7 @@
 <translation id="864544049772947936">Управление на прозорците (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Използвайте Chrome по предпочитания от вас начин</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Блокирано от организацията ви}other{Блокирани от организацията ви: #}}</translation>
 <translation id="8672883760227492369">Някои пароли на това устройство скоро ще спрат да работят. Можете да преместите тези пароли в Google Мениджър на пароли.</translation>
 <translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Потвърждения при вход</translation>

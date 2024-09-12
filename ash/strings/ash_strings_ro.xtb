@@ -374,6 +374,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360398059912971776">baterie</translation>
 <translation id="2361210043495191221">Comută Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efecte de aspect</translation>
 <translation id="236574664504281623">Trimis de la <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nu te poți conecta la Chromebook</translation>
 <translation id="2367972762794486313">Afișați aplicații</translation>
@@ -734,6 +735,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3600061223661453002">Dezactivat</translation>
 <translation id="3604801046548457007">A fost creat desktopul <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Afișajul Braille este conectat.</translation>
+<translation id="3612634595000403645">Preferințe pentru efectele de aspect</translation>
 <translation id="3615926715408477684">Dacă activezi datele mobile, se va activa Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Meniul a fost mutat în colțul din dreapta sus al ecranului.</translation>
@@ -894,6 +896,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4146671046252289537">Deplasați cursorul la finalul cuvântului următor</translation>
 <translation id="4146833061457621061">Redă muzică</translation>
 <translation id="4150201353443180367">Ecran</translation>
+<translation id="4151054805501931758">Retușarea portretului</translation>
 <translation id="4156293514828496577">Baterie rămasă: <ph name="PERCENTAGE" /> % (aproximativ <ph name="TIME_LEFT" />).
 Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4160919062868802509">S-au detectat mai multe surse audio</translation>
@@ -1106,6 +1109,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
 <translation id="482908187605862807">Aplicații disponibile din Magazinul Play</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
+<translation id="4835677468087803981">Ascunde codul PIN</translation>
 <translation id="4849058404725798627">Evidențiază obiectul focalizat de la tastatură</translation>
 <translation id="485592688953820832">Nicio acțiune (pauză)</translation>
 <translation id="485634149294284819">Accesează meniul tastaturii</translation>
@@ -1188,6 +1192,7 @@ Un dispozitiv conectat.</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083035541015925118">ctrl + alt + săgeată în sus</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
+<translation id="5091636240353511739">Afișează codul PIN</translation>
 <translation id="5092436659250499817">Activează / dezactivează retroiluminarea tastaturii</translation>
 <translation id="5094577350232361255">despre</translation>
 <translation id="5095136268899496849">Personalizează-ți <ph name="PRODUCT_NAME" /> din Setări. Încearcă să schimbi imaginea de fundal sau să setezi un screensaver.</translation>
@@ -1641,6 +1646,7 @@ Instalare nouă</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera foto este aliniată cu colțul din stânga jos. Conflict cu platforma de sistem.</translation>
 <translation id="6605415194043280389">Modul Focus este activat</translation>
+<translation id="660846213831377756">Tastele mouse-ului</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6612802754306526077">Modul de înregistrare a ecranului selectat</translation>
 <translation id="6612889377159412215">sarcină secundară</translation>
@@ -1968,6 +1974,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7769299611924763557">GIF-ul va fi gata în curând</translation>
 <translation id="7773536009433685931">Activează conexiunea Wi-Fi</translation>
+<translation id="77747521138552256">Prea multe încercări de introducere a codului PIN. Așteaptă <ph name="TIME_LEFT" /> și încearcă din nou codul PIN sau introdu parola pentru a te conecta imediat.</translation>
 <translation id="7780094051999721182">comenzi rapide</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7781829728241885113">Ieri</translation>

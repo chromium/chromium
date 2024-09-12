@@ -1110,6 +1110,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4826588772550366629">cámara y micrófono</translation>
 <translation id="482908187605862807">Aplicaciones disponibles en Play Store</translation>
 <translation id="4831034276697007977">¿Seguro que quieres desactivar los clics automáticos?</translation>
+<translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4849058404725798627">Resaltar el objeto con el foco del teclado</translation>
 <translation id="485592688953820832">Ninguna acción (pausa)</translation>
 <translation id="485634149294284819">Menú de selección de teclado</translation>
@@ -1192,6 +1193,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083035541015925118">Ctrl + Alt + flecha hacia arriba</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
+<translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5092436659250499817">Activar o desactivar la retroiluminación del teclado</translation>
 <translation id="5094577350232361255">acerca de</translation>
 <translation id="5095136268899496849">Personaliza tu <ph name="PRODUCT_NAME" /> en Configuración. Prueba a cambiar el fondo de pantalla o a configurar un salvapantallas.</translation>
@@ -1645,6 +1647,7 @@ Nueva instalación</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara ajustada a la esquina inferior izquierda. Conflicto con la superficie del sistema.</translation>
 <translation id="6605415194043280389">El modo Sin distracciones está activado</translation>
+<translation id="660846213831377756">Teclas del ratón</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="6612802754306526077">Modo de grabación de pantalla seleccionado</translation>
 <translation id="6612889377159412215">subtarea</translation>

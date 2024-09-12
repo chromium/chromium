@@ -259,6 +259,7 @@
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2195732836444333448">At capacity right now. Come back soon.</translation>
+<translation id="2197185031095816179">Safety reset can help remove unwanted pop-ups, fix network issues and address other unexpected issues.</translation>
 <translation id="2201758491318984023">bicycle</translation>
 <translation id="2203272733515928691">hot spring</translation>
 <translation id="2203642483788377106">cliff</translation>
@@ -537,6 +538,7 @@
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="382043424867370667">Sunset wallpaper</translation>
 <translation id="3824259034819781947">Attach files</translation>
+<translation id="3836587210832263413">Only turn on extensions that you trust</translation>
 <translation id="3838338534323494292">New password</translation>
 <translation id="3845880861638660475">Press <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> to close the dialogue.</translation>
 <translation id="3848280697030027394">keyboard darken</translation>
@@ -626,6 +628,7 @@
 <translation id="4251839292699800785">Stylish office</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
 <translation id="4266143281602681663">yarn</translation>
+<translation id="4269815121975886860">Startup preferences</translation>
 <translation id="4271957103967917607">View full screen</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Edit or remove to resolve the conflict.</translation>
@@ -760,6 +763,7 @@
 <translation id="4932733599132424254">Date</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tree tunnel</translation>
+<translation id="4965661459364092269">Safety reset has been completed</translation>
 <translation id="4965703485264574128">For an approximate result, multiply the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Split</translation>
 <translation id="4972592110715526173">mode change</translation>
@@ -820,6 +824,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">A <ph name="SIMPLE_STYLE" /> bookshelf in a <ph name="SIMPLE_TONE" /> room</translation>
 <translation id="5257811368506016604">Enable light colour mode</translation>
+<translation id="5261479807286543505">Startup settings</translation>
 <translation id="5264277876637023664">Run CPU test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN is disabled.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6846843854964504403">Safety reset</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
 <translation id="6862416241246624313">Feedback submitted</translation>
 <translation id="6866732840889595464">daisy</translation>
@@ -1315,6 +1321,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7746357909584236306">editable</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
 <translation id="7752963721013053477">Dawn to dark – exclusive</translation>
+<translation id="7760571082554155847">Homepage settings</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
@@ -1355,6 +1362,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943235353293548836">Persistent keepalive interval</translation>
 <translation id="7943516765291457328">Turn on Bluetooth to scan for nearby hotspots</translation>
+<translation id="7944482598620888754">Site content</translation>
 <translation id="7944562637040950644">toggle keyboard backlight</translation>
 <translation id="7953669802889559161">Inputs</translation>
 <translation id="7955587717700691983">Bluetooth keyboard</translation>
@@ -1391,6 +1399,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>
+<translation id="8135609423982943441">Your Chromebook was reset to safe defaults. You can adjust these changes at any time in Settings.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Developer tools</translation>
@@ -1420,6 +1429,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8291967909914612644">Home provider country</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
+<translation id="8308787307410010965">Site content settings</translation>
 <translation id="8312330582793120272">play media</translation>
 <translation id="8318753676953949627">No images</translation>
 <translation id="8320910311642849813">forest</translation>
@@ -1618,6 +1628,8 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>
 <translation id="952992212772159698">Not activated</translation>
 <translation id="95718197892796296">clay</translation>
+<translation id="959792926760890141">Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
+          Your default search engine will be reset, but your tabs, files, cookies and history won't be changed.</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="965918541715156800">yellow and teal</translation>
 <translation id="966787709310836684">menu</translation>

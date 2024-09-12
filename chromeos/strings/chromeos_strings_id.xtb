@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="1207734034680156868">Saran didasarkan pada deskripsi Anda</translation>
 <translation id="121090498480012229">putar atau jeda media</translation>
+<translation id="1216675364136048456">Tutup</translation>
 <translation id="1223498995510244364">Ringkasan</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1232610416724362657">air terjun</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bulan ini</translation>
 <translation id="1593528591614229756">Pastikan untuk memilih APN yang disediakan oleh operator seluler atau administrator Anda. Memilih APN akan menonaktifkan APN kustom apa pun. APN yang tidak valid dapat mengganggu koneksi seluler Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Sembunyikan transkrip</translation>
 <translation id="160633243685262989">Pratinjau Gambar</translation>
 <translation id="1611649489706141841">maju</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Ubah gambar wallpaper setiap hari</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1651925268237749928">Anda telah memilih album bersama. Pengguna lain dapat menambahkan atau mengubah foto. Wallpaper Anda mungkin menggunakan foto yang saat ini tidak ada di album ini.</translation>
+<translation id="1661512400125589646">Jeda</translation>
 <translation id="1661865805917886535">Beberapa informasi akun dan sistem dapat dikirimkan ke Google. Kami menggunakan informasi ini untuk membantu mengatasi masalah teknis dan meningkatkan kualitas layanan kami, sesuai dengan Kebijakan Privasi (<ph name="PRIVACYPOLICYURL" />) dan Persyaratan Layanan (<ph name="TERMSOFSERVICEURL" />) kami. Untuk meminta perubahan konten, buka Bantuan Hukum (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1664796644829245314">Pratinjau <ph name="PREVIEW_OBJECT" /></translation>
@@ -172,6 +175,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkrip</translation>
 <translation id="1765169783255151332">Beralih tombol dengan cepat</translation>
 <translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1776228893584526149">Warna wallpaper</translation>
@@ -216,6 +220,7 @@
 <translation id="1954818433534793392">bangunan</translation>
 <translation id="1962550982027027473">APN default diperlukan</translation>
 <translation id="1967860190218310525">Buat APN baru</translation>
+<translation id="1967917622327567355">Tampilkan transkrip</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">tradisional</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
@@ -259,6 +264,7 @@
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2189104374785738357">Edit detail APN</translation>
 <translation id="2195732836444333448">Saat ini sudah mencapai batas kapasitas. Coba lagi nanti.</translation>
+<translation id="2197185031095816179">Reset keamanan dapat membantu menghapus pop-up yang tidak diinginkan, memperbaiki masalah jaringan, dan mengatasi masalah tidak terduga lainnya.</translation>
 <translation id="2201758491318984023">sepeda</translation>
 <translation id="2203272733515928691">mata air panas</translation>
 <translation id="2203642483788377106">tebing</translation>
@@ -537,6 +543,7 @@
 <translation id="3820172043799983114">PIN tidak valid.</translation>
 <translation id="382043424867370667">Wallpaper Matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan file</translation>
+<translation id="3836587210832263413">Hanya aktifkan ekstensi yang Anda percayai</translation>
 <translation id="3838338534323494292">Sandi baru</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="3848280697030027394">gelapkan keyboard</translation>
@@ -597,6 +604,7 @@
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Anda kini memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baru</translation>
 <translation id="4117637339509843559">Mode gelap</translation>
+<translation id="4126551873361000548">Mundur 10 detik</translation>
 <translation id="4130035430755296270">Terus gerakkan kursor untuk melihat opsi tata letak lainnya</translation>
 <translation id="4130750466177569591">Saya setuju</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
@@ -626,6 +634,7 @@
 <translation id="4251839292699800785">Kantor trendi</translation>
 <translation id="4258281355379922695">Latensi HTTP</translation>
 <translation id="4266143281602681663">benang</translation>
+<translation id="4269815121975886860">Preferensi sistem dimulai</translation>
 <translation id="4271957103967917607">Lihat di Layar Penuh</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Edit atau hapus untuk menyelesaikan konflik.</translation>
@@ -677,6 +686,7 @@
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Masukan</translation>
+<translation id="4516323842122524821">Volume</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
@@ -760,6 +770,7 @@
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">terowongan pohon</translation>
+<translation id="4965661459364092269">Reset keamanan telah selesai</translation>
 <translation id="4965703485264574128">Untuk mendapatkan perkiraan hasil, kalikan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
@@ -780,6 +791,7 @@
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
 <translation id="5051044138948155788">Ini adalah satu-satunya halaman. Anda akan diarahkan ke layar awal pemindaian.</translation>
+<translation id="5053233795640754917">Jeda</translation>
 <translation id="5078711626843651677">Model suara disimpan sementara di perangkat hingga pelabelan pembicara selesai. Anda dapat menonaktifkannya kapan saja di Setelan.</translation>
 <translation id="5078983345702708852">futuristik</translation>
 <translation id="5087864757604726239">kembali</translation>
@@ -787,6 +799,7 @@
 <translation id="5089810972385038852">Negara Bagian</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Cabut kabel USB <ph name="DEVICE_NAME" />, lalu colokkan kembali untuk melanjutkan proses update</translation>
+<translation id="5095864667399748231">Aktifkan/nonaktifkan bisukan</translation>
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa tombol <ph name="META_KEY" /> mungkin bertentangan dengan pintasan aplikasi tertentu. Tekan pintasan ini lagi untuk terus menggunakannya, atau tekan pintasan baru menggunakan tombol <ph name="KEY" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonim:</translation>
@@ -820,6 +833,7 @@
 <translation id="5252456968953390977">Jelajah</translation>
 <translation id="5254600740122644523">Rak buku <ph name="SIMPLE_STYLE" /> dalam ruangan <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Aktifkan mode warna terang</translation>
+<translation id="5261479807286543505">Setelan sistem dimulai</translation>
 <translation id="5264277876637023664">Jalankan pengujian CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN dinonaktifkan.</translation>
@@ -932,6 +946,7 @@
 <translation id="588258955323874662">Layar Penuh</translation>
 <translation id="5893975327266416093">Ketuk tombol keyboard untuk menetapkan</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
+<translation id="5896602941605730551">Putar</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903200662178656908">Perangkat adalah kombinasi keyboard dan mouse.</translation>
 <translation id="5904994456462260490">Tambahkan APN baru</translation>
@@ -1131,6 +1146,7 @@
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
+<translation id="6846843854964504403">Reset keamanan</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
 <translation id="6862416241246624313">Masukan dikirim</translation>
 <translation id="6866732840889595464">bunga aster</translation>
@@ -1315,9 +1331,11 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7746357909584236306">dapat diedit</translation>
 <translation id="7747039790905080783">Kunci yang dibagikan sebelumnya</translation>
 <translation id="7752963721013053477">Dawn to dark - eksklusif</translation>
+<translation id="7760571082554155847">Setelan halaman beranda</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
+<translation id="7774759755755950354">Kembali</translation>
 <translation id="7778717409420828014">Masukan Anda membantu kami meningkatkan pengalaman Chromebook dan akan ditinjau oleh tim kami. Karena banyaknya jumlah laporan, kami tidak dapat mengirim balasan.</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7784116172884276937">Tidak ada server DNS yang disiapkan</translation>
@@ -1355,6 +1373,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Interval keepalive persisten</translation>
 <translation id="7943516765291457328">Aktifkan Bluetooth untuk memindai hotspot di sekitar</translation>
+<translation id="7944482598620888754">Konten situs</translation>
 <translation id="7944562637040950644">aktifkan/nonaktifkan lampu latar keyboard</translation>
 <translation id="7953669802889559161">Input</translation>
 <translation id="7955587717700691983">Keyboard Bluetooth</translation>
@@ -1391,6 +1410,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
+<translation id="8135609423982943441">Chromebook Anda direset ke setelan default yang aman. Anda dapat menyesuaikan perubahan ini kapan saja di Setelan.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Developer Tools</translation>
@@ -1408,6 +1428,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8227488649450500937">Coba salah satu perintah ini atau lihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
+<translation id="8236972776513018241">Transkrip</translation>
 <translation id="8238771987802558562">Pilih APN</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
 <translation id="8250926778281121244">cokelat</translation>
@@ -1420,6 +1441,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8291967909914612644">Negara penyedia rumah</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8308787307410010965">Setelan konten situs</translation>
 <translation id="8312330582793120272">putar media</translation>
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8320910311642849813">hutan</translation>
@@ -1510,6 +1532,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8775713578693478175">APN Modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
+<translation id="8797082062139985406">Buat nama menggunakan AI Google</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
 <translation id="8808828119384186784">Setelan Chrome</translation>
@@ -1530,6 +1553,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8864415976656252616">Tidak ada konten yang disarankan. Lihat konten bantuan teratas.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>
+<translation id="8878117140814294155">Aktifkan/nonaktifkan bisukan di mikrofon</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8882789155418924367">burung hantu</translation>
 <translation id="8892443466059986410">Batalkan pengeditan pintasan</translation>
@@ -1618,6 +1642,8 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="951780398843003443">Membandingkan suara di sepanjang rekaman sehingga transkrip dapat menunjukkan ucapan setiap pembicara beserta waktunya</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
+<translation id="959792926760890141">Reset keamanan akan menonaktifkan ekstensi browser Chrome dan mereset jaringan serta setelan lainnya ke setelan default yang aman.
+          Mesin telusur default akan direset, tetapi tab, file, cookie, dan histori Anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

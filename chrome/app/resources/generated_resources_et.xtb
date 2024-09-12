@@ -8018,6 +8018,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Sellel saidil on lubatud teie seadmesse andmeid salvestada.</translation>
 <translation id="680488281839478944">Virtuaalmasin „<ph name="DEFAULT_VM_NAME" />“ on olemas</translation>
+<translation id="6805236548654699520">Eemaldage soovimatuid hüpikaknaid, lahendage võrguprobleeme ja tehke muudki, taastades oma seaded turvalistele vaikeseadetele.</translation>
 <translation id="6805478749741295868">See on katsejärgus AI funktsioon ega saa alati õigeid tulemusi.</translation>
 <translation id="6805647936811177813">Logige sisse rakendusse <ph name="TOKEN_NAME" /> rakendusest <ph name="HOST_NAME" /> kliendi sertifikaadi importimiseks.</translation>
 <translation id="680572642341004180">Lubage RLZ-i jälgimine rakenduses <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
@@ -8101,6 +8102,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6845038076637626672">Ava maksimeeritult</translation>
 <translation id="6845231585063669905">A–Z</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” soovib printida faili <ph name="FILE_NAME" /> printeriga <ph name="PRINTER_NAME" />.</translation>
+<translation id="6846843854964504403">Ohutuseesmärgil lähtestamine</translation>
 <translation id="6847125920277401289">Jätkamiseks vabastage ruumi</translation>
 <translation id="6848388270925200958">Praegu on teil kaarte, mida saab kasutada ainult selles seadmes</translation>
 <translation id="6848716236260083778">Sõrmejälje seadistamiseks paluge lapsel puudutada sõrmejäljeandurit. Teie lapse sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> kunagi väljapoole.</translation>
@@ -9818,7 +9820,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8090513782447872344">Võite alati tagasi tulla ja selle uuesti üle vaadata</translation>
 <translation id="8090579562279016251">Vähendab jõudlust, kuid muudab V8 rünnakutele vastupidavamaks</translation>
 <translation id="8090686009202681725">AI-ga teema loomine</translation>
-<translation id="8091655032047076676">Katseline</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ei reageeri</translation>
 <translation id="8094536695728193970">Aprikoos</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Varundage andmed Google Drive'i. Saate andmed igal ajal hõlpsasti taastada või seadet vahetada. Teie varukoopia hõlmab rakenduste andmeid.<ph name="END_PARAGRAPH1" />
@@ -10307,6 +10308,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8440630305826533614">Linuxi rakendused</translation>
 <translation id="844063558976952706">Sellel saidil alati</translation>
 <translation id="8441313165929432954">Jagamise lubamine/keelamine</translation>
+<translation id="8443542808381875261">Kasutamata vahelehtede sulgemine</translation>
 <translation id="8443986842926457191">URL on pikem kui 2048 tähemärki</translation>
 <translation id="8445281870900174108">See vaheleht kasutab teie kaamerat</translation>
 <translation id="8446884382197647889">Lisateave</translation>

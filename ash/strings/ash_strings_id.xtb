@@ -374,6 +374,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360398059912971776">baterai</translation>
 <translation id="2361210043495191221">Aktifkan/nonaktifkan Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efek tampilan</translation>
 <translation id="236574664504281623">Dikirim dari <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Tidak dapat login ke Chromebook</translation>
 <translation id="2367972762794486313">Tampilkan aplikasi</translation>
@@ -734,6 +735,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3600061223661453002">Nonaktif</translation>
 <translation id="3604801046548457007">Desktop <ph name="DESK_TITILE" /> dibuat</translation>
 <translation id="3606978283550408104">Penampil Braille terhubung.</translation>
+<translation id="3612634595000403645">Preferensi efek tampilan</translation>
 <translation id="3615926715408477684">Mengaktifkan data seluler akan mengaktifkan Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu dipindahkan ke pojok kanan atas layar.</translation>
@@ -894,6 +896,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4146671046252289537">Pindah ke akhir kata berikutnya</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4150201353443180367">Tampilan</translation>
+<translation id="4151054805501931758">Percantik tampilan diri</translation>
 <translation id="4156293514828496577">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />).
 Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4160919062868802509">Beberapa sumber audio terdeteksi</translation>
@@ -1106,6 +1109,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="482908187605862807">Aplikasi yang tersedia dari Play Store</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
+<translation id="4835677468087803981">Sembunyikan PIN</translation>
 <translation id="4849058404725798627">Sorot objek dengan fokus keyboard</translation>
 <translation id="485592688953820832">Tidak ada tindakan (jeda)</translation>
 <translation id="485634149294284819">Buka menu keyboard</translation>
@@ -1188,6 +1192,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083035541015925118">ctrl + alt + panah atas</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
+<translation id="5091636240353511739">Tampilkan PIN</translation>
 <translation id="5092436659250499817">Aktifkan/nonaktifkan lampu latar keyboard</translation>
 <translation id="5094577350232361255">tentang</translation>
 <translation id="5095136268899496849">Sesuaikan dan personalisasi <ph name="PRODUCT_NAME" /> Anda di Setelan. Coba ubah wallpaper atau setel screensaver.</translation>
@@ -1641,6 +1646,7 @@ Baru diinstal</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera dipaskan ke pojok kiri bawah. Bertentangan dengan platform sistem.</translation>
 <translation id="6605415194043280389">Fokus aktif</translation>
+<translation id="660846213831377756">Tombol mouse</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="6612802754306526077">Mode perekaman layar dipilih</translation>
 <translation id="6612889377159412215">subtugas</translation>
@@ -1968,6 +1974,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7769299611924763557">GIF Anda akan segera siap</translation>
 <translation id="7773536009433685931">Aktifkan Wi-Fi</translation>
+<translation id="77747521138552256">Terlalu banyak percobaan memasukkan PIN. Tunggu <ph name="TIME_LEFT" /> dan coba masukkan PIN lagi, atau masukkan sandi untuk segera login.</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7781829728241885113">Kemarin</translation>

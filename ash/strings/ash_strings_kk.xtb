@@ -1106,6 +1106,7 @@
 <translation id="4826588772550366629">камера және микрофон</translation>
 <translation id="482908187605862807">Play Store-дан қолжетімді қолданбалар</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
+<translation id="4835677468087803981">PIN кодын жасыру</translation>
 <translation id="4849058404725798627">Нысанды пернетақта фокусымен ерекшелеу</translation>
 <translation id="485592688953820832">Ештеңе істемеу (кідірту)</translation>
 <translation id="485634149294284819">Пернетақта мәзіріне кіру</translation>
@@ -1188,6 +1189,7 @@
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083035541015925118">ctrl + alt + жоғары бағыт пернесі</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
+<translation id="5091636240353511739">PIN кодын көрсету</translation>
 <translation id="5092436659250499817">Пернетақтаның артқы жарығын қосу/өшіру</translation>
 <translation id="5094577350232361255">шамамен</translation>
 <translation id="5095136268899496849">Параметрлерде <ph name="PRODUCT_NAME" /> құрылғысын бейімдеңіз және жекелендіріңіз. Тұсқағазды өзгертіп көріңіз немесе скринсейвер орнатып көріңіз.</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера төменгі сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="6605415194043280389">Зейін қою режимі қосулы</translation>
+<translation id="660846213831377756">Тінтуір пернелері</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
 <translation id="6612889377159412215">қосымша тапсырма</translation>
@@ -2300,6 +2303,7 @@
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>
 <translation id="8939855324412367560">Кіріс аудио — "<ph name="INPUT_DEVICE_NAME" />" және шығыс аудио — "<ph name="OUTPUT_DEVICE_NAME" />". Өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="8940956008527784070">Батарея заряды төмен (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Студия стиліндегі микрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> құсбелгі ұяшығы таңдалмаған.</translation>
 <translation id="8949925099261528566">Қосылған, интернет жоқ</translation>
 <translation id="8951539504029375108">Мақұлданған Thunderbolt құрылғылары ғана Chromebook-пен үйлесімді.</translation>

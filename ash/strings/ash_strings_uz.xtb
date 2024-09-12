@@ -1106,6 +1106,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
 <translation id="482908187605862807">Play Marketdan mavjud ilovalar</translation>
 <translation id="4831034276697007977">Avtomatik kliklar bekor qilinsinmi?</translation>
+<translation id="4835677468087803981">PIN kodni berkitish</translation>
 <translation id="4849058404725798627">Obyektlar klaviatura fokusi orqali ajratib ko‘rsatilsin</translation>
 <translation id="485592688953820832">Harakatsiz (pauza)</translation>
 <translation id="485634149294284819">Klaviatura menyusini ochish</translation>
@@ -1188,6 +1189,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083035541015925118">ctrl + alt + yuqoriga strelka</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
+<translation id="5091636240353511739">PIN kodni koʻrsatish</translation>
 <translation id="5092436659250499817">Klaviatura orqa chirogʻini yoqish/oʻchirish</translation>
 <translation id="5094577350232361255">versiya haqida</translation>
 <translation id="5095136268899496849">Sozlamalar orqali <ph name="PRODUCT_NAME" /> qurilmangizni sozlang va moslashtiring. Fon rasmini oʻzgartiring yoki ekran lavhasini oʻrnating.</translation>
@@ -1641,6 +1643,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera pastki chap burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="6605415194043280389">Fokus yoniq</translation>
+<translation id="660846213831377756">Sinchqoncha tugmalari</translation>
 <translation id="661203523074512333">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="6612802754306526077">Ekranni yozib olish rejimi tanlandi</translation>
 <translation id="6612889377159412215">ichki vazifa</translation>
@@ -2300,6 +2303,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>
 <translation id="8939855324412367560">Audio manbasi: "<ph name="INPUT_DEVICE_NAME" />" va audio chiqarish qurilmasi: "<ph name="OUTPUT_DEVICE_NAME" />". Sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="8940956008527784070">Batareya zaryadi kam (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Studiyaviy mikrofon</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> katakchasi belgilanmagan</translation>
 <translation id="8949925099261528566">Ulangan, lekin internetsiz</translation>
 <translation id="8951539504029375108">Chromebook qurilmangiz faqat ishonchli Thunderbolt qurilmalari bilan ishlay oladi</translation>

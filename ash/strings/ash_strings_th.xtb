@@ -1104,6 +1104,7 @@
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="482908187605862807">แอปที่พร้อมใช้งานจาก Play Store</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
+<translation id="4835677468087803981">ซ่อน PIN</translation>
 <translation id="4849058404725798627">ไฮไลต์วัตถุที่มีโฟกัสแป้นพิมพ์</translation>
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
 <translation id="485634149294284819">ป้อนเมนูแป้นพิมพ์</translation>
@@ -1186,6 +1187,7 @@
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ลูกศรขึ้น</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
+<translation id="5091636240353511739">แสดง PIN</translation>
 <translation id="5092436659250499817">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="5094577350232361255">เกี่ยวกับ</translation>
 <translation id="5095136268899496849">ปรับแต่งและปรับเปลี่ยน <ph name="PRODUCT_NAME" /> ในแบบของคุณในการตั้งค่า ลองเปลี่ยนวอลเปเปอร์หรือตั้งค่าภาพพักหน้าจอ</translation>
@@ -1639,6 +1641,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">จัดกล้องพอดีกับมุมซ้ายล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="6605415194043280389">โหมดโฟกัสเปิดอยู่</translation>
+<translation id="660846213831377756">แป้นเมาส์</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6612802754306526077">เลือกโหมดบันทึกหน้าจอแล้ว</translation>
 <translation id="6612889377159412215">งานย่อย</translation>

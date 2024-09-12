@@ -1106,6 +1106,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
 <translation id="482908187605862807">Apiau sydd ar gael o'r Play Store</translation>
 <translation id="4831034276697007977">Ydych chi'n siŵr eich bod am ddiffodd cliciau awtomatig?</translation>
+<translation id="4835677468087803981">Cuddio'r PIN</translation>
 <translation id="4849058404725798627">Amlygu'r gwrthrych sydd â ffocws y bysellfwrdd</translation>
 <translation id="485592688953820832">Dim gweithred (seibio)</translation>
 <translation id="485634149294284819">Rhowch ddewislen bysellfwrdd</translation>
@@ -1188,6 +1189,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="5078796286268621944">PIN anghywir</translation>
 <translation id="5083035541015925118">ctrl + alt + saeth i fyny</translation>
 <translation id="5083553833479578423">Datgloi rhagor o nodweddion Assistant.</translation>
+<translation id="5091636240353511739">Dangos y PIN</translation>
 <translation id="5092436659250499817">Troi lliw ôl-olau'r bysellfwrdd ymlaen/ei ddiffodd</translation>
 <translation id="5094577350232361255">ynghylch</translation>
 <translation id="5095136268899496849">Addasu a phersonoleiddio'ch <ph name="PRODUCT_NAME" /> yn y Gosodiadau. Rhowch gynnig ar newid eich papur wal neu osod arbedwr sgrîn.</translation>
@@ -1641,6 +1643,7 @@ Gosodiad newydd</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Mae'r camera wedi'i snapio i'r gornel chwith isaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="6605415194043280389">Mae Ffocysu ymlaen</translation>
+<translation id="660846213831377756">Bysellau'r llygoden</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="6612802754306526077">Dewiswyd y modd recordio sgrîn</translation>
 <translation id="6612889377159412215">is-dasg</translation>

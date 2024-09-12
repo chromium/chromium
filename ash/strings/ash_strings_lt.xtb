@@ -1109,6 +1109,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
 <translation id="482908187605862807">Pasiekiamos programos iš „Play“ parduotuvės</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
+<translation id="4835677468087803981">Slėpti PIN kodą</translation>
 <translation id="4849058404725798627">Paryškinti objektą jį suaktyvinus klaviatūra</translation>
 <translation id="485592688953820832">Nesiimti jokių veiksmų (pristabdyti)</translation>
 <translation id="485634149294284819">Klaviatūros pasirinkimo meniu</translation>
@@ -1191,6 +1192,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5083035541015925118">„Ctrl“ + „Alt“ + rodyklė aukštyn</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
+<translation id="5091636240353511739">Rodyti PIN kodą</translation>
 <translation id="5092436659250499817">Įjungti ir (arba) išjungti klaviatūros foninį apšvietimą</translation>
 <translation id="5094577350232361255">apie</translation>
 <translation id="5095136268899496849">Tinkinkite ir suasmeninkite „<ph name="PRODUCT_NAME" />“ nustatymuose. Pabandykite pakeisti ekrano foną arba nustatyti ekrano užsklandą.</translation>
@@ -1644,6 +1646,7 @@ Naujas įdiegimas</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="6605415194043280389">„Focus“ įjungtas</translation>
+<translation id="660846213831377756">Pelės klavišai</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="6612802754306526077">Pasirinktas ekrano vaizdo įrašymo režimas</translation>
 <translation id="6612889377159412215">papildoma užduotis</translation>

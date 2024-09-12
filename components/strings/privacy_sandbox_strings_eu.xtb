@@ -1,11 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1444443021901415601">Azkenaldiko arakatze-historian oinarrituta, interesatzen zaizkizun gaiak erregistratzen ditu Chrome-k</translation>
 <translation id="2252052615723281030">Chrome-n saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chrome-k webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea.</translation>
+<translation id="2793385791865768072">Azkenaldiko arakatze-historian oinarrituta, interesatzen zaizkizun gaiak erregistratzen ditu Chromium-ek</translation>
 <translation id="33479675708419823">Chrome-n saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chrome-k webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea. Lortu <ph name="LINK_BEGIN" />IParen babesak funtzionatzeko moduari<ph name="LINK_END" /> buruzko informazio gehiago</translation>
 <translation id="3529311220178827364">Lortu IP helbidea ezkutatzeari buruzko informazio gehiago</translation>
+<translation id="4041687306270459969">4 aste baino gehiagoko iragarkien gaiak automatikoki ezabatzen dira. Gaien artean kirolak, moda eta beste gauza batzuk daude.</translation>
+<translation id="4177501066905053472">Iragarkien gaiak</translation>
 <translation id="4301151630239508244">Iragarkien gaiak webgune batek iragarkiak pertsonalizatzeko erabil ditzakeen gauza ugarietako bat da. Iragarkien gairik gabe ere, webguneek iragarkiak erakutsi ahal izango dizkizute, baina baliteke hain pertsonalizatuta ez egotea. Lortu <ph name="BEGIN_LINK_1" />iragarkien pribatutasuna kudeatzeari<ph name="END_LINK_1" /> buruzko informazio gehiago.</translation>
+<translation id="453692855554576066">Iragarkien gaiak Chromium-en ezarpenetan ikus ditzakezu, eta webguneekin partekatu nahi ez dituzunak blokeatu</translation>
 <translation id="4598427486995631491">Ezkutatu IP helbidea</translation>
+<translation id="4692439979815346597">Iragarkien gaiak Chrome-ren ezarpenetan ikus ditzakezu, eta webguneekin partekatu nahi ez dituzunak blokeatu</translation>
+<translation id="5413586988657235240">Bisitatzen dituzun webguneek gaiak eska diezazkiokete Chromium-i, haien araberako iragarkiak erakusteko zure arakatze-historia eta identitatea babestu bitartean</translation>
+<translation id="6186536480878693792">Bisitatzen dituzun webguneek gaiak eska diezazkiokete Chrome-ri, haien araberako iragarkiak erakusteko zure arakatze-historia eta identitatea babestu bitartean</translation>
 <translation id="6371812158043974664">Chromium-en saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chromium-ek webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea. Lortu <ph name="LINK_BEGIN" />IParen babesak funtzionatzeko moduari<ph name="LINK_END" /> buruzko informazio gehiago</translation>
 <translation id="7040031291654706261">Ikusi <ph name="BEGIN_LINK" />IParen babesak nola funtzionatzen duen<ph name="END_LINK" /></translation>
+<translation id="7475768947023614021">Berrikusi iragarkien gaien ezarpena</translation>
 </translationbundle>

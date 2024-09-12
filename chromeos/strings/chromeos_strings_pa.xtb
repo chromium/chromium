@@ -259,6 +259,7 @@
 <translation id="2180197493692062006">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2189104374785738357">APN ਵੇਰਵਿਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2195732836444333448">ਸਾਡੇ ਕੋਲ ਹਾਲੇ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਵਾਪਸ ਆਓ।</translation>
+<translation id="2197185031095816179">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ ਅਣਚਾਹੇ ਪੌਪ-ਅੱਪ ਹਟਾਉਣ, ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਨੂੰ ਠੀਕ ਕਰਨ ਅਤੇ ਹੋਰ ਅਣਕਿਆਸੀਆਂ ਸਮੱਸਿਆਵਾਂ ਨੂੰ ਹੱਲ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2201758491318984023">ਸਾਈਕਲ</translation>
 <translation id="2203272733515928691">ਗਰਮ ਪਾਣੀ ਦਾ ਝਰਨਾ</translation>
 <translation id="2203642483788377106">ਟਿੱਲਾ</translation>
@@ -537,6 +538,7 @@
 <translation id="3820172043799983114">ਅਵੈਧ ਪਿੰਨ।</translation>
 <translation id="382043424867370667">ਡੁੱਬਦੇ ਸੂਰਜ ਦਾ ਵਾਲਪੇਪਰ</translation>
 <translation id="3824259034819781947">ਫ਼ਾਈਲਾਂ ਨੱਥੀ ਕਰੋ</translation>
+<translation id="3836587210832263413">ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਭਰੋਸਾ ਕਰਦੇ ਹੋ</translation>
 <translation id="3838338534323494292">ਨਵਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="3845880861638660475">ਵਿੰਡੋ ਬੰਦ ਕਰਨ ਲਈ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="3848280697030027394">ਕੀ-ਬੋਰਡ 'ਤੇ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਓ</translation>
@@ -626,6 +628,7 @@
 <translation id="4251839292699800785">ਸਟਾਈਲਿਸ਼ ਦਫ਼ਤਰ</translation>
 <translation id="4258281355379922695">HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="4266143281602681663">ਉੱਨ</translation>
+<translation id="4269815121975886860">ਸਟਾਰਟ-ਅੱਪ ਤਰਜੀਹਾਂ</translation>
 <translation id="4271957103967917607">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇਖੋ</translation>
 <translation id="4275663329226226506">ਮੀਡੀਆ</translation>
 <translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਵਿਵਾਦ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਸੰਪਾਦਨ ਕਰੋ ਜਾਂ ਹਟਾਓ।</translation>
@@ -760,6 +763,7 @@
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
 <translation id="4950314376641394653">ਫ਼ਰਮਵੇਅਰ <ph name="DEVICE_NAME" /> ਨੂੰ ਵਰਜਨ <ph name="VERSION" /> 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4950893758552030541">ਰੁੱਖਾਂ ਨਾਲ ਬਣਾਈ ਗਈ ਸੁਰੰਗ</translation>
+<translation id="4965661459364092269">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="4965703485264574128">ਕਿਸੇ ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਗੁਣਾ ਕਰੋ</translation>
 <translation id="4969079779290789265">ਵੰਡਿਆ</translation>
 <translation id="4972592110715526173">ਮੋਡ ਬਦਲੋ</translation>
@@ -820,6 +824,7 @@
 <translation id="5252456968953390977">ਰੋਮਿੰਗ</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> ਕਮਰੇ ਵਿੱਚ ਇੱਕ <ph name="SIMPLE_STYLE" /> ਬੁੱਕਸ਼ੈਲਫ਼</translation>
 <translation id="5257811368506016604">ਹਲਕੇ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="5261479807286543505">ਸਟਾਰਟ-ਅੱਪ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5264277876637023664">CPU ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN ਬੰਦ ਹੈ।</translation>
@@ -1131,6 +1136,7 @@
 <translation id="680983167891198932">ਕੁੰਜੀ</translation>
 <translation id="6816797338148849397">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="6831043979455480757">ਅਨੁਵਾਦ ਕਰੋ</translation>
+<translation id="6846843854964504403">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ</translation>
 <translation id="6853312040151791195">ਡਿਸਚਾਰਜ ਹੋਣ ਦੀ ਦਰ</translation>
 <translation id="6862416241246624313">ਵਿਚਾਰ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6866732840889595464">ਡੇਜ਼ੀ</translation>
@@ -1315,6 +1321,7 @@
 <translation id="7746357909584236306">ਸੰਪਾਦਨਯੋਗ ਹੈ</translation>
 <translation id="7747039790905080783">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
 <translation id="7752963721013053477">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ - ਵਿਸ਼ੇਸ਼</translation>
+<translation id="7760571082554155847">ਹੋਮਪੇਜ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7762130827864645708">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਾਸਵਰਡ ਨੂੰ ਬਦਲਣਾ ਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ ਹੁਣ ਤੋਂ ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="7763470514545477072">ਡੋੋਮੇਨ ਪਿਛੇਤਰ ਦਾ ਮਿਲਾਨ</translation>
 <translation id="7769672763586021400">ਮਾਡਲ ਆਈ.ਡੀ.</translation>
@@ -1355,6 +1362,7 @@
 <translation id="7942349550061667556">ਲਾਲ</translation>
 <translation id="7943235353293548836">ਸਥਾਈ ਕੀਪ-ਅਲਾਇਵ ਅੰਤਰਾਲ</translation>
 <translation id="7943516765291457328">ਨਜ਼ਦੀਕੀ ਹੌਟਸਪੌਟਾਂ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="7944482598620888754">ਸਾਈਟ ਸਮੱਗਰੀ</translation>
 <translation id="7944562637040950644">ਕੀ-ਬੋਰਡ ਦੀ ਬੈਕਲਾਈਟ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="7953669802889559161">ਇਨਪੁੱਟ</translation>
 <translation id="7955587717700691983">ਬਲੂਟੁੱਥ ਕੀ-ਬੋਰਡ</translation>
@@ -1391,6 +1399,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
+<translation id="8135609423982943441">ਤੁਹਾਡੀ Chromebook ਨੂੰ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਨ੍ਹਾਂ ਤਬਦੀਲੀਆਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ਚੁਣੋ</translation>
 <translation id="8151185429379586178">ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ</translation>
@@ -1420,6 +1429,7 @@
 <translation id="8291967909914612644">ਹੋਮ ਪ੍ਰਦਾਨਕ ਦੇਸ਼</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
 <translation id="8302368968391049045">HTTPS ਫ਼ਾਇਰਵਾਲ</translation>
+<translation id="8308787307410010965">ਸਾਈਟ ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8312330582793120272">ਮੀਡੀਆ ਚਲਾਓ</translation>
 <translation id="8318753676953949627">ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ</translation>
 <translation id="8320910311642849813">ਜੰਗਲ</translation>
@@ -1618,6 +1628,8 @@
 <translation id="951780398843003443">ਸਾਰੀ ਰਿਕਾਰਡਿੰਗ ਵਿੱਚ ਅਵਾਜ਼ਾਂ ਦੀ ਤੁਲਨਾ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਇਹ ਦਰਸਾ ਸਕੇ ਕਿ ਹਰੇਕ ਸਪੀਕਰ ਨੇ ਕੀ ਅਤੇ ਕਦੋਂ ਕਿਹਾ ਹੈ</translation>
 <translation id="952992212772159698">ਸਕਿਰਿਆ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="95718197892796296">ਕਲੇ</translation>
+<translation id="959792926760890141">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ Chrome ਬ੍ਰਾਊਜ਼ਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਂਦੀਆਂ ਹਨ, ਨੈੱਟਵਰਕ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।
+          ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ, ਪਰ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਫ਼ਾਈਲਾਂ, ਕੂਕੀ, ਅਤੇ ਇਤਿਹਾਸ ਵਿੱਚ ਕੋਈ ਤਬਦੀਲੀ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="960719561871045870">ਓਪਰੇਟਰ ਕੋਡ</translation>
 <translation id="965918541715156800">ਪੀਲਾ ਅਤੇ ਟੀਲ</translation>
 <translation id="966787709310836684">ਮੀਨੂ</translation>

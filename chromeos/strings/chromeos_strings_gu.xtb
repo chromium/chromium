@@ -265,6 +265,7 @@
 <translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2189104374785738357">APNની વિગતોમાં ફેરફાર કરો</translation>
 <translation id="2195732836444333448">હાલમાં મહત્તમ ક્ષમતાએ કામ કરી રહ્યાં છીએ. જલ્દી પાછા આવીશું.</translation>
+<translation id="2197185031095816179">"સલામતી માટે રીસેટ" અનિચ્છિત પૉપ-અપ કાઢી નાખવામાં, નેટવર્ક સંબંધિત સમસ્યાઓ ઠીક કરવામાં અને અન્ય અનપેક્ષિત સમસ્યાઓ પર કામ કરવામાં સહાય કરી શકે છે.</translation>
 <translation id="2201758491318984023">સાઇકલ</translation>
 <translation id="2203272733515928691">ગરમ પાણીનો ઝરો</translation>
 <translation id="2203642483788377106">ભેખડ</translation>
@@ -543,6 +544,7 @@
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="382043424867370667">સનસેટ વૉલપેપર</translation>
 <translation id="3824259034819781947">ફાઇલ જોડો</translation>
+<translation id="3836587210832263413">તમે વિશ્વાસ કરતા હો ફક્ત તેવા જ એક્સ્ટેન્શન ચાલુ કરો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3845880861638660475">સંવાદ બંધ કરવા માટે <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> દબાવો.</translation>
 <translation id="3848280697030027394">કીબોર્ડને ઘેરું કરો</translation>
@@ -633,6 +635,7 @@
 <translation id="4251839292699800785">સ્ટાઇલિશ ઑફિસ</translation>
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
 <translation id="4266143281602681663">ઊનનો દોરો</translation>
+<translation id="4269815121975886860">સ્ટાર્ટઅપની પસંદગીઓ</translation>
 <translation id="4271957103967917607">પૂર્ણ સ્ક્રીન જુઓ</translation>
 <translation id="4275663329226226506">મીડિયા</translation>
 <translation id="4278766082079064416">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. આ વિરોધાભાસના નિરાકરણ માટે તેમાં ફેરફાર કરો અથવા તેને કાઢી નાખો.</translation>
@@ -769,6 +772,7 @@
 <translation id="4932733599132424254">તારીખ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ફર્મવેયર વર્ઝન <ph name="VERSION" /> પર અપડેટ કરાયું</translation>
 <translation id="4950893758552030541">વૃક્ષની ટનલ</translation>
+<translation id="4965661459364092269">"સલામતી માટે રીસેટ" પૂર્ણ કરવામાં આવ્યું</translation>
 <translation id="4965703485264574128">એક અંદાજિત પરિણામ માટે, <ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ગુણાકાર કરો</translation>
 <translation id="4969079779290789265">વિભાજન કરો</translation>
 <translation id="4972592110715526173">મોડમાં ફેરફાર</translation>
@@ -831,6 +835,7 @@
 <translation id="5252456968953390977">રોમિંગ</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> રૂમમાં <ph name="SIMPLE_STYLE" /> બુકશેલ્ફ</translation>
 <translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
+<translation id="5261479807286543505">સ્ટાર્ટઅપ સેટિંગ</translation>
 <translation id="5264277876637023664">CPUનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN બંધ કરેલું છે.</translation>
@@ -1144,6 +1149,7 @@
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6846843854964504403">સલામતી માટે રીસેટ</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
 <translation id="6862416241246624313">પ્રતિસાદ સબમિટ કર્યો</translation>
 <translation id="6866732840889595464">ગુલબહાર</translation>
@@ -1328,6 +1334,7 @@
 <translation id="7746357909584236306">ફેરફાર કરવા યોગ્ય</translation>
 <translation id="7747039790905080783">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="7752963721013053477">ડૉન ટુ ડાર્ક - વિશેષ</translation>
+<translation id="7760571082554155847">હોમપેજના સેટિંગ</translation>
 <translation id="7762130827864645708">પાસવર્ડ બદલવાનું સફળ રહ્યું. કૃપા કરીને હવેથી નવા પાસવર્ડનો ઉપયોગ કરો.</translation>
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
@@ -1369,6 +1376,7 @@
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943235353293548836">સતત keepalive અવધિ</translation>
 <translation id="7943516765291457328">નજીકના હૉટસ્પૉટ સ્કૅન કરવા માટે બ્લૂટૂથ ચાલુ કરો</translation>
+<translation id="7944482598620888754">સાઇટનું કન્ટેન્ટ</translation>
 <translation id="7944562637040950644">કીબોર્ડની બૅકલાઇટ ટૉગલ કરો</translation>
 <translation id="7953669802889559161">ઇનપુટ</translation>
 <translation id="7955587717700691983">બ્લૂટૂથ કીબોર્ડ</translation>
@@ -1405,6 +1413,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
+<translation id="8135609423982943441">તમારી Chromebook "સલામત" ડિફૉલ્ટ પર રીસેટ કરવામાં આવી હતી. તમે સેટિંગમાં જઈને કોઈપણ સમયે આ ફેરફારો ગોઠવી શકો છો.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> પસંદ કરો</translation>
 <translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
@@ -1435,6 +1444,7 @@
 <translation id="8291967909914612644">હોમ પ્રદાતાનો દેશ</translation>
 <translation id="8294431847097064396">સ્રોત</translation>
 <translation id="8302368968391049045">HTTPS ફાયરવૉલ</translation>
+<translation id="8308787307410010965">સાઇટના કન્ટેન્ટ સેટિંગ</translation>
 <translation id="8312330582793120272">મીડિયા ચલાવો</translation>
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
 <translation id="8320910311642849813">જંગલ</translation>
@@ -1635,6 +1645,8 @@
 <translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="95718197892796296">માટી</translation>
+<translation id="959792926760890141">"સલામતી માટે રીસેટ" Chrome બ્રાઉઝરના એક્સ્ટેન્શન બંધ કરી દે છે અને નેટવર્ક તથા અન્ય સેટિંગને "સલામત" ડિફૉલ્ટ પર રીસેટ કરે છે.
+          તમારું ડિફૉલ્ટ શોધ એન્જિન રીસેટ કરવામાં આવશે, પણ તમારા ટૅબ, ફાઇલો, કુકી અને ઇતિહાસ બદલાશે નહીં.</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>
 <translation id="965918541715156800">પીળો અને મોરપીંછ</translation>
 <translation id="966787709310836684">મેનૂ</translation>

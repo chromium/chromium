@@ -142,6 +142,7 @@
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">आपने शेयर किया गया एल्बम चुना है. इसमें अन्य लोग फ़ोटो जोड़ सकते हैं या बदल सकते हैं. आपके वॉलपेपर में ऐसी फ़ोटो इस्तेमाल की जा सकती हैं जो फ़िलहाल इस एल्बम में नहीं हैं.</translation>
 <translation id="1661865805917886535">खाते और सिस्टम की कुछ जानकारी Google को भेजी जा सकती है. इस जानकारी का इस्तेमाल हम तकनीकी समस्याओं को हल करने और हमारी सेवाओं को बेहतर बनाने के लिए करते हैं. ऐसा Google की निजता नीति (<ph name="PRIVACYPOLICYURL" />) और सेवा की शर्तों (<ph name="TERMSOFSERVICEURL" />) के मुताबिक किया जाता है. कॉन्टेंट में बदलावों का अनुरोध करने के लिए, कानूनी सहायता (<ph name="LEGALHELPPAGEURL" />) पेज पर जाएं.</translation>
+<translation id="1662699081856352167">खास जानकारी जनरेट की गई</translation>
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> की झलक देखें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
@@ -533,6 +534,7 @@
 <translation id="3780740315729837296">कोई कीबोर्ड बटन असाइन करें</translation>
 <translation id="3784455785234192852">लॉक चालू है</translation>
 <translation id="3785643128701396311">पिक्सल आर्ट</translation>
+<translation id="3799381533888781854">बंद है - इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="380097101658023925">आरजीबी के लिए कंट्रोल</translation>
 <translation id="38114475217616659">सारा इतिहास मिटाएं</translation>
 <translation id="3820172043799983114">गलत पिन</translation>
@@ -733,6 +735,7 @@
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4813136279048157860">मेरी इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
+<translation id="4824527342590024245">फ़िलहाल, <ph name="MIN_WORD_LENGTH" /> से कम शब्दों की ट्रांसक्रिप्ट का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="4830894019733815633">घाटी</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
@@ -761,6 +764,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4946927805998996217">खास जानकारी जनरेट की जा रही है</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
 <translation id="4950893758552030541">ट्री टनल</translation>
 <translation id="4965661459364092269">सुरक्षा के लिए सेटिंग रीसेट करने की प्रोसेस पूरी हो गई है</translation>
@@ -819,6 +823,7 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" को कन्वर्ट करें</translation>
 <translation id="5229344016299762883">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
+<translation id="5236119614998611749">खास जानकारी जनरेट नहीं की जा सकी</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है.}=2{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और 1 अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}one{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}other{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं.}}</translation>
 <translation id="5248419081947706722">नीले</translation>
 <translation id="5252456968953390977">रोमिंग</translation>

@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">এই নীতিটোত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক বিশেষভাৱে প্ৰদৰ্শিত প্ৰবিষ্টি থাকিব নালাগে।</translation>
 <translation id="2267047181501709434">আপোনাৰ পৰিচয় সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> মিনিটত আপল’ড কৰক</translation>
 <translation id="2270484714375784793">ফ’ন নম্বৰ</translation>
 <translation id="2276057643614339130">প্ৰিণ্ট বে’ছ</translation>
 <translation id="2277103315734023688">আগলৈ যাওক</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">ব্ৰাউজিঙৰ ডেটা মচক...</translation>
 <translation id="306573536155379004">গে’ম আৰম্ভ হৈছে।</translation>
 <translation id="3067505415088964188">কম মূল্যৰ</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড ১ মিনিটত আৰম্ভ হ’ব</translation>
 <translation id="3076865167425975822">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
 <translation id="3082007635241601060">ব্যক্তিগতকৃত ৰেহাইসমূহ উপলব্ধ হ’লে সেইবোৰ বিচাৰিবলৈ Googleক আপোনাৰ কাৰ্টখন ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">উপলব্ধ কেমেৰাসমূহ (<ph name="CAMERAS_COUNT" /> টা) ব্যৱহাৰ কৰক</translation>
 <translation id="3102312643185441063">সঞ্চয়</translation>
 <translation id="3103188521861412364">ষ্টক আৰু বণ্ড</translation>
+<translation id="3103535543639438037">একেধৰণৰ প্ৰ’ডাক্ট সমান্তৰালভাৱে তুলনা কৰক</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাজৰ ট্ৰে’</translation>
@@ -1296,6 +1299,7 @@
 <translation id="3407789382767355356">তৃতীয় পক্ষৰ ছাইন-ইন</translation>
 <translation id="340924996148642843">তুলনা কৰাৰ সুবিধা এই মুহূৰ্তত উপলব্ধ নহয়</translation>
 <translation id="3409896703495473338">সুৰক্ষাৰ ছেটিং পৰিচালনা কৰক</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> ঘণ্টাত আপল’ড কৰক</translation>
 <translation id="3414275587143250384">বিতৰণ কৰা আৰু ক্লাউড কম্পিউটিং</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
 <translation id="341513675006332771">Chrome Dino গে’মটো খেলাৰ বুটাম, Chromeত Dino Run গে’মটো খেলিবলৈ সক্ৰিয় কৰক</translation>
@@ -1961,6 +1965,7 @@
 <translation id="4628678854894591460">বন্ধদিনৰ অফাৰ</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড <ph name="HOURS" /> ঘণ্টাত আৰম্ভ হ’ব</translation>
 <translation id="4631649115723685955">কেশ্ববেক লিংক কৰা হ'ল</translation>
 <translation id="4631881646528206880">ভাৰ্চুৱেল কাৰ্ডৰ পঞ্জীয়ন</translation>
 <translation id="4635278307999235413">প্ৰশাসকৰ কনছ’ললৈ ডেটা পঠিয়াই থকা হৈছে</translation>
@@ -2081,6 +2086,7 @@
 <translation id="484988093836683706">ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="4854853140771946034">Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰক</translation>
+<translation id="4855395119669662878">আপোনাৰ প্ৰশাসকে <ph name="DATE_TIME" />ত আপোনাৰ ফাইল <ph name="CLOUD_PROVIDER" />ত আপল’ড কৰা আৰম্ভ কৰিব। আপোনাৰ ফাইল আপল’ড কৰা সম্পূৰ্ণ নোহোৱালৈকে আপোনাৰ ডিভাইচ সংযুক্ত কৰি ৰাখক। আপল’ড চলি থকাৰ সময়ত আপুনি কেৱল স্থানীয় ফাইলহে পঢ়িব পাৰিব।</translation>
 <translation id="485902285759009870">ক’ডটো সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="4860260582253463350">YouTubeলৈ অব্যাহত ৰাখিবলৈ, আমি আপোনাৰ পৰিচয়টো নিশ্চিত কৰিব লাগিব। আপুনি আপোনাৰ অভিভাৱক বা বৈধ অভিভাৱকে Family Linkত ছেট আপ কৰা ছেটিং পাব।</translation>
 <translation id="4864406669374375262">সংস্কৰণৰ ষ্ট্ৰিং ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
@@ -2136,6 +2142,7 @@
 <translation id="4933468175699107356">যিকোনো ফৰ্মত আপোনাৰ নাম বা ঠিকনাৰ দৰে ছেভ কৰি থোৱা তথ্য স্বয়ংক্রিয়ভাৱে পূৰ কৰিবলৈ ৰাইট ক্লিক কৰক</translation>
 <translation id="4934780484581617878">ৱিণ্ড’ পৰিচালনা</translation>
 <translation id="4936134414789135531">ভৰোৱা <ph name="VALUE_NAME" /> বিচাৰি পাব পৰা নগ’ল।</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড ১ ঘণ্টাত আৰম্ভ হ’ব</translation>
 <translation id="4936675324097895694">বিত্ত</translation>
 <translation id="4943620199112228840">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4943872375798546930">কোনো ফলাফল নাই</translation>
@@ -2309,6 +2316,7 @@
 <translation id="5269225904387178860">তলৰ অংশ চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />"ৰ বাবে "<ph name="DATA_CONTROLS_ATTRIBUTE" />" এটা সমৰ্থিত চৰ্ত নহয়</translation>
 <translation id="5273658854610202413">সাৱধানবাণী: এই নীতিটো PolicyDictionaryMultipleSourceMergeList নীতিত নিৰ্দিষ্ট কৰা ধৰণে একত্ৰিত হোৱা নাই কাৰণ এইটো একত্ৰিত কৰিব পৰা অভিধানৰ নীতিসমূহৰ অংশ নহয়।</translation>
+<translation id="5278778426231952189">এতিয়াই আপল’ড কৰক</translation>
 <translation id="5279286380302340275">ডাউনল’ডসমূহ পৰিচালনা কৰক</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">নথিৰ বৈশিষ্ট্য</translation>
@@ -3810,6 +3818,7 @@
 <translation id="8030729864112325446">বৃত্তি সম্পৰ্কীয় শিক্ষা আৰু শিক্ষা অব্যাহত ৰখা</translation>
 <translation id="8032546467100845887">স্বচ্ছতা</translation>
 <translation id="8035152190676905274">পেন</translation>
+<translation id="8035264638816032066">আপুনি তালিকাখনত যোগ দিয়া পৃষ্ঠাসমূহৰ টেবৰ শিৰোনাম আৰু URL Googleলৈ পঠিওৱা হয়</translation>
 <translation id="8037117624646282037">যিয়ে শেহতীয়াকৈ ডিভাইচটো ব্যৱহাৰ কৰিছে</translation>
 <translation id="8037357227543935929">সোধক (ডিফ'ল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>
@@ -4003,6 +4012,7 @@
 <translation id="8381674639488873545">এই মাচুলবোৰ এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেয়া সুনিৰ্দিষ্ট নহ’ব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">স্বয়ংক্ৰিয় পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="838307841291975086">ষ্টেচন ৱেগন</translation>
+<translation id="8388286357548915205">আটাইবোৰ অতিথিৰ বাবে ব্যৱহাৰ কৰক</translation>
 <translation id="8389532092404711541">সচৰাচৰ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">কাষ্টমাইজ কৰা আৰু কাৰ্যক্ষম বাহন</translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" />ৰ পৰা <ph name="VM_NAME" />লৈ শ্বেয়াৰ কৰাৰ সুবিধাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
@@ -4109,6 +4119,7 @@
 <translation id="8564466070529550495">এই মুহূৰ্তত ভাৰ্চুৱেল কাৰ্ডখন উপলব্ধ নহয়, অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8564985650692024650">আপুনি যদি নিজৰ পাছৱৰ্ডটো অন্য ছাইটত পুনৰ ব্যৱহাৰ কৰিছিল <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />এ আপোনাৰ পাছৱর্ডটো ৰিছেট কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="8570895683659698018">ৰুচি আৰু অৱসৰ-বিনোদন</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> পৰ্যন্ত মান্য হৈ থাকিব</translation>
 <translation id="8574841453995331336">ৰেফ্ৰিজাৰেটৰ আৰু ফ্ৰীজাৰ</translation>
 <translation id="8577192028579836704">আটাইবোৰ বিকল্প সচৰাচৰ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ভাৰ্চুৱেল কাৰ্ডখন উপলব্ধ নহয়</translation>
@@ -4130,6 +4141,7 @@
 <translation id="8617269623452051934">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
 <translation id="861775596732816396">আকাৰ ৪</translation>
 <translation id="8620276786115098679">এনভেল’প কাকু ৭</translation>
+<translation id="8622864575115813231">আপোনাৰ বিত্তীয় প্ৰতিষ্ঠানৰ সৈতে সংযোগ কৰি থকা হৈছে...</translation>
 <translation id="8623885649813806493">মিলা কোনো পাছৱৰ্ড নাই। ছেভ হৈ থকা সকলো পাছৱৰ্ড দেখুৱাওক।</translation>
 <translation id="8624354461147303341">ৰেহাই পাওক</translation>
 <translation id="8634957317623797170">৫৪ x ৮৬ মি.মি.</translation>
@@ -4429,6 +4441,7 @@
 <translation id="9192361865877479444">মেটেল (Matte)</translation>
 <translation id="9192947025498305328">প্ৰাকৃতিক সৌন্দৰ্য সম্পৰ্কীয় প্ৰ’ডাক্ট</translation>
 <translation id="9199905725844810519">প্ৰিণ্ট কৰাটো অৱৰোধ কৰা হৈছে</translation>
+<translation id="9204089334327209740">আপল’ড কৰা সম্পূৰ্ণ হ’লে, আপুনি <ph name="CLOUD_PROVIDER" />ত থকা আপোনাৰ ফাইলসমূহ সংশোধন কৰিব পাৰিব। ট্ৰেশ্বত থকা যিকোনো ফাইলকে ধৰি স্থানীয় ষ্ট’ৰেজ স্বয়ংক্ৰিয়ভাৱে আঁতৰোৱা হ’ব।</translation>
 <translation id="9205078245616868884">আপোনাৰ ডেটা নিজৰ ছিংক পাছফ্ৰেজৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰিবলৈ পাছফ্ৰেজ দিয়ক।</translation>
 <translation id="920643408853370361">ভ্ৰমণ বীমা</translation>
 <translation id="9207861905230894330">লেখা যোগ কৰিব নোৱাৰিলে।</translation>
@@ -4449,6 +4462,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপোনাৰ বিজ্ঞাপনৰ বিষয়বস্তু আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ ইতিহাসৰ ওপৰত নিৰ্ভৰ কৰে, যি হৈছে আপুনি এই ডিভাইচটোত Chrome ব্যৱহাৰ কৰি চোৱা ছাইটসমূহৰ সূচী।</translation>
 <translation id="937885410143139026">প্ৰশাসকৰ কনছ’ললৈ ডেটা পঠিওৱা হৈছে</translation>
 <translation id="939736085109172342">নতুন ফ'ল্ডাৰ</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড <ph name="MINUTES" /> মিনিটত আৰম্ভ হ’ব</translation>
 <translation id="944540589955480312">আপোনাৰ Google একাউণ্টত ছেভ কৰা পাছৱৰ্ড আৰু পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="945646848072568856">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ অৱৰোধ কৰে।</translation>
 <translation id="945855313015696284">তলৰ তথ্য পৰীক্ষা কৰক আৰু কোনো অমান্য কার্ড থাকিলে মচক</translation>

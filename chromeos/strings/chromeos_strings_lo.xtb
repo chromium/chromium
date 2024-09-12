@@ -265,6 +265,7 @@
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2189104374785738357">ແກ້ໄຂລາຍລະອຽດ APN</translation>
 <translation id="2195732836444333448">ຕອນນີ້ຮອດຂີດຈຳກັດແລ້ວ. ກະລຸນາກັບມາໃໝ່ໃນໄວໆນີ້.</translation>
+<translation id="2197185031095816179">ການຣີເຊັດຄວາມປອດໄພຈະຊ່ວຍລຶບປັອບອັບທີ່ບໍ່ຕ້ອງການອອກ, ແກ້ໄຂບັນຫາເຄືອຂ່າຍ ແລະ ແກ້ບັນຫາອື່ນໆທີ່ບໍ່ຄາດຄິດ.</translation>
 <translation id="2201758491318984023">ລົດຖີບ</translation>
 <translation id="2203272733515928691">ນ້ຳພຸຮ້ອນ</translation>
 <translation id="2203642483788377106">ໜ້າຜາ</translation>
@@ -543,6 +544,7 @@
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="382043424867370667">ຮູບພື້ນຫຼັງຕາເວັນຕົກ</translation>
 <translation id="3824259034819781947">ແນບໄຟລ໌</translation>
+<translation id="3836587210832263413">ກະລຸນາເປີດສະເພາະສ່ວນຂະຫຍາຍທີ່ທ່ານເຊື່ອຖືໄດ້ເທົ່ານັ້ນ</translation>
 <translation id="3838338534323494292">ລະຫັດຜ່ານໃໝ່</translation>
 <translation id="3845880861638660475">ກົດປຸ່ມ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> ເພື່ອປິດກ່ອງໂຕ້ຕອບ.</translation>
 <translation id="3848280697030027394">ແປ້ນພິມມືດ</translation>
@@ -633,6 +635,7 @@
 <translation id="4251839292699800785">ຫ້ອງການແບບມີສະໄຕລ໌</translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4266143281602681663">ໄໝພົມ</translation>
+<translation id="4269815121975886860">ການຕັ້ງຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="4271957103967917607">ເບິ່ງແບບເຕັມຈໍ</translation>
 <translation id="4275663329226226506">ມີເດຍ</translation>
 <translation id="4278766082079064416">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກະລຸນາແກ້ໄຂ ຫຼື ລຶບອອກເພື່ອແກ້ໄຂຂໍ້ຂັດແຍ່ງ.</translation>
@@ -769,6 +772,7 @@
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="4950314376641394653">ອັບເດດເຟີມແວ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ແລ້ວ</translation>
 <translation id="4950893758552030541">ອຸໂມງຕົ້ນໄມ້</translation>
+<translation id="4965661459364092269">ຣີເຊັດຄວາມປອດໄພສຳເລັດແລ້ວ</translation>
 <translation id="4965703485264574128">ສຳລັບຜົນໄດ້ຮັບໂດຍປະມານ, ໃຫ້ຄູນ <ph name="CATEGORY_TEXT" /> ດ້ວຍ <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">ແຍກ</translation>
 <translation id="4972592110715526173">ປ່ຽນໂໝດ</translation>
@@ -831,6 +835,7 @@
 <translation id="5252456968953390977">ໂຣມມິງ</translation>
 <translation id="5254600740122644523">ຖ້ານ​ວາງ​ປຶ້ມ <ph name="SIMPLE_STYLE" /> ໃນຫ້ອງ <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">ເປີດການນຳໃຊ້ໂໝດສີແຈ້ງ</translation>
+<translation id="5261479807286543505">ການຕັ້ງຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="5264277876637023664">ດຳເນີນການທົດສອບ CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN ຖືກປິດການນຳໃຊ້.</translation>
@@ -1144,6 +1149,7 @@
 <translation id="680983167891198932">ກະແຈ</translation>
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
+<translation id="6846843854964504403">ຣີເຊັດຄວາມປອດໄພ</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
 <translation id="6862416241246624313">ສົ່ງຄຳຕິຊົມແລ້ວ</translation>
 <translation id="6866732840889595464">ເດຊີ</translation>
@@ -1329,6 +1335,7 @@
 <translation id="7746357909584236306">ແກ້ໄຂໄດ້</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="7752963721013053477">ຮຸ່ງອະລຸນສູ່ຄວາມມືດ - ພິເສດສະເພາະ</translation>
+<translation id="7760571082554155847">ການຕັ້ງຄ່າໜ້າຫຼັກ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
@@ -1370,6 +1377,7 @@
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7943235353293548836">ໄລຍະເວລາຂອງ keepalive ຕໍ່ເນື່ອງ</translation>
 <translation id="7943516765291457328">ເປີດ Bluetooth ເພື່ອສະແກນຫາຮັອດສະປອດໃກ້ຄຽງ</translation>
+<translation id="7944482598620888754">ເນື້ອຫາເວັບໄຊ</translation>
 <translation id="7944562637040950644">ສະຫຼັບໄຟພື້ນຫຼັງແປ້ນພິມ</translation>
 <translation id="7953669802889559161">ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7955587717700691983">ແປ້ນພິມ Bluetooth</translation>
@@ -1406,6 +1414,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
+<translation id="8135609423982943441">Chromebook ຂອງທ່ານຣີເຊັດເປັນຄ່າເລີ່ມຕົ້ນທີ່ປອດໄພແລ້ວ. ທ່ານສາມາດປັບແກ້ການປ່ຽນແປງເຫຼົ່ານີ້ໃນການຕັ້ງຄ່າໄດ້ທຸກເວລາ.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
@@ -1436,6 +1445,7 @@
 <translation id="8291967909914612644">ປະເທດຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
+<translation id="8308787307410010965">ການຕັ້ງຄ່າເນື້ອຫາເວັບໄຊ</translation>
 <translation id="8312330582793120272">ຫຼິ້ນມີເດຍ</translation>
 <translation id="8318753676953949627">ບໍ່ມີຮູບ</translation>
 <translation id="8320910311642849813">ປ່າ</translation>
@@ -1636,6 +1646,8 @@
 <translation id="951780398843003443">ປຽບທຽບສຽງໃນສຽງທີ່ບັນທຶກໄວ້ຕັ້ງແຕ່ຕົ້ນຈົນຈົບເພື່ອໃຫ້ຂໍ້ຄວາມຖອດສຽງສະແດງຂໍ້ຄວາມຂອງຜູ້ເວົ້າແຕ່ລະຄົນ ແລະ ເວລາທີ່ເວົ້າ</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
 <translation id="95718197892796296">ນ້ຳຕານອົມສົ້ມ</translation>
+<translation id="959792926760890141">ການຣີເຊັດຄວາມປອດໄພຈະປິດສ່ວນຂະຫຍາຍໂປຣແກຣມທ່ອງເວັບ Chrome ພ້ອມທັງຣີເຊັດເຄືອຂ່າຍ ແລະ ການຕັ້ງຄ່າອື່ນໆໃຫ້ເປັນຄ່າເລີ່ມຕົ້ນທີ່ປອດໄພ.
+          ລະບົບຈະຣີເຊັດໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ, ແຕ່ຈະບໍ່ປ່ຽນແປງແຖບ, ໄຟລ໌, ຄຸກກີ້ ແລະ ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="960719561871045870">ລະຫັດຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="965918541715156800">ສີເຫຼືອງ ແລະ ສີຂຽວຫົວເປັດ</translation>
 <translation id="966787709310836684">ເມນູ</translation>

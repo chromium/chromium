@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Feed de vídeo de la càmera web</translation>
 <translation id="1676557873873341166">S'està gravant un vídeo</translation>
 <translation id="1684279041537802716">Color d'èmfasi</translation>
+<translation id="1697278726914783200">Grava</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1708602061922134366">Blau Google</translation>
@@ -693,6 +694,7 @@
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4594021849294327751">Crea una transcripció</translation>
+<translation id="4602266091140407479">Micròfon</translation>
 <translation id="4607282946861182308">No es poden crear imatges d'això. Prova-ho amb una altra línia d'ordres.</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
@@ -996,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Creat el dia <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
+<translation id="6189987971574353264">Reprodueix</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
 <translation id="6196607555925437199">Torna a crear</translation>
 <translation id="6205145102504628069">Moviment de núvols</translation>

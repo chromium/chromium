@@ -375,6 +375,7 @@
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2360398059912971776">بطارية</translation>
 <translation id="2361210043495191221">‏إيقاف/تفعيل شبكة Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">تأثيرات المظهر</translation>
 <translation id="236574664504281623">تم الإرسال من <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">‏يتعذّر تسجيل الدخول إلى جهاز Chromebook.</translation>
 <translation id="2367972762794486313">إظهار التطبيقات</translation>
@@ -735,6 +736,7 @@
 <translation id="3600061223661453002">غير مفعَّلة</translation>
 <translation id="3604801046548457007">تم إنشاء سطح المكتب <ph name="DESK_TITILE" />.</translation>
 <translation id="3606978283550408104">تم توصيل شاشة برايل.</translation>
+<translation id="3612634595000403645">الإعدادات المفضّلة لتأثيرات المظهر</translation>
 <translation id="3615926715408477684">سيؤدي تفعيل ميزة بيانات الجوّال إلى تفعيل البلوتوث.</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3616883743181209306">تم نقل القائمة إلى أعلى يسار الشاشة.</translation>
@@ -896,6 +898,7 @@
 <translation id="4146671046252289537">نقل إلى نهاية الكلمة التالية</translation>
 <translation id="4146833061457621061">تشغيل الموسيقى</translation>
 <translation id="4150201353443180367">عرض</translation>
+<translation id="4151054805501931758">تحسين صورة الوجه</translation>
 <translation id="4156293514828496577">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />).
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
 <translation id="4160919062868802509">تم رصد مصادر صوتية متعددة</translation>
@@ -1108,6 +1111,7 @@
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="482908187605862807">‏التطبيقات المتوفّرة من "متجر Play"</translation>
 <translation id="4831034276697007977">هل تريد فعلاً إيقاف النقرات التلقائية؟</translation>
+<translation id="4835677468087803981">إخفاء رقم التعريف الشخصي</translation>
 <translation id="4849058404725798627">تمييز الكائن باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="485592688953820832">عدم اتخاذ أي إجراء (إيقاف مؤقَّت)</translation>
 <translation id="485634149294284819">إدخال قائمة لوحة المفاتيح</translation>
@@ -1190,6 +1194,7 @@
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5083035541015925118">‏‫ctrl‏ + alt + السهم المتّجه للأعلى</translation>
 <translation id="5083553833479578423">‏الاطّلاع على المزيد من ميزات "مساعد Google"</translation>
+<translation id="5091636240353511739">إظهار رقم التعريف الشخصي</translation>
 <translation id="5092436659250499817">تشغيل/إيقاف الإضاءة الخلفية في لوحة المفاتيح</translation>
 <translation id="5094577350232361255">لمحة</translation>
 <translation id="5095136268899496849">لاختيار الإعدادات التي تناسبك، انتقِل إلى "الإعدادات" على <ph name="PRODUCT_NAME" />. يمكنك مثلاً تغيير الخلفية أو ضبط شاشة استراحة.</translation>
@@ -1643,6 +1648,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="6605415194043280389">"وضع التركيز" مفعَّل</translation>
+<translation id="660846213831377756">مفاتيح الماوس</translation>
 <translation id="661203523074512333">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="6612802754306526077">تم اختيار وضع تسجيل الشاشة.</translation>
 <translation id="6612889377159412215">مهمة فرعية</translation>
@@ -1971,6 +1977,7 @@
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7769299611924763557">‏سيصبح ملف GIF جاهزًا بعد قليل.</translation>
 <translation id="7773536009433685931">‏تفعيل شبكة Wi-Fi</translation>
+<translation id="77747521138552256">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا. يُرجى الانتظار لمدة <ph name="TIME_LEFT" /> وإعادة إدخال رقم التعريف الشخصي أو إدخال كلمة المرور لتسجيل الدخول على الفور.</translation>
 <translation id="7780094051999721182">الاختصارات</translation>
 <translation id="7780159184141939021">تدوير الشاشة</translation>
 <translation id="7781829728241885113">أمس</translation>

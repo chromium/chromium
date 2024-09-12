@@ -1109,6 +1109,7 @@
 <translation id="4826588772550366629">камера менен микрофонду</translation>
 <translation id="482908187605862807">Play Store'до жеткиликтүү колдонмолор</translation>
 <translation id="4831034276697007977">Автоматтык түрдө чыкылдатууларды чын эле өчүргүңүз келеби?</translation>
+<translation id="4835677468087803981">PIN кодду жашыруу</translation>
 <translation id="4849058404725798627">Баскычтоп менен тандалган элементтер баса белгиленсин</translation>
 <translation id="485592688953820832">Эч кандай аракет аткарылбасын (тындыруу)</translation>
 <translation id="485634149294284819">Баскычтоп менюсун киргизиңиз</translation>
@@ -1191,6 +1192,7 @@
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + өйдө жебе</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
+<translation id="5091636240353511739">PIN кодду көрсөтүү</translation>
 <translation id="5092436659250499817">Баскычтоптун жарыгын күйгүзүү/өчүрүү</translation>
 <translation id="5094577350232361255">жөнүндө</translation>
 <translation id="5095136268899496849">Параметрлерден <ph name="PRODUCT_NAME" /> түзмөгүңүздү ыңгайлаштырып жана жекелештирип алыңыз. Тушкагазды өзгөртүп же көшөгөнү тууралап көрүңүз.</translation>
@@ -1644,6 +1646,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера төмөнкү сол бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="6605415194043280389">Ынтаа коюу режими күйүк</translation>
+<translation id="660846213831377756">Чычкандын баскычтары</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6612802754306526077">Экрандан видео жаздырып алуу режими тандалды</translation>
 <translation id="6612889377159412215">кошумча иш</translation>

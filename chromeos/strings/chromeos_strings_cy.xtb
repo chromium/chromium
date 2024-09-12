@@ -260,6 +260,7 @@
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
 <translation id="2189104374785738357">Golygu manylion APN</translation>
 <translation id="2195732836444333448">Capasiti yn llawn ar hyn o bryd. Dewch yn ôl yn fuan.</translation>
+<translation id="2197185031095816179">Gall ailosod diogelwch helpu i gael gwared ar ffenestri naid dieisiau, trwsio problemau rhwydwaith, a mynd i'r afael â materion annisgwyl eraill.</translation>
 <translation id="2201758491318984023">beic</translation>
 <translation id="2203272733515928691">ffynnon boeth</translation>
 <translation id="2203642483788377106">clogwyn</translation>
@@ -516,6 +517,7 @@
 <translation id="3661106764436337772">Ysgrifennu yn gyflymach ac yn fwy hyderus</translation>
 <translation id="3662461537616691585">Lliw gwin a browngoch</translation>
 <translation id="3668449597372804501">Papur wal llif cwmwl</translation>
+<translation id="3668570675727296296">Gosodiadau iaith</translation>
 <translation id="3675132884790542448">moch</translation>
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
@@ -537,6 +539,7 @@
 <translation id="3820172043799983114">PIN annilys.</translation>
 <translation id="382043424867370667">Papur wal machlud haul</translation>
 <translation id="3824259034819781947">Atodi ffeiliau</translation>
+<translation id="3836587210832263413">Troi ymlaen estyniadau rydych yn ymddiried ynddynt yn unig</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="3845880861638660475">Pwyswch <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> i gau'r deialog.</translation>
 <translation id="3848280697030027394">tywyllu bysellfwrdd</translation>
@@ -626,6 +629,7 @@
 <translation id="4251839292699800785">Swyddfa steilus</translation>
 <translation id="4258281355379922695">Cuddni HTTP</translation>
 <translation id="4266143281602681663">edau</translation>
+<translation id="4269815121975886860">Dewisiadau cychwyn</translation>
 <translation id="4271957103967917607">Gweld yn y modd Sgrîn Lawn</translation>
 <translation id="4275663329226226506">Cyfryngau</translation>
 <translation id="4278766082079064416">Mae'r llwybr byr yn cael ei ddefnyddio ar gyfer "<ph name="CONFLICT_ACCEL_NAME" />". Golygwch neu tynnwch i ddatrys y gwrthdaro.</translation>
@@ -761,6 +765,7 @@
 <translation id="4932733599132424254">Dyddiad</translation>
 <translation id="4950314376641394653">Mae caledwedd <ph name="DEVICE_NAME" /> wedi'i diweddaru i fersiwn <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">twnnel coed</translation>
+<translation id="4965661459364092269">Mae ailosod diogelwch wedi'i gwblhau</translation>
 <translation id="4965703485264574128">Am ganlyniad bras, lluosi'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Hollti</translation>
 <translation id="4972592110715526173">newid modd</translation>
@@ -821,6 +826,7 @@
 <translation id="5252456968953390977">Trawsrwydweithio</translation>
 <translation id="5254600740122644523">Silff lyfrau <ph name="SIMPLE_STYLE" /> mewn ystafell <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Galluogi'r modd lliw golau</translation>
+<translation id="5261479807286543505">Gosodiadau cychwyn</translation>
 <translation id="5264277876637023664">Cynnal prawf CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Mae APN wedi'i analluogi.</translation>
@@ -1133,6 +1139,7 @@
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
+<translation id="6846843854964504403">Ailosod diogelwch</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
 <translation id="6862416241246624313">Wedi cyflwyno'r adborth</translation>
 <translation id="6866732840889595464">llygad y dydd</translation>
@@ -1317,6 +1324,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7746357909584236306">gellir ei olygu</translation>
 <translation id="7747039790905080783">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="7752963721013053477">O'r wawr i'r tywyllwch - unigryw</translation>
+<translation id="7760571082554155847">Gosodiadau'r hafan</translation>
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
@@ -1356,6 +1364,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943235353293548836">Cyfnod cadw'n fyw parhaus</translation>
 <translation id="7943516765291457328">Trowch Bluetooth ymlaen i sganio am fannau problemus cyfagos</translation>
+<translation id="7944482598620888754">Cynnwys y wefan</translation>
 <translation id="7944562637040950644">toglo ôl-olau bysellfwrdd</translation>
 <translation id="7953669802889559161">Mewnbynnau</translation>
 <translation id="7955587717700691983">Bysellfwrdd Bluetooth</translation>
@@ -1392,6 +1401,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>
+<translation id="8135609423982943441">Cafodd eich Chromebook ei ailosod i osodiadau diofyn diogel. Gallwch addasu'r newidiadau hyn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Offer datblygwyr</translation>
@@ -1421,6 +1431,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8291967909914612644">Gwlad darparwr cartref</translation>
 <translation id="8294431847097064396">Ffynhonnell</translation>
 <translation id="8302368968391049045">Wal Dân HTTPS</translation>
+<translation id="8308787307410010965">Gosodiadau cynnwys y wefan</translation>
 <translation id="8312330582793120272">chwarae cyfryngau</translation>
 <translation id="8318753676953949627">Dim Delweddau</translation>
 <translation id="8320910311642849813">coedwig</translation>
@@ -1619,6 +1630,8 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="951780398843003443">Cymharwch leisiau trwy gydol y recordiad fel bod y trawsgrifiad yn adlewyrchu'r hyn a ddywedodd pob siaradwr a phryd</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="95718197892796296">clai</translation>
+<translation id="959792926760890141">Mae ailosod diogelwch yn diffodd estyniadau porwr Chrome ac yn ailosod gosodiadau rhwydwaith a gosodiadau eraill i osodiadau diogel diofyn.
+          Bydd eich peiriant chwilio diofyn yn cael ei ailosod, ond ni fydd eich tabiau, ffeiliau, cwcis a hanes yn cael eu newid.</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
 <translation id="965918541715156800">melyn a gwyrddlas</translation>
 <translation id="966787709310836684">dewislen</translation>

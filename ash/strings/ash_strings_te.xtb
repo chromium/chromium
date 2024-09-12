@@ -1110,6 +1110,7 @@
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
 <translation id="482908187605862807">Play Storeలో అందుబాటులో ఉన్న యాప్‌లు</translation>
 <translation id="4831034276697007977">ఆటోమేటిక్ క్లిక్‌లను మీరు ఖచ్చితంగా ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
+<translation id="4835677468087803981">PINను దాచండి</translation>
 <translation id="4849058404725798627">కీబోర్డ్ దృష్టి కేంద్రీకరణతో అంశాన్ని హైలైట్ చేయి</translation>
 <translation id="485592688953820832">చర్య వద్దు (పాజ్ చేయి)</translation>
 <translation id="485634149294284819">కీబోర్డ్ మెనూను తెరవండి</translation>
@@ -1192,6 +1193,7 @@
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
+<translation id="5091636240353511739">PINను చూడండి</translation>
 <translation id="5092436659250499817">కీబోర్డ్ బ్యాక్‌లైట్‌ను ఆన్/ఆఫ్ చేయండి</translation>
 <translation id="5094577350232361255">పరిచయం</translation>
 <translation id="5095136268899496849">సెట్టింగ్‌లలో మీ <ph name="PRODUCT_NAME" />ను అనుకూలంగా మార్చండి, వ్యక్తిగతీకరించండి. మీ వాల్‌పేపర్‌ను మార్చడానికి లేదా స్క్రీన్ సేవర్‌ను సెట్ చేయడానికి ట్రై చేయండి.</translation>
@@ -1359,6 +1361,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">మీ పాస్‌వర్డ్ వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
+<translation id="5633826232582408011">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను ఆన్ చేసినప్పుడు, <ph name="LINK_TO_SERVICE_TERMS" />‌కు లోబడి, రాత సూచనలను, సారాంశాలను జెనరేట్ చేయడానికి, ప్రశ్నలకు సమాధానమివ్వడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ఇన్‌పుట్ టెక్స్ట్, డాక్యుమెంట్ కంటెంట్, వెబ్ పేజీ URL Google AI సర్వర్‌లకు పంపబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5662075790140998213">డెస్క్ 10</translation>
@@ -1645,6 +1648,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">కెమెరా దిగువ ఎడమ మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="6605415194043280389">ఫోకస్ ఆన్‌లో ఉంది</translation>
+<translation id="660846213831377756">మౌస్ కీలు</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6612802754306526077">స్క్రీన్ రికార్డింగ్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="6612889377159412215">సబ్‌టాస్క్</translation>

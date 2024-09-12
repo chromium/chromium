@@ -374,6 +374,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Aktivizo/çaktivizo Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efektet e pamjes</translation>
 <translation id="236574664504281623">Dërguar nga <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nuk mund të identifikohesh në Chromebook-un tënd</translation>
 <translation id="2367972762794486313">Shfaq aplikacionet</translation>
@@ -734,6 +735,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3600061223661453002">Joaktiv</translation>
 <translation id="3604801046548457007">U krijua tavolina e punës <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Ekrani "Braille" është i lidhur.</translation>
+<translation id="3612634595000403645">Preferencat e efekteve të pamjes</translation>
 <translation id="3615926715408477684">Aktivizimi i të dhënave celulare do të aktivizojë Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menyja u zhvendos në këndin lart djathtas të ekranit.</translation>
@@ -894,6 +896,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4146671046252289537">Kalo në fund të fjalës tjetër</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
 <translation id="4150201353443180367">Ekrani</translation>
+<translation id="4151054805501931758">Përmirësimi i portretit</translation>
 <translation id="4156293514828496577">Bateria e mbetur: <ph name="PERCENTAGE" />% (rreth <ph name="TIME_LEFT" />).
 Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translation>
 <translation id="4160919062868802509">U zbuluan disa burime të audios</translation>
@@ -1106,6 +1109,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
 <translation id="482908187605862807">Aplikacionet e disponueshme nga "Dyqani i Play"</translation>
 <translation id="4831034276697007977">Je i sigurt që dëshiron të çaktivizosh klikimet automatike?</translation>
+<translation id="4835677468087803981">Fshihe kodin PIN</translation>
 <translation id="4849058404725798627">Thekso objektin me fokusin e tastierës</translation>
 <translation id="485592688953820832">Asnjë veprim (vendos në pauzë)</translation>
 <translation id="485634149294284819">Hyr në menynë e tastierës</translation>
@@ -1188,6 +1192,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + shigjeta lart</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
+<translation id="5091636240353511739">Shfaq kodin PIN</translation>
 <translation id="5092436659250499817">Aktivizo/çaktivizo dritën e sfondit të tastierës</translation>
 <translation id="5094577350232361255">rreth</translation>
 <translation id="5095136268899496849">Personalizo pajisjen tënde <ph name="PRODUCT_NAME" /> te "Cilësimet". Provo të ndryshosh imazhin e sfondit ose të caktosh një mbrojtës ekrani.</translation>
@@ -1641,6 +1646,7 @@ Instalim i ri</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="6605415194043280389">"Fokusi" është aktiv</translation>
+<translation id="660846213831377756">Butonat e miut</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6612802754306526077">U zgjodh modaliteti i regjistrimit të ekranit</translation>
 <translation id="6612889377159412215">nëndetyrë</translation>
@@ -1968,6 +1974,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7769299611924763557">Imazhi yt GIF do të jetë gati së shpejti</translation>
 <translation id="7773536009433685931">Aktivizo WiFi më mirë</translation>
+<translation id="77747521138552256">Shumë përpjekje me kodin PIN. Prit <ph name="TIME_LEFT" /> dhe provo përsëri kodin PIN ose fut fjalëkalimin për t'u identifikuar menjëherë.</translation>
 <translation id="7780094051999721182">shkurtoret</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7781829728241885113">Dje</translation>
@@ -2300,6 +2307,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8939855324412367560">Audioja e hyrjes është nga "<ph name="INPUT_DEVICE_NAME" />" dhe audioja e daljes është nga "<ph name="OUTPUT_DEVICE_NAME" />". Shko te "Cilësimet" për ta ndryshuar.</translation>
 <translation id="8940956008527784070">Nivel i ulët baterie (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">Mikrofon i stilit të studios</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, kutia e zgjedhjes nuk është zgjedhur.</translation>
 <translation id="8949925099261528566">Lidhur, por pa internet</translation>
 <translation id="8951539504029375108">Vetëm pajisjet e miratuara Thunderbolt janë të përputhshme me pajisjen tënde Chromebook</translation>

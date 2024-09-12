@@ -1106,6 +1106,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4826588772550366629">Kamera und Mikrofon</translation>
 <translation id="482908187605862807">Im Play Store verfügbare Apps</translation>
 <translation id="4831034276697007977">Möchtest du automatische Klicks wirklich deaktivieren?</translation>
+<translation id="4835677468087803981">PIN ausblenden</translation>
 <translation id="4849058404725798627">Objekt mit Tastaturfokus hervorheben</translation>
 <translation id="485592688953820832">Keine Aktion (Pause)</translation>
 <translation id="485634149294284819">Tastaturmenü öffnen</translation>
@@ -1188,6 +1189,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083035541015925118">Strg + Alt + Aufwärtspfeil</translation>
 <translation id="5083553833479578423">Möchtest du weitere Assistant-Funktionen freischalten?</translation>
+<translation id="5091636240353511739">PIN anzeigen</translation>
 <translation id="5092436659250499817">Hintergrundbeleuchtung der Tastatur aktivieren/deaktivieren</translation>
 <translation id="5094577350232361255">Info</translation>
 <translation id="5095136268899496849">In den Einstellungen kannst du dein <ph name="PRODUCT_NAME" /> anpassen und personalisieren. Ändere beispielsweise deinen Hintergrund oder lege einen Bildschirmschoner fest.</translation>
@@ -1641,6 +1643,7 @@ Neuinstallation</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera ist an der unteren linken Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="6605415194043280389">Konzentrationsmodus ist aktiviert</translation>
+<translation id="660846213831377756">Maustasten</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="6612802754306526077">Modus für Aufzeichnung des Bildschirms ausgewählt</translation>
 <translation id="6612889377159412215">Unteraufgabe</translation>

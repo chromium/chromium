@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="1207734034680156868">Sugjerimet bazohen në përshkrimin tënd</translation>
 <translation id="121090498480012229">luaj ose vendos në pauzë median</translation>
+<translation id="1216675364136048456">Mbyll</translation>
 <translation id="1223498995510244364">Përmblidh</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
 <translation id="1232610416724362657">ujëvarë</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Këtë muaj</translation>
 <translation id="1593528591614229756">Sigurohu që të zgjedhë sh APN-të e ofruara nga operatori celular ose administratori. Zgjedhja e një APN-je do të çaktivizojë çdo APN të personalizuar. APN-të e pavlefshme mund të ndërpresin lidhjen e rrjetit celular. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Fshih transkriptin</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
 <translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1651925268237749928">Ke zgjedhur një album të ndarë. Të tjerët mund të shtojnë ose të ndryshojnë fotografitë. Imazhi yt i sfondit mund të përdorë fotografi që nuk janë aktualisht në këtë album.</translation>
+<translation id="1661512400125589646">Vendos në pauzë</translation>
 <translation id="1661865805917886535">Disa prej informacioneve të llogarisë dhe të sistemit mund të dërgohen te Google. Në e përdorim këtë informacion për të ndihmuar në zgjidhjen e problemeve teknike dhe për të përmirësuar shërbimet tona, sipas "Politikës së privatësisë" (<ph name="PRIVACYPOLICYURL" />) dhe "Kushteve të shërbimit" (<ph name="TERMSOFSERVICEURL" />). Për të kërkuar ndryshime të përmbajtjes, shko te "Ndihma ligjore" (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1664796644829245314">Shiko paraprakisht <ph name="PREVIEW_OBJECT" /></translation>
@@ -150,6 +153,7 @@
 <translation id="1672499492233627739">Furnizimi i videos i uebkamerës</translation>
 <translation id="1676557873873341166">Po nxjerr një video</translation>
 <translation id="1684279041537802716">Ngjyra e theksit</translation>
+<translation id="1697278726914783200">Regjistro</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
 <translation id="1708602061922134366">Blu e Google</translation>
@@ -172,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkripti</translation>
 <translation id="1765169783255151332">Ndërro me shpejtësi tastet</translation>
 <translation id="1768959921651994223">Lloji i vërtetimit</translation>
 <translation id="1776228893584526149">Toni i imazhit të sfondit</translation>
@@ -216,6 +221,7 @@
 <translation id="1954818433534793392">ndërtesë</translation>
 <translation id="1962550982027027473">Kërkohet një APN e parazgjedhur</translation>
 <translation id="1967860190218310525">Krijo një APN të re</translation>
+<translation id="1967917622327567355">Shfaq transkriptin</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">tradicionale</translation>
 <translation id="1977994649430373166">Fotografia e profilit në Google</translation>
@@ -597,6 +603,7 @@
 <translation id="4111761024568264522">Blloku me prekje USB</translation>
 <translation id="4113067922640381334">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modaliteti i errët</translation>
+<translation id="4126551873361000548">Prapa me 10 sekonda</translation>
 <translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
 <translation id="4130750466177569591">Jam dakord</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
@@ -677,6 +684,7 @@
 <translation id="4507392511610824664">rrit ndriçimin</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Komente</translation>
+<translation id="4516323842122524821">Volumi</translation>
 <translation id="4521826082652183069">Përputhje e emrit alternativ të subjektit</translation>
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4536864596629708641">Konfigurimi i IP-së</translation>
@@ -693,6 +701,7 @@
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
+<translation id="4602266091140407479">Mikrofoni</translation>
 <translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
@@ -780,6 +789,7 @@
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
+<translation id="5053233795640754917">Vendos në pauzë</translation>
 <translation id="5078711626843651677">Modelet e zërit ruhen përkohësisht në pajisje derisa të përfundojë etiketimi i folësit. Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5078983345702708852">futuriste</translation>
 <translation id="5087864757604726239">prapa</translation>
@@ -787,6 +797,7 @@
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Hiq kabllon USB të "<ph name="DEVICE_NAME" />" dhe më pas fute sërish për të vazhduar procesin e përditësimit</translation>
+<translation id="5095864667399748231">Aktivizo/çaktivizo zërin</translation>
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>
@@ -932,6 +943,7 @@
 <translation id="588258955323874662">Ekrani i plotë</translation>
 <translation id="5893975327266416093">Trokit te një tast i tastierës për ta caktuar</translation>
 <translation id="5895138241574237353">Rinis</translation>
+<translation id="5896602941605730551">Luaj</translation>
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5903200662178656908">Pajisja është një kombinim i tastierës dhe mausit.</translation>
 <translation id="5904994456462260490">Shto një APN të re</translation>
@@ -996,6 +1008,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Krijuar më <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
+<translation id="6189987971574353264">Luaj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
 <translation id="6196607555925437199">Rikrijo</translation>
 <translation id="6205145102504628069">Rrjedha e reve</translation>
@@ -1318,6 +1331,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
+<translation id="7774759755755950354">Prapa</translation>
 <translation id="7778717409420828014">Komentet e tua na ndihmojnë të përmirësojmë përvojën me Chromebook dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
@@ -1408,6 +1422,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8227488649450500937">Provo një nga këto kërkesa ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin për kërkesat<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
+<translation id="8236972776513018241">Transkripti</translation>
 <translation id="8238771987802558562">Zgjidh një APN</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
 <translation id="8250926778281121244">ndryshku</translation>
@@ -1510,6 +1525,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8775713578693478175">APN-ja e modemit</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ky rrjet mund të ketë një portal izolues</translation>
+<translation id="8797082062139985406">Krijo emrin duke përdorur IA-në e Google</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8798441408945964110">Emri i ofruesit</translation>
 <translation id="8808828119384186784">Cilësimet e Chrome</translation>
@@ -1530,6 +1546,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8864415976656252616">Nuk ka përmbajtje të sugjeruara. Shiko përmbajtjet kryesore të ndihmës.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Pajisja është një tablet.</translation>
+<translation id="8878117140814294155">Aktivizo/çaktivizo zërin në mikrofon</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
 <translation id="8882789155418924367">bufë</translation>
 <translation id="8892443466059986410">Anulo modifikimin e shkurtores</translation>

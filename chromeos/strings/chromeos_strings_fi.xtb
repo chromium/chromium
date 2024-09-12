@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="1207734034680156868">Ehdotukset perustuvat kuvaukseen</translation>
 <translation id="121090498480012229">toista mediaa tai keskeytä se</translation>
+<translation id="1216675364136048456">Sulje</translation>
 <translation id="1223498995510244364">Tee yhteenveto</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
 <translation id="1232610416724362657">vesiputous</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1593528591614229756">Muista valita mobiilioperaattorin tai järjestelmänvalvojan antamat APN:t. Jos valitset APN:n, kaikki muokatut APN:t poistetaan käytöstä. Virheelliset APN:t voivat häiritä mobiiliyhteyttä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Piilota transkriptio</translation>
 <translation id="160633243685262989">Esikatselukuva</translation>
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Olet valinnut jaetun albumin. Muut voivat lisätä tai muuttaa kuvia. Taustakuvaan saatetaan käyttää kuvia, jotka eivät tällä hetkellä sisälly tähän albumiin.</translation>
+<translation id="1661512400125589646">Keskeytä</translation>
 <translation id="1661865805917886535">Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Tietojen avulla ratkomme teknisiä ongelmia ja kehitämme palveluitamme tietosuojakäytännön (<ph name="PRIVACYPOLICYURL" />) ja käyttöehtojen (<ph name="TERMSOFSERVICEURL" />) mukaisesti. Jos haluat pyytää sisältöön muutoksia, siirry lakiasioiden ohjesivulle (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1664796644829245314">Esikatsele: <ph name="PREVIEW_OBJECT" /></translation>
@@ -172,6 +175,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkriptio</translation>
 <translation id="1765169783255151332">Vaihda näppäimiä nopeasti</translation>
 <translation id="1768959921651994223">Todennustyyppi</translation>
 <translation id="1776228893584526149">Taustakuvan sävy</translation>
@@ -216,6 +220,7 @@
 <translation id="1954818433534793392">rakennus</translation>
 <translation id="1962550982027027473">Oletus-APN on pakollinen</translation>
 <translation id="1967860190218310525">Luo uusi APN</translation>
+<translation id="1967917622327567355">Näytä transkriptio</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">perinteinen</translation>
 <translation id="1977994649430373166">Google-profiilikuva</translation>
@@ -597,6 +602,7 @@
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
 <translation id="4113067922640381334">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tumma tila</translation>
+<translation id="4126551873361000548">Taaksepäin 10 sekuntia</translation>
 <translation id="4130035430755296270">Pidä osoitin paikallaan, niin näet lisää asetteluvaihtoehtoja</translation>
 <translation id="4130750466177569591">Hyväksyn</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
@@ -677,6 +683,7 @@
 <translation id="4507392511610824664">lisää kirkkautta</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4513946894732546136">Palaute</translation>
+<translation id="4516323842122524821">Äänenvoimakkuus</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
 <translation id="4522570452068850558">Tiedot</translation>
 <translation id="4536864596629708641">IP-määritykset</translation>
@@ -780,6 +787,7 @@
 <translation id="5049856988445523908">SIM-kortti lukittu (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
 <translation id="5051044138948155788">Tämä on ainoa sivu. Sinut ohjataan skannauksen aloitusnäytölle.</translation>
+<translation id="5053233795640754917">Keskeytä</translation>
 <translation id="5078711626843651677">Äänimallit tallennetaan väliaikaisesti laitteelle, kunnes puhujatunnisteet ovat valmiit. Voit milloin tahansa laittaa tämän pois päältä asetuksista.</translation>
 <translation id="5078983345702708852">futuristinen</translation>
 <translation id="5087864757604726239">takaisin</translation>
@@ -787,6 +795,7 @@
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Irrota USB-johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia.</translation>
+<translation id="5095864667399748231">Mykistä / poista mykistys</translation>
 <translation id="5099354524039520280">ylös</translation>
 <translation id="5107243100836678918">Pikakomento ilman <ph name="META_KEY" />näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />näppäimellä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Samantyyppisiä:</translation>
@@ -932,6 +941,7 @@
 <translation id="588258955323874662">Koko näyttö</translation>
 <translation id="5893975327266416093">Määritä napauttamalla näppäimistön näppäintä</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="5896602941605730551">Toista</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
 <translation id="5904994456462260490">Lisää uusi APN</translation>
@@ -1318,6 +1328,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
+<translation id="7774759755755950354">Takaisin</translation>
 <translation id="7778717409420828014">Tiimimme tarkastaa palautteesi, ja se auttaa meitä parantamaan Chromebook-kokemusta. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7784116172884276937">DNS-palvelimia ei ole määritetty</translation>
@@ -1408,6 +1419,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8227119283605456246">Liitä tiedosto</translation>
 <translation id="8227488649450500937">Kokeile jotakin näistä kehotteista tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
+<translation id="8236972776513018241">Transkriptio</translation>
 <translation id="8238771987802558562">Valitse APN</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="8250926778281121244">ruoste</translation>
@@ -1510,6 +1522,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8775713578693478175">Modeemin APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>
+<translation id="8797082062139985406">Luo nimi Googlen tekoälyn avulla</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
 <translation id="8808828119384186784">Chromen asetukset</translation>
@@ -1530,6 +1543,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8864415976656252616">Ei sisältöehdotuksia. Katso suosituin ohjesisältö.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>
+<translation id="8878117140814294155">Mikrofonin mykistys päälle tai pois päältä</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>
 <translation id="8882789155418924367">pöllöt</translation>
 <translation id="8892443466059986410">Peru pikanäppäimen muokkaus</translation>

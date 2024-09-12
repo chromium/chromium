@@ -1109,6 +1109,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1780273119488802839">Bukmarklar import qilinmoqda...</translation>
 <translation id="1780572199786401845">Haqoratomuz yoki xavfli kontent haqida xabar bering</translation>
 <translation id="178092663238929451">Nearby Share funksiyasini sozlang va atrofdagi odamlar bilan fayl almashining</translation>
+<translation id="1781164264587898620">Shovqinsizlantirish va audio tuzatishlarni tatbiq qilish</translation>
 <translation id="1781291988450150470">Joriy PIN kod</translation>
 <translation id="1781502536226964113">Yangi varaq sahifasini ochish</translation>
 <translation id="1781553166608855614">Nutq tili</translation>
@@ -9795,7 +9796,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8090513782447872344">Nazar solish uchun istalgan vaqt qaytish mumkin</translation>
 <translation id="8090579562279016251">Unumdorlik pasayadi, ammo V8 hujumlarga yaxshiroq qarshilik qiladi</translation>
 <translation id="8090686009202681725">AI bilan mavzu yaratish</translation>
-<translation id="8091655032047076676">Tajribaviy</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />” plagini javob bermayapti</translation>
 <translation id="8094536695728193970">Apricot</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive xizmatiga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova ma’lumotlari ham bor.<ph name="END_PARAGRAPH1" />
@@ -10985,6 +10985,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 
 Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="8945274638472141382">Belgi oʻlchami</translation>
+<translation id="8945508919180478719">Studiyaviy mikrofon</translation>
 <translation id="8946359700442089734">Nosozliklarni ko‘rib chiqish xususiyatlari <ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmaga to‘liq yoqilmagan.</translation>
 <translation id="8946954897220903437">Barcha soʻrovlarni manzil qatorida yigʻish</translation>
 <translation id="894763922177556086">Yaxshi</translation>

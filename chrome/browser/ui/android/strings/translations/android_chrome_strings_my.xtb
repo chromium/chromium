@@ -488,6 +488,7 @@
 <translation id="3282568296779691940">Chrome သို့ လက်မှတ်ထိုး ဝင်</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="3293181007446299124">ကြည့်ရှုမှုမှတ်တမ်းကို သင့်စက်တွင် သီးသန့်ထားရှိပြီး သင့်အထောက်အထားကို ကာကွယ်ရန် အစီရင်ခံစာများအား စောင့်ဆိုင်း၍ ပို့သည်</translation>
+<translation id="3302615849591357577"><ph name="COLOR_NAME" /> ရောင် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။</translation>
 <translation id="3303414029551471755">အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် ရှေ့ဆက်မလား?</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
 <translation id="3305130791745726624">စက်များသို့ပို့ရန်</translation>
@@ -799,6 +800,7 @@
 <translation id="4834007576107377210">သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် သင့်ရှာဖွေရေး အင်ဂျင်၏ ညွှန်ကြားချက်များကို ကြည့်ပါ</translation>
 <translation id="4834250788637067901">Google Pay ကို သုံးထားသော ငွေပေးချေနည်းလမ်း၊ ကမ်းလှမ်းချက်နှင့် လိပ်စာများ</translation>
 <translation id="4835385943915508971">တောင်းဆိုထားသည့် အရင်းမြစ်ကို Chrome သည် အသုံးပြုခွင့်မရှိပါ။</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}}</translation>
 <translation id="4837753911714442426">စာမျက်နှာကို ပုံနှိပ်ဖို့ နည်းလမ်း အားဖွင့်ရန်</translation>
 <translation id="4842092870884894799">စကားဝှက် ထုတ်လုပ်ခြင်း ပေါ့ပ်အပ် ပြနေစဉ်</translation>
 <translation id="4844633725025837809">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပါ</translation>
@@ -1182,6 +1184,7 @@
 <translation id="6593061639179217415">ဒက်စ်တော့ဝဘ်ဆိုက်</translation>
 <translation id="6594347733515723558">ရွေးစရာများ စီပြီးကြည့်ရန်</translation>
 <translation id="6595046016124923392">သင့်အတွက် ရှင်းလင်းချက်များပိုကောင်းမွန်စေရန် ပုံများကို Google သို့ ပို့သည်။</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခုပါသော တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခုပါသော တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}}</translation>
 <translation id="6604931690954120417">Chrome တွင် လက်မှတ်ထိုးဝင်ထားသောအခါ သင်သိမ်းထားသော စကားဝှက်များကို သင့် Google Account သို့ပို့မည်။ ၎င်းကိုပိတ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များသို့ သွားပါ<ph name="END_LINK" />။</translation>
 <translation id="661266467055912436">သင်နှင့် ဝဘ်ပေါ်ရှိ လူအားလုံးအတွက် လုံခြုံရေးကို တိုးမြှင့်ထားသည်။</translation>
 <translation id="6621391692573306628">အခြားစက်သို့ ဤတဘ်ကို ပို့ရန် နှစ်စက်လုံးတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -1206,6 +1209,7 @@
 <translation id="6674571176963658787">စင့်ခ်လုပ်ခြင်းစတင်ရန် သင်၏စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6676927815633975364">ဤဝဘ်ဆိုက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6684809838922667136">Chrome ပိုကောင်းရန်လုပ်ခြင်း</translation>
+<translation id="6704048624334633734">စကားဝှက်များ ထုတ်ယူခြင်း၊ ဖျက်ခြင်း</translation>
 <translation id="670498945988402717">မနေ့က စစ်ဆေးခဲ့သည်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="671481426037969117">သင်၏ <ph name="FQDN" /> တိုင်မာ အချိန်ကုန်သွားပါပြီ။ မနက်ဖြန် ထပ်မံစတင်ပါမည်။</translation>
@@ -1667,6 +1671,7 @@
 <translation id="864544049772947936">ဝင်းဒိုး (<ph name="INSTANCE_COUNTS" />) ခုကို စီမံရန်</translation>
 <translation id="8664215986015753476">Chrome ကို သင့်အလိုကျသုံးခြင်း</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}other{# ကို သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}}</translation>
 <translation id="8672883760227492369">ဤစက်တွင် စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ဤစကားဝှက်များကို Google Password Manager သို့ ရွှေ့နိုင်သည်။</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>

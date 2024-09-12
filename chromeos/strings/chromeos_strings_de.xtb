@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Webcam-Videofeed</translation>
 <translation id="1676557873873341166">Video wird aufgezeichnet</translation>
 <translation id="1684279041537802716">Akzentfarbe</translation>
+<translation id="1697278726914783200">Aufnehmen</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
 <translation id="1708602061922134366">Google-Blau</translation>
@@ -693,6 +694,7 @@
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4594021849294327751">Transkript erstellen</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Dafür können keine Bilder erstellt werden. Versuche es mit einem anderen Prompt.</translation>
 <translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn du den Druckauftrag abbrechen möchtest, drücke die Eingabetaste.</translation>
@@ -996,6 +998,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
+<translation id="6189987971574353264">Wiedergeben</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6196607555925437199">Neu erstellen</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>

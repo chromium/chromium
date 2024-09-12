@@ -3471,6 +3471,7 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Desativar relatórios sobre a interface de rede do dispositivo</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
+<translation id="3546260240984542017">Manter espaços em branco para todos os Tipos MIME</translation>
 <translation id="3546271546272655966">O <ph name="DBSC_FEATURE_NAME" /> pode ser usado dependendo do processo de lançamento do recurso.</translation>
 <translation id="3547954654003013442">Configurações de proxy</translation>
 <translation id="3548064438634502368">Fechar navegadores</translation>
@@ -8453,6 +8454,7 @@ gerenciador de senhas integrado.
 Esta política não afeta os gerenciadores de senhas de terceiros que usam
 APIs de acessibilidade.</translation>
 <translation id="7114169791477667553">Desativar o provedor de pesquisa padrão</translation>
+<translation id="7115684775550072082">Manter apenas espaços em branco para Tipos MIME de texto e XML</translation>
 <translation id="7121046543122812054">Esta política foi descontinuada. Use a <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
@@ -8777,6 +8779,13 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="7358359585412734876">Ativar o <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Somente o usuário</translation>
 <translation id="736486789939370545">Permitir a instalação de extensões externas</translation>
+<translation id="7364975417585163622">Esta política fornece uma desativação temporária para mudanças na forma como o Chrome lida com espaços em branco em URLs de <ph name="DATA_URL_SCHEME" />.
+Anteriormente, os espaços em branco eram mantidos apenas se o tipo de mídia de nível superior fosse <ph name="TEXT_MEDIA_TYPE" /> ou tivesse a string de tipo de mídia <ph name="XML" />.
+Agora, os espaços em branco serão preservados em todos os URLs de dados, independente do tipo de mídia.
+
+Se esta política for definida como verdadeira ou deixada sem definição, o novo comportamento será ativado.
+
+Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
 <translation id="7366948865469126526">Desativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="7367734504783638685">Sincronização de senhas entre provedores SSO terceirizados e dispositivos Chrome</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
@@ -10908,6 +10917,7 @@ Ao contrário de outras políticas, a definida no nível do perfil tem precedên
 <translation id="9015759770696099204">As configurações F11/F12 estão desativadas</translation>
 <translation id="9015952763003753868">Fazer com que <ph name="ACAM_HEADER_NAME" /> corresponda à especificação de simulação do <ph name="CORS" /> em conformidade</translation>
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
+<translation id="9025912013525357598">Preservação de espaços em branco do DataURL para todos os tipos de mídia</translation>
 <translation id="9026905189580734497">Esta política controla as configurações do recurso Quero ajuda para ler do <ph name="PRODUCT_OS_NAME" />.
 
 0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.

@@ -5803,7 +5803,7 @@
 <translation id="5156638757840305347">అది కనిపించినప్పుడు లేదా కదలికలో ఉన్నప్పుడు కర్సర్ హైలైట్ అవుతుంది</translation>
 <translation id="5157250307065481244">సైట్ వివరాలు చూడండి</translation>
 <translation id="5158206172605340248">యాక్సెంట్ మార్క్‌ల మెనూ విస్మరించబడింది.</translation>
-<translation id="5159094275429367735">Crostiniని సెటప్ చేయి</translation>
+<translation id="5159094275429367735">Crostiniని సెటప్ చేయండి</translation>
 <translation id="5159419673777902220">ఎక్స్‌టెన్షన్ అనుమతులను మీ తల్లి/తండ్రి డిజేబుల్ చేశారు</translation>
 <translation id="5160634252433617617">భౌతిక కీబోర్డ్</translation>
 <translation id="5160857336552977725">మీ <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయండి</translation>
@@ -8024,6 +8024,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">మీ పరికరంలో డేటాను సేవ్ చేయడానికి ఈ సైట్‌కు అనుమతి ఉంది.</translation>
 <translation id="680488281839478944">వర్చువల్ మెషీన్‌కు "<ph name="DEFAULT_VM_NAME" />" ఉంది</translation>
+<translation id="6805236548654699520">మీ సెట్టింగ్‌లను సురక్షిత ఆటోమేటిక్ సెట్టింగ్‌లకు రీస్టోర్ చేయడం ద్వారా అవాంఛిత పాప్-అప్‌లను తీసివేయడం, నెట్‌వర్క్ సమస్యలను పరిష్కరించడం మొదలైనవి చేయండి.</translation>
 <translation id="6805478749741295868">ఇది ప్రయోగాత్మక AI ఫీచర్, ఇది ఇచ్చే సమాధానాలన్నీ నూటికి నూరు శాతం సరైనవే అని చెప్పలేము.</translation>
 <translation id="6805647936811177813">దయచేసి <ph name="HOST_NAME" /> నుండి క్లయింట్ స‌ర్టిఫికెట్‌ను దిగుమతి చేయ‌డానికి <ph name="TOKEN_NAME" />కు సైన్ ఇన్ చేయండి.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" />లో RLZ ట్రాకింగ్‌ను ప్రారంభించండి.</translation>
@@ -8107,6 +8108,7 @@
 <translation id="6845038076637626672">గరిష్టీకరించిన దాన్ని తెరువు</translation>
 <translation id="6845231585063669905">A నుండి Z వరకు</translation>
 <translation id="6846178040388691741"><ph name="FILE_NAME" />ను "<ph name="EXTENSION_NAME" />", <ph name="PRINTER_NAME" />తో ప్రింట్ చేయాలనుకుంటుంది.</translation>
+<translation id="6846843854964504403">సేఫ్టీ రీసెట్</translation>
 <translation id="6847125920277401289">కొనసాగించడానికి స్టోరేజ్‌ స్థలాన్ని ఖాళీ చేయండి</translation>
 <translation id="6848388270925200958">ఇప్పుడు, కేవలం ఈ పరికరంలో మాత్రమే ఉపయోగించగల కొన్ని కార్డ్‌లు మీ వద్ద ఉన్నాయి</translation>
 <translation id="6848716236260083778">వేలిముద్రను సెటప్ చేయడానికి, మీ చిన్నారి చేత వేలిముద్ర సెన్సార్‌పై తాకించండి. మీ చిన్నారి వేలిముద్ర సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ ఈ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
@@ -9820,7 +9822,6 @@
 <translation id="8090513782447872344">మళ్లీ చూడటానికి మీరు ఎప్పుడైనా తిరిగి రావచ్చు</translation>
 <translation id="8090579562279016251">పనితీరును తగ్గిస్తుంది, కానీ అటాక్‌ల నుండి మరింత రక్షణ ఇచ్చేలా V8ను చేస్తుంది</translation>
 <translation id="8090686009202681725">AIతో రూపాన్ని క్రియేట్ చేయండి</translation>
-<translation id="8091655032047076676">ప్రయోగాత్మకం</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ప్రతిస్పందించడం లేదు</translation>
 <translation id="8094536695728193970">ఆప్రికాట్</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Driveకు బ్యాకప్ చేయండి. ఏ సమయంలో అయినా సులభంగా మీ డేటాను పునరుద్ధరించండి లేదా పరికరాన్ని మార్చండి. మీ బ్యాకప్‌లో యాప్ డేటా ఉంటుంది.<ph name="END_PARAGRAPH1" />

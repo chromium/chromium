@@ -253,6 +253,7 @@
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
+<translation id="2154460308960858308">ניקוי החיפוש</translation>
 <translation id="2156072344042480449">שתי ההנחיות האחרונות שלך. אפשר להשתמש בהנחיות האלה רק כשנמצאים בדף הזה.</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
@@ -499,6 +500,7 @@
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
 <translation id="3569407787324516067">שומר מסך</translation>
+<translation id="3571184524500629183">סגירת החיפוש</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3583278742022654445">‏עוצמת האות חלשה. כדאי להתקרב למקור של אות ה-Wi-Fi.</translation>
@@ -943,6 +945,7 @@
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5876385649737594562">צריך להפעיל כדי לבחור אפשרויות</translation>
+<translation id="5877503382465267833">השהיה של <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5893975327266416093">צריך להקיש על מקש במקלדת כדי להקצות</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -1159,6 +1162,7 @@
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
 <translation id="6910845598686542904">לחשב מודלים של הקולות שזוהו בהקלטה</translation>
 <translation id="6911383237894364323">לא ניתן להתחבר לשרתי מדיה</translation>
+<translation id="6927968682840110570">שם ההקלטה</translation>
 <translation id="6930242544192836755">משך החיבור</translation>
 <translation id="6930597342185648547">מידע על הרקע שנבחר</translation>
 <translation id="6939667434404433010">חיפוש שם ההקלטה</translation>
@@ -1271,6 +1275,7 @@
 <translation id="7378170410161264436">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור.
 כדי ליצור תמלילים כאלה, צריך להוריד את מודל התמלול (עד 100MB).</translation>
 <translation id="7384004438856720753">ארמון</translation>
+<translation id="7388345524791662148">אפשרויות נוספות של <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">לוח מגע מובנה</translation>
 <translation id="7397270852490618635">השבתת העיצוב הבהיר</translation>
 <translation id="7401543881546089382">מחק קיצור דרך</translation>
@@ -1292,6 +1297,7 @@
 <translation id="7513770521371759388">חלק תחתון</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">הפעלה של <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">יצירה</translation>
 <translation id="7528507600602050979">תוכן העזרה לא זמין</translation>
 <translation id="7535791657097741517">הפעלת העיצוב הבהיר</translation>
@@ -1368,6 +1374,7 @@
 <translation id="7897043345768902965">טיילת</translation>
 <translation id="7902285181767404769">השתקת ההתראות בזמן ההקלטה</translation>
 <translation id="7903695460270716054">בחירת תמונות ויצירות אומנות מתוך אוסף</translation>
+<translation id="7912005977894000746">חזרה לדף הראשי</translation>
 <translation id="7915220255123750251">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט.</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
