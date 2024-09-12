@@ -3722,8 +3722,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Network.DataURLLength{Type}" units="characters"
-    expires_after="2024-09-27">
+<histogram name="Blink.Network.DataUrlLength{Type}" units="characters"
+    expires_after="2025-03-27">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
