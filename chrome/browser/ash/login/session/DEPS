@@ -53,7 +53,7 @@ include_rules = [
   "+chrome/browser/ash/sparky/sparky_manager_service_factory.h",
   "+chrome/browser/ash/system_web_apps/apps/help_app",
   "+chrome/browser/ash/tether",
-  "+chrome/browser/ash/tpm_firmware_update_notification.h",
+  "+chrome/browser/ash/tpm",
   "+chrome/browser/ash/u2f",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",

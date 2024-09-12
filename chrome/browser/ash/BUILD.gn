@@ -29,10 +29,6 @@ static_library("ash") {
     "chrome_browser_main_parts_ash.h",
     "system_token_cert_db_initializer.cc",
     "system_token_cert_db_initializer.h",
-    "tpm_firmware_update.cc",
-    "tpm_firmware_update.h",
-    "tpm_firmware_update_notification.cc",
-    "tpm_firmware_update_notification.h",
   ]
 
   allow_circular_includes_from = [
@@ -1062,7 +1058,6 @@ source_set("unit_tests") {
     "../ui/webui/settings/about_handler_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "system_token_cert_db_initializer_unittest.cc",
-    "tpm_firmware_update_unittest.cc",
   ]
 
   deps = [
@@ -1818,6 +1813,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_logs:unit_tests",
     "//chrome/browser/ash/system_web_apps:unit_tests",
     "//chrome/browser/ash/tether:unit_tests",
+    "//chrome/browser/ash/tpm:unit_tests",
     "//chrome/browser/ash/trusted_vault:unit_tests",
     "//chrome/browser/ash/usb:unit_tests",
     "//chrome/browser/ash/video_conference:unit_tests",

@@ -177,6 +177,7 @@ static_library("screens") {
     "//chrome/browser/ash/login/saml",
     "//chrome/browser/ash/login/screens/chromevox_hint",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/webui/ash/login/mojom",

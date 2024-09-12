@@ -101,7 +101,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
 #include "chrome/browser/ash/tether/tether_service.h"
-#include "chrome/browser/ash/tpm_firmware_update_notification.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update_notification.h"
 #include "chrome/browser/ash/u2f/u2f_notification.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"

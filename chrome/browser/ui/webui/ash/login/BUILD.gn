@@ -199,6 +199,7 @@ static_library("login") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/ui/webui/ash/login/mojom",
     "//chrome/common",
     "//chromeos/ash/components/dbus/os_install",

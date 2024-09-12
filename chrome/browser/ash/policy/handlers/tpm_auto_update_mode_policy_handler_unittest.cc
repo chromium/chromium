@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

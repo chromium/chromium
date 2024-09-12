@@ -109,6 +109,7 @@ static_library("ui") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",

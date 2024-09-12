@@ -19,7 +19,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"

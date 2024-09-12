@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 
 #include <memory>
 #include <utility>
@@ -38,8 +38,9 @@ namespace {
 // Decodes a |settings| dictionary into a set of allowed update modes.
 std::set<Mode> GetModesFromSetting(const base::Value* settings) {
   std::set<Mode> modes;
-  if (!settings)
+  if (!settings) {
     return modes;
+  }
 
   const base::Value::Dict& settings_dict = settings->GetDict();
   std::optional<bool> allow_powerwash =

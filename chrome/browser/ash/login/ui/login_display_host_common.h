@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_ui_pref_controller.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"

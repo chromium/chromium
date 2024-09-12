@@ -33,7 +33,7 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
-  "+chrome/browser/ash/tpm_firmware_update.h",
+  "+chrome/browser/ash/tpm",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/extensions/policy_handlers.h",

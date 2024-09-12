@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_RESET_SCREEN_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {

@@ -85,6 +85,7 @@ static_library("core") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -149,6 +150,7 @@ static_library("core") {
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ash/tpm",
   ]
 }
 

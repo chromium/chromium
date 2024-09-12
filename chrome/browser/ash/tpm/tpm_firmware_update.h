@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_H_
-#define CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_H_
+#ifndef CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_H_
+#define CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_H_
 
 #include <memory>
 #include <set>
@@ -66,4 +66,4 @@ void UpdateAvailable(base::OnceCallback<void(bool)> completion,
 }  // namespace tpm_firmware_update
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_H_
+#endif  // CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_H_

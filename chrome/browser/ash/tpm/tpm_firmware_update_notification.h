@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
-#define CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
+#ifndef CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
+#define CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
 
 class Profile;
 
@@ -18,4 +18,4 @@ void ShowNotificationIfNeeded(Profile* profile);
 }  // namespace tpm_firmware_update
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
+#endif  // CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
