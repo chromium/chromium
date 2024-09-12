@@ -197,15 +197,14 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // === Uninstall Registration ===
   // ------------------------------
 
-#if BUILDFLAG(IS_WIN)
-  // Returns true if the given app_id/name/profile is registered with the OS in
-  // the uninstall menu, and false if it isn't. The unexpected value is a string
-  // description of the error.
+  // On Windows, returns true if the given app_id/name/profile is registered
+  // with the OS in the uninstall menu, and false if it isn't. The unexpected
+  // value is a string description of the error. On other platforms, returns an
+  // error.
   base::expected<bool, std::string> IsUninstallRegisteredWithOs(
       const webapps::AppId& app_id,
       const std::string& app_name,
       Profile* profile);
-#endif  // BUILDFLAG(IS_WIN)
 
   // -------------------------
   // === Protocol Handlers ===

@@ -80,6 +80,11 @@ void UninstallationViaOsSettingsSubManager::Execute(
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
+  if (!IsOsUninstallationSupported()) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (!ShouldRegisterOsUninstall(current_state) &&
       !ShouldRegisterOsUninstall(desired_state)) {
     std::move(callback).Run();
