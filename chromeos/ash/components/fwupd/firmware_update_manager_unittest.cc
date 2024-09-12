@@ -258,6 +258,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     firmware_update_manager_->BindInterface(
         update_provider_remote_.BindNewPipeAndPassReceiver());
+
+    // Default network to online
+    network_handler_test_helper_->ResetDevicesAndServices();
+    default_wifi_path_ =
+        network_handler_test_helper_->ConfigureWiFi(shill::kStateOnline);
   }
 
   FirmwareUpdateManagerTest(const FirmwareUpdateManagerTest&) = delete;
@@ -719,10 +724,17 @@ class FirmwareUpdateManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void SetDefaultNetworkState(const std::string& state) {
+    network_handler_test_helper_->SetServiceProperty(
+        default_wifi_path_, shill::kStateProperty, base::Value(state));
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  std::string default_wifi_path_;
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
@@ -1529,6 +1541,48 @@ TEST_F(FirmwareUpdateManagerTest, RequestSucceededWithDurationMetric) {
   // recorded again.
   histogram_tester.ExpectTimeBucketCount(request_success_metric_name,
                                          base::Minutes(5), 1);
+}
+
+TEST_F(FirmwareUpdateManagerTest, RefreshRemoteNetworkConnection) {
+  base::HistogramTester histogram_tester;
+
+  // Set connection to "idle" (disconnected).
+  SetDefaultNetworkState(shill::kStateIdle);
+
+  // Clear default empty dbus response expected from RefreshRemote in SetUp()
+  dbus_responses_.clear();
+  // Provide one device and one update for RequestUpdates() call from
+  // SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+
+  RequestAllUpdatesFromSource(FirmwareUpdateManager::Source::kUSBChange);
+  task_environment_.RunUntilIdle();
+  // Verify updates were caught even though RefreshRemote was skipped
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult", 0);
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
+
+  CreateOneDeviceAndUpdateResponse();
+  RequestAllUpdatesFromSource(FirmwareUpdateManager::Source::kUSBChange);
+  task_environment_.RunUntilIdle();
+  // RefreshRemote should not be triggered since connection state is
+  // "disconnecting".
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult", 0);
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
+
+  PrepareForRefreshRemote();
+  CreateOneDeviceAndUpdateResponse();
+
+  // Set connection to "online"
+  SetDefaultNetworkState(shill::kStateOnline);
+
+  // Allow FirmwareUpdateManager to respond to the state change.
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult", MethodResult::kSuccess,
+      1);
 }
 
 TEST_F(FirmwareUpdateManagerTest, RefreshRemoteMeteredConnectionFromUI) {

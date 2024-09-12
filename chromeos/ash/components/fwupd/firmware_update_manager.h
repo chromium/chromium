@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -106,14 +107,16 @@ enum class MethodResult {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
-      public firmware_update::mojom::InstallController {
+      public firmware_update::mojom::InstallController,
+      public NetworkStateHandlerObserver {
  public:
   enum class Source {
     kUI = 0,
     kStartup = 1,
     kUSBChange = 2,
     kInstallComplete = 3,
-    kMaxValue = kInstallComplete,
+    kNetworkChange = 4,
+    kMaxValue = kNetworkChange,
   };
 
   FirmwareUpdateManager();
@@ -181,6 +184,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   // Query all updates for all devices.
   void RequestAllUpdates(Source source);
+
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const NetworkState* network) override;
 
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
@@ -370,6 +376,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   // Whether or not fetching updates in inflight.
   bool is_fetching_updates_ = false;
+
+  // Whether Refresh Remote has been requested and pending successful
+  // completion.
+  bool is_refresh_pending_ = false;
 
   // Checksum and firmware paths and File objects are held temporarily during
   // download, and are used for cleanup which must be done on task_runner_.
