@@ -1832,10 +1832,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "first_web_contents_profiler_ash_browsertest.cc",
-    "wmp_browsertest.cc",
-  ]
+  sources = [ "first_web_contents_profiler_ash_browsertest.cc" ]
 
   deps = [
     ":ash",

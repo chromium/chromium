@@ -31,13 +31,17 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "snap_group_browsertest.cc" ]
+  sources = [
+    "snap_group_browsertest.cc",
+    "wmp_browsertest.cc",
+  ]
 
   deps = [
     "//ash",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/new_window",
