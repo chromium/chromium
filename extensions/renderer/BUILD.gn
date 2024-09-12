@@ -238,6 +238,7 @@ source_set("renderer") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//chrome:resources",
     "//components/crx_file",
@@ -309,54 +310,120 @@ source_set("renderer") {
   }
 }
 
-if (enable_extensions) {
-  static_library("unit_test_support") {
-    # Sources that are shared between chrome-based renderer unit tests and
-    # top-level extensions renderer unit tests.
-    testonly = true
-    sources = [
-      "api/messaging/mock_message_port_host.cc",
-      "api/messaging/mock_message_port_host.h",
-      "api/messaging/send_message_tester.cc",
-      "api/messaging/send_message_tester.h",
-      "bindings/api_binding_test.cc",
-      "bindings/api_binding_test.h",
-      "bindings/api_binding_test_util.cc",
-      "bindings/api_binding_test_util.h",
-      "bindings/test_interaction_provider.cc",
-      "bindings/test_interaction_provider.h",
-      "bindings/test_js_runner.cc",
-      "bindings/test_js_runner.h",
-      "native_extension_bindings_system_test_base.cc",
-      "native_extension_bindings_system_test_base.h",
-      "string_source_map.cc",
-      "string_source_map.h",
-      "test_v8_extension_configuration.cc",
-      "test_v8_extension_configuration.h",
-    ]
+static_library("unit_test_support") {
+  # Sources that are shared between chrome-based renderer unit tests and
+  # top-level extensions renderer unit tests.
+  testonly = true
+  sources = [
+    "api/messaging/mock_message_port_host.cc",
+    "api/messaging/mock_message_port_host.h",
+    "api/messaging/send_message_tester.cc",
+    "api/messaging/send_message_tester.h",
+    "bindings/api_binding_test.cc",
+    "bindings/api_binding_test.h",
+    "bindings/api_binding_test_util.cc",
+    "bindings/api_binding_test_util.h",
+    "bindings/test_interaction_provider.cc",
+    "bindings/test_interaction_provider.h",
+    "bindings/test_js_runner.cc",
+    "bindings/test_js_runner.h",
+    "native_extension_bindings_system_test_base.cc",
+    "native_extension_bindings_system_test_base.h",
+    "string_source_map.cc",
+    "string_source_map.h",
+    "test_v8_extension_configuration.cc",
+    "test_v8_extension_configuration.h",
+  ]
 
-    deps = [
-      ":renderer",
-      "//base",
-      "//base/test:test_support",
-      "//components/crx_file",
-      "//content/public/renderer",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//extensions/buildflags",
-      "//extensions/common",
-      "//gin",
-      "//gin:gin_test",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/zlib/google:compression_utils",
-    ]
-  }
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//components/crx_file",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//gin",
+    "//gin:gin_test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+  ]
+}
 
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "activity_log_converter_strategy_unittest.cc",
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "activity_log_converter_strategy_unittest.cc",
+    "api_activity_logger_unittest.cc",
+    "bindings/api_binding_bridge_unittest.cc",
+    "bindings/api_binding_hooks_test_delegate.cc",
+    "bindings/api_binding_hooks_test_delegate.h",
+    "bindings/api_binding_js_util_unittest.cc",
+    "bindings/api_binding_unittest.cc",
+    "bindings/api_bindings_system_unittest.cc",
+    "bindings/api_bindings_system_unittest.h",
+    "bindings/api_event_handler_unittest.cc",
+    "bindings/api_event_listeners_unittest.cc",
+    "bindings/api_invocation_errors_unittest.cc",
+    "bindings/api_last_error_unittest.cc",
+    "bindings/api_request_handler_unittest.cc",
+    "bindings/api_response_validator_unittest.cc",
+    "bindings/api_signature_unittest.cc",
+    "bindings/argument_spec_builder.cc",
+    "bindings/argument_spec_builder.h",
+    "bindings/argument_spec_unittest.cc",
+    "bindings/binding_access_checker_unittest.cc",
+    "bindings/event_emitter_unittest.cc",
+    "bindings/exception_handler_unittest.cc",
+    "bindings/listener_tracker_unittest.cc",
+    "bindings/returns_async_builder.cc",
+    "bindings/returns_async_builder.h",
+    "extension_localization_throttle_unittest.cc",
+    "extension_throttle_simulation_unittest.cc",
+    "extension_throttle_test_support.cc",
+    "extension_throttle_test_support.h",
+    "extension_throttle_unittest.cc",
+    "feature_cache_unittest.cc",
+    "gc_callback_unittest.cc",
+    "module_system_test.cc",
+    "module_system_test.h",
+    "module_system_unittest.cc",
+    "safe_builtins_unittest.cc",
+    "scoped_web_frame.cc",
+    "scoped_web_frame.h",
+    "script_context_set_unittest.cc",
+    "utils_unittest.cc",
+  ]
+
+  deps = [
+    ":renderer",
+    ":unit_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/crx_file:crx_file",
+    "//content/test:test_support",
+    "//extensions:extensions_renderer_resources",
+    "//extensions:test_support",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//gin",
+    "//gin:gin_test",
+    "//ipc:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//ui/base",
+  ]
+
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build when the related extensions APIs are enabled.
+  if (enable_extensions) {
+    sources += [
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
       "api/i18n_hooks_delegate_unittest.cc",
@@ -365,73 +432,15 @@ if (enable_extensions) {
       "api/messaging/native_renderer_messaging_service_unittest.cc",
       "api/messaging/one_time_message_handler_unittest.cc",
       "api/runtime_hooks_delegate_unittest.cc",
-      "api_activity_logger_unittest.cc",
-      "bindings/api_binding_bridge_unittest.cc",
-      "bindings/api_binding_hooks_test_delegate.cc",
-      "bindings/api_binding_hooks_test_delegate.h",
-      "bindings/api_binding_js_util_unittest.cc",
-      "bindings/api_binding_unittest.cc",
-      "bindings/api_bindings_system_unittest.cc",
-      "bindings/api_bindings_system_unittest.h",
-      "bindings/api_event_handler_unittest.cc",
-      "bindings/api_event_listeners_unittest.cc",
-      "bindings/api_invocation_errors_unittest.cc",
-      "bindings/api_last_error_unittest.cc",
-      "bindings/api_request_handler_unittest.cc",
-      "bindings/api_response_validator_unittest.cc",
-      "bindings/api_signature_unittest.cc",
-      "bindings/argument_spec_builder.cc",
-      "bindings/argument_spec_builder.h",
-      "bindings/argument_spec_unittest.cc",
-      "bindings/binding_access_checker_unittest.cc",
       "bindings/declarative_event_unittest.cc",
-      "bindings/event_emitter_unittest.cc",
-      "bindings/exception_handler_unittest.cc",
-      "bindings/listener_tracker_unittest.cc",
-      "bindings/returns_async_builder.cc",
-      "bindings/returns_async_builder.h",
-      "extension_localization_throttle_unittest.cc",
-      "extension_throttle_simulation_unittest.cc",
-      "extension_throttle_test_support.cc",
-      "extension_throttle_test_support.h",
-      "extension_throttle_unittest.cc",
-      "feature_cache_unittest.cc",
-      "gc_callback_unittest.cc",
-      "module_system_test.cc",
-      "module_system_test.h",
-      "module_system_unittest.cc",
       "native_extension_bindings_system_unittest.cc",
-      "safe_builtins_unittest.cc",
-      "scoped_web_frame.cc",
-      "scoped_web_frame.h",
-      "script_context_set_unittest.cc",
       "storage_area_unittest.cc",
-      "utils_unittest.cc",
-    ]
-
-    deps = [
-      ":renderer",
-      ":unit_test_support",
-      "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//components/crx_file:crx_file",
-      "//content/test:test_support",
-      "//extensions:extensions_renderer_resources",
-      "//extensions:test_support",
-      "//extensions/buildflags",
-      "//extensions/common",
-      "//gin",
-      "//gin:gin_test",
-      "//ipc:test_support",
-      "//services/network:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/blink/public:blink",
-      "//ui/base",
     ]
   }
+}
 
+if (enable_extensions) {
+  # Browser tests are not currently supported in desktop-android builds.
   source_set("browser_tests") {
     testonly = true
     sources = [ "script_context_browsertest.cc" ]

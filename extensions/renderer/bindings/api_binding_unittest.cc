@@ -747,7 +747,8 @@ TEST_F(APIBindingUnittest, TestProperties) {
       "  'notLinuxOrLacros': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
-      "    'platforms': ['win', 'mac', 'chromeos', 'fuchsia']"
+      "    'platforms': ["
+      "       'win', 'mac', 'chromeos', 'fuchsia', 'desktop_android']"
       "  }"
       "}");
   InitializeBinding();
