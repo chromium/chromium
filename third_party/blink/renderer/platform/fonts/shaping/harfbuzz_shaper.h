@@ -157,6 +157,8 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const BufferSlice&,
                     ShapeResult*) const;
 
+  void CheckTextLen(unsigned start, unsigned length) const;
+
   const String text_;
   EmojiMetricsCallback emoji_metrics_reporter_for_testing_;
 };
