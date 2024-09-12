@@ -140,7 +140,8 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
       .SetProperty(views::kMarginsKey, kAssignmentLabelsMargin)
       .SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+          views::FlexSpecification(views::BoxLayout::Orientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
       .AddChild(views::Builder<views::Label>()
                     .SetText(base::UTF8ToUTF16(assignment->course_work_title))
