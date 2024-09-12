@@ -49,6 +49,27 @@ public abstract class LaunchCauseMetrics
 
     private static ApplicationStatus.ActivityStateListener sAppActivityListener;
 
+    static {
+        doStaticInit();
+    }
+
+    private static void doStaticInit() {
+        sAppActivityListener =
+                new ApplicationStatus.ActivityStateListener() {
+                    @Override
+                    public void onActivityStateChange(Activity activity, int newState) {
+                        if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
+                        if (newState == ActivityState.DESTROYED) {
+                            if (activity == sLastResumedActivity) sLastResumedActivity = null;
+                        }
+                    }
+                };
+        ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
+        if (ApplicationStatus.getStateForApplication() == ApplicationState.HAS_RUNNING_ACTIVITIES) {
+            sLastResumedActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+        }
+    }
+
     // State pertaining to the current launch, reset when Chrome is backgrounded,
     // and after computing LaunchCause.
     private static class PerLaunchState {
@@ -123,23 +144,6 @@ public abstract class LaunchCauseMetrics
      */
     public LaunchCauseMetrics(final Activity activity) {
         mActivity = activity;
-        if (sAppActivityListener == null) {
-            sAppActivityListener =
-                    new ApplicationStatus.ActivityStateListener() {
-                        @Override
-                        public void onActivityStateChange(Activity activity, int newState) {
-                            if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
-                            if (newState == ActivityState.DESTROYED) {
-                                if (activity == sLastResumedActivity) sLastResumedActivity = null;
-                            }
-                        }
-                    };
-            ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
-            if (ApplicationStatus.getStateForApplication()
-                    == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-                sLastResumedActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            }
-        }
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, activity);
     }
@@ -295,6 +299,7 @@ public abstract class LaunchCauseMetrics
             sAppActivityListener = null;
         }
         sLastResumedActivity = null;
+        doStaticInit();
     }
 
     @CheckDiscard("")
