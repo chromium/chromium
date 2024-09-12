@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -21,44 +22,50 @@ constexpr float kEpsilon = 0.01f;
 
 namespace {
 
-inline char FoldAsciiChar(char c) {
-  return (c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c;
-}
-
-// Returns occurrence count of `query_term` in `passage`, ranging from zero up
-// to `max_count` inclusive; but if `max_count` is zero then all occurrences are
-// counted.  The `query_term` is already-folded ASCII, and `passage` is pure
-// ASCII, so it can be folded efficiently during search.  Note: This can be
-// simplified to gain performance boost if we do text cleaning and folding of
-// passages in advance. Doing all terms at once with tokenization would be even
-// faster, but there's a tradeoff between performance and flexibility.
-// TODO(b/363086589): Optimize to finish all terms for all passages.
-size_t CountTermInPassage(std::string_view query_term,
-                          std::string_view passage,
-                          size_t max_count) {
-  DCHECK(base::IsStringASCII(query_term));
-  DCHECK_EQ(base::ToLowerASCII(query_term), query_term);
+// Increases occurrence counts for each element of `query_terms` as they are
+// found in `passage`, ranging from zero up to `max_count` inclusive. The
+// `term_counts` vector is modified while counting, corresponding 1:1 with the
+// terms, so its size must exactly match that of `query_terms`. Each term is
+// already-folded ASCII, and `passage` is pure ASCII, so it can be folded
+// efficiently during search.  Note: This can be simplified to gain performance
+// boost if we do text cleaning and folding of passages in advance.
+void CountTermsInPassage(std::vector<size_t>& term_counts,
+                         const std::vector<std::string>& query_terms,
+                         const std::string_view passage,
+                         const size_t max_count) {
+  DCHECK_EQ(term_counts.size(), query_terms.size());
   DCHECK(base::IsStringASCII(passage));
-  DCHECK(!query_term.empty());
-  size_t count = 0;
-  for (size_t passage_index = 0;
-       passage_index + query_term.size() - 1 < passage.size();
-       passage_index++) {
-    size_t term_index;
-    for (term_index = 0; term_index < query_term.size(); term_index++) {
-      char c = FoldAsciiChar(passage[passage_index + term_index]);
-      if (query_term[term_index] != c) {
-        break;
+  DCHECK(std::ranges::all_of(
+      query_terms, [](std::string_view term) { return !term.empty(); }));
+  DCHECK(std::ranges::all_of(query_terms, [](std::string_view term) {
+    return base::IsStringASCII(term);
+  }));
+  DCHECK(std::ranges::all_of(query_terms, [](std::string_view term) {
+    return base::ToLowerASCII(term) == term;
+  }));
+
+  base::StringViewTokenizer tokenizer(passage, ",;. ");
+  while (tokenizer.GetNext()) {
+    const std::string_view token = tokenizer.token();
+    for (size_t term_index = 0; term_index < query_terms.size(); term_index++) {
+      if (term_counts[term_index] >= max_count) {
+        continue;
       }
-    }
-    if (term_index == query_term.size()) {
-      count++;
-      if (count == max_count) {
-        break;
+      const std::string_view query_term = query_terms[term_index];
+      if (query_term.size() != token.size()) {
+        continue;
+      }
+      size_t char_index;
+      for (char_index = 0; char_index < token.size(); char_index++) {
+        if (query_term[char_index] != base::ToLowerASCII(token[char_index])) {
+          break;
+        }
+      }
+      if (char_index == token.size()) {
+        term_counts[term_index]++;
       }
     }
   }
-  return count;
 }
 
 }  // namespace
@@ -177,15 +184,8 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
       // Since the ASCII check above processed the whole passage string, it is
       // likely ready in CPU cache. Scan text again to count terms in passage.
       base::ElapsedTimer timer;
-      for (size_t term_index = 0; term_index < search_params.query_terms.size();
-           term_index++) {
-        if (term_counts[term_index] >= search_params.word_match_limit) {
-          continue;
-        }
-        term_counts[term_index] += CountTermInPassage(
-            search_params.query_terms[term_index], passage,
-            search_params.word_match_limit - term_counts[term_index]);
-      }
+      CountTermsInPassage(term_counts, search_params.query_terms, passage,
+                          search_params.word_match_limit);
       search_info.passage_scanning_time += timer.Elapsed();
     }
 
@@ -194,10 +194,9 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
 
   // Calculate total boost from term counts across all passages.
   float word_match_boost = 0.0f;
-  for (size_t term_index = 0; term_index < search_params.query_terms.size();
-       term_index++) {
+  for (size_t term_count : term_counts) {
     float term_boost = search_params.word_match_score_boost_factor *
-                       term_counts[term_index] / search_params.word_match_limit;
+                       term_count / search_params.word_match_limit;
     // Boost factor is applied per term such that longer queries boost more.
     word_match_boost += term_boost;
   }
