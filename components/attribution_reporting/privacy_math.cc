@@ -219,8 +219,8 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
   if (specs.SingleSharedSpec()) {
     if (const base::CheckedNumeric<uint32_t> num_sequences =
             internal::GetNumberOfStarsAndBarsSequences(
-                /*num_stars=*/max_reports,
-                /*num_bars=*/specs.size() * num_windows);
+                /*num_stars=*/static_cast<uint32_t>(max_reports),
+                /*num_bars=*/static_cast<uint32_t>(specs.size() * num_windows));
         num_sequences.IsValid() &&
         num_sequences.ValueOrDie() <= g_max_trigger_state_cardinality) {
       return num_sequences.ValueOrDie();
@@ -336,10 +336,11 @@ bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
 
 namespace internal {
 
-base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k) {
-  CHECK_GE(n, 0);
-  CHECK_GE(k, 0);
-
+base::CheckedNumeric<uint32_t> BinomialCoefficient(
+    base::StrictNumeric<uint32_t> strict_n,
+    base::StrictNumeric<uint32_t> strict_k) {
+  uint32_t n = strict_n;
+  uint32_t k = strict_k;
   if (k > n) {
     return 0;
   }
@@ -350,7 +351,8 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k) {
   }
 
   // BinomialCoefficient(n, k) == BinomialCoefficient(n, n - k),
-  // So simplify if possible.
+  // So simplify if possible. Underflow not possible as we know k < n at this
+  // point.
   if (k > n - k) {
     k = n - k;
   }
@@ -364,7 +366,7 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k) {
   // remainder in the below algorithm. This immediately implies that
   // (n choose i) is fractional, which we know is not the case.
   base::CheckedNumeric<uint64_t> result = 1;
-  for (int i = 1; i <= k; i++) {
+  for (uint32_t i = 1; i <= k; i++) {
     uint32_t term = n - i + 1;
     base::CheckedNumeric<uint64_t> temp_result = result * term;
     DCHECK(!temp_result.IsValid() || (temp_result % i).ValueOrDie() == 0);
@@ -390,16 +392,16 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k) {
 //
 // We find this set via a simple greedy algorithm.
 // http://math0.wvstateu.edu/~baker/cs405/code/Combinadics.html
-std::vector<int> GetKCombinationAtIndex(
+std::vector<uint32_t> GetKCombinationAtIndex(
     base::StrictNumeric<uint32_t> combination_index,
-    int k) {
-  DCHECK_GE(k, 0);
+    base::StrictNumeric<uint32_t> strict_k) {
   // `k` can be no more than max number of event level reports per source (20).
-  DCHECK_LE(k, 20);
+  uint32_t k = strict_k;
+  DCHECK_LE(k, 20u);
 
-  std::vector<int> output_k_combination;
+  std::vector<uint32_t> output_k_combination;
   output_k_combination.reserve(k);
-  if (k == 0) {
+  if (k == 0u) {
     return output_k_combination;
   }
 
@@ -435,7 +437,7 @@ std::vector<int> GetKCombinationAtIndex(
   // We know from the k-combination definition, all subsequent values will be
   // strictly decreasing. Find them all by decrementing `candidate`.
   // Use the previous binomial coefficient to compute the next one.
-  int current_k = k;
+  uint32_t current_k = k;
   while (true) {
     // The optimized code below maintains this loop invariant.
     DCHECK(binomial_coefficient ==
@@ -489,14 +491,17 @@ GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
   return reports;
 }
 
-base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(int num_stars,
-                                                                int num_bars) {
-  return BinomialCoefficient(num_stars + num_bars, num_stars);
+base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars) {
+  return BinomialCoefficient(
+      static_cast<uint32_t>(num_stars) + static_cast<uint32_t>(num_bars),
+      num_stars);
 }
 
-base::expected<std::vector<int>, absl::monostate> GetStarIndices(
-    int num_stars,
-    int num_bars,
+base::expected<std::vector<uint32_t>, absl::monostate> GetStarIndices(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars,
     base::StrictNumeric<uint32_t> sequence_index) {
   const base::CheckedNumeric<uint32_t> num_sequences =
       GetNumberOfStarsAndBarsSequences(num_stars, num_bars);
@@ -508,11 +513,11 @@ base::expected<std::vector<int>, absl::monostate> GetStarIndices(
   return GetKCombinationAtIndex(sequence_index, num_stars);
 }
 
-std::vector<int> GetBarsPrecedingEachStar(std::vector<int> out) {
+std::vector<uint32_t> GetBarsPrecedingEachStar(std::vector<uint32_t> out) {
   DCHECK(base::ranges::is_sorted(out, std::greater{}));
 
   for (size_t i = 0u; i < out.size(); i++) {
-    int star_index = out[i];
+    uint32_t star_index = out[i];
 
     // There are `star_index` prior positions in the sequence, and `i` prior
     // stars, so there are `star_index` - `i` prior bars.
@@ -552,14 +557,16 @@ double ComputeChannelCapacity(
 
 double ComputeChannelCapacityScopes(
     const base::StrictNumeric<uint32_t> num_states,
-    const uint32_t max_event_states,
-    const uint32_t attribution_scope_limit) {
+    const base::StrictNumeric<uint32_t> max_event_states,
+    const base::StrictNumeric<uint32_t> attribution_scope_limit) {
   CHECK(num_states > 0u);
-  CHECK_GT(attribution_scope_limit, 0u);
+  CHECK(attribution_scope_limit > 0u);
 
   double num_states_double = static_cast<double>(num_states);
   double total_states =
-      num_states_double + max_event_states * (attribution_scope_limit - 1);
+      num_states_double +
+      static_cast<uint32_t>(max_event_states) *
+          (static_cast<uint32_t>(attribution_scope_limit) - 1);
 
   return log2(total_states);
 }
@@ -575,17 +582,19 @@ GetFakeReportsForSequenceIndex(
   const int max_reports = specs.max_event_level_reports();
 
   ASSIGN_OR_RETURN(
-      const std::vector<int> stars,
+      const std::vector<uint32_t> stars,
       GetStarIndices(
-          /*num_stars=*/max_reports,
-          /*num_bars=*/trigger_data_cardinality *
-              single_spec->event_report_windows().end_times().size(),
+          /*num_stars=*/static_cast<uint32_t>(max_reports),
+          /*num_bars=*/
+          static_cast<uint32_t>(
+              trigger_data_cardinality *
+              single_spec->event_report_windows().end_times().size()),
           /*sequence_index=*/random_stars_and_bars_sequence_index),
       [](absl::monostate) {
         return RandomizedResponseError::kExceedsTriggerStateCardinalityLimit;
       });
 
-  const std::vector<int> bars_preceding_each_star =
+  const std::vector<uint32_t> bars_preceding_each_star =
       GetBarsPrecedingEachStar(stars);
 
   std::vector<FakeEventLevelReport> fake_reports;
@@ -595,7 +604,7 @@ GetFakeReportsForSequenceIndex(
   // w = the number of reporting windows
   // c = the maximum number of reports for a source
   // d = the trigger data cardinality for a source
-  for (int num_bars : bars_preceding_each_star) {
+  for (uint32_t num_bars : bars_preceding_each_star) {
     if (num_bars == 0) {
       continue;
     }
@@ -603,7 +612,6 @@ GetFakeReportsForSequenceIndex(
     auto result = std::div(num_bars - 1, trigger_data_cardinality);
 
     const int trigger_data_index = result.rem;
-    DCHECK_GE(trigger_data_index, 0);
     DCHECK_LT(trigger_data_index, trigger_data_cardinality);
 
     fake_reports.push_back({

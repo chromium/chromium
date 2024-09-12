@@ -117,7 +117,9 @@ namespace internal {
 // Note: large values of `n` and `k` may overflow, which will cause the returned
 // `CheckedNumeric` to be invalid.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k);
+base::CheckedNumeric<uint32_t> BinomialCoefficient(
+    base::StrictNumeric<uint32_t> n,
+    base::StrictNumeric<uint32_t> k);
 
 // Returns the k-combination associated with the number `combination_index`. In
 // other words, returns the combination of `k` integers uniquely indexed by
@@ -126,24 +128,25 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k);
 //
 // The returned vector is guaranteed to have size `k`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetKCombinationAtIndex(
+std::vector<uint32_t> GetKCombinationAtIndex(
     base::StrictNumeric<uint32_t> combination_index,
-    int k);
+    base::StrictNumeric<uint32_t> k);
 
 // Returns the number of possible sequences of "stars and bars" sequences
 // https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics),
 // which is equivalent to (num_stars + num_bars choose num_stars).
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(int num_stars,
-                                                                int num_bars);
+base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars);
 
 // Returns a vector of the indices of every star in the stars and bars sequence
 // indexed by `sequence_index`. The indexing technique uses the k-combination
 // utility documented above.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::vector<int>, absl::monostate> GetStarIndices(
-    int num_stars,
-    int num_bars,
+base::expected<std::vector<uint32_t>, absl::monostate> GetStarIndices(
+    base::StrictNumeric<uint32_t> num_stars,
+    base::StrictNumeric<uint32_t> num_bars,
     base::StrictNumeric<uint32_t> sequence_index);
 
 // From a vector with the index of every star in a stars and bars sequence,
@@ -151,7 +154,8 @@ base::expected<std::vector<int>, absl::monostate> GetStarIndices(
 // it. Assumes `star_indices` is in descending order. Output is also sorted
 // in descending order.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetBarsPrecedingEachStar(std::vector<int> star_indices);
+std::vector<uint32_t> GetBarsPrecedingEachStar(
+    std::vector<uint32_t> star_indices);
 
 // Computes the binary entropy function:
 // https://en.wikipedia.org/wiki/Binary_entropy_function
@@ -169,8 +173,8 @@ double ComputeChannelCapacity(base::StrictNumeric<uint32_t> num_states_strict,
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 double ComputeChannelCapacityScopes(
     base::StrictNumeric<uint32_t> num_states_strict,
-    uint32_t max_event_states,
-    uint32_t attribution_scope_limit);
+    base::StrictNumeric<uint32_t> max_event_states,
+    base::StrictNumeric<uint32_t> attribution_scope_limit);
 
 // Generates fake reports from the "stars and bars" sequence index of a
 // possible output of the API. This output is determined by the following

@@ -39,9 +39,9 @@ using ::attribution_reporting::mojom::SourceType;
 TEST(PrivacyMathTest, BinomialCoefficient) {
   // Test cases generated via a python program using scipy.special.comb.
   struct {
-    int n;
-    int k;
-    int expected;
+    uint32_t n;
+    uint32_t k;
+    uint32_t expected;
   } kTestCases[]{
       // All cases for n and k in [0, 10).
       // clang-format off
@@ -83,8 +83,8 @@ TEST(PrivacyMathTest, GetKCombinationAtIndex) {
   // https://planetcalc.com/8592/
   struct {
     uint32_t index;
-    int k;
-    std::vector<int> expected;
+    uint32_t k;
+    std::vector<uint32_t> expected;
   } kTestCases[]{
       {0, 0, {}},
 
@@ -127,8 +127,8 @@ TEST(PrivacyMathTest, GetKCombinationAtIndex) {
 // combinations uniquely indexed by the given index, i.e. there are never any
 // repeats.
 TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
-  for (int k = 1; k < 5; k++) {
-    std::set<std::vector<int>> seen_combinations;
+  for (uint32_t k = 1u; k < 5u; k++) {
+    std::set<std::vector<uint32_t>> seen_combinations;
     for (uint32_t index = 0; index < 3000; index++) {
       const auto& combination = internal::GetKCombinationAtIndex(index, k);
       EXPECT_TRUE(seen_combinations.insert(combination).second)
@@ -141,11 +141,11 @@ TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
 // a_k > a_{k-1} > ... > a_2 > a_1 >= 0 such that
 // `index` = \sum_{i=1}^k {a_i}\choose{i}
 TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
-  for (int k = 1; k < 5; k++) {
+  for (uint32_t k = 1; k < 5; k++) {
     for (uint32_t index = 0; index < 3000; index++) {
       const auto& combination = internal::GetKCombinationAtIndex(index, k);
       base::CheckedNumeric<uint32_t> sum = 0;
-      for (int i = 0; i < k; i++) {
+      for (uint32_t i = 0; i < k; i++) {
         sum += internal::BinomialCoefficient((combination)[i], k - i);
       }
       ASSERT_TRUE(sum.IsValid());
@@ -155,23 +155,23 @@ TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
 }
 
 TEST(PrivacyMathTest, GetNumberOfStarsAndBarsSequences) {
-  auto case_1 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/1,
-                                                           /*num_bars=*/2);
+  auto case_1 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/1u,
+                                                           /*num_bars=*/2u);
   ASSERT_TRUE(case_1.IsValid());
   EXPECT_EQ(3, case_1.ValueOrDie());
 
-  auto case_2 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/3,
-                                                           /*num_bars=*/24);
+  auto case_2 = internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/3u,
+                                                           /*num_bars=*/24u);
   ASSERT_TRUE(case_2.IsValid());
   EXPECT_EQ(2925, case_2.ValueOrDie());
 }
 
 TEST(PrivacyMathTest, GetStarIndices) {
   const struct {
-    int num_stars;
-    int num_bars;
+    uint32_t num_stars;
+    uint32_t num_bars;
     uint32_t sequence_index;
-    std::vector<int> expected;
+    std::vector<uint32_t> expected;
   } kTestCases[] = {
       {1, 2, 2, {2}},
       {3, 24, 23, {6, 3, 0}},
@@ -186,8 +186,8 @@ TEST(PrivacyMathTest, GetStarIndices) {
 
 TEST(PrivacyMathTest, GetBarsPrecedingEachStar) {
   const struct {
-    std::vector<int> star_indices;
-    std::vector<int> expected;
+    std::vector<uint32_t> star_indices;
+    std::vector<uint32_t> expected;
   } kTestCases[] = {
       {{2}, {2}},
       {{6, 3, 0}, {4, 2, 0}},
