@@ -581,6 +581,8 @@ class WPTAdapter:
 
     def run_tests(self) -> int:
         exit_code = 0
+        if self.options.build and (exit_code := self.port.check_build()):
+            return exit_code
         try:
             with self.test_env() as runner_options:
                 run = _load_entry_point()

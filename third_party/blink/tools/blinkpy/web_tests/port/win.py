@@ -167,9 +167,8 @@ class WinPort(base.Port):
                 env[key] = value
         return env
 
-    def check_build(self, needs_http, printer):
-        result = super(WinPort, self).check_build(needs_http, printer)
-
+    def check_build(self, needs_http: bool = False) -> int:
+        result = super().check_build(needs_http)
         if result:
             _log.error('For complete Windows build requirements, please see:')
             _log.error('')

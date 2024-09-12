@@ -582,7 +582,7 @@ class Port(object):
             return False
         return True
 
-    def check_build(self, needs_http, printer):
+    def check_build(self, needs_http: bool = False) -> int:
         if not self._check_file_exists(self.path_to_driver(), 'test driver'):
             return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
@@ -600,6 +600,9 @@ class Port(object):
         if needs_http and not self.check_httpd():
             return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
+        # TODO(crbug.com/366033834): For wptrunner, check that:
+        #  1. `chromedriver` exists.
+        #  2. `target_os` in `args.gn` matches the port that's executing tests.
         return exit_codes.OK_EXIT_STATUS
 
     def check_sys_deps(self):

@@ -389,8 +389,7 @@ class Manager(object):
     def _set_up_run(self, test_names):
         self._printer.write_update('Checking build ...')
         if self._options.build:
-            exit_code = self._port.check_build(
-                self._needs_servers(test_names), self._printer)
+            exit_code = self._port.check_build(self._needs_servers(test_names))
             if exit_code:
                 _log.error('Build check failed')
                 return exit_code
