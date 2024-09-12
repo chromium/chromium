@@ -1773,6 +1773,9 @@ extern const char kPowerBookmarkBackendDescription[];
 extern const char kSpeculationRulesPrerenderingTargetHintName[];
 extern const char kSpeculationRulesPrerenderingTargetHintDescription[];
 
+extern const char kSubframeProcessReuseThresholds[];
+extern const char kSubframeProcessReuseThresholdsDescription[];
+
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 

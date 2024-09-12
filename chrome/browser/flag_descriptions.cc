@@ -3081,6 +3081,14 @@ const char kSpeculationRulesPrerenderingTargetHintName[] =
 const char kSpeculationRulesPrerenderingTargetHintDescription[] =
     "Enable target_hint param on Speculation Rules API for prerendering.";
 
+const char kSubframeProcessReuseThresholds[] =
+    "Subframe process reuse thresholds";
+const char kSubframeProcessReuseThresholdsDescription[] =
+    "Enable thresholds for subframe process reuse. When "
+    "out-of-process iframes attempt to reuse compatible processes from "
+    "unrelated tabs, process reuse will only be allowed if the process stays "
+    "below predefined thresholds (e.g., below a certain memory limit).";
+
 const char kSupportSearchSuggestionForPrerender2Name[] =
     "Prerender search suggestions";
 const char kSupportSearchSuggestionForPrerender2Description[] =

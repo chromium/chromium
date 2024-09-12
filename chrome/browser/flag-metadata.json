@@ -8429,6 +8429,15 @@
     "expiry_milestone": 93
   },
   {
+    "name": "subframe-process-reuse-thresholds",
+    "owners": [
+      "alexmos@google.com",
+      "creis@google.com",
+      "wjmaclean@google.com"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "summarization-api-for-gemini-nano",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
     "expiry_milestone": 140
