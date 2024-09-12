@@ -35,8 +35,7 @@
   _mediator = [[AccountPickerSelectionScreenMediator alloc]
       initWithSelectedIdentity:selectedIdentity
          accountManagerService:ChromeAccountManagerServiceFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                   GetForProfile(self.browser->GetProfile())];
 
   _accountListViewController =
       [[AccountPickerSelectionScreenViewController alloc] init];
@@ -75,8 +74,8 @@
             (AccountPickerSelectionScreenTableViewController*)viewController
                  didSelectIdentityWithGaiaID:(NSString*)gaiaID {
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          self.browser->GetProfile());
 
   id<SystemIdentity> identity = accountManagerService->GetIdentityWithGaiaID(
       base::SysNSStringToUTF8(gaiaID));

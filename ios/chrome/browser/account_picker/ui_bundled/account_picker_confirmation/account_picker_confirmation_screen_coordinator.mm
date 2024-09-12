@@ -45,12 +45,12 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   _mediator = [[AccountPickerConfirmationScreenMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(browserState)
+                                        GetForProfile(profile)
                     identityManager:IdentityManagerFactory::GetForProfile(
-                                        browserState)
+                                        profile)
                       configuration:_configuration];
   _confirmationViewController =
       [[AccountPickerConfirmationScreenViewController alloc]
