@@ -48,7 +48,7 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   if (!length)
     return string.IsNull() ? string : g_empty_atom.GetString();
 
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+  return WTF::VisitCharacters(string, [&](auto chars) {
     unsigned num_leading_spaces = 0;
     unsigned num_trailing_spaces = 0;
 
@@ -83,10 +83,11 @@ Vector<String> SplitOnASCIIWhitespace(const String& input) {
   if (!length) {
     return output;
   }
-  WTF::VisitCharacters(input, [&](const auto* cursor, unsigned length) {
+  WTF::VisitCharacters(input, [&](auto chars) {
+    const auto* cursor = chars.data();
     using CharacterType = std::decay_t<decltype(*cursor)>;
     const CharacterType* string_start = cursor;
-    const CharacterType* string_end = cursor + length;
+    const CharacterType* string_end = cursor + chars.size();
     SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
     while (cursor < string_end) {
       const CharacterType* token_start = cursor;
@@ -188,10 +189,10 @@ bool ParseHTMLInteger(const String& input, int& value) {
   if (length == 0)
     return false;
 
-  return WTF::VisitCharacters(input, [&](const auto* position,
-                                         unsigned length) {
+  return WTF::VisitCharacters(input, [&](auto chars) {
+    const auto* position = chars.data();
     using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + length;
+    const auto* end = position + chars.size();
 
     // Step 4
     SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
@@ -222,9 +223,10 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
     return WTF::NumberParsingResult::kError;
 
   return WTF::VisitCharacters(
-      input, [&](const auto* position, unsigned length) {
+      input, [&](auto chars) {
+        const auto* position = chars.data();
         using CharacterType = std::decay_t<decltype(*position)>;
-        const auto* end = position + length;
+        const auto* end = position + chars.size();
 
         // This function is an implementation of the following algorithm:
         // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
@@ -307,9 +309,10 @@ Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
   if (!length)
     return numbers;
 
-  WTF::VisitCharacters(input, [&](const auto* position, unsigned length) {
+  WTF::VisitCharacters(input, [&](auto chars) {
+    const auto* position = chars.data();
     using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + length;
+    const auto* end = position + chars.size();
 
     SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
 

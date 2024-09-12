@@ -126,9 +126,9 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
       {'\r', carriage_return_reference, kEntityCarriageReturn},
   };
 
-  WTF::VisitCharacters(source, [&](const auto* chars, unsigned) {
+  WTF::VisitCharacters(source, [&](auto chars) {
     AppendCharactersReplacingEntitiesInternal(
-        result, source, chars, source.length(), kEntityMaps,
+        result, source, chars.data(), source.length(), kEntityMaps,
         std::size(kEntityMaps), entity_mask);
   });
 }

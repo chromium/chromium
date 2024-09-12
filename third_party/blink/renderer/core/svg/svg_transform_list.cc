@@ -198,9 +198,9 @@ SVGTransformList::SVGTransformList(SVGTransformType transform_type,
     return;
   TransformArguments arguments;
   bool success =
-      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-        const auto* ptr = chars;
-        const auto* end = chars + length;
+      WTF::VisitCharacters(value, [&](auto chars) {
+        const auto* ptr = chars.data();
+        const auto* end = ptr + chars.size();
         SVGParseStatus status =
             ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
         return status == SVGParseStatus::kNoError &&
@@ -403,8 +403,9 @@ bool SVGTransformList::Parse(const LChar*& ptr, const LChar* end) {
 SVGTransformType ParseTransformType(const String& string) {
   if (string.empty())
     return SVGTransformType::kUnknown;
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return ParseAndSkipTransformType(chars, chars + length);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* start = chars.data();
+    return ParseAndSkipTransformType(start, start + chars.size());
   });
 }
 
@@ -413,10 +414,10 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
     Clear();
     return SVGParseStatus::kNoError;
   }
-  SVGParsingError parse_error =
-      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-        return ParseInternal(chars, chars + length);
-      });
+  SVGParsingError parse_error = WTF::VisitCharacters(value, [&](auto chars) {
+    const auto* start = chars.data();
+    return ParseInternal(start, start + chars.size());
+  });
   if (parse_error != SVGParseStatus::kNoError)
     Clear();
   return parse_error;

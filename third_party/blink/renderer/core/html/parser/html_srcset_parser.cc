@@ -282,10 +282,9 @@ static bool ParseDescriptors(const String& attribute,
                              DescriptorParsingResult& result,
                              Document* document) {
   // FIXME: See if StringView can't be extended to replace DescriptorToken here.
-  return WTF::VisitCharacters(
-      attribute, [&](const auto* chars, unsigned length) {
-        return ParseDescriptors(chars, descriptors, result, document);
-      });
+  return WTF::VisitCharacters(attribute, [&](auto chars) {
+    return ParseDescriptors(chars.data(), descriptors, result, document);
+  });
 }
 
 // http://picture.responsiveimages.org/#parse-srcset-attr

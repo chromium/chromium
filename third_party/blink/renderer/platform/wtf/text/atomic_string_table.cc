@@ -276,8 +276,9 @@ struct LowercaseLookupTranslator {
     if (bucket->Bytes() == query->Bytes() &&
         bucket->Is8Bit() == query->Is8Bit())
       return query->IsLowerASCII();
-    return WTF::VisitCharacters(*bucket, [&](const auto* bch, wtf_size_t) {
-      return WTF::VisitCharacters(*query, [&](const auto* qch, wtf_size_t len) {
+    return WTF::VisitCharacters(*bucket, [&](auto bch) {
+      return WTF::VisitCharacters(*query, [&](auto qch) {
+        wtf_size_t len = query->length();
         for (wtf_size_t i = 0; i < len; ++i) {
           if (bch[i] != ToASCIILower(qch[i]))
             return false;

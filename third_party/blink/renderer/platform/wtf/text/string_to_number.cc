@@ -215,10 +215,9 @@ int CharactersToInt(const UChar* data,
 int CharactersToInt(const StringView& string,
                     NumberParsingOptions options,
                     bool* ok) {
-  return WTF::VisitCharacters(
-      string, [&](const auto* chars, wtf_size_t length) {
-        return CharactersToInt(chars, length, options, ok);
-      });
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    return CharactersToInt(chars.data(), chars.size(), options, ok);
+  });
 }
 
 unsigned CharactersToUInt(const LChar* data,

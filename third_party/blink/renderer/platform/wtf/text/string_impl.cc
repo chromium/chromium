@@ -1863,10 +1863,10 @@ int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
                                      const StringImpl* string2) {
   if (!string2)
     return string1 && string1->length() > 0 ? 1 : 0;
-  return VisitCharacters(
-      *string2, [string1](const auto* chars, wtf_size_t length) {
-        return CodeUnitCompareIgnoringASCIICase(string1, chars, length);
-      });
+  return VisitCharacters(*string2, [string1](auto chars) {
+    return CodeUnitCompareIgnoringASCIICase(string1, chars.data(),
+                                            chars.size());
+  });
 }
 
 }  // namespace WTF

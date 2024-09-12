@@ -91,6 +91,8 @@ class WTF_EXPORT AtomicString {
   const LChar* Characters8() const { return string_.Characters8(); }
   const UChar* Characters16() const { return string_.Characters16(); }
   wtf_size_t length() const { return string_.length(); }
+  base::span<const LChar> Span8() const { return string_.Span8(); }
+  base::span<const UChar> Span16() const { return string_.Span16(); }
 
   UChar operator[](wtf_size_t i) const { return string_[i]; }
 
