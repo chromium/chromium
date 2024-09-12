@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_rect_cutout_path_builder.h"
 #include "base/i18n/rtl.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -27,6 +28,10 @@ constexpr int kSinglePlaylistViewWidth = 72;
 constexpr int kIconSize = 20;
 constexpr int kMediaActionIconSpacing = 6;
 constexpr int kSelectedCurvycutoutSpacing = 4;
+
+// This is the alpha value for the default image that is equivalent to 0.06
+// opacity.
+constexpr U8CPU kDefaultImageAlpha = 15;
 
 std::unique_ptr<lottie::Animation> GetEqualizerAnimation() {
   std::optional<std::vector<uint8_t>> lottie_data =
@@ -139,6 +144,13 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
 }
 
 void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    is_default_image_ = true;
+    UpdateToDefaultImage();
+    return;
+  }
+
+  is_default_image_ = false;
   image_view_->SetImage(image);
 }
 
@@ -146,6 +158,33 @@ void PlaylistImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
   // Set the tooltip text for `image_view_` to show the tooltip when hovering on
   // it.
   image_view_->SetTooltipText(tooltip_text);
+}
+
+void PlaylistImageButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  if (is_default_image_) {
+    UpdateToDefaultImage();
+  }
+}
+
+void PlaylistImageButton::UpdateToDefaultImage() {
+  CHECK(is_default_image_);
+
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  if (!image_view_ || !color_provider) {
+    return;
+  }
+
+  // Construct and use the default image.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth,
+                        false);
+  SkCanvas canvas(bitmap);
+  canvas.drawColor(
+      SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysOnSurface),
+                  kDefaultImageAlpha));
+  image_view_->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(std::move(bitmap)));
 }
 
 BEGIN_METADATA(PlaylistImageButton)
