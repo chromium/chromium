@@ -845,4 +845,135 @@ TEST_F(LensOverlayQueryControllerTest,
             second_analytics_id);
 }
 
+TEST_F(LensOverlayQueryControllerTest,
+       SendFullPageTranslateQuery_UpdatesRequestIdCorrectly) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Check initial fetch objects request id is correct.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  auto initial_sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(initial_sent_object_request.request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  ASSERT_EQ(
+      initial_sent_object_request.request_context().request_id().sequence_id(),
+      1);
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendMultimodalRequest(
+      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      additional_search_query_params, std::nullopt);
+  ASSERT_TRUE(interaction_data_response_future.Wait());
+
+  // Verify the interaction request id sequence was incremented.
+  auto initial_sent_interaction_request =
+      query_controller.sent_interaction_request_;
+  ASSERT_EQ(initial_sent_interaction_request.request_context()
+                .request_id()
+                .sequence_id(),
+            2);
+  std::string interaction_analytics_id =
+      GetAnalyticsIdFromUrl(url_response_future.Get().url());
+  ASSERT_NE(interaction_analytics_id,
+            initial_sent_object_request.request_context()
+                .request_id()
+                .analytics_id());
+
+  // Now issue a fullpage translate request.
+  full_image_response_future.Clear();
+  query_controller.SendFullPageTranslateQuery("en", "de");
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Check that the image sequence id and sequence id were incremented by
+  // the fullpage translate request, and a new analytics id was generated.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  auto second_sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(second_sent_object_request.request_context()
+                .request_id()
+                .image_sequence_id(),
+            2);
+  ASSERT_NE(
+      second_sent_object_request.request_context().request_id().analytics_id(),
+      interaction_analytics_id);
+  // Interactions increment the sequence twice (once for Lens requests and once
+  // in the search url) so the sequence id should now be 4.
+  ASSERT_EQ(
+      second_sent_object_request.request_context().request_id().sequence_id(),
+      4);
+
+  // Now change the languages.
+  full_image_response_future.Clear();
+  query_controller.SendFullPageTranslateQuery("en", "es");
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Check that the image sequence id and sequence id were incremented by
+  // the fullpage translate request, and a new analytics id was generated.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  auto third_sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(third_sent_object_request.request_context()
+                .request_id()
+                .image_sequence_id(),
+            3);
+  ASSERT_NE(
+      third_sent_object_request.request_context().request_id().analytics_id(),
+      second_sent_object_request.request_context().request_id().analytics_id());
+  ASSERT_EQ(
+      third_sent_object_request.request_context().request_id().sequence_id(),
+      5);
+
+  // Now disable translate mode.
+  full_image_response_future.Clear();
+  query_controller.SendEndTranslateModeQuery();
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Check that the image sequence id and sequence id were incremented by
+  // the end translate mode request.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  auto fourth_sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(fourth_sent_object_request.request_context()
+                .request_id()
+                .image_sequence_id(),
+            4);
+  ASSERT_EQ(
+      fourth_sent_object_request.request_context().request_id().sequence_id(),
+      6);
+  ASSERT_NE(
+      fourth_sent_object_request.request_context().request_id().analytics_id(),
+      third_sent_object_request.request_context().request_id().analytics_id());
+
+  query_controller.EndQuery();
+}
+
 }  // namespace lens

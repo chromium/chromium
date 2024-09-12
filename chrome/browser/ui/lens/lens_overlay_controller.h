@@ -423,6 +423,9 @@ class LensOverlayController : public LensSearchboxClient,
       const std::string& source_language,
       const std::string& target_language);
 
+  // Testing function to end translate mode.
+  void IssueEndTranslateModeRequestForTesting();
+
   // Testing function to issue a searchbox request.
   void IssueSearchBoxRequestForTesting(
       const std::string& search_box_text,
@@ -775,6 +778,7 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTranslateFullPageRequest(
       const std::string& source_language,
       const std::string& target_language) override;
+  void IssueEndTranslateModeRequest() override;
   void IssueTranslateSelectionRequest(const std::string& text_query,
                                       const std::string& content_language,
                                       int selection_start_index,

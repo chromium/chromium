@@ -399,6 +399,17 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
                                   /*is_error=*/false));
   }
 
+  void SendEndTranslateModeQuery() override {
+    Reset();
+    std::vector<lens::mojom::OverlayObjectPtr> test_objects;
+    test_objects.push_back(kTestOverlayObject->Clone());
+    lens::mojom::TextPtr text = kTestText->Clone();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(full_image_callback_, std::move(test_objects),
+                                  std::move(text),
+                                  /*is_error=*/false));
+  }
+
   void SetShouldReturnError(bool full_image_request_should_return_error) {
     full_image_request_should_return_error_ =
         full_image_request_should_return_error;
@@ -1375,13 +1386,29 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_objects_.empty());
 
-  auto* object =
+  auto* translate_object =
       fake_controller->fake_overlay_page_.last_received_objects_[0].get();
-  auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
-  EXPECT_TRUE(object);
-  EXPECT_TRUE(text);
-  EXPECT_TRUE(kTestOverlayObject->Equals(*object));
-  EXPECT_EQ(target, text->content_language);
+  auto* translated_text =
+      fake_controller->fake_overlay_page_.last_received_text_.get();
+  EXPECT_TRUE(translate_object);
+  EXPECT_TRUE(translated_text);
+  EXPECT_TRUE(kTestOverlayObject->Equals(*translate_object));
+  EXPECT_EQ(target, translated_text->content_language);
+
+  // Now disable translate mode.
+  controller->IssueEndTranslateModeRequestForTesting();
+
+  // Prevent flakiness by flushing the tasks.
+  fake_controller->FlushForTesting();
+
+  auto* non_translate_object =
+      fake_controller->fake_overlay_page_.last_received_objects_[0].get();
+  auto* non_translated_text =
+      fake_controller->fake_overlay_page_.last_received_text_.get();
+  EXPECT_TRUE(non_translate_object);
+  EXPECT_TRUE(non_translated_text);
+  EXPECT_TRUE(kTestOverlayObject->Equals(*non_translate_object));
+  EXPECT_EQ(kTestText->content_language, non_translated_text->content_language);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

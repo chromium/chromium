@@ -90,6 +90,10 @@ class LensOverlayQueryController {
   virtual void SendFullPageTranslateQuery(const std::string& source_language,
                                           const std::string& target_language);
 
+  // Sends a full image request with no translate options as a result of
+  // ending translate mode.
+  virtual void SendEndTranslateModeQuery();
+
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
   // the region out of the screenshot. This should be used to provide a higher

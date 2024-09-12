@@ -144,6 +144,11 @@ interface LensPageHandler {
   IssueTranslateFullPageRequest(
       string source_language, string target_language);
 
+  // When this method is called, the C++ coordinator issues another full image
+  // request with the auto filter, which is necessary to update the overlay
+  // state to the default non-translate mode.
+  IssueEndTranslateModeRequest();
+
   // When called, the C++ coordinator closes the lens search bubble. When the
   // user selects text or thumbnail on the WebUI overlay, the search bubble
   // must close.
