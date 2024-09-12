@@ -486,6 +486,12 @@ CanvasRotationInVertical CanvasRotationForRun(
 
 }  // namespace
 
+inline void HarfBuzzShaper::CheckTextLen(unsigned start,
+                                         unsigned length) const {
+  CHECK_LE(start, text_.length());
+  CHECK_LE(length, text_.length() - start);
+}
+
 void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
                                   const SimpleFontData* current_font,
                                   UScriptCode current_run_script,
@@ -697,7 +703,7 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
       break;
     }
 
-    CHECK_LE((it->start_index_ + it->num_characters_), text_.length());
+    CheckTextLen(it->start_index_, it->num_characters_);
     if (text_.Is8Bit()) {
       for (unsigned i = 0; i < it->num_characters_; i++) {
         const UChar hint_char = text_[it->start_index_ + i];
