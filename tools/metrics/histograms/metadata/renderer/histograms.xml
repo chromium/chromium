@@ -135,29 +135,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
-    units="ms" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    The latency improvement provided by predicting extra delegated ink points
-    when using the delegated ink trail API with SkiaRenderer in milliseconds.
-    The improvement is the difference between the timestamp of the final real
-    point and the final predicted point.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-</histogram>
-
 <histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
     enum="BooleanDirection" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
@@ -168,9 +145,8 @@ chromium-metrics-reviews@google.com.
     the real trajectory at the same prediction time. True means the direction is
     not the same (wrong direction).
 
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.WrongDirection since 02-26.
-    Will be reenabled in M95, after experimentation.
+    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -183,9 +159,8 @@ chromium-metrics-reviews@google.com.
     {Direction}shoot distance in pixels between a predicted point and the
     corresponding interpolated real point that occurred at the prediction time.
 
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.{Direction}Prediction since
-    02-26. Will be reenabled in M95, after experimentation.
+    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
+    be missing.
   </summary>
   <token key="Direction">
     <variant name="Over"/>
@@ -204,113 +179,9 @@ chromium-metrics-reviews@google.com.
     point and its corresponding interpolated real position that occurred at
     {Type} time.
 
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.{Type}Jitter since 02-26.
-    Will be reenabled in M95, after experimentation.
+    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
+    be missing.
   </summary>
-  <token key="Type">
-    <variant name="Prediction" summary="prediction"/>
-    <variant name="Visual" summary="frame"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
-    units="pixels" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Distance in pixels between a predicted point and the corresponding
-    interpolated real point that occurred at the prediction time.
-
-    The difference between {ScoreType} and Frame{ScoreType} is that the former
-    uses prediction time and the later uses frame time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
-    enum="BooleanDirection" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Whether the prediction is in the same direction as the real trajectory at
-    the same prediction time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
-    units="pixels" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Distance in pixels between a predicted point and the corresponding
-    interpolated real point that occurred at the prediction time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
-    units="pixels" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Euclidean distance in pixels between two successive variations of delegated
-    ink trail deltas which are the difference beween a predicted delegated ink
-    point and its corresponding interpolated real position that occurred at
-    {Type} time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
   <token key="Type">
     <variant name="Prediction" summary="prediction"/>
     <variant name="Visual" summary="frame"/>

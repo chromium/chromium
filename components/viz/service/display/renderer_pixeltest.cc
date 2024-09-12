@@ -6305,53 +6305,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkTest);
 
-// Test to confirm that predicted points are not drawn if prediction is not
-// enabled, since it is disabled by default.
-TEST_P(DelegatedInkTest, DrawTrailWithPredictionDisabled) {
-  // Send some DelegatedInkPoints, numbers arbitrary. Sending 4 points will
-  // cause prediction to be available.
-  const gfx::PointF kFirstPoint(20, 35);
-  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
-  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
-  CreateAndSendPointFromLastPoint(gfx::PointF(56, 92));
-  CreateAndSendPointFromLastPoint(gfx::PointF(101, 145));
-  CreateAndSendPointFromLastPoint(gfx::PointF(106, 170));
-
-  // Provide the metadata required to draw the trail, matching the first
-  // DelegatedInkPoint sent.
-  CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kCyan, kFirstTimestamp,
-                        gfx::RectF(0, 0, 200, 200));
-
-  base::FilePath expected_result = base::FilePath(
-      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png"));
-  if (is_skia_graphite()) {
-    expected_result = expected_result.InsertBeforeExtensionASCII(kGraphiteStr);
-  }
-
-  // Confirm that the trail was drawn without prediction.
-  EXPECT_TRUE(DrawAndTestTrail(expected_result));
-
-  // The metadata should have been cleared after drawing, so confirm that there
-  // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
-}
-
-class DelegatedInkWithPredictionTest : public DelegatedInkTest {
-  void SetUp() override {
-    EnablePrediction();
-    DelegatedInkTest::SetUp();
-  }
-
-  virtual void EnablePrediction() {
-    base::FieldTrialParams params;
-    params["predicted_points"] = ::features::kDraw1Point12Ms;
-    base::test::FeatureRefAndParams prediction_params = {
-        features::kDrawPredictedInkPoint, params};
-
-    feature_list_.Reset();
-    feature_list_.InitWithFeaturesAndParameters({prediction_params}, {});
-  }
-};
+class DelegatedInkWithPredictionTest : public DelegatedInkTest {};
 
 INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkWithPredictionTest,

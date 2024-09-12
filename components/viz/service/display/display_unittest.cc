@@ -1624,8 +1624,6 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     display_->ResetDisplayClientForTesting(&client_);
   }
 
-  void SetUp() override { EnablePrediction(); }
-
   void SetUpRenderers() {
     SetUpGpuDisplay(RendererSettings());
 
@@ -1636,16 +1634,6 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     ink_renderer_ = renderer.get();
     display_->renderer_for_testing()->SetDelegatedInkPointRendererSkiaForTest(
         std::move(renderer));
-  }
-
-  void EnablePrediction() {
-    base::FieldTrialParams params;
-    params["predicted_points"] = ::features::kDraw1Point12Ms;
-    base::test::FeatureRefAndParams prediction_params = {
-        features::kDrawPredictedInkPoint, params};
-
-    feature_list_.Reset();
-    feature_list_.InitWithFeaturesAndParameters({prediction_params}, {});
   }
 
   DelegatedInkPointRendererBase* ink_renderer() {
@@ -1760,10 +1748,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction");
     HistogramCheck(
         histograms, expected_bucket_with_prediction,
-        base::StrCat({"Renderer.DelegatedInkTrail."
-                      "LatencyImprovementWithPrediction.Experiment",
-                      base::NumberToString(PredictionConfig::k1Point12Ms)})
-            .c_str());
+        "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithPrediction");
   }
 
   void DrawDelegatedInkTrail() {
@@ -1806,6 +1791,14 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     return ink_points_[pointer_id].size();
   }
 
+  int points_to_predict() const { return kPointsToPredict; }
+
+  const base::TimeDelta time_into_the_future() const {
+    return base::Milliseconds(
+        (kMillisecondsIntoFuturePerPoint - kResampleLatency) *
+        kPointsToPredict);
+  }
+
  protected:
   raw_ptr<DelegatedInkPointRendererSkiaForTest> ink_renderer_ = nullptr;
 
@@ -1816,6 +1809,12 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
 
  private:
   std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
+
+  // Values used to configure the points predictor. Needs to match the values
+  // in `DelegatedInkTrailData`;
+  static const int kPointsToPredict = 2;
+  static const int kMillisecondsIntoFuturePerPoint = 6;
+  static const int kResampleLatency = 5;
 };
 
 // Testing filtering points in the the delegated ink renderer when the skia
@@ -1961,11 +1960,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
       last_ink_point(kPointerIds[0]).timestamp() - metadata.timestamp();
   FinalizePathAndCheckHistograms(
       bucket_without_prediction,
-      bucket_without_prediction +
-          base::Milliseconds(kPredictionConfigs[PredictionConfig::k1Point12Ms]
-                                 .milliseconds_into_future_per_point *
-                             kPredictionConfigs[PredictionConfig::k1Point12Ms]
-                                 .points_to_predict));
+      bucket_without_prediction + time_into_the_future());
 
   // Confirm the size, first, and last points of the first pointer ID are what
   // we expect.
@@ -2043,11 +2038,7 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   base::TimeDelta bucket_without_prediction = base::Milliseconds(24);
   FinalizePathAndCheckHistograms(
       bucket_without_prediction,
-      bucket_without_prediction +
-          base::Milliseconds(kPredictionConfigs[PredictionConfig::k1Point12Ms]
-                                 .milliseconds_into_future_per_point *
-                             kPredictionConfigs[PredictionConfig::k1Point12Ms]
-                                 .points_to_predict));
+      bucket_without_prediction + time_into_the_future());
 
   // Now provide metadata that matches the final ink point provided, so that
   // everything earlier is filtered out. Then the *WithoutPrediction histogram
@@ -2056,12 +2047,8 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   MakeAndSendMetadataFromStoredInkPoint(/*index*/ 3, kDiameter,
                                         SkColors::kBlack, gfx::RectF());
   bucket_without_prediction = base::Milliseconds(0);
-  FinalizePathAndCheckHistograms(
-      bucket_without_prediction,
-      base::Milliseconds(
-          kPredictionConfigs[PredictionConfig::k1Point12Ms]
-              .milliseconds_into_future_per_point *
-          kPredictionConfigs[PredictionConfig::k1Point12Ms].points_to_predict));
+  FinalizePathAndCheckHistograms(bucket_without_prediction,
+                                 time_into_the_future());
 
   // DrawDelegatedInkTrail should clear the metadata, so finalizing the path
   // shouldn't record anything in the histograms.
@@ -2107,7 +2094,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   // If the metadata was close enough, then a trail should be drawn with all
   // three points.
   ink_renderer()->FinalizePathForDraw();
-  EXPECT_EQ(GetPathPointCount(), 3);
+  EXPECT_EQ(GetPathPointCount(), 3 + points_to_predict());
 
   // Now send a metadata with a point that is slightly further away from the
   // second point, such that the distance between them is greater than the

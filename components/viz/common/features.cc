@@ -194,16 +194,7 @@ BASE_FEATURE(kWebViewFrameRateHints,
 
 BASE_FEATURE(kDrawPredictedInkPoint,
              "DrawPredictedInkPoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kDraw1Point12Ms[] = "1-pt-12ms";
-const char kDraw2Points6Ms[] = "2-pt-6ms";
-const char kDraw1Point6Ms[] = "1-pt-6ms";
-const char kDraw2Points3Ms[] = "2-pt-3ms";
-const char kPredictorKalman[] = "kalman";
-const char kPredictorLinearResampling[] = "linear-resampling";
-const char kPredictorLinear1[] = "linear-1";
-const char kPredictorLinear2[] = "linear-2";
-const char kPredictorLsq[] = "lsq";
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
 // Increase the max CALayer number allowed for CoreAnimation.
@@ -492,30 +483,8 @@ bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
 }
 
-std::optional<int> ShouldDrawPredictedInkPoints() {
-  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
-    return std::nullopt;
-
-  std::string predicted_points = GetFieldTrialParamValueByFeature(
-      kDrawPredictedInkPoint, "predicted_points");
-  if (predicted_points == kDraw1Point12Ms)
-    return viz::PredictionConfig::k1Point12Ms;
-  else if (predicted_points == kDraw2Points6Ms)
-    return viz::PredictionConfig::k2Points6Ms;
-  else if (predicted_points == kDraw1Point6Ms)
-    return viz::PredictionConfig::k1Point6Ms;
-  else if (predicted_points == kDraw2Points3Ms)
-    return viz::PredictionConfig::k2Points3Ms;
-
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
-}
-
-std::string InkPredictor() {
-  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
-    return "";
-
-  return GetFieldTrialParamValueByFeature(kDrawPredictedInkPoint, "predictor");
+bool ShouldDrawPredictedInkPoints() {
+  return base::FeatureList::IsEnabled(kDrawPredictedInkPoint);
 }
 
 #if BUILDFLAG(IS_ANDROID)

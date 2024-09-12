@@ -4086,15 +4086,6 @@ const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";
 
-const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";
-const char kDraw2PredictedPoints6Ms[] = "2 points, each 6ms ahead.";
-const char kDraw1PredictedPoint6Ms[] = "1 point 6ms ahead.";
-const char kDraw2PredictedPoints3Ms[] = "2 points, each 3ms ahead.";
-const char kDrawPredictedPointsDescription[] =
-    "Draw predicted points when using the delegated ink trails API. Requires "
-    "experimental web platform features to be enabled.";
-const char kDrawPredictedPointsName[] = "Draw predicted delegated ink points";
-
 const char kSanitizerApiName[] = "Sanitizer API";
 const char kSanitizerApiDescription[] =
     "Enable the Sanitizer API. See: https://github.com/WICG/sanitizer-api";

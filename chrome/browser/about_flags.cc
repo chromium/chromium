@@ -2681,29 +2681,6 @@ const FeatureEntry::Choice kEnableExperimentalCookieFeaturesChoices[] = {
      switches::kEnableExperimentalCookieFeatures, ""},
 };
 
-const FeatureEntry::FeatureParam kDrawPredictedPointExperiment1Point12Ms[] = {
-    {"predicted_points", features::kDraw1Point12Ms}};
-const FeatureEntry::FeatureParam kDrawPredictedPointExperiment2Points6Ms[] = {
-    {"predicted_points", features::kDraw2Points6Ms}};
-const FeatureEntry::FeatureParam kDrawPredictedPointExperiment1Point6Ms[] = {
-    {"predicted_points", features::kDraw1Point6Ms}};
-const FeatureEntry::FeatureParam kDrawPredictedPointExperiment2Points3Ms[] = {
-    {"predicted_points", features::kDraw2Points3Ms}};
-
-const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
-    {flag_descriptions::kDraw1PredictedPoint12Ms,
-     kDrawPredictedPointExperiment1Point12Ms,
-     std::size(kDrawPredictedPointExperiment1Point12Ms), nullptr},
-    {flag_descriptions::kDraw2PredictedPoints6Ms,
-     kDrawPredictedPointExperiment2Points6Ms,
-     std::size(kDrawPredictedPointExperiment2Points6Ms), nullptr},
-    {flag_descriptions::kDraw1PredictedPoint6Ms,
-     kDrawPredictedPointExperiment1Point6Ms,
-     std::size(kDrawPredictedPointExperiment1Point6Ms), nullptr},
-    {flag_descriptions::kDraw2PredictedPoints3Ms,
-     kDrawPredictedPointExperiment2Points3Ms,
-     std::size(kDrawPredictedPointExperiment2Points3Ms), nullptr}};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Default", "", ""},
@@ -9157,12 +9134,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSplitCacheByNetworkIsolationKeyDescription,
      kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
-
-    {"draw-predicted-ink-point", flag_descriptions::kDrawPredictedPointsName,
-     flag_descriptions::kDrawPredictedPointsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDrawPredictedInkPoint,
-                                    kDrawPredictedPointVariations,
-                                    "DrawPredictedInkPoint")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"optimization-guide-personalized-fetching",

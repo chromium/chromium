@@ -2315,11 +2315,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "draw-predicted-ink-point",
-    "owners": [ "joalmei@microsoft.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "drive-fs-mirroring",
     "owners": [ "wenbojie@chromium.org", "fdegros@chromium.org", "simmonsjosh@google.com"],
     "expiry_milestone": 133

@@ -2380,13 +2380,6 @@ extern const char kResponsiveToolbarDescription[];
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
 
-extern const char kDraw1PredictedPoint12Ms[];
-extern const char kDraw2PredictedPoints6Ms[];
-extern const char kDraw1PredictedPoint6Ms[];
-extern const char kDraw2PredictedPoints3Ms[];
-extern const char kDrawPredictedPointsDescription[];
-extern const char kDrawPredictedPointsName[];
-
 extern const char kSanitizerApiName[];
 extern const char kSanitizerApiDescription[];
 
