@@ -538,7 +538,6 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
   EXPECT_EQ(color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   // TODO(crbug.com/40652358): Remove this flag and provision when HDR is fully
   // supported on ChromeOS.
@@ -593,7 +592,6 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
                                                /*needs_alpha=*/true));
   EXPECT_EQ(3.f, display_color_spaces.GetHDRMaxLuminanceRelative());
 }
-#endif
 
 TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   ui::DeviceDataManager::CreateInstance();

@@ -150,7 +150,6 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
     const std::vector<ManagedDisplayInfo>& display_info_list,
     bool from_native_platform) {
   std::vector<ManagedDisplayInfo> display_list_copy = display_info_list;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (display_list_copy.size() > maximum_support_display_) {
     display_manager_->configurator()->has_unassociated_display_ = true;
     while (display_list_copy.size() > maximum_support_display_) {
@@ -159,7 +158,6 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
   } else {
     display_manager_->configurator()->has_unassociated_display_ = false;
   }
-#endif
   bool is_host_origin_set = false;
   for (const ManagedDisplayInfo& display_info : display_list_copy) {
     if (display_info.bounds_in_native().origin() != gfx::Point(0, 0)) {
