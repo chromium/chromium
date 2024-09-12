@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(
       component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
-          proto, version));
+          proto, version, /*is_pre_installed=*/false));
 
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
@@ -224,5 +224,105 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PrivacySandboxAttestationPreInstallBrowserTest);
+
+class PrivacySandboxAttestationPreInstallInteractionWithDownloadTest
+    : public PrivacySandboxAttestationPreInstallBrowserTest {
+ public:
+  PrivacySandboxAttestationPreInstallInteractionWithDownloadTest() = default;
+
+  ~PrivacySandboxAttestationPreInstallInteractionWithDownloadTest() override =
+      default;
+
+ private:
+  base::ScopedPathOverride preinstalled_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED};
+  base::ScopedPathOverride preinstalled_alt_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
+};
+
+// If both pre-installed and downloaded attestation lists are available and they
+// have the same version, the component installer will:
+// 1. if feature off, select the pre-installed attestation list, but not parse
+// it.
+// 2. if feature on, select and parse the pre-installed attestation list.
+IN_PROC_BROWSER_TEST_P(
+    PrivacySandboxAttestationPreInstallInteractionWithDownloadTest,
+    BothPreinstalledAndDownloadedAttestationsAvailable) {
+  // Override the pre-install component directories that have the pre-installed
+  // attestation file shipped with Chromium. A test pre-installed attestation
+  // file will be written into directory `DIR_COMPONENT_PREINSTALLED`.
+  PrivacySandboxAttestationsProto proto;
+
+  // Create an attestations file that contains the site with attestation for
+  // Topics API.
+  std::string site = "https://example.com";
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
+      site_attestation;
+  site_attestation.add_attested_apis(TOPICS);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  // There is an existing pre-installed attestations component that is shipped
+  // with Chromium. Choose a version number that is sure to be higher. This
+  // makes sure that the component installer will ignore the shipped
+  // pre-installed attestations component.
+  base::Version version("12345.0.0.0");
+
+  // Install the attestation component to both pre-install and download
+  // directories.
+  ASSERT_TRUE(
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          proto, version, /*is_pre_installed=*/false));
+  ASSERT_TRUE(
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          proto, version, /*is_pre_installed=*/true));
+
+  base::RunLoop run_loop;
+  PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
+
+  // Register the privacy sandbox attestations component, which searches for the
+  // attestation file and starts parsing.
+  RegisterPrivacySandboxAttestationsComponent(
+      g_browser_process->component_updater());
+
+  if (IsParamFeatureEnabled()) {
+    // Component installer selects the pre-installed attestation list. Wait
+    // until the attestations parsing is done.
+    run_loop.Run();
+
+    EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                    ->GetVersionForTesting()
+                    .IsValid());
+
+    // Make an attestation check to verify the data point is recorded to the
+    // correct histogram bucket.
+    ASSERT_TRUE(PrivacySandboxSettingsImpl::IsAllowed(
+        PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+            net::SchemefulSite(GURL("https://example.com")),
+            PrivacySandboxAttestationsGatedAPI::kTopics)));
+    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+    histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                         FileSource::kPreInstalled, 1);
+  } else {
+    // If feature off, the component installer still selects the pre-installed
+    // attestation list. But it will not parse it.
+    ASSERT_TRUE(base::test::RunUntil([]() {
+      return PrivacySandboxAttestations::GetInstance()
+          ->attestations_file_checked();
+    }));
+
+    // The attestations component ends up with no attestation map.
+    ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()
+                     ->GetVersionForTesting()
+                     .IsValid());
+    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+        net::SchemefulSite(GURL("https://example.com")),
+        PrivacySandboxAttestationsGatedAPI::kTopics);
+    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PrivacySandboxAttestationPreInstallInteractionWithDownloadTest);
 
 }  // namespace privacy_sandbox

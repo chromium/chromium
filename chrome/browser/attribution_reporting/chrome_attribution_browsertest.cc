@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
   // component directory.
   ASSERT_TRUE(
       component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
-          proto, base::Version("12345.0.0.0")));
+          proto, base::Version("12345.0.0.0"), /*is_pre_installed=*/false));
 }
 
 // TODO(crbug.com/327794975) Test is flaky on various platforms.
