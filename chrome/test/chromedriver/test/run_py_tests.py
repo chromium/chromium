@@ -154,6 +154,14 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testFindChildElementsStaleElement2',
     # Flaky: https://crbug.com/1486520
     'ChromeDriverTest.testClickStaleElement',
+    # https://issues.chromium.org/issues/42323658
+    # The following tests fail on Mac due to focus issues
+    'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMaximumFrequency',
+    'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
+    'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
+    'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
+    # Flaky: https://crbug.com/361521805
+    'ChromeDriverSiteIsolation.testClickNavigateLocalToLocal',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
