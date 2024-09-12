@@ -79,27 +79,31 @@ constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
 constexpr char kClass[] = "class";
 
-constexpr const char* const kLogLevelName[] = {"info", "warning", "error"};
+constexpr const char* const kLogLevelName[] = {"verbose", "info", "warning",
+                                               "error"};
 
 size_t SeverityToLogLevelNameIndex(logging::LogSeverity severity) {
-  if (severity <= logging::LOGGING_INFO) {
+  if (severity <= logging::LOGGING_VERBOSE) {
     return 0;
   }
-  if (severity == logging::LOGGING_WARNING) {
+  if (severity == logging::LOGGING_INFO) {
     return 1;
   }
-  return 2;
+  if (severity == logging::LOGGING_WARNING) {
+    return 2;
+  }
+  return 3;
 }
 
 size_t LogMarkToLogLevelNameIndex(char mark) {
   switch (mark) {
-    case 'I':
-    case 'V':
+    case 'F':
       return 0;
-    case 'W':
+    case 'I':
       return 1;
+    case 'E':
     default:
-      return 2;
+      return 3;
   }
 }
 
@@ -228,6 +232,7 @@ std::pair<ino_t, Value::List> GetServiceLogContents(const FilePath& log_path,
 
     std::string line;
     int line_number = 0;
+    size_t severity_index = 0;
     while (log.good()) {
       std::getline(log, line);
       if (line.empty() || ++line_number <= from_line_number) {
@@ -235,7 +240,6 @@ std::pair<ino_t, Value::List> GetServiceLogContents(const FilePath& log_path,
       }
 
       std::string_view log_line = line;
-      size_t severity_index = 0;
       if (base::MatchPattern(log_line.substr(0, pattern_length),
                              kTimestampPattern) &&
           google_apis::util::GetTimeFromString(
