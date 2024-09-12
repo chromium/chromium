@@ -2837,7 +2837,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   AddPskWifiService(kServiceWifi3, kGuidWifiHTTPOnly, kWifiNameHTTPOnly,
                     shill::kStateIdle);
 
-  const char* kConfig = R"(
+  static constexpr char kConfig[] = R"(
       {
         "GlobalNetworkConfiguration": {
         },
@@ -2945,7 +2945,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Set a policy that uses a ClientCertPattern which has an EnrollmentURI and
   // will not resolve to any client certificate (no client certificate has been
   // installed/imported at all).
-  const char kUserONC[] = R"(
+  static constexpr char kUserONC[] = R"(
     {
       "NetworkConfigurations": [
         {
