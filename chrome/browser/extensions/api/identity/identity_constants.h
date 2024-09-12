@@ -23,9 +23,9 @@ extern const char kOffTheRecord[];
 extern const char kPageLoadFailure[];
 extern const char kPageLoadTimedOut[];
 extern const char kInvalidConsentResult[];
-extern const char kCanceled[];
 extern const char kCannotCreateWindow[];
 extern const char kInvalidURLScheme[];
+extern const char kBrowserContextShutDown[];
 
 extern const int kCachedRemoteConsentTTLSeconds;
 }  // namespace identity_constants
