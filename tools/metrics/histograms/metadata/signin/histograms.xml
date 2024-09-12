@@ -1719,12 +1719,40 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.OAuth2MintToken.ApiCallResult"
-    enum="OAuth2MintTokenApiCallResult" expires_after="2024-05-19">
+    enum="OAuth2MintTokenApiCallResult" expires_after="2025-02-10">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Result of the OAuth2MintToken API call. Recorded after the response is
     processed. Desktop only.
+
+    Warning: this histogram was expired from 2024-05-19 to 2024-09-10; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Signin.OAuth2MintToken.BoundFetchAuthError"
+    enum="GoogleServiceAuthError" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an error code (or none) for a single OAuth2MintToken API fetch with
+    a bound refresh token. Recorded after the response is processed. Desktop
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Signin.OAuth2MintToken.BoundFetchEncryptionError"
+    enum="BoundOAuth2TokenFetchEncryptionError" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an encryption failure that occured during OAuth2MintToken API fetch
+    with a bound refresh token. Recorded after the response is processed and
+    only of the fetch failed due to such an error. Desktop only.
   </summary>
 </histogram>
 
