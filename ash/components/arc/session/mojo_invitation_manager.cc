@@ -4,7 +4,7 @@
 
 #include "ash/components/arc/session/mojo_invitation_manager.h"
 
-#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -25,12 +25,6 @@ namespace arc {
 
 namespace {
 
-std::string GenerateRandomToken() {
-  uint8_t random_bytes[16];
-  base::RandBytes(random_bytes);
-  return base::HexEncode(random_bytes);
-}
-
 base::FilePath GetMojoProxyPath() {
   base::FilePath mojo_proxy_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &mojo_proxy_path));
@@ -42,10 +36,8 @@ base::FilePath GetMojoProxyPath() {
 MojoInvitationManager::MojoInvitationManager()
     : MojoInvitationManager(GetMojoProxyPath()) {}
 
-// Generate an arbitrary 32-byte string. ARC uses this length as a protocol
-// version identifier.
 MojoInvitationManager::MojoInvitationManager(const base::FilePath& proxy_path)
-    : proxy_path_(proxy_path), token_(GenerateRandomToken()) {}
+    : proxy_path_(proxy_path) {}
 
 MojoInvitationManager::~MojoInvitationManager() {
   if (proxy_process_.IsValid()) {
@@ -60,7 +52,8 @@ MojoInvitationManager::~MojoInvitationManager() {
 
 base::Process MojoInvitationManager::LaunchMojoProxy(
     mojo::PlatformChannel& channel,
-    mojo::PlatformChannel& proxy_channel) {
+    mojo::PlatformChannel& proxy_channel,
+    std::string_view token) {
   base::ScopedFD target_fd =
       channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD();
   auto proxy_remote_endpoint = proxy_channel.TakeRemoteEndpoint();
@@ -81,7 +74,7 @@ base::Process MojoInvitationManager::LaunchMojoProxy(
   proxy_command_line.AppendSwitchASCII(
       switches::kHostIpczTransportFd,
       base::NumberToString(kHostIpczTransportFdValue));
-  proxy_command_line.AppendSwitchASCII(switches::kAttachmentName, token_);
+  proxy_command_line.AppendSwitchASCII(switches::kAttachmentName, token);
   proxy_command_line.AppendSwitch(switches::kInheritIpczBroker);
 
   base::Process proxy_process =
@@ -91,16 +84,17 @@ base::Process MojoInvitationManager::LaunchMojoProxy(
   return proxy_process;
 }
 
-void MojoInvitationManager::SendInvitation(mojo::PlatformChannel& channel) {
+void MojoInvitationManager::SendInvitation(mojo::PlatformChannel& channel,
+                                           std::string_view token) {
   mojo::OutgoingInvitation invitation;
-  pipe_ = invitation.AttachMessagePipe(token_);
+  pipe_ = invitation.AttachMessagePipe(token);
 
   if (mojo::core::IsMojoIpczEnabled()) {
     // ARCVM containers still use legacy Mojo Core. If IPCZ is enabled, we
     // spawn an instance of Mojo Proxy which acts as a IPCZ <=> Mojo Core
     // translation layer between Ash Chrome and ARCVM.
     mojo::PlatformChannel proxy_channel;
-    proxy_process_ = LaunchMojoProxy(channel, proxy_channel);
+    proxy_process_ = LaunchMojoProxy(channel, proxy_channel, token);
     DCHECK(proxy_process_.IsValid());
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
     mojo::OutgoingInvitation::Send(std::move(invitation),

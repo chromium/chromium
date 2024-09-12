@@ -66,6 +66,7 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 // Deprecated method IDs: 101, 105, 109, 121, 126, 132, 134, 136, 137, 147, 153,
 //                        154, 160
 // Next method ID: 173
+[Uuid="1defbc6a-5e24-46bd-9117-3b2f106d7e7a"]
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a

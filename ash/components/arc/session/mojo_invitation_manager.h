@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_SESSION_MOJO_INVITATION_MANAGER_H_
 #define ASH_COMPONENTS_ARC_SESSION_MOJO_INVITATION_MANAGER_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/process/process.h"
@@ -28,21 +28,20 @@ class MojoInvitationManager {
   explicit MojoInvitationManager(const base::FilePath& proxy_path);
   ~MojoInvitationManager();
 
-  void SendInvitation(mojo::PlatformChannel& channel);
+  void SendInvitation(mojo::PlatformChannel& channel, std::string_view token);
 
   mojo::ScopedMessagePipeHandle TakePipe() { return std::move(pipe_); }
   base::Process& proxy_process() { return proxy_process_; }
-  const std::string& token() { return token_; }
 
  private:
   base::Process LaunchMojoProxy(mojo::PlatformChannel& channel,
-                                mojo::PlatformChannel& proxy_channel);
+                                mojo::PlatformChannel& proxy_channel,
+                                std::string_view token);
   static void CollectMojoProxyProcess(base::Process proxy_process);
 
   mojo::ScopedMessagePipeHandle pipe_;
   base::FilePath proxy_path_;
   base::Process proxy_process_;
-  std::string token_;
 };
 
 }  // namespace arc

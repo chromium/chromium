@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/session/mojo_invitation_manager.h"
 
+#include "ash/components/arc/session/mojo_init_data.h"
 #include "base/command_line.h"
 #include "base/process/launch.h"
 #include "base/test/multiprocess_test.h"
@@ -54,7 +55,8 @@ MULTIPROCESS_TEST_MAIN(InvitationSenderMain) {
   {
     MojoInvitationManager invitation_manager(base::FilePath("/bin/true"));
     mojo::PlatformChannel channel;
-    invitation_manager.SendInvitation(channel);
+    MojoInitData mojo_init_data;
+    invitation_manager.SendInvitation(channel, mojo_init_data.token());
 
     base::Process proxy_process = std::move(invitation_manager.proxy_process());
     if (mojo::core::IsMojoIpczEnabled()) {
