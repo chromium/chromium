@@ -738,7 +738,7 @@ BASE_FEATURE(kHttpsUpgrades, "HttpsUpgrades", base::FEATURE_ENABLED_BY_DEFAULT);
 // are available for opting out of this default behavior.)
 BASE_FEATURE(kHttpsFirstModeIncognito,
              "HttpsFirstModeIncognito",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the binary opt-in to HTTPS-First Mode with a tri-state setting (HFM
 // everywhere, HFM in Incognito, or no HFM) with HFM-in-Incognito the new
