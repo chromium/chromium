@@ -9,12 +9,14 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
@@ -36,6 +38,26 @@ bool IsBrowserWindow(aura::Window* window) {
          chromeos::AppType::BROWSER;
 }
 
+bool IsValidInSessionWindow(aura::Window* window) {
+  auto* delegate = Shell::Get()->saved_desk_delegate();
+
+  // We should guarantee the window can be launched in saved desk template.
+  if (!delegate->IsWindowSupportedForSavedDesk(window)) {
+    return false;
+  }
+
+  // The window should belongs to the current active user.
+  if (auto* window_manager = MultiUserWindowManagerImpl::Get()) {
+    const AccountId& window_owner = window_manager->GetWindowOwner(window);
+    const AccountId& active_owner =
+        Shell::Get()->session_controller()->GetActiveAccountId();
+    if (window_owner.is_valid() && active_owner != window_owner) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Gets the data of the tabs opening on the active desk.
 std::set<coral_util::TabData> GetInSessionTabData() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
@@ -43,17 +65,22 @@ std::set<coral_util::TabData> GetInSessionTabData() {
   std::set<coral_util::TabData> tab_data;
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
+    aura::Window* browser_window = tab->current_info().browser_window;
+
     // Filter out the browser window which is not on the active desk.
-    if (!desks_util::BelongsToActiveDesk(tab->current_info().browser_window)) {
+    if (!desks_util::BelongsToActiveDesk(browser_window)) {
       continue;
     }
 
     // Filter out non-browser tab info.
-    if (!IsBrowserWindow(tab->current_info().browser_window)) {
+    if (!IsBrowserWindow(browser_window)) {
       continue;
     }
 
-    // TODO(http://b/363353433): filter out the tabs info from incognito window.
+    // Filter out invalid window.
+    if (!IsValidInSessionWindow(browser_window)) {
+      continue;
+    }
 
     tab_data.insert({.tab_title = tab->current_info().title,
                      .source = tab->current_info().source});
@@ -69,7 +96,6 @@ std::set<coral_util::AppData> GetInSessionAppData() {
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* delegate = shell->saved_desk_delegate();
   for (aura::Window* window : mru_windows) {
     // Skip transient windows.
     if (wm::GetTransientParent(window)) {
@@ -81,8 +107,8 @@ std::set<coral_util::AppData> GetInSessionAppData() {
       continue;
     }
 
-    // We should guarantee the app can be launched in saved desk template.
-    if (!delegate->IsWindowSupportedForSavedDesk(window)) {
+    // Skip invalid windows.
+    if (!IsValidInSessionWindow(window)) {
       continue;
     }
 
@@ -93,10 +119,12 @@ std::set<coral_util::AppData> GetInSessionAppData() {
     }
 
     const std::string* app_id_key = window->GetProperty(kAppIDKey);
-    app_data.insert({.app_id = app_id,
-                     .app_name = (!app_id_key || IsArcWindow(window))
-                                     ? base::UTF16ToUTF8(window->GetTitle())
-                                     : delegate->GetAppShortName(*app_id_key)});
+    app_data.insert(
+        {.app_id = app_id,
+         .app_name =
+             (!app_id_key || IsArcWindow(window))
+                 ? base::UTF16ToUTF8(window->GetTitle())
+                 : shell->saved_desk_delegate()->GetAppShortName(*app_id_key)});
   }
   return app_data;
 }
