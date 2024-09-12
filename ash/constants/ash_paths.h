@@ -59,10 +59,6 @@ enum {
                                        // data resources are cached.
   DIR_DEVICE_POLICY_SCREENSAVER_DATA,  // Directory where the device policy
                                        // managed screensaver images are cached.
-  FILE_DEVICE_LOCAL_ACCOUNT_FIRST_POLICY_FETCH,  // File location to mark that
-                                                 // the first policy fetch for
-                                                 // device local accounts has
-                                                 // been scheduled.
   PATH_END
 };
 

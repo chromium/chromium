@@ -78,8 +78,8 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
       CloudPolicyStore* store,
       CloudPolicyService* service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
-      bool skip_first_policy_fetch = false);
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
   CloudPolicyRefreshScheduler(const CloudPolicyRefreshScheduler&) = delete;
   CloudPolicyRefreshScheduler& operator=(const CloudPolicyRefreshScheduler&) =
       delete;
@@ -211,10 +211,6 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
 
   // Whether we have retried with key reset or not.
   bool has_retried_with_key_reset_ = false;
-
-  // Whether the immediate policy fetch should be skipped. Applied to device
-  // local accounts when it's not the first time Chrome starts on device boot.
-  bool skip_first_policy_fetch_ = false;
 
   base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
 

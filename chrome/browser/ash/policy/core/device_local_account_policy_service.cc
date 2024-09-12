@@ -79,17 +79,6 @@ void DeleteObsoleteExtensionCache(const std::string& account_id_to_delete) {
   }
 }
 
-// Store the information that the first policy fetch since the device boot
-// has been scheduled.
-void MarkPolicyFetchOnBootScheduled() {
-  base::FilePath first_policy_fetch_path;
-  CHECK(
-      base::PathService::Get(ash::FILE_DEVICE_LOCAL_ACCOUNT_FIRST_POLICY_FETCH,
-                             &first_policy_fetch_path));
-  base::File file(first_policy_fetch_path,
-                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-}
-
 }  // namespace
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
@@ -128,22 +117,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
   external_data_service_ =
       std::make_unique<DeviceLocalAccountExternalDataService>(
           this, std::move(external_data_service_backend_task_runner));
-  CheckPolicyFetchRequired();
   UpdateAccountList();
-}
-
-void DeviceLocalAccountPolicyService::CheckPolicyFetchRequired() {
-  // We keep a flag file in memory whenever the first policy fetch happened. If
-  // it happened before, then on Chrome start the first policy fetch should be
-  // skipped since the policy should be up to date from invalidations.
-  base::FilePath first_policy_fetch_file;
-  CHECK(
-      base::PathService::Get(ash::FILE_DEVICE_LOCAL_ACCOUNT_FIRST_POLICY_FETCH,
-                             &first_policy_fetch_file));
-  skip_first_policy_fetch_ = base::PathExists(first_policy_fetch_file);
-  if (!skip_first_policy_fetch_) {
-    MarkPolicyFetchOnBootScheduled();
-  }
 }
 
 DeviceLocalAccountPolicyService::~DeviceLocalAccountPolicyService() {
@@ -339,8 +313,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           resource_cache_task_runner_,
           invalidation::RawPointerVariantToPointer(
-              invalidation_service_provider_or_listener_),
-          skip_first_policy_fetch_);
+              invalidation_service_provider_or_listener_));
     }
 
     // Fire up the cloud connection for fetching policy for the account from

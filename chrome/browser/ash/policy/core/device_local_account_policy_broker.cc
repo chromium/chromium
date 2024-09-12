@@ -150,8 +150,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
     const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
     std::variant<AffiliatedInvalidationServiceProvider*,
                  invalidation::InvalidationListener*>
-        invalidation_service_provider_or_listener,
-    bool skip_first_policy_fetch)
+        invalidation_service_provider_or_listener)
     : invalidation_service_provider_or_listener_(
           invalidation::PointerVariantToRawPointer(
               invalidation_service_provider_or_listener)),
@@ -186,7 +185,6 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   schema_registry_.RegisterComponent(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()), GetChromeSchema());
   schema_registry_.SetAllDomainsReady();
-  core_.SetSkipFirstPolicyFetch(skip_first_policy_fetch);
 }
 
 DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {

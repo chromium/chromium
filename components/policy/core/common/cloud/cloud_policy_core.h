@@ -130,14 +130,6 @@ class POLICY_EXPORT CloudPolicyCore {
   // Removes the specified observer.
   void RemoveObserver(Observer* observer);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set if the refresh_scheduler needs the first policy fetch.
-  void SetSkipFirstPolicyFetch(bool skip_first_policy_fetch);
-  bool skip_first_policy_fetch() { return skip_first_policy_fetch_; }
-#else
-  bool skip_first_policy_fetch() { return false; }
-#endif
-
   // Initializes the cloud connection using injected |service| and |client|.
   void ConnectForTesting(std::unique_ptr<CloudPolicyService> service,
                          std::unique_ptr<CloudPolicyClient> client);
@@ -157,9 +149,6 @@ class POLICY_EXPORT CloudPolicyCore {
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
   std::unique_ptr<IntegerPrefMember> refresh_delay_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool skip_first_policy_fetch_ = false;
-#endif
 };
 
 }  // namespace policy
