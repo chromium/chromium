@@ -6922,7 +6922,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Test your device with the new features added to the Chromebook and more.
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more.
+    Test your device with the new features added to the Chromebook and more accessibility test.
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE" desc="Title of the second description section." translateable="false">
     Testing
@@ -6931,7 +6931,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Test your device with the new features added to the Chromebook and more.
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the second description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more.
+    Test your device with the new features added to the Chromebook and more accessibility test.
   </message>
 
   <!-- Touchpad Scroll -->
