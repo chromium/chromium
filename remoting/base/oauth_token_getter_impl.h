@@ -34,11 +34,6 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   //   about to expire; otherwise refresh the access token only when
   //   CallWithToken() is called while the cached token has expired.
   OAuthTokenGetterImpl(
-      std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials,
-      const OAuthTokenGetter::CredentialsUpdatedCallback& on_credentials_update,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      bool auto_refresh);
-  OAuthTokenGetterImpl(
       std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool auto_refresh);
@@ -66,8 +61,6 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
                             const std::string& user_email,
                             const std::string& access_token,
                             const std::string& scopes);
-  void NotifyUpdatedCallbacks(const std::string& user_email,
-                              const std::string& refresh_token);
   void GetOauthTokensFromAuthCode();
   void RefreshAccessToken();
 
@@ -79,7 +72,6 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials_;
   std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-  OAuthTokenGetter::CredentialsUpdatedCallback credentials_updated_callback_;
 
   bool email_verified_ = false;
   bool email_discovery_ = false;

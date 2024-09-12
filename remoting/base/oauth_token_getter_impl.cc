@@ -31,20 +31,6 @@ constexpr base::TimeDelta kResponseTimeoutDuration = base::Seconds(30);
 }  // namespace
 
 OAuthTokenGetterImpl::OAuthTokenGetterImpl(
-    std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials,
-    const OAuthTokenGetter::CredentialsUpdatedCallback& on_credentials_update,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    bool auto_refresh)
-    : url_loader_factory_(url_loader_factory),
-      intermediate_credentials_(std::move(intermediate_credentials)),
-      gaia_oauth_client_(new gaia::GaiaOAuthClient(url_loader_factory)),
-      credentials_updated_callback_(on_credentials_update) {
-  if (auto_refresh) {
-    refresh_timer_ = std::make_unique<base::OneShotTimer>();
-  }
-}
-
-OAuthTokenGetterImpl::OAuthTokenGetterImpl(
     std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool auto_refresh)
@@ -119,8 +105,6 @@ void OAuthTokenGetterImpl::OnGetTokenInfoResponse(
   if (email_discovery_) {
     authorization_credentials_->login = *user_email;
     email_discovery_ = false;
-    NotifyUpdatedCallbacks(authorization_credentials_->login,
-                           authorization_credentials_->refresh_token);
   } else if (*user_email != authorization_credentials_->login) {
     LOG(ERROR) << "OAuth token and email address do not refer to "
                   "the same account.";
@@ -171,15 +155,6 @@ void OAuthTokenGetterImpl::NotifyTokenCallbacks(Status status,
   while (!callbacks.empty()) {
     std::move(callbacks.front()).Run(status, user_email, access_token, scopes);
     callbacks.pop();
-  }
-}
-
-void OAuthTokenGetterImpl::NotifyUpdatedCallbacks(
-    const std::string& user_email,
-    const std::string& refresh_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (credentials_updated_callback_) {
-    credentials_updated_callback_.Run(user_email, refresh_token);
   }
 }
 

@@ -56,10 +56,6 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
   base::WeakPtr<TestOAuthTokenGetter> GetWeakPtr();
 
  private:
-  std::unique_ptr<OAuthTokenGetter> CreateFromIntermediateCredentials(
-      const std::string& auth_code,
-      const OAuthTokenGetter::CredentialsUpdatedCallback&
-          on_credentials_update);
   std::unique_ptr<OAuthTokenGetter> CreateWithRefreshToken(
       const std::string& refresh_token,
       const std::string& email);
