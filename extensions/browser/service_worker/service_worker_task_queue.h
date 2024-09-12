@@ -403,6 +403,9 @@ class ServiceWorkerTaskQueue
                           base::Time start_time,
                           blink::ServiceWorkerStatusCode status_code);
 
+  bool IsStartWorkerFailureUnexpected(
+      blink::ServiceWorkerStatusCode status_code);
+
   // Records that the extension with |extension_id| and |version| successfully
   // registered a Service Worker.
   void SetRegisteredServiceWorkerInfo(const ExtensionId& extension_id,
