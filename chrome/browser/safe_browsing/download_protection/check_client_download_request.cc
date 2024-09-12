@@ -28,6 +28,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -128,9 +129,9 @@ bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
     case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:
     case DownloadCheckResult::UNCOMMON:
+    case DownloadCheckResult::UNKNOWN:
       return true;
 
-    case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
     case DownloadCheckResult::DEEP_SCANNED_SAFE:
     case DownloadCheckResult::DEEP_SCANNED_FAILED:
@@ -288,15 +289,18 @@ void CheckClientDownloadRequest::MaybeBeginFeedbackForDownload(
     bool upload_requested,
     const std::string& request_data,
     const std::string& response_body) {
-  // TODO(crbug.com/364924720): Remove the storage of
-  // DownloadFeedbackPings. We have the request and response here.
-  DownloadFeedbackService::MaybeStorePingsForDownload(
-      result, upload_requested, item_, request_data, response_body);
+  if (!upload_requested) {
+    return;
+  }
 
-  if (ShouldUploadToDownloadFeedback(result) && !item_->IsInsecure() &&
-      DownloadFeedbackService::IsEnabledForDownload(*item_)) {
+  if (item_->GetReceivedBytes() > DownloadFeedback::kMaxUploadSize) {
+    return;
+  }
+
+  if (ShouldUploadToDownloadFeedback(result) && !item_->IsInsecure()) {
     Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
-    service()->MaybeBeginFeedbackForDownload(profile, item_);
+    service()->MaybeBeginFeedbackForDownload(profile, item_, request_data,
+                                             response_body);
   }
 }
 
