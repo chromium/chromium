@@ -15,19 +15,19 @@ import org.mockito.Mockito;
 import org.chromium.base.Promise;
 import org.chromium.base.test.util.LooperUtils;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.search_engines.SearchEngineCountryDelegate;
+import org.chromium.components.search_engines.SearchEngineChoiceServiceDelegate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class SearchEngineChoiceServiceTestUtil {
-    private final SearchEngineCountryDelegate mMockDelegate;
+    private final SearchEngineChoiceServiceDelegate mMockDelegate;
     private final Promise<String> mDeviceCountry = new Promise<>();
 
     /** Stubs {@link SearchEngineChoiceService} for native tests. */
     @CalledByNative
     public SearchEngineChoiceServiceTestUtil() {
-        mMockDelegate = Mockito.mock(SearchEngineCountryDelegate.class);
+        mMockDelegate = Mockito.mock(SearchEngineChoiceServiceDelegate.class);
         doReturn(mDeviceCountry).when(mMockDelegate).getDeviceCountry();
         SearchEngineChoiceService.setInstanceForTests(new SearchEngineChoiceService(mMockDelegate));
     }

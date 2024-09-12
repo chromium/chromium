@@ -20,13 +20,13 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
+import org.chromium.components.search_engines.SearchEngineChoiceServiceDelegate.DeviceChoiceEventType;
 
 /**
  * Singleton responsible for communicating with device APIs to expose device-level properties that
  * are relevant for search engine choice screens and other similar UIs. It is the Java counterpart
  * of the native `SearchEngineChoiceService`, propagating some of the properties (notably the device
- * country string from {@link SearchEngineCountryDelegate}) to C++ instances of
+ * country string from {@link SearchEngineChoiceServiceDelegate}) to C++ instances of
  * `SearchEngineChoiceService`.
  *
  * <p>The object is a singleton rather than being profile-scoped as device properties apply to all
@@ -42,7 +42,7 @@ public class SearchEngineChoiceService {
      * <p>TODO(b/355054098): Rely on disconnections inside the delegate instead of giving it up to
      * garbage collection. This will allow reconnecting if we need the delegate for other purposes.
      */
-    private @Nullable SearchEngineCountryDelegate mDelegate;
+    private @Nullable SearchEngineChoiceServiceDelegate mDelegate;
 
     /**
      * Cached status associated with initiating a device country fetch when the object is
@@ -68,8 +68,8 @@ public class SearchEngineChoiceService {
             var delegate =
                     SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
                                     && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()
-                            ? new FakeSearchEngineCountryDelegate(/* enableLogging= */ true)
-                            : new SearchEngineCountryDelegateImpl(context);
+                            ? new FakeSearchEngineChoiceServiceDelegate(/* enableLogging= */ true)
+                            : new SearchEngineChoiceServiceDelegateImpl(context);
             sInstance = new SearchEngineChoiceService(delegate);
         }
         return sInstance;
@@ -88,7 +88,7 @@ public class SearchEngineChoiceService {
 
     @VisibleForTesting
     @MainThread
-    public SearchEngineChoiceService(@NonNull SearchEngineCountryDelegate delegate) {
+    public SearchEngineChoiceService(@NonNull SearchEngineChoiceServiceDelegate delegate) {
         ThreadUtils.checkUiThread();
         mDelegate = delegate;
 
@@ -237,8 +237,8 @@ public class SearchEngineChoiceService {
         }
 
         assert mDelegate != null;
-        Log.i(TAG, "log(%d)", eventType);
-        mDelegate.log(eventType);
+        Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        mDelegate.notifyDeviceChoiceEvent(eventType);
     }
 
     private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {
