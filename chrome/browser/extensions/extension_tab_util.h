@@ -90,7 +90,7 @@ class ExtensionTabUtil {
                                          const Extension* extension,
                                          mojom::ContextType context);
 
-  static Browser* GetBrowserFromWindowID(
+  static WindowController* GetControllerFromWindowID(
       const ChromeExtensionFunctionDetails& details,
       int window_id,
       std::string* error_message);
@@ -99,10 +99,11 @@ class ExtensionTabUtil {
   // `profile`. Optionally, this will also look at browsers associated with the
   // incognito version of `profile` if `also_match_incognito_profile` is true.
   // Populates `error_message` if no matching browser is found.
-  static Browser* GetBrowserInProfileWithId(Profile* profile,
-                                            int window_id,
-                                            bool also_match_incognito_profile,
-                                            std::string* error_message);
+  static WindowController* GetControllerInProfileWithId(
+      Profile* profile,
+      int window_id,
+      bool also_match_incognito_profile,
+      std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the |browser|.
   static std::string GetBrowserWindowTypeText(const Browser& browser);

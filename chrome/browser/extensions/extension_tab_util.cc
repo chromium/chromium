@@ -228,9 +228,13 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // windowId defaults to "current" window.
   int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
 
+  Browser* browser = nullptr;
   std::string error;
-  Browser* browser = GetBrowserFromWindowID(chrome_details, window_id, &error);
-  if (!browser) {
+  if (WindowController* controller =
+          GetControllerFromWindowID(chrome_details, window_id, &error)) {
+    browser = controller->GetBrowser();
+  } else {
+    // No matching window.
     if (!params.create_browser_if_needed)
       return base::unexpected(error);
 
@@ -358,29 +362,26 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
       .ToValue();
 }
 
-Browser* ExtensionTabUtil::GetBrowserFromWindowID(
+WindowController* ExtensionTabUtil::GetControllerFromWindowID(
     const ChromeExtensionFunctionDetails& details,
     int window_id,
     std::string* error) {
   if (window_id == extension_misc::kCurrentWindowId) {
     if (WindowController* window_controller =
             details.GetCurrentWindowController()) {
-      Browser* result = window_controller->GetBrowser();
-      if (result && result->window()) {
-        return result;
-      }
+      return window_controller;
     }
     if (error) {
       *error = tabs_constants::kNoCurrentWindowError;
     }
     return nullptr;
   }
-  return GetBrowserInProfileWithId(
+  return GetControllerInProfileWithId(
       Profile::FromBrowserContext(details.function()->browser_context()),
       window_id, details.function()->include_incognito_information(), error);
 }
 
-Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
+WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
     Profile* profile,
     int window_id,
     bool also_match_incognito_profile,
@@ -391,10 +392,11 @@ Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
           : nullptr;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if ((browser->profile() == profile ||
-         browser->profile() == incognito_profile) &&
-        ExtensionTabUtil::GetWindowId(browser) == window_id &&
-        browser->window()) {
-      return browser;
+         browser->profile() == incognito_profile)) {
+      WindowController* controller = WindowControllerFromBrowser(browser);
+      if (controller->GetWindowId() == window_id) {
+        return controller;
+      }
     }
   }
 

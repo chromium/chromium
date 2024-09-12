@@ -977,9 +977,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
           api_test_utils::FunctionMode::kIncognito));
   int window_id = GetWindowId(result);
   std::string error;
-  Browser* new_window = ExtensionTabUtil::GetBrowserFromWindowID(
-      ChromeExtensionFunctionDetails(function.get()), window_id, &error);
+
+  WindowController* new_controller =
+      ExtensionTabUtil::GetControllerFromWindowID(
+          ChromeExtensionFunctionDetails(function.get()), window_id, &error);
+  ASSERT_TRUE(new_controller);
   EXPECT_TRUE(error.empty());
+  Browser* new_browser = new_controller->GetBrowser();
+  ASSERT_TRUE(new_browser);
 
 // TODO(crbug.com/40254339): Remove this workaround if this wait is no longer
 // needed.
@@ -993,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   // from the window server
   views::test::PropertyWaiter minimize_waiter(
       base::BindRepeating(&BrowserWindow::IsMinimized,
-                          base::Unretained(new_window->window())),
+                          base::Unretained(new_browser->window())),
       true);
   EXPECT_TRUE(minimize_waiter.Wait());
 #elif BUILDFLAG(IS_OZONE_WAYLAND)
@@ -1001,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   // verification of IsMinimized() for as well.
 #endif
 #else
-  EXPECT_TRUE(new_window->window()->IsMinimized());
+  EXPECT_TRUE(new_controller->window()->IsMinimized());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   function = base::MakeRefCounted<WindowsCreateFunction>();
@@ -1011,10 +1016,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
       function.get(), "[{\"state\": \"fullscreen\"}]", browser()->profile(),
       api_test_utils::FunctionMode::kIncognito));
   window_id = GetWindowId(result);
-  new_window = ExtensionTabUtil::GetBrowserFromWindowID(
+
+  new_controller = ExtensionTabUtil::GetControllerFromWindowID(
       ChromeExtensionFunctionDetails(function.get()), window_id, &error);
+  ASSERT_TRUE(new_controller);
   EXPECT_TRUE(error.empty());
-  EXPECT_TRUE(new_window->window()->IsFullscreen());
+  EXPECT_TRUE(new_controller->GetBrowser()->window()->IsFullscreen());
 
   // Let the message loop run so that |fake_fullscreen| finishes transition.
   content::RunAllPendingInMessageLoop();
@@ -1129,8 +1136,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, CreatePopupWindowFromWebUI) {
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           function.get(), R"([{"type": "popup"}])", browser()->profile()));
   int window_id = GetWindowId(result);
+
   std::string error;
-  EXPECT_TRUE(ExtensionTabUtil::GetBrowserFromWindowID(
+  EXPECT_TRUE(ExtensionTabUtil::GetControllerFromWindowID(
       ChromeExtensionFunctionDetails(function.get()), window_id, &error));
   EXPECT_TRUE(error.empty());
 }
