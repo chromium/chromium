@@ -1,15 +1,18 @@
 # Event Timing - Key Interaction State Machine
-Patricija Cerkaite, May 29 2023
+
+Patricija Cerkaite, created on May 29 2023
+
+Aoyuan Zuo, updated on Sept. 09 2024
 
 [TOC]
 
 ## Background
-A keyboard interaction is a group of event handlers that fire when pressing a key on a keyboard. For example, A single "key pressed" interaction should include set order of events, such as `keydown`, `input`, and `keyup`. [EventTiming](https://w3c.github.io/event-timing/) group up certain events as interactions by assigning the same & non-trivial [interactionId](https://www.w3.org/TR/2022/WD-event-timing-20220524/#dom-performanceeventtiming-interactionid) following a state machine logic located in [`responsiveness_metrics.cc -> ResponsivenessMetrics::SetKeyIdAndRecordLatency()`](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/responsiveness_metrics.cc#327). This doc visualizes this state machine to help people understand its logic.
+A keyboard interaction is a group of event handlers that fire when pressing a key on a keyboard. For example, A single "key pressed" interaction should include set order of events, such as `keydown`, `keypress`, `input`, and `keyup`. [EventTiming](https://w3c.github.io/event-timing/) group up certain events as interactions by assigning the same & non-trivial [interactionId](https://www.w3.org/TR/2022/WD-event-timing-20220524/#dom-performanceeventtiming-interactionid) following a state machine logic located in [`responsiveness_metrics.cc -> ResponsivenessMetrics::SetKeyIdAndRecordLatency()`](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/responsiveness_metrics.cc#327). This doc visualizes this state machine to help people understand its logic.
 - - - -
 
 ## Diagram
 
-![state diagram](/docs/images/Key_interaction_state_machine_diagram.svg)
+![state diagram](/docs/images/Key_interaction_state_machine_diagram.png)
 
 *** note
 ### Note:
@@ -21,46 +24,92 @@ A keyboard interaction is a group of event handlers that fire when pressing a ke
 
 ## States
 
-### `[1]` No entry
-The initial state. Either no entry of the key_code has been seen or previous ones have been cancelled.
-`key_code_entry_map_` does not contain any entry with a key equal to key_code.
+### `[1]` Non Composition
+The initial state. No entry of the key_code has been seen. `key_code_to_interaction_info_map_` does not contain any entry with a key equal to key_code.
 
-### `[2]` Have keydown entry
-An intermediate state. In this state, we have seen the `keydown` entry for the current interaction, and are waiting for the matching `keyup` entry.
-`key_code_entry_map_` currently contains the `keydown` entry of the interaction that this state machine represent. In this state, `keydown` entry waiting for a **matching** `keyup` entry to finish the current interaction.
+### `[2]` Have Keydown
+An intermediate state. In this state, we have seen the `keydown` entry for the current interaction, and are waiting for potentially `keypress` or `contextmenu` events, and a matching `keyup` entry.
+`key_code_to_interaction_info_map_` and `sequence_based_keyboard_interaction_info_` currently contains the `keydown` entry.
 
-### `[3]` Composition Event
-The state indicates that `keydown` has initiated the composition. Since the composition events are not part of the keyboard interactions this intermediate state holds until the interactionId is produced.
+### `[3]` Have Keypress
+An intermediate state. In this state, we have seen the `keydown` and `keypress` entries for the current interaction, and are waiting for the matching `keyup` entry.
+`key_code_to_interaction_info_map_` currently contains the timestamps of both `keydown` and `keypress` entries of the interaction that this state machine represent. In this state, we are waiting for the **matching** `keyup` entry to finish the current interaction.
 
-### `[4]` Interaction finished
-This is the end of an interaction lifecycle. The `keydown` entry was paired with the corresponding `keyup` entry and the key_code from the `key_code_entry_map_` was errased.
+### `[4]` Have Contextmenu
+When pressing the menu key on a keyboard, a `contextmenu` event would get dispatched right after the `keydown` event. This is a valid user interaction, but the `keyup` event could possibly be dropped due to the showing of contextmenu overlay. Thus, while we waiting for the potentially coming `keyup` event, we also setup a 1 second timer to wrap up this interaction in case `keyup` is not coming.
+
+### `[5]` Composition Continue Ongoing Interaction
+The state indicates that `compositionstart` has initiated the composition. Since the composition events (`compositionstart`, `compositionupdate`, `compositionend`) are not part of the keyboard interactions this intermediate state holds until the interactionId is produced.
+
+### `[6]` Composition Start New Interaction On Keydown
+This state means we're currently under composition, and we're ready to start recording a new interaction upon next `keydown`.
+
+### `[7]` Composition Start New Interaction On Input
+This state means we're currently under composition, and we have not seen `keydown` thus no interactionId has been generated yet for the current interaction. As a result, we will generate one on `input`.
+
+### `[8]` End Composition On Keydown
+We have get out of the composition session, but are still waiting for potentially coming `keyup`s to wrap up the last interaction in composition.
+
+### `[9]` Interaction finished
+This is the end of an interaction lifecycle. The `keydown` entry was paired with the corresponding `keyup` entry and the key_code from the `key_code_to_interaction_info_map_` was erased.
 
 - - - -
 
 ## Transitions
 
-### `[5]` keydown
+### `[10]` Keydown
+Generate a new interactionId. Assign it to the `keydown` entry. Save the `keydown`'s key_code, interactionId, timestamps into `key_code_to_interaction_info_map_` for UKM reporting later once the interaction is fully finished..
 
-Save the `keydown` key_code value to the `key_code_entry_map_`.
+### `[11]` Key Holding
+When holding a key down for an extended period. A serious of `keydown` events with the same key_code will be dispatched. We treat each individual `keydown` event as a valid interaction and assign a unique interactionId. Only the last one will be matched with `keyup`.
 
-### `[6]` keydown
+### `[12]` Keypress
+A `keypress` event following a `keydown` event belongs to the same interaction as the `keydown`. We assign them the same interactionId and also save `keypress`'s timestamp into `key_code_to_interaction_info_map_` for UKM reporting later.
 
-If key_code value is not equal to 229, then generate a new interactionId for the [`|previous_entry|`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/timing/responsiveness_metrics.cc;l=329;drc=2425fac374aaa944c34b2340b8f53c9c7fc49533#:~:text=if%20(key_code_entry_map_.Contains(*key_code))%20%7B). This transition could be triggered by holding a key down for an extended period.
+### `[13]` Keyup
+A `keyup` event always finish up an interaction by assigning the same interactionId as `keydown`'s and report interaction duration calculated by all events belongs to the interaction to UKM. The `key_code` will be removed from `key_code_to_interaction_info_map_` after reporting, and `sequence_based_keyboard_interaction_info_` will be cleared.
 
-### `[7]` compositionstart
-The keydown event initiates the composition session. The `isComposition` parameter is set to true.
+### `[14]` Contextmenu
+When pressing the menu key on a keyboard, a `contextmenu` event would get dispatched right after the `keydown` event. This is a valid user interaction, but the `keyup` event could possibly be dropped due to the showing of contextmenu overlay. Thus, while we waiting for the potentially coming `keyup` event, we also setup a 1 second timer to wrap up this interaction in case `keyup` is not coming.
 
-### `[8]` input
-The input event within the composition finishes the interaction and produces the interactionId.
+### `[15]` Keyup (after contextmenu)
+A `keyup` after contextmenu stops the timer and wraps up the interaction immediately, which means getting the same interactionId assigned; reporting the interaction to UKM; erasing the interaction info from `key_code_to_interaction_info_map_` and clears `sequence_based_keyboard_interaction_info_`.
 
-### `[9]` [keyup key_code = keydown key_code] keyup
+### `[16]` Compositionstart
+The `compositionstart` event following a `keydown` event initiates the composition session.
 
-The transition occurs if the keyup event is fired and there is a matching key_code of a keydown event. In this transition the following steps are executed:
-   1. Generate a new interactionId for the keydown-keyup pair (`keydown` and `keyup`). 
-   2. Delete the key_code of the pair from the `key_code_entry_map_`.
+### `[17]` Keydown (under composition)
+Some IME (Input Method Editor) could repeatedly dispatch keydowns for the same user interaction. When it happens, we will assign the same interactionId to all of them.
 
-### `[10]` MaybeFlushKeyboardEntries
-[MaybeFlushKeyboardEntries](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/timing/window_performance.cc;l=677;drc=66941d1f0cfe9155b400aef887fe39a403c1f518;bpv=1;bpt=1) free up `keydown` entries stuck in `key_code_entry_map_` upon the first event timing entry after 500ms. `Keydown` gets stuck in the map for reasons like [crbug/1428603](https://bugs.chromium.org/p/chromium/issues/detail?id=1428603). This flush mechanism has a known [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1420716).
+### `[18]` Compositionupdate
+`Compositionupdate` is the center of a keyboard user interaction under composition. Once we see it, we'll start wrapping up this interaction with matching the interactionId to the rest of events including `Input` and `keyup`.
+
+### `[19]` Compositionstart
+This is an edge case that exists for some IMEs where `keydown` events are missing. `Compositionstart` would initiate the composition session without a `keydown`.
+
+### `[20]` Compositionupdate (keydown missing)
+This is an edge case that exists for some IMEs where `keydown` events are missing. Since interactionIds are usually generated with `keydown` events, we'll fallback to generate a new interactionId on `input` to make sure we can still capture and report this interaction.
+
+### `[21]` Input (keydown missing)
+A new interactionId is generated since one wasn't generated before due to the missing `keydown`.
+
+### `[22]` Input
+Assign the current interactionId (previously generated from `keydown`) to the `input` event.
+
+### `[23]` Keyup
+Assign the current interactionId (previously generated from `keydown`) to the `keyup` event.
+
+### `[24]` Keydown (next interaction)
+Under composition session, we interpret a new keydown as the start of a new discrete user interaction on a keyboard, which also marks the end of the current interaction.
+
+### `[25]` Compositionend
+`Compositionend` marks the end of an user interaction under composition through a one second timer, in case when more than one `keyup` events are dispatched we can still group them up into the same user interaction, which could happen to some IMEs as an edge case.
+
+### `[26]` Keyup
+A `keyup` from the same user interaction could come after `compositionend`, and it will get the same interactionId assigned.
+
+### `[27]` Keydown (next interaction) / timer
+Either after 1 second by a timer, or the next `keydown` event coming in before the timer times up, we'll wrap up the current interaction and report to UKM.
 - - - -
 
 ## Mermaid diagram source file
@@ -77,18 +126,35 @@ date as well.
 ```
 stateDiagram-v2
 
-no_entry : No entry [1]
-have_key_down : Have keydown entry [2]
-have_composition : Composition Event [3]
-interaction_finished: Interaction finished [4]
+non_composition : Non Composition [1]
+have_keydown : Have keydown [2]
+have_keypress : Have Keypress [3]
+have_contextmenu : Have Contextmenu [4]
+composition_continue_ongoing_interaction : Composition Continue Ongoing Interaction [5]
+composition_start_new_interaction_on_keydown : Composition Start New Interaction On Keydown [6]
+composition_start_new_interaction_on_input : Composition Start New Interaction On Input [7]
+end_composition_on_keydown : End Composition On Keydown [8]
+interaction_finished: Interaction finished [9]
 
-   [*] --> no_entry
-   no_entry --> have_key_down : keydown [5]
-   have_key_down --> have_key_down : keydown [6]
-   no_entry --> have_composition: compositionstart [7]
-   have_composition --> interaction_finished : input [8]
-   have_key_down --> interaction_finished : [keyup key_code = keydown key_code] keyup [9]
-   have_key_down --> interaction_finished : MaybeFlushKeyboardEntries [10]
+   [*] --> non_composition
+   non_composition --> have_keydown : Keydown [10]
+   have_keydown --> have_keydown : Key Holding [11]
+   have_keydown --> have_keypress : Keypress [12]
+   have_keypress --> interaction_finished : Keyup [13]
+   have_keydown --> have_contextmenu : Contextmenu [14]
+   have_contextmenu --> interaction_finished : Keyup [15]
+   have_keydown --> composition_continue_ongoing_interaction : Compositionstart [16]
+   composition_continue_ongoing_interaction --> composition_continue_ongoing_interaction : Keydown [17]
+   composition_continue_ongoing_interaction --> composition_start_new_interaction_on_keydown : Compositionupdate [18]
+   non_composition --> composition_continue_ongoing_interaction : Compositionstart [19]
+   composition_continue_ongoing_interaction --> composition_start_new_interaction_on_input : Compositionupdate (keydown missing) [20]
+   composition_start_new_interaction_on_input --> composition_start_new_interaction_on_keydown : Input [21]
+   composition_start_new_interaction_on_keydown --> composition_start_new_interaction_on_keydown : Input [22]
+   composition_start_new_interaction_on_keydown --> composition_start_new_interaction_on_keydown : Keyup [23]
+   composition_start_new_interaction_on_keydown --> interaction_finished : Keydown (next interaction) [24]
+   composition_start_new_interaction_on_keydown --> end_composition_on_keydown : Compositionend [25]
+   end_composition_on_keydown --> end_composition_on_keydown : Keyup [26]
+   end_composition_on_keydown --> interaction_finished : Keydown (next interaction) / timer [27]
    interaction_finished --> [*]
 
 ```

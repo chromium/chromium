@@ -627,11 +627,6 @@ void WindowPerformance::OnPresentationPromiseResolved(
   pending_event_presentation_time_map_.Set(presentation_index,
                                            presentation_timestamp);
   ReportEventTimings();
-
-  // Use |end_time| as a proxy for the current time to flush expired keydowns.
-  DOMHighResTimeStamp end_time =
-      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
-  responsiveness_metrics_->FlushExpiredKeydown(end_time);
 }
 
 void WindowPerformance::FlushEventTimingsOnPageHidden() {
@@ -941,10 +936,7 @@ void WindowPerformance::SetFallbackTime(PerformanceEventTiming* entry) {
   if (!show_modal_dialog_timestamps_.empty() &&
       show_modal_dialog_timestamps_.front() <
           entry->GetEventTimingReportingInfo()->presentation_time) {
-    if (base::FeatureList::IsEnabled(
-            features::kEventTimingFallbackToModalDialogStart)) {
-      fallback_end_time_to_dialog_time = true;
-    }
+    fallback_end_time_to_dialog_time = true;
     first_modal_dialog_timestamp = show_modal_dialog_timestamps_.front();
   }
 
@@ -982,8 +974,8 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     return responsiveness_metrics_->SetPointerIdAndRecordLatency(
         entry, event_timestamps);
   }
-  return responsiveness_metrics_->SetKeyIdAndRecordLatency(entry,
-                                                           event_timestamps);
+  responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, event_timestamps);
+  return true;
 }
 
 void WindowPerformance::ReportLongAnimationFrameTiming(

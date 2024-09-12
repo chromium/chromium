@@ -458,11 +458,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 // layer tree frame sink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
-// Exposes Event Timing interactionId of keypress/keyboard events under
-// composition.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEventTimingKeypressAndCompositionInteractionId);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByAllowList);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
@@ -470,9 +465,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDeprecateUnloadAllowlist;
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEventTimingFallbackToModalDialogStart);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingHandleOrphanPointerup);
 

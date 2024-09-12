@@ -13,7 +13,6 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
@@ -67,14 +66,9 @@ base::TimeTicks GetTimeStamp(int64_t time) {
 
 }  // namespace
 
-class WindowPerformanceTest : public testing::Test,
-                              public ::testing::WithParamInterface<bool> {
+class WindowPerformanceTest : public testing::Test {
  protected:
   void SetUp() override {
-    if (GetParam()) {
-      features_.InitAndEnableFeature(
-          blink::features::kEventTimingKeypressAndCompositionInteractionId);
-    }
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     ResetPerformance();
   }
@@ -220,10 +214,9 @@ class WindowPerformanceTest : public testing::Test,
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList features_;
 };
 
-TEST_P(WindowPerformanceTest, SanitizedLongTaskName) {
+TEST_F(WindowPerformanceTest, SanitizedLongTaskName) {
   // Unable to attribute, when no execution contents are available.
   EXPECT_EQ("unknown", SanitizedAttribution(nullptr, false, GetFrame()));
 
@@ -235,7 +228,7 @@ TEST_P(WindowPerformanceTest, SanitizedLongTaskName) {
             SanitizedAttribution(GetWindow(), true, GetFrame()));
 }
 
-TEST_P(WindowPerformanceTest, SanitizedLongTaskName_CrossOrigin) {
+TEST_F(WindowPerformanceTest, SanitizedLongTaskName_CrossOrigin) {
   // Create another dummy page holder and pretend it is an iframe.
   DummyPageHolder another_page(gfx::Size(400, 300));
   another_page.GetDocument().SetURL(KURL("https://iframed.com/bar"));
@@ -252,7 +245,7 @@ TEST_P(WindowPerformanceTest, SanitizedLongTaskName_CrossOrigin) {
 // https://crbug.com/706798: Checks that after navigation that have replaced the
 // window object, calls to not garbage collected yet WindowPerformance belonging
 // to the old window do not cause a crash.
-TEST_P(WindowPerformanceTest, NavigateAway) {
+TEST_F(WindowPerformanceTest, NavigateAway) {
   AddLongTaskObserver();
 
   // Simulate navigation commit.
@@ -307,7 +300,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
 
 // Make sure the output entries with the same timestamps follow the insertion
 // order. (http://crbug.com/767560)
-TEST_P(WindowPerformanceTest, EnsureEntryListOrder) {
+TEST_F(WindowPerformanceTest, EnsureEntryListOrder) {
   // Need to have an active V8 context for ScriptValues to operate.
   v8::HandleScope handle_scope(GetScriptState()->GetIsolate());
   v8::Local<v8::Context> context = GetScriptState()->GetContext();
@@ -340,7 +333,7 @@ TEST_P(WindowPerformanceTest, EnsureEntryListOrder) {
   }
 }
 
-TEST_P(WindowPerformanceTest, EventTimingEntryBuffering) {
+TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
   EXPECT_TRUE(page_holder_->GetFrame().Loader().GetDocumentLoader());
 
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1.1);
@@ -377,7 +370,7 @@ TEST_P(WindowPerformanceTest, EventTimingEntryBuffering) {
                     .size());
 }
 
-TEST_P(WindowPerformanceTest, Expose100MsEvents) {
+TEST_F(WindowPerformanceTest, Expose100MsEvents) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
   base::TimeTicks processing_start = start_time + base::Milliseconds(10);
   base::TimeTicks processing_end = processing_start + base::Milliseconds(10);
@@ -399,7 +392,7 @@ TEST_P(WindowPerformanceTest, Expose100MsEvents) {
   EXPECT_EQ(event_type_names::kMousedown, entries.at(0)->name());
 }
 
-TEST_P(WindowPerformanceTest, EventTimingDuration) {
+TEST_F(WindowPerformanceTest, EventTimingDuration) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Milliseconds(1000);
   base::TimeTicks processing_start = GetTimeOrigin() + base::Milliseconds(1001);
   base::TimeTicks processing_end = GetTimeOrigin() + base::Milliseconds(1002);
@@ -434,7 +427,7 @@ TEST_P(WindowPerformanceTest, EventTimingDuration) {
 
 // Test the case where multiple events are registered and then their
 // presentation promise is resolved.
-TEST_P(WindowPerformanceTest, MultipleEventsThenPresent) {
+TEST_F(WindowPerformanceTest, MultipleEventsThenPresent) {
   size_t num_events = 10;
   for (size_t i = 0; i < num_events; ++i) {
     base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(i);
@@ -458,7 +451,7 @@ TEST_P(WindowPerformanceTest, MultipleEventsThenPresent) {
 
 // Test the case where commit finish timestamps are recorded on all pending
 // EventTimings.
-TEST_P(WindowPerformanceTest,
+TEST_F(WindowPerformanceTest,
        CommitFinishTimeRecordedOnAllPendingEventTimings) {
   size_t num_events = 3;
   for (size_t i = 0; i < num_events; ++i) {
@@ -484,7 +477,7 @@ TEST_P(WindowPerformanceTest,
 
 // Test the case where a new commit finish timestamps does not affect previous
 // EventTiming who has already seen a commit finish.
-TEST_P(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
+TEST_F(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
   base::TimeTicks processing_start = start_time + base::Milliseconds(100);
   base::TimeTicks processing_end = start_time + base::Milliseconds(200);
@@ -512,7 +505,7 @@ TEST_P(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
 }
 
 // Test for existence of 'first-input' given different types of first events.
-TEST_P(WindowPerformanceTest, FirstInput) {
+TEST_F(WindowPerformanceTest, FirstInput) {
   struct {
     AtomicString event_type;
     bool should_report;
@@ -546,7 +539,7 @@ TEST_P(WindowPerformanceTest, FirstInput) {
 
 // Test that the 'first-input' is populated after some irrelevant events are
 // ignored.
-TEST_P(WindowPerformanceTest, FirstInputAfterIgnored) {
+TEST_F(WindowPerformanceTest, FirstInputAfterIgnored) {
   AtomicString several_events[] = {event_type_names::kMouseover,
                                    event_type_names::kMousedown,
                                    event_type_names::kPointerup};
@@ -567,7 +560,7 @@ TEST_P(WindowPerformanceTest, FirstInputAfterIgnored) {
 }
 
 // Test that pointerdown followed by pointerup works as a 'firstInput'.
-TEST_P(WindowPerformanceTest, FirstPointerUp) {
+TEST_F(WindowPerformanceTest, FirstPointerUp) {
   base::TimeTicks start_time = GetTimeStamp(0);
   base::TimeTicks processing_start = GetTimeStamp(1);
   base::TimeTicks processing_end = GetTimeStamp(2);
@@ -593,7 +586,7 @@ TEST_P(WindowPerformanceTest, FirstPointerUp) {
 
 // When the pointerdown is optimized out, the mousedown works as a
 // 'first-input'.
-TEST_P(WindowPerformanceTest, PointerdownOptimizedOut) {
+TEST_F(WindowPerformanceTest, PointerdownOptimizedOut) {
   base::TimeTicks start_time = GetTimeStamp(0);
   base::TimeTicks processing_start = GetTimeStamp(1);
   base::TimeTicks processing_end = GetTimeStamp(2);
@@ -613,7 +606,7 @@ TEST_P(WindowPerformanceTest, PointerdownOptimizedOut) {
 
 // Test that pointerdown followed by mousedown, pointerup works as a
 // 'first-input'.
-TEST_P(WindowPerformanceTest, PointerdownOnDesktop) {
+TEST_F(WindowPerformanceTest, PointerdownOnDesktop) {
   base::TimeTicks start_time = GetTimeStamp(0);
   base::TimeTicks processing_start = GetTimeStamp(1);
   base::TimeTicks processing_end = GetTimeStamp(2);
@@ -643,7 +636,7 @@ TEST_P(WindowPerformanceTest, PointerdownOnDesktop) {
                     .size());
 }
 
-TEST_P(WindowPerformanceTest, OneKeyboardInteraction) {
+TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
   base::TimeTicks keydown_timestamp = GetTimeStamp(0);
   // Keydown
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
@@ -693,7 +686,7 @@ TEST_P(WindowPerformanceTest, OneKeyboardInteraction) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
 }
 
-TEST_P(WindowPerformanceTest, HoldingDownAKey) {
+TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -773,7 +766,7 @@ TEST_P(WindowPerformanceTest, HoldingDownAKey) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
 }
 
-TEST_P(WindowPerformanceTest, PressMultipleKeys) {
+TEST_F(WindowPerformanceTest, PressMultipleKeys) {
   auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -847,7 +840,7 @@ TEST_P(WindowPerformanceTest, PressMultipleKeys) {
 // Test a real world scenario, where keydown got presented first but its
 // callback got invoked later than keyup's due to multi processes & threading
 // overhead.
-TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
+TEST_F(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
   // Arbitrary keycode picked for testing from
   // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#value_of_keycode
   int digit_1_key_code = 0x31;
@@ -908,7 +901,7 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
 }
 
-TEST_P(WindowPerformanceTest, TapOrClick) {
+TEST_F(WindowPerformanceTest, TapOrClick) {
   // Pointerdown
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -968,7 +961,7 @@ TEST_P(WindowPerformanceTest, TapOrClick) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
 }
 
-TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
+TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
   // Pointerdown
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -1033,7 +1026,7 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
   EXPECT_EQ(1ul, performance_->interactionCount());
 }
 
-TEST_P(WindowPerformanceTest, Drag) {
+TEST_F(WindowPerformanceTest, Drag) {
   // Pointerdown
   base::TimeTicks pointerdwon_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -1095,7 +1088,7 @@ TEST_P(WindowPerformanceTest, Drag) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 1);
 }
 
-TEST_P(WindowPerformanceTest, Scroll) {
+TEST_F(WindowPerformanceTest, Scroll) {
   // Pointerdown
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
@@ -1135,7 +1128,7 @@ TEST_P(WindowPerformanceTest, Scroll) {
       "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
 }
 
-TEST_P(WindowPerformanceTest, TouchesWithoutClick) {
+TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   // First Pointerdown
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -1170,7 +1163,7 @@ TEST_P(WindowPerformanceTest, TouchesWithoutClick) {
 //  Test artificial pointerup and click on MacOS fall back to use processingEnd
 //  as event duration ending time.
 //  See crbug.com/1321819
-TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
+TEST_F(WindowPerformanceTest, ArtificialPointerupOrClick) {
   // Arbitrary pointerId picked for testing
   PointerId pointer_id = 4;
 
@@ -1235,7 +1228,7 @@ TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
 
 // The trace_analyzer does not work on platforms on which the migration of
 // tracing into Perfetto has not completed.
-TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
+TEST_F(WindowPerformanceTest, PerformanceMarkTraceEvent) {
   v8::HandleScope handle_scope(GetScriptState()->GetIsolate());
   v8::Local<v8::Context> context = GetScriptState()->GetContext();
   v8::Context::Scope context_scope(context);
@@ -1270,7 +1263,7 @@ TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
   ASSERT_TRUE(navigation_id);
 }
 
-TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
+TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   // |element| needs to be non-null to prevent a crash.
@@ -1311,7 +1304,7 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   EXPECT_EQ(*url, "url");
 }
 
-TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
+TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
@@ -1410,7 +1403,7 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_FALSE(click_begin->other_event->HasDictArg("data"));
 }
 
-TEST_P(WindowPerformanceTest, SlowInteractionToNextPaintTraceEvents) {
+TEST_F(WindowPerformanceTest, SlowInteractionToNextPaintTraceEvents) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
 
@@ -1528,7 +1521,7 @@ TEST_P(WindowPerformanceTest, SlowInteractionToNextPaintTraceEvents) {
   EXPECT_EQ(base::ClampRound(events[2]->GetAbsTimeToOtherEvent()), 600000);
 }
 
-TEST_P(WindowPerformanceTest, InteractionID) {
+TEST_F(WindowPerformanceTest, InteractionID) {
   // Keyboard with max duration 25, total duration 40.
   PerformanceEventTiming* keydown_entry =
       CreatePerformanceEventTiming(event_type_names::kKeydown, 1, std::nullopt,
@@ -1618,8 +1611,6 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All, WindowPerformanceTest, ::testing::Bool());
-
 class InteractionIdTest : public WindowPerformanceTest {
  public:
   struct EventForInteraction {
@@ -1693,7 +1684,7 @@ class InteractionIdTest : public WindowPerformanceTest {
 };
 
 // Tests English typing.
-TEST_P(InteractionIdTest, InputOutsideComposition) {
+TEST_F(InteractionIdTest, InputOutsideComposition) {
   // Insert "a" with a max duration of 50 and total of 50.
   std::vector<EventForInteraction> events1 = {
       {event_type_names::kKeydown, 65, std::nullopt, GetTimeStamp(100),
@@ -1745,7 +1736,7 @@ TEST_P(InteractionIdTest, InputOutsideComposition) {
 }
 
 // Tests Japanese on Mac.
-TEST_P(InteractionIdTest, CompositionSingleKeydown) {
+TEST_F(InteractionIdTest, CompositionSingleKeydown) {
   // Insert "a" with a duration of 20.
   std::vector<EventForInteraction> events1 = {
       {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(100),
@@ -1770,49 +1761,31 @@ TEST_P(InteractionIdTest, CompositionSingleKeydown) {
       {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
 
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
+  performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
 
-    EXPECT_GT(ids1[0], 0u) << "Keydown interactionId was nonzero";
-    EXPECT_EQ(ids1[1], 0u) << "Compositionstart interactionId was zero";
-    EXPECT_GT(ids1[3], 0u) << "Input interactionId was nonzero";
-    EXPECT_GT(ids1[4], 0u) << "Keyup interactionId was nonzero";
-    EXPECT_EQ(ids1[0], ids1[3])
-        << "Keydown and Input have the same interactionIds";
+  EXPECT_GT(ids1[0], 0u) << "Keydown interactionId was nonzero";
+  EXPECT_EQ(ids1[1], 0u) << "Compositionstart interactionId was zero";
+  EXPECT_GT(ids1[3], 0u) << "Input interactionId was nonzero";
+  EXPECT_GT(ids1[4], 0u) << "Keyup interactionId was nonzero";
+  EXPECT_EQ(ids1[0], ids1[3])
+      << "Keydown and Input have the same interactionIds";
 
-    EXPECT_GT(ids2[0], 0u) << "Second keydown interactionId was nonzero";
-    EXPECT_GT(ids2[2], 0u) << "Second input interactionId was nonzero";
-    EXPECT_GT(ids2[3], 0u) << "Second keyup interactionId was non zero";
-    EXPECT_EQ(ids2[4], 0u) << "Compositionend interactionId was zero";
-    EXPECT_EQ(ids2[0], ids2[2])
-        << "Keydown and Input have the same interactionIds";
-    EXPECT_NE(ids1[3], ids2[2])
-        << "First and second inputs have different interactionIds";
+  EXPECT_GT(ids2[0], 0u) << "Second keydown interactionId was nonzero";
+  EXPECT_GT(ids2[2], 0u) << "Second input interactionId was nonzero";
+  EXPECT_GT(ids2[3], 0u) << "Second keyup interactionId was non zero";
+  EXPECT_EQ(ids2[4], 0u) << "Compositionend interactionId was zero";
+  EXPECT_EQ(ids2[0], ids2[2])
+      << "Keydown and Input have the same interactionIds";
+  EXPECT_NE(ids1[3], ids2[2])
+      << "First and second inputs have different interactionIds";
 
-    CheckUKMValues({{100, 120, UserInteractionType::kKeyboard},
-                    {100, 170, UserInteractionType::kKeyboard}});
-  } else {
-    EXPECT_EQ(ids1[0], 0u) << "Keydown interactionId was zero";
-    EXPECT_EQ(ids1[1], 0u) << "Compositionstart interactionId was zero";
-    EXPECT_GT(ids1[3], 0u) << "Input interactionId was nonzero";
-    EXPECT_EQ(ids1[4], 0u) << "Keyup interactionId was zero";
-
-    EXPECT_EQ(ids2[0], 0u) << "Second keydown interactionId was zero";
-    EXPECT_GT(ids2[2], 0u) << "Second input interactionId was nonzero";
-    EXPECT_EQ(ids2[3], 0u) << "Second keyup interactionId was zero";
-    EXPECT_EQ(ids2[4], 0u) << "Compositionend interactionId was zero";
-    EXPECT_NE(ids1[3], ids2[2])
-        << "First and second inputs have different interactionIds";
-
-    CheckUKMValues({{20, 20, UserInteractionType::kKeyboard},
-                    {30, 30, UserInteractionType::kKeyboard}});
-  }
+  CheckUKMValues({{100, 120, UserInteractionType::kKeyboard},
+                  {100, 170, UserInteractionType::kKeyboard}});
 }
 
 // Tests Chinese on Mac. Windows is similar, but has more keyups inside the
 // composition.
-TEST_P(InteractionIdTest, CompositionToFinalInput) {
+TEST_F(InteractionIdTest, CompositionToFinalInput) {
   // Insert "a" with a duration of 25.
   std::vector<EventForInteraction> events1 = {
       {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(100),
@@ -1854,22 +1827,15 @@ TEST_P(InteractionIdTest, CompositionToFinalInput) {
   EXPECT_NE(ids2[2], ids3[1])
       << "Second and third inputs have different interactionIds";
 
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
+  performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
 
-    CheckUKMValues({{90, 90, UserInteractionType::kKeyboard},
-                    {90, 90, UserInteractionType::kKeyboard},
-                    {140, 140, UserInteractionType::kKeyboard}});
-  } else {
-    CheckUKMValues({{25, 25, UserInteractionType::kKeyboard},
-                    {35, 35, UserInteractionType::kKeyboard},
-                    {140, 140, UserInteractionType::kKeyboard}});
-  }
+  CheckUKMValues({{90, 90, UserInteractionType::kKeyboard},
+                  {90, 90, UserInteractionType::kKeyboard},
+                  {140, 140, UserInteractionType::kKeyboard}});
 }
 
 // Tests Chinese on Windows.
-TEST_P(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
+TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
   // Insert "a" with a duration of 66.
   std::vector<EventForInteraction> events1 = {
       {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(0),
@@ -1905,52 +1871,29 @@ TEST_P(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
       {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
 
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
-    EXPECT_GT(ids1[3], 0u) << "First input nonzero";
-    EXPECT_GT(ids1[4], 0u) << "First keyup has nonzero interactionId";
-    EXPECT_GT(ids1[5], 0u) << "Second keyup has nonzero interactionId";
+  performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
+  EXPECT_GT(ids1[3], 0u) << "First input nonzero";
+  EXPECT_GT(ids1[4], 0u) << "First keyup has nonzero interactionId";
+  EXPECT_GT(ids1[5], 0u) << "Second keyup has nonzero interactionId";
 
-    EXPECT_GT(ids2[2], 0u) << "Second input nonzero";
-    EXPECT_NE(ids1[3], ids2[2])
-        << "First and second input have different interactionIds";
-    EXPECT_GT(ids2[3], 0u) << "Third keyup has nonzero interactionId";
-    EXPECT_GT(ids2[4], 0u) << "Fourth keyup has nonzero interactionId";
+  EXPECT_GT(ids2[2], 0u) << "Second input nonzero";
+  EXPECT_NE(ids1[3], ids2[2])
+      << "First and second input have different interactionIds";
+  EXPECT_GT(ids2[3], 0u) << "Third keyup has nonzero interactionId";
+  EXPECT_GT(ids2[4], 0u) << "Fourth keyup has nonzero interactionId";
 
-    EXPECT_GT(ids3[1], 0u) << "Third input has nonzero interactionId";
-    EXPECT_NE(ids1[3], ids3[1])
-        << "First and third inputs have different interactionIds";
-    EXPECT_NE(ids2[2], ids3[1])
-        << "Second and third inputs have different interactionIds";
-    CheckUKMValues({{100, 100, UserInteractionType::kKeyboard},
-                    {100, 100, UserInteractionType::kKeyboard},
-                    {85, 85, UserInteractionType::kKeyboard}});
-  } else {
-    EXPECT_GT(ids1[3], 0u) << "First input nonzero";
-    EXPECT_EQ(ids1[4], 0u) << "First keyup has zero interactionId";
-    EXPECT_EQ(ids1[5], 0u) << "Second keyup has zero interactionId";
-
-    EXPECT_GT(ids2[2], 0u) << "Second input nonzero";
-    EXPECT_NE(ids1[3], ids2[2])
-        << "First and second input have different interactionIds";
-    EXPECT_EQ(ids2[3], 0u) << "Third keyup has zero interactionId";
-    EXPECT_EQ(ids2[4], 0u) << "Fourth keyup has zero interactionId";
-
-    EXPECT_GT(ids3[1], 0u) << "Third input has nonzero interactionId";
-    EXPECT_NE(ids1[3], ids3[1])
-        << "First and third inputs have different interactionIds";
-    EXPECT_NE(ids2[2], ids3[1])
-        << "Second and third inputs have different interactionIds";
-
-    CheckUKMValues({{66, 66, UserInteractionType::kKeyboard},
-                    {51, 51, UserInteractionType::kKeyboard},
-                    {85, 85, UserInteractionType::kKeyboard}});
-  }
+  EXPECT_GT(ids3[1], 0u) << "Third input has nonzero interactionId";
+  EXPECT_NE(ids1[3], ids3[1])
+      << "First and third inputs have different interactionIds";
+  EXPECT_NE(ids2[2], ids3[1])
+      << "Second and third inputs have different interactionIds";
+  CheckUKMValues({{100, 100, UserInteractionType::kKeyboard},
+                  {100, 100, UserInteractionType::kKeyboard},
+                  {85, 85, UserInteractionType::kKeyboard}});
 }
 
 // Tests Android smart suggestions (similar to Android Chinese).
-TEST_P(InteractionIdTest, SmartSuggestion) {
+TEST_F(InteractionIdTest, SmartSuggestion) {
   // Insert "A" with a duration of 9.
   std::vector<EventForInteraction> events1 = {
       {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(0),
@@ -1982,42 +1925,24 @@ TEST_P(InteractionIdTest, SmartSuggestion) {
        GetTimeStamp(270)}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
 
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
-    EXPECT_GT(ids1[3], 0u) << "First input nonzero";
-    EXPECT_EQ(ids1[0], ids1[3]) << "Keydown and input have the same id";
-    EXPECT_EQ(ids1[0], ids1[3]) << "Keydown and keyup have the same id";
+  performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
+  EXPECT_GT(ids1[3], 0u) << "First input nonzero";
+  EXPECT_EQ(ids1[0], ids1[3]) << "Keydown and input have the same id";
+  EXPECT_EQ(ids1[0], ids1[3]) << "Keydown and keyup have the same id";
 
-    EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
-    EXPECT_NE(ids1[3], ids2[1])
-        << "First and second input have different interactionIds";
-    EXPECT_GT(ids3[0], 0u) << "Keydown nonzero";
-    EXPECT_EQ(ids3[0], ids3[2]) << "Keydown and keyup have some id";
-    EXPECT_EQ(ids3[1], 0u) << "Third input has zero id";
+  EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
+  EXPECT_NE(ids1[3], ids2[1])
+      << "First and second input have different interactionIds";
+  EXPECT_GT(ids3[0], 0u) << "Keydown nonzero";
+  EXPECT_EQ(ids3[0], ids3[2]) << "Keydown and keyup have some id";
+  EXPECT_EQ(ids3[1], 0u) << "Third input has zero id";
 
-    CheckUKMValues({{16, 16, UserInteractionType::kKeyboard},
-                    {14, 14, UserInteractionType::kKeyboard},
-                    {43, 70, UserInteractionType::kKeyboard}});
-
-  } else {
-    EXPECT_GT(ids1[3], 0u) << "First input nonzero";
-
-    EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
-    EXPECT_NE(ids1[3], ids2[1])
-        << "First and second input have different interactionIds";
-
-    EXPECT_GT(ids3[0], 0u) << "Keydown nonzero";
-    EXPECT_EQ(ids3[0], ids3[2]) << "Keydown and keyup have some id";
-    EXPECT_EQ(ids3[1], 0u) << "Third input has zero id";
-
-    CheckUKMValues({{9, 9, UserInteractionType::kKeyboard},
-                    {14, 14, UserInteractionType::kKeyboard},
-                    {43, 70, UserInteractionType::kKeyboard}});
-  }
+  CheckUKMValues({{16, 16, UserInteractionType::kKeyboard},
+                  {14, 14, UserInteractionType::kKeyboard},
+                  {43, 70, UserInteractionType::kKeyboard}});
 }
 
-TEST_P(InteractionIdTest, TapWithoutClick) {
+TEST_F(InteractionIdTest, TapWithoutClick) {
   std::vector<EventForInteraction> events = {
       {event_type_names::kPointerdown, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(140)},
@@ -2038,7 +1963,7 @@ TEST_P(InteractionIdTest, TapWithoutClick) {
   CheckUKMValues({{40, 50, UserInteractionType::kTapOrClick}});
 }
 
-TEST_P(InteractionIdTest, PointerupClick) {
+TEST_F(InteractionIdTest, PointerupClick) {
   std::vector<EventForInteraction> events = {
       {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(140)},
@@ -2052,7 +1977,7 @@ TEST_P(InteractionIdTest, PointerupClick) {
   CheckUKMValues({{30, 30, UserInteractionType::kTapOrClick}});
 }
 
-TEST_P(InteractionIdTest, JustClick) {
+TEST_F(InteractionIdTest, JustClick) {
   // Hitting enter on a keyboard may cause just a trusted click event.
   std::vector<EventForInteraction> events = {
       {event_type_names::kClick, std::nullopt, 0, GetTimeStamp(120),
@@ -2064,7 +1989,7 @@ TEST_P(InteractionIdTest, JustClick) {
   CheckUKMValues({{30, 30, UserInteractionType::kTapOrClick}});
 }
 
-TEST_P(InteractionIdTest, PointerdownClick) {
+TEST_F(InteractionIdTest, PointerdownClick) {
   // Contextmenus may cause us to only see pointerdown and click (no pointerup).
   std::vector<EventForInteraction> events = {
       {event_type_names::kPointerdown, std::nullopt, 1, GetTimeStamp(100),
@@ -2079,7 +2004,7 @@ TEST_P(InteractionIdTest, PointerdownClick) {
   CheckUKMValues({{40, 50, UserInteractionType::kTapOrClick}});
 }
 
-TEST_P(InteractionIdTest, MultiTouch) {
+TEST_F(InteractionIdTest, MultiTouch) {
   // In multitouch, we report an interaction per pointerId. We do not see
   // clicks.
   std::vector<EventForInteraction> events = {
@@ -2104,7 +2029,7 @@ TEST_P(InteractionIdTest, MultiTouch) {
                   {50, 60, UserInteractionType::kTapOrClick}});
 }
 
-TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
+TEST_F(InteractionIdTest, ClickIncorrectPointerId) {
   // On mobile, in cases where touchstart is skipped, click does not get the
   // correct pointerId. See crbug.com/1264930 for more details.
   // TODO crbug.com/359679950: remove this test and event timing workaround
@@ -2121,7 +2046,5 @@ TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
   RunPendingTasks();
   CheckUKMValues({{40, 40, UserInteractionType::kTapOrClick}});
 }
-
-INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());
 
 }  // namespace blink

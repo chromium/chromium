@@ -786,12 +786,6 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 #endif
 );
 
-// Exposes Event Timing keyboard InteractionId of composition and keypress
-// events.
-BASE_FEATURE(kEventTimingKeypressAndCompositionInteractionId,
-             "EventTimingKeypressAndCompositionInteractionId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables unload handler deprecation via Permissions-Policy.
 // https://crbug.com/1324111
 BASE_FEATURE(kDeprecateUnload,
@@ -815,12 +809,6 @@ BASE_FEATURE(kDeprecateUnloadByAllowList,
 // the all hosts are allowed.
 const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
     &kDeprecateUnloadByAllowList, "allowlist", ""};
-
-// Enable reporting the modal dialog start time as an alternative end time for
-// duration measurement in performance event timing.
-BASE_FEATURE(kEventTimingFallbackToModalDialogStart,
-             "EventTimingFallbackToModalDialogStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable not reporting orphan pointerup (pointerup not accompanied by
 // pointerdown) as an interaction in performance event timing.

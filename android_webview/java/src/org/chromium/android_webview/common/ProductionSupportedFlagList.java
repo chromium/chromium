@@ -876,13 +876,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
                 "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
-        Flag.baseFeature(
-                BlinkFeatures.EVENT_TIMING_FALLBACK_TO_MODAL_DIALOG_START,
-                "Enable reporting the modal dialog start time as an alternative end time for"
-                        + " duration measurement in performance event timing."),
-        Flag.baseFeature(
-                BlinkFeatures.EVENT_TIMING_KEYPRESS_AND_COMPOSITION_INTERACTION_ID,
-                "Exposes Event Timing keyboard InteractionId of composition and keypress events."),
         Flag.baseFeature("SkipUnnecessaryThreadHopsForParseHeaders"),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FPS_COMPONENT,

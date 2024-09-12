@@ -43,8 +43,7 @@ class CORE_EXPORT ResponsivenessMetrics
   };
 
   // Wrapper class to store interactionId, interaction offset, and timestamps
-  // of an entry on a HashMap. It is optimized and used only in the experimental
-  // SetKeyIdAndRecordLatency function. (SetKeyIdAndRecordLatencyExperimental)
+  // of an entry on a HashMap.
   class InteractionInfo {
    public:
     InteractionInfo(uint32_t interaction_id,
@@ -167,21 +166,12 @@ class CORE_EXPORT ResponsivenessMetrics
 
   // Assigns interactionId and records interaction latency for keyboard events.
   // We care about input, compositionstart, and compositionend events, so
-  // |key_code| will be std::nullopt in those cases. Returns true if the entry
-  // would be ready to be surfaced in PerformanceObservers and the Performance
-  // Timeline.
-  bool SetKeyIdAndRecordLatency(PerformanceEventTiming* entry,
+  // |key_code| will be std::nullopt in those cases.
+  void SetKeyIdAndRecordLatency(PerformanceEventTiming* entry,
                                 EventTimestamps event_timestamps);
 
-  // Experimental function that in addition to SetKeyIdAndRecordLatency()
-  // exposes interactionId for keypress and keyup/keydown under composition.
-  bool SetKeyIdAndRecordLatencyExperimental(PerformanceEventTiming* entry,
-                                            EventTimestamps event_timestamps);
-
-  // Clear keydowns in |key_codes_to_remove| if we have stored them for a while.
-  void FlushExpiredKeydown(DOMHighResTimeStamp end_time);
-  // Clears all keydowns in |key_codes_to_remove| no matter how long we have
-  // stored them.
+  // Clears all keydowns in |key_code_to_interaction_info_map_| and report to
+  // UKM.
   void FlushKeydown();
 
   uint32_t GetInteractionCount() const;
@@ -265,12 +255,6 @@ class CORE_EXPORT ResponsivenessMetrics
   // Map from keyCodes to interaction info (ID, offset, and timestamps).
   HashMap<int, InteractionInfo, IntWithZeroKeyHashTraits<int>>
       key_code_to_interaction_info_map_;
-
-  // Map from keyCodes to keydown entries and keydown timestamps.
-  HeapHashMap<int,
-              Member<KeyboardEntryAndTimestamps>,
-              IntWithZeroKeyHashTraits<int>>
-      key_code_entry_map_;
 
   // Whether we are composing or not. When we are not composing, we set
   // interactionId for keydown and keyup events. When we are composing, we set

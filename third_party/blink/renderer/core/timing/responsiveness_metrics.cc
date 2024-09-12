@@ -48,9 +48,6 @@ constexpr uint32_t kMaxFirstInteractionID = 10000;
 // interactions. This is consistent with the spec, which allows the increasing
 // the user interaction value by a small number chosen by the user agent.
 constexpr uint32_t kInteractionIdIncrement = 7;
-// The maximum tap delay we can handle for assigning interaction id.
-constexpr blink::DOMHighResTimeStamp kMaxDelayForEntries =
-    blink::DOMHighResTimeStamp(500);
 // The length of the timer to flush entries from the time pointerup occurs.
 constexpr base::TimeDelta kFlushTimerLength = base::Seconds(1);
 // The name for the histogram which records interaction timings, and the names
@@ -440,9 +437,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       }
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kEventTimingKeypressAndCompositionInteractionId) &&
-        RuntimeEnabledFeaturesBase::
+    if (RuntimeEnabledFeaturesBase::
             EventTimingHandleKeyboardEventSimulatedClickEnabled()) {
       // Try handle keyboard event simulated click.
       if (TryHandleKeyboardEventSimulatedClick(entry, pointer_id)) {
@@ -529,112 +524,7 @@ void ResponsivenessMetrics::RecordKeyboardUKM(
 // (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/Key_interaction_state_machine.md)
 // to help understand the logic below that how event timing group up keyboard
 // events as interactions.
-bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
-    PerformanceEventTiming* entry,
-    EventTimestamps event_timestamps) {
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    return SetKeyIdAndRecordLatencyExperimental(entry, event_timestamps);
-  }
-
-  last_pointer_id_ = std::nullopt;
-  auto event_type = entry->name();
-  if (event_type == event_type_names::kKeydown) {
-    // If we were waiting for matching pointerup/keyup after a contextmenu, they
-    // won't show up at this point.
-    if (contextmenu_flush_timer_.IsActive()) {
-      contextmenu_flush_timer_.Stop();
-      FlushPointerdownAndPointerup();
-      FlushKeydown();
-    }
-    // During compositions, we ignore keydowns/keyups and look at input events.
-    if (composition_started_) {
-      return true;
-    }
-
-    DCHECK(entry->GetEventTimingReportingInfo()->key_code.has_value());
-    auto key_code = entry->GetEventTimingReportingInfo()->key_code.value();
-    if (key_code_entry_map_.Contains(key_code)) {
-      auto* previous_entry = key_code_entry_map_.at(key_code);
-      // Ignore repeat IME keydowns. See
-      // https://w3c.github.io/uievents/#determine-keydown-keyup-keyCode.
-      // Reasoning: we cannot ignore all IME keydowns because on Android in
-      // some languages the events received are 'keydown', 'input', 'keyup',
-      // and since we are not composing then the 'input' event is ignored, so
-      // we must consider the key events with 229 keyCode as the user
-      // interaction. Besides this, we cannot consider repeat 229 keydowns
-      // because we may get those on ChromeOS when we should ignore them. This
-      // may be related to crbug.com/1252856.
-      if (key_code != 229) {
-        // Generate a new interaction id for |previous_entry|. This case could
-        // be caused by keeping a key pressed for a while.
-        UpdateInteractionId();
-        previous_entry->GetEntry()->SetInteractionIdAndOffset(
-            GetCurrentInteractionId(), GetInteractionCount());
-        RecordKeyboardUKM(window_performance_->DomWindow(),
-                          {previous_entry->GetTimeStamps()},
-                          previous_entry->GetEntry()->interactionOffset());
-      }
-      window_performance_->NotifyAndAddEventTimingBuffer(
-          previous_entry->GetEntry());
-    }
-    key_code_entry_map_.Set(
-        key_code, KeyboardEntryAndTimestamps::Create(entry, event_timestamps));
-    // Similar to pointerdown, we need to wait a bit before knowing the
-    // interactionId of keydowns.
-    return false;
-  } else if (event_type == event_type_names::kKeyup) {
-    if (contextmenu_flush_timer_.IsActive()) {
-      contextmenu_flush_timer_.Stop();
-    }
-    DCHECK(entry->GetEventTimingReportingInfo()->key_code.has_value());
-    auto key_code = entry->GetEventTimingReportingInfo()->key_code.value();
-    if (composition_started_ || !key_code_entry_map_.Contains(key_code)) {
-      return true;
-    }
-
-    auto* previous_entry = key_code_entry_map_.at(key_code);
-    // Generate a new interaction id for the keydown-keyup pair.
-    UpdateInteractionId();
-    previous_entry->GetEntry()->SetInteractionIdAndOffset(
-        GetCurrentInteractionId(), GetInteractionCount());
-    window_performance_->NotifyAndAddEventTimingBuffer(
-        previous_entry->GetEntry());
-    if (previous_entry->GetEntry()->HasKnownInteractionID()) {
-      entry->SetInteractionIdAndOffset(
-          previous_entry->GetEntry()->interactionId(),
-          previous_entry->GetEntry()->interactionOffset());
-    }
-    RecordKeyboardUKM(window_performance_->DomWindow(),
-                      {previous_entry->GetTimeStamps(), event_timestamps},
-                      entry->interactionOffset());
-    key_code_entry_map_.erase(key_code);
-  } else if (event_type == event_type_names::kCompositionstart) {
-    composition_started_ = true;
-    for (auto key_entry : key_code_entry_map_.Values()) {
-      window_performance_->NotifyAndAddEventTimingBuffer(key_entry->GetEntry());
-    }
-    key_code_entry_map_.clear();
-  } else if (event_type == event_type_names::kCompositionend) {
-    composition_started_ = false;
-  } else if (event_type == event_type_names::kInput) {
-    if (!composition_started_) {
-      return true;
-    }
-    // We are in the case of a text input event while compositing with
-    // non-trivial data, so we want to increase interactionId.
-    // TODO(crbug.com/1252856): fix counts in ChromeOS due to duplicate
-    // events.
-    UpdateInteractionId();
-    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                     GetInteractionCount());
-    RecordKeyboardUKM(window_performance_->DomWindow(), {event_timestamps},
-                      entry->interactionOffset());
-  }
-  return true;
-}
-
-bool ResponsivenessMetrics::SetKeyIdAndRecordLatencyExperimental(
+void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     PerformanceEventTiming* entry,
     EventTimestamps event_timestamps) {
   last_pointer_id_ = std::nullopt;
@@ -685,7 +575,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatencyExperimental(
       CHECK(entry->GetEventTimingReportingInfo()->key_code.has_value());
       auto key_code = entry->GetEventTimingReportingInfo()->key_code.value();
       if (!key_code_to_interaction_info_map_.Contains(key_code)) {
-        return true;
+        return;
       }
 
       // Match the keydown entry with the keyup entry using keycode.
@@ -734,7 +624,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatencyExperimental(
   } else if (event_type == event_type_names::kInput) {
     // Expose interactionId for Input events only under composition
     if (composition_state_ == kNonComposition) {
-      return true;
+      return;
     }
     // Update Interaction Id when input is selected using IME suggestion without
     // pressing a key. In this case Input event starts and finishes interaction
@@ -759,44 +649,18 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatencyExperimental(
     }
     last_keydown_keycode_info_.reset();
   }
-  return true;
-}
-
-void ResponsivenessMetrics::FlushExpiredKeydown(
-    DOMHighResTimeStamp current_time) {
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingKeypressAndCompositionInteractionId)) {
-    // Do nothing. Experimenting not cleaning up keydown/keypress that was not
-    // successfully paired with a keyup thus get stuck in the map.
-  } else {
-    // We cannot delete from a HashMap while iterating.
-    Vector<int> key_codes_to_remove;
-    for (const auto& entry : key_code_entry_map_) {
-      PerformanceEventTiming* key_down = entry.value->GetEntry();
-      if (current_time - key_down->processingEnd() > kMaxDelayForEntries) {
-        window_performance_->NotifyAndAddEventTimingBuffer(key_down);
-        key_codes_to_remove.push_back(entry.key);
-      }
-    }
-    key_code_entry_map_.RemoveAll(key_codes_to_remove);
-  }
 }
 
 void ResponsivenessMetrics::FlushKeydown() {
-  for (const auto& entry : key_code_entry_map_) {
-    PerformanceEventTiming* key_down = entry.value->GetEntry();
+  for (auto& entry : key_code_to_interaction_info_map_) {
     // Keydowns triggered contextmenu, though missing pairing keyups due to a
     // known issue - https://github.com/w3c/pointerevents/issues/408, should
-    // still be counted as a valid interaction and get a valid id assigned.
-    UpdateInteractionId();
-    key_down->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                        GetInteractionCount());
-    window_performance_->NotifyAndAddEventTimingBuffer(key_down);
+    // still be counted as a valid interaction and get reported to UKM.
     RecordKeyboardUKM(window_performance_->DomWindow(),
-                      {entry.value->GetTimeStamps()},
-                      key_down->interactionOffset());
+                      entry.value.GetTimeStamps(),
+                      entry.value.GetInteractionOffset());
   }
-  key_code_entry_map_.clear();
+  key_code_to_interaction_info_map_.clear();
 }
 
 void ResponsivenessMetrics::FlushAllEventsAtPageHidden() {
@@ -958,7 +822,6 @@ void ResponsivenessMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(pointer_id_entry_map_);
   visitor->Trace(pointer_flush_timer_);
   visitor->Trace(contextmenu_flush_timer_);
-  visitor->Trace(key_code_entry_map_);
   visitor->Trace(composition_end_flush_timer_);
 }
 
