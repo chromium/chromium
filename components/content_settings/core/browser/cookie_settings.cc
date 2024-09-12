@@ -436,7 +436,9 @@ void CookieSettings::OnContentSettingChanged(
 
 void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
   OnCookiePreferencesChanged();
+}
 
+void CookieSettings::OnMitigationsEnabledChanged() {
   bool new_mitigations_enabled_for_3pcd = MitigationsEnabledFor3pcdInternal();
   {
     base::AutoLock auto_lock(lock_);
@@ -485,8 +487,13 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
 void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kAddLimit3pcsSetting) ||
+      (tracking_protection_settings_ &&
+       tracking_protection_settings_->IsTrackingProtection3pcdEnabled())) {
+    OnMitigationsEnabledChanged();
+  }
 
+  bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
   {
     base::AutoLock auto_lock(lock_);
     if (block_third_party_cookies_ == new_block_third_party_cookies) {
