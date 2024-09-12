@@ -147,7 +147,8 @@ import java.util.concurrent.ExecutionException;
     // account storage is disabled above, otherwise tests run into assertion failures. Long term,
     // these tests probably need to be fixed for the bookmarks account storage case rather than
     // force-disable the feature.
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
 })
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
