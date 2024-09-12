@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -151,6 +152,8 @@ class CORE_EXPORT ImageResource final
   bool is_referenced_from_ua_stylesheet_ = false;
 
   bool is_pending_flushing_ = false;
+
+  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 template <>

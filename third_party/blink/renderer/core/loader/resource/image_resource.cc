@@ -377,6 +377,8 @@ ImageResource::ImageResource(const ResourceRequest& resource_request,
 ImageResource::~ImageResource() {
   RESOURCE_LOADING_DVLOG(1) << "~ImageResource " << this;
 
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
+
   if (is_referenced_from_ua_stylesheet_)
     InstanceCounters::DecrementCounter(InstanceCounters::kUACSSResourceCounter);
 }
@@ -413,6 +415,7 @@ void ImageResource::DestroyDecodedDataForFailedRevalidation() {
   // revalidation response.
   UpdateImage(nullptr, ImageResourceContent::kClearAndUpdateImage, false);
   SetDecodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 void ImageResource::DestroyDecodedDataIfPossible() {
@@ -446,10 +449,7 @@ void ImageResource::AppendData(
   // method must be called with a `span<const char>` data.
   CHECK(absl::holds_alternative<base::span<const char>>(data));
   base::span<const char> span = absl::get<base::span<const char>>(data);
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(span.size());
-  if (span.size() > 0) {
-    GetContent()->SetAllocatedExternalMemory();
-  }
+  external_memory_accounter_.Increase(v8::Isolate::GetCurrent(), span.size());
   if (multipart_parser_) {
     multipart_parser_->AppendData(span.data(),
                                   base::checked_cast<wtf_size_t>(span.size()));
@@ -509,6 +509,7 @@ void ImageResource::DecodeError(bool all_data_received) {
 
   ClearData();
   SetEncodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
   if (!ErrorOccurred())
     SetStatus(ResourceStatus::kDecodeError);
 
@@ -570,6 +571,7 @@ void ImageResource::FinishAsError(const ResourceError& error,
   // TODO(hiroshige): Move setEncodedSize() call to Resource::error() if it
   // is really needed, or remove it otherwise.
   SetEncodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
   is_during_finish_as_error_ = true;
   Resource::FinishAsError(error, task_runner);
   is_during_finish_as_error_ = false;

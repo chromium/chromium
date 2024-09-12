@@ -337,10 +337,6 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
 void ImageResourceContent::ClearImage() {
   if (!image_)
     return;
-  int64_t length = image_->HasData() ? image_->DataSize() : 0;
-  if (allocated_external_memory_) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-length);
-  }
 
   // If our Image has an observer, it's always us so we need to clear the back
   // pointer before dropping our reference.
