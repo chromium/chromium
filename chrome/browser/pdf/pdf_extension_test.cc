@@ -2962,6 +2962,20 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 1);
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
                                PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium, 1);
+
+  // All other buckets should not be incremented.
+  histograms.ExpectBucketCount(
+      kPdfLoadStatusMetric,
+      PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf, 0);
+  histograms.ExpectBucketCount(
+      kPdfLoadStatusMetric, PDFLoadStatus::kTriggeredNoGestureDriveByDownload,
+      0);
+  // TODO(crbug.com/365953522): Count should be 0.
+  histograms.ExpectBucketCount(
+      kPdfLoadStatusMetric, PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer, 1);
+  histograms.ExpectBucketCount(
+      kPdfLoadStatusMetric,
+      PDFLoadStatus::kViewPdfClickedInPdfPluginPlaceholder, 0);
 }
 
 // Flaky. See https://crbug.com/1101514.
