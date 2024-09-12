@@ -361,66 +361,11 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
+# Gather browser tests from subdirectories.
+group("browser_tests") {
   testonly = true
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
   deps = [
-    ":ash",
-    "//ash",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base/test:test_support",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/login",
-    "//chrome/browser/ash/login:test_support",
-    "//chrome/browser/ash/login/lock",
-    "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ash/login/session:test_support",
-    "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ash/policy/core:test_support",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/ash/scalable_iph:test_support",
-    "//chrome/browser/ash/settings",
-    "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/ash/wallpaper_handlers:test_support",
-    "//chrome/browser/chromeos/arc",
-    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/ash:test_support",
-    "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/ash/new_window",
-    "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//chrome/test/base/ash/util:test_support",
-    "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
-    "//chromeos/ash/components/settings",
-    "//components/account_id",
-    "//components/feature_engagement/test:test_support",
-    "//components/media_router/browser",
-    "//components/media_router/browser:test_support",
-    "//components/media_router/common",
-    "//components/media_router/common:test_support",
-    "//components/policy/core/common",
-    "//components/prefs",
-    "//components/user_manager",
-    "//components/value_store:test_support",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//services/audio/public/cpp",
-    "//testing/gtest",
-    "//ui/base",
-    "//ui/chromeos",
-    "//ui/events:test_support",
-
-    # Gather browser tests from subdirectories.
     "//chrome/browser/ui/ash/annotator:browser_tests",
     "//chrome/browser/ui/ash/app_list:browser_tests",
     "//chrome/browser/ui/ash/arc:browser_tests",
