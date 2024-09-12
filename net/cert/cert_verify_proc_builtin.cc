@@ -1219,6 +1219,12 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
           base::Value::Dict results;
           if (verification_type == VerificationType::kEV)
             results.Set("is_ev_attempt", true);
+          results.Set("is_network_time_attempt", !cur_attempt.use_system_time);
+          if (!cur_attempt.use_system_time) {
+            results.Set(
+                "network_time_value",
+                NetLogNumberValue(custom_time.InMillisecondsSinceUnixEpoch()));
+          }
           results.Set("digest_policy",
                       static_cast<int>(cur_attempt.digest_policy));
           return results;
