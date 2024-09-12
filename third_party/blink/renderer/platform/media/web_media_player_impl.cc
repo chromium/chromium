@@ -910,7 +910,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
       main_task_runner_,
       url_index_->GetByUrl(
           url, static_cast<UrlData::CorsMode>(cors_mode),
-          is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal),
+          is_cache_disabled ? UrlData::kCacheDisabled : UrlData::kNormal),
       media_log_.get(), buffered_data_source_host_.get(),
       base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading, weak_this_));
 
@@ -1653,7 +1653,7 @@ void WebMediaPlayerImpl::GetUrlData(
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
       gurl, static_cast<UrlData::CorsMode>(cors_mode_),
-      is_cache_disabled_ ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
+      is_cache_disabled_ ? UrlData::kCacheDisabled : UrlData::kNormal);
   std::move(cb).Run(std::move(url_data));
 }
 

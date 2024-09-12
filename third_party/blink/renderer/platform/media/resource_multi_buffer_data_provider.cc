@@ -227,7 +227,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 
   if (!redirects_to_.is_empty()) {
     destination_url_data = url_data_->url_index()->GetByUrl(
-        redirects_to_, cors_mode_, UrlIndex::kNormal);
+        redirects_to_, cors_mode_, url_data_->cache_lookup_mode());
     redirects_to_ = GURL();
   }
 
@@ -244,8 +244,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   destination_url_data->set_valid_until(base::Time::Now() +
                                         GetCacheValidUntil(response));
 
-  destination_url_data->set_cacheable(GetReasonsForUncacheability(response) ==
-                                      0);
+  bool cacheable = GetReasonsForUncacheability(response) == 0;
+  destination_url_data->set_cacheable(cacheable);
 
   // Expected content length can be |kPositionNotSpecified|, in that case
   // |content_length_| is not specified and this is a streaming response.
