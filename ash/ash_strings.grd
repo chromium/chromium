@@ -1236,6 +1236,9 @@ Style notes:
     system tray to toggle on/off spoken feedback feature.">
         ChromeVox (spoken feedback)
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Mouse keys
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
       </message>
@@ -4061,6 +4064,9 @@ No devices connected.
 
       <message name="IDS_ASH_IME_MENU_ACCESSIBLE_NAME" desc="The accessible text for opt-in IME menu icon in status tray.">
         IME menu button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the mouse keys menu icon in the status tray.">
+        Mouse keys button
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
         Select-to-speak button
