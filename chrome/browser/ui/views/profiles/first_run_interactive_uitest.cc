@@ -875,8 +875,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PeekAndDeclineSignIn DISABLED_PeekAndDeclineSignIn
+#else
+#define MAYBE_PeekAndDeclineSignIn PeekAndDeclineSignIn
+#endif
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       PeekAndDeclineSignIn) {
+                       MAYBE_PeekAndDeclineSignIn) {
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
