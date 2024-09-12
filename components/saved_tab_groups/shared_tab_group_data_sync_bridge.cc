@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -310,6 +311,42 @@ size_t AdjustPreferredTabIndex(size_t position_insert_before,
   return position_insert_before;
 }
 
+// Compares two elements in the reversed order based on their unique positions.
+// Entities with invalid positions are considered greater than entities with
+// valid positions.
+bool ReversedUniquePositionComparison(
+    const std::unique_ptr<syncer::EntityChange>& left,
+    const std::unique_ptr<syncer::EntityChange>& right) {
+  syncer::UniquePosition left_unique_position =
+      syncer::UniquePosition::FromProto(left->data()
+                                            .specifics.shared_tab_group_data()
+                                            .tab()
+                                            .unique_position());
+  if (!left_unique_position.IsValid()) {
+    // `left` (invalid) == `right` (invalid).
+    // `left` (invalid) > `right` (valid).
+    return false;
+  }
+  syncer::UniquePosition right_unique_position =
+      syncer::UniquePosition::FromProto(right->data()
+                                            .specifics.shared_tab_group_data()
+                                            .tab()
+                                            .unique_position());
+  if (!right_unique_position.IsValid()) {
+    // `left` (valid) < `right` (invalid).
+    return true;
+  }
+  return right_unique_position.LessThan(left_unique_position);
+}
+
+// Sorts the tab changes (only additions and updates, without deletions) in the
+// reversed order by their unique positions. If some updates do not have a valid
+// unique position, they are placed to the end in an unspecified order.
+void SortByUniquePositionFromRightToLeft(
+    std::vector<std::unique_ptr<syncer::EntityChange>>& tab_changes) {
+  base::ranges::sort(tab_changes, &ReversedUniquePositionComparison);
+}
+
 }  // namespace
 
 SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
@@ -353,6 +390,7 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
@@ -388,15 +426,38 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   // state. This will unintentionally delete the group and drop any additional
   // add / update messages. By processing deletes last, we can give the groups
   // an opportunity to resolve themselves before they become empty.
+  // TODO(crbug.com/351357559): fix the order of applying updates (groups after
+  // tabs).
   for (const std::string& entity : deleted_entities) {
     DeleteDataFromLocalStorage(entity, write_batch.get());
+  }
+
+  // Sort tab updates and creations in the reversed order. This is required to
+  // apply updates from right to left within one group to avoid unnecessary
+  // reordering during applying updates. See a corresponding test case
+  // ShouldKeepTabsOrderDuringRemoteUpdate for example. Note that ordering by
+  // groups is not required (although could be done for optimization). Tab
+  // updates with invalid unique positions are applied last.
+  SortByUniquePositionFromRightToLeft(tab_updates);
+
+  std::set<base::Uuid> tab_ids_with_pending_model_update;
+  for (const std::unique_ptr<syncer::EntityChange>& change : tab_updates) {
+    // TODO(crbug.com/351357559): consider duplicate GUIDs with different
+    // collaboration IDs.
+    tab_ids_with_pending_model_update.insert(base::Uuid::ParseLowercase(
+        change->data().specifics.shared_tab_group_data().guid()));
   }
 
   // Process tab updates after applying deletions so that tab updates having
   // deleted groups will be stored to `tabs_missing_groups_`.
   for (const std::unique_ptr<syncer::EntityChange>& change : tab_updates) {
-    AddTabToLocalStorage(change->data().specifics.shared_tab_group_data(),
-                         metadata_change_list.get(), write_batch.get());
+    ApplyRemoteTabUpdate(change->data().specifics.shared_tab_group_data(),
+                         metadata_change_list.get(), write_batch.get(),
+                         tab_ids_with_pending_model_update);
+
+    // The tab update has been applied to the model.
+    tab_ids_with_pending_model_update.erase(base::Uuid::ParseLowercase(
+        change->data().specifics.shared_tab_group_data().guid()));
   }
 
   // TODO(crbug.com/319521964): resolve and handle tabs missing groups later.
@@ -773,27 +834,30 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
   StoreSpecifics(write_batch, updated_specifics);
 }
 
-void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
+void SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     syncer::MetadataChangeList* metadata_change_list,
-    syncer::DataTypeStore::WriteBatch* write_batch) {
+    syncer::DataTypeStore::WriteBatch* write_batch,
+    const std::set<base::Uuid>& tab_ids_with_pending_model_update) {
   CHECK(specifics.has_tab());
 
   base::Uuid tab_guid = base::Uuid::ParseLowercase(specifics.guid());
+  CHECK(tab_guid.is_valid());
   base::Uuid group_guid =
       base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid());
-  if (!tab_guid.is_valid() || !group_guid.is_valid()) {
+  if (!group_guid.is_valid()) {
     // Ignore tab with invalid data.
     return;
   }
 
   const SavedTabGroup* existing_group = model_wrapper_->GetGroup(group_guid);
   if (existing_group && existing_group->ContainsTab(tab_guid)) {
-    const size_t position_insert_before = PositionToInsertRemoteTab(
-        specifics.tab().unique_position(), *existing_group);
     const std::optional<int> current_tab_index =
         existing_group->GetIndexOfTab(tab_guid);
     CHECK(current_tab_index.has_value());
+    const size_t position_insert_before = PositionToInsertRemoteTab(
+        specifics.tab().unique_position(), *existing_group,
+        tab_ids_with_pending_model_update);
 
     const SavedTabGroupTab* merged_tab =
         model_wrapper_->MergeRemoteTab(SpecificsToSharedTabGroupTab(
@@ -821,9 +885,9 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
     model_wrapper_->AddTabToGroup(
         existing_group->saved_guid(),
         SpecificsToSharedTabGroupTab(
-            specifics,
-            PositionToInsertRemoteTab(specifics.tab().unique_position(),
-                                      *existing_group)));
+            specifics, PositionToInsertRemoteTab(
+                           specifics.tab().unique_position(), *existing_group,
+                           tab_ids_with_pending_model_update)));
   } else {
     // The tab does not have a corresponding group. This can happen when sync
     // sends the tab data before the group data. In this case, the tab is stored
@@ -951,7 +1015,8 @@ sync_pb::UniquePosition SharedTabGroupDataSyncBridge::CalculateUniquePosition(
 
 size_t SharedTabGroupDataSyncBridge::PositionToInsertRemoteTab(
     const sync_pb::UniquePosition& remote_unique_position,
-    const SavedTabGroup& group) const {
+    const SavedTabGroup& group,
+    const std::set<base::Uuid>& tab_ids_to_ignore) const {
   syncer::UniquePosition parsed_remote_position =
       syncer::UniquePosition::FromProto(remote_unique_position);
   if (!parsed_remote_position.IsValid()) {
@@ -961,6 +1026,15 @@ size_t SharedTabGroupDataSyncBridge::PositionToInsertRemoteTab(
 
   // Find the first local tab index before which the new tab should be inserted.
   for (size_t i = 0; i < group.saved_tabs().size(); ++i) {
+    if (tab_ids_to_ignore.contains(group.saved_tabs()[i].saved_tab_guid())) {
+      // Skip tabs which will be updated later because their unique positions
+      // are already updated in the processor and they can't be used until the
+      // update is applied to the model (because the ordering of tabs may be now
+      // inconsistent between the model and the processor).
+      // This is similar to removing all the updated tabs from the model, and
+      // then adding them one by one considering the right order.
+      continue;
+    }
     syncer::UniquePosition local_position = syncer::UniquePosition::FromProto(
         change_processor()->GetUniquePositionForStorageKey(
             StorageKeyForTabInGroup(group, i)));

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -117,10 +118,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& collaboration_id,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch* write_batch);
-  void AddTabToLocalStorage(
+  void ApplyRemoteTabUpdate(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       syncer::MetadataChangeList* metadata_change_list,
-      syncer::DataTypeStore::WriteBatch* write_batch);
+      syncer::DataTypeStore::WriteBatch* write_batch,
+      const std::set<base::Uuid>& tab_ids_with_pending_model_update);
 
   // Removes all data assigned to `storage_key` from local storage
   // (SavedTabGroupModel, and DataTypeStore). If a group is removed, all its
@@ -158,9 +160,12 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Calculates the position to insert a remote tab with the given unique
   // position. Always returns a valid value regardless input validness.
+  // `tab_ids_to_ignore` is used to exclude tabs which will be updated later
+  // from the comparison (see details in the implementation).
   size_t PositionToInsertRemoteTab(
       const sync_pb::UniquePosition& remote_unique_position,
-      const SavedTabGroup& group) const;
+      const SavedTabGroup& group,
+      const std::set<base::Uuid>& tab_ids_to_ignore) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -55,6 +55,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
+using testing::InvokeWithoutArgs;
 using testing::Pointee;
 using testing::Return;
 using testing::SizeIs;
@@ -68,6 +69,10 @@ MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
 
 MATCHER_P2(HasTabMetadata, title, url, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.url() == GURL(url);
+}
+
+MATCHER_P(HasTabUrl, url, "") {
+  return arg.url() == GURL(url);
 }
 
 MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
@@ -211,6 +216,11 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
       storage_key, CreateEntityData(specifics, collaboration_id));
 }
 
+std::unique_ptr<syncer::EntityChange> CreateDeleteEntityChange(
+    const std::string& storage_key) {
+  return syncer::EntityChange::CreateDelete(storage_key);
+}
+
 std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
     std::unique_ptr<syncer::DataBatch> batch) {
   std::vector<syncer::EntityData> result;
@@ -299,6 +309,20 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     }
   }
 
+  // Updates and mocks unique position for `tab_specifics`. This is helpful to
+  // simulate the order of applying updates: first, sync metadata is stored in
+  // the processor (with unique position), then updates are applied.
+  void UpdateAndMockUniquePositionForTabSpecifics(
+      sync_pb::SharedTabGroupDataSpecifics& tab_specifics,
+      sync_pb::UniquePosition new_unique_position) {
+    CHECK(tab_specifics.has_tab());
+    *tab_specifics.mutable_tab()->mutable_unique_position() =
+        std::move(new_unique_position);
+    ON_CALL(mock_processor(),
+            GetUniquePositionForStorageKey(tab_specifics.guid()))
+        .WillByDefault(Return(tab_specifics.tab().unique_position()));
+  }
+
   // Returns last mocked unique position for `tab`.
   syncer::UniquePosition GetMockedUniquePosition(
       const SavedTabGroupTab& tab) const {
@@ -336,6 +360,26 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     change_list.push_back(std::move(entity_change));
     bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                           std::move(change_list));
+  }
+
+  sync_pb::UniquePosition GetMockedUniquePosition(
+      const std::string& storage_key) {
+    return mock_processor().GetUniquePositionForStorageKey(storage_key);
+  }
+
+  // Generates specifics for the given tab update using the current mocked
+  // unique position.
+  sync_pb::SharedTabGroupDataSpecifics GenerateTabUpdateSpecifics(
+      const SavedTabGroupTab& tab,
+      const std::string& new_title) {
+    sync_pb::UniquePosition tab_unique_position =
+        GetMockedUniquePosition(StorageKeyForTab(tab));
+    sync_pb::SharedTabGroupDataSpecifics tab_update_specifics =
+        MakeTabSpecifics(
+            new_title, tab.url(), tab.saved_group_guid(),
+            syncer::UniquePosition::FromProto(tab_unique_position));
+    tab_update_specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
+    return tab_update_specifics;
   }
 
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
@@ -1312,8 +1356,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
   tab_1_specifics.set_guid(tab_guid_to_update.AsLowercaseString());
 
   // Move "tab 1" to the end, after "tab 2".
-  *tab_1_specifics.mutable_tab()->mutable_unique_position() =
-      GenerateUniquePositionAfter(group.saved_tabs()[2]).ToProto();
+  UpdateAndMockUniquePositionForTabSpecifics(
+      tab_1_specifics,
+      GenerateUniquePositionAfter(group.saved_tabs()[2]).ToProto());
   ApplySingleEntityChange(
       CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
 
@@ -1323,8 +1368,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
                           HasTabMetadata("tab 1", "https://google.com/1")));
 
   // Move "tab 1" to the beginning, before "tab 0".
-  *tab_1_specifics.mutable_tab()->mutable_unique_position() =
-      GenerateUniquePositionBefore(group.saved_tabs()[0]).ToProto();
+  UpdateAndMockUniquePositionForTabSpecifics(
+      tab_1_specifics,
+      GenerateUniquePositionBefore(group.saved_tabs()[0]).ToProto());
   ApplySingleEntityChange(
       CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
 
@@ -1334,10 +1380,10 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
                           HasTabMetadata("tab 2", "https://google.com/2")));
 
   // Move "tab 1" in the middle, between "tab 0" and "tab 2".
-  *tab_1_specifics.mutable_tab()->mutable_unique_position() =
-      GenerateUniquePositionBetween(group.saved_tabs()[1],
-                                    group.saved_tabs()[2])
-          .ToProto();
+  UpdateAndMockUniquePositionForTabSpecifics(
+      tab_1_specifics, GenerateUniquePositionBetween(group.saved_tabs()[0],
+                                                     group.saved_tabs()[2])
+                           .ToProto());
   ApplySingleEntityChange(
       CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
 
@@ -1347,10 +1393,10 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
                           HasTabMetadata("tab 2", "https://google.com/2")));
 
   // Keep "tab 1" in the middle, between "tab 0" and "tab 2".
-  *tab_1_specifics.mutable_tab()->mutable_unique_position() =
-      GenerateUniquePositionBetween(group.saved_tabs()[0],
-                                    group.saved_tabs()[2])
-          .ToProto();
+  UpdateAndMockUniquePositionForTabSpecifics(
+      tab_1_specifics, GenerateUniquePositionBetween(group.saved_tabs()[0],
+                                                     group.saved_tabs()[2])
+                           .ToProto());
   ApplySingleEntityChange(
       CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
 
@@ -1358,6 +1404,116 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
               ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
                           HasTabMetadata("tab 1", "https://google.com/1"),
                           HasTabMetadata("tab 2", "https://google.com/2")));
+}
+
+// This test verifies that the model remains stable from the tab positions POV
+// to avoid changing tab positions when unnecessary. This is helpful to verify
+// applying remote updates which don't contain actual unique position changes.
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldKeepTabsOrderDuringRemoteUpdate) {
+  const std::string kCollaborationId = "collaboration";
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+
+  // Create 3 local tabs and update only 2 of them (but without any moves).
+  for (size_t i = 0; i < 3; ++i) {
+    group.AddTabLocally(test::CreateSavedTabGroupTab(
+        "https://google.com/" + base::NumberToString(i),
+        u"tab " + base::NumberToString16(i), group.saved_guid(),
+        /*position=*/i));
+  }
+  GenerateUniquePositionsForTabsInGroup(group);
+  model()->Add(group);
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
+                          HasTabMetadata("tab 1", "https://google.com/1"),
+                          HasTabMetadata("tab 2", "https://google.com/2")));
+
+  EXPECT_CALL(mock_model_observer(), SavedTabGroupUpdatedFromSync)
+      .Times(2)
+      .WillRepeatedly(InvokeWithoutArgs([this]() {
+        // Verify that tab updates do not reorder them within a group.
+        EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+                    ElementsAre(HasTabUrl("https://google.com/0"),
+                                HasTabUrl("https://google.com/1"),
+                                HasTabUrl("https://google.com/2")));
+      }));
+
+  // Apply updates for the 2 first tabs keeping their unique positions. Keep tab
+  // URLs to be able to verify the order during applying updates.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateUpdateEntityChange(
+      GenerateTabUpdateSpecifics(group.saved_tabs()[0], "updated tab 0"),
+      kCollaborationId));
+  change_list.push_back(CreateUpdateEntityChange(
+      GenerateTabUpdateSpecifics(group.saved_tabs()[1], "updated tab 1"),
+      kCollaborationId));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  // Verify that the order hasn't changed but updates were applied.
+  ASSERT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      ElementsAre(HasTabMetadata("updated tab 0", "https://google.com/0"),
+                  HasTabMetadata("updated tab 1", "https://google.com/1"),
+                  HasTabMetadata("tab 2", "https://google.com/2")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldUpdateMultiplePositionsOnRemoteUpdate) {
+  const std::string kCollaborationId = "collaboration";
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+
+  // Create 3 local tabs to have the following states during one update: tab 0
+  // is deleted, tab 1 is moved, tab 2 stays intact.
+  for (size_t i = 0; i < 3; ++i) {
+    group.AddTabLocally(test::CreateSavedTabGroupTab(
+        "https://google.com/" + base::NumberToString(i),
+        u"tab " + base::NumberToString16(i), group.saved_guid(),
+        /*position=*/i));
+  }
+  GenerateUniquePositionsForTabsInGroup(group);
+  model()->Add(group);
+
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
+                          HasTabMetadata("tab 1", "https://google.com/1"),
+                          HasTabMetadata("tab 2", "https://google.com/2")));
+
+  // Move tab 1 to the end, and remove tab 0.
+  base::Uuid tab_guid_to_update = group.saved_tabs()[1].saved_tab_guid();
+  sync_pb::SharedTabGroupDataSpecifics tab_1_specifics = MakeTabSpecifics(
+      "tab 1", GURL("https://google.com/1"),
+      /*group_id=*/group.saved_guid(), GenerateRandomUniquePosition());
+  tab_1_specifics.set_guid(tab_guid_to_update.AsLowercaseString());
+
+  // Update unique positions in the processor before applying updates.
+  UpdateAndMockUniquePositionForTabSpecifics(
+      tab_1_specifics,
+      GenerateUniquePositionAfter(group.saved_tabs()[2]).ToProto());
+  ON_CALL(mock_processor(), GetUniquePositionForStorageKey(
+                                StorageKeyForTab(group.saved_tabs()[0])))
+      .WillByDefault(Return(sync_pb::UniquePosition()));
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
+  change_list.push_back(
+      CreateDeleteEntityChange(StorageKeyForTab(group.saved_tabs()[0])));
+
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 2", "https://google.com/2"),
+                          HasTabMetadata("tab 1", "https://google.com/1")));
 }
 
 // The number of tabs to test the correct ordering of remote updates.
