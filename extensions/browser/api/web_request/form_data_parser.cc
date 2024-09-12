@@ -335,8 +335,9 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
       offset += sizeof(kBoundaryString) - 1;
       boundary = content_type_header->substr(
           offset, content_type_header->find(';', offset));
-      if (!boundary.empty())
+      if (!boundary.empty()) {
         choice = MULTIPART;
+      }
     }
   }
   // Other cases are unparseable, including when |content_type| is "text/plain".
@@ -375,8 +376,9 @@ bool FormDataParserUrlEncoded::AllDataReadOK() {
 }
 
 bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
-  if (!source_set_ || source_malformed_)
+  if (!source_set_ || source_malformed_) {
     return false;
+  }
 
   bool success = RE2::ConsumeN(&source_, pattern(), args_, args_size_);
   if (success) {
@@ -395,17 +397,19 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
     }
   }
   if (source_.length() > 0) {
-    if (source_[0] == '&')
+    if (source_[0] == '&') {
       source_.remove_prefix(1);  // Remove the leading '&'.
-    else
+    } else {
       source_malformed_ = true;  // '&' missing between two name-value pairs.
+    }
   }
   return success && !source_malformed_;
 }
 
 bool FormDataParserUrlEncoded::SetSource(std::string_view source) {
-  if (source_set_)
+  if (source_set_) {
     return false;  // We do not allow multiple sources for this parser.
+  }
   source_ = source;
   source_set_ = true;
   source_malformed_ = false;
@@ -469,8 +473,9 @@ bool FormDataParserMultipart::FinishReadingPart(std::string_view* data) {
 }
 
 bool FormDataParserMultipart::GetNextNameValue(Result* result) {
-  if (source_.empty() || state_ != STATE_READY)
+  if (source_.empty() || state_ != STATE_READY) {
     return false;
+  }
 
   // 1. Read body-part headers.
   std::string_view name;
@@ -519,8 +524,9 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
 }
 
 bool FormDataParserMultipart::SetSource(std::string_view source) {
-  if (source.data() == nullptr || !source_.empty())
+  if (source.data() == nullptr || !source_.empty()) {
     return false;
+  }
   source_ = source;
 
   switch (state_) {
@@ -566,15 +572,17 @@ bool FormDataParserMultipart::TryReadHeader(std::string_view* name,
     return true;
   }
   const char* header_start = source_.data();
-  if (!RE2::Consume(&source_, header_pattern()))
+  if (!RE2::Consume(&source_, header_pattern())) {
     return false;
+  }
   // (*) After this point we must return true, because we consumed one header.
 
   // Subtract 2 for the trailing "\r\n".
   std::string_view header(header_start, source_.data() - header_start - 2);
 
-  if (!StartsWithPattern(header, content_disposition_pattern()))
+  if (!StartsWithPattern(header, content_disposition_pattern())) {
     return true;  // Skip headers that don't describe the content-disposition.
+  }
 
   std::string_view groups[2];
 

@@ -83,8 +83,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     // be associated with a DOM element.
     CHECK(!should_collapse_initiator);
 
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     OnBeforeRequestCompleted(result);
@@ -106,8 +107,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
                     &WebTransportHandshakeProxy::OnBeforeSendHeadersCompleted,
                     base::Unretained(this)),
                 &request_headers_);
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     // See the comments in the OnBeforeSendHeadersCompleted to see why
@@ -175,8 +177,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     // be associated with a DOM element.
     CHECK(!should_collapse_initiator);
 
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
     OnHeadersReceivedCompleted(result);

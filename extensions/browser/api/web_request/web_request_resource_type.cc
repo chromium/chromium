@@ -52,10 +52,12 @@ static_assert(kResourceTypesLength ==
 WebRequestResourceType ToWebRequestResourceType(
     const network::ResourceRequest& request,
     bool is_download) {
-  if (request.url.SchemeIsWSOrWSS())
+  if (request.url.SchemeIsWSOrWSS()) {
     return WebRequestResourceType::WEB_SOCKET;
-  if (is_download)
+  }
+  if (is_download) {
     return WebRequestResourceType::OTHER;
+  }
   if (request.is_fetch_like_api) {
     // This must be checked before `request.keepalive` check below, because
     // currently Fetch keepAlive is not reported as ping.
@@ -98,8 +100,9 @@ WebRequestResourceType ToWebRequestResourceType(
       return WebRequestResourceType::CSP_REPORT;
     case network::mojom::RequestDestination::kEmpty:
       // https://fetch.spec.whatwg.org/#concept-request-destination
-      if (request.keepalive)
+      if (request.keepalive) {
         return WebRequestResourceType::PING;
+      }
       return WebRequestResourceType::OTHER;
     case network::mojom::RequestDestination::kWebBundle:
       return WebRequestResourceType::WEBBUNDLE;
