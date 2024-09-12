@@ -675,7 +675,6 @@
           "--initial-find-device-attempts=3",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -962,7 +961,6 @@
           "--initial-find-device-attempts=3",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1252,7 +1250,6 @@
           "--initial-find-device-attempts=3",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

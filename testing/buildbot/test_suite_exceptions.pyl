@@ -4881,17 +4881,6 @@
   },
   'webgpu_cts_compat_tests': {
     'modifications': {
-      # TODO(crbug.com/40277102): Make these tests non-experimental on Android
-      # after they've had a chance to soak on CI.
-      'Dawn Android arm64 DEPS Release (Pixel 6)': {
-        'experiment_percentage': 100,
-      },
-      'Dawn Android arm64 Experimental Release (Pixel 6)': {
-        'experiment_percentage': 100,
-      },
-      'Dawn Android arm64 Release (Pixel 6)': {
-        'experiment_percentage': 100,
-      },
       # TODO(crbug.com/40932096): Enable on Intel trybots once there is
       # sufficient capacity.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
