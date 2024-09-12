@@ -339,15 +339,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionBehavior"
-    enum="ConversionAttributionBehavior" expires_after="2024-10-24">
+    enum="ConversionAttributionBehavior" expires_after="2025-09-01">
+  <owner>pbirk@chromium.org</owner>
   <owner>jdeabreu@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the Attribution Behavior for WebView set via the androidx.webkit
-    WebSettingsCompat#setAttributionRegistrationBehavior method. This setting
-    allows developers to configure whether Attribution sources and triggers are
-    registered as coming from the app itself or coming from the web content in
-    the WebView, or if Attribution should be disabled.
+    Records the Attribution Behavior for WebView. This behavior can be changed
+    via the androidx.webkit WebSettingsCompat#setAttributionRegistrationBehavior
+    method, and allows developers to configure whether Attribution sources and
+    triggers are registered as coming from the app itself or coming from the web
+    content in the WebView, or if Attribution should be disabled.
+
+    The histogram is logged whenever a new WebContents is created for a WebView.
   </summary>
 </histogram>
 
