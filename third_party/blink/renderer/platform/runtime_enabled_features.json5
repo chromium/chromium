@@ -1068,8 +1068,10 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
+      // Shipped in M130.  Should be removed a little bit after M130 reaches
+      // stable.
       name: "CSSPartAllowsMoreSelectorsAfter",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The `inset-area` CSS property has been renamed to `position-area`. This
