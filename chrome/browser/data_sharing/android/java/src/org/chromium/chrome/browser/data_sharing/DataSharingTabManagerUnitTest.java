@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -253,9 +254,8 @@ public class DataSharingTabManagerUnitTest {
         SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
         savedTabGroupWithoutLocalId.savedTabs.add(savedTabGroupTab);
 
-        when(mTabGroupSyncService.getGroup(GROUP_ID))
-                .thenReturn(savedTabGroupWithoutLocalId)
-                .thenReturn(mSavedTabGroup);
+        when(mTabGroupSyncService.getGroup(GROUP_ID)).thenReturn(savedTabGroupWithoutLocalId);
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(mSavedTabGroup);
 
         mDataSharingTabManager.initiateJoinFlow(TEST_URL);
 
@@ -270,8 +270,12 @@ public class DataSharingTabManagerUnitTest {
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
         mDataSharingTabManager.initiateJoinFlow(TEST_URL);
+
+        // The same group should not be observed twice.
+        mDataSharingTabManager.initiateJoinFlow(TEST_URL);
+
         verify(mTabGroupSyncService).addObserver(any());
-        verify(mDataSharingService).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
+        verify(mDataSharingService, times(2)).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
     }
 
     @Test

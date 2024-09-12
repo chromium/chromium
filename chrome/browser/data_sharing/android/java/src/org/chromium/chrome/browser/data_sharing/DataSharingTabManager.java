@@ -48,8 +48,9 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is responsible for handling communication from the UI to multiple data sharing
@@ -66,22 +67,18 @@ public class DataSharingTabManager {
     private final Resources mResources;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private Callback<Profile> mProfileObserver;
-    private List<SyncObserver> mSyncObserversList;
+    private Map</*collaborationId*/ String, SyncObserver> mSyncObserversList;
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
-        interface OnTabGroupAddedCallback {
-            void onResult(SyncObserver observer, SavedTabGroup group);
-        }
-
         private final String mDataSharingGroupId;
         private final TabGroupSyncService mTabGroupSyncService;
-        private OnTabGroupAddedCallback mCallback;
+        private Callback<SavedTabGroup> mCallback;
 
         SyncObserver(
                 String dataSharingGroupId,
                 TabGroupSyncService tabGroupSyncService,
-                OnTabGroupAddedCallback callback) {
+                Callback<SavedTabGroup> callback) {
             mDataSharingGroupId = dataSharingGroupId;
             mTabGroupSyncService = tabGroupSyncService;
             mCallback = callback;
@@ -92,9 +89,9 @@ public class DataSharingTabManager {
         @Override
         public void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {
             if (mDataSharingGroupId.equals(group.collaborationId)) {
-                OnTabGroupAddedCallback callback = mCallback;
+                Callback<SavedTabGroup> callback = mCallback;
                 destroy();
-                callback.onResult(this, group);
+                callback.onResult(group);
             }
         }
 
@@ -131,7 +128,7 @@ public class DataSharingTabManager {
         mWindowAndroid = windowAndroid;
         mResources = resources;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
-        mSyncObserversList = new ArrayList<SyncObserver>();
+        mSyncObserversList = new HashMap<>();
         assert mProfileSupplier != null;
         assert mBottomSheetControllerSupplier != null;
         assert mShareDelegateSupplier != null;
@@ -139,9 +136,10 @@ public class DataSharingTabManager {
 
     /** Cleans up any outstanding resources. */
     public void destroy() {
-        for (SyncObserver observer : mSyncObserversList) {
-            observer.destroy();
+        for (Map.Entry<String, SyncObserver> entry : mSyncObserversList.entrySet()) {
+            entry.getValue().destroy();
         }
+        mSyncObserversList.clear();
     }
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -225,9 +223,9 @@ public class DataSharingTabManager {
         }
 
         GroupToken groupToken = parseResult.groupToken;
+        String groupId = groupToken.groupId;
         // Verify that tab group does not already exist in sync.
-        SavedTabGroup existingGroup =
-                getTabGroupForCollabIdFromSync(groupToken.groupId, tabGroupSyncService);
+        SavedTabGroup existingGroup = getTabGroupForCollabIdFromSync(groupId, tabGroupSyncService);
         if (existingGroup != null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "DataSharing.Android.JoinActionFlowState",
@@ -238,17 +236,18 @@ public class DataSharingTabManager {
         }
 
         // TODO(b/354003616): Show loading dialog while waiting for tab.
+        if (!mSyncObserversList.containsKey(groupId)) {
+            SyncObserver syncObserver =
+                    new SyncObserver(
+                            groupId,
+                            tabGroupSyncService,
+                            (group) -> {
+                                onSavedTabGroupAvailable(group);
+                                mSyncObserversList.remove(group.collaborationId);
+                            });
 
-        SyncObserver syncObserver =
-                new SyncObserver(
-                        groupToken.groupId,
-                        tabGroupSyncService,
-                        (observer, group) -> {
-                            onSavedTabGroupAvailable(group);
-                            mSyncObserversList.remove(observer);
-                        });
-
-        mSyncObserversList.add(syncObserver);
+            mSyncObserversList.put(groupId, syncObserver);
+        }
 
         dataSharingService.addMember(
                 groupToken.groupId,
@@ -340,8 +339,7 @@ public class DataSharingTabManager {
                             "DataSharing.Android.JoinActionFlowState",
                             JoinActionStateAndroid.LOCAL_TAB_GROUP_ADDED,
                             JoinActionStateAndroid.COUNT);
-                    SavedTabGroup savedTabGroup =
-                            tabGroupSyncService.getGroup(group.collaborationId);
+                    SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(group.syncId);
                     switchToTabGroup(savedTabGroup);
                     RecordHistogram.recordEnumeratedHistogram(
                             "DataSharing.Android.JoinActionFlowState",
