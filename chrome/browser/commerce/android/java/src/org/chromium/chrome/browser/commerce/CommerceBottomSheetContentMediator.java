@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -16,10 +20,18 @@ public class CommerceBottomSheetContentMediator {
     private final ModelList mModelList;
     private int mContentReadyCount;
     private final int mExpectedContentCount;
+    @NonNull private final BottomSheetController mBottomSheetController;
+    private final View mCommerceBottomSheetContentContainer;
 
-    public CommerceBottomSheetContentMediator(ModelList modelList, int expectedContentCount) {
+    public CommerceBottomSheetContentMediator(
+            ModelList modelList,
+            int expectedContentCount,
+            @NonNull BottomSheetController bottomSheetController,
+            View commerceBottomSheetContentContainer) {
         mModelList = modelList;
         mExpectedContentCount = expectedContentCount;
+        mBottomSheetController = bottomSheetController;
+        mCommerceBottomSheetContentContainer = commerceBottomSheetContentContainer;
     }
 
     public void onContentReady(@Nullable PropertyModel model) {
@@ -64,7 +76,9 @@ public class CommerceBottomSheetContentMediator {
     }
 
     private void showBottomSheet() {
-        // TODO(b/362359865): create BottomSheetContent and request to show with the
-        // BottomSheetController.
+        CommerceBottomSheetContent content =
+                new CommerceBottomSheetContent(
+                        mCommerceBottomSheetContentContainer, mModelList.size());
+        mBottomSheetController.requestShowContent(content, true);
     }
 }

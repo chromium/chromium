@@ -17,11 +17,15 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -38,6 +42,10 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus().setBugComponent(UI_BROWSER_SHOPPING).build();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock BottomSheetController mBottomSheetController;
 
     private ModelList mModelList;
     private View mContentView;
@@ -58,6 +66,7 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup rootView = new FrameLayout(getActivity());
@@ -67,7 +76,9 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     getActivity().setContentView(rootView, params);
 
-                    mCoordinator = new CommerceBottomSheetContentCoordinator(getActivity());
+                    mCoordinator =
+                            new CommerceBottomSheetContentCoordinator(
+                                    getActivity(), mBottomSheetController);
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();

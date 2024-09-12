@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -50,7 +51,8 @@ public class CommerceBottomSheetContentCoordinator {
     private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public CommerceBottomSheetContentCoordinator(Context context) {
+    public CommerceBottomSheetContentCoordinator(
+            Context context, @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
@@ -84,7 +86,12 @@ public class CommerceBottomSheetContentCoordinator {
                     }
                 });
 
-        mMediator = new CommerceBottomSheetContentMediator(mModelList, mContentProviders.size());
+        mMediator =
+                new CommerceBottomSheetContentMediator(
+                        mModelList,
+                        mContentProviders.size(),
+                        bottomSheetController,
+                        mCommerceBottomSheetContentContainer);
     }
 
     /** Request to show the bottom sheet. */
