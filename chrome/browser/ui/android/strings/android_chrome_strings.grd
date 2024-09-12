@@ -4536,7 +4536,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Bookmark saved
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_UNTRACKED_SUCCESS_MESSAGE" desc="Confirmation message when user untrack a product successfully.">
-        Alerts for this product have been turned off
+        Price tracking stopped
       </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
