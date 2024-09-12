@@ -712,21 +712,17 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
 
   check(kSuccess, std::nullopt, false);
   check(kFailedNotEligible,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff,
-        false);
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
-  check(kFailedBSA401,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
+  check(kFailedBSA401, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
   check(kFailedBSA403,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff,
-        false);
+        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
   check(kFailedBSAOther,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff,
-        true);
+        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
   check(kFailedOAuthTokenTransient,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff,
-        true);
+        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
 
   check(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
@@ -735,8 +731,8 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   // The backoff time should have been reset.
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
 
   check(kFailedOAuthTokenPersistent, base::TimeDelta::Max(), false);
   check(kFailedBSA400, base::TimeDelta::Max(), false);
@@ -749,8 +745,8 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
-  check(kFailedBSA400,
-        ip_protection::IpProtectionCoreHostHelper::kBugBackoff, true);
+  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
+        true);
 }
 
 TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {

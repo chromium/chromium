@@ -20,8 +20,7 @@ IpProtectionCoreHost* IpProtectionCoreHostFactory::GetForProfile(
 }
 
 // static
-IpProtectionCoreHostFactory*
-IpProtectionCoreHostFactory::GetInstance() {
+IpProtectionCoreHostFactory* IpProtectionCoreHostFactory::GetInstance() {
   static base::NoDestructor<IpProtectionCoreHostFactory> instance;
   return instance.get();
 }
@@ -57,8 +56,7 @@ IpProtectionCoreHostFactory::IpProtectionCoreHostFactory()
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
-IpProtectionCoreHostFactory::~IpProtectionCoreHostFactory() =
-    default;
+IpProtectionCoreHostFactory::~IpProtectionCoreHostFactory() = default;
 
 std::unique_ptr<KeyedService>
 IpProtectionCoreHostFactory::BuildServiceInstanceForBrowserContext(
@@ -70,8 +68,7 @@ IpProtectionCoreHostFactory::BuildServiceInstanceForBrowserContext(
       profile->GetPrefs(), profile);
 }
 
-bool IpProtectionCoreHostFactory::ServiceIsCreatedWithBrowserContext()
-    const {
+bool IpProtectionCoreHostFactory::ServiceIsCreatedWithBrowserContext() const {
   // Auth tokens will be requested soon after `Profile()` creation (after the
   // per-profile `NetworkContext()` gets created) so instantiate the
   // `IpProtectionCoreHost()` so that it already exists by the time

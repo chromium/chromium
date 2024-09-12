@@ -88,7 +88,7 @@ class IpProtectionCoreHost
 
   static IpProtectionCoreHost* Get(Profile* profile);
 
-mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
+  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
     return receivers_;
   }

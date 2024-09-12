@@ -155,8 +155,7 @@ void IpProtectionCoreHost::TryGetAuthTokens(
           ? quiche::ProxyLayer::kProxyA
           : quiche::ProxyLayer::kProxyB;
   auto request_token_callback = base::BindOnce(
-      &IpProtectionCoreHost::
-          OnRequestOAuthTokenCompletedForTryGetAuthTokens,
+      &IpProtectionCoreHost::OnRequestOAuthTokenCompletedForTryGetAuthTokens,
       weak_ptr_factory_.GetWeakPtr(), batch_size, quiche_proxy_layer,
       std::move(callback), oauth_token_fetch_start_time);
 
@@ -202,10 +201,9 @@ void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
-  auto request_token_callback =
-      base::BindOnce(&IpProtectionCoreHost::
-                         OnRequestOAuthTokenCompletedForGetProxyConfig,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto request_token_callback = base::BindOnce(
+      &IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   RequestOAuthToken(std::move(request_token_callback));
 }
@@ -253,14 +251,13 @@ void IpProtectionCoreHost::OnRequestOAuthTokenCompleted(
   std::move(callback).Run(error, access_token_info);
 }
 
-void IpProtectionCoreHost::
-    OnRequestOAuthTokenCompletedForTryGetAuthTokens(
-        uint32_t batch_size,
-        quiche::ProxyLayer quiche_proxy_layer,
-        TryGetAuthTokensCallback callback,
-        base::TimeTicks oauth_token_fetch_start_time,
-        GoogleServiceAuthError error,
-        signin::AccessTokenInfo access_token_info) {
+void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForTryGetAuthTokens(
+    uint32_t batch_size,
+    quiche::ProxyLayer quiche_proxy_layer,
+    TryGetAuthTokensCallback callback,
+    base::TimeTicks oauth_token_fetch_start_time,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -306,12 +303,11 @@ void IpProtectionCoreHost::FetchBlindSignedToken(
   ip_protection_token_direct_fetcher_
       .AsyncCall(
           &ip_protection::IpProtectionTokenDirectFetcher::FetchBlindSignedToken)
-      .WithArgs(
-          std::move(access_token), batch_size, quiche_proxy_layer,
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted,
-              weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
-              std::move(callback))));
+      .WithArgs(std::move(access_token), batch_size, quiche_proxy_layer,
+                base::BindPostTaskToCurrentDefault(base::BindOnce(
+                    &IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted,
+                    weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
+                    std::move(callback))));
 }
 
 void IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
@@ -359,8 +355,8 @@ void IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
   std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
     std::optional<ip_protection::BlindSignedAuthToken> converted_token =
-        ip_protection::IpProtectionCoreHostHelper::
-            CreateBlindSignedAuthToken(token);
+        ip_protection::IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(
+            token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(std::nullopt, std::move(callback),
                                kFailedBSAOther);
@@ -431,15 +427,13 @@ std::optional<base::TimeDelta> IpProtectionCoreHost::CalculateBackoff(
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff =
-          ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff;
+      backoff = ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff;
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff =
-          ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
+      backoff = ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
       exponential = true;
       break;
     case kFailedBSA400:
