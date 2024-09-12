@@ -33,6 +33,7 @@ enum class UserRemovalReason : int32_t {
   DEVICE_EPHEMERAL_USERS_ENABLED = 4,
   GAIA_REMOVED = 5,
   MISCONFIGURED_USER = 6,
+  DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
 };
 
 // Interface for UserManagerBase - that provides base implementation for
