@@ -1896,7 +1896,6 @@ data/accessibility/css/color-expected-win.txt
 data/accessibility/css/color.html
 data/accessibility/css/content-visibility-auto-aria-hidden-expected-blink.txt
 data/accessibility/css/content-visibility-auto-aria-hidden.html
-data/accessibility/css/content-visibility-auto-crash-expected-blink.txt
 data/accessibility/css/content-visibility-auto-crash.html
 data/accessibility/css/content-visibility-hidden-check-failure-expected-blink.txt
 data/accessibility/css/content-visibility-hidden-check-failure.html

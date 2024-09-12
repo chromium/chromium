@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSColor) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityCSSContentVisibilityAutoCrash) {
+                       AccessibilityCSSContentVisibilityAutoCrash) {
   RunCSSTest(FILE_PATH_LITERAL("content-visibility-auto-crash.html"));
 }
 
@@ -549,15 +549,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAOnclick) {
   RunHtmlTest(FILE_PATH_LITERAL("a-onclick.html"));
 }
 
-// TODO(crbug.com/40830092): This test is failing on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilityANestedStructure \
-  DISABLED_AccessibilityANestedStructure
-#else
-#define MAYBE_AccessibilityANestedStructure AccessibilityANestedStructure
-#endif  // BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityANestedStructure) {
+                       AccessibilityANestedStructure) {
   RunHtmlTest(FILE_PATH_LITERAL("a-nested-structure.html"));
 }
 
@@ -602,14 +595,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomLiveRegion) {
   RunAomTest(FILE_PATH_LITERAL("aom-live-region.html"));
 }
 
-// TODO(http://crbug.com/1289698): fails on Windows 7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityAomModalDialog DISABLED_AccessibilityAomModalDialog
-#else
-#define MAYBE_AccessibilityAomModalDialog AccessibilityAomModalDialog
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAomModalDialog) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomModalDialog) {
   RunAomTest(FILE_PATH_LITERAL("aom-modal-dialog.html"));
 }
 
@@ -776,16 +762,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaControls) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls.html"));
 }
 
-// The test times out on Linux (crbug.com/342552400).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityAriaControlsManyParagraphsBetween \
-  DISABLED_AccessibilityAriaControlsManyParagraphsBetween
-#else
-#define MAYBE_AccessibilityAriaControlsManyParagraphsBetween \
-  AccessibilityAriaControlsManyParagraphsBetween
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaControlsManyParagraphsBetween) {
+                       AccessibilityAriaControlsManyParagraphsBetween) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls-many-paragraphs-between.html"));
 }
 
@@ -1322,17 +1300,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsList) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-list.html"));
 }
 
-// TODO(crbug.com/40848920): test timeout on Fuchsia
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilityAriaOwnsWithRoleChange \
-  DISABLED_AccessibilityAriaOwnsWithRoleChange
-#else
-#define MAYBE_AccessibilityAriaOwnsWithRoleChange \
-  AccessibilityAriaOwnsWithRoleChange
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaOwnsWithRoleChange) {
+                       AccessibilityAriaOwnsWithRoleChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-with-role-change.html"));
 }
 
@@ -1357,8 +1326,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaParagraph) {
   RunAriaTest(FILE_PATH_LITERAL("aria-paragraph.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAriaPosinset) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaPosinset) {
   RunAriaTest(FILE_PATH_LITERAL("aria-posinset.html"));
 }
 
@@ -1460,7 +1428,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaSearchbox) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAriaSearchboxWithSelection) {
+                       AccessibilityAriaSearchboxWithSelection) {
   RunAriaTest(FILE_PATH_LITERAL("aria-searchbox-with-selection.html"));
 }
 
@@ -1574,7 +1542,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAriaTextboxWithSelection) {
+                       AccessibilityAriaTextboxWithSelection) {
   RunAriaTest(FILE_PATH_LITERAL("aria-textbox-with-selection.html"));
 }
 
