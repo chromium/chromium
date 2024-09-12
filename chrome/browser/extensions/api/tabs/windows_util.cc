@@ -26,47 +26,49 @@
 
 namespace windows_util {
 
-bool GetControllerFromWindowID(ExtensionFunction* function,
-                               int window_id,
-                               extensions::WindowController::TypeFilter filter,
-                               extensions::WindowController** out_controller,
-                               std::string* error) {
-  DCHECK(out_controller);
+bool GetBrowserFromWindowID(ExtensionFunction* function,
+                            int window_id,
+                            extensions::WindowController::TypeFilter filter,
+                            Browser** browser,
+                            std::string* error) {
+  DCHECK(browser);
   DCHECK(error);
 
-  *out_controller = nullptr;
+  *browser = nullptr;
   if (window_id == extension_misc::kCurrentWindowId) {
     // If there is a window controller associated with this extension, use that.
-    if (extensions::WindowController* window_controller =
-            function->dispatcher()->GetExtensionWindowController()) {
-      *out_controller = window_controller;
-      return true;
+    extensions::WindowController* window_controller =
+        function->dispatcher()->GetExtensionWindowController();
+    if (!window_controller) {
+      // Otherwise get the focused or most recently added window.
+      window_controller =
+          extensions::WindowControllerList::GetInstance()
+              ->CurrentWindowForFunctionWithFilter(function, filter);
     }
 
-    // Otherwise get the focused or most recently added window.
-    if (extensions::WindowController* window_controller =
-            extensions::WindowControllerList::GetInstance()
-                ->CurrentWindowForFunctionWithFilter(function, filter)) {
-      *out_controller = window_controller;
-      return true;
-    }
+    if (window_controller)
+      *browser = window_controller->GetBrowser();
 
-    *error = extensions::tabs_constants::kNoCurrentWindowError;
-    return false;
+    if (!(*browser)) {
+      *error = extensions::tabs_constants::kNoCurrentWindowError;
+      return false;
+    }
   } else {
-    if (extensions::WindowController* window_controller =
-            extensions::WindowControllerList::GetInstance()
-                ->FindWindowForFunctionByIdWithFilter(function, window_id,
-                                                      filter)) {
-      *out_controller = window_controller;
-      return true;
-    }
+    extensions::WindowController* window_controller =
+        extensions::WindowControllerList::GetInstance()
+            ->FindWindowForFunctionByIdWithFilter(function, window_id, filter);
+    if (window_controller)
+      *browser = window_controller->GetBrowser();
 
-    *error = extensions::ErrorUtils::FormatErrorMessage(
-        extensions::tabs_constants::kWindowNotFoundError,
-        base::NumberToString(window_id));
-    return false;
+    if (!(*browser)) {
+      *error = extensions::ErrorUtils::FormatErrorMessage(
+          extensions::tabs_constants::kWindowNotFoundError,
+          base::NumberToString(window_id));
+      return false;
+    }
   }
+  DCHECK(*browser);
+  return true;
 }
 
 bool CanOperateOnWindow(const ExtensionFunction* function,

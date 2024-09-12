@@ -692,11 +692,8 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     if (!browser)
       error = kNoActiveWindowFound;
   } else {
-    if (WindowController* controller =
-            ExtensionTabUtil::GetControllerInProfileWithId(
-                profile, window_id, include_incognito_information(), &error)) {
-      browser = controller->GetBrowser();
-    }
+    browser = ExtensionTabUtil::GetBrowserInProfileWithId(
+        profile, window_id, include_incognito_information(), &error);
   }
 
   if (!browser) {

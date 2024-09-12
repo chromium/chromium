@@ -446,15 +446,16 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::GetRestoredTabResult(
 
 ExtensionFunction::ResponseValue
 SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
-  WindowController* window_controller = nullptr;
+  Browser* browser = nullptr;
   std::string error;
-  if (!windows_util::GetControllerFromWindowID(this, window_id, 0,
-                                               &window_controller, &error)) {
+  if (!windows_util::GetBrowserFromWindowID(this, window_id, 0, &browser,
+                                            &error)) {
     return Error(error);
   }
   base::Value::Dict window_value =
-      window_controller->CreateWindowValueForExtension(
-          extension(), WindowController::kPopulateTabs, source_context_type());
+      ExtensionTabUtil::CreateWindowValueForExtension(
+          *browser, extension(), WindowController::kPopulateTabs,
+          source_context_type());
   std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);
   DCHECK(window);

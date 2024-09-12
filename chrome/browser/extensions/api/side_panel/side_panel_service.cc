@@ -223,11 +223,10 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
     int window_id,
     bool include_incognito_information) {
   std::string error;
-  WindowController* window_controller =
-      ExtensionTabUtil::GetControllerInProfileWithId(
-          Profile::FromBrowserContext(context), window_id,
-          include_incognito_information, &error);
-  if (!window_controller) {
+  Browser* browser = ExtensionTabUtil::GetBrowserInProfileWithId(
+      Profile::FromBrowserContext(context), window_id,
+      include_incognito_information, &error);
+  if (!browser) {
     return base::unexpected(error);
   }
 
@@ -239,8 +238,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
   }
 
   side_panel_util::OpenGlobalExtensionSidePanel(
-      *window_controller->GetBrowser(), /*web_contents=*/nullptr,
-      extension.id());
+      *browser, /*web_contents=*/nullptr, extension.id());
   return true;
 }
 
