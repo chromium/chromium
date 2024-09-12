@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -150,7 +151,7 @@ AggregatableDebugRateLimitTable::AllowedForRateLimit(
     }
 
     total_global_budget += consumed_budget;
-    if (serialized_reporting_site == statement.ColumnString(0)) {
+    if (serialized_reporting_site == statement.ColumnStringView(0)) {
       total_reporting_budget += consumed_budget;
     }
   }
@@ -241,7 +242,7 @@ bool AggregatableDebugRateLimitTable::ClearDataForOriginsInRange(
   while (select_statement.Step()) {
     int64_t rate_limit_id = select_statement.ColumnInt64(0);
     if (filter.Run(blink::StorageKey::CreateFirstParty(
-            DeserializeOrigin(select_statement.ColumnString(1))))) {
+            DeserializeOrigin(select_statement.ColumnStringView(1))))) {
       delete_statement.Reset(/*clear_bound_vars=*/false);
       delete_statement.BindInt64(0, rate_limit_id);
       if (!delete_statement.Run()) {

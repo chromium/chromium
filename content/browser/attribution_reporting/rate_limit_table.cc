@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -326,17 +327,19 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
       net::SchemefulSite(source.common_info().reporting_origin()).Serialize());
   statement.BindTime(2, min_timestamp);
 
-  std::string serialized_reporting_origin =
+  const std::string serialized_reporting_origin =
       source.common_info().reporting_origin().Serialize();
   std::set<std::string> reporting_origins;
   while (statement.Step()) {
-    std::string origin = statement.ColumnString(0);
+    std::string_view origin = statement.ColumnStringView(0);
 
     if (origin == serialized_reporting_origin) {
       return RateLimitResult::kAllowed;
     }
 
-    reporting_origins.insert(std::move(origin));
+    // Note: In C++23 this can be `insert(origin)` instead to avoid copying the
+    // string when the value is already contained.
+    reporting_origins.insert(std::string(origin));
     if (reporting_origins.size() == max_origins) {
       return RateLimitResult::kNotAllowed;
     }
@@ -555,9 +558,9 @@ RateLimitTable::SourceAllowedForDestinationRateLimit(
 
   while (statement.Step()) {
     net::SchemefulSite destination_site =
-        net::SchemefulSite::Deserialize(statement.ColumnString(0));
+        net::SchemefulSite::Deserialize(statement.ColumnStringView(0));
 
-    if (serialized_reporting_site == statement.ColumnString(1)) {
+    if (serialized_reporting_site == statement.ColumnStringView(1)) {
       same_reporting_destination_sites.insert(destination_site);
     }
 
@@ -619,7 +622,8 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationPerDayRateLimit(
 
   while (statement.Step()) {
     destination_sites.insert(
-        net::SchemefulSite::Deserialize(statement.ColumnString(0)));
+        net::SchemefulSite::Deserialize(statement.ColumnStringView(0)));
+
     if (destination_sites.size() > static_cast<size_t>(limit)) {
       return RateLimitResult::kNotAllowed;
     }
@@ -679,14 +683,16 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
     statement.BindString(1, destination.Serialize());
 
     while (statement.Step()) {
-      std::string reporting_origin = statement.ColumnString(0);
+      std::string_view reporting_origin = statement.ColumnStringView(0);
 
       // The origin isn't new, so it doesn't change the count.
       if (reporting_origin == serialized_reporting_origin) {
         break;
       }
 
-      reporting_origins.insert(std::move(reporting_origin));
+      // Note: In C++23 this can be `insert(origin)` instead to avoid copying
+      // the string when the value is already contained.
+      reporting_origins.insert(std::string(reporting_origin));
 
       if (reporting_origins.size() == static_cast<size_t>(max)) {
         return RateLimitResult::kNotAllowed;
@@ -766,7 +772,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
   while (select_statement.Step()) {
     int64_t rate_limit_id = select_statement.ColumnInt64(0);
     if (filter.Run(blink::StorageKey::CreateFirstParty(
-            DeserializeOrigin(select_statement.ColumnString(1))))) {
+            DeserializeOrigin(select_statement.ColumnStringView(1))))) {
       // See https://www.sqlite.org/isolation.html for why it's OK for this
       // DELETE to be interleaved in the surrounding SELECT.
       delete_statement.Reset(/*clear_bound_vars=*/false);
@@ -830,7 +836,8 @@ void RateLimitTable::AppendRateLimitDataKeys(
       SQL_FROM_HERE, attribution_queries::kGetRateLimitDataKeysSql));
 
   while (statement.Step()) {
-    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(0));
+    url::Origin reporting_origin =
+        DeserializeOrigin(statement.ColumnStringView(0));
     if (reporting_origin.opaque()) {
       continue;
     }

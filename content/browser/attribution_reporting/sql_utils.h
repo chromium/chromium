@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -49,7 +50,7 @@ class AttributionReadOnlySourceData;
 
 class StoredSource;
 
-url::Origin DeserializeOrigin(const std::string& origin);
+url::Origin DeserializeOrigin(std::string_view origin);
 
 std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);

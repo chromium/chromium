@@ -269,9 +269,9 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   StoredSource::Id source_id(statement.ColumnInt64(col++));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(col++));
   std::optional<SuitableOrigin> source_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   std::optional<SuitableOrigin> reporting_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   base::Time source_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
   base::Time aggregatable_report_window_time = statement.ColumnTime(col++);
@@ -389,7 +389,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   std::vector<net::SchemefulSite> destination_sites;
   while (destination_sites_statement.Step()) {
     auto destination_site = net::SchemefulSite::Deserialize(
-        destination_sites_statement.ColumnString(0));
+        destination_sites_statement.ColumnStringView(0));
     destination_sites.push_back(std::move(destination_site));
   }
   if (!destination_sites_statement.Succeeded()) {
@@ -1241,13 +1241,13 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   base::Time initial_report_time = statement.ColumnTime(col++);
   int failed_send_attempts = statement.ColumnInt(col++);
   base::Uuid external_report_id =
-      base::Uuid::ParseLowercase(statement.ColumnString(col++));
+      base::Uuid::ParseLowercase(statement.ColumnStringView(col++));
   std::optional<uint64_t> trigger_debug_key =
       ColumnUint64OrNull(statement, col++);
   auto context_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   auto reporting_origin =
-      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+      SuitableOrigin::Deserialize(statement.ColumnStringView(col++));
   std::optional<AttributionReport::Type> report_type =
       DeserializeReportType(statement.ColumnInt(col++));
 
@@ -2470,7 +2470,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
     return false;
   }
 
-  auto match_filter = [&](const std::string& str) {
+  auto match_filter = [&](std::string_view str) {
     return filter.is_null() || filter.Run(blink::StorageKey::CreateFirstParty(
                                    DeserializeOrigin(str)));
   };
@@ -2481,7 +2481,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
   scan_sources_statement.BindTime(1, delete_end);
 
   while (scan_sources_statement.Step()) {
-    if (match_filter(scan_sources_statement.ColumnString(0))) {
+    if (match_filter(scan_sources_statement.ColumnStringView(0))) {
       source_ids_to_delete.emplace_back(scan_sources_statement.ColumnInt64(1));
     }
   }
@@ -2496,7 +2496,7 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
   scan_reports_statement.BindTime(1, delete_end);
 
   while (scan_reports_statement.Step()) {
-    if (!match_filter(scan_reports_statement.ColumnString(0))) {
+    if (!match_filter(scan_reports_statement.ColumnStringView(0))) {
       continue;
     }
     source_ids_to_delete.emplace_back(scan_reports_statement.ColumnInt64(1));
@@ -2794,7 +2794,7 @@ AttributionStorageSql::GetAllDataKeys() {
   const auto get_data_keys = [&](sql::Statement& statement) {
     while (statement.Step()) {
       url::Origin reporting_origin =
-          DeserializeOrigin(statement.ColumnString(0));
+          DeserializeOrigin(statement.ColumnStringView(0));
       if (reporting_origin.opaque()) {
         continue;
       }

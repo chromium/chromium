@@ -1406,7 +1406,7 @@ TEST_F(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
     sql::Statement s(
         raw_db.GetUniqueStatement("SELECT context_origin FROM reports"));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ(s.ColumnString(0), kDestinationOriginB);
+    ASSERT_EQ(s.ColumnStringView(0), kDestinationOriginB);
   }
 }
 
@@ -1434,7 +1434,7 @@ TEST_F(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
     sql::Statement s(
         raw_db.GetUniqueStatement("SELECT context_origin FROM reports"));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ(s.ColumnString(0), "https://a.s.test");
+    ASSERT_EQ(s.ColumnStringView(0), "https://a.s.test");
   }
 }
 

@@ -9,6 +9,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -147,7 +148,7 @@ DeserializeCommonAggregatableData(
 
 }  // namespace
 
-url::Origin DeserializeOrigin(const std::string& origin) {
+url::Origin DeserializeOrigin(std::string_view origin) {
   return url::Origin::Create(GURL(origin));
 }
 

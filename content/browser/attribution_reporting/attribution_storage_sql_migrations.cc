@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/function_ref.h"
@@ -189,7 +190,8 @@ bool To54(sql::Database& db) {
 
   while (get_statement.Step()) {
     int64_t id = get_statement.ColumnInt64(0);
-    auto reporting_origin = DeserializeOrigin(get_statement.ColumnString(1));
+    auto reporting_origin =
+        DeserializeOrigin(get_statement.ColumnStringView(1));
 
     set_statement.Reset(/*clear_bound_vars=*/true);
     set_statement.BindString(0,
