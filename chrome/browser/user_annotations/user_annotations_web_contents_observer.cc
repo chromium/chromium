@@ -93,7 +93,8 @@ void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
 #if BUILDFLAG(ENABLE_COMPOSE)
   ComposeAXSerializationUtils::PopulateAXTreeUpdate(snapshot, &ax_tree);
 #endif
-  user_annotations_service_->AddFormSubmission(std::move(ax_tree), form);
+  user_annotations_service_->AddFormSubmission(std::move(ax_tree), form,
+                                               base::DoNothing());
 }
 
 }  // namespace user_annotations

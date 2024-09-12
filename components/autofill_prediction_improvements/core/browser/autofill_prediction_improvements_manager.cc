@@ -345,9 +345,23 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
         /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
-  // TODO(crbug.com/365911258): Call
-  // `client_->GetUserAnnotationsService()->AddFormSubmission()` once the method
-  // is adjusted in a follow-up CL.
+  // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
+  // e.g. by async filters added in future.
+  client_->GetAXTree(base::BindOnce(
+      &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
+      weak_ptr_factory_.GetWeakPtr(), form, std::move(callback)));
+}
+
+void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
+    const autofill::FormData& form,
+    ImportFormCallback callback,
+    optimization_guide::proto::AXTreeUpdate ax_tree_update) {
+  if (user_annotations::UserAnnotationsService* user_annotations_service =
+          client_->GetUserAnnotationsService()) {
+    user_annotations_service->AddFormSubmission(std::move(ax_tree_update), form,
+                                                std::move(callback));
+    return;
+  }
   std::move(callback).Run(/*to_be_upserted_entries=*/{},
                           /*prompt_acceptance_callback=*/base::DoNothing());
 }

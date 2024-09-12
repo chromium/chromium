@@ -27,10 +27,20 @@ namespace user_annotations {
 
 namespace {
 
-void RecordUserAnnotationsFormSubmissionResult(
-    UserAnnotationsExecutionResult result) {
+void RunResultCallback(UserAnnotationsService::ImportFormCallback callback,
+                       UserAnnotationsEntries to_be_upserted_entries,
+                       UserAnnotationsExecutionResult result) {
   base::UmaHistogramEnumeration("UserAnnotations.AddFormSubmissionResult",
                                 result);
+  // TODO(crbug.com/366142497): Bind to `prompt_acceptance_callback` and only
+  // import any form data if the binding method's parameter
+  // `prompt_was_accepted` equals `true`.
+  std::move(callback).Run(
+      /*to_be_upserted_entries=*/(result ==
+                                  UserAnnotationsExecutionResult::kSuccess)
+          ? std::move(to_be_upserted_entries)
+          : std::vector<optimization_guide::proto::UserAnnotationsEntry>(),
+      /*prompt_acceptance_callback=*/base::DoNothing());
 }
 
 void ProcessEntryRetrieval(
@@ -73,7 +83,8 @@ UserAnnotationsService::~UserAnnotationsService() = default;
 
 void UserAnnotationsService::AddFormSubmission(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    const autofill::FormData& form_data) {
+    const autofill::FormData& form_data,
+    ImportFormCallback callback) {
   // Construct request.
   optimization_guide::proto::FormsAnnotationsRequest request;
   optimization_guide::proto::PageContext* page_context =
@@ -89,7 +100,7 @@ void UserAnnotationsService::AddFormSubmission(
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
       base::BindOnce(&UserAnnotationsService::OnModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void UserAnnotationsService::RetrieveAllEntries(
@@ -131,9 +142,13 @@ void UserAnnotationsService::OnOsCryptAsyncReady(
 void UserAnnotationsService::Shutdown() {}
 
 void UserAnnotationsService::OnModelExecuted(
+    ImportFormCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
+    // TODO(crbug.com/366158591): Add this error case to FormSubmissionResult.
+    std::move(callback).Run(/*to_be_upserted_entries=*/{},
+                            /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
 
@@ -141,13 +156,16 @@ void UserAnnotationsService::OnModelExecuted(
       maybe_response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsAnnotationsResponse>(result.value());
   if (!maybe_response) {
+    // TODO(crbug.com/366158591): Add this error case to FormSubmissionResult.
+    std::move(callback).Run(/*to_be_upserted_entries=*/{},
+                            /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
 
   if (ShouldPersistUserAnnotations()) {
     if (!user_annotations_database_) {
-      RecordUserAnnotationsFormSubmissionResult(
-          UserAnnotationsExecutionResult::kCryptNotInitialized);
+      RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
+                        UserAnnotationsExecutionResult::kCryptNotInitialized);
       return;
     }
 
@@ -158,10 +176,18 @@ void UserAnnotationsService::OnModelExecuted(
       entry_proto.set_value(entry.value());
       entries_protos.push_back(std::move(entry_proto));
     }
+    // A copy of `entries_protos` is required because the `WithArgs()` call
+    // below forwards `entries_protos` to the database sequence.
+    UserAnnotationsEntries entries_protos_copy = entries_protos;
+    // TODO(crbug.com/366140790): Only pass the diff from `entries_protos_copy`
+    // to the current state in the database, which is not necessarily
+    // `entries_protos_copy`.
     user_annotations_database_
         .AsyncCall(&UserAnnotationsDatabase::UpdateEntries)
         .WithArgs(entries_protos)
-        .Then(base::BindOnce(RecordUserAnnotationsFormSubmissionResult));
+        .Then(base::BindOnce(
+            RunResultCallback, std::move(callback),
+            /*to_be_upserted_entries=*/std::move(entries_protos_copy)));
     return;
   }
 
@@ -178,7 +204,11 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.push_back(
         {.entry_id = entry_id, .entry_proto = std::move(entry_proto)});
   }
-  RecordUserAnnotationsFormSubmissionResult(
+  RunResultCallback(
+      std::move(callback),
+      /*to_be_upserted_entries=*/
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>(
+          maybe_response->entries().begin(), maybe_response->entries().end()),
       UserAnnotationsExecutionResult::kSuccess);
 }
 

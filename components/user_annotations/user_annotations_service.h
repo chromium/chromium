@@ -36,6 +36,17 @@ struct Entry;
 
 class UserAnnotationsService : public KeyedService {
  public:
+  // `ImportFormCallback` carries `to_be_upserted_entries` that will be shown in
+  // the Autofill prediction improvements prompt. The prompt then notifies the
+  // `UserAnnotationsService` about the user decision by running
+  // `prompt_acceptance_callback`, that is also provided by
+  // `ImportFormCallback`.
+  using ImportFormCallback = base::OnceCallback<void(
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback)>;
+
   UserAnnotationsService(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
       const base::FilePath& storage_dir,
@@ -45,9 +56,16 @@ class UserAnnotationsService : public KeyedService {
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
 
-  // Adds a form submission to the user annotations.
-  void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
-                         const autofill::FormData& form_data);
+  // Adds a form submission to the user annotations. Calls `callback` according
+  // to the outcome of the import process. The `callback` will notify Autofill
+  // code about the import attempt so they can show a save prompt to the user.
+  // When the prompt is closed, the inner `prompt_acceptance_callback` will
+  // notify `this` about the user's decision.
+  // Virtual for testing.
+  virtual void AddFormSubmission(
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      const autofill::FormData& form_data,
+      ImportFormCallback callback);
 
   // Retrieves all entries from the database. Invokes `callback` when complete.
   // Virtual for testing.
@@ -74,6 +92,7 @@ class UserAnnotationsService : public KeyedService {
   // Processes model execution response. Invoked when model execution has been
   // received.
   void OnModelExecuted(
+      ImportFormCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

@@ -11,10 +11,12 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/user_annotations/test_user_annotations_service.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,11 +127,14 @@ class AutofillPredictionImprovementsManagerTest
                                                 {{"skip_allowlist", "true"}});
     ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetUserAnnotationsService)
+        .WillByDefault(Return(&user_annotations_service_));
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_);
   }
 
  protected:
+  user_annotations::TestUserAnnotationsService user_annotations_service_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
 };
 
@@ -268,18 +273,24 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   HasType(SuggestionType::kManageAddress)));
 }
 
-// Tests that `import_form_callback` is run with `false` when
-// `user_annotations::ShouldAddFormSubmissionForURL()` returns `true`.
-// TODO(crbug.com/365911258): Add a test that would also run the callback with
-// `true`, once the `UserAnnotationService` is actually called (requires some
-// changes that will be done in a follow-up CL).
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       MaybeImportFormRunsCallbackWithFalseWhenImportIsAttempted) {
+class AutofillPredictionImprovementsManagerImportFormTest
+    : public AutofillPredictionImprovementsManagerTest,
+      public testing::WithParamInterface<bool> {};
+
+// Tests that `import_form_callback` is run with added entries if the import was
+// successful.
+TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
+       MaybeImportFormRunsCallbackWithAddedEntriesWhenImportWasSuccessful) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       user_annotations::kUserAnnotations,
       {{"allowed_hosts_for_form_submissions", "*"}});
-  autofill::FormData form_data;
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST,
+                  .label = u"First Name",
+                  .value = u"Jane"}}};
+  autofill::FormData form_data = autofill::test::GetFormData(form_description);
   autofill::FormStructure eligible_form_structure(form_data);
   autofill::FormStructureTestApi form_test_api(eligible_form_structure);
 
@@ -296,6 +307,11 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   base::MockCallback<
       autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
       import_form_callback;
+  AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
+  EXPECT_CALL(client_, GetAXTree)
+      .WillOnce(MoveArg<0>(&axtree_received_callback));
+  user_annotations_service_.SetShouldImportFormData(
+      /*should_import_form_data=*/GetParam());
 
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       user_annotations_entries;
@@ -303,10 +319,15 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .WillOnce(SaveArg<0>(&user_annotations_entries));
   manager_->MaybeImportForm(form_data, eligible_form_structure,
                             import_form_callback.Get());
-  EXPECT_TRUE(user_annotations_entries.empty());
+  std::move(axtree_received_callback).Run({});
+  EXPECT_THAT(user_annotations_entries.empty(), !GetParam());
 }
 
-// Tests that `import_form_callback` is run with `false` when
+INSTANTIATE_TEST_SUITE_P(,
+                         AutofillPredictionImprovementsManagerImportFormTest,
+                         testing::Bool());
+
+// Tests that `import_form_callback` is run with an empty list of entries when
 // `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {

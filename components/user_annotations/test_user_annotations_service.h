@@ -27,13 +27,24 @@ class TestUserAnnotationsService : public UserAnnotationsService {
   // Replaces all entries in the service with `entries`.
   void ReplaceAllEntries(UserAnnotationsEntries entries);
 
+  // `AddFormSubmission()` will only import form data if
+  // `should_import_form_data` is set to `true`.
+  void SetShouldImportFormData(bool should_import_form_data) {
+    should_import_form_data_ = should_import_form_data;
+  }
+
   // UserAnnotationsService:
+  void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
+                         const autofill::FormData& form_data,
+                         ImportFormCallback callback) override;
   void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback) override;
 
  private:
   // An in-memory representation of the "database" of user annotation entries.
   std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_;
+  // Used in `AddFormSubmission()` to decide if form data should be imported.
+  bool should_import_form_data_ = true;
 };
 
 }  // namespace user_annotations

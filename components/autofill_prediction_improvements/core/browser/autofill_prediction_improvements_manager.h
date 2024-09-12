@@ -84,6 +84,11 @@ class AutofillPredictionImprovementsManager
   // whether a context menu entry is displayed or not.
   bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
 
+  void OnReceivedAXTreeForFormImport(
+      const autofill::FormData& form,
+      ImportFormCallback callback,
+      optimization_guide::proto::AXTreeUpdate ax_tree_update);
+
   // Creates a suggestion that calls `ExtractImprovedPredictionsForFormFields()`
   // when invoked.
   std::vector<autofill::Suggestion> CreateTriggerSuggestion(bool add_separator);
