@@ -760,18 +760,32 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
   StreamRequester requester1;
   HttpStreamRequest* request1 =
       requester1.set_priority(RequestPriority::LOW).RequestStream(pool());
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::LOW);
 
+  // Create another request with IDLE priority, which has lower than LOW.
   StreamRequester requester2;
   HttpStreamRequest* request2 =
       requester2.set_priority(RequestPriority::IDLE).RequestStream(pool());
+  ASSERT_EQ(manager, pool()
+                         .GetOrCreateGroupForTesting(requester2.GetStreamKey())
+                         .GetAttemptManagerForTesting());
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::LOW);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::LOW);
 
+  // Set the second request's priority to HIGHEST. The corresponding service
+  // endpoint request and attempt manager should update their priorities.
   request2->SetPriority(RequestPriority::HIGHEST);
   ASSERT_EQ(endpoint_request->priority(), RequestPriority::HIGHEST);
+  ASSERT_EQ(manager->GetPriority(), RequestPriority::HIGHEST);
 
   // Check `request2` completes first.
 
