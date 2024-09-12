@@ -276,7 +276,10 @@ void ChromeUserManagerImpl::OnPolicyUpdated(const std::string& user_id) {
   if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
     return;
   }
-  UpdatePublicAccountDisplayName(user_id);
+  auto display_name = GetDisplayName(user_id);
+  if (display_name) {
+    SaveUserDisplayName(user->GetAccountId(), *display_name);
+  }
 }
 
 void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
@@ -471,7 +474,11 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     }
     if (account.type == policy::DeviceLocalAccountType::kPublicSession ||
         account.type == policy::DeviceLocalAccountType::kSamlPublicSession) {
-      UpdatePublicAccountDisplayName(account.user_id);
+      auto display_name = GetDisplayName(account.user_id);
+      if (display_name) {
+        SaveUserDisplayName(AccountId::FromUserEmail(account.user_id),
+                            *display_name);
+      }
     }
   }
 
@@ -486,20 +493,19 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   return true;
 }
 
-void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
-    const std::string& user_id) {
-  std::string display_name;
-
-  if (device_local_account_policy_service_) {
-    policy::DeviceLocalAccountPolicyBroker* broker =
-        device_local_account_policy_service_->GetBrokerForUser(user_id);
-    if (broker) {
-      display_name = broker->GetDisplayName();
-      // Set or clear the display name.
-      SaveUserDisplayName(AccountId::FromUserEmail(user_id),
-                          base::UTF8ToUTF16(display_name));
-    }
+std::optional<std::u16string> ChromeUserManagerImpl::GetDisplayName(
+    std::string_view user_id) {
+  if (!device_local_account_policy_service_) {
+    return std::nullopt;
   }
+
+  policy::DeviceLocalAccountPolicyBroker* broker =
+      device_local_account_policy_service_->GetBrokerForUser(user_id);
+  if (!broker) {
+    return std::nullopt;
+  }
+
+  return base::UTF8ToUTF16(broker->GetDisplayName());
 }
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {

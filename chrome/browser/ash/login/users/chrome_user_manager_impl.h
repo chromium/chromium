@@ -92,14 +92,14 @@ class ChromeUserManagerImpl
   bool UpdateAndCleanUpDeviceLocalAccounts(
       const std::vector<policy::DeviceLocalAccount>& device_local_accounts);
 
-  // Updates the display name for public account `username` from policy settings
-  // associated with that username.
-  void UpdatePublicAccountDisplayName(const std::string& user_id);
-
   // Update the number of users.
   void UpdateNumberOfUsers();
 
   void UpdateOwnerId();
+
+  // Returns the display name taken from policy, expected to be used for
+  // public accounts.
+  std::optional<std::u16string> GetDisplayName(std::string_view user_id);
 
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>
