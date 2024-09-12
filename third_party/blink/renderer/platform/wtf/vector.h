@@ -1246,11 +1246,12 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
       typename Proj,
       typename = std::enable_if<std::is_invocable_v<Proj, const_reference>>>
   Vector(const Vector&, Proj);
-  template <
-      typename U,
-      wtf_size_t otherCapacity,
-      typename Proj,
-      typename = std::enable_if<std::is_invocable_v<Proj, const_reference>>>
+  template <typename U,
+            wtf_size_t otherCapacity,
+            typename Proj,
+            typename = std::enable_if<std::is_invocable_v<
+                Proj,
+                typename Vector<U, otherCapacity, Allocator>::const_reference>>>
   explicit Vector(const Vector<U, otherCapacity, Allocator>&, Proj);
 
   // Creates a vector with items copied from a collection. |Collection| must
