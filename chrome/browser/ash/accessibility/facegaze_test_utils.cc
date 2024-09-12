@@ -44,104 +44,6 @@ PrefService* GetPrefs() {
   return AccessibilityManager::Get()->profile()->GetPrefs();
 }
 
-std::string ToString(const FaceGazeGesture& gesture) {
-  switch (gesture) {
-    case FaceGazeGesture::BROW_INNER_UP:
-      return "browInnerUp";
-    case FaceGazeGesture::BROWS_DOWN:
-      return "browsDown";
-    case FaceGazeGesture::EYE_SQUINT_LEFT:
-      return "eyeSquintLeft";
-    case FaceGazeGesture::EYE_SQUINT_RIGHT:
-      return "eyeSquintRight";
-    case FaceGazeGesture::EYES_BLINK:
-      return "eyesBlink";
-    case FaceGazeGesture::EYES_LOOK_DOWN:
-      return "eyesLookDown";
-    case FaceGazeGesture::EYES_LOOK_LEFT:
-      return "eyesLookLeft";
-    case FaceGazeGesture::EYES_LOOK_RIGHT:
-      return "eyesLookRight";
-    case FaceGazeGesture::EYES_LOOK_UP:
-      return "eyesLookUp";
-    case FaceGazeGesture::JAW_LEFT:
-      return "jawLeft";
-    case FaceGazeGesture::JAW_OPEN:
-      return "jawOpen";
-    case FaceGazeGesture::JAW_RIGHT:
-      return "jawRight";
-    case FaceGazeGesture::MOUTH_FUNNEL:
-      return "mouthFunnel";
-    case FaceGazeGesture::MOUTH_LEFT:
-      return "mouthLeft";
-    case FaceGazeGesture::MOUTH_PUCKER:
-      return "mouthPucker";
-    case FaceGazeGesture::MOUTH_RIGHT:
-      return "mouthRight";
-    case FaceGazeGesture::MOUTH_SMILE:
-      return "mouthSmile";
-    case FaceGazeGesture::MOUTH_UPPER_UP:
-      return "mouthUpperUp";
-  }
-}
-
-std::string ToString(const MediapipeGesture& gesture) {
-  switch (gesture) {
-    case MediapipeGesture::BROW_DOWN_LEFT:
-      return "browDownLeft";
-    case MediapipeGesture::BROW_DOWN_RIGHT:
-      return "browDownRight";
-    case MediapipeGesture::BROW_INNER_UP:
-      return "browInnerUp";
-    case MediapipeGesture::EYE_BLINK_LEFT:
-      return "eyeBlinkLeft";
-    case MediapipeGesture::EYE_BLINK_RIGHT:
-      return "eyeBlinkRight";
-    case MediapipeGesture::EYE_LOOK_DOWN_LEFT:
-      return "eyeLookDownLeft";
-    case MediapipeGesture::EYE_LOOK_DOWN_RIGHT:
-      return "eyeLookDownRight";
-    case MediapipeGesture::EYE_LOOK_IN_LEFT:
-      return "eyeLookInLeft";
-    case MediapipeGesture::EYE_LOOK_IN_RIGHT:
-      return "eyeLookInRight";
-    case MediapipeGesture::EYE_LOOK_OUT_LEFT:
-      return "eyeLookOutLeft";
-    case MediapipeGesture::EYE_LOOK_OUT_RIGHT:
-      return "eyeLookOutRight";
-    case MediapipeGesture::EYE_LOOK_UP_LEFT:
-      return "eyeLookUpLeft";
-    case MediapipeGesture::EYE_LOOK_UP_RIGHT:
-      return "eyeLookUpRight";
-    case MediapipeGesture::EYE_SQUINT_LEFT:
-      return "eyeSquintLeft";
-    case MediapipeGesture::EYE_SQUINT_RIGHT:
-      return "eyeSquintRight";
-    case MediapipeGesture::JAW_LEFT:
-      return "jawLeft";
-    case MediapipeGesture::JAW_OPEN:
-      return "jawOpen";
-    case MediapipeGesture::JAW_RIGHT:
-      return "jawRight";
-    case MediapipeGesture::MOUTH_FUNNEL:
-      return "mouthFunnel";
-    case MediapipeGesture::MOUTH_LEFT:
-      return "mouthLeft";
-    case MediapipeGesture::MOUTH_PUCKER:
-      return "mouthPucker";
-    case MediapipeGesture::MOUTH_RIGHT:
-      return "mouthRight";
-    case MediapipeGesture::MOUTH_SMILE_LEFT:
-      return "mouthSmileLeft";
-    case MediapipeGesture::MOUTH_SMILE_RIGHT:
-      return "mouthSmileRight";
-    case MediapipeGesture::MOUTH_UPPER_UP_LEFT:
-      return "mouthUpperUpLeft";
-    case MediapipeGesture::MOUTH_UPPER_UP_RIGHT:
-      return "mouthUpperUpRight";
-  }
-}
-
 }  // namespace
 
 FaceGazeTestUtils::Config::Config() = default;
@@ -260,6 +162,106 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithLatency(int latency) {
 
 FaceGazeTestUtils::FaceGazeTestUtils() = default;
 FaceGazeTestUtils::~FaceGazeTestUtils() = default;
+
+// static.
+std::string FaceGazeTestUtils::ToString(const FaceGazeGesture& gesture) {
+  switch (gesture) {
+    case FaceGazeGesture::BROW_INNER_UP:
+      return "browInnerUp";
+    case FaceGazeGesture::BROWS_DOWN:
+      return "browsDown";
+    case FaceGazeGesture::EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case FaceGazeGesture::EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case FaceGazeGesture::EYES_BLINK:
+      return "eyesBlink";
+    case FaceGazeGesture::EYES_LOOK_DOWN:
+      return "eyesLookDown";
+    case FaceGazeGesture::EYES_LOOK_LEFT:
+      return "eyesLookLeft";
+    case FaceGazeGesture::EYES_LOOK_RIGHT:
+      return "eyesLookRight";
+    case FaceGazeGesture::EYES_LOOK_UP:
+      return "eyesLookUp";
+    case FaceGazeGesture::JAW_LEFT:
+      return "jawLeft";
+    case FaceGazeGesture::JAW_OPEN:
+      return "jawOpen";
+    case FaceGazeGesture::JAW_RIGHT:
+      return "jawRight";
+    case FaceGazeGesture::MOUTH_FUNNEL:
+      return "mouthFunnel";
+    case FaceGazeGesture::MOUTH_LEFT:
+      return "mouthLeft";
+    case FaceGazeGesture::MOUTH_PUCKER:
+      return "mouthPucker";
+    case FaceGazeGesture::MOUTH_RIGHT:
+      return "mouthRight";
+    case FaceGazeGesture::MOUTH_SMILE:
+      return "mouthSmile";
+    case FaceGazeGesture::MOUTH_UPPER_UP:
+      return "mouthUpperUp";
+  }
+}
+
+// static.
+std::string FaceGazeTestUtils::ToString(const MediapipeGesture& gesture) {
+  switch (gesture) {
+    case MediapipeGesture::BROW_DOWN_LEFT:
+      return "browDownLeft";
+    case MediapipeGesture::BROW_DOWN_RIGHT:
+      return "browDownRight";
+    case MediapipeGesture::BROW_INNER_UP:
+      return "browInnerUp";
+    case MediapipeGesture::EYE_BLINK_LEFT:
+      return "eyeBlinkLeft";
+    case MediapipeGesture::EYE_BLINK_RIGHT:
+      return "eyeBlinkRight";
+    case MediapipeGesture::EYE_LOOK_DOWN_LEFT:
+      return "eyeLookDownLeft";
+    case MediapipeGesture::EYE_LOOK_DOWN_RIGHT:
+      return "eyeLookDownRight";
+    case MediapipeGesture::EYE_LOOK_IN_LEFT:
+      return "eyeLookInLeft";
+    case MediapipeGesture::EYE_LOOK_IN_RIGHT:
+      return "eyeLookInRight";
+    case MediapipeGesture::EYE_LOOK_OUT_LEFT:
+      return "eyeLookOutLeft";
+    case MediapipeGesture::EYE_LOOK_OUT_RIGHT:
+      return "eyeLookOutRight";
+    case MediapipeGesture::EYE_LOOK_UP_LEFT:
+      return "eyeLookUpLeft";
+    case MediapipeGesture::EYE_LOOK_UP_RIGHT:
+      return "eyeLookUpRight";
+    case MediapipeGesture::EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case MediapipeGesture::EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case MediapipeGesture::JAW_LEFT:
+      return "jawLeft";
+    case MediapipeGesture::JAW_OPEN:
+      return "jawOpen";
+    case MediapipeGesture::JAW_RIGHT:
+      return "jawRight";
+    case MediapipeGesture::MOUTH_FUNNEL:
+      return "mouthFunnel";
+    case MediapipeGesture::MOUTH_LEFT:
+      return "mouthLeft";
+    case MediapipeGesture::MOUTH_PUCKER:
+      return "mouthPucker";
+    case MediapipeGesture::MOUTH_RIGHT:
+      return "mouthRight";
+    case MediapipeGesture::MOUTH_SMILE_LEFT:
+      return "mouthSmileLeft";
+    case MediapipeGesture::MOUTH_SMILE_RIGHT:
+      return "mouthSmileRight";
+    case MediapipeGesture::MOUTH_UPPER_UP_LEFT:
+      return "mouthUpperUpLeft";
+    case MediapipeGesture::MOUTH_UPPER_UP_RIGHT:
+      return "mouthUpperUpRight";
+  }
+}
 
 void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   // TODO(b/309121742): Add display size to Config so that tests can configure

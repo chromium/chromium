@@ -152,6 +152,18 @@ const char kTtsLiteFileName[] = "voice.zvoice";
 // The file name of a standard TTS voice.
 const char kTtsStandardFileName[] = "voice-standard.zvoice";
 
+// The value representing the FaceGaze left click action. See
+// ash/webui/common/resources/accessibility/macro_names.ts for the full list of
+// FaceGaze actions. This value needs to be in sync with the MOUSE_CLICK_LEFT
+// action in the above file.
+constexpr int kFaceGazeLeftClickValue = 35;
+
+// The string representing the FaceGaze mouth smile gesture. See
+// ash/webui/common/resources/accessibility/facial_gestures.ts for the full list
+// of FaceGaze gestures. This value needs to be in sync with the MOUTH_SMILE
+// gesture in the above file.
+constexpr char kFaceGazeMouthSmileGesture[] = "mouthSmile";
+
 static AccessibilityManager* g_accessibility_manager = nullptr;
 
 static BrailleController* g_braille_controller_for_test = nullptr;
@@ -658,6 +670,28 @@ void AccessibilityManager::EnableLargeCursor(bool enabled) {
 
 void AccessibilityManager::OnFaceGazeChanged() {
   OnAccessibilityCommonChanged(prefs::kAccessibilityFaceGazeEnabled);
+  if (!profile_) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  if (!pref_service->GetBoolean(prefs::kAccessibilityFaceGazeEnabled)) {
+    return;
+  }
+
+  if (pref_service->GetDict(prefs::kAccessibilityFaceGazeGesturesToMacros)
+          .empty()) {
+    // If FaceGaze is enabled but there isn't a gesture to action mapping, then
+    // we should install a minimal mapping to provide a working default
+    // experience.
+    pref_service->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
+                          base::Value::Dict().Set(kFaceGazeMouthSmileGesture,
+                                                  kFaceGazeLeftClickValue));
+    pref_service->SetDict(
+        prefs::kAccessibilityFaceGazeGesturesToConfidence,
+        base::Value::Dict().Set(kFaceGazeMouthSmileGesture, 60));
+    pref_service->CommitPendingWrite();
+  }
 }
 
 void AccessibilityManager::OnLargeCursorChanged() {

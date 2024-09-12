@@ -48,6 +48,8 @@ class FaceGazeTestUtils {
     MOUTH_UPPER_UP,
   };
 
+  static std::string ToString(const FaceGazeGesture& gesture);
+
   // Macros used by accessibility features on ChromeOS.
   // Ensure this enum stays in sync with the source of truth in
   // ash/webui/common/resources/accessibility/macro_names.ts.
@@ -135,6 +137,8 @@ class FaceGazeTestUtils {
     MOUTH_UPPER_UP_LEFT,
     MOUTH_UPPER_UP_RIGHT,
   };
+
+  static std::string ToString(const MediapipeGesture& gesture);
 
   // A struct that holds cursor speed values.
   struct CursorSpeeds {

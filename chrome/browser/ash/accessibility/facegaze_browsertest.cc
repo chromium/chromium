@@ -601,4 +601,21 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
   utils()->AssertScrollMode(false);
 }
 
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DefaultBehavior) {
+  utils()->EnableFaceGaze(Config().Default());
+  // Default gesture-to-macro and gesture-to-confidence mappings should be
+  // installed if we didn't specify them.
+  const auto& gestures_to_macros =
+      GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToMacros);
+  const auto& gestures_to_confidences =
+      GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence);
+  ASSERT_EQ(gestures_to_macros.size(), 1u);
+  ASSERT_EQ(gestures_to_confidences.size(), 1u);
+  ASSERT_EQ(/* MOUTH_SMILE */ 35,
+            gestures_to_macros.FindInt(
+                FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
+  ASSERT_EQ(60, gestures_to_confidences.FindInt(
+                    FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
+}
+
 }  // namespace ash
