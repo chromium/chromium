@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -18,7 +19,13 @@ AutocompleteScoringModelExecutor::~AutocompleteScoringModelExecutor() = default;
 bool AutocompleteScoringModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     ModelInput input) {
-  DCHECK_EQ(input.size(), input_tensors.size());
+  const bool valid_input_size = input.size() == input_tensors.size();
+  base::UmaHistogramBoolean(
+      "Omnibox.URLScoringModelExecuted.Preprocess.ValidInputSize",
+      valid_input_size);
+  if (!valid_input_size) {
+    return false;
+  }
   DCHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   for (size_t i = 0; i < input.size(); ++i) {
     std::vector<float> data = {input[i]};

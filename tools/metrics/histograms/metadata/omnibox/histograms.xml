@@ -2338,6 +2338,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.URLScoringModelExecuted.Preprocess.ValidInputSize"
+    enum="Boolean" expires_after="2025-02-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    During the execution of `AutocompleteScoringModelExecutor::Preprocess()`,
+    this metric records whether or not the number of input tensors passed in
+    matches the size of the ModelInput.
+
+    This will be recorded once for each suggestion contained in a batch that's
+    submitted to the ML scoring service.
+
+    This will NOT be recorded for any suggestion that already has a non-null
+    scoring result stored in the ML score cache.
+  </summary>
+</histogram>
+
 <!--
   Keep consistent:
   - omnibox_event.proto `ScoringSignals`
