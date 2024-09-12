@@ -65,6 +65,7 @@ build_webui("build") {
     "about_page/about_page.ts",
     "ai_page/ai_info_card.ts",
     "ai_page/ai_page.ts",
+    "ai_page/ai_tab_organization_subpage.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/home_url_input.ts",

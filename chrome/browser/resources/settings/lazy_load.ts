@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Subpages
+import './ai_page/ai_tab_organization_subpage.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_section.js';
 import './autofill_page/autofill_prediction_improvements_section.js';
@@ -112,6 +113,7 @@ export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
 // </if>
 
+export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';

@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
+import './ai_tab_organization_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './ai_page.html.js';
@@ -89,6 +93,19 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () =>
             [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
       },
+
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+
+          if (routes.AI_TAB_ORGANIZATION) {
+            map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
+          }
+
+          return map;
+        },
+      },
     };
   }
 
@@ -121,6 +138,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private onHistorySearchRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
+  }
+
+  private onTabOrganizationRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().AI_TAB_ORGANIZATION);
   }
 }
 

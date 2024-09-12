@@ -6,7 +6,8 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
+import {SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -20,12 +21,12 @@ suite('ExperimentalAdvancedPage', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function createPage() {
+  async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-ai-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
-    flush();
+    return flushTasks();
   }
 
   test('FeaturesVisibilityWithRefreshEnabled', async () => {
@@ -36,7 +37,8 @@ suite('ExperimentalAdvancedPage', function() {
       showTabOrganizationControl: false,
       showWallpaperSearchControl: false,
     });
-    createPage();
+    resetRouterForTesting();
+    await createPage();
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     assertTrue(isChildVisible(page, '#composeRowV2'));
@@ -56,7 +58,8 @@ suite('ExperimentalAdvancedPage', function() {
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
     });
-    createPage();
+    resetRouterForTesting();
+    await createPage();
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     assertFalse(isChildVisible(page, '#composeRowV2'));
@@ -68,6 +71,24 @@ suite('ExperimentalAdvancedPage', function() {
         page.shadowRoot!.querySelectorAll('settings-toggle-button');
     assertEquals(0, toggles2.length);
     assertFalse(isChildVisible(page, '#historySearchRow'));
+  });
+
+  test('tabOrganizationRow', async () => {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showTabOrganizationControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const tabOrganizationRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#tabOrganizationRowV2');
+
+    assertTrue(!!tabOrganizationRow);
+    assertTrue(isVisible(tabOrganizationRow));
+    tabOrganizationRow.click();
+    assertEquals(
+        routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
   });
 });
 

@@ -34383,6 +34383,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1575150353" label="/content/cookies"/>
   <int value="-1569772500" label="/manageAccessibility/tts"/>
   <int value="-1555301506" label="/content/notifications"/>
+  <int value="-1548884702" label="/ai"/>
   <int value="-1484929503" label="/manageAccessibility/switchAccess"/>
   <int value="-1435300306" label="/passwords/view"/>
   <int value="-1402547108" label="/passwords/device"/>
@@ -34412,6 +34413,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-916174295" label="/internet"/>
   <int value="-907780721" label="/certificates"/>
   <int value="-898481268" label="/multidevice/features"/>
+  <int value="-878760557" label="/ai/tabOrganizer"/>
   <int value="-876839853" label="/content/windowManagement"/>
   <int value="-842548379" label="/apps"/>
   <int value="-809146474" label="/content/location"/>

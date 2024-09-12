@@ -204,6 +204,10 @@ function createRoutes(): SettingsRoutes {
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
         '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
+    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        loadTimeData.getBoolean('showTabOrganizationControl')) {
+      r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+    }
   }
 
   // <if expr="not chromeos_ash">
