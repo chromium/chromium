@@ -90,19 +90,24 @@ void TabDeclutterController::ProcessStaleTabs() {
   }
 
   if (DeclutterNudgeCriteriaMet(tabs)) {
-    if (!tabs.empty()) {
-      StartNudgeTimer();
-    }
-
+    StartNudgeTimer();
     for (auto& observer : observers_) {
       observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
     }
+
+    stale_tabs_previous_nudge_.clear();
+    stale_tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
   }
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     const std::vector<tabs::TabModel*> stale_tabs) {
   if (nudge_timer_->IsRunning()) {
+    return false;
+  }
+
+  // TODO(b/366078827): Handle hide case for the nudge.
+  if (stale_tabs.empty()) {
     return false;
   }
 
@@ -119,7 +124,14 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     return false;
   }
 
-  return true;
+  // If there is a new stale tab found in this computation, return true.
+  for (tabs::TabModel* tab : stale_tabs) {
+    if (stale_tabs_previous_nudge_.count(tab) == 0) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void TabDeclutterController::OnActionUIAccepted(

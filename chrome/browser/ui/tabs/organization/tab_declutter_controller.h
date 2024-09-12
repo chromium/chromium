@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_CONTROLLER_H_
 
 #include <memory>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -73,6 +74,9 @@ class TabDeclutterController {
   std::unique_ptr<base::RepeatingTimer> declutter_timer_;
   // The timer that is responsible for blocking the nudge from showing.
   std::unique_ptr<base::OneShotTimer> nudge_timer_;
+
+  // The list of tabs shown previously in a nudge.
+  std::set<tabs::TabModel*> stale_tabs_previous_nudge_;
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
