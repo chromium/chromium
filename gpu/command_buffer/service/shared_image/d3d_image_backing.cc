@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -806,6 +807,10 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
       LOG(ERROR) << "Failed to create WGPUTexture";
       return nullptr;
     }
+
+    std::string label = base::StrCat({GetName(), "_", debug_label()});
+    texture.SetLabel(label.c_str());
+
     dawn_shared_texture_holder_.MaybeCacheWGPUTexture(device, texture);
   }
 
