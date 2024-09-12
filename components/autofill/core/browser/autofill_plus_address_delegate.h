@@ -152,7 +152,8 @@ class AutofillPlusAddressDelegate {
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
       ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-      ShowErrorDialogCallback show_error_dialog) = 0;
+      ShowErrorDialogCallback show_error_dialog,
+      base::OnceClosure reshow_suggestions) = 0;
 };
 
 }  // namespace autofill

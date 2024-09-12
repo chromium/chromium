@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -644,7 +645,8 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
     HideSuggestionsCallback hide_suggestions_callback,
     PlusAddressCallback fill_field_callback,
     ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-    ShowErrorDialogCallback show_error_dialog) {
+    ShowErrorDialogCallback show_error_dialog,
+    base::OnceClosure reshow_suggestions) {
   // TODO(crbug.com/362445807): Record metrics.
   const std::u16string suggested_address =
       current_suggestions[current_suggestion_index]
@@ -668,6 +670,7 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
          PlusAddressCallback fill_callback,
          ShowAffiliationErrorDialogCallback show_affiliation_error,
          ShowErrorDialogCallback show_error,
+         base::OnceClosure reshow_suggestions,
          const PlusAddress& requested_address,
          const PlusProfileOrError& profile_or_error) {
         // Always hide the popup.
@@ -680,11 +683,11 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
                      /*on_accepted=*/base::DoNothing());
             return;
           }
-          // TODO(crbug.com/362445807): Pass a callback that re-shows the
-          // popup. Add tests for that case.
+          // TODO(crbug.com/362445807): Differentiate more between different
+          // error cases and add tests.
           std::move(show_error)
               .Run(PlusAddressErrorDialogType::kGenericError,
-                   /*on_accepted=*/base::DoNothing());
+                   /*on_accepted=*/std::move(reshow_suggestions));
           return;
         }
         if (requested_address != profile_or_error->plus_address) {
@@ -698,7 +701,7 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
       },
       std::move(hide_suggestions_callback), std::move(fill_field_callback),
       std::move(show_affiliation_error_dialog), std::move(show_error_dialog),
-      requested_plus_address);
+      std::move(reshow_suggestions), requested_plus_address);
   ConfirmPlusAddress(primary_main_frame_origin,
                      std::move(requested_plus_address), std::move(callback));
 }

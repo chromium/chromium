@@ -1696,12 +1696,26 @@ void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
       },
       GetWeakPtr());
 
+  base::OnceClosure reshow_suggestions = base::BindOnce(
+      [](base::WeakPtr<AutofillExternalDelegate> self, FieldGlobalId field) {
+        if (!self) {
+          return;
+        }
+        // Manual fallbacks are used as a trigger source to guarantee that a
+        // plus address suggestion will show.
+        self->manager_->driver().RendererShouldTriggerSuggestions(
+            field,
+            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+      },
+      GetWeakPtr(), query_field_.global_id());
+
   delegate->OnAcceptedInlineSuggestion(
       manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
       /*current_suggestion_index=*/it - suggestions.begin(),
       CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
       CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddressInline),
-      std::move(show_affiliation_error), std::move(show_error));
+      std::move(show_affiliation_error), std::move(show_error),
+      std::move(reshow_suggestions));
 }
 
 }  // namespace autofill

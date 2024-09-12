@@ -716,7 +716,8 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), fill_callback.Get(),
       /*show_affiliation_error_dialog=*/base::DoNothing(),
-      /*show_error_dialog=*/base::DoNothing());
+      /*show_error_dialog=*/base::DoNothing(),
+      /*reshow_suggestions=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
@@ -764,7 +765,8 @@ TEST_F(PlusAddressServiceRequestsTest,
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
       show_affiliation_error_callback.Get(),
-      /*show_error_dialog=*/base::DoNothing());
+      /*show_error_dialog=*/base::DoNothing(),
+      /*reshow_suggestions=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
@@ -813,7 +815,7 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionQuotaError) {
       /*current_suggestion_index=*/0, update_callback.Get(),
       hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
       /*show_affiliation_error_dialog=*/base::DoNothing(),
-      show_error_callback.Get());
+      show_error_callback.Get(), /*reshow_suggestions=*/base::DoNothing());
   check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(

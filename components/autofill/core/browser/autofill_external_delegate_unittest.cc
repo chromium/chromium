@@ -2483,7 +2483,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions()),
-                    /*current_suggestion_index=*/0, _, _, _, _, _))
+                    /*current_suggestion_index=*/0, _, _, _, _, _, _))
         .WillOnce(
             [&](const url::Origin& primary_main_frame_origin,
                 base::span<const Suggestion> current_suggestions,
@@ -2492,7 +2492,8 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
                 HideSuggestionsCallback hide_suggestions_callback,
                 PlusAddressCallback fill_field_callback,
                 AutofillPlusAddressDelegate::ShowAffiliationErrorDialogCallback,
-                AutofillPlusAddressDelegate::ShowErrorDialogCallback) {
+                AutofillPlusAddressDelegate::ShowErrorDialogCallback,
+                base::OnceClosure reshow_suggestions) {
               update_callback = std::move(update_suggestions_callback);
               hide_callback = std::move(hide_suggestions_callback);
               filling_callback = std::move(fill_field_callback);
@@ -2543,24 +2544,22 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
   AutofillPlusAddressDelegate::ShowAffiliationErrorDialogCallback
       show_affiliation_error_callback;
-  {
-    EXPECT_CALL(plus_address_delegate(),
-                OnAcceptedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions()),
-                    /*current_suggestion_index=*/0, _, _, _, _, _))
-        .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
-    // Simulate accepting the dialog.
-    EXPECT_CALL(client(), ShowPlusAddressAffiliationError(
-                              affiliated_domain, affiliated_plus_address, _))
-        .WillOnce(RunOnceCallback<2>());
-    EXPECT_CALL(manager(),
-                FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                   mojom::FieldActionType::kReplaceAll,
-                                   HasQueriedFormId(), HasQueriedFieldId(),
-                                   affiliated_plus_address,
-                                   SuggestionType::kCreateNewPlusAddressInline,
-                                   std::optional(EMAIL_ADDRESS)));
-  }
+  EXPECT_CALL(plus_address_delegate(),
+              OnAcceptedInlineSuggestion(
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
+  // Simulate accepting the dialog.
+  EXPECT_CALL(client(), ShowPlusAddressAffiliationError(
+                            affiliated_domain, affiliated_plus_address, _))
+      .WillOnce(RunOnceCallback<2>());
+  EXPECT_CALL(manager(),
+              FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 HasQueriedFormId(), HasQueriedFieldId(),
+                                 affiliated_plus_address,
+                                 SuggestionType::kCreateNewPlusAddressInline,
+                                 std::optional(EMAIL_ADDRESS)));
 
   external_delegate().DidAcceptSuggestion(suggestions()[0],
                                           SuggestionPosition{.row = 0});
@@ -2578,17 +2577,15 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   AutofillPlusAddressDelegate::ShowErrorDialogCallback show_error_callback;
-  {
-    EXPECT_CALL(plus_address_delegate(),
-                OnAcceptedInlineSuggestion(
-                    _, base::span<const Suggestion>(suggestions()),
-                    /*current_suggestion_index=*/0, _, _, _, _, _))
-        .WillOnce(MoveArg<7>(&show_error_callback));
-    EXPECT_CALL(
-        client(),
-        ShowPlusAddressError(
-            AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted, _));
-  }
+  EXPECT_CALL(plus_address_delegate(),
+              OnAcceptedInlineSuggestion(
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<7>(&show_error_callback));
+  EXPECT_CALL(
+      client(),
+      ShowPlusAddressError(
+          AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted, _));
 
   external_delegate().DidAcceptSuggestion(suggestions()[0],
                                           SuggestionPosition{.row = 0});
@@ -2596,6 +2593,30 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   std::move(show_error_callback)
       .Run(AutofillClient::PlusAddressErrorDialogType::kQuotaExhausted,
            base::DoNothing());
+}
+
+// Tests that `OnAcceptedInlineSuggestion` gets passed a closure that, when run,
+// triggers reshowing the plus address suggestions.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressInlineAcceptedReshowSuggestions) {
+  ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
+
+  base::OnceClosure reshow_suggestions;
+  EXPECT_CALL(plus_address_delegate(),
+              OnAcceptedInlineSuggestion(
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<8>(&reshow_suggestions));
+  EXPECT_CALL(
+      driver(),
+      RendererShouldTriggerSuggestions(
+          queried_field().global_id(),
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
+
+  external_delegate().DidAcceptSuggestion(suggestions()[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(reshow_suggestions);
+  std::move(reshow_suggestions).Run();
 }
 
 TEST_F(
