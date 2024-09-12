@@ -143,6 +143,23 @@ class USER_MANAGER_EXPORT UserManager {
     const std::string locale_;
   };
 
+  // Info to build a device local account.
+  struct DeviceLocalAccountInfo {
+    DeviceLocalAccountInfo(std::string user_id, UserType type);
+    DeviceLocalAccountInfo(const DeviceLocalAccountInfo&);
+    DeviceLocalAccountInfo& operator=(const DeviceLocalAccountInfo&);
+    ~DeviceLocalAccountInfo();
+
+    // Corresponding to AccountId's user email.
+    std::string user_id;
+
+    // Type of the device local account.
+    UserType type;
+
+    // Display name. Can be set only if the type is kPublicAccount.
+    std::optional<std::u16string> display_name;
+  };
+
   // Initializes UserManager instance to this. Normally should be called right
   // after creation so that user_manager::UserManager::Get() doesn't fail.
   // Tests could call this method if they are replacing existing UserManager

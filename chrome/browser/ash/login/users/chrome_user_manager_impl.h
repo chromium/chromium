@@ -90,7 +90,7 @@ class ChromeUserManagerImpl
   // Device local accounts are defined by policy. This method is called whenever
   // an updated list of device local accounts is received from policy.
   bool UpdateAndCleanUpDeviceLocalAccounts(
-      const std::vector<policy::DeviceLocalAccount>& device_local_accounts);
+      const std::vector<DeviceLocalAccountInfo>& device_local_accounts);
 
   // Update the number of users.
   void UpdateNumberOfUsers();

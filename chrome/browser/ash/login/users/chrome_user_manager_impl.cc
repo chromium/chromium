@@ -312,8 +312,20 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   SetOwnerId(owner_account_id);
 
-  bool changed = UpdateAndCleanUpDeviceLocalAccounts(
-      policy::GetDeviceLocalAccounts(cros_settings()));
+  auto device_local_accounts = policy::GetDeviceLocalAccounts(cros_settings());
+  std::vector<DeviceLocalAccountInfo> device_local_account_info_list;
+  for (const auto& account : device_local_accounts) {
+    DeviceLocalAccountInfo info(
+        account.user_id,
+        *chrome_user_manager_util::DeviceLocalAccountTypeToUserType(
+            account.type));
+    if (info.type == user_manager::UserType::kPublicAccount) {
+      info.display_name = GetDisplayName(info.user_id);
+    }
+    device_local_account_info_list.push_back(std::move(info));
+  }
+  bool changed =
+      UpdateAndCleanUpDeviceLocalAccounts(device_local_account_info_list);
 
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
@@ -402,7 +414,7 @@ void ChromeUserManagerImpl::CleanUpDeviceLocalAccountNonCryptohomeData(
 }
 
 bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
-    const std::vector<policy::DeviceLocalAccount>& device_local_accounts) {
+    const std::vector<DeviceLocalAccountInfo>& device_local_accounts) {
   // Try to remove any device local account data marked as pending removal.
   CleanUpDeviceLocalAccountNonCryptohomeDataPendingRemoval();
 
@@ -456,29 +468,21 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   user_manager::User* const active_user = GetActiveUser();
   const bool is_device_local_account_session =
       active_user && active_user->IsDeviceLocalAccount();
-  for (const policy::DeviceLocalAccount& account :
+  for (const DeviceLocalAccountInfo& account :
        base::Reversed(device_local_accounts)) {
     if (is_device_local_account_session &&
         AccountId::FromUserEmail(account.user_id) ==
             active_user->GetAccountId()) {
       users_.insert(users_.begin(), active_user);
     } else {
-      auto user_type =
-          chrome_user_manager_util::DeviceLocalAccountTypeToUserType(
-              account.type);
-      CHECK(user_type.has_value());
       // Using `new` to access a non-public constructor.
       user_storage_.push_back(base::WrapUnique(new user_manager::User(
-          AccountId::FromUserEmail(account.user_id), *user_type)));
+          AccountId::FromUserEmail(account.user_id), account.type)));
       users_.insert(users_.begin(), user_storage_.back().get());
     }
-    if (account.type == policy::DeviceLocalAccountType::kPublicSession ||
-        account.type == policy::DeviceLocalAccountType::kSamlPublicSession) {
-      auto display_name = GetDisplayName(account.user_id);
-      if (display_name) {
-        SaveUserDisplayName(AccountId::FromUserEmail(account.user_id),
-                            *display_name);
-      }
+    if (account.display_name) {
+      SaveUserDisplayName(AccountId::FromUserEmail(account.user_id),
+                          *account.display_name);
     }
   }
 

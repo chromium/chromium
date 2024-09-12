@@ -66,6 +66,19 @@ UserManager::UserAccountData::UserAccountData(
 
 UserManager::UserAccountData::~UserAccountData() {}
 
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(std::string user_id,
+                                                            UserType type)
+    : user_id(std::move(user_id)), type(type) {}
+
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo&
+UserManager::DeviceLocalAccountInfo::operator=(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo::~DeviceLocalAccountInfo() = default;
+
 void UserManager::Initialize() {
   DCHECK(!UserManager::instance);
   UserManager::SetInstance(this);
