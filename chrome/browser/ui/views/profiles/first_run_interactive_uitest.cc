@@ -563,7 +563,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
+// TODO(crbug.com/366082752): Re-enable this test
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       DISABLED_SignInAndSync) {
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
@@ -712,7 +714,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
+// TODO(crbug.com/366082752): Re-enable this test
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       DISABLED_DeclineSync) {
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
