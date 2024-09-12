@@ -106,13 +106,13 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual ContainerStuckPhysical StuckVertical() const {
     return ContainerStuckPhysical::kNo;
   }
-  // For evaluating scroll-state(stuck: inset-inline-start),
-  // scroll-state(stuck: inset-inline-end)
+  // For evaluating scroll-state(stuck: inline-start),
+  // scroll-state(stuck: inline-end)
   virtual ContainerStuckLogical StuckInline() const {
     return ContainerStuckLogical::kNo;
   }
-  // For evaluating scroll-state(stuck: inset-block-start),
-  // scroll-state(stuck: inset-block-end)
+  // For evaluating scroll-state(stuck: block-start),
+  // scroll-state(stuck: block-end)
   virtual ContainerStuckLogical StuckBlock() const {
     return ContainerStuckLogical::kNo;
   }

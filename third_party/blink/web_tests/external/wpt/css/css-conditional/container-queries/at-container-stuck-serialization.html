@@ -9,7 +9,7 @@
   @container scroll-state(        stuck:top) { }
   @container scroll-STate(stuck:    ) { }
   @container scroll-STate(stuck) { }
-  @container  scroll-state(  ( stuck: BOTTOM) OR ( STUCK: INset-inline-START  ) ) { }
+  @container  scroll-state(  ( stuck: BOTTOM) OR ( STUCK: inline-START  ) ) { }
   @container scroll-state (stuck: top) { }
 </style>
 <script>
@@ -22,7 +22,7 @@
       ["scroll-state(stuck: top)", "Normalize spaces"],
       ["scroll-STate(stuck:    )", "No value - invalid, serializes as <general-enclosed>"],
       ["scroll-state(stuck)", "Boolean context"],
-      ["scroll-state((stuck: bottom) or (stuck: inset-inline-start))", "Logical with 'or'"],
+      ["scroll-state((stuck: bottom) or (stuck: inline-start))", "Logical with 'or'"],
       ["scroll-state (stuck: top)", "Not a scroll-state function with space before '('"]
   ].map((e, i) => [testSheet.sheet.cssRules[i], ...e]);
 

@@ -301,12 +301,12 @@ TEST_F(ContainerQueryTest, ScrollStateContainerSelector) {
             stuck_and_style.Type(WritingMode::kHorizontalTb));
 
   ContainerSelector stuck_and_inline_size = ContainerSelectorFrom(
-      "scroll-state(stuck: inset-block-end) or (inline-size > 10px)");
+      "scroll-state(stuck: block-end) or (inline-size > 10px)");
   EXPECT_EQ((kContainerTypeScrollState | kContainerTypeInlineSize),
             stuck_and_inline_size.Type(WritingMode::kHorizontalTb));
 
-  ContainerSelector stuck_and_block_size = ContainerSelectorFrom(
-      "scroll-state(stuck: inset-block-end) and (height)");
+  ContainerSelector stuck_and_block_size =
+      ContainerSelectorFrom("scroll-state(stuck: block-end) and (height)");
   EXPECT_EQ((kContainerTypeScrollState | kContainerTypeBlockSize),
             stuck_and_block_size.Type(WritingMode::kHorizontalTb));
 }

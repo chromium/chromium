@@ -1541,13 +1541,13 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.StuckVertical() == ContainerStuckPhysical::kBottom;
     case CSSValueID::kRight:
       return media_values.StuckHorizontal() == ContainerStuckPhysical::kRight;
-    case CSSValueID::kInsetBlockStart:
+    case CSSValueID::kBlockStart:
       return media_values.StuckBlock() == ContainerStuckLogical::kStart;
-    case CSSValueID::kInsetBlockEnd:
+    case CSSValueID::kBlockEnd:
       return media_values.StuckBlock() == ContainerStuckLogical::kEnd;
-    case CSSValueID::kInsetInlineStart:
+    case CSSValueID::kInlineStart:
       return media_values.StuckInline() == ContainerStuckLogical::kStart;
-    case CSSValueID::kInsetInlineEnd:
+    case CSSValueID::kInlineEnd:
       return media_values.StuckInline() == ContainerStuckLogical::kEnd;
     default:
       NOTREACHED_IN_MIGRATION();
