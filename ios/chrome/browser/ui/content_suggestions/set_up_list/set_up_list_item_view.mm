@@ -151,6 +151,12 @@ struct ViewConfig {
           kTextSpacing,
       };
     }
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(hideDescriptionOnTraitChange)];
+    }
   }
   return self;
 }
@@ -170,17 +176,19 @@ struct ViewConfig {
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    _description.hidden = self.traitCollection.preferredContentSizeCategory >
-                          UIContentSizeCategoryExtraExtraLarge;
-    // Force a layout since the size of text components may have changed.
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
+    [self hideDescriptionOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Public methods
 
@@ -417,6 +425,16 @@ struct ViewConfig {
     case SetUpListItemType::kFollow:
       return set_up_list::kFollowItemID;
   }
+}
+
+// Hides `_description` if the font size category is larger than
+// extra-extra-large.
+- (void)hideDescriptionOnTraitChange {
+  _description.hidden = self.traitCollection.preferredContentSizeCategory >
+                        UIContentSizeCategoryExtraExtraLarge;
+  // Force a layout since the size of text components may have changed.
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 #pragma mark - Private methods (animation helpers)
