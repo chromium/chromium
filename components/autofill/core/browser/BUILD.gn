@@ -1016,6 +1016,7 @@ static_library("test_support") {
     "//components/feature_engagement",
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
     "//components/pref_registry",
     "//components/prefs:test_support",

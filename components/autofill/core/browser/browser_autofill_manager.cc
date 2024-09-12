@@ -133,6 +133,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -886,7 +887,32 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
-  MaybeImportFromSubmittedForm(form, submitted_form.get());
+  // Try to import the `form` into user annotations via the
+  // `AutofillPredictionImprovementsDelegate`. `MaybeImportFromSubmittedForm()`
+  // will be called if the import was not successful.
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      delegate && submitted_form) {
+    delegate->MaybeImportForm(
+        form, *submitted_form,
+        base::BindOnce(
+            &BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound,
+            weak_ptr_factory_.GetWeakPtr(), form, std::move(submitted_form),
+            source, form_submitted_timestamp));
+  } else {
+    MaybeImportFromSubmittedForm(
+        form, submitted_form.get(),
+        /*attempt_to_import_into_form_data_importer=*/true);
+    OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
+                               form_submitted_timestamp);
+  }
+}
+
+void BrowserAutofillManager::OnFormSubmittedAfterImport(
+    const FormData& form,
+    std::unique_ptr<FormStructure> submitted_form,
+    SubmissionSource source,
+    base::TimeTicks form_submitted_timestamp) {
   if (!submitted_form) {
     return;
   }
@@ -1040,9 +1066,34 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
                               /*observed_submission=*/false);
 }
 
+void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
+    const FormData& form,
+    std::unique_ptr<FormStructure> submitted_form,
+    SubmissionSource source,
+    base::TimeTicks form_submitted_timestamp,
+    std::vector<optimization_guide::proto::UserAnnotationsEntry>
+        to_be_upserted_entries,
+    base::OnceCallback<void(bool prompt_was_accepted)>
+        prompt_acceptance_callback) {
+  const bool should_show_prediction_improvements_bubble =
+      !to_be_upserted_entries.empty();
+  if (should_show_prediction_improvements_bubble) {
+    // TODO(crbug.com/366132304): Pass `to_be_upserted_entries` and
+    // `prompt_acceptance_callback` to
+    // `ShowSaveAutofillPredictionImprovementsBubble()`.
+    client().ShowSaveAutofillPredictionImprovementsBubble();
+  }
+  MaybeImportFromSubmittedForm(form, submitted_form.get(),
+                               /*attempt_to_import_into_form_data_importer=*/
+                               !should_show_prediction_improvements_bubble);
+  OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
+                             form_submitted_timestamp);
+}
+
 void BrowserAutofillManager::MaybeImportFromSubmittedForm(
     const FormData& form,
-    const FormStructure* const form_structure) {
+    const FormStructure* const form_structure,
+    bool attempt_to_import_into_form_data_importer) {
   if (!form_structure) {
     // We always give Autocomplete a chance to save the data.
     // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
@@ -1052,7 +1103,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
         form, nullptr, client().IsAutocompleteEnabled());
     return;
   }
-  if (form_structure->IsAutofillable()) {
+  if (attempt_to_import_into_form_data_importer &&
+      form_structure->IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client().GetFormDataImporter()->ImportAndProcessFormData(
         *form_structure, IsAutofillProfileEnabled(),

@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -99,6 +100,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -7235,6 +7237,79 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
       external_delegate()->suggestions(),
       ElementsAre(Field(&Suggestion::type,
                         Eq(SuggestionType::kRetrievePredictionImprovements))));
+}
+
+// Tests that an Autofill profile is not imported into the address data manager
+// when the submitted form was imported into user annotations successfully.
+TEST_F(BrowserAutofillManagerTest,
+       ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
+  TestAddressDataManager& adm = personal_data().test_address_data_manager();
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  AutofillPredictionImprovementsDelegate::ImportFormCallback
+      import_form_callback;
+  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+      .WillByDefault(Return(&delegate));
+  EXPECT_CALL(delegate, MaybeImportForm)
+      .WillOnce(MoveArg<2>(&import_form_callback));
+
+  // Fill the form.
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+  ExpectFilledAddressFormElvis(response_data, false);
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
+
+  // Remove the filled profile and simulate form submission. Since the
+  // `personal_data()`'s auto accept imports for testing is enabled, expect
+  // that the profile should be imported again which it's not because of
+  // prediction improvements.
+  adm.ClearProfiles();
+  EXPECT_TRUE(adm.GetProfiles().empty());
+  FormSubmitted(response_data);
+  optimization_guide::proto::UserAnnotationsEntry entry;
+  entry.set_entry_id(1LL);
+  entry.set_key("key");
+  entry.set_value("value");
+  std::move(import_form_callback)
+      .Run(/*to_be_upserted_entries=*/{std::move(entry)},
+           /*prompt_acceptance_callback=*/base::DoNothing());
+  EXPECT_TRUE(adm.GetProfiles().empty());
+}
+
+// Tests that an Autofill profile is imported into the address data manager when
+// the submitted form was not imported into user annotations.
+TEST_F(BrowserAutofillManagerTest,
+       ProfileImportedOnFailedUserAnnotationsImport) {
+  TestAddressDataManager& adm = personal_data().test_address_data_manager();
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  AutofillPredictionImprovementsDelegate::ImportFormCallback
+      import_form_callback;
+  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+      .WillByDefault(Return(&delegate));
+  EXPECT_CALL(delegate, MaybeImportForm)
+      .WillOnce(MoveArg<2>(&import_form_callback));
+
+  // Fill the form.
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+  ExpectFilledAddressFormElvis(response_data, false);
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
+
+  // Remove the filled profile and simulate form submission. Since the
+  // `personal_data()`'s auto accept imports for testing is enabled, expect
+  // that the profile is imported again.
+  adm.ClearProfiles();
+  EXPECT_TRUE(adm.GetProfiles().empty());
+  FormSubmitted(response_data);
+  std::move(import_form_callback)
+      .Run(/*to_be_upserted_entries=*/{},
+           /*prompt_acceptance_callback=*/base::DoNothing());
+  EXPECT_FALSE(adm.GetProfiles().empty());
 }
 
 // Test param indicates if there is an active screen reader.

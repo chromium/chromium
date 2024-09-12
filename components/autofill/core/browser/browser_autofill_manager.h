@@ -61,6 +61,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
+
 namespace autofill {
 
 class AutofillField;
@@ -465,8 +469,30 @@ class BrowserAutofillManager : public AutofillManager {
   };
 
   // Triggers the possible import of submitted data at submission time.
-  void MaybeImportFromSubmittedForm(const FormData& form,
-                                    const FormStructure* const form_structure);
+  void MaybeImportFromSubmittedForm(
+      const FormData& form,
+      const FormStructure* const form_structure,
+      bool attempt_to_import_into_form_data_importer);
+
+  // Event handler for
+  // `AutofillPredictionImprovementsDelegate::MaybeImportForm()` which is bound
+  // on form submission if the delegate exists.
+  void OnUserAnnotationsMaybeImportableFormFound(
+      const FormData& form,
+      std::unique_ptr<FormStructure> submitted_form,
+      mojom::SubmissionSource source,
+      base::TimeTicks form_submitted_timestamp,
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback);
+
+  // Method containing logic to be run in `OnFormSubmittedImpl()` after any
+  // import attempts of the submitted form occurred.
+  void OnFormSubmittedAfterImport(const FormData& form,
+                                  std::unique_ptr<FormStructure> submitted_form,
+                                  mojom::SubmissionSource source,
+                                  base::TimeTicks form_submitted_timestamp);
 
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,
