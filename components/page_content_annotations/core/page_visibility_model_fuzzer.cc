@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include <fuzzer/FuzzedDataProvider.h>
+
+#include <string>
 
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/page_visibility_model_executor.h"
+#include "components/page_content_annotations/core/page_visibility_model_executor.h"
 
 class PageVisiblityExecutorFuzzer {
  public:
   PageVisiblityExecutorFuzzer()
-      : model_executor_(optimization_guide::PageVisibilityModelExecutor()) {
+      : model_executor_(page_content_annotations::PageVisibilityModelExecutor()) {
     model_executor_.InitializeAndMoveToExecutionThread(
         // This is an arbitrarily long time since we don't need to test the
         // timeout behavior here, libfuzzer will take care of hangs.
@@ -36,7 +36,7 @@ class PageVisiblityExecutorFuzzer {
   }
   ~PageVisiblityExecutorFuzzer() { task_environment_.RunUntilIdle(); }
 
-  optimization_guide::PageVisibilityModelExecutor* executor() {
+  page_content_annotations::PageVisibilityModelExecutor* executor() {
     return &model_executor_;
   }
 
@@ -44,7 +44,7 @@ class PageVisiblityExecutorFuzzer {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  optimization_guide::PageVisibilityModelExecutor model_executor_;
+  page_content_annotations::PageVisibilityModelExecutor model_executor_;
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

@@ -10,9 +10,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/page_visibility_model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_visibility_model_executor.h"
 
 namespace page_content_annotations {
 
@@ -30,7 +30,7 @@ PageVisibilityModelHandler::PageVisibilityModelHandler(
                    const std::string&>(
           model_provider,
           background_task_runner,
-          std::make_unique<optimization_guide::PageVisibilityModelExecutor>(),
+          std::make_unique<PageVisibilityModelExecutor>(),
           /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
           model_metadata) {

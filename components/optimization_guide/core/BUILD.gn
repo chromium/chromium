@@ -9,7 +9,6 @@ if (is_android) {
 }
 import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/tflite/features.gni")
 
@@ -44,8 +43,6 @@ static_library("model_executor") {
       "bert_model_executor.h",
       "model_execution_timeout_watchdog.cc",
       "model_execution_timeout_watchdog.h",
-      "page_visibility_model_executor.cc",
-      "page_visibility_model_executor.h",
       "tflite_model_executor.h",
     ]
   }
@@ -102,15 +99,12 @@ mojom("interfaces") {
 if (build_with_tflite_lib) {
   static_library("machine_learning") {
     sources = [
-      "page_visibility_op_resolver.cc",
-      "page_visibility_op_resolver.h",
       "tflite_op_resolver.cc",
       "tflite_op_resolver.h",
     ]
     deps = [
       ":features",
       "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//third_party/tensorflow_models:tflite_custom_ops",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_public_headers",
@@ -632,21 +626,6 @@ if (is_mac && build_with_internal_optimization_guide) {
     outputs = [ "$root_out_dir/og_intermediates/{{source_file_part}}" ]
     deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
-    ]
-  }
-}
-
-if (build_with_tflite_lib) {
-  fuzzer_test("optimization_guide_page_visibility_model_fuzzer") {
-    sources = [ "page_visibility_model_fuzzer.cc" ]
-    deps = [
-      ":core",
-      ":features",
-      ":machine_learning",
-      ":model_executor",
-      "//base:base",
-      "//base/test:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
     ]
   }
 }

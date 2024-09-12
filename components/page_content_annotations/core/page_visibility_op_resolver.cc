@@ -1,13 +1,13 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/optimization_guide/core/page_visibility_op_resolver.h"
+#include "components/page_content_annotations/core/page_visibility_op_resolver.h"
 
 #include "third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/denylist_skipgram.h"
 #include "third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.h"
 #include "third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 PageVisibilityOpResolver::PageVisibilityOpResolver() {
   AddCustom("SequenceStringProjection",
@@ -18,4 +18,4 @@ PageVisibilityOpResolver::PageVisibilityOpResolver() {
 }
 PageVisibilityOpResolver::~PageVisibilityOpResolver() = default;
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
