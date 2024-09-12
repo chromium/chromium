@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
   std::string fake_access_token = "fake_access_token";
 
   RunTestSequence(
-      Do([=]() {
+      Do([=, this]() {
         auto share_link = data_sharing::GetShareLink(
             fake_collaboration_id, fake_access_token, browser()->profile());
         auto* data_sharing_service =

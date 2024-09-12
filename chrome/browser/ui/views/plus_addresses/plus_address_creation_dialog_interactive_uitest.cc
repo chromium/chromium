@@ -264,7 +264,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
       PlusAddressModalCompletionStatus status,
       int refresh_count,
       bool notice_shown) {
-    return Do([=]() {
+    return Do([=, this]() {
       histogram_tester_.ExpectTotalCount(
           FormatDurationHistogramNameFor(status, notice_shown), 1);
       histogram_tester_.ExpectUniqueSample(
@@ -278,7 +278,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
       int confirmed,
       int canceled,
       bool notice_shown) {
-    return Do([=]() {
+    return Do([=, this]() {
       EXPECT_THAT(
           histogram_tester_.GetAllSamples(
               notice_shown ? kPlusAddressModalWithNoticeEventHistogram

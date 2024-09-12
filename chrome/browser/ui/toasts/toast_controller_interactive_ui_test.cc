@@ -63,10 +63,10 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowEphemeralToast) {
-  RunTestSequence(ShowToast(ToastParams(ToastId::kLinkCopied)),
-                  WaitForShow(toasts::ToastView::kToastViewId), Check([=]() {
-                    return GetToastController()->IsShowingToast();
-                  }));
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
@@ -74,18 +74,18 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),
-      Check([=]() { return GetToastController()->IsShowingToast(); }),
+      Check([=, this]() { return GetToastController()->IsShowingToast(); }),
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),
-      Check([=]() { return GetToastController()->IsShowingToast(); }));
+      Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptEphemeralToast) {
-  RunTestSequence(ShowToast(ToastParams(ToastId::kLinkCopied)),
-                  WaitForShow(toasts::ToastView::kToastViewId), Check([=]() {
-                    return GetToastController()->IsShowingToast();
-                  }),
-                  ShowToast(ToastParams(ToastId::kImageCopied)));
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      Check([=, this]() { return GetToastController()->IsShowingToast(); }),
+      ShowToast(ToastParams(ToastId::kImageCopied)));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowPersistentToast) {

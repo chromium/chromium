@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                   CheckAlertRowLabel(u"Inactive tab", true),
                   CheckView(
                       TabHoverCardBubbleView::kHoverCardBubbleElementId,
-                      [=](TabHoverCardBubbleView* bubble) {
+                      [=, this](TabHoverCardBubbleView* bubble) {
                         return GetPrimaryPerformanceRowFromHoverCard(bubble)
                             ->footer_label()
                             ->GetText()
