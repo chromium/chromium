@@ -57,10 +57,10 @@ enum ManualFallbackItemType : NSInteger {
 
 @implementation PasswordViewController {
   // Credentials to be shown in the view.
-  NSArray<TableViewItem*>* _credentials;
+  NSArray<ManualFillCredentialItem*>* _credentials;
 
   // Plus Addresses to be shown in the view.
-  NSArray<TableViewItem*>* _plusAddresses;
+  NSArray<ManualFillPlusAddressItem*>* _plusAddresses;
 }
 
 - (instancetype)initWithSearchController:(UISearchController*)searchController {
@@ -186,7 +186,7 @@ enum ManualFallbackItemType : NSInteger {
   if (!self.searchController &&
       base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
-    _credentials = (NSArray<TableViewItem*>*)credentials;
+    _credentials = credentials;
     [self presentItems];
   } else {
     [self presentDataItems:credentials];
@@ -207,7 +207,7 @@ enum ManualFallbackItemType : NSInteger {
 
 - (void)presentPlusAddresses:
     (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
-  _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
+  _plusAddresses = plusAddresses;
   for (ManualFillPlusAddressItem* plusAddressItem in _plusAddresses) {
     plusAddressItem.type = manual_fill::ManualFallbackItemType::kPlusAddress;
   }
@@ -223,17 +223,32 @@ enum ManualFallbackItemType : NSInteger {
 // Show items depending on the availibility of `_credentials` and
 // `_plusAddresses`.
 - (void)presentItems {
-  NSArray* items = nil;
   if (_credentials && _plusAddresses) {
-    items = [_plusAddresses arrayByAddingObjectsFromArray:_credentials];
-  } else if (_credentials) {
-    items = _credentials;
-  } else if (_plusAddresses) {
-    items = _plusAddresses;
-  }
+    NSMutableArray<TableViewItem*>* items = [[NSMutableArray alloc] init];
 
-  CHECK(items);
-  [self presentDataItems:items];
+    // Stores a set of usernames extracted from the `_credentials`.
+    NSMutableSet<NSString*>* credentialUsernamesSet =
+        [[NSMutableSet alloc] init];
+    for (ManualFillCredentialItem* item in _credentials) {
+      [credentialUsernamesSet addObject:item.username];
+    }
+
+    // We don't show a separate entry for the plus addresses that belong to a
+    // credential as a username.
+    for (ManualFillPlusAddressItem* item in _plusAddresses) {
+      if (![credentialUsernamesSet containsObject:item.plusAddress]) {
+        [items addObject:item];
+      }
+    }
+    [items addObjectsFromArray:_credentials];
+
+    CHECK(items);
+    [self presentDataItems:items];
+  } else if (_credentials) {
+    [self presentDataItems:_credentials];
+  } else if (_plusAddresses) {
+    [self presentDataItems:_plusAddresses];
+  }
 }
 
 // Retrieves favicon from FaviconLoader and sets image in `cell` for plus

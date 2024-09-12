@@ -37,7 +37,8 @@ CGFloat GetFaviconSize() {
 @interface ManualFillPlusAddressItem ()
 
 // The plus address for this item.
-@property(nonatomic, strong, readonly) ManualFillPlusAddress* plusAddress;
+@property(nonatomic, strong, readonly)
+    ManualFillPlusAddress* manualFillPlusAddress;
 
 // The delegate for this item.
 @property(nonatomic, weak, readonly) id<ManualFillContentInjector>
@@ -62,7 +63,7 @@ CGFloat GetFaviconSize() {
         cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _plusAddress = plusAddress;
+    _manualFillPlusAddress = plusAddress;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
@@ -74,18 +75,22 @@ CGFloat GetFaviconSize() {
 - (void)configureCell:(ManualFillPlusAddressCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  [cell setUpWithPlusAddress:self.plusAddress
+  [cell setUpWithPlusAddress:self.manualFillPlusAddress
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel];
 }
 
 - (const GURL&)faviconURL {
-  return self.plusAddress.URL;
+  return self.manualFillPlusAddress.URL;
 }
 
 - (NSString*)uniqueIdentifier {
-  return base::SysUTF8ToNSString(self.plusAddress.URL.spec());
+  return base::SysUTF8ToNSString(self.manualFillPlusAddress.URL.spec());
+}
+
+- (NSString*)plusAddress {
+  return self.manualFillPlusAddress.plusAddress;
 }
 
 @end

@@ -127,6 +127,10 @@ CGFloat GetFaviconSize() {
   return base::SysUTF8ToNSString(self.credential.URL.spec());
 }
 
+- (NSString*)username {
+  return self.credential.username;
+}
+
 @end
 
 namespace {
