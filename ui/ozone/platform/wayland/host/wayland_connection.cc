@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
@@ -233,6 +234,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // Create the buffer factory before registry listener is set so that shm, drm,
   // zwp_linux_dmabuf objects are able to be stored.
   buffer_factory_ = std::make_unique<WaylandBufferFactory>();
+
+  wl::RecordConnectionMetrics(display());
 
   static constexpr wl_registry_listener kRegistryListener = {
       .global = &OnGlobal,

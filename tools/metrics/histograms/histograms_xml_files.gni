@@ -133,6 +133,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/lens/enums.xml",
   "//tools/metrics/histograms/metadata/lens/histograms.xml",
   "//tools/metrics/histograms/metadata/leveldb_proto/histograms.xml",
+  "//tools/metrics/histograms/metadata/linux/enums.xml",
+  "//tools/metrics/histograms/metadata/linux/histograms.xml",
   "//tools/metrics/histograms/metadata/local/histograms.xml",
   "//tools/metrics/histograms/metadata/login/histograms.xml",
   "//tools/metrics/histograms/metadata/mac/enums.xml",
