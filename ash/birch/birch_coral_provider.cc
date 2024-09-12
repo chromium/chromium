@@ -37,10 +37,10 @@ bool IsBrowserWindow(aura::Window* window) {
 }
 
 // Gets the data of the tabs opening on the active desk.
-std::vector<coral_util::TabData> GetInSessionTabData() {
+std::set<coral_util::TabData> GetInSessionTabData() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::vector<coral_util::TabData> tab_data;
+  std::set<coral_util::TabData> tab_data;
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
     // Filter out the browser window which is not on the active desk.
@@ -55,16 +55,16 @@ std::vector<coral_util::TabData> GetInSessionTabData() {
 
     // TODO(http://b/363353433): filter out the tabs info from incognito window.
 
-    tab_data.push_back({.tab_title = tab->current_info().title,
-                        .source = tab->current_info().source});
+    tab_data.insert({.tab_title = tab->current_info().title,
+                     .source = tab->current_info().source});
   }
 
   return tab_data;
 }
 
 // Gets the data of the apps opening on the active desk.
-std::vector<coral_util::AppData> GetInSessionAppData() {
-  std::vector<coral_util::AppData> app_data;
+std::set<coral_util::AppData> GetInSessionAppData() {
+  std::set<coral_util::AppData> app_data;
 
   auto* const shell = Shell::Get();
   auto mru_windows =
@@ -93,11 +93,10 @@ std::vector<coral_util::AppData> GetInSessionAppData() {
     }
 
     const std::string* app_id_key = window->GetProperty(kAppIDKey);
-    app_data.push_back(
-        {.app_id = app_id,
-         .app_name = (!app_id_key || IsArcWindow(window))
-                         ? base::UTF16ToUTF8(window->GetTitle())
-                         : delegate->GetAppShortName(*app_id_key)});
+    app_data.insert({.app_id = app_id,
+                     .app_name = (!app_id_key || IsArcWindow(window))
+                                     ? base::UTF16ToUTF8(window->GetTitle())
+                                     : delegate->GetAppShortName(*app_id_key)});
   }
   return app_data;
 }

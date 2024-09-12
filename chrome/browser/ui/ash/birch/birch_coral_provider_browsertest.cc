@@ -98,19 +98,82 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   }
 
   // Comparing the collected tab data with the expected tab data.
-  EXPECT_THAT(tab_data,
-              testing::ElementsAreArray(std::vector<coral_util::TabData>{
-                  {.tab_title = "examples1.com", .source = "examples1.com/"},
-                  {.tab_title = "examples2.com", .source = "examples2.com/"},
-                  {.tab_title = "examples3.com", .source = "examples3.com/"}}));
+  EXPECT_THAT(
+      tab_data,
+      testing::UnorderedElementsAreArray(std::vector<coral_util::TabData>{
+          {.tab_title = "examples1.com", .source = "examples1.com/"},
+          {.tab_title = "examples2.com", .source = "examples2.com/"},
+          {.tab_title = "examples3.com", .source = "examples3.com/"}}));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(
       app_data,
-      testing::ElementsAreArray(std::vector<coral_util::AppData>{
+      testing::UnorderedElementsAreArray(std::vector<coral_util::AppData>{
           {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "Gmail"},
           {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "YouTube"},
           {.app_id = "nbljnnecbjbmifnoehiemkgefbnpoeak", .app_name = "Explore"},
+          {.app_id = "odknhmnlageboeamepcngndbggdpaobj",
+           .app_name = "Settings"},
+          {.app_id = "fkiggjmkendpmbegkagpmagjepfkpmeb",
+           .app_name = "Files"}}));
+}
+
+// Tests that the coral provider filters out duplicated tab and app data.
+IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
+  // Close existing browser windows.
+  CloseAllBrowsers();
+
+  // Create two browsers with duplicated urls.
+  test::CreateAndShowBrowser(
+      profile(), {GURL("https://examples1.com"), GURL("https://examples2.com"),
+                  GURL("https://examples2.com")});
+  test::CreateAndShowBrowser(profile(), {GURL("https://examples1.com"),
+                                         GURL("https://examples3.com")});
+
+  // Open some SWA windows with duplicated apps.
+  test::CreateSystemWebApp(profile(), SystemWebAppType::FILE_MANAGER);
+  test::CreateSystemWebApp(profile(), SystemWebAppType::FILE_MANAGER);
+  test::CreateSystemWebApp(profile(), SystemWebAppType::SETTINGS);
+
+  // Open some PWA windows with duplicated apps.
+  test::InstallAndLaunchPWA(profile(), GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"YouTube");
+  test::InstallAndLaunchPWA(profile(), GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"Youtube");
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  // Check if the collected data as expected.
+  auto* coral_provider = GetCoralProvider();
+  const auto& content_data = coral_provider->request_for_test().content();
+
+  // Extract tab data and app data from content data.
+  std::vector<coral_util::TabData> tab_data;
+  std::vector<coral_util::AppData> app_data;
+  for (const auto& data : content_data) {
+    if (std::holds_alternative<coral_util::TabData>(data)) {
+      tab_data.emplace_back(std::get<coral_util::TabData>(data));
+    } else {
+      app_data.emplace_back(std::get<coral_util::AppData>(data));
+    }
+  }
+
+  // Comparing the collected tab data with the expected tab data.
+  EXPECT_THAT(
+      tab_data,
+      testing::UnorderedElementsAreArray(std::vector<coral_util::TabData>{
+          {.tab_title = "examples1.com", .source = "examples1.com/"},
+          {.tab_title = "examples2.com", .source = "examples2.com/"},
+          {.tab_title = "examples3.com", .source = "examples3.com/"}}));
+
+  // Comparing the collected app data with the expected app data in mru order.
+  EXPECT_THAT(
+      app_data,
+      testing::UnorderedElementsAreArray(std::vector<coral_util::AppData>{
+          {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "YouTube"},
           {.app_id = "odknhmnlageboeamepcngndbggdpaobj",
            .app_name = "Settings"},
           {.app_id = "fkiggjmkendpmbegkagpmagjepfkpmeb",
