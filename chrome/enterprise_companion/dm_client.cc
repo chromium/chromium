@@ -80,7 +80,8 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
     return GetGlobalConstants()->DeviceManagementServerURL().spec();
   }
   std::string GetAgentParameter() const override {
-    return base::StrCat({PRODUCT_FULLNAME_STRING, kEnterpriseCompanionVersion});
+    return base::StrCat(
+        {PRODUCT_FULLNAME_STRING, " ", kEnterpriseCompanionVersion});
   }
   std::string GetPlatformParameter() const override {
     int32_t major = 0;

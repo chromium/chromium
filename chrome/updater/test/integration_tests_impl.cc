@@ -370,7 +370,7 @@ void ExpectDeviceManagementRequestViaCompanionApp(
     std::optional<GURL> target_url = {}) {
   request::MatcherGroup request_matchers = {
       request::GetPathMatcher(base::StringPrintf(
-          R"(%s\?.*agent=%sEnterpriseCompanion%s&apptype=Chrome)"
+          R"(%s\?.*agent=%sEnterpriseCompanion\+%s&apptype=Chrome)"
           R"(&deviceid=%s.*&platform=.*&request=%s)",
           test_server->device_management_path().c_str(), BROWSER_NAME_STRING,
           kUpdaterVersion,
