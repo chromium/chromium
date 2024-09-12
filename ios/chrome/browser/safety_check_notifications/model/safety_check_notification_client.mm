@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -42,6 +43,40 @@ NSArray<UNNotificationRequest*>* NotificationsWithIdentifiers(
   }
 
   return matching_requests;
+}
+
+// Returns `true` if provisional Safety Check notifications are allowed based
+// on:
+//  - The existence of a compromised password notification.
+//  - The current notification authorization status (provisional or not yet
+//  determined).
+bool CanSendProvisionalNotifications(
+    PasswordSafetyCheckState password_check_state,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
+    PrefService* local_pref_service) {
+  CHECK(local_pref_service);
+
+  // Only send provisional notifications for compromised passwords.
+  if (password_check_state !=
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
+    return false;
+  }
+
+  UNNotificationContent* password_notification =
+      NotificationForPasswordCheckState(password_check_state,
+                                        insecure_password_counts);
+
+  // Only send provisional notifications if a password notification actually
+  // exists.
+  if (password_notification == nil) {
+    return false;
+  }
+
+  UNAuthorizationStatus auth_status =
+      [PushNotificationUtil getSavedPermissionSettings];
+
+  return auth_status == UNAuthorizationStatusProvisional ||
+         auth_status == UNAuthorizationStatusNotDetermined;
 }
 
 }  // namespace
@@ -108,14 +143,6 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
-  // Check notification (e.g., notifications disabled, recent notification
-  // already shown).
-  if (!IsPermitted()) {
-    std::move(completion).Run();
-    return;
-  }
-
   // Confirm that `SafetyCheckNotificationClient` is not observing
   // `IOSChromeSafetyCheckManager` before registering itself as an observer for
   // Safety Check updates.
@@ -141,6 +168,14 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     password_check_state_ = safety_check_manager->GetPasswordCheckState();
     insecure_password_counts_ =
         safety_check_manager->GetInsecurePasswordCounts();
+  }
+
+  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
+  // Check notification (e.g., notifications disabled, recent notification
+  // already shown).
+  if (!IsPermitted()) {
+    std::move(completion).Run();
+    return;
   }
 
   ClearAndRescheduleSafetyCheckNotifications(
@@ -237,7 +272,14 @@ bool SafetyCheckNotificationClient::IsPermitted() {
   // TODO(crbug.com/362260014): Replace current opt-in state logic with
   // `GetMobileNotificationPermissionStatusForClient()` once
   // `PushNotificationClient` dependencies are refactored.
+
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  if (CanSendProvisionalNotifications(password_check_state_,
+                                      insecure_password_counts_,
+                                      local_pref_service)) {
+    return true;
+  }
 
   return local_pref_service
       ->GetDict(prefs::kAppLevelPushNotificationPermissions)

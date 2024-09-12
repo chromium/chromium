@@ -616,6 +616,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/profile_metrics/model",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/screenshot/model",

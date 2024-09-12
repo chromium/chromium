@@ -59,6 +59,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safety_check/model",

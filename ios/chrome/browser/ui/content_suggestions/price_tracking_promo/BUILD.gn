@@ -17,6 +17,7 @@ source_set("price_tracking_promo") {
     "//base:base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util:util",
     "//ios/chrome/browser/ui/content_suggestions:constants",

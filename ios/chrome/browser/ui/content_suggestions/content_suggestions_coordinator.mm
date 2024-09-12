@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -237,6 +238,20 @@
 
   self.authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+
+  // Conditionally register for provisional Safety Check notifications if the
+  // feature is enabled.
+  //
+  // TODO(crbug.com/366182129): Move Safety Check provisional notification
+  // enrollment to `SafetyCheckNotificationClient` once
+  // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    [ProvisionalPushNotificationUtil
+        enrollUserToProvisionalNotificationsForClientIds:
+            {PushNotificationClientId::kSafetyCheck}
+                                         withAuthService:self.authService
+                                   deviceInfoSyncService:nil];
+  }
 
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(browserState)->GetPrefs();
