@@ -34,6 +34,12 @@ TEST(EncodingSupportTest, EnablesVp8HardwareEncoderAlways) {
   EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles()));
 }
 
+TEST(EncodingSupportTest, DenyListedHardwareEncoderNotOffered) {
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles()));
+  DenyListHardwareCodec(VideoCodec::kVP8);
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles()));
+}
+
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
   static const bool is_enabled =
 #if BUILDFLAG(IS_MAC)

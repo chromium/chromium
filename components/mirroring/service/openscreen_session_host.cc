@@ -216,6 +216,31 @@ void RecordRemotePlaybackSessionStartsBeforeTimeout(bool started) {
       "MediaRouter.RemotePlayback.SessionStartsBeforeTimeout", started);
 }
 
+// Returns a message that can be reported alongside an error status. If not a
+// reportable error, returns nullptr.
+const char* AsErrorMessage(OperationalStatus status) {
+  switch (status) {
+    case OperationalStatus::STATUS_UNINITIALIZED:
+    case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
+    // Not an error.
+    // TODO(crbug.com/40103719): As an optimization, signal the client to pause
+    // sending more frames until the state becomes STATUS_INITIALIZED again.
+    case OperationalStatus::STATUS_INITIALIZED:
+      return nullptr;
+
+    case OperationalStatus::STATUS_INVALID_CONFIGURATION:
+      return "Invalid encoder configuration.";
+
+    case OperationalStatus::STATUS_UNSUPPORTED_CODEC:
+      return "Unsupported codec.";
+
+    case OperationalStatus::STATUS_CODEC_INIT_FAILED:
+      return "Failed to initialize codec.";
+
+    case OperationalStatus::STATUS_CODEC_RUNTIME_ERROR:
+      return "Fatal error in codec runtime.";
+  }
+}
 }  // namespace
 
 // Receives data from the audio capturer source, and calls `audio_data_callback`
@@ -472,7 +497,7 @@ void OpenscreenSessionHost::OnNegotiated(
         cast_environment_, *audio_config,
         base::BindOnce(&OpenscreenSessionHost::OnEncoderStatusChange,
                        // Safe because we own `audio_stream`.
-                       weak_factory_.GetWeakPtr()),
+                       weak_factory_.GetWeakPtr(), *audio_config),
         std::move(senders.audio_sender));
     audio_stream_ = std::make_unique<AudioRtpStream>(
         std::move(audio_sender), weak_factory_.GetWeakPtr());
@@ -507,7 +532,7 @@ void OpenscreenSessionHost::OnNegotiated(
     auto video_sender = std::make_unique<media::cast::VideoSender>(
         cast_environment_, *video_config,
         base::BindRepeating(&OpenscreenSessionHost::OnEncoderStatusChange,
-                            weak_factory_.GetWeakPtr()),
+                            weak_factory_.GetWeakPtr(), *video_config),
         base::BindRepeating(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
             weak_factory_.GetWeakPtr()),
@@ -912,35 +937,30 @@ void OpenscreenSessionHost::CreateAudioStream(
                                         shared_memory_count);
 }
 
-void OpenscreenSessionHost::OnEncoderStatusChange(OperationalStatus status) {
-  switch (status) {
-    case OperationalStatus::STATUS_UNINITIALIZED:
-    case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
-    // Not an error.
-    // TODO(crbug.com/40103719): As an optimization, signal the client to pause
-    // sending more frames until the state becomes STATUS_INITIALIZED again.
-    case OperationalStatus::STATUS_INITIALIZED:
-      break;
-
-    case OperationalStatus::STATUS_INVALID_CONFIGURATION:
-      ReportAndLogError(SessionError::ENCODING_ERROR,
-                        "Invalid encoder configuration.");
-      break;
-
-    case OperationalStatus::STATUS_UNSUPPORTED_CODEC:
-      ReportAndLogError(SessionError::ENCODING_ERROR, "Unsupported codec.");
-      break;
-
-    case OperationalStatus::STATUS_CODEC_INIT_FAILED:
-      ReportAndLogError(SessionError::ENCODING_ERROR,
-                        "Failed to initialize codec.");
-      break;
-
-    case OperationalStatus::STATUS_CODEC_RUNTIME_ERROR:
-      ReportAndLogError(SessionError::ENCODING_ERROR,
-                        "Fatal error in codec runtime.");
-      break;
+void OpenscreenSessionHost::OnEncoderStatusChange(
+    const FrameSenderConfig& config,
+    OperationalStatus status) {
+  const char* error_message = AsErrorMessage(status);
+  if (!error_message) {
+    return;
   }
+
+  // If we used a hardware video encoder and it failed, denylist it for the rest
+  // of the browsing session and try renegotiating.
+  if (config.use_hardware_encoder && config.is_video()) {
+    CHECK_EQ(state_, State::kMirroring);
+
+    media::cast::encoding_support::DenyListHardwareCodec(config.video_codec());
+    StopStreaming();
+    Negotiate();
+
+    base::UmaHistogramEnumeration(
+        "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated",
+        config.video_codec());
+    return;
+  }
+
+  ReportAndLogError(SessionError::ENCODING_ERROR, error_message);
 }
 
 void OpenscreenSessionHost::SetTargetPlayoutDelay(

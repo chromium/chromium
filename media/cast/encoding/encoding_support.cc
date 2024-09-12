@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/encoding/encoding_support.h"
+
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -11,6 +15,18 @@
 
 namespace media::cast::encoding_support {
 namespace {
+
+using VideoCodecBitset =
+    std::bitset<static_cast<size_t>(VideoCodec::kMaxValue) + 1>;
+
+static VideoCodecBitset& GetHardwareCodecDenyList() {
+  static VideoCodecBitset* const kInstance = new VideoCodecBitset();
+  return *kInstance;
+}
+
+bool IsHardwareDenyListed(VideoCodec codec) {
+  return GetHardwareCodecDenyList().test(static_cast<size_t>(codec));
+}
 
 bool IsCastStreamingAv1Enabled() {
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -122,6 +138,10 @@ bool IsSoftwareEnabled(VideoCodec codec) {
 bool IsHardwareEnabled(
     VideoCodec codec,
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
+  if (IsHardwareDenyListed(codec)) {
+    return false;
+  }
+
   switch (codec) {
     case VideoCodec::kVP8:
       return IsHardwareVP8EncodingEnabled(profiles);
@@ -135,6 +155,17 @@ bool IsHardwareEnabled(
     default:
       return false;
   }
+}
+
+void DenyListHardwareCodec(VideoCodec codec) {
+  // Codecs should not be disabled multiple times. This likely means that we
+  // offered it again when we shouldn't have, somehow.
+  CHECK(!IsHardwareDenyListed(codec));
+  GetHardwareCodecDenyList().set(static_cast<size_t>(codec));
+}
+
+void ClearHardwareCodecDenyListForTesting() {
+  GetHardwareCodecDenyList().reset();
 }
 
 }  //  namespace media::cast::encoding_support

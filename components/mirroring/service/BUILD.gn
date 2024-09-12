@@ -104,6 +104,7 @@ source_set("unittests") {
     "//media:test_support",
     "//media/capture/mojom:video_capture",
     "//media/cast:common",
+    "//media/cast:encoding",
     "//media/cast:sender",
     "//media/cast:test_support",
     "//media/cast/openscreen:remoting_utils",

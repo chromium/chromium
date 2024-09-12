@@ -140,10 +140,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   friend class OpenscreenSessionHostTest;
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay);
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, UpdateBandwidthEstimate);
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
-                           ShouldEnableHardwareVp8EncodingIfSupported);
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
-                           ShouldEnableHardwareH264EncodingIfSupported);
   class AudioCapturingCallback;
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
 
@@ -180,7 +176,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       uint32_t shared_memory_count);
 
   // Callback by Audio/VideoSender to indicate encoder status change.
-  void OnEncoderStatusChange(media::cast::OperationalStatus status);
+  void OnEncoderStatusChange(const media::cast::FrameSenderConfig& config,
+                             media::cast::OperationalStatus status);
 
   // Callback by media::cast::VideoSender to report resource utilization.
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
