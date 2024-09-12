@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -27,6 +28,7 @@ class LanguageDetectionModelValidTest : public testing::Test {
             std::make_unique<LanguageDetectionModel>(tflite_model_.get())) {}
 
  protected:
+  base::test::TaskEnvironment environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<LanguageDetectionModel> language_detection_model_;

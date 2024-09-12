@@ -10,6 +10,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -41,9 +42,11 @@ LanguageDetectionModel::LanguageDetectionModel(
 
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
+#if !BUILDFLAG(IS_IOS)
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   tflite_model_->UpdateWithFile(std::move(model_file));
 }
+#endif
 
 bool LanguageDetectionModel::IsAvailable() const {
   return tflite_model_ && tflite_model_->IsAvailable();

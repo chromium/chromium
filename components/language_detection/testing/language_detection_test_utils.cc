@@ -9,6 +9,8 @@
 #include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "build/build_config.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "gtest/gtest.h"
 
@@ -30,7 +32,13 @@ std::unique_ptr<LanguageDetectionModel> GetValidLanguageModel() {
   auto instance = std::make_unique<LanguageDetectionModel>();
   if (!instance->IsAvailable()) {
     base::File file = GetValidModelFile();
+#if !BUILDFLAG(IS_IOS)
     instance->UpdateWithFile(std::move(file));
+#else
+    base::RunLoop run_loop;
+    instance->UpdateWithFileAsync(std::move(file), run_loop.QuitClosure());
+    run_loop.Run();
+#endif
   }
   EXPECT_TRUE(instance->IsAvailable());
   return instance;

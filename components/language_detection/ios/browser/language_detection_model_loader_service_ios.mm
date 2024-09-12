@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#import "base/task/sequenced_task_runner.h"
 #include "components/language_detection/core/browser/language_detection_model_service.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/core/language_detection_provider.h"
@@ -14,40 +13,35 @@
 
 namespace language_detection {
 
-class LanguageDetectionModelContainer
-    // TODO(https://crbug.com/356380874): Clarify the thread safety of this
-    // class. The TFLite model should not be accessed from multiple threads,
-    // so it should not be destroyed from another thread.
-    : public base::RefCountedThreadSafe<LanguageDetectionModelContainer>,
-      public translate::LanguageDetectionModel {
+// Container class owning both a language_detection::LanguageDetectionModel
+// and a translate::LanguageDetectionModel and orchestrating their lifetime.
+class LanguageDetectionModelLoaderServiceIOS::ModelContainer {
  public:
-  LanguageDetectionModelContainer()
-      : translate::LanguageDetectionModel(
-            &language_detection::GetLanguageDetectionModel()) {}
+  ModelContainer() = default;
+
+  ModelContainer(const ModelContainer&) = delete;
+  ModelContainer& operator=(const ModelContainer&) = delete;
+
+  ~ModelContainer() = default;
+
+  translate::LanguageDetectionModel* model() { return &outer_model_; }
+
+  bool IsAvailable() const { return outer_model_.IsAvailable(); }
+
+  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback) {
+    inner_model_.UpdateWithFileAsync(std::move(model_file), base::DoNothing());
+  }
 
  private:
-  // Allow destruction by RefCounted<>.
-  friend class RefCountedThreadSafe<LanguageDetectionModelContainer>;
-  // Destructor must be private/protected.
-  ~LanguageDetectionModelContainer() = default;
+  language_detection::LanguageDetectionModel inner_model_;
+  translate::LanguageDetectionModel outer_model_{&inner_model_};
 };
-
-namespace {
-void SetLanguageDetectionModelModelFile(
-    scoped_refptr<LanguageDetectionModelContainer> language_detection_model,
-    base::File model_file) {
-  language_detection_model->UpdateWithFile(std::move(model_file));
-}
-}  // namespace
 
 LanguageDetectionModelLoaderServiceIOS::LanguageDetectionModelLoaderServiceIOS(
     language_detection::LanguageDetectionModelService*
-        language_detection_model_service,
-    const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
+        language_detection_model_service)
     : language_detection_model_service_(language_detection_model_service),
-      background_task_runner_(background_task_runner),
-      language_detection_model_(
-          base::MakeRefCounted<LanguageDetectionModelContainer>()) {
+      model_container_(std::make_unique<ModelContainer>()) {
   if (language_detection_model_service_) {
     language_detection_model_service_->GetLanguageDetectionModelFile(
         base::BindOnce(&LanguageDetectionModelLoaderServiceIOS::
@@ -57,21 +51,24 @@ LanguageDetectionModelLoaderServiceIOS::LanguageDetectionModelLoaderServiceIOS(
 }
 
 LanguageDetectionModelLoaderServiceIOS::
-    ~LanguageDetectionModelLoaderServiceIOS() {}
+    ~LanguageDetectionModelLoaderServiceIOS() = default;
 
 translate::LanguageDetectionModel*
 LanguageDetectionModelLoaderServiceIOS::GetLanguageDetectionModel() {
-  return language_detection_model_.get();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return model_container_->model();
 }
 
 bool LanguageDetectionModelLoaderServiceIOS::IsModelAvailable() {
-  return language_detection_model_->IsAvailable();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return model_container_->IsAvailable();
 }
 
 void LanguageDetectionModelLoaderServiceIOS::
     OnLanguageDetectionModelFileReceived(base::File model_file) {
-  SetLanguageDetectionModelModelFile(language_detection_model_,
-                                     std::move(model_file));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_container_->UpdateWithFileAsync(std::move(model_file),
+                                        base::DoNothing());
 }
 
 }  // namespace language_detection

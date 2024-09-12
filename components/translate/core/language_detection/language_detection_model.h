@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "build/build_config.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "partition_alloc/pointers/raw_ref.h"
 
@@ -24,9 +25,11 @@ class LanguageDetectionModel {
       language_detection::LanguageDetectionModel* tflite_model_);
   ~LanguageDetectionModel();
 
+#if !BUILDFLAG(IS_IOS)
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
   void UpdateWithFile(base::File model_file);
+#endif
 
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.

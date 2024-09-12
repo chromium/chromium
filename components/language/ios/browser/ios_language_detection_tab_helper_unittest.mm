@@ -7,18 +7,18 @@
 #import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
+#import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
-#include "components/language_detection/core/language_detection_model.h"
-#include "components/language_detection/core/language_detection_provider.h"
+#import "components/language_detection/core/language_detection_model.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/common/translate_util.h"
-#include "components/translate/core/language_detection/language_detection_model.h"
+#import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -27,8 +27,7 @@ namespace language {
 
 class IOSLanguageDetectionTabHelperTest : public PlatformTest {
  public:
-  IOSLanguageDetectionTabHelperTest()
-      : model_(&language_detection::GetLanguageDetectionModel()) {}
+  IOSLanguageDetectionTabHelperTest() {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -53,7 +52,8 @@ class IOSLanguageDetectionTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
-  translate::LanguageDetectionModel model_;
+  language_detection::LanguageDetectionModel tf_model_;
+  translate::LanguageDetectionModel model_{&tf_model_};
   web::FakeWebState web_state_;
 };
 
@@ -78,10 +78,10 @@ TEST_F(IOSLanguageDetectionTabHelperTest,
   histogram_tester_.ExpectTotalCount(
       "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 0);
 
-  language_detection_tab_helper->language_detection_model_->UpdateWithFile(
-      GetValidModelFile());
-  EXPECT_TRUE(
-      language_detection_tab_helper->language_detection_model_->IsAvailable());
+  base::RunLoop run_loop;
+  tf_model_.UpdateWithFileAsync(GetValidModelFile(), run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(tf_model_.IsAvailable());
 
   base::Value text_content("hello world");
   language_detection_tab_helper->OnTextRetrieved(true, "en", "en", GURL(""),
