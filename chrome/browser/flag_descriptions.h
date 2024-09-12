@@ -1900,6 +1900,11 @@ extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kRetainOmniboxOnFocusName[];
+extern const char kRetainOmniboxOnFocusDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kRippleForEnhancedProtectionName[];
 extern const char kRippleForEnhancedProtectionDescription[];
 

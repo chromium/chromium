@@ -3303,6 +3303,18 @@ const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
     "API";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kRetainOmniboxOnFocusName[] = "Retain omnibox on focus";
+const char kRetainOmniboxOnFocusDescription[] =
+    "Whether the contents of the omnibox should be retained on focus as "
+    "opposed to being cleared. When this feature flag is enabled and the "
+    "omnibox contents are retained, focus events will also result in the "
+    "omnibox contents being fully selected so as to allow for easy replacement "
+    "by the user. Note that even with this feature flag enabled, only large "
+    "screen devices with an attached keyboard and precision pointer will "
+    "exhibit a change in behavior.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kRippleForEnhancedProtectionName[] =
     "Ripple for Enhanced Protection";
 const char kRippleForEnhancedProtectionDescription[] =

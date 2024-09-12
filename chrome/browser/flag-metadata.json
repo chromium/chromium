@@ -7847,6 +7847,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "retain-omnibox-on-focus",
+    "owners": [ "dmblack@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "revamp-page-info-ios",
     "owners": [ "fsenra@google.com", "bling-flags@google.com", "chrome-contextual-privacy@google.com"],
     "expiry_milestone": 129
