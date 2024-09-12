@@ -100,8 +100,8 @@ class BridgedNativeWidgetHostDummy
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
-  void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
-  }
+  void OnImmersiveFullscreenMenuBarRevealChanged(
+      double reveal_amount) override {}
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
   void DoDialogButtonAction(ui::mojom::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
@@ -1363,12 +1363,13 @@ void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenToolbarRevealChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenMenuBarRevealChanged(
-    float reveal_amount) {
+    double reveal_amount) {
   if (immersive_mode_reveal_client_) {
     immersive_mode_reveal_client_->OnImmersiveModeMenuBarRevealChanged(
         reveal_amount);
   }
 }
+
 void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
     int menu_bar_height) {
   if (immersive_mode_reveal_client_) {

@@ -767,6 +767,13 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Slide tabs out of the way during the reveal of the close, minimize and
+// maximize (traffic lights) buttons. kImmersiveFullscreenTabs must be enabled
+// for this feature to have an effect.
+BASE_FEATURE(kFullscreenAnimateTabs,
+             "FullscreenAnimateTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

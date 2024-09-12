@@ -21057,6 +21057,7 @@ from previous Chrome versions.
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
+  <int value="168955875" label="FullscreenAnimateTabs:disabled"/>
   <int value="169302610" label="DirectSockets:enabled"/>
   <int value="169986702" label="FirmwareUpdateJelly:enabled"/>
   <int value="170101645" label="PageInfoAboutThisSiteMoreInfo:disabled"/>
@@ -24162,6 +24163,7 @@ from previous Chrome versions.
   <int value="1455753326" label="EnableNearbyBleV2GattServer:disabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>
   <int value="1455970119" label="MacCoreLocationBackend:disabled"/>
+  <int value="1456045101" label="FullscreenAnimateTabs:enabled"/>
   <int value="1456108837" label="RealboxSecondaryZeroSuggest:disabled"/>
   <int value="1457383851" label="NtpHistoryClustersModule:disabled"/>
   <int value="1457465866" label="TouchToFillPasswordSubmission:disabled"/>

@@ -5929,6 +5929,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImmersiveFullscreenName,
      flag_descriptions::kImmersiveFullscreenDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kImmersiveFullscreen)},
+    {"enable-fullscreen-animate-tabs",
+     flag_descriptions::kMacFullscreenAnimateTabsName,
+     flag_descriptions::kMacFullscreenAnimateTabsDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kFullscreenAnimateTabs)},
 #endif  // BUILDFLAG(IS_MAC)
     {"enable-web-payments-experimental-features",
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,
