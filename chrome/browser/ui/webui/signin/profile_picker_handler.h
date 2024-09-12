@@ -60,6 +60,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // profile picker is shown on startup.
   void EnableStartupMetrics();
 
+  // Displays an error dialog on top of the profile picker based on the error
+  // enum.
+  // Empty `profile_path` will not show an additional "Sign in" button that
+  // allows to reach reauth step.
+  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
+                                     const ForceSigninUIError& error);
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
@@ -168,13 +175,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Updates if guest mode is available following a profile addition, removal,
   // or changed supervision status.
   void MaybeUpdateGuestMode();
-
-  // Displays an error dialog on top of the profile picker based on the error
-  // enum.
-  // Empty `profile_path` will not show an additional "Sign in" button that
-  // allows to reach reauth step.
-  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
-                                     const ForceSigninUIError& error);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // GaiaId as input string.

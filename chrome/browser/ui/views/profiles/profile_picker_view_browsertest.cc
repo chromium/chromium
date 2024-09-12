@@ -1296,8 +1296,12 @@ IN_PROC_BROWSER_TEST_F(
   // Created profile is destroyed.
   destruction_waiter.Wait();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_number_of_profiles);
-  // TODO(b/360733721): Should also test that the dialog is opened with an error
-  // shown when implemented.
+  EXPECT_TRUE(IsForceSigninErrorDialogShown());
+  // Check error dialog content.
+  ForceSigninUIError::UiTexts errors =
+      ForceSigninUIError::SigninPatternNotMatching(email).GetErrorTexts();
+  EXPECT_EQ(GetForceSigninErrorDialogTitleText(), errors.first);
+  EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
 }
 
 class ForceSigninProfilePickerCreationFlowBrowserTestWithPRE

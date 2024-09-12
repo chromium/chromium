@@ -71,8 +71,9 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
 }
 
 ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
-  if (contents())
+  if (contents()) {
     contents()->SetDelegate(nullptr);
+  }
 }
 
 void ProfilePickerSignedInFlowController::Init() {
@@ -168,11 +169,14 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
-void ProfilePickerSignedInFlowController::ResetHost() {
+void ProfilePickerSignedInFlowController::ResetHostAndShowErrorDialog(
+    const ForceSigninUIError& error) {
   CHECK(IsInitialized());
 
   Cancel();
-  host_->Reset();
+  host_->Reset(
+      base::BindOnce(&ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
+                     base::Unretained(host_), error));
 }
 
 std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
@@ -180,8 +184,9 @@ std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-  if (theme_service->UsingPolicyTheme())
+  if (theme_service->UsingPolicyTheme()) {
     return theme_service->GetPolicyThemeColor();
+  }
   return profile_color_;
 }
 

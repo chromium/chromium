@@ -116,6 +116,8 @@ class ForceSigninUIError {
     kReauthWrongAccount,
     // A timeout occurred while attempting to reauth.
     kReauthTimeout,
+    // Signin pattern not matching.
+    kSigninPatternNotMatching,
   };
 
   // Helper pair to get the error messages based on the `Type` error enum to be
@@ -130,6 +132,7 @@ class ForceSigninUIError {
   static ForceSigninUIError ReauthNotAllowed();
   static ForceSigninUIError ReauthWrongAccount(const std::string& email);
   static ForceSigninUIError ReauthTimeout();
+  static ForceSigninUIError SigninPatternNotMatching(const std::string& email);
 
   // Returns the error messages for the given `error`.
   // `type_` must not be `ForceSigninUIError::kNone`.

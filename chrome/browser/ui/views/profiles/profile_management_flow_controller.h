@@ -101,8 +101,8 @@ class ProfileManagementFlowController {
 
   // Clears the current state and reset it to the initial state that shows the
   // main screen. When calling this function the state should not be the
-  // initial one.
-  void Reset();
+  // initial one. Executes `callback` when the initial state is shown.
+  void Reset(StepSwitchFinishedCallback callback);
 
   // Returns a string to use as title for the window, for accessibility
   // purposes. It is used in case the host is not able to obtain a title from

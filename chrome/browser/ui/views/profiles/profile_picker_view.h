@@ -80,7 +80,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
   content::WebContentsDelegate* GetWebContentsDelegate() override;
-  void Reset() override;
+  void Reset(StepSwitchFinishedCallback callback) override;
+  void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
+                                  bool success) override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;

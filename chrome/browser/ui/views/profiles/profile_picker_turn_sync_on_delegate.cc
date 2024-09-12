@@ -116,9 +116,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   if (signin_util::IsForceSigninEnabled() &&
       error.type() ==
           SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
-    controller_->ResetHost();
-    // TODO(b/360733721): Should also open a dialog showing an error after
-    // navigating back to the Profile Picker main page.
+    controller_->ResetHostAndShowErrorDialog(
+        ForceSigninUIError::SigninPatternNotMatching(
+            base::UTF16ToUTF8(error.email())));
     return;
   }
 
