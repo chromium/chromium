@@ -257,6 +257,7 @@ public class PlusAddressCreationModuleTest {
         assertTrue(modalCancelButton.isEnabled());
 
         modalCancelButton.performClick();
+        verify(mBottomSheetController).hideContent(view, true);
         verify(mBridge).onCanceled();
     }
 

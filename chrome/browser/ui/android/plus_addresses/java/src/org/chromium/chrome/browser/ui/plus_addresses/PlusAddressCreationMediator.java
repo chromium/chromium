@@ -152,6 +152,7 @@ import org.chromium.url.GURL;
 
     @Override
     public void onCanceled() {
+        mModel.set(VISIBLE, false);
         mBridge.onCanceled();
     }
 
