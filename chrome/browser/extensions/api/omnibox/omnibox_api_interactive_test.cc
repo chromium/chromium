@@ -329,6 +329,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
       R"([{"text":"current tab","disposition":"currentTab"},)"
       R"({"text":"new tab","disposition":"newForegroundTab"}])";
   EXPECT_EQ(kExpectedResult, listener.message());
+  EXPECT_TRUE(listener.had_user_gesture());
 }
 
 // Tests receiving suggestions from and sending input to the incognito context
