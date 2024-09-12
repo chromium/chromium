@@ -51,7 +51,7 @@ SensitiveContentManager::SensitiveContentManager(
 
 SensitiveContentManager::~SensitiveContentManager() = default;
 
-void SensitiveContentManager::UpdateContentSensitivity() {
+bool SensitiveContentManager::UpdateContentSensitivity() {
   const bool content_is_sensitive = !sensitive_fields_.empty();
   // Prevent unnecessary calls to the client.
   if (last_content_was_sensitive_ != content_is_sensitive) {
@@ -60,7 +60,9 @@ void SensitiveContentManager::UpdateContentSensitivity() {
     base::UmaHistogramBoolean(
         base::StrCat({client_->GetHistogramPrefix(), "SensitivityChanged"}),
         content_is_sensitive);
+    return true;
   }
+  return false;
 }
 
 void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
@@ -75,15 +77,27 @@ void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
         sensitive_fields_.erase(field->global_id());
       }
     }
-    UpdateContentSensitivity();
+
+    if (UpdateContentSensitivity() && last_content_was_sensitive_) {
+      const auto& element = latency_until_sensitive_timer_.find(form_id);
+      if (element != latency_until_sensitive_timer_.end()) {
+        base::UmaHistogramLongTimes(base::StrCat({client_->GetHistogramPrefix(),
+                                                  "LatencyUntilSensitive"}),
+                                    base::TimeTicks::Now() - element->second);
+      }
+    }
   }
 }
 
 void SensitiveContentManager::OnBeforeFormsSeen(
     AutofillManager& manager,
-    base::span<const autofill::FormGlobalId> updated_forms,
-    base::span<const autofill::FormGlobalId> removed_forms) {
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  for (const FormGlobalId& form_id : updated_forms) {
+    latency_until_sensitive_timer_[form_id] = base::TimeTicks::Now();
+  }
   for (const FormGlobalId& form_id : removed_forms) {
+    latency_until_sensitive_timer_.erase(form_id);
     if (const autofill::FormStructure* form =
             manager.FindCachedFormById(form_id)) {
       for (const std::unique_ptr<AutofillField>& field : form->fields()) {
@@ -95,7 +109,7 @@ void SensitiveContentManager::OnBeforeFormsSeen(
 }
 
 void SensitiveContentManager::OnAutofillManagerStateChanged(
-    autofill::AutofillManager& manager,
+    AutofillManager& manager,
     LifecycleState previous,
     LifecycleState current) {
   autofill::LocalFrameToken local_frame_token =
@@ -110,6 +124,11 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
     std::erase_if(sensitive_fields_,
                   [local_frame_token](autofill::FieldGlobalId field_id) {
                     return field_id.frame_token == local_frame_token;
+                  });
+    std::erase_if(latency_until_sensitive_timer_,
+                  [local_frame_token](const auto& item) {
+                    FormGlobalId form_id = item.first;
+                    return form_id.frame_token == local_frame_token;
                   });
   } else if (previous != LifecycleState::kActive &&
              current == LifecycleState::kActive) {

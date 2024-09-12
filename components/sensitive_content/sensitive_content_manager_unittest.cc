@@ -4,17 +4,25 @@
 
 #include "components/sensitive_content/sensitive_content_manager.h"
 
+#include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +32,8 @@
 namespace sensitive_content {
 namespace {
 
+using autofill::AutofillManager;
+using autofill::AutofillQueryResponse;
 using autofill::FormData;
 using autofill::FormFieldData;
 using ::testing::InSequence;
@@ -32,6 +42,24 @@ using LifecycleState = autofill::AutofillDriver::LifecycleState;
 
 constexpr std::string_view histogram_sensitivity_changed =
     "SensitiveContent.Chrome.SensitivityChanged";
+constexpr std::string_view histogram_latency_until_sensitive =
+    "SensitiveContent.Chrome.LatencyUntilSensitive";
+
+std::optional<std::string> CreateSensitiveServerPredictions(
+    const FormData& form) {
+  AutofillQueryResponse response;
+  AutofillQueryResponse::FormSuggestion* form_suggestion;
+  std::string response_string;
+
+  form_suggestion = response.add_form_suggestions();
+  autofill::test::AddFieldPredictionToForm(
+      form.fields()[0], autofill::FieldType::ACCOUNT_CREATION_PASSWORD,
+      form_suggestion);
+  if (!response.SerializeToString(&response_string)) {
+    return std::nullopt;
+  }
+  return response_string;
+}
 
 class MockSensitiveContentClient : public SensitiveContentClient {
  public:
@@ -44,6 +72,10 @@ class MockSensitiveContentClient : public SensitiveContentClient {
 
 class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
  public:
+  SensitiveContentManagerTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     sensitive_content_manager_ = std::make_unique<SensitiveContentManager>(
@@ -62,12 +94,16 @@ class SensitiveContentManagerTest : public content::RenderViewHostTestHarness {
     return autofill_driver_injector_[web_contents()];
   }
 
-  autofill::AutofillManager& autofill_manager() {
+  AutofillManager& autofill_manager() {
     return autofill_driver()->GetAutofillManager();
   }
 
   MockSensitiveContentClient& sensitive_content_client() {
     return sensitive_content_client_;
+  }
+
+  SensitiveContentManager& sensitive_content_manager() {
+    return *sensitive_content_manager_;
   }
 
   // Creates a `FormData` that is not sensitive and sets its `LocalFrameToken`
@@ -215,6 +251,42 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
                                      /*content_is_sensitive=*/true, 2);
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
                                      /*content_is_sensitive=*/false, 1);
+}
+
+TEST_F(SensitiveContentManagerTest, LatencyUntilSensitiveMetricRecorded) {
+  NavigateAndCommit(GURL("https://test.com"));
+  // The form is not considered sensitive by heuristics. The form will be
+  // considered sensitive only after server predictions are served.
+  FormData server_predictions_sensitive_form = CreateNotSensitiveFormData();
+  base::HistogramTester histogram_tester;
+
+  // Simulate the form being detected in the DOM. The heuristics will consider
+  // the form as not sensitive.
+  autofill::TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
+      autofill_manager(), &AutofillManager::Observer::OnAfterFormsSeen);
+  autofill_manager().OnFormsSeen(
+      /*updated_forms=*/{server_predictions_sensitive_form},
+      /*removed_forms=*/{});
+  ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
+
+  // Mock a delay between the start of parsing and receiving the server
+  // predictions.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  EXPECT_CALL(sensitive_content_client(),
+              SetContentSensitivity(/*content_is_sensitive=*/true));
+  // Simulate sensitive server predictions for the form.
+  autofill::FormStructure form_structure(server_predictions_sensitive_form);
+  std::optional<std::string> response_string =
+      CreateSensitiveServerPredictions(server_predictions_sensitive_form);
+  ASSERT_TRUE(response_string.has_value());
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions(
+          base::Base64Encode(response_string.value()),
+          autofill::test::GetEncodedSignatures(form_structure));
+
+  histogram_tester.ExpectUniqueTimeSample(histogram_latency_until_sensitive,
+                                          base::Milliseconds(100), 1);
 }
 
 }  // namespace
