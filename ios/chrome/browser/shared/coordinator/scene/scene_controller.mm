@@ -2027,29 +2027,6 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController {
-  BOOL hasDefaultBrowserBlueDot = NO;
-
-  Browser* browser = self.mainInterface.browser;
-  if (browser) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser->GetBrowserState());
-    if (tracker) {
-      hasDefaultBrowserBlueDot =
-          ShouldTriggerDefaultBrowserHighlightFeature(tracker);
-    }
-  }
-
-  if (hasDefaultBrowserBlueDot) {
-    RecordDefaultBrowserBlueDotFirstDisplay();
-  }
-
-  [self showSettingsFromViewController:baseViewController
-              hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
-}
-
-- (void)showSettingsFromViewController:(UIViewController*)baseViewController
-              hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
   if (!baseViewController) {
     baseViewController = self.currentInterface.viewController;
   }
@@ -2065,10 +2042,9 @@ using UserFeedbackDataCallback =
 
   Browser* browser = self.mainInterface.browser;
 
-  self.settingsNavigationController = [SettingsNavigationController
-      mainSettingsControllerForBrowser:browser
-                              delegate:self
-              hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
+  self.settingsNavigationController =
+      [SettingsNavigationController mainSettingsControllerForBrowser:browser
+                                                            delegate:self];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

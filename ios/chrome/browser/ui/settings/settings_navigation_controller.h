@@ -54,8 +54,7 @@ extern NSString* const kSettingsDoneButtonId;
 + (instancetype)
     mainSettingsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
-                                         delegate
-            hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
+                                         delegate;
 
 // Creates a new AccountsTableViewController and the chrome around it.
 // `browser` is the browser where settings are being displayed and should not be

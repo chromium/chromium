@@ -119,8 +119,7 @@ TEST_F(SettingsNavigationControllerTest, PopController) {
   SettingsNavigationController* settingsController =
       [SettingsNavigationController
           mainSettingsControllerForBrowser:browser_.get()
-                                  delegate:nil
-                  hasDefaultBrowserBlueDot:NO];
+                                  delegate:nil];
   UIViewController* viewController =
       [[UIViewController alloc] initWithNibName:nil bundle:nil];
   [settingsController pushViewController:viewController animated:NO];
@@ -139,8 +138,7 @@ TEST_F(SettingsNavigationControllerTest, DontPopRootController) {
   SettingsNavigationController* settingsController =
       [SettingsNavigationController
           mainSettingsControllerForBrowser:browser_.get()
-                                  delegate:nil
-                  hasDefaultBrowserBlueDot:NO];
+                                  delegate:nil];
   EXPECT_EQ(1U, [[settingsController viewControllers] count]);
 
   EXPECT_FALSE([settingsController popViewControllerAnimated:NO]);
@@ -155,8 +153,7 @@ TEST_F(SettingsNavigationControllerTest,
   SettingsNavigationController* settingsController =
       [SettingsNavigationController
           mainSettingsControllerForBrowser:browser_.get()
-                                  delegate:mockDelegate_
-                  hasDefaultBrowserBlueDot:NO];
+                                  delegate:mockDelegate_];
   UIViewController* viewController =
       [[UIViewController alloc] initWithNibName:nil bundle:nil];
   [settingsController pushViewController:viewController animated:NO];
@@ -177,8 +174,7 @@ TEST_F(SettingsNavigationControllerTest,
   SettingsNavigationController* settingsController =
       [SettingsNavigationController
           mainSettingsControllerForBrowser:browser_.get()
-                                  delegate:mockDelegate_
-                  hasDefaultBrowserBlueDot:NO];
+                                  delegate:mockDelegate_];
   EXPECT_EQ(1U, [[settingsController viewControllers] count]);
   [[mockDelegate_ expect] closeSettings];
   ASSERT_EQ(0, user_action_tester.GetActionCount("MobileSettingsClose"));
@@ -194,8 +190,7 @@ TEST_F(SettingsNavigationControllerTest, Metrics) {
   SettingsNavigationController* settingsController =
       [SettingsNavigationController
           mainSettingsControllerForBrowser:browser_.get()
-                                  delegate:mockDelegate_
-                  hasDefaultBrowserBlueDot:NO];
+                                  delegate:mockDelegate_];
   std::string user_action = "MobileKeyCommandClose";
   ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
 

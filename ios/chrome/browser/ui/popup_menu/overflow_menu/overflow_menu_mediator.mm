@@ -2302,9 +2302,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                        : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
   [self.applicationHandler
-      showSettingsFromViewController:self.baseViewController
-            hasDefaultBrowserBlueDot:(self.settingsDestination.badge ==
-                                      BadgeTypePromo)];
+      showSettingsFromViewController:self.baseViewController];
 }
 
 - (void)enterpriseLearnMore {
