@@ -415,10 +415,22 @@ static_library("renderer") {
 
     if (build_with_tflite_lib) {
       sources += [
+        "accessibility/phrase_segmentation/base_phrase_segmenter.cc",
+        "accessibility/phrase_segmentation/base_phrase_segmenter.h",
         "accessibility/phrase_segmentation/dependency_parser_model.cc",
         "accessibility/phrase_segmentation/dependency_parser_model.h",
         "accessibility/phrase_segmentation/dependency_parser_op_resolver.cc",
         "accessibility/phrase_segmentation/dependency_parser_op_resolver.h",
+        "accessibility/phrase_segmentation/dependency_tree.cc",
+        "accessibility/phrase_segmentation/dependency_tree.h",
+        "accessibility/phrase_segmentation/phrase_segmenter.cc",
+        "accessibility/phrase_segmentation/phrase_segmenter.h",
+        "accessibility/phrase_segmentation/token_boundaries.cc",
+        "accessibility/phrase_segmentation/token_boundaries.h",
+        "accessibility/phrase_segmentation/tokenized_sentence.cc",
+        "accessibility/phrase_segmentation/tokenized_sentence.h",
+        "accessibility/phrase_segmentation/tokenizer.cc",
+        "accessibility/phrase_segmentation/tokenizer.h",
       ]
 
       deps += [
