@@ -89,14 +89,15 @@ class MacPort(base.Port):
 
         assert self._version in self.SUPPORTED_VERSIONS
 
-    def check_build(self, needs_http: bool = False) -> int:
-        result = super().check_build(needs_http)
+    def check_build(self, needs_http, printer):
+        result = super(MacPort, self).check_build(needs_http, printer)
         if result:
             _log.error('For complete Mac build requirements, please see:')
             _log.error('')
             _log.error(
                 '    https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md'
             )
+
         return result
 
     def operating_system(self):

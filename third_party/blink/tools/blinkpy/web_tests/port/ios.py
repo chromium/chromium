@@ -46,12 +46,13 @@ class IOSPort(base.Port):
         self._version = port_name[port_name.index('ios-') + len('ios-'):]
         self._stdio_redirect_port = self._get_available_port()
 
-    def check_build(self, needs_http: bool = False) -> int:
-        result = super().check_build(needs_http)
+    def check_build(self, needs_http, printer):
+        result = super(IOSPort, self).check_build(needs_http, printer)
         if result:
             _log.error('For complete ios build requirements, please see:')
             _log.error('')
             _log.error(self.BUILD_REQUIREMENTS_URL)
+
         return result
 
     def reinstall_cmd_line(self):

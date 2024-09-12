@@ -100,16 +100,18 @@ class PortTestCase(LoggingTestCase):
         port._options.build = True
         port._check_driver_build_up_to_date = lambda config: True
         port.check_httpd = lambda: True
-        self.assertEqual(port.check_build(needs_http=True),
-                         exit_codes.OK_EXIT_STATUS)
+        self.assertEqual(
+            port.check_build(needs_http=True, printer=FakePrinter()),
+            exit_codes.OK_EXIT_STATUS)
         logs = ''.join(self.logMessages())
         self.assertNotIn('build requirements', logs)
 
         # And here, after changing it so that the driver binary is not found,
         # we get an error exit status and message about build requirements.
         port._check_file_exists = lambda path, desc: False
-        self.assertEqual(port.check_build(needs_http=True),
-                         exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
+        self.assertEqual(
+            port.check_build(needs_http=True, printer=FakePrinter()),
+            exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
         logs = ''.join(self.logMessages())
         self.assertIn('build requirements', logs)
 

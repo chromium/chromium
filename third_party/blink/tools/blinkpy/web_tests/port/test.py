@@ -755,7 +755,7 @@ class TestPort(Port):
     def default_child_processes(self):
         return 1
 
-    def check_build(self, needs_http: bool = False) -> int:
+    def check_build(self, needs_http, printer):
         return exit_codes.OK_EXIT_STATUS
 
     def check_sys_deps(self):

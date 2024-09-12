@@ -72,7 +72,7 @@ class MockDRTPort(object):
     def __getattr__(self, name):
         return getattr(self.__delegate, name)
 
-    def check_build(self, needs_http: bool = False) -> int:
+    def check_build(self, needs_http, printer):
         return exit_codes.OK_EXIT_STATUS
 
     def check_sys_deps(self):

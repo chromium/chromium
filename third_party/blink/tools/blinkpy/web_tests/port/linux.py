@@ -87,8 +87,9 @@ class LinuxPort(base.Port):
             return {self.port_name: list(self.SUPPORTED_VERSIONS)}
         return super().configuration_specifier_macros()
 
-    def check_build(self, needs_http: bool = False) -> int:
-        result = super().check_build(needs_http)
+    def check_build(self, needs_http, printer):
+        result = super(LinuxPort, self).check_build(needs_http, printer)
+
         if result:
             _log.error('For complete Linux build requirements, please see:')
             _log.error('')

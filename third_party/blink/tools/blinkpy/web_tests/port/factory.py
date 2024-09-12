@@ -514,17 +514,17 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         action='store_true',
         help=('Skip tests marked TIMEOUT. Use it to speed up running the '
               'entire test suite.'))
-    testing_group.add_argument(
-        '--build',
-        action='store_true',
-        default=True,
-        help=('Check to ensure the build is up to date (default).'))
-    testing_group.add_argument(
-        '--no-build',
-        dest='build',
-        action='store_false',
-        help="Don't check to see if the build is up to date.")
     if rwt:
+        testing_group.add_argument(
+            '--build',
+            action='store_true',
+            default=True,
+            help=('Check to ensure the build is up to date (default).'))
+        testing_group.add_argument(
+            '--no-build',
+            dest='build',
+            action='store_false',
+            help="Don't check to see if the build is up to date.")
         testing_group.add_argument('--wpt-only',
                                    action='store_true',
                                    help='Run web platform tests only.')
