@@ -2101,15 +2101,13 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
   selection_.push_back(find_results_[current_find_index_.value()]);
 
   // If the result is not in view, scroll to it.
-  gfx::Rect bounding_rect;
   gfx::Rect visible_rect = GetVisibleRect();
 
   // Use zoom of 1.0 since `visible_rect` is without zoom.
   const std::vector<gfx::Rect>& rects =
       find_results_[current_find_index_.value()].GetScreenRects(
           gfx::Point(), 1.0, layout_.options().default_page_orientation());
-  for (const auto& rect : rects)
-    bounding_rect.Union(rect);
+  const gfx::Rect bounding_rect = gfx::UnionRects(rects);
   if (!visible_rect.Contains(bounding_rect)) {
     gfx::Point center = bounding_rect.CenterPoint();
     // Make the page centered.
@@ -2152,12 +2150,9 @@ std::vector<gfx::Rect> PDFiumEngine::GetAllScreenRectsUnion(
   std::vector<gfx::Rect> rect_vector;
   rect_vector.reserve(rect_range.size());
   for (const auto& range : rect_range) {
-    gfx::Rect result_rect;
     const std::vector<gfx::Rect>& rects = range.GetScreenRects(
         point, current_zoom_, layout_.options().default_page_orientation());
-    for (const auto& rect : rects)
-      result_rect.Union(rect);
-    rect_vector.push_back(result_rect);
+    rect_vector.push_back(gfx::UnionRects(rects));
   }
   return rect_vector;
 }

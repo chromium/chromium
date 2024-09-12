@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -272,6 +273,7 @@ inline RectF operator+(const Vector2dF& lhs, const RectF& rhs) {
 
 GEOMETRY_EXPORT RectF IntersectRects(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF UnionRects(const RectF& a, const RectF& b);
+GEOMETRY_EXPORT RectF UnionRects(base::span<const RectF> rects);
 GEOMETRY_EXPORT RectF UnionRectsEvenIfEmpty(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF SubtractRects(const RectF& a, const RectF& b);
 

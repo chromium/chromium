@@ -49,9 +49,7 @@ void AppendLayerPropertiesMatchedStyle(
 
   const ui::Layer::ShapeRects* alpha_shape_bounds = layer->alpha_shape();
   if (alpha_shape_bounds && alpha_shape_bounds->size()) {
-    gfx::Rect bounding_box;
-    for (auto& shape_bound : *alpha_shape_bounds)
-      bounding_box.Union(shape_bound);
+    gfx::Rect bounding_box = gfx::UnionRects(*alpha_shape_bounds);
     ret->emplace_back("alpha-shape-bounding-box", bounding_box.ToString());
   }
 
