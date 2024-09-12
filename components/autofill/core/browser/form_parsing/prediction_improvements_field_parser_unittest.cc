@@ -41,6 +41,13 @@ TEST_F(PredictionImprovementsFieldParserTest, ParseNonSearchTerm) {
   ClassifyAndVerify(ParseResult::kNotParsed, GeoIpCountryCode(""),
                     LanguageCode(""), PatternFile::kPredictionImprovements);
 }
+#else
+TEST_F(PredictionImprovementsFieldParserTest, Parse) {
+  AddTextFormFieldData("document#", "document#", IMPROVED_PREDICTION);
+
+  ClassifyAndVerify(ParseResult::kNotParsed, GeoIpCountryCode(""),
+                    LanguageCode(""), PatternFile::kLegacy);
+}
 #endif
 
 }  // namespace autofill
