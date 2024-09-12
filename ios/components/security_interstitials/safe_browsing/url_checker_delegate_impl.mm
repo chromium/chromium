@@ -15,16 +15,36 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
-namespace {
-// Helper function for managing a blocking page request for `resource`.  For the
-// committed interstitial flow, this function does not actually display the
-// blocking page.  Instead, it updates the allow list and stores a copy of the
-// unsafe resource before calling `resource`'s callback.  The blocking page is
-// displayed later when the do-not-proceed signal triggers an error page.  Must
-// be called on the UI thread.
-void HandleBlockingPageRequestOnUIThread(
-    const security_interstitials::UnsafeResource resource,
-    base::WeakPtr<SafeBrowsingClient> client) {
+#pragma mark - UrlCheckerDelegateImpl
+
+UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    base::WeakPtr<SafeBrowsingClient> client)
+    : database_manager_(std::move(database_manager)),
+      client_(client),
+      threat_types_(safe_browsing::CreateSBThreatTypeSet(
+          {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {}
+
+UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
+
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
+    base::OnceCallback<content::WebContents*()> web_contents_getter) {}
+
+void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
+    const security_interstitials::UnsafeResource& resource,
+    const std::string& method,
+    const net::HttpRequestHeaders& headers,
+    bool has_user_gesture) {
+  // Helper function for managing a blocking page request for `resource`.  For
+  // the committed interstitial flow, this function does not actually display
+  // the blocking page.  Instead, it updates the allow list and stores a copy of
+  // the unsafe resource before calling `resource`'s callback.  The blocking
+  // page is displayed later when the do-not-proceed signal triggers an error
+  // page.  Must be called on the UI thread.
+
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Send do-not-proceed signal if the WebState has been destroyed.
@@ -35,7 +55,7 @@ void HandleBlockingPageRequestOnUIThread(
     return;
   }
 
-  if (client && client->ShouldBlockUnsafeResource(resource)) {
+  if (client_ && client_->ShouldBlockUnsafeResource(resource)) {
     RunUnsafeResourceCallback(resource, /*proceed=*/false,
                               /*showed_interstitial=*/false);
     return;
@@ -64,37 +84,6 @@ void HandleBlockingPageRequestOnUIThread(
   // the error page to be displayed using the stored UnsafeResource copy.
   RunUnsafeResourceCallback(resource, /*proceed=*/false,
                             /*showed_interstitial=*/true);
-}
-}  // namespace
-
-#pragma mark - UrlCheckerDelegateImpl
-
-UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    base::WeakPtr<SafeBrowsingClient> client)
-    : database_manager_(std::move(database_manager)),
-      client_(client),
-      threat_types_(safe_browsing::CreateSBThreatTypeSet(
-          {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
-           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
-           safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {}
-
-UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
-
-void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
-    base::OnceCallback<content::WebContents*()> web_contents_getter) {}
-
-void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
-    const security_interstitials::UnsafeResource& resource,
-    const std::string& method,
-    const net::HttpRequestHeaders& headers,
-    bool has_user_gesture) {
-  // Query the allow list on the UI thread to determine whether the navigation
-  // can proceed.
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource, client_));
 }
 
 void UrlCheckerDelegateImpl::
