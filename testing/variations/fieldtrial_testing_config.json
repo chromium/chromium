@@ -2673,7 +2673,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_6point5seconds",
+                    "params": {
+                        "autofill_upload_card_request_timeout_milliseconds": "6500"
+                    },
+                    "enable_features": [
+                        "AutofillUploadCardRequestTimeout"
+                    ]
+                },
+                {
+                    "name": "Enabled_7seconds",
+                    "params": {
+                        "autofill_upload_card_request_timeout_milliseconds": "7000"
+                    },
+                    "enable_features": [
+                        "AutofillUploadCardRequestTimeout"
+                    ]
+                },
+                {
+                    "name": "Enabled_9seconds",
+                    "params": {
+                        "autofill_upload_card_request_timeout_milliseconds": "9000"
+                    },
                     "enable_features": [
                         "AutofillUploadCardRequestTimeout"
                     ]
@@ -2760,7 +2781,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_5seconds",
+                    "params": {
+                        "autofill_vcn_enroll_request_timeout_milliseconds": "5000"
+                    },
+                    "enable_features": [
+                        "AutofillVcnEnrollRequestTimeout"
+                    ]
+                },
+                {
+                    "name": "Enabled_7point5seconds",
+                    "params": {
+                        "autofill_vcn_enroll_request_timeout_milliseconds": "7500"
+                    },
+                    "enable_features": [
+                        "AutofillVcnEnrollRequestTimeout"
+                    ]
+                },
+                {
+                    "name": "Enabled_10seconds",
+                    "params": {
+                        "autofill_vcn_enroll_request_timeout_milliseconds": "10000"
+                    },
                     "enable_features": [
                         "AutofillVcnEnrollRequestTimeout"
                     ]
