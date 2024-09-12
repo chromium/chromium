@@ -13,7 +13,6 @@ import android.accounts.Account;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,9 +31,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountManagerFacadeTest {
-    private static final ExecutorService WORKER = Executors.newSingleThreadExecutor();
+    private static final class CustomAccountManagerDelegate extends FakeAccountManagerDelegate {
+        private static final ExecutorService WORKER = Executors.newSingleThreadExecutor();
 
-    private static class CustomAccountManagerDelegate extends FakeAccountManagerDelegate {
         private final CallbackHelper mBlockGetAccounts = new CallbackHelper();
 
         @Override
@@ -54,35 +53,25 @@ public class AccountManagerFacadeTest {
         }
     }
 
-    private final CustomAccountManagerDelegate mDelegate = new CustomAccountManagerDelegate();
-
-    @Before
-    public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AccountManagerFacadeProvider.setInstanceForTests(
-                            new AccountManagerFacadeImpl(mDelegate));
-                });
-    }
-
     @Test
     @SmallTest
     public void testIsCachePopulated() throws InterruptedException {
-        // Cache shouldn't be populated until getAccountsSync is unblocked.
+        CustomAccountManagerDelegate blockingDelegate = new CustomAccountManagerDelegate();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new AccountManagerFacadeImpl(blockingDelegate));
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertFalse(
-                            AccountManagerFacadeProvider.getInstance()
-                                    .getCoreAccountInfos()
-                                    .isFulfilled());
+                    // Cache shouldn't be populated until getAccountsSync is unblocked.
+                    assertFalse(facade.getCoreAccountInfos().isFulfilled());
                 });
 
-        mDelegate.unblockGetAccounts();
+        blockingDelegate.unblockGetAccounts();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccountManagerFacadeProvider.getInstance()
-                            .getCoreAccountInfos()
+                    facade.getCoreAccountInfos()
                             .then(
                                     coreAccountInfos -> {
                                         countDownLatch.countDown();
@@ -92,22 +81,23 @@ public class AccountManagerFacadeTest {
         countDownLatch.await();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(
-                            AccountManagerFacadeProvider.getInstance()
-                                    .getCoreAccountInfos()
-                                    .isFulfilled());
+                    assertTrue(facade.getCoreAccountInfos().isFulfilled());
                 });
     }
 
     @Test
     @SmallTest
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
+        CustomAccountManagerDelegate blockingDelegate = new CustomAccountManagerDelegate();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new AccountManagerFacadeImpl(blockingDelegate));
+
         CountDownLatch firstCounter = new CountDownLatch(1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add callback. This should be done on the main thread.
-                    AccountManagerFacadeProvider.getInstance()
-                            .getCoreAccountInfos()
+                    facade.getCoreAccountInfos()
                             .then(
                                     coreAccountInfos -> {
                                         firstCounter.countDown();
@@ -118,15 +108,14 @@ public class AccountManagerFacadeTest {
                 1,
                 firstCounter.getCount());
 
-        mDelegate.unblockGetAccounts();
+        blockingDelegate.unblockGetAccounts();
         // Cache should be populated & callback should be invoked
         firstCounter.await();
 
         CountDownLatch secondCounter = new CountDownLatch(1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccountManagerFacadeProvider.getInstance()
-                            .getCoreAccountInfos()
+                    facade.getCoreAccountInfos()
                             .then(
                                     coreAccountInfos -> {
                                         secondCounter.countDown();
