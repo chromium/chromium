@@ -9,6 +9,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -37,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -132,7 +134,8 @@ class NavigationFinishObserver : public WebContentsObserver {
 // SubresourceFilterBrowserTest is necessary to test ad-tagging related
 // behaviors.
 class OpenerHeuristicBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest {
+    : public subresource_filter::SubresourceFilterBrowserTest,
+      public content::TestDevToolsProtocolClient {
  public:
   void SetUp() override {
     tpcd_heuristics_grants_params_["TpcdReadHeuristicsGrants"] = "true";
@@ -164,7 +167,14 @@ class OpenerHeuristicBrowserTest
 
     DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
+
+    // Open and reset DevTools.
+    AttachToWebContents(chrome_test_utils::GetActiveWebContents(this));
+    SendCommandSync("Audits.enable");
+    ClearNotifications();
   }
+
+  void TearDownOnMainThread() override { DetachProtocolClient(); }
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -291,6 +301,39 @@ class OpenerHeuristicBrowserTest
   base::FieldTrialParams tpcd_heuristics_grants_params_;
   base::SimpleTestClock clock_;
   base::test::ScopedFeatureList feature_list_;
+
+ protected:
+  void WaitForCookieIssueAndCheck(std::string_view third_party_site,
+                                  std::string_view warning) {
+    auto is_cookie_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "CookieIssue";
+    };
+
+    // Wait for notification of a Cookie Issue.
+    base::Value::Dict params = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
+
+    std::string partial_expected =
+        content::JsReplace(R"({
+            "cookie": {
+               "domain": $1,
+               "name": "name",
+               "path": "/"
+            },
+            "cookieWarningReasons": [ $2 ],
+            "operation": "ReadCookie",
+         })",
+                           third_party_site, warning);
+
+    // Find relevant fields from cookieIssueDetails
+    ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
+                testing::Pointee(base::test::DictionaryHasValues(
+                    base::test::ParseJsonDict(partial_expected))));
+
+    ClearNotifications();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -1046,6 +1089,47 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(access_entries[0].metrics["IsAdTagged"],
             static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
+  // We will host an "image" on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL opener_url = https_server.GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = https_server.GetURL("c.test", "/title1.html");
+  GURL popup_url_2 =
+      https_server.GetURL("b.test", "/server-redirect?title1.html");
+  GURL popup_url_3 = https_server.GetURL("b.test", "/title1.html");
+
+  // Initialize popup and interaction.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(popup_url_1));
+
+  clock_.Advance(base::Minutes(1));
+  ASSERT_TRUE(content::NavigateToURL(popup, popup_url_2, popup_url_3));
+
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(popup);
+
+  // Add a cookie access by popup_url on opener_url.
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
+                                  "sub.b.test",
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+
+  CreateImageAndWaitForCookieAccess(
+      GetActiveWebContents(),
+      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+
+  // CookieIssue was fired since it was exempt from blocking
+  WaitForCookieIssueAndCheck("sub.b.test", "WarnThirdPartyCookieHeuristic");
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,

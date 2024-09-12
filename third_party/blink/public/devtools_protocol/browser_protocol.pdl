@@ -532,6 +532,8 @@ experimental domain Audits
       WarnDomainNonASCII
       WarnThirdPartyPhaseout
       WarnCrossSiteRedirectDowngradeChangesInclusion
+      WarnDeprecationTrialMetadata
+      WarnThirdPartyCookieHeuristic
 
   type CookieOperation extends string
     enum
