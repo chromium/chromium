@@ -68,6 +68,9 @@ class SensitiveContentManager final
   // sure calls to the client are made only when the content sensitivity
   // changes, and not when it stays the same.
   bool last_content_was_sensitive_ = false;
+  // Used to record the time elapsed between when the content became sensitive
+  // and when the content became not sensitive again.
+  std::optional<base::TimeTicks> content_became_sensitive_timestamp_;
   // Used to record the latency between when a form is first seen or last
   // modified, until the content is marked as sensitive.
   std::map<autofill::FormGlobalId, base::TimeTicks>

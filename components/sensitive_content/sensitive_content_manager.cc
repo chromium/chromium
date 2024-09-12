@@ -57,9 +57,19 @@ bool SensitiveContentManager::UpdateContentSensitivity() {
   if (last_content_was_sensitive_ != content_is_sensitive) {
     client_->SetContentSensitivity(!sensitive_fields_.empty());
     last_content_was_sensitive_ = content_is_sensitive;
+
     base::UmaHistogramBoolean(
         base::StrCat({client_->GetHistogramPrefix(), "SensitivityChanged"}),
         content_is_sensitive);
+
+    if (content_is_sensitive) {
+      content_became_sensitive_timestamp_ = base::TimeTicks::Now();
+    } else if (content_became_sensitive_timestamp_.has_value()) {
+      base::UmaHistogramLongTimes(
+          base::StrCat({client_->GetHistogramPrefix(), "SensitiveTime"}),
+          base::TimeTicks::Now() - content_became_sensitive_timestamp_.value());
+      content_became_sensitive_timestamp_.reset();
+    }
     return true;
   }
   return false;

@@ -40,6 +40,8 @@ using ::testing::InSequence;
 using ::testing::MockFunction;
 using LifecycleState = autofill::AutofillDriver::LifecycleState;
 
+constexpr std::string_view histogram_sensitive_time =
+    "SensitiveContent.Chrome.SensitiveTime";
 constexpr std::string_view histogram_sensitivity_changed =
     "SensitiveContent.Chrome.SensitivityChanged";
 constexpr std::string_view histogram_latency_until_sensitive =
@@ -286,6 +288,29 @@ TEST_F(SensitiveContentManagerTest, LatencyUntilSensitiveMetricRecorded) {
           autofill::test::GetEncodedSignatures(form_structure));
 
   histogram_tester.ExpectUniqueTimeSample(histogram_latency_until_sensitive,
+                                          base::Milliseconds(100), 1);
+}
+
+TEST_F(SensitiveContentManagerTest, SensitiveTimeMetricRecorded) {
+  NavigateAndCommit(GURL("https://test.com"));
+  FormData sensitive_form = CreateSensitiveFormData();
+  base::HistogramTester histogram_tester;
+
+  autofill::TestAutofillManagerWaiter waiter(
+      autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+  autofill_manager().OnFormsSeen(
+      /*updated_forms=*/{sensitive_form},
+      /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  autofill_manager().OnFormsSeen(
+      /*updated_forms=*/{},
+      /*removed_forms=*/{sensitive_form.global_id()});
+  ASSERT_TRUE(waiter.Wait());
+
+  histogram_tester.ExpectUniqueTimeSample(histogram_sensitive_time,
                                           base::Milliseconds(100), 1);
 }
 

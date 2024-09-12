@@ -42,6 +42,21 @@ chromium-metrics-reviews@google.com.
   <token key="Embedder" variants="Embedder"/>
 </histogram>
 
+<histogram name="SensitiveContent.{Embedder}.SensitiveTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>theocristea@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for how long the content was marked as sensitive, in {Embedder}.
+    That is, it measures the time elapsed between when the content was last
+    marked as sensitive until the content was last marked as not sensitive. This
+    metric is emitted every time the content sensitivity of a WebContents
+    changes from sensitive to not sensitive.
+  </summary>
+  <token key="Embedder" variants="Embedder"/>
+</histogram>
+
 <histogram name="SensitiveContent.{Embedder}.SensitivityChanged"
     enum="ContentSensitivity" expires_after="2025-03-01">
   <owner>theocristea@google.com</owner>
@@ -51,7 +66,7 @@ chromium-metrics-reviews@google.com.
     Emitted when the content changed its sensitivity from sensitive to not
     sensitive and vice-versa, in {Embedder}. On page load, the content is
     considered not sensitive. This metric gets recorded every time the content
-    sensitivity of a page changes.
+    sensitivity of a WebContents changes.
   </summary>
   <token key="Embedder" variants="Embedder"/>
 </histogram>
