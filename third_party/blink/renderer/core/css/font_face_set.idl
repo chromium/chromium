@@ -32,8 +32,8 @@
 
 enum FontFaceSetLoadStatus { "loading", "loaded" };
 
-// TODO(foolip): This interface should have a constructor and thus not have
-// [LegacyNoInterfaceObject]
+// No constructor, see
+// https://github.com/w3c/csswg-drafts/issues/10390#issuecomment-2233736229
 [
     LegacyNoInterfaceObject,
     Exposed=(Window,Worker)
