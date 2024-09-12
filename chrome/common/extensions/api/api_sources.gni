@@ -23,6 +23,7 @@ if (enable_extensions) {
   schema_sources_ += [
     "accessibility_features.json",
     "activity_log_private.json",
+    "experimental_ai_data.idl",
     "autofill_private.idl",
     "autotest_private.idl",
     "bookmark_manager_private.json",

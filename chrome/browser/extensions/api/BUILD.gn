@@ -32,6 +32,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/desktop_capture",
     "//chrome/browser/extensions/api/downloads_internal",
+    "//chrome/browser/extensions/api/experimental_ai_data",
     "//chrome/browser/extensions/api/font_settings",
     "//chrome/browser/extensions/api/mdns",
     "//chrome/browser/extensions/api/module",
