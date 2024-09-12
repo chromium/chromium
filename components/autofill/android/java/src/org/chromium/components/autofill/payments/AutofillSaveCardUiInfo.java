@@ -89,7 +89,32 @@ public class AutofillSaveCardUiInfo {
     }
 
     // LINT.IfChange
-    /** Construct the delegate given all the members. */
+    /**
+     * Construct the {@link AutofillSaveCardUiInfo} given all the members. This constructor is used
+     * for native binding purposes.
+     *
+     * @param isForUpload {@code true} is the card is going to be saved on the server, {@code false}
+     *     otherwise.
+     * @param logoIcon The icon id used displayed at the top of the bottom sheet. This value is
+     *     {@code 0} for local credit card save.
+     * @param issuerIcon Credit card icon shown in the bottom sheet. This value is {@code 0} for
+     *     local credit card save.
+     * @param legalMessageLines A list of legal message strings with user help links. This list is
+     *     empty for local save. Must not be {@code null}.
+     * @param cardLabel A string that contains an obfuscated credit card number. Must not be {@code
+     *     null}.
+     * @param cardSubLabel A string that contains the credit card expiration date. Must not be
+     *     {@code null}.
+     * @param cardDescription A credit card description string used for accessibility. Must not be
+     *     {@code null}.
+     * @param titleText The title of the bottom sheet. Must not be {@code null}.
+     * @param confirmText The UI string displayed on the confirm button. Must not be {@code null}.
+     * @param cancelText The UI string displayed on the cancel button. Must not be {@code null}.
+     * @param descriptionText The bottom sheet description UI string. Must not be {@code null}.
+     * @param loadingDescription An accessibility strings for the loading view. Must not be {@code
+     *     null}.
+     * @param isGooglePayBrandingEnabled Whether Google Chrome branding is enabled for the build.
+     */
     @CalledByNative
     @VisibleForTesting
     /*package*/ AutofillSaveCardUiInfo(

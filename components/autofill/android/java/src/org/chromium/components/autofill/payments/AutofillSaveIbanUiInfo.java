@@ -66,7 +66,20 @@ public class AutofillSaveIbanUiInfo {
 
     @CalledByNative
     @VisibleForTesting
-    /** Construct the delegate given all the members. */
+    /**
+     * Construct the {@link AutofillSaveIbanUiInfo} given all the members. This constructor is used
+     * for native binding purposes.
+     *
+     * @param acceptText A UI string displayed on the confirm button. This value must not be {@code
+     *     null}.
+     * @param cancelText A UI string displayed on the cancel button. This value must not be {@code
+     *     null}.
+     * @param descriptionText A bottom sheet description UI string displayed below the bottom sheet
+     *     title. This value must not be {@code null}.
+     * @param logoIcon A logo icon displayed at the top of the bottom sheet. This value is equals to
+     *     {@code 0} for local save.
+     * @param titleText A bottom sheet title UI string. This value must not be {@code null}.
+     */
     /* package */ AutofillSaveIbanUiInfo(
             @JniType("std::u16string") String acceptText,
             @JniType("std::u16string") String cancelText,

@@ -26,8 +26,8 @@ import java.util.function.Consumer;
         /**
          * Constructs legal messages.
          *
-         * @param lines The legal message lines.
-         * @param link The link for the legal message.
+         * @param lines The legal message lines. Must not be {@code null}.
+         * @param link The link for the legal message. Must not be {@code null}.
          */
         LegalMessage(List<LegalMessageLine> lines, Consumer<String> link) {
             mLines = Objects.requireNonNull(lines, "List of legal message lines can't be null");
