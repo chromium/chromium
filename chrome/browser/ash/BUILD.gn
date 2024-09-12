@@ -27,8 +27,6 @@ static_library("ash") {
     "browser_context_keyed_service_factories.h",
     "chrome_browser_main_parts_ash.cc",
     "chrome_browser_main_parts_ash.h",
-    "system_token_cert_db_initializer.cc",
-    "system_token_cert_db_initializer.h",
   ]
 
   allow_circular_includes_from = [
@@ -298,8 +296,6 @@ static_library("ash") {
     "//chromeos/dbus/missive",
     "//chromeos/dbus/missive:history_tracker",
     "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/dbus/tpm_manager",
-    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/printing",
     "//chromeos/services/machine_learning/public/mojom",
     "//chromeos/services/network_config/public/cpp",
@@ -571,6 +567,7 @@ static_library("ash") {
     "//chrome/browser/ash/calendar",
     "//chrome/browser/ash/camera",
     "//chrome/browser/ash/cert_provisioning",
+    "//chrome/browser/ash/certs",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/concierge_helper",
@@ -793,7 +790,6 @@ static_library("ash") {
     "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/sync_wifi",
     "//chromeos/ash/components/tpm",
-    "//chromeos/ash/components/tpm:buildflags",
     "//chromeos/ash/resources:resources_grit",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
@@ -1057,7 +1053,6 @@ source_set("unit_tests") {
     "../ui/browser_finder_chromeos_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
-    "system_token_cert_db_initializer_unittest.cc",
   ]
 
   deps = [
@@ -1356,7 +1351,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system_info",
     "//chromeos/ash/components/tether",
     "//chromeos/ash/components/tether:test_support",
-    "//chromeos/ash/components/tpm",
     "//chromeos/ash/components/trash_service",
     "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/components/trash_service/public/mojom",
@@ -1400,7 +1394,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/regmon",
     "//chromeos/dbus/regmon:regmon_proto",
-    "//chromeos/dbus/tpm_manager",
     "//chromeos/printing",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
@@ -1695,6 +1688,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/camera:unit_tests",
     "//chrome/browser/ash/camera_mic:unit_tests",
     "//chrome/browser/ash/cert_provisioning:unit_tests",
+    "//chrome/browser/ash/certs:unit_tests",
     "//chrome/browser/ash/child_accounts:unit_tests",
     "//chrome/browser/ash/concierge_helper:unit_tests",
     "//chrome/browser/ash/crosapi:unit_tests",

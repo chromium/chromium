@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_token_cert_db_initializer.h"
+#include "chrome/browser/ash/certs/system_token_cert_db_initializer.h"
 
 #include <pk11pub.h>
 
@@ -218,8 +218,9 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
 void SystemTokenCertDBInitializer::MaybeStartInitializingDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (started_initializing_)
+  if (started_initializing_) {
     return;
+  }
   started_initializing_ = true;
   VLOG(1)
       << "SystemTokenCertDBInitializer: TPM is ready, loading system token.";

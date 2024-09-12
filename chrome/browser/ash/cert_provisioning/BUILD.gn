@@ -55,6 +55,9 @@ static_library("cert_provisioning") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/invalidation:invalidation",
     "//components/invalidation/impl",
     "//components/policy/core/common",
@@ -102,6 +105,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
+    "//crypto:test_support",
     "//net:test_support",
     "//testing/gtest",
   ]
