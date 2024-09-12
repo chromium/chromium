@@ -16,5 +16,5 @@
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
     // TODO(crbug.com/335383516): Remove this once synchronous info attribute is implemented.
-    [DeprecateAs=V8GPUAdapter_RequestAdapterInfo_Method, CallWith=ScriptState, Measure] Promise<GPUAdapterInfo> requestAdapterInfo();
+    [RuntimeEnabled=DeprecatedRequestAdapterInfo, DeprecateAs=V8GPUAdapter_RequestAdapterInfo_Method, CallWith=ScriptState, Measure] Promise<GPUAdapterInfo> requestAdapterInfo();
 };
