@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -69,12 +69,12 @@
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
-  [consumer
-      updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
-  [consumer updateLensImageSupported:self.searchEngineSupportsLens];
+  [consumer setSearchByImageEnabled:self.searchEngineSupportsSearchByImage];
+  [consumer setLensImageEnabled:self.searchEngineSupportsLens];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
   if (templateURLService) {
     self.searchEngineSupportsSearchByImage =
         search_engines::SupportsSearchByImage(templateURLService);
@@ -84,7 +84,6 @@
     self.searchEngineSupportsSearchByImage = NO;
     _searchEngineObserver.reset();
   }
-  _templateURLService = templateURLService;
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
@@ -93,8 +92,7 @@
       _searchEngineSupportsSearchByImage != searchEngineSupportsSearchByImage;
   _searchEngineSupportsSearchByImage = searchEngineSupportsSearchByImage;
   if (supportChanged) {
-    [self.consumer
-        updateSearchByImageSupported:searchEngineSupportsSearchByImage];
+    [self.consumer setSearchByImageEnabled:searchEngineSupportsSearchByImage];
   }
 }
 
@@ -102,7 +100,7 @@
   BOOL supportChanged = _searchEngineSupportsLens != searchEngineSupportsLens;
   _searchEngineSupportsLens = searchEngineSupportsLens;
   if (supportChanged) {
-    [self.consumer updateLensImageSupported:searchEngineSupportsLens];
+    [self.consumer setLensImageEnabled:searchEngineSupportsLens];
   }
 }
 

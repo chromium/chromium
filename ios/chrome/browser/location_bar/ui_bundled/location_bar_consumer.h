@@ -13,11 +13,11 @@
 
 // Notifies the consumer to update after the search-by-image support status
 // changes. (This is usually when the default search engine changes).
-- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported;
+- (void)setSearchByImageEnabled:(BOOL)searchByImageSupported;
 
 // Notifies the consumer to update after the Lens support status
 // changes. (This is usually when the default search engine changes).
-- (void)updateLensImageSupported:(BOOL)lensImageSupported;
+- (void)setLensImageEnabled:(BOOL)lensImageSupported;
 
 @end
 

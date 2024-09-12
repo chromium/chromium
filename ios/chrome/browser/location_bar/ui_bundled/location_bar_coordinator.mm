@@ -90,7 +90,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     ContextualPanelEntrypointCoordinatorDelegate,
     LoadQueryCommands,
     LocationBarViewControllerDelegate,
-    LocationBarConsumer,
     LocationBarSteadyViewConsumer,
     OmniboxControllerDelegate,
     URLDragDataSource> {
@@ -275,7 +274,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.mediator = [[LocationBarMediator alloc] init];
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
-  self.mediator.consumer = self;
+  self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
@@ -523,20 +522,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
             (ContextualPanelEntrypointCoordinator*)coordinator
                                          centered:(BOOL)centered {
   [self.viewController setLocationBarLabelCenteredBetweenContent:centered];
-}
-
-#pragma mark - LocationBarConsumer
-
-- (void)defocusOmnibox {
-  [self cancelOmniboxEdit];
-}
-
-- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
-  self.viewController.searchByImageEnabled = searchByImageSupported;
-}
-
-- (void)updateLensImageSupported:(BOOL)lensImageSupported {
-  self.viewController.lensImageEnabled = lensImageSupported;
 }
 
 #pragma mark - LocationBarSteadyViewConsumer

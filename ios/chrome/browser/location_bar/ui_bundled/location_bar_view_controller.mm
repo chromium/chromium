@@ -90,6 +90,14 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // icon (in iPad multitasking).
 @property(nonatomic, assign) BOOL shareButtonEnabled;
 
+// Whether the default search engine supports search-by-image. This controls the
+// edit menu option to do an image search.
+@property(nonatomic, assign) BOOL searchByImageEnabled;
+
+// Whether the default search engine supports Lensing images. This controls the
+// edit menu option to do an image search.
+@property(nonatomic, assign) BOOL lensImageEnabled;
+
 // Starts voice search, updating the layout guide to be constrained to the
 // trailing button.
 - (void)startVoiceSearch;
@@ -142,14 +150,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   _incognito = incognito;
   self.locationBarSteadyView.colorScheme =
       [LocationBarSteadyViewColorScheme standardScheme];
-}
-
-- (void)setDispatcher:(id<ActivityServiceCommands,
-                          BrowserCoordinatorCommands,
-                          ApplicationCommands,
-                          LoadQueryCommands,
-                          OmniboxCommands>)dispatcher {
-  _dispatcher = dispatcher;
 }
 
 - (void)setVoiceSearchEnabled:(BOOL)enabled {
@@ -288,6 +288,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 }
 
 #pragma mark - LocationBarConsumer
+
+- (void)defocusOmnibox {
+  [self.dispatcher cancelOmniboxEdit];
+}
+
+#pragma mark - LocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail {
   [self.locationBarSteadyView setLocationLabelText:string];

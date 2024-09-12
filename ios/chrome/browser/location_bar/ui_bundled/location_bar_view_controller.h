@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
@@ -62,8 +63,9 @@
 // the omnibox - the editing and the non-editing states. In the editing state,
 // the omnibox textfield is displayed; in the non-editing state, the current
 // location is displayed.
-@interface LocationBarViewController
-    : UIViewController <FullscreenUIElement, LocationBarAnimatee>
+@interface LocationBarViewController : UIViewController <FullscreenUIElement,
+                                                         LocationBarAnimatee,
+                                                         LocationBarConsumer>
 
 @property(nonatomic, assign) BOOL incognito;
 
@@ -86,14 +88,6 @@
 // Displays the voice search button instead of the share button in steady state,
 // and adds the voice search button to the empty textfield.
 @property(nonatomic, assign) BOOL voiceSearchEnabled;
-
-// Whether the default search engine supports search-by-image. This controls the
-// edit menu option to do an image search.
-@property(nonatomic, assign) BOOL searchByImageEnabled;
-
-// Whether the default search engine supports Lensing images. This controls the
-// edit menu option to do an image search.
-@property(nonatomic, assign) BOOL lensImageEnabled;
 
 // Sets the edit view to use in the editing state. This must be set before the
 // view of this view controller is initialized. This must only be called once.
