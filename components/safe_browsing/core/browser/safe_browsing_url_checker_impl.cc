@@ -220,10 +220,6 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
           check_allowlist_before_hash_database),
       tab_id_(tab_id) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
-
-  // This object is used exclusively on the IO thread but may be constructed on
-  // the UI thread.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
