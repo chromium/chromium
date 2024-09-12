@@ -1102,6 +1102,11 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  // If the browser window is closing, do nothing.
+  if (tab_strip_model->closing_all()) {
+    return;
+  }
+
   if (!selection.active_tab_changed()) {
     return;
   }
