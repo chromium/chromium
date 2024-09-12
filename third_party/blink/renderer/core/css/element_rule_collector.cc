@@ -1040,7 +1040,7 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
     const MatchRequest& match_request,
     PartNames* part_names,
     bool for_shadow_pseudo) {
-  PartRequest request{part_names, for_shadow_pseudo};
+  PartRequest request{for_shadow_pseudo};
   SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 

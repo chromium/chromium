@@ -243,7 +243,6 @@ class CORE_EXPORT ElementRuleCollector {
     STACK_ALLOCATED();
 
    public:
-    PartNames* part_names;
     // If this is true, we're matching for a pseudo-element of the part, such as
     // ::placeholder.
     bool for_shadow_pseudo = false;
