@@ -27,9 +27,11 @@ chromium-metrics-reviews@google.com.
 <enums>
 
 <enum name="AndroidSettingsFragmentHashes">
+  <int value="-2093401879" label="SafetyCheckSettingsFragment"/>
   <int value="-2054907175" label="GroupedWebsitesSettings"/>
   <int value="-1989639959" label="AdMeasurementFragment"/>
   <int value="-1897035940" label="ThemeSettingsFragment"/>
+  <int value="-1768724911" label="HomepageSettings"/>
   <int value="-1752194986" label="SingleWebsiteSettings"/>
   <int value="-1696636734" label="EnhancedProtectionSettingsFragment"/>
   <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
@@ -66,6 +68,8 @@ chromium-metrics-reviews@google.com.
   <int value="493474121" label="StandardProtectionSettingsFragment"/>
   <int value="513483078" label="DoNotTrackSettings"/>
   <int value="590543987" label="StorageAccessSubpageSettings"/>
+  <int value="688926211" label="ManageSyncSettings"/>
+  <int value="690866195" label="SafetyHubFragment"/>
   <int value="887082954" label="FingerprintingProtectionSettingsFragment"/>
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="903277107" label="FledgeBlockedSitesFragment"/>
@@ -81,6 +85,7 @@ chromium-metrics-reviews@google.com.
   <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
   <int value="1952237285" label="TracingSettings"/>
   <int value="1968319616" label="ClearBrowsingDataFragmentBasic"/>
+  <int value="2070921964" label="ClearBrowsingDataTabsFragment"/>
 </enum>
 
 <enum name="BooleanRedirected">
