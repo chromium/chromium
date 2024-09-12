@@ -902,6 +902,34 @@ bool DawnImageRepresentation::SupportsMultipleConcurrentReadAccess() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// DawnBufferRepresentation
+
+DawnBufferRepresentation::ScopedAccess::ScopedAccess(
+    base::PassKey<DawnBufferRepresentation> /* pass_key */,
+    DawnBufferRepresentation* representation,
+    wgpu::Buffer buffer,
+    AccessMode access_mode)
+    : ScopedAccessBase(representation, access_mode),
+      buffer_(std::move(buffer)) {}
+
+DawnBufferRepresentation::ScopedAccess::~ScopedAccess() {
+  representation()->EndAccess();
+}
+
+std::unique_ptr<DawnBufferRepresentation::ScopedAccess>
+DawnBufferRepresentation::BeginScopedAccess(wgpu::BufferUsage usage) {
+  wgpu::Buffer buffer = BeginAccess(usage);
+  if (!buffer) {
+    LOG(ERROR) << "Error creating wgpu::Buffer";
+    return nullptr;
+  }
+
+  return std::make_unique<ScopedAccess>(
+      base::PassKey<DawnBufferRepresentation>(), this, std::move(buffer),
+      AccessMode::kWrite);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // SharedImageRepresentationFactoryRef
 
 SharedImageRepresentationFactoryRef::SharedImageRepresentationFactoryRef(

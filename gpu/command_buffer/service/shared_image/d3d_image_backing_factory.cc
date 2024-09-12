@@ -251,6 +251,22 @@ bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
   return ClearD3D11TextureToColor(d3d11_texture, color);
 }
 
+// static
+std::unique_ptr<SharedImageBacking> CreateFromD3D12Resource(
+    const Mailbox& mailbox,
+    uint32_t size,
+    SharedImageUsageSet usage,
+    std::string debug_label,
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource) {
+  DCHECK(usage &
+         (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+          SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
+
+  auto backing = D3DImageBacking::CreateFromD3D12Resource(
+      mailbox, size, usage, std::move(debug_label), std::move(d3d12_resource));
+  return backing;
+}
+
 D3DImageBackingFactory::SwapChainBackings
 D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                         const Mailbox& back_buffer_mailbox,

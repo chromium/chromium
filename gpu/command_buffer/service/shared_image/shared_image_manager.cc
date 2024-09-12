@@ -293,6 +293,33 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
   return representation;
 }
 
+std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
+                  "Dawn buffer representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  auto representation =
+      (*found)->ProduceDawnBuffer(this, tracker, device, backend_type);
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
+                  "Dawn buffer representation from an incompatible backing: "
+               << (*found)->GetName();
+    return nullptr;
+  }
+
+  return representation;
+}
+
 std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
     const gpu::Mailbox& mailbox,
     gpu::MemoryTypeTracker* tracker) {

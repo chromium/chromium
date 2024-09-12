@@ -128,6 +128,44 @@ bool DawnD3DImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return !d3d_image_backing->has_keyed_mutex();
 }
 
+DawnD3DBufferRepresentation::DawnD3DBufferRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type)
+    : DawnBufferRepresentation(manager, backing, tracker),
+      device_(device),
+      backend_type_(backend_type) {
+  DCHECK(device_);
+}
+
+DawnD3DBufferRepresentation::~DawnD3DBufferRepresentation() {
+  EndAccess();
+}
+
+wgpu::Buffer DawnD3DBufferRepresentation::BeginAccess(wgpu::BufferUsage usage) {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  buffer_ =
+      d3d_image_backing->BeginAccessDawnBuffer(device_, backend_type_, usage);
+  return buffer_;
+}
+
+void DawnD3DBufferRepresentation::EndAccess() {
+  if (!buffer_) {
+    return;
+  }
+
+  // Do this before further operations since those could end up destroying the
+  // Dawn device and we want the fence to be duplicated before then.
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  d3d_image_backing->EndAccessDawnBuffer(device_, buffer_);
+
+  // All further operations on the buffer are errors (they would be racy
+  // with other backings).
+  buffer_ = nullptr;
+}
+
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,

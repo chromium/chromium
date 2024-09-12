@@ -100,14 +100,17 @@ enum SharedImageUsage : uint32_t {
   // display controller understands.
   SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 24,
 
+  // Image will be used as a WebGPU shared buffer
+  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 25,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_PROTECTED_VIDEO,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 25,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 26,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

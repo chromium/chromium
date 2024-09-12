@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 
 #include <dawn/native/D3D11Backend.h>
+#include <dawn/native/D3D12Backend.h>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -12,6 +13,7 @@
 #include "gpu/config/gpu_finch_features.h"
 
 using dawn::native::d3d11::SharedTextureMemoryD3D11Texture2DDescriptor;
+using dawn::native::d3d12::SharedBufferMemoryD3D12ResourceDescriptor;
 
 namespace gpu {
 
@@ -118,4 +120,56 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
   return shared_texture_memory;
 }
 
+wgpu::Buffer CreateDawnSharedBuffer(
+    const wgpu::SharedBufferMemory& shared_buffer_memory,
+    wgpu::BufferUsage usage) {
+  wgpu::SharedBufferMemoryProperties properties;
+  shared_buffer_memory.GetProperties(&properties);
+
+  wgpu::BufferDescriptor wgpu_buffer_desc;
+  wgpu_buffer_desc.size = properties.size;
+  wgpu_buffer_desc.usage = usage;
+
+  return shared_buffer_memory.CreateBuffer(&wgpu_buffer_desc);
+}
+
+wgpu::SharedBufferMemory CreateDawnSharedBufferMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource) {
+  wgpu::SharedBufferMemory shared_buffer_memory;
+  SharedBufferMemoryD3D12ResourceDescriptor d3d12_resource_desc;
+  d3d12_resource_desc.resource = std::move(resource);
+
+  wgpu::SharedBufferMemoryDescriptor desc;
+  desc.nextInChain = &d3d12_resource_desc;
+  desc.label = "SharedBufferD3D_SharedBufferMemory_Resource";
+  shared_buffer_memory = device.ImportSharedBufferMemory(&desc);
+
+  if (!shared_buffer_memory) {
+    LOG(ERROR) << "Failed to create shared buffer memory";
+    return nullptr;
+  }
+
+  DCHECK(!shared_buffer_memory.IsDeviceLost());
+  return shared_buffer_memory;
+}
+
+wgpu::SharedFence CreateDawnSharedFence(
+    const wgpu::Device& device,
+    scoped_refptr<gfx::D3DSharedFence> fence) {
+  wgpu::SharedFence shared_fence;
+  wgpu::SharedFenceDXGISharedHandleDescriptor dxgi_desc;
+  dxgi_desc.handle = fence->GetSharedHandle();
+  wgpu::SharedFenceDescriptor fence_desc;
+  fence_desc.nextInChain = &dxgi_desc;
+
+  shared_fence = device.ImportSharedFence(&fence_desc);
+
+  if (!shared_fence) {
+    LOG(ERROR) << "Failed to create shared fence.";
+    return nullptr;
+  }
+
+  return shared_fence;
+}
 }  // namespace gpu

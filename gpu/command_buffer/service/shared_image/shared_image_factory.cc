@@ -963,6 +963,15 @@ SharedImageRepresentationFactory::ProduceDawn(
                                std::move(view_formats), context_state);
 }
 
+std::unique_ptr<DawnBufferRepresentation>
+SharedImageRepresentationFactory::ProduceDawnBuffer(
+    const Mailbox& mailbox,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type) {
+  return manager_->ProduceDawnBuffer(mailbox, tracker_.get(), device,
+                                     backend_type);
+}
+
 std::unique_ptr<OverlayImageRepresentation>
 SharedImageRepresentationFactory::ProduceOverlay(const gpu::Mailbox& mailbox) {
   return manager_->ProduceOverlay(mailbox, tracker_.get());

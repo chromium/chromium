@@ -837,6 +837,42 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// DawnBufferRepresentation
+
+class GPU_GLES2_EXPORT DawnBufferRepresentation
+    : public SharedImageRepresentation {
+ public:
+  DawnBufferRepresentation(SharedImageManager* manager,
+                           SharedImageBacking* backing,
+                           MemoryTypeTracker* tracker)
+      : SharedImageRepresentation(manager, backing, tracker) {}
+
+  class GPU_GLES2_EXPORT ScopedAccess
+      : public ScopedAccessBase<DawnBufferRepresentation> {
+   public:
+    ScopedAccess(base::PassKey<DawnBufferRepresentation> pass_key,
+                 DawnBufferRepresentation* representation,
+                 wgpu::Buffer buffer,
+                 AccessMode access_mode);
+    ~ScopedAccess();
+
+    std::unique_ptr<ScopedAccess> BeginScopedAccess(wgpu::BufferUsage usage);
+
+    const wgpu::Buffer& buffer() const { return buffer_; }
+
+   private:
+    wgpu::Buffer buffer_;
+  };
+
+  // Allows passing usages to the created Dawn buffer.
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(wgpu::BufferUsage usage);
+
+ private:
+  virtual wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) = 0;
+  virtual void EndAccess() = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
 
 class GPU_GLES2_EXPORT OverlayImageRepresentation
