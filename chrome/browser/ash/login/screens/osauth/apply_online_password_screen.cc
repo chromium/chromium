@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -107,12 +105,9 @@ void ApplyOnlinePasswordScreen::SetOnlinePassword() {
         base::BindOnce(&ApplyOnlinePasswordScreen::OnOnlinePasswordSet,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    if (!auth_factors_config_.HasConfiguredFactor(
-            cryptohome::AuthFactorType::kPassword)) {
-      LOG(WARNING) << "User does not have password configured.";
-      base::debug::DumpWithoutCrashing();
-    }
-    password_factor_editor.UpdateOrSetOnlinePassword(
+    CHECK(auth_factors_config_.HasConfiguredFactor(
+        cryptohome::AuthFactorType::kPassword));
+    password_factor_editor.UpdateOnlinePassword(
         GetToken(), online_password_.value().value(),
         base::BindOnce(&ApplyOnlinePasswordScreen::OnOnlinePasswordSet,
                        weak_ptr_factory_.GetWeakPtr()));

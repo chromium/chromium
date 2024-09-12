@@ -26,12 +26,12 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
   PasswordFactorEditor(const mojom::PasswordFactorEditor&) = delete;
   PasswordFactorEditor& operator=(const PasswordFactorEditor&) = delete;
 
-  void UpdateOrSetLocalPassword(
+  void UpdateLocalPassword(
       const std::string& auth_token,
       const std::string& new_password,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
 
-  void UpdateOrSetOnlinePassword(
+  void UpdateOnlinePassword(
       const std::string& auth_token,
       const std::string& new_password,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
@@ -62,13 +62,6 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       std::unique_ptr<UserContext> user_context);
 
   void SetPasswordWithContext(
-      const std::string& auth_token,
-      const std::string& new_password,
-      const cryptohome::KeyLabel& label,
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      std::unique_ptr<UserContext> user_context);
-
-  void UpdateOrSetPasswordWithContext(
       const std::string& auth_token,
       const std::string& new_password,
       const cryptohome::KeyLabel& label,
