@@ -151,6 +151,7 @@
 #include "device/fido/fido_test_data.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/util.h"
+#include "third_party/microsoft_webauthn/webauthn.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -8437,6 +8438,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
 // This is because largeBlob = required is ignored by the Windows platform
 // authenticator at the time of writing (Feb 2023).
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlobWinPlatform) {
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   fake_win_webauthn_api_.set_available(true);
   fake_win_webauthn_api_.set_version(WEBAUTHN_API_VERSION_3);
   PublicKeyCredentialCreationOptionsPtr options =
@@ -8449,6 +8451,31 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlobWinPlatform) {
   MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_FALSE(fake_win_webauthn_api_.last_make_credential_options());
+}
+
+// Tests that attempting to make a credential with large blob = preferred does
+// not fail the request on Windows.
+// Regression test for crbug.com/325934997.
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlobWinPreferred) {
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
+  fake_win_webauthn_api_.set_available(true);
+  fake_win_webauthn_api_.set_version(WEBAUTHN_API_VERSION_3);
+  for (bool large_blob_supported : {false, true}) {
+    fake_win_webauthn_api_.set_large_blob_supported(large_blob_supported);
+    SCOPED_TRACE(large_blob_supported);
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->large_blob_enable = device::LargeBlobSupport::kPreferred;
+    options->authenticator_selection->resident_key =
+        device::ResidentKeyRequirement::kRequired;
+    options->authenticator_selection->authenticator_attachment =
+        device::AuthenticatorAttachment::kCrossPlatform;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_TRUE(result.response->echo_large_blob);
+    EXPECT_EQ(result.response->supports_large_blob, large_blob_supported);
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

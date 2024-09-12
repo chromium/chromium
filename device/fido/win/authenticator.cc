@@ -47,7 +47,7 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   options.supports_cred_protect = api_version >= WEBAUTHN_API_VERSION_2;
   options.enterprise_attestation = api_version >= WEBAUTHN_API_VERSION_3;
   if (api_version >= WEBAUTHN_API_VERSION_3) {
-    options.large_blob_type = LargeBlobSupportType::kKey;
+    options.large_blob_type = LargeBlobSupportType::kBespoke;
   }
   options.supports_min_pin_length_extension =
       api_version >= WEBAUTHN_API_VERSION_3;
