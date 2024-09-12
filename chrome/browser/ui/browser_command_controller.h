@@ -97,8 +97,9 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserCommandControllerBrowserTest,
-                           LockedFullscreen);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  friend class BrowserCommandControllerBrowserTestLockedFullscreen;
+#endif
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
