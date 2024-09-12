@@ -8,6 +8,7 @@
 // META: variant=?1-4
 // META: variant=?5-8
 // META: variant=?9-12
+// META: variant=?13-16
 
 // These tests focus on the navigator.getInterestGroupAdAuctionData() method.
 
@@ -468,3 +469,100 @@ subsetTest(promise_test, async test => {
   assert_equals(prevWinAd.metadata, '"ada"', 'prevWin ad metadata');
   assert_equals(prevWinAd.adRenderId, 'a', 'prevWin ad adRenderId');
 }, 'getInterestGroupAdAuctionData() browserSignals with include-full-ads');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  const igTemplate = makeTemplateIgConfig(uuid);
+  await joinInterestGroup(test, uuid, {...igTemplate, name: 'first'});
+  await joinInterestGroup(test, uuid, {...igTemplate, name: 'second'});
+
+  const result = await navigator.getInterestGroupAdAuctionData(
+      {seller: window.location.origin});
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+  assert_equals(decoded.message.version, 0);
+  assert_equals(decoded.message.publisher, window.location.hostname);
+  assert_equals(typeof decoded.message.generationId, 'string');
+
+  let origin = window.location.origin;
+  let igMapKeys = Object.getOwnPropertyNames(decoded.message.interestGroups);
+  assert_array_equals(igMapKeys, [origin]);
+  assert_equals(decoded.message.interestGroups[origin].length, 2);
+  let names = [
+    decoded.message.interestGroups[origin][0].name,
+    decoded.message.interestGroups[origin][1].name
+  ];
+  assert_array_equals(names.sort(), ['first', 'second']);
+}, 'getInterestGroupAdAuctionData() with multiple interest groups');
+
+async function joinCrossOriginIG(test, uuid, origin, name) {
+  let iframe = await createIframe(test, origin, 'join-ad-interest-group');
+  await runInFrame(
+      test, iframe,
+      `await joinInterestGroup(test_instance, "${uuid}", {name: "${name}"});`);
+}
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN1, 'o1');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN2, 'o2');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN3, 'o3');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN4, 'o4');
+
+  const result = await navigator.getInterestGroupAdAuctionData(
+      {seller: window.location.origin});
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+  assert_equals(decoded.message.version, 0);
+  assert_equals(decoded.message.publisher, window.location.hostname);
+  assert_equals(typeof decoded.message.generationId, 'string');
+  let igMapKeys = Object.getOwnPropertyNames(decoded.message.interestGroups);
+  assert_array_equals(
+      igMapKeys.sort(),
+      [OTHER_ORIGIN1, OTHER_ORIGIN2, OTHER_ORIGIN3, OTHER_ORIGIN4].sort());
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN1].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN1][0].name, 'o1');
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN2].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN2][0].name, 'o2');
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN3].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN3][0].name, 'o3');
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN4].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN4][0].name, 'o4');
+}, 'getInterestGroupAdAuctionData() with multiple buyers');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN1, 'o1');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN2, 'o2');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN3, 'o3');
+  await joinCrossOriginIG(test, uuid, OTHER_ORIGIN4, 'o4');
+
+  let config = {
+    seller: window.location.origin,
+    perBuyerConfig: {},
+    requestSize: 5000
+  };
+  config.perBuyerConfig[OTHER_ORIGIN2] = {};
+  config.perBuyerConfig[OTHER_ORIGIN3] = {};
+  const result = await navigator.getInterestGroupAdAuctionData(config);
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+  assert_equals(decoded.message.version, 0);
+  assert_equals(decoded.message.publisher, window.location.hostname);
+  assert_equals(typeof decoded.message.generationId, 'string');
+  let igMapKeys = Object.getOwnPropertyNames(decoded.message.interestGroups);
+  assert_array_equals(igMapKeys.sort(), [OTHER_ORIGIN2, OTHER_ORIGIN3].sort());
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN2].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN2][0].name, 'o2');
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN3].length, 1);
+  assert_equals(decoded.message.interestGroups[OTHER_ORIGIN3][0].name, 'o3');
+}, 'getInterestGroupAdAuctionData() uses perBuyerConfig to select buyers');

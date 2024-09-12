@@ -5,5 +5,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
 [FAIL] getInterestGroupAdAuctionData() browserSignals with include-full-ads
   promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
+[FAIL] getInterestGroupAdAuctionData() with multiple interest groups
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
 Harness: the test ran to completion.
 
