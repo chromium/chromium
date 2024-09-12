@@ -179,6 +179,7 @@ component("gpu") {
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
       "//services/service_manager/public/cpp:cpp",
+      "//third_party/libgav1:libgav1_parser",
       "//ui/gl:gl_jni_headers",
     ]
     if (enable_vulkan) {

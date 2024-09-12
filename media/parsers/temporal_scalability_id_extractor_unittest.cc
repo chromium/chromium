@@ -4,6 +4,10 @@
 
 #include "media/parsers/temporal_scalability_id_extractor.h"
 
+#include "base/files/file_util.h"
+#include "media/base/decoder_buffer.h"
+#include "media/base/test_data_util.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,6 +72,60 @@ TEST(TemporalScalabilityIdExtractorTest, H264_CorruptedStream) {
   EXPECT_FALSE(
       extractor.ParseChunk(bytes{0, 0, 0, 1, 0xff, 0xff, 0xff}, 2, md));
   EXPECT_EQ(md.temporal_id, 0);
+}
+
+std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(
+    const std::string& fname) {
+  std::string ivf_data;
+  auto input_file = media::GetTestDataFilePath(fname);
+  EXPECT_TRUE(base::ReadFileToString(input_file, &ivf_data));
+
+  media::IvfParser ivf_parser;
+  media::IvfFileHeader ivf_header{};
+  EXPECT_TRUE(
+      ivf_parser.Initialize(reinterpret_cast<const uint8_t*>(ivf_data.data()),
+                            ivf_data.size(), &ivf_header));
+
+  std::vector<scoped_refptr<media::DecoderBuffer>> buffers;
+  media::IvfFrameHeader ivf_frame_header{};
+  const uint8_t* data;
+  while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
+    buffers.push_back(media::DecoderBuffer::CopyFrom(
+        // TODO(crbug.com/40284755): Spanify `ParseNextFrame`.
+        UNSAFE_TODO(base::span(data, ivf_frame_header.frame_size))));
+  }
+  return buffers;
+}
+
+struct AV1TemporalScalabilityData {
+  int frame_index;
+  uint8_t temporal_idx;
+  uint8_t reference_idx_flags;
+  uint8_t refresh_frame_flags;
+};
+
+// `temporal_id`, `reference_frame_indices`, and `refresh_frame_flags` are
+// populated from the bitstream.
+TEST(TemporalScalabilityIdExtractorTest, AV1_TwoTemporalLayers) {
+  TemporalScalabilityIdExtractor extractor(VideoCodec::kAV1, 2);
+  TemporalScalabilityIdExtractor::BitstreamMetadata md;
+
+  const std::string kTLStream("av1-svc-L1T2.ivf");
+  auto buffers = ReadIVF(kTLStream);
+  ASSERT_FALSE(buffers.empty());
+
+  const std::vector<AV1TemporalScalabilityData> expected{
+      {0, 0, 0b00000000, 0b11111111}, {1, 1, 0b01111111, 0b00000000},
+      {2, 0, 0b01111111, 0b00000100}, {3, 1, 0b01111111, 0b00000000},
+      {4, 0, 0b01111111, 0b00000010}, {5, 1, 0b01111111, 0b00000000},
+      {6, 0, 0b01111111, 0b00000001}, {7, 1, 0b01111111, 0b00000000},
+  };
+  for (int i = 0; i < static_cast<int>(buffers.size()); i++) {
+    EXPECT_TRUE(extractor.ParseChunk(buffers[i]->AsSpan(), i, md));
+    EXPECT_EQ(md.temporal_id, expected[i].temporal_idx);
+    EXPECT_EQ(md.reference_idx_flags, expected[i].reference_idx_flags);
+    EXPECT_EQ(md.refresh_frame_flags, expected[i].refresh_frame_flags);
+  }
 }
 
 }  // namespace media

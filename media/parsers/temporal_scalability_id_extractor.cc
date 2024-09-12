@@ -11,9 +11,24 @@
 
 #include <bitset>
 
+#include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 
 namespace media {
+namespace {
+
+// Returns true iff the current stream has multiple spatial layers.
+bool IsAV1SpatialLayerStream(int operating_point_idc) {
+  // Spec 6.4.1.
+  constexpr int kTemporalLayerBitMaskBits = 8;
+  const int kUsedSpatialLayerBitMask =
+      (operating_point_idc >> kTemporalLayerBitMaskBits) & 0b1111;
+  // In case of an only temporal layer encoding e.g. L1T3, spatial layer#0 bit
+  // is 1. We allow this case.
+  return kUsedSpatialLayerBitMask > 1;
+}
+
+}  // namespace
 
 TemporalScalabilityIdExtractor::TemporalScalabilityIdExtractor(VideoCodec codec,
                                                                int layer_count)
@@ -29,6 +44,14 @@ TemporalScalabilityIdExtractor::TemporalScalabilityIdExtractor(VideoCodec codec,
 #endif
     case VideoCodec::kVP9:
       vp9_ = std::make_unique<Vp9Parser>(false);
+      break;
+    case VideoCodec::kAV1:
+      buffer_pool_ = std::make_unique<libgav1::BufferPool>(
+          /*on_frame_buffer_size_changed=*/nullptr,
+          /*get_frame_buffer=*/nullptr,
+          /*release_frame_buffer=*/nullptr,
+          /*callback_private_data=*/nullptr);
+      av1_decoder_state_ = std::make_unique<libgav1::DecoderState>();
       break;
     default:
       break;
@@ -49,6 +72,8 @@ bool TemporalScalabilityIdExtractor::ParseChunk(base::span<const uint8_t> chunk,
 #endif
     case VideoCodec::kVP9:
       return ParseVP9(chunk, frame_id, tid_by_svc_spec, md);
+    case VideoCodec::kAV1:
+      return ParseAV1(chunk, frame_id, tid_by_svc_spec, md);
     default:
       return false;
   }
@@ -149,6 +174,59 @@ bool TemporalScalabilityIdExtractor::ParseVP9(base::span<const uint8_t> chunk,
       slot.temporal_id = md.temporal_id;
     }
   }
+  return true;
+}
+
+bool TemporalScalabilityIdExtractor::ParseAV1(base::span<const uint8_t> chunk,
+                                              uint32_t frame_id,
+                                              int tid_by_svc_spec,
+                                              BitstreamMetadata& md) {
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  if (av1_sequence_header_) {
+    parser->set_sequence_header(*av1_sequence_header_);
+  }
+  while (parser->HasData()) {
+    libgav1::RefCountedBufferPtr current_frame;
+    libgav1::StatusCode status = parser->ParseOneFrame(&current_frame);
+    if (status != libgav1::kStatusOk) {
+      return false;
+    }
+    if (!current_frame) {
+      // No frame found.
+      break;
+    }
+
+    if (parser->sequence_header_changed()) {
+      auto sequence_header = parser->sequence_header();
+      if (IsAV1SpatialLayerStream(sequence_header.operating_point_idc[0])) {
+        // AV1 spatial layer stream is not supported.
+        return false;
+      }
+      av1_sequence_header_ = sequence_header;
+    }
+
+    auto frame_header = parser->frame_header();
+    md.refresh_frame_flags = frame_header.refresh_frame_flags;
+    md.reference_idx_flags = 0;
+    if (!libgav1::IsIntraFrame(frame_header.frame_type)) {
+      for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
+        md.reference_idx_flags |= 1 << frame_header.reference_frame_index[i];
+      }
+    }
+
+    av1_decoder_state_->UpdateReferenceFrames(
+        current_frame,
+        base::strict_cast<int>(frame_header.refresh_frame_flags));
+  }
+
+  if (!parser->obu_headers().empty()) {
+    md.temporal_id = parser->obu_headers().back().temporal_id;
+  } else {
+    md.temporal_id = tid_by_svc_spec;
+  }
+
   return true;
 }
 
