@@ -233,7 +233,8 @@ Browser* LaunchWebAppBrowserAndWait(Profile* profile,
 }
 
 Browser* LaunchBrowserForWebAppInTab(Profile* profile,
-                                     const webapps::AppId& app_id) {
+                                     const webapps::AppId& app_id,
+                                     WindowOpenDisposition disposition) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(profile)->registrar_unsafe();
   GURL start_url = registrar.GetAppLaunchUrl(app_id);
@@ -241,12 +242,12 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
   SCOPED_TRACE(base::StrCat({"Attempted to launch ", app_id, " at ",
                              start_url.possibly_invalid_spec(), " with scope ",
                              scope.possibly_invalid_spec()}));
+
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-              app_id, apps::LaunchContainer::kLaunchContainerTab,
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              app_id, apps::LaunchContainer::kLaunchContainerTab, disposition,
               apps::LaunchSource::kFromTest));
 
   if (!web_contents) {

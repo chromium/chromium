@@ -4911,6 +4911,8 @@ static_library("ui") {
       "views/site_data/page_specific_site_data_dialog.h",
       "views/site_data/page_specific_site_data_dialog_controller.cc",
       "views/site_data/page_specific_site_data_dialog_controller.h",
+      "views/site_data/related_app_row_view.cc",
+      "views/site_data/related_app_row_view.h",
       "views/site_data/site_data_row_view.cc",
       "views/site_data/site_data_row_view.h",
       "views/ssl_client_certificate_selector.cc",

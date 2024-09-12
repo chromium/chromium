@@ -66,7 +66,11 @@ Browser* LaunchWebAppBrowserAndWait(
     WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
 // Launches a new tab for |app| in |profile|.
-Browser* LaunchBrowserForWebAppInTab(Profile*, const webapps::AppId&);
+Browser* LaunchBrowserForWebAppInTab(
+    Profile*,
+    const webapps::AppId&,
+    WindowOpenDisposition disposition =
+        WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
 // Launches the web app to the given URL.
 Browser* LaunchWebAppToURL(Profile* profile,

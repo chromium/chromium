@@ -12691,6 +12691,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         If a site uses cookies, it will appear here
       </message>
 
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_RELATED_APPS_TITLE" desc="This is a title of a section that displays a list of related installed web applications to the site the user is currently visiting. The label is shown in the `Cookies and site data` dialog.">
+        Related installed applications
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_RELATED_APPS_SUBTITLE" desc="This is a subtitle of a section that displays a list of related installed web applications to the site the user is currently visiting. It provides more information about what related installed web applications means. The label is shown in the `Cookies and site data` dialog.">
+        A site can find out if related web applications are installed on your machine. This info is available to the site and its subdomains.
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_RELATED_APPS_SETTINGS_LINK_TOOLTIP" desc="This is a tooltip for a link to an app settings page displayed on a related installed web application on the on-site data dialog. The label is shown in the `Cookies and site data` dialog.">
+        Go to app settings
+      </message>
+
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_MENU_ITEM"
           desc="The name of a menu item that allows storage access (creates an allow exception) for a site. The menu item is shown in the `Cookies and site data` dialog.">
         Allow to save data
