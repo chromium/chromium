@@ -10878,7 +10878,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/media/webrtc/webrtc_interactive_uitest.cc",
       "../browser/media/webrtc/webrtc_mediadevices_interactive_uitest.cc",
       "../browser/mouse_events_interactive_uitest.cc",
-      "../browser/net/cookie_encryption_provider_browsertest.cc",
       "../browser/new_tab_page/modules/new_tab_page_modules_interactive_uitest.cc",
       "../browser/new_tab_page/modules/test_support.cc",
       "../browser/new_tab_page/modules/test_support.h",
@@ -11693,14 +11692,20 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_linux) {
+      deps += [ "//ui/linux:linux_ui" ]
+
       if (ozone_platform_x11 && enable_remoting) {
         sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
       }
-      deps += [
-        "//components/os_crypt/async/browser:secret_portal_key_provider",
-        "//components/os_crypt/async/browser:test_secret_portal",
-        "//ui/linux:linux_ui",
-      ]
+
+      if (use_dbus) {
+        sources +=
+            [ "../browser/net/cookie_encryption_provider_browsertest.cc" ]
+        deps += [
+          "//components/os_crypt/async/browser:secret_portal_key_provider",
+          "//components/os_crypt/async/browser:test_secret_portal",
+        ]
+      }
     }
 
     if (is_linux || is_chromeos_lacros) {
