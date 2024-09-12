@@ -65,9 +65,10 @@ class DataProtectionNavigationObserver
   };
 
   // Creates a DataProtectionNavigationObserver if needed.  For example, the
-  // user data may not be needed for internal chrome URLs, if this is a same doc
-  // navigation, a non-primary-main frame navigation, or if the required
-  // enterprise policies are not set.
+  // user data may not be needed for internal chrome URLs or if the required
+  // enterprise policies are not set. If this is a same doc navigation, a
+  // non-primary-main frame navigation, the data protection state should remain
+  // unchanged.
   //
   // This function should be called in some DidStartNavigation() function
   // so that DataProtectionNavigationObserver can be created early enough to

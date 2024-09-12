@@ -563,6 +563,55 @@ TEST_F(DataProtectionNavigationObserverTest,
   }
 }
 
+TEST_F(DataProtectionNavigationObserverTest,
+       SubframeNavigation_DoesNotUpdateDataProtectionState) {
+  // Data Protection state should not be updated during background navigations.
+  // These can take place in various cases:
+  // 1. Chrome has some optimizations to start navigations while the URL is
+  // being typed in the omnibox.
+  // 2. Sub-navigations to URLs that are different from the main omnibox URL.
+  // Since the URL could be different, it could negate the verdict reached using
+  // the main frame URL.
+  SetContents(CreateTestWebContents());
+
+  // Set up verdicts for main-frame and sub-frame URLs.
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         "custom_message");
+  lookup_service_.SetWatermarkTextForURL(
+      GURL("https://background-navigation.com/"), std::nullopt);
+
+  // Navigate to main-frame URL and check verdict.
+  NavigateAndCommit(GURL("https://example.com"));
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    DataProtectionNavigationObserver::GetDataProtectionSettings(
+        Profile::FromBrowserContext(browser_context()), web_contents(),
+        future.GetCallback());
+    EXPECT_NE(future.Get().watermark_text.find("custom_message"),
+              std::string::npos);
+  }
+
+  // Navigate to sub-frame URL and verify that watermark string is unchanged.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://background-navigation.com/"), subframe);
+  simulator->SetInitiatorFrame(main_rfh());
+  simulator->Commit();
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    DataProtectionNavigationObserver::GetDataProtectionSettings(
+        Profile::FromBrowserContext(browser_context()), web_contents(),
+        future.GetCallback());
+    EXPECT_NE(future.Get().watermark_text.find("custom_message"),
+              std::string::npos);
+  }
+}
+
 TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();

@@ -193,16 +193,17 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     content::NavigationHandle* navigation_handle,
     Callback callback) {
   if (navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      !IsDataProtectionEnabled(profile)) {
-    std::move(callback).Run(UrlSettings::None());
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 
-  // If this is a skipped URL, force the view to clear any data protections if
-  // present.  This is needed to handle for example navigating from a
-  // watermarked page to the NTP.
-  if (SkipUrl(navigation_handle->GetURL())) {
+  // The Data protection settings need to be cleared if:
+  // 1. This is a skipped URL. This is needed to handle for example navigating
+  // from a watermarked page to the NTP.
+  // 2. Data protection is disabled. This is needed to prevent stale data
+  // protection settings if the enabled state is changed mid session.
+  if (SkipUrl(navigation_handle->GetURL()) ||
+      !IsDataProtectionEnabled(profile)) {
     std::move(callback).Run(UrlSettings::None());
     return;
   }
