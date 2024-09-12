@@ -10,12 +10,12 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/containers/span_writer.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,7 +29,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -72,16 +74,19 @@ const uint8_t kTestPublicKey[] = {
 
 const uint8_t kKeyId = 3;
 
-// Helper to create a CompressionGroupResult given all field values. Copies the
-// entire `compression_group_data`.
+// Helper to create a CompressionGroupResult given all field values.
+// `compression_group_data` is a string that will be CBOR encoded to form the
+// expected compression group body.
 TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme,
     std::string_view compression_group_data,
     base::TimeDelta ttl) {
   TrustedSignalsFetcher::CompressionGroupResult out;
   out.compression_scheme = compression_scheme;
-  out.compression_group_data = base::Value::BlobStorage(
-      compression_group_data.begin(), compression_group_data.end());
+  std::optional<std::vector<uint8_t>> content_string =
+      cbor::Writer::Write(cbor::Value(compression_group_data));
+  CHECK(content_string);
+  out.compression_group_data = std::move(content_string).value();
   out.ttl = ttl;
   return out;
 }
@@ -119,24 +124,6 @@ class TrustedSignalsFetcherTest : public testing::Test {
       "0071616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
       "000000000000000000000000000000000000000000";
 
-  // CBOR representation of a response with a single compression group. Same for
-  // both bidding and scoring signals.
-  //
-  // It's the CBOR representation of:
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "ttlMs" : 100,
-  //       "content" : "compression group content"
-  //     }
-  //   ]
-  // }
-  const std::string_view kDefaultResponseBody =
-      "A171636F6D7072657373696F6E47726F75707381A36574746C4D73186467636F6E74656E"
-      "745819636F6D7072657373696F6E2067726F757020636F6E74656E7472636F6D70726573"
-      "73696F6E47726F7570496400";
-
   TrustedSignalsFetcherTest() {
     embedded_test_server_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -145,13 +132,28 @@ class TrustedSignalsFetcherTest : public testing::Test {
         base::BindRepeating(&TrustedSignalsFetcherTest::HandleSignalsRequest,
                             base::Unretained(this)));
     EXPECT_TRUE(embedded_test_server_.Start());
-    SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody);
+    SetResponseBodyAndAddHeader(DefaultResponseBody());
   }
 
   ~TrustedSignalsFetcherTest() override {
     base::AutoLock auto_lock(lock_);
     // Any request body should have been verified.
     EXPECT_FALSE(bidding_request_body_.has_value());
+  }
+
+  // CBOR representation of a response with a single compression group. Same for
+  // both bidding and scoring signals.
+  static std::string DefaultResponseBody() {
+    return auction_worklet::test::ToKVv2ResponseCborString(
+        R"({
+             "compressionGroups": [
+               {
+                 "compressionGroupId": 0,
+                 "ttlMs" : 100,
+                 "content" : "compression group content"
+               }
+             ]
+           })");
   }
 
   GURL TrustedBiddingSignalsUrl() const {
@@ -234,36 +236,16 @@ class TrustedSignalsFetcherTest : public testing::Test {
     use_cleartext_response_body_ = use_cleartext;
   }
 
-  // Takes response body string as a CBOR-encoded hex string, parses the hex,
-  // adds a framing header (compression format, length) and, optionally,
-  // padding, and sets that as the next response. If `advertised_cbor_length` is
-  // std::nullopt, uses the length of the input string, after decoding the hex.
-  // `padding_length` 0's are appended to the end of the response body.
-  // Compression scheme is taken as a raw byte, to allow testing of values not
-  // representable by auction_worklet::mojom::TrustedSignalsCompressionScheme,
-  // and will write to the entire leading 8-bits, instead of only the low-order
-  // 2 bits that are actually the compression scheme. The default value of 2
-  // corresponds to gzip.
-  void SetResponseBodyAndAddHeaderFromHex(
-      std::string_view cbor_response_body_hex,
+  // Convenience wrapper that calls CreateKVv2ResponseBody() on the provided
+  // values, and sets the resulting string as the response body.
+  void SetResponseBodyAndAddHeader(
+      std::string_view cbor_response_body,
       std::optional<size_t> advertised_cbor_length = std::nullopt,
       size_t padding_length = 0,
-      uint8_t compression_scheme = 2) {
-    std::string cbor_response_body;
-    EXPECT_TRUE(
-        base::HexStringToString(cbor_response_body_hex, &cbor_response_body));
-    if (!advertised_cbor_length.has_value()) {
-      advertised_cbor_length = cbor_response_body.length();
-    }
-
-    std::string response_body(5 + cbor_response_body.size() + padding_length,
-                              0);
-    base::SpanWriter writer(
-        base::as_writable_bytes(base::make_span(response_body)));
-    writer.WriteU8BigEndian(compression_scheme);
-    writer.WriteU32BigEndian(*advertised_cbor_length);
-    writer.Write(base::as_bytes(base::make_span(cbor_response_body)));
-    SetResponseBody(std::move(response_body));
+      uint8_t compression_scheme = 0) {
+    SetResponseBody(auction_worklet::test::CreateKVv2ResponseBody(
+        cbor_response_body, advertised_cbor_length, padding_length,
+        compression_scheme));
   }
 
   // Helper to, in the case of a successfully fetched result, compare `result`
@@ -289,14 +271,14 @@ class TrustedSignalsFetcherTest : public testing::Test {
     }
   }
 
-  // Checks that the fetch result matches what `kDefaultResponseBody` is
+  // Checks that the fetch result matches what `DefaultResponseBody()` is
   // expected to be parsed as.
   void ValidateDefaultFetchResult(
       const TrustedSignalsFetcher::SignalsFetchResult& result) {
     TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
     expected_result.try_emplace(
         0, CreateCompressionGroupResult(
-               auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+               auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
                "compression group content", base::Milliseconds(100)));
     ValidateFetchResult(result, expected_result);
   }
@@ -757,23 +739,21 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
       "000000000000000000000000000000000000000000";
 
   // The response similarly only includes information for compression group 3.
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 3,
-  //       "content": "content"
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F7570496403");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+             "compressionGroups": [
+               {
+                 "compressionGroupId": 3,
+                 "content": "content"
+               }
+             ]
+           })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       3, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBody(kExpectedRequestBody);
@@ -848,28 +828,28 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyUnencrypted) {
 // Receiving CBOR without a header in the response body should result in
 // failure.
 TEST_F(TrustedSignalsFetcherTest, NoResponseBodyHeader) {
-  std::string response_body;
-  EXPECT_TRUE(base::HexStringToString(kDefaultResponseBody, &response_body));
-  SetResponseBody(response_body);
+  SetResponseBody(DefaultResponseBody());
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   // Don't check the specific error - it depends on the specific details of the
-  // CBOR representation of kDefaultResponseBody.
+  // CBOR representation of DefaultResponseBody().
   ASSERT_FALSE(result.has_value());
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
-TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeNone) {
-  SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                     /*advertised_cbor_length=*/std::nullopt,
-                                     /*padding_length=*/0,
-                                     /*compression_scheme=*/0);
+// This test does not actually gzip the body. The fetcher doesn't try to
+// decompress anything, so that should be fine.
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeGzip) {
+  SetResponseBodyAndAddHeader(DefaultResponseBody(),
+                              /*advertised_cbor_length=*/std::nullopt,
+                              /*padding_length=*/0,
+                              /*compression_scheme=*/2);
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
 
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
              "compression group content", base::Milliseconds(100)));
   ValidateFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request),
@@ -879,10 +859,9 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeNone) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeUnsupported) {
   for (int compression_scheme : {1, 3}) {
-    SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                       /*advertised_cbor_length=*/std::nullopt,
-                                       /*padding_length=*/0,
-                                       compression_scheme);
+    SetResponseBodyAndAddHeader(DefaultResponseBody(),
+                                /*advertised_cbor_length=*/std::nullopt,
+                                /*padding_length=*/0, compression_scheme);
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -900,13 +879,19 @@ TEST_F(TrustedSignalsFetcherTest,
        BiddingSignalsCompressionSchemeHighOrderBitsIgnored) {
   // Everything but the low order two bits of the compression scheme should be
   // ignored, so this should be treated as scheme 2 - gzip.
-  SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                     /*advertised_cbor_length=*/std::nullopt,
-                                     /*padding_length=*/0,
-                                     /*compression_scheme=*/0xFE);
+  SetResponseBodyAndAddHeader(DefaultResponseBody(),
+                              /*advertised_cbor_length=*/std::nullopt,
+                              /*padding_length=*/0,
+                              /*compression_scheme=*/0xFE);
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  ValidateDefaultFetchResult(
-      RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
+  TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
+  expected_result.try_emplace(
+      0, CreateCompressionGroupResult(
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             "compression group content", base::Milliseconds(100)));
+  ValidateFetchResult(
+      RequestBiddingSignalsAndWaitForResult(bidding_signals_request),
+      expected_result);
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
@@ -915,12 +900,11 @@ TEST_F(TrustedSignalsFetcherTest,
 // case where the maximum possible length is received, to make sure there are no
 // overflow/underflow issues.
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooLong) {
-  const uint32_t kTestCases[] = {
-      static_cast<uint32_t>(kDefaultResponseBody.length() / 2 + 1),
-      std::numeric_limits<uint32_t>::max()};
-  for (uint32_t advertised_cbor_length : kTestCases) {
-    SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                       advertised_cbor_length);
+  const std::string response_body = DefaultResponseBody();
+  const size_t kTestCases[] = {response_body.length() + 1,
+                               std::numeric_limits<uint32_t>::max()};
+  for (size_t advertised_cbor_length : kTestCases) {
+    SetResponseBodyAndAddHeader(response_body, advertised_cbor_length);
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -936,8 +920,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooLong) {
 // If the advertised shorter is longer than the response, the remaining bytes
 // should be ignored, even if they make an otherwise valid CBOR response.
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooShort) {
-  SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                     kDefaultResponseBody.length() / 2 - 1);
+  SetResponseBodyAndAddHeader(DefaultResponseBody(),
+                              DefaultResponseBody().length() / 2 - 1);
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
@@ -950,11 +934,11 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooShort) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponsePadding) {
   // No need to check length 0 - that's the default amount of padding added by
-  // SetResponseBodyAndAddHeaderFromHex().
+  // SetResponseBodyAndAddHeader().
   for (size_t padding_length : {1, 2, 16, 1023, 1024}) {
-    SetResponseBodyAndAddHeaderFromHex(kDefaultResponseBody,
-                                       /*advertised_cbor_length=*/std::nullopt,
-                                       padding_length);
+    SetResponseBodyAndAddHeader(DefaultResponseBody(),
+                                /*advertised_cbor_length=*/std::nullopt,
+                                padding_length);
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     ValidateDefaultFetchResult(
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -967,31 +951,31 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponsePadding) {
 TEST_F(TrustedSignalsFetcherTest, NotCbor) {
   const std::string_view kTestCases[] = {
       // This is "This is not CBOR." as a hex string.
-      "54686973206973206E6F742043424F522E",
+      "\x54\x68\x69\x73\x20\x69\x73\x20\x6E\x6F\x74\x20\x43\x42\x4F\x52\x2E",
 
       // Null in CBOR, which is currently rejected as not being CBOR by the CBOR
       // parser, which is a little weird. Seems
       // best to test this case, though, and if we ever do parse it, move it
       // into the next test.
-      "F6",
+      "\xF6",
 
       // CBOR has a lot of values that don't map to JSON or even to Javascript
       // objects. This is a very incomplete set of some types of them, without
       // delving into the spec.
 
       // Undefined in CBOR.
-      "F7",
+      "\xF7",
 
       // An unassigned CBOR value.
-      "F0",
+      "\xF0",
 
       // A reserved CBOR value.
-      "F820",
+      "\xF8\x20",
   };
 
   for (const std::string_view& test_string : kTestCases) {
-    SCOPED_TRACE(test_string);
-    SetResponseBodyAndAddHeaderFromHex(test_string);
+    SCOPED_TRACE(base::HexEncode(test_string));
+    SetResponseBodyAndAddHeader(test_string);
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1008,22 +992,16 @@ TEST_F(TrustedSignalsFetcherTest, NotCbor) {
 // but it's not a map.
 TEST_F(TrustedSignalsFetcherTest, NotCborMap) {
   const std::string_view kTestCases[] = {
-      // true
-      "F5",
-
-      // "This is a string"
-      "7054686973206973206120737472696E67",
-
-      // 42
-      "182A",
-
-      // ["array"]
-      "81656172726179",
+      R"(true)",
+      R"("This is a string")",
+      R"(42)",
+      R"(["array"])",
   };
 
   for (const std::string_view& test_string : kTestCases) {
     SCOPED_TRACE(test_string);
-    SetResponseBodyAndAddHeaderFromHex(test_string);
+    SetResponseBodyAndAddHeader(
+        auction_worklet::test::ToKVv2ResponseCborString(test_string));
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1037,8 +1015,9 @@ TEST_F(TrustedSignalsFetcherTest, NotCborMap) {
 }
 
 TEST_F(TrustedSignalsFetcherTest, NoCompressionGroupMap) {
-  // An empty CBOR map "{}".
-  SetResponseBodyAndAddHeaderFromHex("A0");
+  // An empty map.
+  SetResponseBodyAndAddHeader(
+      auction_worklet::test::ToKVv2ResponseCborString("{}"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
@@ -1051,9 +1030,8 @@ TEST_F(TrustedSignalsFetcherTest, NoCompressionGroupMap) {
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupsNotArray) {
-  // "{"compressionGroups": {}}".
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F757073A0");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({"compressionGroups": {}})"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
@@ -1066,9 +1044,8 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupsNotArray) {
 }
 
 TEST_F(TrustedSignalsFetcherTest, NoCompressionGroups) {
-  // "{"compressionGroups": []}".
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707380");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({"compressionGroups": []})"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   // The fetch succeeds, and the result is an empty map. The cache layer, which
   // maps requests to fetched compression groups, will consider this a failure,
@@ -1080,9 +1057,8 @@ TEST_F(TrustedSignalsFetcherTest, NoCompressionGroups) {
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupNotMap) {
-  // "{"compressionGroups": [[]]}".
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F7570738180");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({"compressionGroups": [[]]})"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
@@ -1096,53 +1072,46 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupNotMap) {
 TEST_F(TrustedSignalsFetcherTest,
        CompressionGroupWithBadOrNoCompressionGroupId) {
   const std::string_view kTestCases[] = {
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "content" : "content"
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A167636F6E74656E7447636F6E74656E"
-      "74",
+      R"({
+           "compressionGroups": [
+             {
+               "content" : "content"
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": "Jim",
-      //       "content" : "content"
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F75704964634A696D",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": "Jim",
+               "content" : "content"
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": -1,
-      //       "content" : "content"
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F7570496420",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": -1,
+               "content" : "content"
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 0.0,
-      //       "content" : "content"
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F75704964F90000",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0.0,
+               "content" : "content"
+             }
+           ]
+         })",
   };
 
-  for (const std::string_view& test_string : kTestCases) {
+  for (const std::string_view test_string : kTestCases) {
     SCOPED_TRACE(test_string);
-    SetResponseBodyAndAddHeaderFromHex(test_string);
+    SetResponseBodyAndAddHeader(
+        auction_worklet::test::ToKVv2ResponseCborString(test_string));
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1163,42 +1132,52 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadOrNoContent) {
   // the cache layer, since it has to match compression groups to requests it
   // sent out, anyways.
   const std::vector<std::string_view> kTestCases = {
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 0
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A172636F6D7072657373696F6E47726F"
-      "7570496400",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 1,
-      //       "content" : 5
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E740572636F6D7072"
-      "657373696F6E47726F7570496401",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 1,
+               "content" : 5
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 2,
-      //       "content" : ["content"]
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E748147636F6E7465"
-      "6E7472636F6D7072657373696F6E47726F7570496402",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 2,
+               "content" : ["content"]
+             }
+           ]
+         })",
+
+      // This content type is a string instead of a binary string, which should
+      // result in an error.
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 3,
+               "content" : "content"
+             }
+           ]
+         })",
   };
 
   for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(kTestCases[i]);
-    SetResponseBodyAndAddHeaderFromHex(kTestCases[i]);
+    // Note that this uses ToCborString() to convert the JSON to a CBOR string
+    // rather than ToKVv2ResponseCborString(). This results in the "content"
+    // fields not being encoded as binary strings, but rather as whatever CBOR
+    // type corresponds to the JSON type of the "content" field.
+    SetResponseBodyAndAddHeader(
+        auction_worklet::test::ToCborString(kTestCases[i]));
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1218,35 +1197,31 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
   // the cache layer, since it has to match compression groups to requests it
   // sent out, anyways.
   const std::vector<std::string_view> kTestCases = {
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 0,
-      //       "content": "content",
-      //       "ttlMs": "grapefruit"
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A36574746C4D736A6772617065667275"
-      "697467636F6E74656E7447636F6E74656E7472636F6D7072657373696F6E47726F757049"
-      "6400",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content",
+               "ttlMs": "grapefruit"
+             }
+           ]
+         })",
 
-      // {
-      //   "compressionGroups": [
-      //     {
-      //       "compressionGroupId": 1,
-      //       "content": "content",
-      //       "ttlMs": 0.5
-      //     }
-      //   ]
-      // }
-      "A171636F6D7072657373696F6E47726F75707381A36574746C4D73F9380067636F6E7465"
-      "6E7447636F6E74656E7472636F6D7072657373696F6E47726F7570496401",
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 1,
+               "content": "content",
+               "ttlMs": 0.5
+             }
+           ]
+         })",
   };
 
   for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(kTestCases[i]);
-    SetResponseBodyAndAddHeaderFromHex(kTestCases[i]);
+    SetResponseBodyAndAddHeader(
+        auction_worklet::test::ToKVv2ResponseCborString(kTestCases[i]));
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1262,47 +1237,43 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
 // `ttlMs` is an optional field. When not present, we currently default to a
 // value of 0.
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNoTtl) {
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content"
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707381A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F7570496400");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content"
+             }
+           ]
+         })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content",
-  //       "ttlMs": 0
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707381A36574746C4D730067636F6E74656E74"
-      "47636F6E74656E7472636F6D7072657373696F6E47726F7570496400");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content",
+               "ttlMs": 0
+             }
+           ]
+         })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
@@ -1310,24 +1281,22 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
 
 // Negative TTLs are allows, and are treated as if they were zero.
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNegativeTtl) {
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content",
-  //       "ttlMs": -1
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707381A36574746C4D732067636F6E74656E74"
-      "47636F6E74656E7472636F6D7072657373696F6E47726F7570496400");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content",
+               "ttlMs": -1
+             }
+           ]
+         })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
@@ -1440,22 +1409,19 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
 // Test that a fetch fails when there are two compression groups with the same
 // ID in the response.
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsDuplicateCompressionGroups) {
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content"
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content"
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707382A267636F6E74656E7447636F6E74656E"
-      "7472636F6D7072657373696F6E47726F7570496400A267636F6E74656E7447636F6E7465"
-      "6E7472636F6D7072657373696F6E47726F7570496400");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content"
+             },
+             {
+               "compressionGroupId": 0,
+               "content": "content"
+             }
+           ]
+         })"));
 
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1569,45 +1535,39 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
       "000000000000000000000000000000000000000000000000000000000000000000000000"
       "000000000000000000000000000000000000000000000000000000000000000000";
 
-  // The response similarly only includes information for 3 compression groups.
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content1",
-  //       "ttlMs": 10
-  //     },
-  //     {
-  //       "compressionGroupId": 1,
-  //       "content": "content2"
-  //     },
-  //     {
-  //       "compressionGroupId": 2,
-  //       "content": "content3",
-  //       "ttlMs": 150
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707383A36574746C4D730A67636F6E74656E74"
-      "48636F6E74656E743172636F6D7072657373696F6E47726F7570496400A267636F6E7465"
-      "6E7448636F6E74656E743272636F6D7072657373696F6E47726F7570496401A36574746C"
-      "4D73189667636F6E74656E7448636F6E74656E743372636F6D7072657373696F6E47726F"
-      "7570496402");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content1",
+               "ttlMs": 10
+             },
+             {
+               "compressionGroupId": 1,
+               "content": "content2"
+             },
+             {
+               "compressionGroupId": 2,
+               "content": "content3",
+               "ttlMs": 150
+             }
+           ]
+         })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
   expected_result.try_emplace(
       0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content1", base::Milliseconds(10)));
   expected_result.try_emplace(
       1, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content2", base::Milliseconds(0)));
   expected_result.try_emplace(
       2, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content3", base::Milliseconds(150)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBody(kExpectedRequestBody);
@@ -1718,30 +1678,24 @@ TEST_F(TrustedSignalsFetcherTest,
       "000000000000000000000000000000000000000000000000000000000000000000000000"
       "000000000000000000000000000000000000000000000000000000000000000000";
 
-  // The response similarly only includes information for 3 compression groups.
-  // {
-  //   "compressionGroups": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "content": "content1",
-  //       "ttlMs": 10
-  //     },
-  //     {
-  //       "compressionGroupId": 1,
-  //       "content": 2
-  //     },
-  //     {
-  //       "compressionGroupId": 2,
-  //       "content": "content3",
-  //       "ttlMs": 150
-  //     }
-  //   ]
-  // }
-  SetResponseBodyAndAddHeaderFromHex(
-      "A171636F6D7072657373696F6E47726F75707383A36574746C4D730A67636F6E74656E74"
-      "48636F6E74656E743172636F6D7072657373696F6E47726F7570496400A267636F6E7465"
-      "6E740272636F6D7072657373696F6E47726F7570496401A36574746C4D73189667636F6E"
-      "74656E7448636F6E74656E743372636F6D7072657373696F6E47726F7570496402");
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+           "compressionGroups": [
+             {
+               "compressionGroupId": 0,
+               "content": "content1",
+               "ttlMs": 10
+             },
+             {
+               "compressionGroupId": 1
+             },
+             {
+               "compressionGroupId": 2,
+               "content": "content3",
+               "ttlMs": 150
+             }
+           ]
+         })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());

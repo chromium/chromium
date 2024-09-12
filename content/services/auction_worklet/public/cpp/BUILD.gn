@@ -25,3 +25,19 @@ source_set("cpp") {
     "//url",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cbor_test_util.cc",
+    "cbor_test_util.h",
+  ]
+
+  deps = [ "//base/test:test_support" ]
+
+  public_deps = [
+    "//base",
+    "//components/cbor",
+  ]
+}
