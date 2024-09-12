@@ -121,14 +121,11 @@ class EncryptorTestBase : public ::testing::Test {
     return Encryptor(std::move(keys), provider_for_encryption);
   }
 
-  static std::vector<uint8_t> GenerateRandomTestKey(size_t length) {
-    return crypto::RandBytesAsVector(length);
-  }
-
   static Encryptor::Key GenerateRandomAES256TestKey(
       bool is_os_crypt_sync_compatible = false) {
-    Encryptor::Key key(GenerateRandomTestKey(Encryptor::Key::kAES256GCMKeySize),
-                       mojom::Algorithm::kAES256GCM);
+    Encryptor::Key key(
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
+        mojom::Algorithm::kAES256GCM);
     key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
     return key;
   }
@@ -564,7 +561,7 @@ TEST_F(EncryptorTestBase, IsEncryptionAvailable) {
 TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
   std::string ciphertext;
   std::string ciphertext16;
-  auto random_key = GenerateRandomTestKey(kKeyLength);
+  const auto random_key = crypto::RandBytesAsVector(kKeyLength);
   // Set the OSCrypt key to the fixed key.
   OSCrypt::SetRawEncryptionKey(
       std::string(random_key.begin(), random_key.end()));
@@ -612,7 +609,7 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
 // OSCrypt.
 TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
   // From os_crypt_win.cc
-  auto random_key = GenerateRandomTestKey(kKeyLength);
+  const auto random_key = crypto::RandBytesAsVector(kKeyLength);
 
   // Set up a test Encryptor that can encrypt the data.
   Encryptor::KeyRing key_ring;
@@ -753,11 +750,10 @@ class EncryptorTraitsTest : public EncryptorTestBase {};
 
 TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
   {
-    std::vector<uint8_t> test_key1(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(test_key1);
-
-    std::vector<uint8_t> test_key2(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(test_key2);
+    const auto test_key1 =
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize);
+    const auto test_key2 =
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize);
 
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST1",

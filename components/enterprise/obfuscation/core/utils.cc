@@ -41,11 +41,8 @@ static constexpr size_t kChunkSizePrefixSize = 4u;
 
 // Generates a random 256 bit AES key.
 const std::vector<uint8_t>& GetSymmetricKey() {
-  static const base::NoDestructor<std::vector<uint8_t>> kSymmetricKey([]() {
-    std::vector<uint8_t> key(kKeySize);
-    crypto::RandBytes(key);
-    return key;
-  }());
+  static const base::NoDestructor<std::vector<uint8_t>> kSymmetricKey(
+      crypto::RandBytesAsVector(kKeySize));
 
   return *kSymmetricKey;
 }

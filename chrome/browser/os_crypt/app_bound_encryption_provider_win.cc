@@ -173,9 +173,8 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
     return;
   }
 
-  std::vector<uint8_t> random_key(
+  const auto random_key = crypto::RandBytesAsVector(
       os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
-  crypto::RandBytes(random_key);
   // Take a copy of the key. This will be returned as the unencrypted key for
   // the provider, once the encryption operation is complete.
   std::vector<uint8_t> decrypted_key(random_key.cbegin(), random_key.cend());
