@@ -2364,10 +2364,10 @@
     Don't see any warnings before going to insecure sites
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_LABEL" desc="Label for radio button to enable the stricter form of HTTPS-First Mode">
-    Warns you for all insecure sites
+    Warns you for insecure public &amp; private sites
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_SUBLABEL" desc="Secondary, continued explanation for the stricter form of HTTPS-First Mode">
-    Warns you for both public sites, and private sites, such as your company’s intranet
+    Private sites might include things like your company’s intranet
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_LABEL" desc="Label for radio button to enable the less-strict form of HTTPS-First Mode">
     Warns you for insecure public sites
