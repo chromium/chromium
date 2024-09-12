@@ -63,7 +63,8 @@ TypeConverter<media::mojom::DecoderBufferSideDataPtr,
   mojo_side_data->alpha_data = input->alpha_data;
   mojo_side_data->spatial_layers = input->spatial_layers;
   mojo_side_data->secure_handle = input->secure_handle;
-
+  mojo_side_data->front_discard = input->discard_padding.first;
+  mojo_side_data->back_discard = input->discard_padding.second;
   return mojo_side_data;
 }
 
@@ -80,6 +81,8 @@ TypeConverter<std::optional<media::DecoderBufferSideData>,
   side_data->alpha_data = input->alpha_data;
   side_data->spatial_layers = input->spatial_layers;
   side_data->secure_handle = input->secure_handle;
+  side_data->discard_padding.first = input->front_discard;
+  side_data->discard_padding.second = input->back_discard;
   return side_data;
 }
 
@@ -99,9 +102,6 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
   mojo_buffer->duration = input.duration();
   mojo_buffer->is_key_frame = input.is_key_frame();
   mojo_buffer->data_size = base::checked_cast<uint32_t>(input.size());
-  mojo_buffer->front_discard = input.discard_padding().first;
-  mojo_buffer->back_discard = input.discard_padding().second;
-
   mojo_buffer->side_data =
       media::mojom::DecoderBufferSideData::From(input.side_data());
 
@@ -141,10 +141,6 @@ TypeConverter<scoped_refptr<media::DecoderBuffer>,
     buffer->set_decrypt_config(
         input->decrypt_config.To<std::unique_ptr<media::DecryptConfig>>());
   }
-
-  media::DecoderBuffer::DiscardPadding discard_padding(input->front_discard,
-                                                       input->back_discard);
-  buffer->set_discard_padding(discard_padding);
 
   // TODO(dalecurtis): We intentionally do not deserialize the data section of
   // the DecoderBuffer here; this must instead be done by clients via their

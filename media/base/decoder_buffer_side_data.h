@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -30,6 +31,13 @@ struct MEDIA_EXPORT DecoderBufferSideData {
   // Secure buffer handle corresponding to the decrypted contents of the
   // associated DecoderBuffer. A non-zero value indicates this was set.
   uint64_t secure_handle = 0;
+
+  // Duration of (audio) samples from the beginning and end of this frame
+  // which should be discarded after decoding. A value of kInfiniteDuration
+  // for the first value indicates the entire frame should be discarded; the
+  // second value must be base::TimeDelta() in this case.
+  using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
+  DiscardPadding discard_padding;
 };
 
 }  // namespace media

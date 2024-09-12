@@ -145,11 +145,10 @@ base::span<const uint8_t> DecoderBuffer::AsSpan() const {
 
 void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
   DCHECK(!end_of_stream());
-  if (discard_padding.first.is_zero() && discard_padding.second.is_zero()) {
-    discard_padding_.reset();
+  if (!side_data_ && discard_padding == DiscardPadding()) {
     return;
   }
-  discard_padding_ = std::make_unique<DiscardPadding>(discard_padding);
+  WritableSideData().discard_padding = discard_padding;
 }
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
@@ -178,8 +177,7 @@ bool DecoderBuffer::MatchesMetadataForTesting(
     return true;
 
   if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
-      is_key_frame() != buffer.is_key_frame() ||
-      discard_padding() != buffer.discard_padding()) {
+      is_key_frame() != buffer.is_key_frame()) {
     return false;
   }
 
@@ -223,9 +221,10 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
   if (verbose) {
     s << " has_side_data=" << has_side_data();
-    if (discard_padding_) {
-      s << " discard_padding (us)=(" << discard_padding_->first.InMicroseconds()
-        << ", " << discard_padding_->second.InMicroseconds() << ")";
+    if (has_side_data()) {
+      s << " discard_padding (us)=("
+        << side_data_->discard_padding.first.InMicroseconds() << ", "
+        << side_data_->discard_padding.second.InMicroseconds() << ")";
     }
     if (decrypt_config_) {
       s << " decrypt_config=" << (*decrypt_config_);

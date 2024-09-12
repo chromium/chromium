@@ -15,7 +15,9 @@ DecoderBufferSideData::DecoderBufferSideData(
 
 bool DecoderBufferSideData::Matches(const DecoderBufferSideData& other) const {
   return spatial_layers == other.spatial_layers &&
-         alpha_data == other.alpha_data && secure_handle == other.secure_handle;
+         alpha_data == other.alpha_data &&
+         secure_handle == other.secure_handle &&
+         discard_padding == other.discard_padding;
 }
 
 }  // namespace media

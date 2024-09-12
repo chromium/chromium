@@ -48,7 +48,7 @@ class MEDIA_EXPORT DecoderBuffer
     virtual const base::span<const uint8_t> Span() const = 0;
   };
 
-  using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
+  using DiscardPadding = DecoderBufferSideData::DiscardPadding;
 
   // TODO(crbug.com/365814210): Remove this structure. It's barely used outside
   // of unit tests.
@@ -184,13 +184,15 @@ class MEDIA_EXPORT DecoderBuffer
 
   bool empty() const { return size() == 0u; }
 
-  // TODO(crbug.com/365814210): Convert to const*.
+  // TODO(crbug.com/365814210): Remove this method and force callers to get it
+  // through side_data().
   DiscardPadding discard_padding() const {
     DCHECK(!end_of_stream());
-    return discard_padding_ ? *discard_padding_ : DiscardPadding();
+    return side_data_ ? side_data_->discard_padding : DiscardPadding();
   }
 
-  // TODO(crbug.com/365814210): This should be renamed to CamelCase().
+  // TODO(crbug.com/365814210): Remove this method and force callers to get it
+  // through side_data().
   void set_discard_padding(const DiscardPadding& discard_padding);
 
   // Returns DecryptConfig associated with |this|. Returns null if |this| is
@@ -284,12 +286,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Presentation duration of the frame.
   base::TimeDelta duration_;
-
-  // Duration of (audio) samples from the beginning and end of this frame
-  // which should be discarded after decoding. A value of kInfiniteDuration
-  // for the first value indicates the entire frame should be discarded; the
-  // second value must be base::TimeDelta() in this case.
-  std::unique_ptr<DiscardPadding> discard_padding_;
 
   // Size of the encoded data.
   const size_t size_ = 0u;

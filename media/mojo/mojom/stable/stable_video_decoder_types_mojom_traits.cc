@@ -462,6 +462,14 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
   if (decrypt_config)
     decoder_buffer->set_decrypt_config(std::move(decrypt_config));
 
+  std::optional<media::DecoderBufferSideData> side_data;
+  if (!input.ReadSideData(&side_data)) {
+    return false;
+  }
+  decoder_buffer->set_side_data(side_data);
+
+  // Note: DiscardPadding must be set after side data since the non-stable
+  // interface has moved the discard padding into side data.
   base::TimeDelta front_discard;
   if (!input.ReadFrontDiscard(&front_discard))
     return false;
@@ -476,13 +484,9 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
       "chromeos-gfx-video@google.com.");
   media::DecoderBuffer::DiscardPadding discard_padding(front_discard,
                                                        back_discard);
-  decoder_buffer->set_discard_padding(discard_padding);
-
-  std::optional<media::DecoderBufferSideData> side_data;
-  if (!input.ReadSideData(&side_data)) {
-    return false;
+  if (discard_padding != media::DecoderBuffer::DiscardPadding()) {
+    decoder_buffer->set_discard_padding(discard_padding);
   }
-  decoder_buffer->set_side_data(side_data);
 
   // TODO(b/269383891): Remove this in M120.
   // If the input is an older version than us, then it may have |raw_side_data|
