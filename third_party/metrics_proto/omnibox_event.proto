@@ -214,6 +214,9 @@ message OmniboxEventProto {
     // Equivalent of OTHER for CCT.
     OTHER_ON_CCT = 28;
 
+    // The searchbox in the Android Hub.
+    HUB = 29;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.

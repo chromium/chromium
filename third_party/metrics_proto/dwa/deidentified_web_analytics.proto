@@ -41,41 +41,41 @@ message DeidentifiedWebAnalyticsReport {
 // Next tag: 7
 message CoarseSystemInfo {
   // Stable or not-stable channel, 1 bit allocated.
-  // INVALID_CHANNEL is an invalid value and should never used. The client
+  // CHANNEL_INVALID is an invalid value and should never used. The client
   // should check the value before sending the report.
   enum Channel {
-    INVALID_CHANNEL = 0;
-    STABLE = 1;
-    NOT_STABLE = 2;
+    CHANNEL_INVALID = 0;
+    CHANNEL_STABLE = 1;
+    CHANNEL_NOT_STABLE = 2;
   }
   optional Channel channel = 1;
 
   // Platform and activity type, 4 bits allocated.
-  // INVALID_PLATFORM is an invalid value and should never used. The client
+  // PLATFORM_INVALID is an invalid value and should never used. The client
   // should check the value before sending the report.
   enum Platform {
-    INVALID_PLATFORM = 0;
-    OTHER = 1;
-    ANDROID_WEBVIEW = 2;
-    ANDROID_BROWSER_APP = 3;
-    ANDROID_CCT = 4;
-    ANDROID_PWA = 5;
-    ANDROID_TWA = 6;
-    IOS = 7;
-    WINDOWS = 8;
-    MACOS = 9;
-    LINUX = 10;
-    CHROMEOS = 11;
+    PLATFORM_INVALID = 0;
+    PLATFORM_OTHER = 1;
+    PLATFORM_ANDROID_WEBVIEW = 2;
+    PLATFORM_ANDROID_BROWSER_APP = 3;
+    PLATFORM_ANDROID_CCT = 4;
+    PLATFORM_ANDROID_PWA = 5;
+    PLATFORM_ANDROID_TWA = 6;
+    PLATFORM_IOS = 7;
+    PLATFORM_WINDOWS = 8;
+    PLATFORM_MACOS = 9;
+    PLATFORM_LINUX = 10;
+    PLATFORM_CHROMEOS = 11;
   }
   optional Platform platform = 2;
 
   // Geo designation, 1 bit allocated.
-  // INVALID_GEO_DESIGNATION is an invalid value and should never used. The
+  // GEO_DESIGNATION_INVALID is an invalid value and should never used. The
   // client should check the value before sending the report.
   enum GeoDesignation {
-    INVALID_GEO_DESIGNATION = 0;
-    EEA = 1;  // Countries under the European Economic Area.
-    ROW = 2;  // Rest of the world.
+    GEO_DESIGNATION_INVALID = 0;
+    GEO_DESIGNATION_EEA = 1;  // Countries under the European Economic Area.
+    GEO_DESIGNATION_ROW = 2;  // Rest of the world.
   }
   optional GeoDesignation geo_designation = 3;
 
@@ -85,12 +85,12 @@ message CoarseSystemInfo {
   // without changing the enum value as that would increase entropy.
   // When analyzing data, always check for changes in what recent means for
   // each milestone.
-  // INVALID_CLIENT_AGE is an invalid value and should never used. The client
+  // CLIENT_AGE_INVALID is an invalid value and should never used. The client
   // should check the value before sending the report.
   enum ClientAge {
-    INVALID_CLIENT_AGE = 0;
-    RECENT = 1;
-    NOT_RECENT = 2;
+    CLIENT_AGE_INVALID = 0;
+    CLIENT_AGE_RECENT = 1;
+    CLIENT_AGE_NOT_RECENT = 2;
   }
   optional ClientAge client_age = 4;
 
@@ -117,9 +117,11 @@ message EncryptedPageLoadEvents {
       optional bytes encrypted_event = 1;
       optional fixed64 field_trials_hash = 2;
     }
+
     repeated EncryptedDeidentifiedWebAnalyticsEvent
         encrypted_deidentified_web_analytics_events = 1;
   }
+
   repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
 }
 
@@ -130,13 +132,14 @@ message DeidentifiedWebAnalyticsEvent {
   optional fixed64 event_hash = 1;
 
   // The type of content that the event is associated with.
-  // INVALID_CONTENT_TYPE is an invalid value and should never used. The
+  // CONTENT_TYPE_INVALID is an invalid value and should never used. The
   // client should check the value before sending the report.
   message ContentMetric {
     enum ContentType {
-      INVALID_CONTENT_TYPE = 0;
+      CONTENT_TYPE_INVALID = 0;
+
       // The content is a URL.
-      URL = 1;
+      CONTENT_TYPE_URL = 1;
     }
     optional ContentType content_type = 1;
 
@@ -149,6 +152,7 @@ message DeidentifiedWebAnalyticsEvent {
     // same as in UMA.
     repeated metrics.HistogramEventProto metrics = 3;
   }
+
   repeated ContentMetric content_metrics = 2;
 
   // Field trials that we want to associate with this event, name id and
