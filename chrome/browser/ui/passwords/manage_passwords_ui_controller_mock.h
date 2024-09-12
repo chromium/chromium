@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_
 
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -52,6 +53,13 @@ class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
+  MOCK_METHOD(
+      std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>,
+      CreateMovePasswordToAccountStoreHelper,
+      (const password_manager::PasswordForm&,
+       password_manager::metrics_util::MoveToAccountStoreTrigger,
+       base::OnceCallback<void()>),
+      (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_

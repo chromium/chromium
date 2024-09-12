@@ -10,13 +10,16 @@
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
-#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -28,6 +31,10 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,6 +48,22 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Initiates a `MovePasswordToAccountStoreHelper`, which takes care of moving
+// the `form` from profile to account store.
+void MovePasswordToAccount(
+    const password_manager::PasswordForm& form,
+    password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+    content::WebContents* web_contents) {
+  PasswordsModelDelegateFromWebContents(web_contents)
+      ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+}  // namespace
 
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
@@ -194,7 +217,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   // Close the bubble if the sign in promo should not be shown.
   if (!signin::ShouldShowSignInPromo(
           *controller_.GetProfile(),
-          signin::SignInAutofillBubblePromoType::Passwords)) {
+          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)) {
     return true;
   }
 
@@ -215,12 +238,32 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   accessibility_view->SetVisible(false);
   accessibility_alert_ = AddChildView(std::move(accessibility_view));
 
+  auto move_callback =
+      base::BindOnce(&MovePasswordToAccount, controller_.pending_password(),
+                     password_manager::metrics_util::MoveToAccountStoreTrigger::
+                         kUserOptedInAfterSavingLocally);
+
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
       controller_.GetWebContents(),
-      signin::SignInAutofillBubblePromoType::Passwords,
-      controller_.pending_password());
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
+      std::move(move_callback));
   AddChildView(std::move(sign_in_promo));
+
+  // Record that the sign in promo was shown.
+  Profile* profile = controller_.GetProfile();
+  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(profile));
+
+  if (account.gaia.empty()) {
+    int show_count = profile->GetPrefs()->GetInteger(
+        prefs::kPasswordSignInPromoShownCountPerProfile);
+    profile->GetPrefs()->SetInteger(
+        prefs::kPasswordSignInPromoShownCountPerProfile, show_count + 1);
+  } else {
+    SigninPrefs(*profile->GetPrefs())
+        .IncrementPasswordSigninPromoImpressionCount(account.gaia);
+  }
 
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();

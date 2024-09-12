@@ -26,11 +26,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -868,9 +864,10 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Do not trigger the IPH if the sign in promo will be shown.
-  if (browser && !signin::ShouldShowSignInPromo(
-                     *browser->profile(),
-                     signin::SignInAutofillBubblePromoType::Passwords)) {
+  if (browser &&
+      !signin::ShouldShowSignInPromo(
+          *browser->profile(),
+          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)) {
     if (browser->window()->MaybeShowFeaturePromo(
             feature_engagement::
                 kIPHPasswordsManagementBubbleAfterSaveFeature)) {
@@ -991,51 +988,6 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-void ManagePasswordsUIController::SignIn(
-    const AccountInfo& account,
-    const password_manager::PasswordForm& password_to_move) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  signin_ui_util::SignInFromSingleAccountPromo(
-      profile, account,
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
-
-  // If the sign in was already successful, move the password directly.
-  // Otherwise, wait for a sign in event and move the password upon success.
-  signin_util::SignedInState signed_in_state = signin_util::GetSignedInState(
-      IdentityManagerFactory::GetForProfile(profile));
-  if (signed_in_state == signin_util::SignedInState::kSignedIn) {
-    MoveJustSavedPasswordAfterAccountStoreOptIn(
-        password_to_move,
-        password_manager::PasswordManagerClient::ReauthSucceeded(true));
-  } else {
-    if (signed_in_state != signin_util::SignedInState::kSignedOut &&
-        signed_in_state != signin_util::SignedInState::kSignInPending &&
-        signed_in_state != signin_util::SignedInState::kWebOnlySignedIn) {
-      return;
-    }
-    content::WebContents* sign_in_tab_contents =
-        signin_ui_util::GetSignInTabWithAccessPoint(
-            *chrome::FindBrowserWithTab(web_contents()),
-            signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
-
-    // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
-    // sign in event in that case.
-    if (!sign_in_tab_contents) {
-      return;
-    }
-
-    autofill::AutofillSigninPromoTabHelper::GetForWebContents(
-        *sign_in_tab_contents)
-        ->InitializeDataMoveAfterSignIn(
-            password_to_move,
-            signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
-  }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-}
 
 void ManagePasswordsUIController::OnDialogHidden() {
   dialog_controller_.reset();

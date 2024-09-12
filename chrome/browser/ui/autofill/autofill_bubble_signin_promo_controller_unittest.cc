@@ -3,84 +3,63 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
 
-#include <memory>
+#include "base/test/mock_callback.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-using ::testing::Return;
-
-MATCHER_P(AccountEq, expected, "") {
-  return expected.account_id == arg.account_id && expected.email == arg.email &&
-         expected.gaia == arg.gaia;
-}
-
-class AutofillBubbleSignInPromoControllerTest : public ::testing::Test {
+class AutofillBubbleSignInPromoControllerTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  AutofillBubbleSignInPromoControllerTest() {
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    mock_delegate_ =
-        std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
-  }
-  ~AutofillBubbleSignInPromoControllerTest() override = default;
+  void SetUp() override;
 
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> GetCurrentForms()
-      const;
-
-  PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
-  autofill::AutofillBubbleSignInPromoController* controller() {
-    return controller_.get();
+  autofill::AutofillBubbleSignInPromoController* autofill_bubble_controller() {
+    return autofill_bubble_controller_.get();
   }
 
-  const password_manager::PasswordForm& form() const { return password_form_; }
-
-  void Init();
-  void DestroyController();
+  base::MockCallback<base::OnceCallback<void(content::WebContents*)>>
+      mock_callback_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler rvh_enabler_;
-  TestingProfile profile_;
-  password_manager::PasswordForm password_form_;
-  std::unique_ptr<content::WebContents> test_web_contents_;
-  std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
-  std::unique_ptr<autofill::AutofillBubbleSignInPromoController> controller_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+  std::unique_ptr<autofill::AutofillBubbleSignInPromoController>
+      autofill_bubble_controller_;
 };
 
-void AutofillBubbleSignInPromoControllerTest::Init() {
-  EXPECT_CALL(*delegate(), GetWebContents())
-      .WillRepeatedly(Return(test_web_contents_.get()));
+void AutofillBubbleSignInPromoControllerTest::SetUp() {
+  ChromeRenderViewHostTestHarness::SetUp();
 
-  password_form_.signon_realm = "http://www.google.com/";
-  password_form_.url = GURL(password_form_.signon_realm);
-  password_form_.username_value = u"username";
-  password_form_.password_value = u"password";
-
-  controller_ = std::make_unique<autofill::AutofillBubbleSignInPromoController>(
-      mock_delegate_->AsWeakPtr(), password_form_);
+  autofill_bubble_controller_ =
+      std::make_unique<autofill::AutofillBubbleSignInPromoController>(
+          *web_contents(),
+          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
+          mock_callback_.Get());
 }
 
-TEST_F(AutofillBubbleSignInPromoControllerTest, SignInIsCalled) {
-  Init();
-  AccountInfo account;
-  account.gaia = "foo_gaia_id";
-  account.email = "foo@bar.com";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  EXPECT_CALL(*delegate(), SignIn(AccountEq(account), form()));
-  controller()->OnSignInToChromeClicked(account);
-}
+TEST_F(AutofillBubbleSignInPromoControllerTest,
+       RunsCallbackUponSignInWithExistingAccount) {
+  // Simulate a sign in to the web.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
 
-}  // namespace
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build("test@gmail.com"));
+
+  // Check that the move callback will be called.
+  EXPECT_CALL(mock_callback_, Run(web_contents()));
+
+  // This should sign in the user to Chrome directly, as there is already an
+  // account on the web.
+  autofill_bubble_controller()->OnSignInToChromeClicked(account_info);
+
+  // Check that the user was signed in to Chrome.
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}

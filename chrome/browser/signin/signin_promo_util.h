@@ -7,10 +7,11 @@
 
 class Profile;
 
-namespace signin {
+namespace signin_metrics {
+enum class AccessPoint;
+}
 
-// Enumeration of sign in promo types for the autofill bubble.
-enum class SignInAutofillBubblePromoType { Passwords, Addresses, Payments };
+namespace signin {
 
 // Whether we should show the sync promo.
 bool ShouldShowSyncPromo(Profile& profile);
@@ -18,7 +19,7 @@ bool ShouldShowSyncPromo(Profile& profile);
 // Whether we should show the sign in promo after data of the type
 // |signin_promo_type| was saved.
 bool ShouldShowSignInPromo(Profile& profile,
-                           SignInAutofillBubblePromoType signin_promo_type);
+                           signin_metrics::AccessPoint access_point);
 
 }  // namespace signin
 

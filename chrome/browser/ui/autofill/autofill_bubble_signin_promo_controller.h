@@ -5,11 +5,21 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_SIGNIN_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_SIGNIN_PROMO_CONTROLLER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/password_form.h"
 
 struct AccountInfo;
-class PasswordsModelDelegate;
+namespace signin {
+enum class SignInAutofillBubblePromoType;
+}  // namespace signin
+
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace autofill {
 
@@ -18,8 +28,9 @@ namespace autofill {
 class AutofillBubbleSignInPromoController {
  public:
   explicit AutofillBubbleSignInPromoController(
-      base::WeakPtr<PasswordsModelDelegate> delegate,
-      const password_manager::PasswordForm& saved_password);
+      content::WebContents& web_contents,
+      signin_metrics::AccessPoint access_point,
+      base::OnceCallback<void(content::WebContents*)> move_callback);
   ~AutofillBubbleSignInPromoController();
 
   // Called by the view when the "Sign in" button in the promo bubble is
@@ -27,13 +38,11 @@ class AutofillBubbleSignInPromoController {
   void OnSignInToChromeClicked(const AccountInfo& account);
 
  private:
-  // A bridge to ManagePasswordsUIController instance.
-  // TODO(crbug.com/319411728): Should be something across all autofill types
-  // instead.
-  base::WeakPtr<PasswordsModelDelegate> delegate_;
-
-  // Password that was just saved by the save update bubble.
-  password_manager::PasswordForm saved_password_;
+  // Used to move the local data item to the account storage once the sign in
+  // has been completed.
+  base::OnceCallback<void(content::WebContents*)> move_callback_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  signin_metrics::AccessPoint access_point_;
 };
 
 }  // namespace autofill

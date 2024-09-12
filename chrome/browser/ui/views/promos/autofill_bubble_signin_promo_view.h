@@ -14,6 +14,9 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
+namespace signin_metrics {
+enum class AccessPoint;
+}
 namespace content {
 class WebContents;
 }
@@ -31,8 +34,8 @@ class AutofillBubbleSignInPromoView : public views::View {
  public:
   explicit AutofillBubbleSignInPromoView(
       content::WebContents* web_contents,
-      signin::SignInAutofillBubblePromoType promo_type,
-      const password_manager::PasswordForm& saved_password);
+      signin_metrics::AccessPoint access_point,
+      base::OnceCallback<void(content::WebContents*)> move_callback);
   AutofillBubbleSignInPromoView(const AutofillBubbleSignInPromoView&) = delete;
   AutofillBubbleSignInPromoView& operator=(
       const AutofillBubbleSignInPromoView&) = delete;
@@ -47,7 +50,7 @@ class AutofillBubbleSignInPromoView : public views::View {
   class DiceSigninPromoDelegate;
 
   autofill::AutofillBubbleSignInPromoController controller_;
-  const signin::SignInAutofillBubblePromoType promo_type_;
+  const signin_metrics::AccessPoint access_point_;
   std::unique_ptr<DiceSigninPromoDelegate> dice_sign_in_promo_delegate_;
 };
 

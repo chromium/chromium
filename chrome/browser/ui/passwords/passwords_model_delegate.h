@@ -26,10 +26,9 @@ class PasswordFormMetricsRecorder;
 struct PasswordForm;
 namespace metrics_util {
 enum class CredentialSourceType;
+enum class MoveToAccountStoreTrigger;
 }  // namespace metrics_util
 }  // namespace password_manager
-
-struct AccountInfo;
 
 // An interface for ManagePasswordsBubbleModel implemented by
 // ManagePasswordsUIController. Allows to retrieve the current state of the tab
@@ -140,6 +139,11 @@ class PasswordsModelDelegate {
   // used or selected credential to their account store.
   virtual void MovePasswordToAccountStore() = 0;
 
+  // Moves pending password to the account storage.
+  virtual void MovePendingPasswordToAccountStoreUsingHelper(
+      const password_manager::PasswordForm&,
+      password_manager::metrics_util::MoveToAccountStoreTrigger) = 0;
+
   // Called from the dialog controller when a user rejects moving the recently
   // used credential to their account store.
   virtual void BlockMovingPasswordToAccountStore() = 0;
@@ -171,11 +175,6 @@ class PasswordsModelDelegate {
   // Open a new tab, pointing to the password check in the settings page.
   virtual void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) = 0;
-  // Called by the view when the "Sign in to Chrome" button or the "Sync to"
-  // button in the promo bubble are clicked.
-  virtual void SignIn(
-      const AccountInfo& account,
-      const password_manager::PasswordForm& password_to_move) = 0;
 
   // Called from the dialog controller when the dialog is hidden.
   virtual void OnDialogHidden() = 0;

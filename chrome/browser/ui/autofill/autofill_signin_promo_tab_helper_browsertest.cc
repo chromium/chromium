@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -90,8 +91,7 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
   content::WebContents* sign_in_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
-          *browser(),
-          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+          browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 
   // The identity manager is observed by AutofillSigninPromoTabHelper, which
   // will move the password once the primary account has changed.
@@ -103,7 +103,18 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
   autofill::AutofillSigninPromoTabHelper* user_data =
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*sign_in_tab);
   user_data->InitializeDataMoveAfterSignIn(
-      form, signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+      /*move_callback=*/base::BindOnce(
+          [](const password_manager::PasswordForm& form,
+             password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+             content::WebContents* web_contents) {
+            PasswordsModelDelegateFromWebContents(web_contents)
+                ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
+          },
+          form,
+          password_manager::metrics_util::MoveToAccountStoreTrigger::
+              kUserOptedInAfterSavingLocally),
+      /*access_point=*/signin_metrics::AccessPoint::
+          ACCESS_POINT_PASSWORD_BUBBLE);
 
   auto account_store_waiter =
       password_manager::PasswordStoreWaiter(account_password_store_.get());

@@ -106,9 +106,9 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (password_manager::PasswordCheckReferrer),
               (override));
   MOCK_METHOD(void,
-              SignIn,
-              (const AccountInfo& account,
-               const password_manager::PasswordForm& password_to_move),
+              MovePendingPasswordToAccountStoreUsingHelper,
+              (const password_manager::PasswordForm&,
+               password_manager::metrics_util::MoveToAccountStoreTrigger),
               (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(void,
