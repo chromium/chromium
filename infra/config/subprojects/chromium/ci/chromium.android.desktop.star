@@ -251,13 +251,15 @@ ci.thin_tester(
         build_gs_bucket = "chromium-android-desktop-archive",
     ),
     targets = targets.bundle(
-        targets = "android_desktop_tests",
-        mixins = [
-            "14-desktop-x64-emulator",
-            "emulator-8-cores",
-            "has_native_resultdb_integration",
-            "linux-jammy",
-            "x86-64",
+        targets = [
+            "android_desktop_junit_tests",
+            targets.bundle(
+                targets = "android_desktop_tests",
+                mixins = [
+                    "14-desktop-x64-emulator",
+                    "emulator-8-cores",
+                ],
+            ),
         ],
     ),
     targets_settings = targets.settings(

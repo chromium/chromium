@@ -33,15 +33,52 @@ targets.bundle(
     ],
 )
 
+# Android desktop tests that run on a Linux host.
+targets.bundle(
+    name = "android_desktop_junit_tests",
+    targets = [
+        "chrome_junit_tests",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "junit-swarming-emulator",
+        "linux-jammy",
+        "x86-64",
+    ],
+)
+
+# Android desktop tests that run on AVDs or devices. Specific emulator or
+# device mixins should be added where this is used.
 targets.bundle(
     name = "android_desktop_tests",
     targets = [
-        "chrome_junit_tests",
+        "android_browsertests",
         "chrome_public_test_apk",
         "chrome_public_unit_test_apk",
-        "android_browsertests",
         "extensions_unittests",
     ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "linux-jammy",
+        "x86-64",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+        "chrome_public_unit_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
