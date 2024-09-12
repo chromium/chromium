@@ -10,6 +10,8 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
+
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
@@ -118,4 +120,8 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobject context,
     jobject convertedObjects);
 
+
+
+
 #endif  // TEMP_DIR_HEADER_
+

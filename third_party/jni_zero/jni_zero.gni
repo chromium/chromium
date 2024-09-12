@@ -85,7 +85,6 @@ template("_invoke_jni_zero") {
                             "codegen/placeholder_gen_jni_java.py",
                             "codegen/placeholder_java_type.py",
                             "codegen/proxy_impl_java.py",
-                            "codegen/register_natives.py",
                             "common.py",
                             "java_lang_classes.py",
                             "java_types.py",

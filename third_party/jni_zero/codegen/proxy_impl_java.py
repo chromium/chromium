@@ -84,7 +84,7 @@ private static {ctx.interface_name} testInstance;
 
 public static final JniStaticTestMocker<{ctx.interface_name}> TEST_HOOKS =
     new JniStaticTestMocker<{ctx.interface_name}>()""")
-  with sb.block(after=';'):
+  with sb.block(end='};\n'):
     sb(f"""\
 @Override
 public void setInstanceForTesting({ctx.interface_name} instance)""")

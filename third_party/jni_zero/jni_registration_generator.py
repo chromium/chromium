@@ -19,7 +19,6 @@ import zipfile
 
 from codegen import header_common
 from codegen import natives_header
-from codegen import register_natives
 import common
 import java_types
 import jni_generator
@@ -27,11 +26,12 @@ import parse
 import proxy
 
 
-_THIS_DIR = os.path.dirname(__file__)
-
 _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN = "<INSERT HERE>"
 
+# All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
+    'CLASS_ACCESSORS',
+    'FORWARD_DECLARATIONS',
     'JNI_NATIVE_METHOD',
     'JNI_NATIVE_METHOD_ARRAY',
     'PROXY_NATIVE_SIGNATURES',
@@ -111,24 +111,24 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
                                   options)
   _FilterJniObjs(jni_objs_by_path, options)
 
-  jni_objs = list(
-      _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
+  dicts = []
+  for jni_obj in _Flatten(jni_objs_by_path,
+                          native_sources_set & java_sources_set):
+    dicts.append(DictionaryGenerator(jni_obj, options).Generate())
 
-  priority_set = set(priority_java_sources) if priority_java_sources else set()
-  # Sort for determinism and to put priority_java_sources first.
-  jni_objs.sort(key=lambda o: (o.filename not in priority_set, o.java_class))
+  priority_java_sources = set(
+      priority_java_sources) if priority_java_sources else {}
+  # Sort to make output deterministic, and to put priority_java_sources at the
+  # top.
+  dicts.sort(key=lambda d: (d['FILE_PATH'] not in priority_java_sources, d[
+      'FULL_CLASS_NAME']))
 
   whole_hash = None
   priority_hash = None
   if options.enable_jni_multiplexing:
-    whole_hash, priority_hash = _GenerateHashes(jni_objs, len(priority_set))
-
+    whole_hash, priority_hash = _GenerateHashes(dicts, priority_java_sources)
   stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
                                   java_sources_set)
-  dicts = []
-  for jni_obj in jni_objs:
-    dicts.append(DictionaryGenerator(jni_obj, options).Generate())
-
   combined_dict = {}
   for key in MERGEABLE_KEYS:
     combined_dict[key] = ''.join(d.get(key, '') for d in dicts)
@@ -172,8 +172,9 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
         signature_to_cpp_calls, short_gen_jni_class)
 
   if options.header_path:
-    header_content = _CreateHeader(jni_objs, gen_jni_class, options,
-                                   combined_dict, whole_hash, priority_hash)
+    combined_dict['NAMESPACE'] = options.namespace or ''
+    header_content = CreateHeaderFromDict(gen_jni_class, options, combined_dict,
+                                          whole_hash, priority_hash)
     with common.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
@@ -249,24 +250,22 @@ Unneeded Java files:
   return [_GenerateStubs(o.proxy_natives) for o in java_only_jni_objs]
 
 
-def _GenerateHashes(jni_objs, num_priority_objs):
+def _GenerateHashes(dicts, priority_java_sources):
   # We assume that if we have identical files and they are in the same order, we
   # will have switch number alignment. We do this, instead of directly
   # inspecting the switch numbers, because differentiating the priority sources
   # is a big pain.
   whole_hash = hashlib.md5()
-  if num_priority_objs:
+  if priority_java_sources:
     priority_hash = hashlib.md5()
   else:
     priority_hash = whole_hash
-
-  for i, jni_obj in enumerate(jni_objs):
-    path = os.path.relpath(jni_obj.filename, start=_THIS_DIR)
+  for d in dicts:
+    path = os.path.relpath(d['FILE_PATH'], start=os.path.dirname(__file__))
     encoded = path.encode('utf-8')
     whole_hash.update(encoded)
-    if i < num_priority_objs:
+    if path in priority_java_sources:
       priority_hash.update(encoded)
-
   uint64_t_max = (1 << 64) - 1
   int64_t_min = -(1 << 63)
   whole_hash_uint = int(whole_hash.hexdigest(), 16) % uint64_t_max
@@ -375,6 +374,92 @@ ${CASES}
   return ''.join(s for s in forwarding_function_definitons)
 
 
+def _SetProxyRegistrationFields(options, gen_jni_class, registration_dict):
+  registration_template = string.Template("""\
+
+static const JNINativeMethod kMethods_${ESCAPED_PROXY_CLASS}[] = {
+${KMETHODS}
+};
+
+namespace {
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTRATION_NAME}(JNIEnv* env) {
+  const int number_of_methods = std::size(kMethods_${ESCAPED_PROXY_CLASS});
+
+  jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
+      jni_zero::GetClass(env, "${PROXY_CLASS}");
+  if (env->RegisterNatives(
+      native_clazz.obj(),
+      kMethods_${ESCAPED_PROXY_CLASS},
+      number_of_methods) < 0) {
+
+    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+""")
+
+  registration_call = string.Template("""\
+
+  // Register natives in a proxy.
+  if (!${REGISTRATION_NAME}(env)) {
+    return false;
+  }
+""")
+
+  manual_registration = string.Template("""\
+// Method declarations.
+
+${JNI_NATIVE_METHOD_ARRAY}\
+${PROXY_NATIVE_METHOD_ARRAY}\
+
+${JNI_NATIVE_METHOD}
+// Registration function.
+
+namespace ${NAMESPACE} {
+
+bool RegisterNatives(JNIEnv* env) {\
+${REGISTER_PROXY_NATIVES}
+${REGISTER_NATIVES}
+  return true;
+}
+
+}  // namespace ${NAMESPACE}
+""")
+
+  short_name = options.use_proxy_hash or options.enable_jni_multiplexing
+  sub_dict = {
+      'ESCAPED_PROXY_CLASS':
+      common.escape_class_name(gen_jni_class.full_name_with_slashes),
+      'PROXY_CLASS':
+      gen_jni_class.full_name_with_slashes,
+      'KMETHODS':
+      registration_dict['PROXY_NATIVE_METHOD_ARRAY'],
+      'REGISTRATION_NAME':
+      _GetRegistrationFunctionName(gen_jni_class.full_name_with_slashes),
+  }
+
+  if registration_dict['PROXY_NATIVE_METHOD_ARRAY']:
+    proxy_native_array = registration_template.substitute(sub_dict)
+    proxy_natives_registration = registration_call.substitute(sub_dict)
+  else:
+    proxy_native_array = ''
+    proxy_natives_registration = ''
+
+  registration_dict['PROXY_NATIVE_METHOD_ARRAY'] = proxy_native_array
+  registration_dict['REGISTER_PROXY_NATIVES'] = proxy_natives_registration
+
+  if options.manual_jni_registration:
+    registration_dict['MANUAL_REGISTRATION'] = manual_registration.substitute(
+        registration_dict)
+  else:
+    registration_dict['MANUAL_REGISTRATION'] = ''
+
+
 def CreateProxyJavaFromDict(options,
                             gen_jni_class,
                             registration_dict,
@@ -431,8 +516,8 @@ ${METHODS}
   })
 
 
-def _CreateHeader(jni_objs, gen_jni_class, options, registration_dict,
-                  whole_hash, priority_hash):
+def CreateHeaderFromDict(gen_jni_class, options, registration_dict, whole_hash,
+                         priority_hash):
   """Returns the content of the header file."""
   header_guard = os.path.splitext(options.header_path)[0].upper() + '_'
   header_guard = re.sub(r'[/.-]', '_', header_guard)
@@ -443,62 +528,34 @@ def _CreateHeader(jni_objs, gen_jni_class, options, registration_dict,
       system_includes=['iterator'],  # For std::size().
       user_includes=['third_party/jni_zero/jni_zero_internal.h'],
       header_guard=header_guard)
+  registration_dict['PREAMBLE'] = preamble
+  registration_dict['EPILOGUE'] = epilogue
+  template = string.Template("""\
+${PREAMBLE}
+${POSSIBLE_MULTIPLEXING_HASHES}
+${CLASS_ACCESSORS}
+// Forward declarations (methods).
 
-  module_name = options.module_name or ''
-
-  sb = common.StringBuilder()
-  sb.line(preamble)
-  if options.enable_jni_multiplexing:
-    sb(f"""\
+${FORWARD_DECLARATIONS}
+${FORWARDING_CALLS}
+${MANUAL_REGISTRATION}
+${EPILOGUE}
+""")
+  _SetProxyRegistrationFields(options, gen_jni_class, registration_dict)
+  if not options.enable_jni_multiplexing:
+    registration_dict['FORWARDING_CALLS'] = ''
+    registration_dict['POSSIBLE_MULTIPLEXING_HASHES'] = ''
+  else:
+    module_name = ''
+    if options.module_name:
+      module_name = options.module_name
+    registration_dict['POSSIBLE_MULTIPLEXING_HASHES'] = f'''\
 extern const int64_t kJniZeroHash{module_name}Whole = {whole_hash}LL;
-extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
-""")
+extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;'''
+  if len(registration_dict['FORWARD_DECLARATIONS']) == 0:
+    return ''
 
-  java_classes_with_natives = set()
-  for jni_obj in jni_objs:
-    java_classes_with_natives.update(n.java_class
-                                     for n in jni_obj.non_proxy_natives)
-  java_classes_with_natives = sorted(java_classes_with_natives)
-
-  sb(header_common.class_accessors(java_classes_with_natives, module_name))
-
-  sb('// Forward declarations (methods).\n\n')
-  for jni_obj in jni_objs:
-    for native in jni_obj.natives:
-      with sb.statement():
-        natives_header.proxy_declaration(sb, jni_obj, native)
-
-  if options.enable_jni_multiplexing:
-    sb.line(registration_dict['FORWARDING_CALLS'])
-
-  if options.manual_jni_registration:
-    has_gen_jni = bool(registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
-    registration_function_name = _GetRegistrationFunctionName(
-        gen_jni_class.full_name_with_slashes)
-
-    sb('// Method declarations.\n\n')
-    sb(registration_dict['JNI_NATIVE_METHOD_ARRAY'])
-    if has_gen_jni:
-      register_natives.gen_jni_register_natives_helper(
-          sb, registration_function_name, gen_jni_class,
-          registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
-    sb('\n')
-    sb(registration_dict['JNI_NATIVE_METHOD'])
-    sb('\n')
-    sb('// Registration function.\n\n')
-    with sb.namespace(options.namespace or ''):
-      sb('bool RegisterNatives(JNIEnv* env)')
-      with sb.block():
-        if has_gen_jni:
-          sb(f"""// Register natives in a proxy.
-if (!{registration_function_name}(env)) {{
-  return false;
-}}
-""")
-        sb.line(registration_dict['REGISTER_NATIVES'])
-        sb('return true;\n')
-  sb(epilogue)
-  return sb.to_string()
+  return template.substitute(registration_dict)
 
 
 def _GetMultiplexingParamsList(param_types, java_types=False):
@@ -536,11 +593,15 @@ class DictionaryGenerator(object):
   """Generates an inline header file for JNI registration."""
   def __init__(self, jni_obj, options):
     self.options = options
+    self.file_path = jni_obj.filename
     self.content_namespace = jni_obj.jni_namespace
+    self.natives = jni_obj.natives
     self.proxy_natives = jni_obj.proxy_natives
     self.non_proxy_natives = jni_obj.non_proxy_natives
     self.fully_qualified_class = jni_obj.java_class.full_name_with_slashes
-    self.registration_dict = {}
+    self.type_resolver = jni_obj.type_resolver
+    self.class_name = jni_obj.java_class.name
+    self.registration_dict = None
     self.jni_obj = jni_obj
     self.gen_jni_class = proxy.get_gen_jni_class(
         short=options.use_proxy_hash or options.enable_jni_multiplexing,
@@ -553,6 +614,14 @@ class DictionaryGenerator(object):
     java_classes_with_natives = sorted(
         set(n.java_class for n in self.jni_obj.non_proxy_natives))
 
+    self.registration_dict = {
+        'FULL_CLASS_NAME': self.fully_qualified_class,
+        'FILE_PATH': self.file_path,
+    }
+    self.registration_dict['CLASS_ACCESSORS'] = (header_common.class_accessors(
+        java_classes_with_natives, self.jni_obj.module_name))
+
+    self._AddForwardDeclaration()
     self._AddJNINativeMethodsArrays(java_classes_with_natives)
     self._AddProxyNativeMethodKStrings()
     self._AddRegisterNativesCalls()
@@ -575,6 +644,14 @@ class DictionaryGenerator(object):
   def _SetDictValue(self, key, value):
     self.registration_dict[key] = jni_generator.WrapOutput(value)
 
+  def _AddForwardDeclaration(self):
+    """Add the content of the forward declaration to the dictionary."""
+    sb = common.StringBuilder()
+    for native in self.natives:
+      with sb.statement():
+        natives_header.proxy_declaration(sb, self.jni_obj, native)
+    self._SetDictValue('FORWARD_DECLARATIONS', sb.to_string())
+
   def _AddRegisterNativesCalls(self):
     """Add the body of the RegisterNativesImpl method to the dictionary."""
 
@@ -582,11 +659,16 @@ class DictionaryGenerator(object):
     if len(self.non_proxy_natives) == 0:
       return ''
 
-    register_name = _GetRegistrationFunctionName(self.fully_qualified_class)
-    self._SetDictValue('REGISTER_NATIVES', f"""\
-if (!{register_name}(env))
-  return false;
+    template = string.Template("""\
+  if (!${REGISTER_NAME}(env))
+    return false;
 """)
+    value = {
+        'REGISTER_NAME':
+        _GetRegistrationFunctionName(self.fully_qualified_class)
+    }
+    register_body = template.substitute(value)
+    self._SetDictValue('REGISTER_NATIVES', register_body)
 
   def _AddJNINativeMethodsArrays(self, java_classes_with_natives):
     """Returns the implementation of the array of native methods."""
@@ -612,7 +694,7 @@ ${KMETHODS}
           (open_namespace, body, close_namespace)))
 
   def _GetKMethodsString(self, clazz):
-    if clazz != self.jni_obj.java_class.name:
+    if clazz != self.class_name:
       return ''
     ret = [self._GetKMethodArrayEntry(n) for n in self.non_proxy_natives]
     return '\n'.join(ret)
@@ -685,17 +767,21 @@ ${KMETHODS}
   def _AddRegisterNativesFunctions(self, java_classes_with_natives):
     """Returns the code for RegisterNatives."""
     if not java_classes_with_natives:
-      return
+      return ''
     natives = self._GetRegisterNativesImplString(java_classes_with_natives)
-    register_name = _GetRegistrationFunctionName(self.fully_qualified_class)
-    self._SetDictValue(
-        'JNI_NATIVE_METHOD', f"""\
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool {register_name}(JNIEnv* env) {{
-{natives}\
+    template = string.Template("""\
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTER_NAME}(JNIEnv* env) {
+${NATIVES}\
   return true;
-}}
+}
 
 """)
+    values = {
+        'REGISTER_NAME':
+        _GetRegistrationFunctionName(self.fully_qualified_class),
+        'NATIVES': natives
+    }
+    self._SetDictValue('JNI_NATIVE_METHOD', template.substitute(values))
 
   def _GetRegisterNativesImplString(self, java_classes_with_natives):
     """Returns the shared implementation for RegisterNatives."""

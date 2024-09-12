@@ -62,33 +62,17 @@ class StringBuilder:
           self(',\n'.join(values))
     self(')')
 
-  def line(self, value=None):
-    self(value)
-    self('\n')
-
   @contextlib.contextmanager
   def statement(self):
     yield
     self(';\n')
 
   @contextlib.contextmanager
-  def namespace(self, namespace_name):
-    value = f' {namespace_name}' if namespace_name else ''
-    self(f'namespace{value} {{\n\n')
-    yield
-    self(f'\n}}  // namespace{value}\n')
-
-  @contextlib.contextmanager
-  def block(self, after=None):
-    self(' {\n')
+  def block(self, start=' {\n', end='}\n'):
+    self(start)
     with self.indent(2):
       yield
-    if after:
-      self('}')
-      self(after)
-      self('\n')
-    else:
-      self('}\n')
+    self(end)
 
   @contextlib.contextmanager
   def indent(self, amount):
