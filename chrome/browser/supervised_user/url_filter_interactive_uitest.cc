@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       ParentAprovesPermissionRequestForBlockedSite) {
+                       ParentApprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
