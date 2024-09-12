@@ -76,9 +76,13 @@ static ColorParseResult ParseColor(Color& parsed_color,
               StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
     static const TextLinkColors kDefaultTextLinkColors{};
     // TODO(40946458): Don't use default length resolver here!
-    const StyleColor style_color = ResolveColorValue(
-        CSSToLengthConversionData(), *color_mix_value, kDefaultTextLinkColors,
-        color_scheme, color_provider, is_in_web_app_scope);
+    const ResolveColorValueContext context{
+        .length_resolver = CSSToLengthConversionData(),
+        .text_link_colors = kDefaultTextLinkColors,
+        .used_color_scheme = color_scheme,
+        .color_provider = color_provider,
+        .is_in_web_app_scope = is_in_web_app_scope};
+    const StyleColor style_color = ResolveColorValue(*color_mix_value, context);
     parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
     return ColorParseResult::kColorMix;
   }

@@ -370,10 +370,13 @@ static Color ResolveStopColor(const CSSLengthResolver& length_resolver,
                               const Document& document,
                               const ComputedStyle& style) {
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  const StyleColor style_stop_color = ResolveColorValue(
-      length_resolver, stop_color, document.GetTextLinkColors(), color_scheme,
-      document.GetColorProviderForPainting(color_scheme),
-      document.IsInWebAppScope());
+  const ResolveColorValueContext context{
+      .length_resolver = length_resolver,
+      .text_link_colors = document.GetTextLinkColors(),
+      .used_color_scheme = color_scheme,
+      .color_provider = document.GetColorProviderForPainting(color_scheme),
+      .is_in_web_app_scope = document.IsInWebAppScope()};
+  const StyleColor style_stop_color = ResolveColorValue(stop_color, context);
   return style_stop_color.Resolve(
       style.VisitedDependentColor(GetCSSPropertyColor()), color_scheme);
 }
@@ -422,10 +425,11 @@ static const CSSValue* GetComputedStopColor(const CSSValue& color,
   // is within webapp scope.
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   // TODO(40946458): Don't use default length resolver here!
-  const StyleColor style_stop_color =
-      ResolveColorValue(CSSToLengthConversionData(), color, TextLinkColors(),
-                        color_scheme, nullptr,
-                        /*is_in_web_app_scope=*/false);
+  const ResolveColorValueContext context{
+      .length_resolver = CSSToLengthConversionData(),
+      .text_link_colors = TextLinkColors(),
+      .used_color_scheme = color_scheme};
+  const StyleColor style_stop_color = ResolveColorValue(color, context);
   const Color current_color =
       style.VisitedDependentColor(GetCSSPropertyColor());
   return ComputedStyleUtils::ValueForColor(
