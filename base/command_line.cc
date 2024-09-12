@@ -526,8 +526,9 @@ void CommandLine::PrependWrapper(StringViewType wrapper) {
   CommandLineTokenizer tokenizer(wrapper_string, FILE_PATH_LITERAL(" "));
   tokenizer.set_quote_chars(FILE_PATH_LITERAL("'\""));
   std::vector<StringType> wrapper_argv;
-  while (tokenizer.GetNext())
-    wrapper_argv.emplace_back(tokenizer.token());
+  while (std::optional<StringViewType> token = tokenizer.GetNextTokenView()) {
+    wrapper_argv.emplace_back(token.value());
+  }
 
   // Prepend the wrapper and update the switches/arguments |begin_args_|.
   argv_.insert(argv_.begin(), wrapper_argv.begin(), wrapper_argv.end());

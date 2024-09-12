@@ -11,6 +11,7 @@
 #define BASE_STRINGS_STRING_TOKENIZER_H_
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -30,12 +31,12 @@ namespace base {
 // EXAMPLE 1:
 //
 //   char input[] = "this is a test";
-//   CStringTokenizer t(input, input + strlen(input), " ");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   CStringTokenizer t(input, " ");
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -48,11 +49,11 @@ namespace base {
 //   std::string input = "no-cache=\"foo, bar\", private";
 //   StringTokenizer t(input, ", ");
 //   t.set_quote_chars("\"");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   no-cache="foo, bar"
 //   private
@@ -64,9 +65,9 @@ namespace base {
 //   std::string input = "text/html; charset=UTF-8; foo=bar";
 //   StringTokenizer t(input, "; =");
 //   t.set_options(StringTokenizer::RETURN_DELIMS);
-//   while (t.GetNext()) {
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
 //     if (t.token_is_delim()) {
-//       switch (*t.token_begin()) {
+//       switch (token.value().front()) {
 //         case ';':
 //           next_is_option = true;
 //           break;
@@ -85,7 +86,7 @@ namespace base {
 //       } else {
 //         label = "mime-type";
 //       }
-//       printf("%s: %s\n", label, t.token().c_str());
+//       LOG(ERROR) << label << " " << token.value();
 //     }
 //   }
 //
@@ -95,11 +96,11 @@ namespace base {
 //   std::string input = "this, \t is, \t a, \t test";
 //   StringTokenizer t(input, ",",
 //       StringTokenizer::WhitespacePolicy::kSkipOver);
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -111,7 +112,7 @@ namespace base {
 // but it strictly only needs to care about the `CharType`. However many users
 // expect to work with string and string::iterator for historical reasons. When
 // they are all working with `string_view`, then this class can be made to
-// unconditoinally use `std::basic_string_view<CharType>` and vend iterators of
+// unconditionally use `std::basic_string_view<CharType>` and vend iterators of
 // that type, and we can drop the `str` and `const_iterator` aliases.
 template <class str, class const_iterator>
 class StringTokenizerT {
@@ -176,6 +177,16 @@ class StringTokenizerT {
   // finds another instance of the quote char.  If a backslash is encountered
   // within a quoted string, then the next character is skipped.
   void set_quote_chars(const owning_str& quotes) { quotes_ = quotes; }
+
+  // Advance the tokenizer to the next delimiter and return the token value. If
+  // the tokenizer is complete, this returns std::nullopt.
+  std::optional<std::basic_string_view<char_type>> GetNextTokenView() {
+    if (!GetNext()) {
+      return std::nullopt;
+    }
+
+    return token_piece();
+  }
 
   // Call this method to advance the tokenizer to the next delimiter.  This
   // returns false if the tokenizer is complete.  This method must be called
