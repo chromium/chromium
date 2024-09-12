@@ -461,6 +461,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kColorScheme, WebDXFeature::kColorScheme},
           {CSSSampleId::kContainIntrinsicSize,
            WebDXFeature::kContainIntrinsicSize},
+          {CSSSampleId::kFieldSizing, WebDXFeature::kFieldSizing},
           {CSSSampleId::kFontOpticalSizing, WebDXFeature::kFontOpticalSizing},
           {CSSSampleId::kFontPalette, WebDXFeature::kFontPalette},
           {CSSSampleId::kFontSynthesisSmallCaps,
