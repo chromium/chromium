@@ -1051,6 +1051,31 @@ TEST_P(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   EXPECT_EQ(0U, result.size());
 }
 
+TEST_P(LoginDatabaseTest, ClearPrivateData_SavedMaxCreatedTimePasswords) {
+  // Create one with Max time.
+  EXPECT_TRUE(AddTimestampedLogin(&db(), "http://1.com", "foo1",
+                                  base::Time::Max(), true));
+
+  std::vector<PasswordForm> forms;
+
+  // Get all time logins.
+  EXPECT_TRUE(
+      db().GetLoginsCreatedBetween(base::Time(), base::Time::Max(), &forms));
+  EXPECT_EQ(1U, forms.size());
+
+  // Delete with Max date (should delete all).
+  PasswordStoreChangeList changes;
+  db().RemoveLoginsCreatedBetween(base::Time(), base::Time::Max(), &changes);
+  ASSERT_EQ(1U, changes.size());
+
+  EXPECT_EQ(forms[0], changes[0].form());
+  forms.clear();
+
+  // Verify nothing is left.
+  EXPECT_TRUE(db().GetAutofillableLogins(&forms));
+  EXPECT_EQ(0U, forms.size());
+}
+
 TEST_P(LoginDatabaseTest, GetAutoSignInLogins) {
   std::vector<PasswordForm> forms;
 
