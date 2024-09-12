@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/new_tab_page_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/new_tab_page_initiated_page_load_metrics_observer.h"
 
 #include <algorithm>
 
@@ -24,14 +24,14 @@ const char kNewTabPageNavigationOrActivationToLargestContentfulPaint[] =
     "NewTabPage.NavigationOrActivationToLargestContentfulPaint";
 }  // namespace
 
-NewTabPagePageLoadMetricsObserver::NewTabPagePageLoadMetricsObserver() =
+NewTabPageInitiatedPageLoadMetricsObserver::NewTabPageInitiatedPageLoadMetricsObserver() =
     default;
 
-NewTabPagePageLoadMetricsObserver::~NewTabPagePageLoadMetricsObserver() =
+NewTabPageInitiatedPageLoadMetricsObserver::~NewTabPageInitiatedPageLoadMetricsObserver() =
     default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::OnStart(
+NewTabPageInitiatedPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
@@ -39,21 +39,21 @@ NewTabPagePageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::OnPrerenderStart(
+NewTabPageInitiatedPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::OnFencedFramesStart(
+NewTabPageInitiatedPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   // This class is interested only in the primary page.
   return STOP_OBSERVING;
 }
 
-void NewTabPagePageLoadMetricsObserver::DidActivatePrerenderedPage(
+void NewTabPageInitiatedPageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
   // `navigation_handle` here is for the activation navigation, while
   // `GetDelegate().GetNavigationStart()` is the start time of initial prerender
@@ -65,7 +65,7 @@ void NewTabPagePageLoadMetricsObserver::DidActivatePrerenderedPage(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::OnCommit(
+NewTabPageInitiatedPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // NavigationHandleUserData is set to be
   // page_load_metrics::NavigationHandleUserData::InitiatorLocation::kNewTabPage
@@ -84,7 +84,7 @@ NewTabPagePageLoadMetricsObserver::OnCommit(
   return STOP_OBSERVING;
 }
 
-void NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+void NewTabPageInitiatedPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(timing.paint_timing->first_contentful_paint);
   base::TimeDelta fcp = timing.paint_timing->first_contentful_paint.value();
@@ -104,7 +104,7 @@ void NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   }
 }
 
-void NewTabPagePageLoadMetricsObserver::
+void NewTabPageInitiatedPageLoadMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
         const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasActivatedInForegroundOptionalEventInForeground(
@@ -123,7 +123,7 @@ void NewTabPagePageLoadMetricsObserver::
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+NewTabPageInitiatedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (GetDelegate().DidCommit()) {
     RecordSessionEndHistograms(timing);
@@ -131,12 +131,12 @@ NewTabPagePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
-void NewTabPagePageLoadMetricsObserver::OnComplete(
+void NewTabPageInitiatedPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   RecordSessionEndHistograms(timing);
 }
 
-void NewTabPagePageLoadMetricsObserver::RecordSessionEndHistograms(
+void NewTabPageInitiatedPageLoadMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(GetDelegate().DidCommit());
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =

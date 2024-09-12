@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_INITIATED_PAGE_LOAD_METRICS_OBSERVER_H_
+#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_INITIATED_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
-// NewTabPagePageLoadMetricsObserver is responsible for recording performance
-// related metrics, such as NavigationOrActivationToFirstContentfulPaint and
-// NavigationOrActivationToLargestContentfulPaint for NewTabPage navigations.
-class NewTabPagePageLoadMetricsObserver
+// NewTabPageInitiatedPageLoadMetricsObserver records performance metrics,
+// such as NavigationOrActivationToFirstContentfulPaint and
+// NavigationOrActivationToLargestContentfulPaint for navigations that are initiated
+// from the NewTabPage.
+class NewTabPageInitiatedPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  NewTabPagePageLoadMetricsObserver();
+  NewTabPageInitiatedPageLoadMetricsObserver();
 
-  NewTabPagePageLoadMetricsObserver(const NewTabPagePageLoadMetricsObserver&) =
+  NewTabPageInitiatedPageLoadMetricsObserver(const NewTabPageInitiatedPageLoadMetricsObserver&) =
       delete;
-  NewTabPagePageLoadMetricsObserver& operator=(
-      const NewTabPagePageLoadMetricsObserver&) = delete;
+  NewTabPageInitiatedPageLoadMetricsObserver& operator=(
+      const NewTabPageInitiatedPageLoadMetricsObserver&) = delete;
 
-  ~NewTabPagePageLoadMetricsObserver() override;
+  ~NewTabPageInitiatedPageLoadMetricsObserver() override;
 
  private:
   // page_load_metrics::PageLoadMetricsObserver:
@@ -49,4 +50,4 @@ class NewTabPagePageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing);
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NEW_TAB_PAGE_INITIATED_PAGE_LOAD_METRICS_OBSERVER_H_

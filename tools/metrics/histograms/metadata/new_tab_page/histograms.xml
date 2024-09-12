@@ -1220,9 +1220,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Measures the time from navigation start or prerender activation to first
-    contentful paint for new tab page. The metrics is recorded when painting
-    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
-    Refer to NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage()
+    contentful paint for NTP-initiated navigations. The metrics is recorded when
+    painting timing update events are dispatched by
+    PageLoadMetricsUpdateDispatcher. Refer to
+    NewTabPageInitiatedPageLoadMetricsObserver::OnFirstContentfulPaintInPage()
     for details.
   </summary>
 </histogram>
@@ -1233,10 +1234,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Measures the time from navigation start or prerender activation to first
-    meaningful paint for new tab page. The metrics is recorded when painting
-    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
-    Refer to
-    NewTabPagePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument()
+    meaningful paint for NTP-initiated navigations. The metrics is recorded when
+    painting timing update events are dispatched by
+    PageLoadMetricsUpdateDispatcher. Refer to
+    NewTabPageInitiatedPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument()
     for details.
   </summary>
 </histogram>
@@ -1247,9 +1248,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Measures the time from navigation start or prerender activation to largest
-    contentful paint for new tab page. The metrics is recorded when painting
-    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
-    Refer to NewTabPagePageLoadMetricsObserver::OnComplete() for details.
+    contentful paint for NTP-initiated navigations. The metrics is recorded when
+    painting timing update events are dispatched by
+    PageLoadMetricsUpdateDispatcher. Refer to
+    NewTabPageInitiatedPageLoadMetricsObserver::OnComplete() for details.
   </summary>
 </histogram>
 
@@ -1299,7 +1301,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from the prerendering navigation starts to prerender
     activation. This metrics is recorded upon prerneder activation. Refer to
-    NewTabPagePageLoadMetricsObserver::DidActivatePrerenderedPage() for details.
+    NewTabPageInitiatedPageLoadMetricsObserver::DidActivatePrerenderedPage() for
+    details.
   </summary>
 </histogram>
 

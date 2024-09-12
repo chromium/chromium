@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/new_tab_page_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/new_tab_page_initiated_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
