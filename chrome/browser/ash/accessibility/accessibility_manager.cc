@@ -830,8 +830,36 @@ bool AccessibilityManager::PlayEarcon(Sound sound_key, PlaySoundOption option) {
   return audio::SoundsManager::Get()->Play(static_cast<int>(sound_key));
 }
 
+void AccessibilityManager::OnTwoFingerTouchStart() {
+  if (!profile_)
+    return;
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_START,
+      extensions::api::accessibility_private::OnTwoFingerTouchStart::kEventName,
+      base::Value::List());
+  event_router->BroadcastEvent(std::move(event));
+}
+
+void AccessibilityManager::OnTwoFingerTouchStop() {
+  if (!profile_)
+    return;
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_STOP,
+      extensions::api::accessibility_private::OnTwoFingerTouchStop::kEventName,
+      base::Value::List());
+  event_router->BroadcastEvent(std::move(event));
+}
+
 bool AccessibilityManager::ShouldToggleSpokenFeedbackViaTouch() {
-  return policy::EnrollmentRequisitionManager::IsMeetDevice();
+  return false;
 }
 
 bool AccessibilityManager::PlaySpokenFeedbackToggleCountdown(int tick_count) {
@@ -2021,9 +2049,8 @@ void AccessibilityManager::PostLoadChromeVox() {
 
   // Force volume slide gesture to be on for Chromebox for Meetings provisioned
   // devices.
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition())
     AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
-  }
 
   if (start_chromevox_with_tutorial_) {
     ShowChromeVoxTutorial();

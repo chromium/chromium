@@ -318,6 +318,14 @@ class AccessibilityManager
   // Notify accessibility when locale changes occur.
   void OnLocaleChanged();
 
+  // Called when we first detect two fingers are held down, which can be
+  // used to toggle spoken feedback on some touch-only devices.
+  void OnTwoFingerTouchStart();
+
+  // Called when the user is no longer holding down two fingers (including
+  // releasing one, holding down three, or moving them).
+  void OnTwoFingerTouchStop();
+
   // Whether or not to enable toggling spoken feedback via holding down
   // two fingers on the screen.
   bool ShouldToggleSpokenFeedbackViaTouch();

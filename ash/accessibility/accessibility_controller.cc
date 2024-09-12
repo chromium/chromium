@@ -2111,6 +2111,16 @@ void AccessibilityController::SilenceSpokenFeedback() {
   }
 }
 
+void AccessibilityController::OnTwoFingerTouchStart() {
+  if (client_)
+    client_->OnTwoFingerTouchStart();
+}
+
+void AccessibilityController::OnTwoFingerTouchStop() {
+  if (client_)
+    client_->OnTwoFingerTouchStop();
+}
+
 bool AccessibilityController::ShouldToggleSpokenFeedbackViaTouch() const {
   return client_ && client_->ShouldToggleSpokenFeedbackViaTouch();
 }
