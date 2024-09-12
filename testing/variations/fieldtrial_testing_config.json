@@ -5223,25 +5223,6 @@
             ]
         }
     ],
-    "ChromnientPostLaunchTranslate": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TranslateButtonEnabled",
-                    "enable_features": [
-                        "LensOverlayTranslateButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClankFeedSyntheticCapabilities": [
         {
             "platforms": [
