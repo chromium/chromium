@@ -8,6 +8,10 @@
 #import <UIKit/UIKit.h>
 
 // Returns a Toolbar background to be displayed when the content of the TabGrid
+// is scrolled to the edge of the toolbar.
+UIView* CreateTabGridScrolledToEdgeBackground();
+
+// Returns a Toolbar background to be displayed when the content of the TabGrid
 // is scrolled past the edge of the toolbar (content displayed below the
 // toolbar).
 UIView* CreateTabGridOverContentBackground();

@@ -44,6 +44,8 @@
 @property(nonatomic, assign) int selectedTabsCount;
 // Delegate to call when a button is pushed.
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
+// Whether the the scrolled to edge background should be hidden.
+@property(nonatomic, assign) BOOL hideScrolledToEdgeBackground;
 
 // Sets `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;

@@ -422,6 +422,7 @@ constexpr CGFloat kSpace = 8;
   _bottomToolbar = bottomToolbar;
   bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 
+  bottomToolbar.hideScrolledToEdgeBackground = YES;
   bottomToolbar.buttonsDelegate = self;
   bottomToolbar.page =
       _incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;

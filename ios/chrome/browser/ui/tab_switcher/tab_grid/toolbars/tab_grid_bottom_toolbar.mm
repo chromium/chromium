@@ -42,6 +42,7 @@
   UIView* _scrolledBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
+  UIView* _scrolledToBottomBackgroundView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -445,6 +446,13 @@
       self, _scrolledBackgroundView,
       LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
 
+  // Background when the content is scrolled to the top.
+  _scrolledToBottomBackgroundView = CreateTabGridScrolledToEdgeBackground();
+  _scrolledToBottomBackgroundView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [self addSubview:_scrolledToBottomBackgroundView];
+  AddSameConstraints(_scrolledBackgroundView, _scrolledToBottomBackgroundView);
+
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
   [_toolbar setBackgroundImage:[[UIImage alloc] init]
@@ -454,6 +462,9 @@
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.
 - (void)updateBackgroundVisibility {
+  _scrolledToBottomBackgroundView.hidden =
+      _hideScrolledToEdgeBackground ||
+      ([self isShowingFloatingButton] || !_scrolledToEdge);
   _scrolledBackgroundView.hidden =
       [self isShowingFloatingButton] || _scrolledToEdge;
 }
