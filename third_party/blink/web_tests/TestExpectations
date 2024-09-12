@@ -8005,3 +8005,32 @@ crbug.com/365487889 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeE
 
 # Gardener 2024-09-10
 crbug.com/364306254 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
+
+# Temporarily add TestExpectation for win11-23h2-rel try builder testing
+# To be removed once crbug.com/359039651 is resolved
+crbug.com/365127791 [ Win11 ] css2.1/t1202-counter-04-b.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] css2.1/t1202-counters-04-b.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] custom-elements/form-validation-bubble-appearance.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] fast/canvas/fillText-emoji.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] fast/forms/file/file-appearance-bidi-filenames.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] fast/loader/json-document-appearance.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] fast/ruby/base-shorter-than-text.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] fast/ruby/nested-ruby.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] media/track/track-cue-rendering-ruby.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] svg/text/bidi-textlength.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] svg/text/surrogate-pair-queries.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/text-antialias/color-emoji.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/text-antialias/emoji-vs-system-fallback.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/text-antialias/emoticons.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/text-antialias/fallback-traits-fixup.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/text-antialias/unicode-fallback-font.html [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Pass Crash ]
+crbug.com/365127791 [ Win11 ] external/wpt/media-capabilities/encodingInfo.any.worker.html [ Pass Crash ]
+crbug.com/365127791 [ Win11 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Pass Crash ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv2d.https.any.html?gpu [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv2d.https.any.worker.html?gpu [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sign.https.any.html?gpu [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sign.https.any.worker.html?gpu [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.html?gpu [ Pass Failure ]
+crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.worker.html?gpu [ Pass Failure ]
