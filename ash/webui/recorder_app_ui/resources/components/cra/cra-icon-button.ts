@@ -66,6 +66,17 @@ export class CraIconButton extends IconButton {
         );
       }
 
+      :host([size="default"]) md-filled-icon-button {
+        --md-filled-icon-button-container-width: var(
+          --cra-icon-button-container-width,
+          40px
+        );
+        --md-filled-icon-button-container-height: var(
+          --cra-icon-button-container-height,
+          40px
+        );
+      }
+
       :host([buttonStyle="toggle"].with-filled-style) md-filled-icon-button {
         --md-filled-icon-button-unselected-container-color: var(
           --cra-icon-button-container-color,
@@ -78,7 +89,7 @@ export class CraIconButton extends IconButton {
       }
 
       :host([buttonStyle="toggle"].with-floating-style) md-filled-icon-button {
-        --md-filled-icon-button-selected-container-color: #00000000;
+        --md-filled-icon-button-selected-container-color: #0000;
       }
 
       :host([buttonStyle="toggle"].with-filled-style) md-filled-icon-button,

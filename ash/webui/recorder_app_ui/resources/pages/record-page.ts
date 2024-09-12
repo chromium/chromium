@@ -879,8 +879,12 @@ export class RecordPage extends ReactiveLitElement {
               id="pause-button"
               @click=${this.onPauseButtonClick}
               aria-label=${i18n.recordPauseButtonTooltip}
+              buttonstyle="toggle"
+              class="with-filled-style"
+              .selected=${this.recordingPaused.value}
             >
               <cra-icon slot="icon" name="pause"></cra-icon>
+              <cra-icon slot="selectedIcon" name="pause"></cra-icon>
             </secondary-button>
           </div>
         </div>
