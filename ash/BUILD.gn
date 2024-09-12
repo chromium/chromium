@@ -1806,6 +1806,7 @@ component("ash") {
     "system/focus_mode/sounds/soundscape/soundscape_types.h",
     "system/focus_mode/sounds/soundscape/soundscapes_downloader.cc",
     "system/focus_mode/sounds/soundscape/soundscapes_downloader.h",
+    "system/focus_mode/sounds/youtube_music/request_signer.h",
     "system/focus_mode/sounds/youtube_music/youtube_music_client.cc",
     "system/focus_mode/sounds/youtube_music/youtube_music_client.h",
     "system/focus_mode/sounds/youtube_music/youtube_music_controller.cc",

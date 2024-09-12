@@ -51,6 +51,23 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
       /*custom_user_agent=*/std::string(), traffic_annotation_tag);
 }
 
+class RequestSignerImpl : public ash::RequestSigner {
+ public:
+  explicit RequestSignerImpl(const AccountId& account_id)
+      : account_id_(account_id) {}
+  ~RequestSignerImpl() override = default;
+
+  bool GenerateHeaders(base::span<const uint8_t> data,
+                       ash::RequestSigner::HeadersCallback callback) override {
+    // TODO(skau): Actually sign `data`.
+    std::move(callback).Run({});
+    return false;
+  }
+
+ private:
+  const AccountId account_id_;
+};
+
 }  // namespace
 
 ChromeFocusModeDelegate::ChromeFocusModeDelegate() = default;
@@ -58,7 +75,8 @@ ChromeFocusModeDelegate::ChromeFocusModeDelegate() = default;
 ChromeFocusModeDelegate::~ChromeFocusModeDelegate() = default;
 
 std::unique_ptr<ash::youtube_music::YouTubeMusicClient>
-ChromeFocusModeDelegate::CreateYouTubeMusicClient() {
+ChromeFocusModeDelegate::CreateYouTubeMusicClient(const AccountId& account_id) {
   return std::make_unique<ash::youtube_music::YouTubeMusicClient>(
-      base::BindRepeating(&CreateRequestSenderForClient));
+      base::BindRepeating(&CreateRequestSenderForClient),
+      std::make_unique<RequestSignerImpl>(account_id));
 }

@@ -158,8 +158,10 @@ CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
 }  // namespace
 
 YouTubeMusicClient::YouTubeMusicClient(
-    const CreateRequestSenderCallback& create_request_sender_callback)
-    : create_request_sender_callback_(create_request_sender_callback) {}
+    const CreateRequestSenderCallback& create_request_sender_callback,
+    std::unique_ptr<RequestSigner> request_signer)
+    : create_request_sender_callback_(create_request_sender_callback),
+      request_signer_(std::move(request_signer)) {}
 
 YouTubeMusicClient::~YouTubeMusicClient() = default;
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -24,7 +25,7 @@ class ASH_EXPORT FocusModeDelegate {
 
   // Virtual function that is implemented in chrome to create the client.
   virtual std::unique_ptr<youtube_music::YouTubeMusicClient>
-  CreateYouTubeMusicClient() = 0;
+  CreateYouTubeMusicClient(const AccountId& account_id) = 0;
 };
 
 }  // namespace ash

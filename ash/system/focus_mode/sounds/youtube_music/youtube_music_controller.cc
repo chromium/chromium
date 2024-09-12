@@ -53,7 +53,8 @@ void YouTubeMusicController::OnActiveUserSessionChanged(
   }
 
   clients_[active_id] =
-      FocusModeController::Get()->delegate()->CreateYouTubeMusicClient();
+      FocusModeController::Get()->delegate()->CreateYouTubeMusicClient(
+          active_id);
 }
 
 youtube_music::YouTubeMusicClient* YouTubeMusicController::GetActiveClient()
