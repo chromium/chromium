@@ -78,6 +78,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   PrefChangeRegistrar _prefChangeRegistrar;
 
   BOOL _canPerformTabsClosureAnimation;
+
+  // Indicates if deletion has been triggered before.
+  BOOL _deletionTriggered;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -148,6 +151,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   _identityManager = nil;
   _browsingDataRemover = nullptr;
   _discoverFeedService = nullptr;
+  _deletionTriggered = NO;
 }
 
 #pragma mark - QuickDeleteMutator
@@ -158,6 +162,10 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 }
 
 - (void)triggerDeletion {
+  // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
+  DUMP_WILL_BE_CHECK(!_deletionTriggered);
+  _deletionTriggered = YES;
+
   [_consumer deletionInProgress];
 
   BrowsingDataRemoveMask removeMask = BrowsingDataRemoveMask::REMOVE_NOTHING;
