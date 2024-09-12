@@ -160,9 +160,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
     ~ScopedAllowSyncCall() { DecreaseScopedAllowCount(); }
 
    private:
-#if ENABLE_SYNC_CALL_RESTRICTIONS
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait_;
-#endif
   };
 };
 

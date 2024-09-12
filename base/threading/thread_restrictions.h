@@ -5,19 +5,15 @@
 #ifndef BASE_THREADING_THREAD_RESTRICTIONS_H_
 #define BASE_THREADING_THREAD_RESTRICTIONS_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
+#include "base/debug/stack_trace.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "build/build_config.h"
-
-#if DCHECK_IS_ON()
-#include <optional>
-
-#include "base/debug/stack_trace.h"
-#endif
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -505,76 +501,66 @@ class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
 
-#if DCHECK_IS_ON()
-// NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
-// altered the allowance (dcheck-builds will provide the setter's stack on
-// assertion) or who made a failing Assert*() call.
-#define INLINE_OR_NOT_TAIL_CALLED NOT_TAIL_CALLED BASE_EXPORT
-#define EMPTY_BODY_IF_DCHECK_IS_OFF
-#define DEFAULT_IF_DCHECK_IS_OFF
+// NaCL doesn't support stack capture.
+// Android can hang in stack capture (crbug.com/959139).
+#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID)
+#define CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES() false
+#else
+// Stack capture is slow. Only enable it in developer builds, to avoid user
+// visible jank when thread restrictions are set.
+#define CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES() EXPENSIVE_DCHECKS_ARE_ON()
+#endif
 
-class BooleanWithStack {
+// A boolean and the stack from which it was set. Note: The stack is not
+// captured in all builds, see `CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()`.
+class BooleanWithOptionalStack {
  public:
   // Default value.
-  BooleanWithStack() = default;
+  BooleanWithOptionalStack() = default;
 
   // Value when explicitly set.
-  explicit BooleanWithStack(bool value);
+  explicit BooleanWithOptionalStack(bool value);
 
   explicit operator bool() const { return value_; }
 
   friend std::ostream& operator<<(std::ostream& out,
-                                  const BooleanWithStack& bws);
+                                  const BooleanWithOptionalStack& bws);
 
  private:
   bool value_ = false;
+#if CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()
   std::optional<debug::StackTrace> stack_;
+#endif
 };
-
-#else
-// inline if dcheck-is-off so it's no overhead
-#define INLINE_OR_NOT_TAIL_CALLED inline
-
-// The static_assert() eats follow-on semicolons.
-#define EMPTY_BODY_IF_DCHECK_IS_OFF \
-  {}                                \
-  static_assert(true)
-
-#define DEFAULT_IF_DCHECK_IS_OFF = default
-#endif  // DCHECK_IS_ON()
 
 namespace internal {
 
 // Asserts that blocking calls are allowed in the current scope. This is an
 // internal call, external code should use ScopedBlockingCall instead, which
 // serves as a precise annotation of the scope that may/will block.
-INLINE_OR_NOT_TAIL_CALLED void AssertBlockingAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
-INLINE_OR_NOT_TAIL_CALLED void AssertBlockingDisallowedForTesting()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingAllowed();
+NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingDisallowedForTesting();
 
 }  // namespace internal
 
 // Disallows blocking on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowBlocking();
 
 // Disallows blocking calls within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBlocking {
+class BASE_EXPORT ScopedDisallowBlocking {
  public:
-  ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBlocking();
 
   ScopedDisallowBlocking(const ScopedDisallowBlocking&) = delete;
   ScopedDisallowBlocking& operator=(const ScopedDisallowBlocking&) = delete;
 
-  ~ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBlocking();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
+class BASE_EXPORT ScopedAllowBlocking {
  public:
   ScopedAllowBlocking(const ScopedAllowBlocking&) = delete;
   ScopedAllowBlocking& operator=(const ScopedAllowBlocking&) = delete;
@@ -705,12 +691,10 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
+class ScopedAllowBlockingForTesting {
  public:
   ScopedAllowBlockingForTesting() = default;
 
@@ -721,33 +705,28 @@ class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
   ~ScopedAllowBlockingForTesting() = default;
 
  private:
-#if DCHECK_IS_ON()
   ScopedAllowBlocking scoped_allow_blocking_;
-#endif
 };
 
-INLINE_OR_NOT_TAIL_CALLED void DisallowBaseSyncPrimitives()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowBaseSyncPrimitives();
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBaseSyncPrimitives {
+class BASE_EXPORT ScopedDisallowBaseSyncPrimitives {
  public:
-  ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBaseSyncPrimitives();
 
   ScopedDisallowBaseSyncPrimitives(const ScopedDisallowBaseSyncPrimitives&) =
       delete;
   ScopedDisallowBaseSyncPrimitives& operator=(
       const ScopedDisallowBaseSyncPrimitives&) = delete;
 
-  ~ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBaseSyncPrimitives();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
+class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
  public:
   ScopedAllowBaseSyncPrimitives(const ScopedAllowBaseSyncPrimitives&) = delete;
   ScopedAllowBaseSyncPrimitives& operator=(
@@ -825,12 +804,10 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
   friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
-  ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
-  ~ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitives();
+  ~ScopedAllowBaseSyncPrimitives();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 class BASE_EXPORT
@@ -938,9 +915,7 @@ class BASE_EXPORT
 
   ~ScopedAllowBaseSyncPrimitivesOutsideBlockingScope();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Allow base-sync-primitives in tests, doesn't require explicit friend'ing like
@@ -948,89 +923,76 @@ class BASE_EXPORT
 // Note: For WaitableEvents in the test logic, base::TestWaitableEvent is
 // exposed as a convenience to avoid the need for
 // ScopedAllowBaseSyncPrimitivesForTesting.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitivesForTesting {
+class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
  public:
-  ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitivesForTesting();
 
   ScopedAllowBaseSyncPrimitivesForTesting(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
   ScopedAllowBaseSyncPrimitivesForTesting& operator=(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
 
-  ~ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowBaseSyncPrimitivesForTesting();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Counterpart to base::DisallowUnresponsiveTasks() for tests to allow them to
 // block their thread after it was banned.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowUnresponsiveTasksForTesting {
+class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
  public:
-  ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowUnresponsiveTasksForTesting();
 
   ScopedAllowUnresponsiveTasksForTesting(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
   ScopedAllowUnresponsiveTasksForTesting& operator=(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
 
-  ~ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowUnresponsiveTasksForTesting();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> base_sync_resetter_;
-  const AutoReset<BooleanWithStack> blocking_resetter_;
-  const AutoReset<BooleanWithStack> cpu_resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> base_sync_resetter_;
+  const AutoReset<BooleanWithOptionalStack> blocking_resetter_;
+  const AutoReset<BooleanWithOptionalStack> cpu_resetter_;
 };
 
 namespace internal {
 
 // Asserts that waiting on a //base sync primitive is allowed in the current
 // scope.
-INLINE_OR_NOT_TAIL_CALLED void AssertBaseSyncPrimitivesAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertBaseSyncPrimitivesAllowed();
 
 // Resets all thread restrictions on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void ResetThreadRestrictionsForTesting()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+BASE_EXPORT void ResetThreadRestrictionsForTesting();
 
 // Check whether the current thread is allowed to use singletons (Singleton /
 // LazyInstance).  DCHECKs if not.
-INLINE_OR_NOT_TAIL_CALLED void AssertSingletonAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertSingletonAllowed();
 
 }  // namespace internal
 
 // Disallow using singleton on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void DisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowSingleton();
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowSingleton {
+class BASE_EXPORT ScopedDisallowSingleton {
  public:
-  ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowSingleton();
 
   ScopedDisallowSingleton(const ScopedDisallowSingleton&) = delete;
   ScopedDisallowSingleton& operator=(const ScopedDisallowSingleton&) = delete;
 
-  ~ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowSingleton();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Asserts that running long CPU work is allowed in the current scope.
-INLINE_OR_NOT_TAIL_CALLED void AssertLongCPUWorkAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertLongCPUWorkAllowed();
 
-INLINE_OR_NOT_TAIL_CALLED void DisallowUnresponsiveTasks()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowUnresponsiveTasks();
 
 // Friend-only methods to permanently allow the current thread to use
 // blocking/sync-primitives calls. Threads start out in the *allowed* state but
@@ -1054,13 +1016,9 @@ class BASE_EXPORT PermanentThreadAllowance {
 #endif  // BUILDFLAG(IS_IOS)
   friend class web::WebMainLoop;
 
-  static void AllowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
-  static void AllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+  static void AllowBlocking();
+  static void AllowBaseSyncPrimitives();
 };
-
-#undef INLINE_OR_NOT_TAIL_CALLED
-#undef EMPTY_BODY_IF_DCHECK_IS_OFF
-#undef DEFAULT_IF_DCHECK_IS_OFF
 
 }  // namespace base
 
