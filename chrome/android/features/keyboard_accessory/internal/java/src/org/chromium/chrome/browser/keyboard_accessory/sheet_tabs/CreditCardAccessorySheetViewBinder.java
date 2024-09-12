@@ -41,8 +41,7 @@ class CreditCardAccessorySheetViewBinder {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.WARNING: // Fallthrough to reuse title container.
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.CREDIT_CARD_INFO:
                 return new CreditCardInfoViewHolder(parent, uiConfiguration.cardDrawableFunction);
             case AccessorySheetDataPiece.Type.PROMO_CODE_INFO:

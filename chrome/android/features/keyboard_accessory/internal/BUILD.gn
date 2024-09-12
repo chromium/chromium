@@ -145,7 +145,6 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_iban_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_legacy_title.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_password_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",

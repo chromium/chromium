@@ -399,12 +399,10 @@ public class CreditCardAccessorySheetViewTest {
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
 
-        assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
-        LinearLayout warning = (LinearLayout) mView.get().getChildAt(0);
-        assertThat(warning.findViewById(R.id.tab_title), instanceOf(TextView.class));
-        TextView warningText = warning.findViewById(R.id.tab_title);
-        assertThat(warningText.isShown(), is(true));
-        assertThat(warningText.getText(), is(kWarning));
+        assertThat(mView.get().getChildAt(0), instanceOf(TextView.class));
+        TextView warningView = (TextView) mView.get().getChildAt(0);
+        assertThat(warningView.isShown(), is(true));
+        assertThat(warningView.getText(), is(kWarning));
     }
 
     @Test

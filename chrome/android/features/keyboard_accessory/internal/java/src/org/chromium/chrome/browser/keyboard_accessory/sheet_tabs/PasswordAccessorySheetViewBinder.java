@@ -48,8 +48,7 @@ class PasswordAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
                 return new PasswordInfoViewHolder(parent, uiConfiguration.faviconHelper);
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
             case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
