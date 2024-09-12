@@ -40,6 +40,7 @@ targets.bundle(
         "chrome_public_test_apk",
         "chrome_public_unit_test_apk",
         "android_browsertests",
+        "extensions_unittests",
     ],
 )
 
