@@ -5,8 +5,11 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -22,6 +25,39 @@ class PasswordManager_LeakWarningDialog;
 }  // namespace ukm::builders
 
 namespace password_manager::metrics_util {
+
+namespace {
+
+struct PasswordAndPasskeyCounts {
+  size_t password_count = 0;
+  size_t passkey_count = 0;
+  bool has_another_device = false;
+};
+
+PasswordAndPasskeyCounts GetPasswordPasskeyCountsAndUseAnotherDeviceShown(
+    const std::vector<autofill::Suggestion>& suggestions) {
+  using autofill::SuggestionType;
+  PasswordAndPasskeyCounts counts;
+  for (const auto& suggestion : suggestions) {
+    switch (suggestion.type) {
+      case SuggestionType::kPasswordEntry:
+      case SuggestionType::kAccountStoragePasswordEntry:
+        counts.password_count++;
+        break;
+      case SuggestionType::kWebauthnCredential:
+        counts.passkey_count++;
+        break;
+      case SuggestionType::kWebauthnSignInWithAnotherDevice:
+        counts.has_another_device = true;
+        break;
+      default:
+        break;
+    }
+  }
+  return counts;
+}
+
+}  // namespace
 
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUserState
@@ -223,8 +259,28 @@ void LogPasswordReuse(int saved_passwords,
                                 PasswordType::PASSWORD_TYPE_COUNT);
 }
 
-void LogPasswordDropdownShown(PasswordDropdownState state) {
-  base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownShown", state);
+void LogPasswordDropdownShown(
+    const std::vector<autofill::Suggestion>& suggestions) {
+  std::optional<PasswordDropdownState> dropdown_state;
+  if (suggestions.size() > 0) {
+    dropdown_state = PasswordDropdownState::kStandard;
+  }
+  for (const auto& suggestion : suggestions) {
+    switch (suggestion.type) {
+      case autofill::SuggestionType::kGeneratePasswordEntry:
+        // TODO(crbug.com/40122999): Revisit metrics for the "opt in and
+        // generate" button.
+      case autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+        dropdown_state = PasswordDropdownState::kStandardGenerate;
+        break;
+      default:
+        break;
+    }
+  }
+  if (dropdown_state.has_value()) {
+    base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownShown",
+                                  dropdown_state.value());
+  }
 }
 
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
@@ -447,4 +503,45 @@ void AddPasswordRemovalReason(
   prefs->SetInteger(pref, pwd_removal_reasons);
 }
 
+void MaybeLogMetricsForPasswordAndWebauthnCounts(
+    const std::vector<autofill::Suggestion>& suggestions,
+    bool is_for_webauthn_request) {
+  PasswordAndPasskeyCounts counts =
+      GetPasswordPasskeyCountsAndUseAnotherDeviceShown(suggestions);
+
+  // If there are no passwords or passkeys, then this is a dropdown with other
+  // elements. Examples include :
+  // - a dropdown with only password generation
+  // - a dropdown with opt-in option to account storage
+  if ((counts.password_count + counts.passkey_count == 0) &&
+      !counts.has_another_device) {
+    return;
+  }
+
+  std::string_view prefix = "PasswordManager.PasswordDropdownShown.";
+  base::UmaHistogramCounts100(base::StrCat({prefix, "TotalCount"}),
+                              counts.password_count + counts.passkey_count);
+  if (is_for_webauthn_request) {
+    std::string_view webauthn_request = "WebAuthnRequest.";
+    base::UmaHistogramCounts100(
+        base::StrCat({prefix, webauthn_request, "PasswordCount"}),
+        counts.password_count);
+    base::UmaHistogramCounts100(
+        base::StrCat({prefix, webauthn_request, "PasskeyCount"}),
+        counts.passkey_count);
+    base::UmaHistogramCounts100(
+        base::StrCat({prefix, webauthn_request, "TotalCount"}),
+        counts.password_count + counts.passkey_count);
+    base::UmaHistogramBoolean(
+        base::StrCat({prefix, webauthn_request, "UseAnotherDeviceShown"}),
+        counts.has_another_device);
+    // TODO(crbug.com/358277466): Add user actions for webauthn.
+  } else {
+    std::string_view non_webauthn_request = "NonWebAuthnRequest.";
+    base::UmaHistogramCounts100(
+        base::StrCat({prefix, non_webauthn_request, "TotalCount"}),
+        counts.password_count);
+    // Non-WebAuthn requests cannot have passkeys or use another device options.
+  }
+}
 }  // namespace password_manager::metrics_util

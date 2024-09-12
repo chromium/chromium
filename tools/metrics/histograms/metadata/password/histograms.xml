@@ -2336,6 +2336,72 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordDropdownShown.NonWebAuthnRequest.TotalCount"
+    units="credentials" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs the number of passwords in the password dropdown when it's shown for a
+    WebAuthn request.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordDropdownShown.TotalCount"
+    units="credentials" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs the number of passwords or passkeys in the password dropdown when it's
+    shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount"
+    units="credentials" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs the number of passkeys in the password dropdown when it's shown for a
+    WebAuthn conditional get request.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount"
+    units="credentials" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs the number of passwords in the password dropdown when it's shown for a
+    WebAuthn conditional get request.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount"
+    units="credentials" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs the total number of credentials in the password dropdown when it's
+    shown for a WebAuthn conditional get request. This is the sum of
+    &quot;PasskeyCount&quot; and &quot;PasswordCount&quot; with the same prefix.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.UseAnotherDeviceShown"
+    enum="Boolean" expires_after="2025-03-09">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs whether the password dropdown has the option to use another device for
+    a passkey sign in. This is emitted when the dropdown is displayed.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
     enum="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
     expires_after="2025-02-10">

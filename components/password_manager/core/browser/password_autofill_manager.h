@@ -131,14 +131,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
  private:
-  // Called just before showing a popup to log which |suggestions| were shown.
-  void LogMetricsForSuggestions(
-      const std::vector<autofill::Suggestion>& suggestions) const;
-
   // Validates and forwards the given objects to the autofill client.
   bool ShowPopup(const gfx::RectF& bounds,
                  base::i18n::TextDirection text_direction,
-                 const std::vector<autofill::Suggestion>& suggestions);
+                 const std::vector<autofill::Suggestion>& suggestions,
+                 bool is_for_webauthn_request);
 
   // Validates and forwards the given objects to the autofill client.
   void UpdatePopup(std::vector<autofill::Suggestion> suggestions);

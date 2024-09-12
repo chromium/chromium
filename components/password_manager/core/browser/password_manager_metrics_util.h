@@ -823,7 +823,8 @@ void LogPasswordReuse(int saved_passwords,
                       PasswordType reused_password_type);
 
 // Log the type of the password dropdown when it's shown.
-void LogPasswordDropdownShown(PasswordDropdownState state);
+void LogPasswordDropdownShown(
+    const std::vector<autofill::Suggestion>& suggestions);
 
 // Log the type of the password dropdown suggestion when chosen.
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
@@ -965,6 +966,12 @@ void AddPasswordRemovalReason(
     PrefService* prefs,
     IsAccountStore is_account_store,
     PasswordManagerCredentialRemovalReason removal_reason);
+
+// Emits histograms for the number of password and webauthn credentials in the
+// passwords popup / dropdown.
+void MaybeLogMetricsForPasswordAndWebauthnCounts(
+    const std::vector<autofill::Suggestion>& suggestions,
+    bool is_for_webauthn_request);
 
 }  // namespace password_manager::metrics_util
 
