@@ -94,7 +94,6 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.removeObserver(this);
         mSigninManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
-        mSyncPromoController = null;
     }
 
     /** Returns the state of the preference. Not valid until registerForUpdates is called. */
