@@ -42,7 +42,8 @@ function mediaErrorEvent() {
 interface PlaybackStatus {
   state: string;
   position: number;
-  initial: boolean;
+  loadTime: Date;
+  clientStartTime: Date;
 }
 let playbackStatus: PlaybackStatus|null = null;
 
@@ -62,11 +63,12 @@ function replyPlaybackStatus(newState: string|null) {
         cmd: 'replyplaybackstatus',
         state: playbackStatus.state,
         position: playbackStatus.position,
-        initial: playbackStatus.initial,
+        loadTime: playbackStatus.loadTime,
+        clientStartTime: playbackStatus.clientStartTime,
       },
       TRUSTED_ORIGIN);
 
-  playbackStatus.initial = false;
+  playbackStatus.clientStartTime = new Date();
 }
 
 function getPlayerElement(): HTMLAudioElement {
@@ -85,10 +87,12 @@ function loadTrack(track: Track) {
     metadata.artwork = [{src: track.thumbnailUrl}];
   }
   navigator.mediaSession.metadata = new MediaMetadata(metadata);
+  const timeNow = new Date();
   playbackStatus = {
     state: 'none',
     position: 0,
-    initial: true,
+    loadTime: timeNow,
+    clientStartTime: timeNow,
   };
 }
 
