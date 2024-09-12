@@ -1246,6 +1246,18 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.IdentityConfirmationSnackbarDecision"
+    enum="IdentityConfirmationSnackbarDecision" expires_after="2025-09-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the decision whether to show an identity confirmation snackbar (and
+    the reason for not showing it), whenever the app is foregrounded. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.BubbleDismissReason{Type}"
     enum="SigninInterceptionDismissReason" expires_after="2025-02-02">
   <owner>rsult@google.com</owner>

@@ -365,6 +365,16 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="kCannotCreateWindow"/>
 </enum>
 
+<enum name="IdentityConfirmationSnackbarDecision">
+  <int value="0" label="Show"/>
+  <int value="1" label="Don't show, no signed-in account"/>
+  <int value="2" label="Don't show, only one signed-in account"/>
+  <int value="3" label="Don't show, Start page isn't visible"/>
+  <int value="4" label="Don't show, was shown recently"/>
+  <int value="5" label="Don't show, impression limit reached"/>
+  <int value="6" label="Don't show, feature flag is disabled"/>
+</enum>
+
 <enum name="IOSDeviceRestoreSignedinState">
   <int value="0" label="User not signed in before iOS device restore"/>
   <int value="1"

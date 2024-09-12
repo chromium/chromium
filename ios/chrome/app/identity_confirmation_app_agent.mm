@@ -6,6 +6,7 @@
 
 #import "base/logging.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -34,16 +35,13 @@
   // split-screen mode (where two scenes are foreground active simultaneously).
   // It does this by resetting this boolean only when any of the scenes become
   // inactive or in background.
-  BOOL _snackbarAlreadyShownForForegroundActive;
+  BOOL _foregroundActiveEventAlreadyHandled;
 }
 
 #pragma mark - SceneObservingAppAgent
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
-    return;
-  }
   if (self.appState.initStage != InitStageFinal) {
     return;
   }
@@ -54,13 +52,13 @@
     case SceneActivationLevelForegroundInactive:
     case SceneActivationLevelDisconnected:
     case SceneActivationLevelUnattached:
-      _snackbarAlreadyShownForForegroundActive = NO;
+      _foregroundActiveEventAlreadyHandled = NO;
       break;
 
     case SceneActivationLevelForegroundActive:
-      if (!_snackbarAlreadyShownForForegroundActive) {
-        [self showIdentityConfirmationSnackbarWithSceneState:sceneState];
-        _snackbarAlreadyShownForForegroundActive = YES;
+      if (!_foregroundActiveEventAlreadyHandled) {
+        [self maybeShowIdentityConfirmationSnackbarWithSceneState:sceneState];
+        _foregroundActiveEventAlreadyHandled = YES;
       }
       break;
   }
@@ -68,9 +66,6 @@
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
-    return;
-  }
   if (!appState.foregroundActiveScene) {
     return;
   }
@@ -79,20 +74,35 @@
   }
 
   [super appState:appState didTransitionFromInitStage:previousInitStage];
-  if (!_snackbarAlreadyShownForForegroundActive) {
+  if (!_foregroundActiveEventAlreadyHandled) {
     // In case of having a foregroundActiveScene before reaching an
     // InitStageFinal, this will be the fallback to show the snackbar.
-    [self showIdentityConfirmationSnackbarWithSceneState:
+    [self maybeShowIdentityConfirmationSnackbarWithSceneState:
               appState.foregroundActiveScene];
-    _snackbarAlreadyShownForForegroundActive = YES;
+    _foregroundActiveEventAlreadyHandled = YES;
   }
 }
 
 #pragma mark - Private
 
-- (void)showIdentityConfirmationSnackbarWithSceneState:(SceneState*)sceneState {
-  CHECK(base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar));
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange
+enum class IdentityConfirmationSnackbarDecision {
+  kShouldShow = 0,
+  kDontShowNoAccount = 1,
+  kDontShowSingleAccount = 2,
+  kDontShowNotOnStartPage = 3,
+  kDontShowShownRecently = 4,
+  kDontShowImpressionLimitReached = 5,
+  kDontShowFeatureDisabled = 6,
+  kMaxValue = kDontShowFeatureDisabled
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
+- (IdentityConfirmationSnackbarDecision)
+    shouldShowIdentityConfirmationSnackbarWithSceneState:
+        (SceneState*)sceneState {
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
   AuthenticationService* authenticationService =
@@ -100,7 +110,7 @@
           browser->GetBrowserState());
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
-    return;
+    return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
   ChromeAccountManagerService* accountManagerService =
@@ -109,8 +119,11 @@
   NSArray<id<SystemIdentity>>* allIdentities =
       accountManagerService->GetAllIdentities();
   if ([allIdentities count] <= 1) {
-    return;
+    return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
+
+  // TODO(crbug.com/336720134): Detect the kDontShowNotOnStartPage case.
+  // TODO(crbug.com/356425783): Also record it in metrics.
 
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
 
@@ -135,18 +148,47 @@
         kIdentityConfirmationMinDisplayInterval3.Get();
   } else {
     // Stop showing after the third reminder.
-    return;
+    return IdentityConfirmationSnackbarDecision::
+        kDontShowImpressionLimitReached;
   }
 
   if (base::Time::Now() - lastPrompted <
       identityConfirmationMinDisplayInterval) {
-    return;
+    return IdentityConfirmationSnackbarDecision::kDontShowShownRecently;
   }
+
+  // At this point, the snackbar will be shown, except if the feature flag is
+  // disabled. Either way, update the prefs, so that the metrics remain
+  // comparable between enabled and disabled groups.
   prefService->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
                           displayCount + 1);
   prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                        base::Time::Now());
 
+  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
+    return IdentityConfirmationSnackbarDecision::kDontShowFeatureDisabled;
+  }
+
+  return IdentityConfirmationSnackbarDecision::kShouldShow;
+}
+
+- (void)maybeShowIdentityConfirmationSnackbarWithSceneState:
+    (SceneState*)sceneState {
+  IdentityConfirmationSnackbarDecision decision =
+      [self shouldShowIdentityConfirmationSnackbarWithSceneState:sceneState];
+
+  base::UmaHistogramEnumeration("Signin.IdentityConfirmationSnackbarDecision",
+                                decision);
+
+  if (decision != IdentityConfirmationSnackbarDecision::kShouldShow) {
+    return;
+  }
+
+  Browser* browser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          browser->GetBrowserState());
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   DCHECK(systemIdentity);
