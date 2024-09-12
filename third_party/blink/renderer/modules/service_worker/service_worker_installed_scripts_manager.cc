@@ -313,8 +313,7 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
               : WTF::TextEncoding(raw_script_data->Encoding())));
 
   Vector<uint8_t> source_text = raw_script_data->TakeScriptText();
-  String decoded_source_text = decoder->Decode(
-      reinterpret_cast<const char*>(source_text.data()), source_text.size());
+  String decoded_source_text = decoder->Decode(base::span(source_text));
 
   // TODO(crbug.com/946676): Remove the unique_ptr<> wrapper around the Vector
   // as we can just use Vector::IsEmpty() to distinguish missing code cache.

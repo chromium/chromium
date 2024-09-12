@@ -72,7 +72,10 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
            source_ == kEncodingFromContentSniffing;
   }
 
-  String Decode(const char* data, size_t length) override;
+  String Decode(base::span<const char> data) override;
+  String Decode(base::span<const uint8_t> data) {
+    return Decode(base::as_chars(data));
+  }
   String Flush() override;
   WebEncodingData GetEncodingData() const override;
 

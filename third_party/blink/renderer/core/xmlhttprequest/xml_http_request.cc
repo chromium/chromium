@@ -1965,7 +1965,6 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
     return;
   }
 
-  unsigned len = base::checked_cast<unsigned>(data.size());
   if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
     ParseDocumentChunk(base::as_bytes(data));
   } else if (response_type_code_ == kResponseTypeDefault ||
@@ -1976,11 +1975,12 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
       decoder_ = CreateDecoder();
 
     if (!response_text_overflow_) {
-      if (response_text_.DoesAppendCauseOverflow(len)) {
+      if (response_text_.DoesAppendCauseOverflow(
+              base::checked_cast<unsigned>(data.size()))) {
         response_text_overflow_ = true;
         response_text_.Clear();
       } else {
-        response_text_.Append(decoder_->Decode(data.data(), len));
+        response_text_.Append(decoder_->Decode(data));
       }
       ReportMemoryUsageToV8();
     }
@@ -1989,7 +1989,7 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
     // Buffer binary data.
     if (!binary_response_builder_)
       binary_response_builder_ = SharedBuffer::Create();
-    binary_response_builder_->Append(data.data(), len);
+    binary_response_builder_->Append(data);
     ReportMemoryUsageToV8();
   }
 
@@ -1998,7 +1998,7 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
     // events are already fired, we should return here.
     return;
   }
-  TrackProgress(len);
+  TrackProgress(data.size());
 }
 
 void XMLHttpRequest::DidDownloadData(uint64_t data_length) {

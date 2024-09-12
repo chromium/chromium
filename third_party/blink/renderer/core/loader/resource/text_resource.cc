@@ -34,7 +34,7 @@ String TextResource::DecodedText() const {
 
   StringBuilder builder;
   for (const auto& span : *Data())
-    builder.Append(decoder_->Decode(span.data(), span.size()));
+    builder.Append(decoder_->Decode(span));
   builder.Append(decoder_->Flush());
   return builder.ToString();
 }

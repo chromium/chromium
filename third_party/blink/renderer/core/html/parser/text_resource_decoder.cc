@@ -398,7 +398,9 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(const char* data,
     detection_completed_ = true;
 }
 
-String TextResourceDecoder::Decode(const char* data, size_t data_len) {
+String TextResourceDecoder::Decode(base::span<const char> data_span) {
+  const char* data = data_span.data();
+  const size_t data_len = data_span.size();
   TRACE_EVENT1("blink", "TextResourceDecoder::Decode", "data_len", data_len);
   wtf_size_t len = base::checked_cast<wtf_size_t>(data_len);
   // If we have previously buffered data, then add the new data to the buffer

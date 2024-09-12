@@ -73,7 +73,7 @@ void ScriptDecoder::DidReceiveData(Vector<char> data) {
   CHECK(decoding_task_runner_->RunsTasksInCurrentSequence());
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
-  AppendData(decoder_->Decode(data.data(), data.size()));
+  AppendData(decoder_->Decode(data));
   raw_data_.Append(std::move(data));
 }
 
@@ -156,8 +156,7 @@ void DataPipeScriptDecoder::Start(mojo::ScopedDataPipeConsumerHandle source) {
 }
 
 void DataPipeScriptDecoder::OnDataAvailable(base::span<const uint8_t> data) {
-  AppendData(decoder_->Decode(reinterpret_cast<const char*>(data.data()),
-                              data.size()));
+  AppendData(decoder_->Decode(data));
   raw_data_.Append(data);
 }
 
@@ -229,7 +228,7 @@ void ScriptDecoderWithClient::DidReceiveData(Vector<char> data,
   CHECK(decoding_task_runner_->RunsTasksInCurrentSequence());
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
-  AppendData(decoder_->Decode(data.data(), data.size()));
+  AppendData(decoder_->Decode(data));
 
   if (!send_to_client) {
     return;

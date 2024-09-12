@@ -340,7 +340,7 @@ bool InspectorPageAgent::SegmentedBufferContent(
 
   const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer);
   if (decoder) {
-    text_content = decoder->Decode(flat_buffer.data(), flat_buffer.size());
+    text_content = decoder->Decode(flat_buffer);
     text_content = text_content + decoder->Flush();
   } else if (encoding.IsValid()) {
     text_content = encoding.Decode(
