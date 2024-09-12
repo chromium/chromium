@@ -580,7 +580,7 @@ std::string snakeCaseToCamelCase(std::string snake_case) {
   char prev = '_';
   for (char& c : snake_case) {
     if (prev == '_') {
-      c = std::toupper(cur);
+      c = std::toupper(c);
     }
     prev = c;
   }
@@ -589,7 +589,7 @@ std::string snakeCaseToCamelCase(std::string snake_case) {
   // call erase from there to the end to actually remove.
   snake_case.erase(std::remove(snake_case.begin(), snake_case.end(), '_'),
                    snake_case.end());
-  return std::move(snake_case);
+  return snake_case;
 }
 
 // Checks if the given array definition involves an unnamed struct type
