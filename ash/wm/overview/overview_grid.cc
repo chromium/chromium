@@ -1387,7 +1387,8 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         root_window_->layer()->GetCompositor(),
         kOverviewDelayedDeskBarPresentationHistogram, "",
-        kDeskBarEnterExitPresentationMaxLatency);
+        ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+            kDeskBarEnterExitPresentationMaxLatency));
     presentation_time_recorder->RequestNext();
     MaybeInitDesksWidget();
   }

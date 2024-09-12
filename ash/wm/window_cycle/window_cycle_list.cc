@@ -381,7 +381,8 @@ void WindowCycleList::InitWindowCycleView() {
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       root_window->layer()->GetCompositor(),
       kEnterWindowCyclePresentationHistogramName, "",
-      kEnterPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kEnterPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   // Close any tray bubbles that are opened before creating the cycle view.
