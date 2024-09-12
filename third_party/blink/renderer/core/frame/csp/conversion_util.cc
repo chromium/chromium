@@ -42,7 +42,6 @@ WebCSPSourceList ConvertToPublic(
           std::move(hashes),
           source_list->allow_self,
           source_list->allow_star,
-          source_list->allow_response_redirects,
           source_list->allow_inline,
           source_list->allow_inline_speculation_rules,
           source_list->allow_eval,
@@ -106,8 +105,7 @@ network::mojom::blink::CSPSourceListPtr ConvertToMojoBlink(
 
   return network::mojom::blink::CSPSourceList::New(
       std::move(sources), ConvertToWTF(source_list.nonces), std::move(hashes),
-      source_list.allow_self, source_list.allow_star,
-      source_list.allow_response_redirects, source_list.allow_inline,
+      source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,
       source_list.allow_dynamic, source_list.allow_unsafe_hashes,

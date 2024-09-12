@@ -4776,9 +4776,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     return;
   }
 
-  // The CSP 'navigate-to' directive needs to know whether the response is a
-  // redirect or not in order to perform its checks. This is the reason why we
-  // need to check the CSP both on request and response.
   net::Error net_error = CheckContentSecurityPolicy(
       was_redirected_ /* has_followed_redirect */,
       false /* url_upgraded_after_redirect */, true /* is_response_check */);
@@ -6683,7 +6680,6 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     network::mojom::CSPDirectiveName directive,
     bool has_followed_redirect,
     bool url_upgraded_after_redirect,
-    bool is_response_check,
     bool is_opaque_fenced_frame,
     network::CSPContext::CheckCSPDisposition disposition) {
   GURL url;
@@ -6701,8 +6697,8 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   }
   network::CSPCheckResult result = context->IsAllowedByCsp(
       policies, directive, url, commit_params_->original_url,
-      has_followed_redirect, is_response_check, common_params_->source_location,
-      disposition, begin_params_->is_form_submission, is_opaque_fenced_frame);
+      has_followed_redirect, common_params_->source_location, disposition,
+      begin_params_->is_form_submission, is_opaque_fenced_frame);
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         GetParentFrame(),
@@ -6735,7 +6731,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
         !IsAllowedByCSPDirective(
             initiator_policies->content_security_policies, &initiator_context,
             network::mojom::CSPDirectiveName::FormAction, has_followed_redirect,
-            url_upgraded_after_redirect, is_response_check,
+            url_upgraded_after_redirect,
             /*is_opaque_fenced_frame=*/false, disposition)) {
       // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
       // a better user experience as the user is not presented with an error
@@ -6743,24 +6739,6 @@ net::Error NavigationRequest::CheckCSPDirectives(
       // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
       // overridden by the checks below.
       error = net::ERR_ABORTED;
-    }
-
-    if (base::FeatureList::IsEnabled(
-            features::kExperimentalContentSecurityPolicyFeatures)) {
-      // [navigate-to]
-      if (!IsAllowedByCSPDirective(
-              initiator_policies->content_security_policies, &initiator_context,
-              network::mojom::CSPDirectiveName::NavigateTo,
-              has_followed_redirect, url_upgraded_after_redirect,
-              is_response_check, /*is_opaque_fenced_frame=*/false,
-              disposition)) {
-        // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
-        // a better user experience as the user is not presented with an error
-        // page. However if other CSP directives life frame-src are violated, it
-        // may be appropriate for them to use ERR_BLOCKED_BY_CSP so this can be
-        // overridden by the checks below.
-        error = net::ERR_ABORTED;
-      }
     }
   }
 
@@ -6779,8 +6757,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
                 ? network::mojom::CSPDirectiveName::FencedFrameSrc
                 : network::mojom::CSPDirectiveName::FrameSrc,
             has_followed_redirect, url_upgraded_after_redirect,
-            is_response_check, is_opaque_fenced_frame_root_navigation,
-            disposition)) {
+            is_opaque_fenced_frame_root_navigation, disposition)) {
       error = net::ERR_BLOCKED_BY_CSP;
     }
   }

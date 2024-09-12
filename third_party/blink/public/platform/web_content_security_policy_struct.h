@@ -59,7 +59,6 @@ struct WebCSPSourceList {
   WebVector<WebCSPHashSource> hashes;
   bool allow_self;
   bool allow_star;
-  bool allow_response_redirects;
   bool allow_inline;
   bool allow_inline_speculation_rules;
   bool allow_eval;

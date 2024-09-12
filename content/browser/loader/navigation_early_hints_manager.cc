@@ -120,10 +120,10 @@ bool CheckContentSecurityPolicyForPreload(
       if (it == policy->directives.end())
         continue;
 
-      if (!network::CheckCSPSourceList(
-              directive, *it->second, link->href, *(policy->self_origin),
-              /*has_followed_redirect=*/false, /*is_response_check=*/false,
-              /*is_opaque_fenced_frame=*/false)) {
+      if (!network::CheckCSPSourceList(directive, *it->second, link->href,
+                                       *(policy->self_origin),
+                                       /*has_followed_redirect=*/false,
+                                       /*is_opaque_fenced_frame=*/false)) {
         // TODO(crbug.com/40218207): Report CSP violation once the final
         // response is received.
         return false;

@@ -147,9 +147,6 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "report-to")) {
     return CSPDirectiveName::ReportTo;
   }
-  if (base::EqualsCaseInsensitiveASCII(name, "navigate-to")) {
-    return CSPDirectiveName::NavigateTo;
-  }
 
   return CSPDirectiveName::Unknown;
 }
@@ -174,7 +171,6 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ImgSrc:
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
-    case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
@@ -212,7 +208,6 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::ImgSrc:
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
-    case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -246,9 +241,6 @@ const char* ErrorMessage(CSPDirectiveName directive) {
              "Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::FrameSrc:
       return "Refused to frame '$1' because it violates the "
-             "following Content Security Policy directive: \"$2\".";
-    case CSPDirectiveName::NavigateTo:
-      return "Refused to navigate to '$1' because it violates the "
              "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::ConnectSrc:
       return "Refused to connect to '$1' because it violates the "
@@ -702,13 +694,6 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
-    if (base::EqualsCaseInsensitiveASCII(expression,
-                                         "'unsafe-allow-redirects'") &&
-        directive_name == CSPDirectiveName::NavigateTo) {
-      directive->allow_response_redirects = true;
-      continue;
-    }
-
     if (base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic'")) {
       directive->allow_dynamic = true;
       continue;
@@ -1039,7 +1024,6 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::ImgSrc:
       case CSPDirectiveName::ManifestSrc:
       case CSPDirectiveName::MediaSrc:
-      case CSPDirectiveName::NavigateTo:
       case CSPDirectiveName::ObjectSrc:
       case CSPDirectiveName::ScriptSrc:
       case CSPDirectiveName::ScriptSrcAttr:
@@ -1235,7 +1219,6 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::DefaultSrc:
     case CSPDirectiveName::FormAction:
     case CSPDirectiveName::FrameAncestors:
-    case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -1406,7 +1389,6 @@ CSPCheckResult CheckContentSecurityPolicy(
     const GURL& url,
     const GURL& url_before_redirects,
     bool has_followed_redirect,
-    bool is_response_check,
     CSPContext* context,
     const mojom::SourceLocationPtr& source_location,
     bool is_form_submission,
@@ -1422,13 +1404,6 @@ CSPCheckResult CheckContentSecurityPolicy(
     return CSPCheckResult::Allowed();
   }
 
-  // 'navigate-to' has no effect when doing a form submission and a
-  // 'form-action' directive is present.
-  if (is_form_submission && directive_name == CSPDirectiveName::NavigateTo &&
-      policy->directives.count(CSPDirectiveName::FormAction)) {
-    return CSPCheckResult::Allowed();
-  }
-
   for (CSPDirectiveName effective_directive_name = directive_name;
        effective_directive_name != CSPDirectiveName::Unknown;
        effective_directive_name =
@@ -1440,7 +1415,7 @@ CSPCheckResult CheckContentSecurityPolicy(
     const auto& source_list = directive->second;
     CSPCheckResult result = CheckCSPSourceList(
         directive_name, *source_list, url, *(policy->self_origin),
-        has_followed_redirect, is_response_check, is_opaque_fenced_frame);
+        has_followed_redirect, is_opaque_fenced_frame);
 
     if (!result) {
       ReportViolation(
@@ -1554,7 +1529,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       CSPDirectiveName::StyleSrcAttr,   CSPDirectiveName::StyleSrcElem,
       CSPDirectiveName::WorkerSrc,      CSPDirectiveName::BaseURI,
       CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
-      CSPDirectiveName::NavigateTo,     CSPDirectiveName::FencedFrameSrc};
+      CSPDirectiveName::FencedFrameSrc};
 
   return base::ranges::all_of(directives, [&](CSPDirectiveName directive) {
     auto required = GetSourceList(directive, policy_a);
@@ -1574,8 +1549,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       if (source_list.second)
         returned.push_back(source_list.second);
     }
-    // TODO(amalika): Add checks for sandbox, disown-opener,
-    // navigation-to.
+    // TODO(amalika): Add checks for sandbox, disown-opener.
     return CSPSourceListSubsumes(*required.second, returned, required.first,
                                  origin_b);
   });
@@ -1639,8 +1613,6 @@ std::string ToString(CSPDirectiveName name) {
       return "worker-src";
     case CSPDirectiveName::ReportTo:
       return "report-to";
-    case CSPDirectiveName::NavigateTo:
-      return "navigate-to";
     case CSPDirectiveName::Unknown:
       return "";
   }

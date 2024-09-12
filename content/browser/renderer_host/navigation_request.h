@@ -1551,20 +1551,18 @@ class CONTENT_EXPORT NavigationRequest
   void CommitPageActivation();
 
   // Checks if the specified CSP context's relevant CSP directive
-  // allows the navigation. This is called to perform the frame-src
-  // and navigate-to checks.
+  // allows the navigation. This is called to perform the frame-src check.
   bool IsAllowedByCSPDirective(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
       network::CSPContext* context,
       network::mojom::CSPDirectiveName directive,
       bool has_followed_redirect,
       bool url_upgraded_after_redirect,
-      bool is_response_check,
       bool is_opaque_fenced_frame,
       network::CSPContext::CheckCSPDisposition disposition);
 
-  // Checks if CSP allows the navigation. This will check the frame-src,
-  // fenced-frame-src and navigate-to directives. Returns net::OK if the checks
+  // Checks if CSP allows the navigation. This will check the frame-src and
+  // fenced-frame-src directives. Returns net::OK if the checks
   // pass, and net::ERR_ABORTED or net::ERR_BLOCKED_BY_CSP depending on which
   // checks fail.
   net::Error CheckCSPDirectives(

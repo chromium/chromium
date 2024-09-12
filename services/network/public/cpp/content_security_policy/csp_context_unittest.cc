@@ -118,14 +118,14 @@ TEST(CSPContextTest, SchemeShouldBypassCSP) {
 
   EXPECT_FALSE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
                                       GURL("data:text/html,<html></html>"),
-                                      GURL(), false, false, SourceLocation(),
+                                      GURL(), false, SourceLocation(),
                                       CSPContext::CHECK_ALL_CSP, false));
 
   context.AddSchemeToBypassCSP("data");
 
   EXPECT_TRUE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
                                      GURL("data:text/html,<html></html>"),
-                                     GURL(), false, false, SourceLocation(),
+                                     GURL(), false, SourceLocation(),
                                      CSPContext::CHECK_ALL_CSP, false));
 }
 
@@ -144,20 +144,20 @@ TEST(CSPContextTest, MultiplePolicies) {
 
   EXPECT_TRUE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
                                      GURL("http://a.com"), GURL("http://a.com"),
-                                     false, false, SourceLocation(),
+                                     false, SourceLocation(),
                                      CSPContext::CHECK_ALL_CSP, false));
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("http://b.com"),
-      GURL("http://b.com"), false, false, SourceLocation(),
-      CSPContext::CHECK_ALL_CSP, false));
+      GURL("http://b.com"), false, SourceLocation(), CSPContext::CHECK_ALL_CSP,
+      false));
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("http://c.com"),
-      GURL("http://c.com"), false, false, SourceLocation(),
-      CSPContext::CHECK_ALL_CSP, false));
+      GURL("http://c.com"), false, SourceLocation(), CSPContext::CHECK_ALL_CSP,
+      false));
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("http://d.com"),
-      GURL("http://d.com"), false, false, SourceLocation(),
-      CSPContext::CHECK_ALL_CSP, false));
+      GURL("http://d.com"), false, SourceLocation(), CSPContext::CHECK_ALL_CSP,
+      false));
 }
 
 TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
@@ -186,7 +186,7 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
   {
     EXPECT_FALSE(context.IsAllowedByCsp(
         policies, CSPDirectiveName::FrameSrc, blocked_url, original_url, false,
-        false, source_location, CSPContext::CHECK_ALL_CSP, false));
+        source_location, CSPContext::CHECK_ALL_CSP, false));
     ASSERT_EQ(1u, context.violations().size());
     EXPECT_EQ(context.violations()[0]->blocked_url, blocked_url);
     EXPECT_EQ(context.violations()[0]->source_location->url,
@@ -204,7 +204,7 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
   {
     EXPECT_FALSE(context.IsAllowedByCsp(
         policies, CSPDirectiveName::FormAction, blocked_url, original_url,
-        false, false, source_location, CSPContext::CHECK_ALL_CSP, false));
+        false, source_location, CSPContext::CHECK_ALL_CSP, false));
     ASSERT_EQ(2u, context.violations().size());
     EXPECT_EQ(context.violations()[1]->blocked_url, original_url);
     EXPECT_EQ(context.violations()[1]->source_location->url,
@@ -225,7 +225,7 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
   {
     EXPECT_FALSE(context.IsAllowedByCsp(
         policies, CSPDirectiveName::FrameSrc, blocked_url, original_url, false,
-        false, source_location, CSPContext::CHECK_ALL_CSP, false));
+        source_location, CSPContext::CHECK_ALL_CSP, false));
     ASSERT_EQ(3u, context.violations().size());
     EXPECT_EQ(context.violations()[2]->blocked_url,
               blocked_url.DeprecatedGetOriginAsURL());
@@ -258,8 +258,8 @@ TEST(CSPContextTest, MultipleInfringement) {
 
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("http://c.com"),
-      GURL("http://c.com"), false, false, SourceLocation(),
-      CSPContext::CHECK_ALL_CSP, false));
+      GURL("http://c.com"), false, SourceLocation(), CSPContext::CHECK_ALL_CSP,
+      false));
   ASSERT_EQ(2u, context.violations().size());
   const char console_message_a[] =
       "Refused to frame 'http://c.com/' because it violates the following "
@@ -295,7 +295,7 @@ TEST(CSPContextTest, CheckCSPDisposition) {
   // be reported.
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("https://not-example.com"),
-      GURL("https://not-example.com"), false, false, SourceLocation(),
+      GURL("https://not-example.com"), false, SourceLocation(),
       CSPContext::CHECK_ALL_CSP, false));
   ASSERT_EQ(2u, context.violations().size());
   const char console_message_a[] =
@@ -318,7 +318,7 @@ TEST(CSPContextTest, CheckCSPDisposition) {
   context.ClearViolations();
   EXPECT_TRUE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("https://not-example.com"),
-      GURL("https://not-example.com"), false, false, SourceLocation(),
+      GURL("https://not-example.com"), false, SourceLocation(),
       CSPContext::CHECK_REPORT_ONLY_CSP, false));
   ASSERT_EQ(1u, context.violations().size());
   EXPECT_EQ(console_message_b, context.violations()[0]->console_message);
@@ -328,7 +328,7 @@ TEST(CSPContextTest, CheckCSPDisposition) {
   context.ClearViolations();
   EXPECT_FALSE(context.IsAllowedByCsp(
       policies, CSPDirectiveName::FrameSrc, GURL("https://not-example.com"),
-      GURL("https://not-example.com"), false, false, SourceLocation(),
+      GURL("https://not-example.com"), false, SourceLocation(),
       CSPContext::CHECK_ENFORCED_CSP, false));
   ASSERT_EQ(1u, context.violations().size());
   EXPECT_EQ(console_message_a, context.violations()[0]->console_message);
@@ -343,7 +343,7 @@ TEST(CSPContextTest, BlockedDespiteWildcard) {
 
   EXPECT_FALSE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
                                       GURL("data:text/html,<html></html>"),
-                                      GURL(), false, false, SourceLocation(),
+                                      GURL(), false, SourceLocation(),
                                       CSPContext::CHECK_ALL_CSP, false));
   EXPECT_EQ(context.violations().size(), 1u);
   EXPECT_EQ(context.violations()[0]->console_message,

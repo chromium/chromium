@@ -1467,8 +1467,6 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "manifest-src";
     case CSPDirectiveName::MediaSrc:
       return "media-src";
-    case CSPDirectiveName::NavigateTo:
-      return "navigate-to";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
     case CSPDirectiveName::ReportTo:
@@ -1536,8 +1534,6 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::ManifestSrc;
   if (name == "media-src")
     return CSPDirectiveName::MediaSrc;
-  if (name == "navigate-to")
-    return CSPDirectiveName::NavigateTo;
   if (name == "object-src")
     return CSPDirectiveName::ObjectSrc;
   if (name == "report-to")

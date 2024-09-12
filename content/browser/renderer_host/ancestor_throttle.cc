@@ -367,8 +367,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
             GURL(),  // url_before_redirects is ignored for frame-ancestors
-            navigation_handle()->WasServerRedirect(),
-            true /* is_response_check */, empty_source_location,
+            navigation_handle()->WasServerRedirect(), empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
             navigation_handle()->IsFormSubmission());
     if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
