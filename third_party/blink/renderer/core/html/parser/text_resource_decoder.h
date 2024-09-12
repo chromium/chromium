@@ -87,12 +87,12 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
       TextResourceDecoderOptions::ContentType,
       const WTF::TextEncoding& default_encoding);
 
-  void AddToBuffer(const char* data, wtf_size_t data_length);
-  void AddToBufferIfEmpty(const char* data, wtf_size_t data_length);
+  void AddToBuffer(base::span<const char> data);
+  void AddToBufferIfEmpty(base::span<const char> data);
   bool CheckForCSSCharset(const char*, wtf_size_t);
   bool CheckForXMLCharset(const char*, wtf_size_t);
-  void CheckForMetaCharset(const char*, wtf_size_t);
-  void AutoDetectEncodingIfAllowed(const char* data, wtf_size_t len);
+  void CheckForMetaCharset(base::span<const char>);
+  void AutoDetectEncodingIfAllowed(base::span<const char> data);
 
   const TextResourceDecoderOptions options_;
 
