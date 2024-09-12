@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
@@ -133,6 +134,11 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
 }
 
 void DeviceLocalAccountPolicyService::CheckPolicyFetchRequired() {
+  // Skip the policy logic if the device is not enterprise managed.
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    return;
+  }
+
   // We keep a flag file in memory whenever the first policy fetch happened. If
   // it happened before, then on Chrome start the first policy fetch should be
   // skipped since the policy should be up to date from invalidations.
