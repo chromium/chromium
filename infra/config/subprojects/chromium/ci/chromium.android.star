@@ -876,10 +876,7 @@ ci.builder(
             "x86-64",
         ],
     ),
-    # TODO(crbug.com/364967534): Enable gardener_rotations once stable.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(crbug.com/364967534): Enable tree_closing once stable.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         # TODO(crbug.com/364967534): Change to "on_cq".
         category = "builder_tester|x64",

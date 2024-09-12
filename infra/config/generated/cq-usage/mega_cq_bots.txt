@@ -2,6 +2,7 @@ chromium/try/android-10-arm64-rel
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-landscape-x64-dbg
 chromium/try/android-12l-x64-dbg
+chromium/try/android-12l-x64-rel-cq
 chromium/try/android-13-x64-rel
 chromium/try/android-14-arm64-rel
 chromium/try/android-arm-compile-dbg
