@@ -56,6 +56,48 @@ if (is_win) {
   }
 }
 
+if (is_linux) {
+  source_set("secret_portal_key_provider") {
+    sources = [
+      "secret_portal_key_provider.cc",
+      "secret_portal_key_provider.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/dbus/properties",
+      "//components/dbus/thread_linux",
+      "//components/dbus/utils",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/sync",
+      "//components/prefs",
+      "//crypto",
+      "//dbus",
+    ]
+  }
+
+  source_set("test_secret_portal") {
+    testonly = true
+
+    sources = [
+      "test_secret_portal.cc",
+      "test_secret_portal.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      ":secret_portal_key_provider",
+      "//base",
+      "//components/dbus/properties",
+      "//components/dbus/utils",
+      "//components/os_crypt/async/common",
+      "//dbus",
+      "//testing/gtest",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_async_unittest.cc" ]
@@ -77,6 +119,18 @@ source_set("unit_tests") {
     deps += [
       ":dpapi_key_provider",
       "//components/prefs:test_support",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [ "secret_portal_key_provider_unittest.cc" ]
+    deps += [
+      ":secret_portal_key_provider",
+      "//components/dbus/properties",
+      "//components/dbus/utils",
+      "//components/prefs:test_support",
+      "//dbus:test_support",
+      "//testing/gmock",
     ]
   }
 }

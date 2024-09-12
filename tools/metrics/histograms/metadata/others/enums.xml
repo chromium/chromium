@@ -124,6 +124,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Succeessfully got salient image url from local cache."/>
 </enum>
 
+<enum name="SecretPortalKeyProviderInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoService"/>
+  <int value="2" label="PipeFailed"/>
+  <int value="3" label="InvalidResponseFormat"/>
+  <int value="4" label="ResponsePathMismatch"/>
+  <int value="5" label="PipeReadFailed"/>
+  <int value="6" label="EmptySecret"/>
+  <int value="7" label="NoResponse"/>
+  <int value="8" label="SignalReadFailed"/>
+  <int value="9" label="UserCancelledUnlock"/>
+  <int value="10" label="DestructedBeforeComplete"/>
+  <int value="11" label="SignalConnectFailed"/>
+  <int value="12" label="SignalParseFailed"/>
+</enum>
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>

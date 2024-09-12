@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
 BASE_DECLARE_FEATURE(kClosedTabCache);
 
+#if BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kDbusSecretPortal);
+#endif
+
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
@@ -138,6 +142,11 @@ BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
+
+#if BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
+#endif
+
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
 
 #if !BUILDFLAG(IS_ANDROID)

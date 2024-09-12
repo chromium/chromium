@@ -6901,7 +6901,10 @@ static_library("browser") {
       "dbus_memory_pressure_evaluator_linux.h",
     ]
 
-    deps += [ "//chrome/common:chrome_features" ]
+    deps += [
+      "//chrome/common:chrome_features",
+      "//components/os_crypt/async/browser:secret_portal_key_provider",
+    ]
   }
 
   if (is_linux || is_chromeos_lacros) {

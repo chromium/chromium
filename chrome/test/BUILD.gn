@@ -11691,7 +11691,11 @@ if (!is_android && !is_chromeos_device) {
       if (ozone_platform_x11 && enable_remoting) {
         sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
       }
-      deps += [ "//ui/linux:linux_ui" ]
+      deps += [
+        "//components/os_crypt/async/browser:secret_portal_key_provider",
+        "//components/os_crypt/async/browser:test_secret_portal",
+        "//ui/linux:linux_ui",
+      ]
     }
 
     if (is_linux || is_chromeos_lacros) {

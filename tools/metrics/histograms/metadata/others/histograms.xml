@@ -6850,6 +6850,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.SecretPortalKeyProvider.GotToken" enum="Boolean"
+    expires_after="2025-07-28">
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    True if a token was received from the service. The token is passed back to
+    the service on subsequent usage to ensure the same secret will be returned.
+    Emitted only on Linux when the desktop portal has emitted the request
+    completed signal after user interaction is finished.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.SecretPortalKeyProvider.InitStatus"
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-07-28">
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The result of the org.freedesktop.portal.Secret OSCrypt Async Key Provider
+    initialization. This is recorded once during browser startup if
+    SecretPortalKeyProvider enabled, on Linux only.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.SecretPortalKeyProvider.NewInitFailure"
+    enum="SecretPortalKeyProviderInitStatus" expires_after="2025-07-28">
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The result of the org.freedesktop.portal.Secret OSCrypt Async Key Provider
+    initialization if the previous initialization succeeded and the current
+    initialization failed, and the previous desktop matches the current desktop.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Win.Decrypt.Result" enum="BooleanSuccess"
     expires_after="2025-02-10">
   <owner>wfh@chromium.org</owner>

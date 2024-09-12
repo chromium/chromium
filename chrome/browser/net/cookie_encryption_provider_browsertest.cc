@@ -35,6 +35,13 @@
 #include "chrome/install_static/test/scoped_install_details.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "components/os_crypt/async/browser/secret_portal_key_provider.h"
+#include "components/os_crypt/async/browser/test_secret_portal.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace {
 
 enum TestConfiguration {
@@ -68,6 +75,10 @@ enum TestConfiguration {
   // have been data encrypted with this key before the policy was disabled.
   kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  // The Secret Portal key provider is being registered with Chrome.
+  kOSCryptAsyncWithSecretPortalProvider,
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 enum MetricsExpectation {
@@ -77,6 +88,9 @@ enum MetricsExpectation {
   kAppBoundEncryptMetrics,
   kAppBoundDecryptMetrics,
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  kSecretPortalMetrics,
+#endif  // BUILDFLAG(IS_LINUX)
   kNoMetrics,
 };
 
@@ -122,6 +136,38 @@ class CookieEncryptionProviderBrowserTest
             std::make_unique<os_crypt::FakeInstallDetails>()) {}
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
+
+    base::OnceClosure initialize_server = base::BindOnce(
+        [](CookieEncryptionProviderBrowserTest* self) {
+          self->test_secret_portal_ =
+              std::make_unique<os_crypt_async::TestSecretPortal>(
+                  content::IsPreTest());
+          os_crypt_async::SecretPortalKeyProvider::
+              GetSecretServiceNameForTest() =
+                  self->test_secret_portal_->BusName();
+        },
+        base::Unretained(this));
+    class PostCreateThreadsObserver : public ChromeBrowserMainExtraParts {
+     public:
+      explicit PostCreateThreadsObserver(base::OnceClosure post_create_threads)
+          : post_create_threads_(std::move(post_create_threads)) {}
+
+      void PostCreateThreads() override {
+        std::move(post_create_threads_).Run();
+      }
+
+     private:
+      base::OnceClosure post_create_threads_;
+    };
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<PostCreateThreadsObserver>(
+            std::move(initialize_server)));
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
     if ((IsElevationRequired(GetParam().before) ||
@@ -149,6 +195,9 @@ class CookieEncryptionProviderBrowserTest
         disabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+        disabled_features.push_back(features::kDbusSecretPortal);
+#endif  // BUILDFLAG(IS_LINUX)
         break;
 #if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncWithAppBoundProvider:
@@ -214,6 +263,15 @@ class CookieEncryptionProviderBrowserTest
             &policy_provider_);
         break;
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+      case kOSCryptAsyncWithSecretPortalProvider:
+        enabled_features.push_back(
+            features::kUseOsCryptAsyncForCookieEncryption);
+        enabled_features.push_back(features::kDbusSecretPortal);
+        enabled_features.push_back(
+            features::kSecretPortalKeyProviderUseForEncryption);
+        break;
+#endif  // BUILDFLAG(IS_LINUX)
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -264,6 +322,15 @@ class CookieEncryptionProviderBrowserTest
             "OSCrypt.AppBoundProvider.Encrypt.ResultCode", 0);
         break;
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+      case kSecretPortalMetrics:
+        histogram_tester_.ExpectBucketCount(
+            os_crypt_async::SecretPortalKeyProvider::kUmaInitStatusEnum,
+            os_crypt_async::SecretPortalKeyProvider::InitStatus::kSuccess, 1);
+        histogram_tester_.ExpectTotalCount(
+            os_crypt_async::SecretPortalKeyProvider::kUmaNewInitFailureEnum, 0);
+        break;
+#endif  // BUILDFLAG(IS_LINUX)
       case kNoMetrics:
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultCode", 0);
@@ -285,6 +352,9 @@ class CookieEncryptionProviderBrowserTest
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<os_crypt_async::TestSecretPortal> test_secret_portal_;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 IN_PROC_BROWSER_TEST_P(CookieEncryptionProviderBrowserTest, PRE_CookieStorage) {
@@ -415,5 +485,12 @@ INSTANTIATE_TEST_SUITE_P(
          .metrics_expectation_before = kAppBoundEncryptMetrics,
          .metrics_expectation_after = kAppBoundDecryptMetrics},
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+        {.name = "secret_portal",
+         .before = kOSCryptAsyncWithSecretPortalProvider,
+         .after = kOSCryptAsyncWithSecretPortalProvider,
+         .metrics_expectation_before = kSecretPortalMetrics,
+         .metrics_expectation_after = kSecretPortalMetrics},
+#endif  // BUILDFLAG(IS_LINUX)
     }),
     [](const auto& info) { return info.param.name; });
