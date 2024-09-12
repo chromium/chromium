@@ -29,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -5522,6 +5523,47 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RenderIdleTime) {
                                     ->GetChildProcessIdleTime();
   base::TimeDelta browser_td = base::TimeTicks::Now() - start;
   EXPECT_TRUE(browser_td >= renderer_td);
+}
+
+class WebContentsDiscardBrowserTest : public WebContentsImplBrowserTest {
+ public:
+  WebContentsDiscardBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsTitle) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  const GURL initial_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Update the tab title.
+  const std::u16string test_title(u"test_title");
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  contents->UpdateTitleForEntry(
+      contents->GetController().GetLastCommittedEntry(), test_title);
+  EXPECT_EQ(test_title, contents->GetTitle());
+
+  // Discard the tab.
+  testing::NiceMock<MockWebContentsObserver> observer(contents);
+  EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
+  EXPECT_CALL(observer, WasDiscarded()).Times(1);
+  EXPECT_FALSE(contents->WasDiscarded());
+  contents->Discard();
+  EXPECT_TRUE(contents->WasDiscarded());
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+
+  // The title should remain unchanged post discard.
+  EXPECT_EQ(test_title, contents->GetTitle());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

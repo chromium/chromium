@@ -7200,9 +7200,11 @@ FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChildInternal(
 void RenderFrameHostImpl::UpdateTitle(
     const std::optional<::std::u16string>& title,
     base::i18n::TextDirection title_direction) {
-  // This message should only be sent for top-level frames.
-  if (!is_main_frame())
+  // This message should only be sent for top-level frames. Suppress title
+  // updates if the message was sent for a discarded document.
+  if (!is_main_frame() || document_associated_data_->is_discarded()) {
     return;
+  }
 
   std::u16string received_title;
   if (title.has_value())
