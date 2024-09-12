@@ -491,8 +491,9 @@ void PlatformFontMac::CalculateMetricsAndInitRenderParams() {
   render_params_ = gfx::GetFontRenderParams(query, nullptr);
 }
 
+// static
 base::apple::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
-    FontSpec font_spec) const {
+    FontSpec font_spec) {
   // One might think that a font descriptor with the NSFontWeightTrait/
   // kCTFontWeightTrait trait could be used to look up a font with a specific
   // weight. That doesn't work, though. You can ask a font for its weight, but
