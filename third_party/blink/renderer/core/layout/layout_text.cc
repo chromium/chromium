@@ -510,11 +510,12 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
   }
 }
 
-void LayoutText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                               MapCoordinatesFlags mode) const {
+void LayoutText::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                         const LayoutBoxModelObject* ancestor,
+                                         MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  CollectLineBoxRects([this, &quads, mode](const PhysicalRect& r) {
-    quads.push_back(LocalRectToAbsoluteQuad(r, mode));
+  CollectLineBoxRects([this, &quads, ancestor, mode](const PhysicalRect& r) {
+    quads.push_back(LocalRectToAncestorQuad(r, ancestor, mode));
   });
 }
 

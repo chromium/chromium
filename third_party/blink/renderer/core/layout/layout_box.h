@@ -540,8 +540,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return MarginBoxOutsets().right;
   }
 
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
 
   void LayoutSubtreeRoot();

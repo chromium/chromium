@@ -235,8 +235,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
-  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
 
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
@@ -245,8 +246,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
  private:
   bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
+                            const LayoutBoxModelObject* ancestor,
                             MapCoordinatesFlags mode,
-                            bool map_to_absolute) const;
+                            bool map_to_ancestor) const;
 
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();

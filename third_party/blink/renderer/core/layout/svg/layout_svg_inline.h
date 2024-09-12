@@ -59,8 +59,9 @@ class LayoutSVGInline : public LayoutInline {
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const final;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const final;
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,

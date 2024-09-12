@@ -471,11 +471,13 @@ PhysicalOffset LayoutView::OffsetForFixedPosition() const {
   return IsScrollContainer() ? ScrolledContentOffset() : PhysicalOffset();
 }
 
-void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                               MapCoordinatesFlags mode) const {
+void LayoutView::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                         const LayoutBoxModelObject* ancestor,
+                                         MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalRectToAbsoluteQuad(
-      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), mode));
+  quads.push_back(LocalRectToAncestorQuad(
+      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), ancestor,
+      mode));
 }
 
 void LayoutView::CommitPendingSelection() {

@@ -161,8 +161,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   void CommitPendingSelection();
 
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
 
   PhysicalRect ViewRect() const override;
   PhysicalRect OverflowClipRect(const PhysicalOffset& location,

@@ -55,8 +55,9 @@ class LayoutSVGModelObject : public LayoutObject {
     return DecoratedBoundingBox();
   }
 
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,

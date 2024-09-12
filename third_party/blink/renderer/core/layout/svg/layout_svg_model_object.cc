@@ -72,11 +72,13 @@ void LayoutSVGModelObject::MapAncestorToLocal(
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
 }
 
-void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                         MapCoordinatesFlags mode) const {
+void LayoutSVGModelObject::QuadsInAncestorInternal(
+    Vector<gfx::QuadF>& quads,
+    const LayoutBoxModelObject* ancestor,
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(
-      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
+      LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));
 }
 
 // This method is called from inside PaintOutline(), and since we call

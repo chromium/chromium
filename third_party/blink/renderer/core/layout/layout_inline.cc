@@ -469,50 +469,55 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
   return false;
 }
 
-void LayoutInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                 MapCoordinatesFlags mode) const {
-  QuadsForSelfInternal(quads, mode, true);
+void LayoutInline::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                           const LayoutBoxModelObject* ancestor,
+                                           MapCoordinatesFlags mode) const {
+  QuadsForSelfInternal(quads, ancestor, mode, true);
 }
 
 void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
+                                        const LayoutBoxModelObject* ancestor,
                                         MapCoordinatesFlags mode,
-                                        bool map_to_absolute) const {
+                                        bool map_to_ancestor) const {
   NOT_DESTROYED();
-  std::optional<gfx::Transform> mapping_to_absolute;
+  std::optional<gfx::Transform> mapping_to_ancestor;
   // Set to true if the transform to absolute space depends on the point
-  // being mapped (in which case we can't use LocalToAbsoluteTransform).
+  // being mapped (in which case we can't use LocalToAncestorTransform).
   bool transform_depends_on_point = false;
   bool transform_depends_on_point_computed = false;
-  auto PushAbsoluteQuad = [&transform_depends_on_point,
+  auto PushAncestorQuad = [&transform_depends_on_point,
                            &transform_depends_on_point_computed,
-                           &mapping_to_absolute, &quads, mode,
+                           &mapping_to_ancestor, &quads, ancestor, mode,
                            this](const PhysicalRect& rect) {
     if (!transform_depends_on_point_computed) {
       transform_depends_on_point_computed = true;
       transform_depends_on_point = AbsoluteTransformDependsOnPoint(*this);
       if (!transform_depends_on_point)
-        mapping_to_absolute.emplace(LocalToAbsoluteTransform(mode));
+        mapping_to_ancestor.emplace(LocalToAncestorTransform(ancestor, mode));
     }
     if (transform_depends_on_point) {
-      quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(gfx::RectF(rect)), mode));
+      quads.push_back(
+          LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor, mode));
     } else {
       quads.push_back(
-          mapping_to_absolute->MapQuad(gfx::QuadF(gfx::RectF(rect))));
+          mapping_to_ancestor->MapQuad(gfx::QuadF(gfx::RectF(rect))));
     }
   };
 
   CollectLineBoxRects(
-      [&PushAbsoluteQuad, &map_to_absolute, &quads](const PhysicalRect& rect) {
-        if (map_to_absolute)
-          PushAbsoluteQuad(rect);
-        else
+      [&PushAncestorQuad, &map_to_ancestor, &quads](const PhysicalRect& rect) {
+        if (map_to_ancestor) {
+          PushAncestorQuad(rect);
+        } else {
           quads.push_back(gfx::QuadF(gfx::RectF(rect)));
+        }
       });
   if (quads.empty()) {
-    if (map_to_absolute)
-      PushAbsoluteQuad(PhysicalRect());
-    else
+    if (map_to_ancestor) {
+      PushAncestorQuad(PhysicalRect());
+    } else {
       quads.push_back(gfx::QuadF());
+    }
   }
 }
 
@@ -944,7 +949,7 @@ void LayoutInline::AddOutlineRects(OutlineRectCollector& collector,
 gfx::RectF LayoutInline::LocalBoundingBoxRectF() const {
   NOT_DESTROYED();
   Vector<gfx::QuadF> quads;
-  QuadsForSelfInternal(quads, 0, false);
+  QuadsForSelfInternal(quads, /*ancestor=*/nullptr, 0, false);
 
   wtf_size_t n = quads.size();
   if (n == 0) {

@@ -2447,10 +2447,20 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // AbsoluteBoundingBoxRectHandlingEmptyInline by ScrollMargin.
   PhysicalRect AbsoluteBoundingBoxRectForScrollIntoView() const;
 
-  // Build an array of quads in absolute coords for line boxes
-  virtual void AbsoluteQuads(Vector<gfx::QuadF>&,
-                             MapCoordinatesFlags mode = 0) const {
+  // Build an array of quads relatively to `ancestor` (which may be nullptr, in
+  // which case they will be in absolute coordinates).
+  void QuadsInAncestor(Vector<gfx::QuadF>& quads,
+                       const LayoutBoxModelObject* ancestor,
+                       MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
+    QuadsInAncestorInternal(quads, ancestor, mode);
+  }
+
+  // Build an array of quads in absolute coords.
+  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
+                     MapCoordinatesFlags mode = 0) const {
+    NOT_DESTROYED();
+    QuadsInAncestor(quads, /*ancestor=*/nullptr, mode);
   }
 
   // The bounding box (see: absoluteBoundingBoxRect) including all descendant
@@ -3529,6 +3539,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       MapCoordinatesFlags mode) const;
   PhysicalOffset OffsetFromScrollableContainer(const LayoutObject*,
                                                bool ignore_scroll_offset) const;
+
+  virtual void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                                       const LayoutBoxModelObject* ancestor,
+                                       MapCoordinatesFlags) const {
+    NOT_DESTROYED();
+  }
 
   bool BackgroundIsKnownToBeObscured() const {
     NOT_DESTROYED();

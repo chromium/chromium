@@ -1105,14 +1105,16 @@ PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
   return PhysicalBoxStrut();
 }
 
-void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                              MapCoordinatesFlags mode) const {
+void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                        const LayoutBoxModelObject* ancestor,
+                                        MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-    flow_thread->AbsoluteQuadsForDescendant(*this, quads, mode);
+    flow_thread->QuadsInAncestorForDescendant(*this, quads, ancestor, mode);
     return;
   }
-  quads.push_back(LocalRectToAbsoluteQuad(PhysicalBorderBoxRect(), mode));
+  quads.push_back(
+      LocalRectToAncestorQuad(PhysicalBorderBoxRect(), ancestor, mode));
 }
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
