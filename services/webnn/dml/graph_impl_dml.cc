@@ -4184,12 +4184,30 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
            output_tensor_dims.size());
 
   const std::string& label = matmul->label;
-  // TODO(issues.chromium.org/353856233): Flatten adjacent dimensions for GEMM >
-  // 4D because DML_GEMM_OPERATOR_DESC restricts tensor's rank <= 4.
-  if (input_a_tensor_desc.GetDimensions().size() > 4) {
-    return CreateUnexpectedError(
-        mojom::Error::Code::kNotSupportedError,
-        "The input tensor rank is larger than 4 for matmul operator.", label);
+  // Flatten adjacent dimensions for GEMM > 4D because DML_GEMM_OPERATOR_DESC
+  // restricts tensor's rank <= 4.
+  auto adjusted_output_tensor_desc = output_tensor_desc;
+  if (output_tensor_dims.size() > 4) {
+    // If flattening fails due to the non-default strides caused by
+    // broadcasting, append an identity node after the input to consume the
+    // non-default strides, ensuring successful flattening of the input.
+    if (!input_a_tensor_desc.RightAlignedFlattenTo(4)) {
+      input_a_node_output = AppendIdentityNode(
+          graph_builder, input_a_node_output, &input_a_tensor_desc);
+      input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+
+      CHECK(input_a_tensor_desc.RightAlignedFlattenTo(4));
+    }
+
+    if (!input_b_tensor_desc.RightAlignedFlattenTo(4)) {
+      input_b_node_output = AppendIdentityNode(
+          graph_builder, input_b_node_output, &input_b_tensor_desc);
+      input_b_tensor_desc = input_b_node_output->GetTensorDesc();
+
+      CHECK(input_b_tensor_desc.RightAlignedFlattenTo(4));
+    }
+
+    CHECK(adjusted_output_tensor_desc.RightAlignedFlattenTo(4));
   }
 
   // Use 4D GEMM which is available since feature level 1.0 for best
@@ -4198,11 +4216,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc.
   // TODO(issues.chromium.org/327244277): Remove the workaround of coercing
   // GEMM's tensors to 4D.
-  auto expanded_output_tensor_desc = output_tensor_desc;
-  if (output_tensor_dims.size() < 4) {
+  else if (output_tensor_dims.size() < 4) {
     input_a_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
     input_b_tensor_desc.EnsureMinimumRank(4, TensorDesc::Alignment::kTrailing);
-    expanded_output_tensor_desc.EnsureMinimumRank(
+    adjusted_output_tensor_desc.EnsureMinimumRank(
         4, TensorDesc::Alignment::kTrailing);
   }
 
@@ -4224,7 +4241,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
       .CTensor = nullptr,
-      .OutputTensor = &expanded_output_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &adjusted_output_tensor_desc.GetDMLTensorDesc(),
       .TransA = transpose_a ? DML_MATRIX_TRANSFORM_TRANSPOSE
                             : DML_MATRIX_TRANSFORM_NONE,
       .TransB = transpose_b ? DML_MATRIX_TRANSFORM_TRANSPOSE

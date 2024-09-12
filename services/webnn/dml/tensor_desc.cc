@@ -155,6 +155,47 @@ void TensorDesc::BroadcastTo(base::span<const uint32_t> broadcasted_dims,
   }
 }
 
+bool TensorDesc::RightAlignedFlattenTo(size_t flattened_rank) {
+  auto flattened_dimensions = dimensions_;
+  auto flattened_strides = strides_;
+  auto original_rank = dimensions_.size();
+  if (flattened_rank == original_rank) {
+    return true;
+  }
+  CHECK_LT(flattened_rank, original_rank);
+  CHECK_NE(flattened_rank, 0u);
+
+  auto flattened_size = base::MakeCheckedNum<uint32_t>(1);
+  for (size_t i = 0; i < original_rank - flattened_rank + 1; ++i) {
+    flattened_size *= flattened_dimensions[i];
+  }
+  flattened_dimensions.erase(
+      flattened_dimensions.begin(),
+      flattened_dimensions.begin() + original_rank - flattened_rank);
+  flattened_dimensions[0] = flattened_size.ValueOrDie();
+
+  flattened_strides.erase(
+      flattened_strides.begin(),
+      flattened_strides.begin() + original_rank - flattened_rank);
+
+  // Flattening is invalid if the total tensor size in bytes after flattening
+  // does not equal the original size. This can occur when the original strides
+  // are non-default values due to broadcasting or transposing.
+  if (CalculateDMLBufferTensorSize(buffer_desc_.DataType, flattened_dimensions,
+                                   flattened_strides) !=
+      buffer_desc_.TotalTensorSizeInBytes) {
+    return false;
+  }
+  dimensions_ = std::move(flattened_dimensions);
+  strides_ = std::move(flattened_strides);
+
+  buffer_desc_.DimensionCount = dimensions_.size();
+  buffer_desc_.Sizes = dimensions_.data();
+  buffer_desc_.Strides = strides_.data();
+
+  return true;
+}
+
 void TensorDesc::EnsureMinimumRank(size_t minimum_rank, Alignment alignment) {
   if (dimensions_.size() >= minimum_rank) {
     return;
