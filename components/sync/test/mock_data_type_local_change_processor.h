@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/model/metadata_batch.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -21,9 +21,10 @@ class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
  public:
   MockDataTypeLocalChangeProcessor();
 
-  MockDataTypeLocalChangeProcessor(const MockDataTypeLocalChangeProcessor&) = delete;
-  MockDataTypeLocalChangeProcessor& operator=(const MockDataTypeLocalChangeProcessor&) =
+  MockDataTypeLocalChangeProcessor(const MockDataTypeLocalChangeProcessor&) =
       delete;
+  MockDataTypeLocalChangeProcessor& operator=(
+      const MockDataTypeLocalChangeProcessor&) = delete;
 
   ~MockDataTypeLocalChangeProcessor() override;
 
@@ -69,10 +70,7 @@ class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
               GetEntityModificationTime,
               (const std::string& storage_key),
               (const override));
-  MOCK_METHOD(void,
-              OnModelStarting,
-              (DataTypeSyncBridge * bridge),
-              (override));
+  MOCK_METHOD(void, OnModelStarting, (DataTypeSyncBridge * bridge), (override));
   MOCK_METHOD(void,
               ModelReadyToSync,
               (std::unique_ptr<MetadataBatch> batch),
@@ -122,7 +120,8 @@ class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
   void DelegateCallsByDefaultTo(DataTypeLocalChangeProcessor* delegate);
 
  private:
-  base::WeakPtrFactory<MockDataTypeLocalChangeProcessor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MockDataTypeLocalChangeProcessor> weak_ptr_factory_{
+      this};
 };
 
 }  //  namespace syncer

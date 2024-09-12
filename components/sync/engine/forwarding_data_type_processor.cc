@@ -43,8 +43,7 @@ void ForwardingDataTypeProcessor::OnCommitCompleted(
                                 error_response_list);
 }
 
-void ForwardingDataTypeProcessor::OnCommitFailed(
-    SyncCommitError commit_error) {
+void ForwardingDataTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
   processor_->OnCommitFailed(commit_error);
 }
 

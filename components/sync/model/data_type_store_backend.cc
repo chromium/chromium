@@ -107,8 +107,9 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
   if (status.IsCorruption()) {
     DCHECK(db_ == nullptr);
     status = DestroyDatabase(path_str, env_.get());
-    if (status.ok())
+    if (status.ok()) {
       status = OpenDatabase(path_str, env_.get());
+    }
   }
   LogDbStatusByCallingSiteIfNeeded("Init", status);
   if (!status.ok()) {
@@ -158,8 +159,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
   options.paranoid_checks = true;
   options.write_buffer_size = 512 * 1024;
 
-  if (env)
+  if (env) {
     options.env = env;
+  }
 
   std::unique_ptr<leveldb::DB> tmp_db;
   const leveldb::Status status = leveldb_env::OpenDB(options, path, &tmp_db);
@@ -174,8 +176,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
 leveldb::Status DataTypeStoreBackend::DestroyDatabase(const std::string& path,
                                                       leveldb::Env* env) {
   leveldb_env::Options options;
-  if (env)
+  if (env) {
     options.env = env;
+  }
   return leveldb::DestroyDB(path, options);
 }
 
@@ -219,8 +222,9 @@ std::optional<ModelError> DataTypeStoreBackend::ReadAllRecordsWithPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     key.remove_prefix(prefix_slice.size());
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
@@ -253,8 +257,9 @@ std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     write_batch.Delete(key);
   }
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);

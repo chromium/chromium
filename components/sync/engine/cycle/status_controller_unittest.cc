@@ -24,8 +24,9 @@ TEST_F(StatusControllerTest, ReadYourWrites) {
   EXPECT_EQ(status.model_neutral_state().commit_result.type(),
             SyncerError::Type::kHttpError);
 
-  for (int i = 0; i < 14; i++)
+  for (int i = 0; i < 14; i++) {
     status.increment_num_successful_commits();
+  }
   EXPECT_EQ(14, status.model_neutral_state().num_successful_commits);
 }
 

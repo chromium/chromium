@@ -367,8 +367,7 @@ DataTypeWorker::PendingInvalidation::PendingInvalidation() = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation&
-DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) =
-    default;
+DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     std::unique_ptr<SyncInvalidation> invalidation,
     bool is_processed)

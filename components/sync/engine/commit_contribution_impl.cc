@@ -142,8 +142,9 @@ void CommitContributionImpl::AddToCommitMessage(
     }
   }
 
-  if (!context_.context().empty())
+  if (!context_.context().empty()) {
     commit_message->add_client_contexts()->CopyFrom(context_);
+  }
 }
 
 SyncerError CommitContributionImpl::ProcessCommitResponse(

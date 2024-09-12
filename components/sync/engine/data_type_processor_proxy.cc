@@ -46,9 +46,8 @@ void ForwardGetLocalChangesCall(
   }
 }
 
-void DataTypeProcessorProxy::GetLocalChanges(
-    size_t max_entries,
-    GetLocalChangesCallback callback) {
+void DataTypeProcessorProxy::GetLocalChanges(size_t max_entries,
+                                             GetLocalChangesCallback callback) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&ForwardGetLocalChangesCall, processor_,
                                         max_entries, std::move(callback)));

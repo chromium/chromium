@@ -102,8 +102,9 @@ const std::string& SyncData::GetTitle() const {
 }
 
 std::string SyncData::ToString() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return "<Invalid SyncData>";
+  }
 
   std::string type = DataTypeToDebugString(GetDataType());
   std::string specifics;

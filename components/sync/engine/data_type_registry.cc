@@ -104,8 +104,9 @@ DataTypeSet DataTypeRegistry::GetConnectedTypes() const {
 DataTypeSet DataTypeRegistry::GetInitialSyncEndedTypes() const {
   DataTypeSet result;
   for (const auto& [type, update_handler] : update_handler_map_) {
-    if (update_handler->IsInitialSyncEnded())
+    if (update_handler->IsInitialSyncEnded()) {
       result.Put(type);
+    }
   }
   return result;
 }
@@ -176,9 +177,8 @@ void DataTypeRegistry::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
   }
 }
 
-void DataTypeRegistry::OnCryptographerStateChanged(
-    Cryptographer* cryptographer,
-    bool has_pending_keys) {
+void DataTypeRegistry::OnCryptographerStateChanged(Cryptographer* cryptographer,
+                                                   bool has_pending_keys) {
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
     worker->OnCryptographerChange();
@@ -186,7 +186,7 @@ void DataTypeRegistry::OnCryptographerStateChanged(
 }
 
 void DataTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
-                                                base::Time passphrase_time) {
+                                               base::Time passphrase_time) {
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
     worker->UpdatePassphraseType(type);

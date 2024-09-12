@@ -429,7 +429,7 @@ int64_t MockDataTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
 }
 
 void MockDataTypeWorker::SetServerVersion(const ClientTagHash& tag_hash,
-                                           int64_t version) {
+                                          int64_t version) {
   server_versions_[tag_hash] = version;
 }
 

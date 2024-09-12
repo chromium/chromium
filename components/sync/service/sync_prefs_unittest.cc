@@ -62,7 +62,6 @@ class SyncPrefsTest : public testing::Test {
   signin::GaiaIdHash gaia_id_hash_;
 };
 
-
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
   auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
   EXPECT_TRUE(

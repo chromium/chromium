@@ -58,9 +58,9 @@ namespace internal {
 
 std::string FormatUserAgentForSync(const std::string& system,
                                    version_info::Channel channel) {
-  #ifndef SYNC_USER_AGENT_PRODUCT
-  #error SYNC_USER_AGENT_PRODUCT not defined, check BUILD.gn.
-  #endif
+#ifndef SYNC_USER_AGENT_PRODUCT
+#error SYNC_USER_AGENT_PRODUCT not defined, check BUILD.gn.
+#endif
   constexpr std::string_view kProduct = STRINGIZE(SYNC_USER_AGENT_PRODUCT);
   return base::StrCat(
       {kProduct, " ", system, version_info::GetVersionNumber(), " (",

@@ -175,16 +175,19 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   // |user_key| is not used anymore so we tolerate a failed import.
   user_key = SymmetricKey::Import(SymmetricKey::AES, user_key_str);
 
-  if (encryption_key_str.empty() || mac_key_str.empty())
+  if (encryption_key_str.empty() || mac_key_str.empty()) {
     return false;
+  }
 
   encryption_key = SymmetricKey::Import(SymmetricKey::AES, encryption_key_str);
-  if (!encryption_key)
+  if (!encryption_key) {
     return false;
+  }
 
   mac_key = SymmetricKey::Import(SymmetricKey::HMAC_SHA1, mac_key_str);
-  if (!mac_key)
+  if (!mac_key) {
     return false;
+  }
 
   return true;
 }
@@ -263,11 +266,13 @@ std::string Nigori::Encrypt(const std::string& value) const {
 
 bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   std::string input;
-  if (!Base64Decode(encrypted, &input))
+  if (!Base64Decode(encrypted, &input)) {
     return false;
+  }
 
-  if (input.size() < kIvSize * 2 + kHashSize)
+  if (input.size() < kIvSize * 2 + kHashSize) {
     return false;
+  }
 
   // The input is:
   // * iv (16 bytes)
@@ -279,18 +284,22 @@ bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   std::string hash(input.substr(input.size() - kHashSize, kHashSize));
 
   HMAC hmac(HMAC::SHA256);
-  if (!hmac.Init(keys_.mac_key->key()))
+  if (!hmac.Init(keys_.mac_key->key())) {
     return false;
+  }
 
-  if (!hmac.Verify(ciphertext, hash))
+  if (!hmac.Verify(ciphertext, hash)) {
     return false;
+  }
 
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv))
+  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv)) {
     return false;
+  }
 
-  if (!encryptor.Decrypt(ciphertext, value))
+  if (!encryptor.Decrypt(ciphertext, value)) {
     return false;
+  }
 
   return true;
 }
@@ -302,10 +311,11 @@ void Nigori::ExportKeys(std::string* user_key,
   DCHECK(mac_key);
   DCHECK(user_key);
 
-  if (keys_.user_key)
+  if (keys_.user_key) {
     *user_key = keys_.user_key->key();
-  else
+  } else {
     user_key->clear();
+  }
 
   *encryption_key = keys_.encryption_key->key();
   *mac_key = keys_.mac_key->key();

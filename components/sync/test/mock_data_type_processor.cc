@@ -32,7 +32,7 @@ void MockDataTypeProcessor::DisconnectSync() {
 }
 
 void MockDataTypeProcessor::GetLocalChanges(size_t max_entries,
-                                             GetLocalChangesCallback callback) {
+                                            GetLocalChangesCallback callback) {
   get_local_changes_call_count_++;
 
   // Truncation may be needed due to |max_entries|.
@@ -56,8 +56,9 @@ void MockDataTypeProcessor::OnCommitCompleted(
   pending_tasks_.push_back(base::BindOnce(
       &MockDataTypeProcessor::OnCommitCompletedImpl, base::Unretained(this),
       type_state, committed_response_list, error_response_list));
-  if (is_synchronous_)
+  if (is_synchronous_) {
     RunQueuedTasks();
+  }
 }
 
 void MockDataTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
@@ -71,8 +72,9 @@ void MockDataTypeProcessor::OnUpdateReceived(
   pending_tasks_.push_back(base::BindOnce(
       &MockDataTypeProcessor::OnUpdateReceivedImpl, base::Unretained(this),
       type_state, std::move(response_list), std::move(gc_directive)));
-  if (is_synchronous_)
+  if (is_synchronous_) {
     RunQueuedTasks();
+  }
 }
 
 void MockDataTypeProcessor::SetSynchronousExecution(bool is_synchronous) {
@@ -233,8 +235,7 @@ CommitResponseData MockDataTypeProcessor::GetCommitResponse(
   return it->second;
 }
 
-void MockDataTypeProcessor::SetDisconnectCallback(
-    DisconnectCallback callback) {
+void MockDataTypeProcessor::SetDisconnectCallback(DisconnectCallback callback) {
   disconnect_callback_ = std::move(callback);
 }
 
@@ -347,7 +348,7 @@ int64_t MockDataTypeProcessor::GetBaseVersion(
 }
 
 void MockDataTypeProcessor::SetBaseVersion(const ClientTagHash& tag_hash,
-                                            int64_t version) {
+                                           int64_t version) {
   base_versions_[tag_hash] = version;
 }
 
@@ -363,7 +364,7 @@ const std::string& MockDataTypeProcessor::GetServerAssignedId(
 }
 
 void MockDataTypeProcessor::SetServerAssignedId(const ClientTagHash& tag_hash,
-                                                 const std::string& id) {
+                                                const std::string& id) {
   assigned_ids_[tag_hash] = id;
 }
 

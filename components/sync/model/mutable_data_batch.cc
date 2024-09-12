@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync/model/mutable_data_batch.h"
+
 #include "base/check.h"
 #include "components/sync/protocol/entity_data.h"
 

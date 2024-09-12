@@ -35,8 +35,9 @@ std::string RandASCIIString(size_t length) {
   const int kMin = static_cast<int>(' ');
   const int kMax = static_cast<int>('~');
   result.reserve(length);
-  for (size_t i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+  }
   return result;
 }
 
@@ -88,8 +89,9 @@ std::unique_ptr<Commit> Commit::Init(
       commit_processor->GatherCommitContributions(max_entries);
 
   // Give up if no one had anything to commit.
-  if (contributions.empty())
+  if (contributions.empty()) {
     return nullptr;
+  }
 
   sync_pb::ClientToServerMessage message;
   message.set_message_contents(sync_pb::ClientToServerMessage::COMMIT);

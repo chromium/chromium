@@ -41,8 +41,9 @@ std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
   // Initialize metadata
   sync_pb::EntityMetadata metadata;
   metadata.set_client_tag_hash(client_tag_hash.value());
-  if (!id.empty())
+  if (!id.empty()) {
     metadata.set_server_id(id);
+  }
   metadata.set_sequence_number(0);
   metadata.set_acked_sequence_number(0);
   metadata.set_server_version(kUncommittedVersion);
@@ -86,8 +87,9 @@ void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
   // Update data's fields from metadata.
   data->client_tag_hash =
       ClientTagHash::FromHashed(metadata_.client_tag_hash());
-  if (!metadata_.server_id().empty())
+  if (!metadata_.server_id().empty()) {
     data->id = metadata_.server_id();
+  }
   data->creation_time = ProtoTimeToTime(metadata_.creation_time());
   data->modification_time = ProtoTimeToTime(metadata_.modification_time());
 

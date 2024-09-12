@@ -27,10 +27,6 @@
 
 namespace syncer {
 
-namespace {
-
-}  // namespace
-
 // A test fixture for tests exercising download updates functions.
 class GetUpdatesProcessorBaseTest : public ::testing::Test {
  public:

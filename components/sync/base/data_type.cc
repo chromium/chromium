@@ -30,8 +30,8 @@ static_assert(53 == syncer::GetNumDataTypes(),
 using kSpecificsFieldNumberToDataTypeMap =
     base::fixed_flat_map<int, DataType, syncer::GetNumDataTypes()>;
 
-constexpr kSpecificsFieldNumberToDataTypeMap
-    specifics_field_number2data_type = base::MakeFixedFlatMap<int, DataType>({
+constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
+    base::MakeFixedFlatMap<int, DataType>({
         {-1, UNSPECIFIED},
         {sync_pb::EntitySpecifics::kBookmarkFieldNumber, BOOKMARKS},
         {sync_pb::EntitySpecifics::kPreferenceFieldNumber, PREFERENCES},
@@ -281,7 +281,7 @@ DataType GetDataTypeFromSpecificsFieldNumber(int field_number) {
   kSpecificsFieldNumberToDataTypeMap::const_iterator it =
       specifics_field_number2data_type.find(field_number);
   return (it == specifics_field_number2data_type.end() ? UNSPECIFIED
-                                                        : it->second);
+                                                       : it->second);
 }
 
 int GetSpecificsFieldNumberFromDataType(DataType data_type) {
@@ -415,91 +415,132 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   static_assert(53 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
-  if (specifics.has_bookmark())
+  if (specifics.has_bookmark()) {
     return BOOKMARKS;
-  if (specifics.has_preference())
+  }
+  if (specifics.has_preference()) {
     return PREFERENCES;
-  if (specifics.has_password())
+  }
+  if (specifics.has_password()) {
     return PASSWORDS;
-  if (specifics.has_autofill_profile())
+  }
+  if (specifics.has_autofill_profile()) {
     return AUTOFILL_PROFILE;
-  if (specifics.has_autofill())
+  }
+  if (specifics.has_autofill()) {
     return AUTOFILL;
-  if (specifics.has_autofill_wallet())
+  }
+  if (specifics.has_autofill_wallet()) {
     return AUTOFILL_WALLET_DATA;
-  if (specifics.has_wallet_metadata())
+  }
+  if (specifics.has_wallet_metadata()) {
     return AUTOFILL_WALLET_METADATA;
-  if (specifics.has_theme())
+  }
+  if (specifics.has_theme()) {
     return THEMES;
-  if (specifics.has_extension())
+  }
+  if (specifics.has_extension()) {
     return EXTENSIONS;
-  if (specifics.has_search_engine())
+  }
+  if (specifics.has_search_engine()) {
     return SEARCH_ENGINES;
-  if (specifics.has_session())
+  }
+  if (specifics.has_session()) {
     return SESSIONS;
-  if (specifics.has_app())
+  }
+  if (specifics.has_app()) {
     return APPS;
-  if (specifics.has_app_setting())
+  }
+  if (specifics.has_app_setting()) {
     return APP_SETTINGS;
-  if (specifics.has_extension_setting())
+  }
+  if (specifics.has_extension_setting()) {
     return EXTENSION_SETTINGS;
-  if (specifics.has_history_delete_directive())
+  }
+  if (specifics.has_history_delete_directive()) {
     return HISTORY_DELETE_DIRECTIVES;
-  if (specifics.has_dictionary())
+  }
+  if (specifics.has_dictionary()) {
     return DICTIONARY;
-  if (specifics.has_device_info())
+  }
+  if (specifics.has_device_info()) {
     return DEVICE_INFO;
-  if (specifics.has_priority_preference())
+  }
+  if (specifics.has_priority_preference()) {
     return PRIORITY_PREFERENCES;
-  if (specifics.has_managed_user_setting())
+  }
+  if (specifics.has_managed_user_setting()) {
     return SUPERVISED_USER_SETTINGS;
-  if (specifics.has_app_list())
+  }
+  if (specifics.has_app_list()) {
     return APP_LIST;
-  if (specifics.has_arc_package())
+  }
+  if (specifics.has_arc_package()) {
     return ARC_PACKAGE;
-  if (specifics.has_printer())
+  }
+  if (specifics.has_printer()) {
     return PRINTERS;
-  if (specifics.has_reading_list())
+  }
+  if (specifics.has_reading_list()) {
     return READING_LIST;
-  if (specifics.has_user_event())
+  }
+  if (specifics.has_user_event()) {
     return USER_EVENTS;
-  if (specifics.has_user_consent())
+  }
+  if (specifics.has_user_consent()) {
     return USER_CONSENTS;
-  if (specifics.has_nigori())
+  }
+  if (specifics.has_nigori()) {
     return NIGORI;
-  if (specifics.has_send_tab_to_self())
+  }
+  if (specifics.has_send_tab_to_self()) {
     return SEND_TAB_TO_SELF;
-  if (specifics.has_security_event())
+  }
+  if (specifics.has_security_event()) {
     return SECURITY_EVENTS;
-  if (specifics.has_web_app())
+  }
+  if (specifics.has_web_app()) {
     return WEB_APPS;
+  }
   if (specifics.has_web_apk()) {
     return WEB_APKS;
   }
-  if (specifics.has_wifi_configuration())
+  if (specifics.has_wifi_configuration()) {
     return WIFI_CONFIGURATIONS;
-  if (specifics.has_os_preference())
+  }
+  if (specifics.has_os_preference()) {
     return OS_PREFERENCES;
-  if (specifics.has_os_priority_preference())
+  }
+  if (specifics.has_os_priority_preference()) {
     return OS_PRIORITY_PREFERENCES;
-  if (specifics.has_sharing_message())
+  }
+  if (specifics.has_sharing_message()) {
     return SHARING_MESSAGE;
-  if (specifics.has_autofill_offer())
+  }
+  if (specifics.has_autofill_offer()) {
     return AUTOFILL_WALLET_OFFER;
-  if (specifics.has_workspace_desk())
+  }
+  if (specifics.has_workspace_desk()) {
     return WORKSPACE_DESK;
-  if (specifics.has_history())
+  }
+  if (specifics.has_history()) {
     return HISTORY;
-  if (specifics.has_printers_authorization_server())
+  }
+  if (specifics.has_printers_authorization_server()) {
     return PRINTERS_AUTHORIZATION_SERVERS;
-  if (specifics.has_contact_info())
+  }
+  if (specifics.has_contact_info()) {
     return CONTACT_INFO;
-  if (specifics.has_autofill_wallet_usage())
+  }
+  if (specifics.has_autofill_wallet_usage()) {
     return AUTOFILL_WALLET_USAGE;
-  if (specifics.has_saved_tab_group())
+  }
+  if (specifics.has_saved_tab_group()) {
     return SAVED_TAB_GROUP;
-  if (specifics.has_power_bookmark())
+  }
+  if (specifics.has_power_bookmark()) {
     return POWER_BOOKMARK;
+  }
   if (specifics.has_webauthn_credential()) {
     return WEBAUTHN_CREDENTIAL;
   }
@@ -1058,8 +1099,7 @@ std::string DataTypeToProtocolRootTag(DataType data_type) {
 }
 
 bool IsRealDataType(DataType data_type) {
-  return data_type >= FIRST_REAL_DATA_TYPE &&
-         data_type <= LAST_REAL_DATA_TYPE;
+  return data_type >= FIRST_REAL_DATA_TYPE && data_type <= LAST_REAL_DATA_TYPE;
 }
 
 bool IsActOnceDataType(DataType data_type) {

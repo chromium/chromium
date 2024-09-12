@@ -172,8 +172,9 @@ class UpdateSieve {
   bool ClientWantsItem(const LoopbackServerEntity& entity) const {
     DataType type = entity.GetDataType();
     auto it = request_version_map_.find(type);
-    if (it == request_version_map_.end())
+    if (it == request_version_map_.end()) {
       return false;
+    }
     DCHECK_NE(0U, response_version_map_.count(type));
     return it->second.entity_version() < entity.GetVersion();
   }
@@ -253,8 +254,9 @@ LoopbackServer::~LoopbackServer() {
 }
 
 void LoopbackServer::Init() {
-  if (LoadStateFromFile())
+  if (LoadStateFromFile()) {
     return;
+  }
 
   store_birthday_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
   keystore_keys_.push_back(GenerateNewKeystoreKey());
@@ -277,8 +279,9 @@ bool LoopbackServer::CreatePermanentBookmarkFolder(
       PersistentPermanentEntity::CreateNew(
           syncer::BOOKMARKS, server_tag, name,
           DataTypeToProtocolRootTag(syncer::BOOKMARKS));
-  if (!entity)
+  if (!entity) {
     return false;
+  }
 
   SaveEntity(std::move(entity));
   return true;
@@ -581,8 +584,9 @@ string LoopbackServer::CommitEntity(
     entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);
   }
 
-  if (!entity)
+  if (!entity) {
     return string();
+  }
 
   const std::string id = entity->GetId();
   SaveEntity(std::move(entity));
@@ -618,8 +622,9 @@ bool LoopbackServer::IsChild(const string& id,
   }
 
   const LoopbackServerEntity& entity = *iter->second;
-  if (entity.GetParentId() == potential_parent_id)
+  if (entity.GetParentId() == potential_parent_id) {
     return true;
+  }
 
   // Recursively look up the tree.
   return IsChild(entity.GetParentId(), potential_parent_id);
@@ -701,8 +706,9 @@ bool LoopbackServer::HandleCommitRequest(
     }
   }
 
-  if (observer_for_tests_)
+  if (observer_for_tests_) {
     observer_for_tests_->OnCommit(committed_data_types);
+  }
 
   return throttled_datatypes_in_request->empty();
 }
@@ -841,8 +847,9 @@ void LoopbackServer::SerializeState(sync_pb::LoopbackServerProto* proto) const {
   proto->set_version(kCurrentLoopbackServerProtoVersion);
   proto->set_store_birthday(store_birthday_);
   proto->set_last_version_assigned(version_);
-  for (const std::vector<uint8_t>& key : keystore_keys_)
+  for (const std::vector<uint8_t>& key : keystore_keys_) {
     proto->add_keystore_keys(key.data(), key.size());
+  }
   for (const auto& [id, entity] : entities_) {
     sync_pb::LoopbackServerEntity* new_entity =
         proto->mutable_entities()->Add();
@@ -865,8 +872,9 @@ bool LoopbackServer::DeSerializeState(
     std::unique_ptr<LoopbackServerEntity> entity =
         LoopbackServerEntity::CreateEntityFromProto(proto.entities(i));
     // Silently drop entities that cannot be successfully deserialized.
-    if (entity)
+    if (entity) {
       entities_[proto.entities(i).entity().id_string()] = std::move(entity);
+    }
   }
 
   // Report success regardless of if some entities were dropped.

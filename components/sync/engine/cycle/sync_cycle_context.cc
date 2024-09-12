@@ -29,8 +29,9 @@ SyncCycleContext::SyncCycleContext(
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;
-  for (it = listeners.begin(); it != listeners.end(); ++it)
+  for (it = listeners.begin(); it != listeners.end(); ++it) {
     listeners_.AddObserver(*it);
+  }
 }
 
 SyncCycleContext::~SyncCycleContext() = default;

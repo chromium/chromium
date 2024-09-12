@@ -15,8 +15,8 @@ ForwardingDataTypeControllerDelegate::ForwardingDataTypeControllerDelegate(
   // FakeUserEventService provides a proper non-null test double.
 }
 
-ForwardingDataTypeControllerDelegate::
-    ~ForwardingDataTypeControllerDelegate() = default;
+ForwardingDataTypeControllerDelegate::~ForwardingDataTypeControllerDelegate() =
+    default;
 
 void ForwardingDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,

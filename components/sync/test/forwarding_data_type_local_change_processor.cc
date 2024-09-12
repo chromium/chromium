@@ -16,8 +16,8 @@ namespace syncer {
 ForwardingDataTypeLocalChangeProcessor::ForwardingDataTypeLocalChangeProcessor(
     DataTypeLocalChangeProcessor* other)
     : other_(other) {}
-ForwardingDataTypeLocalChangeProcessor::~ForwardingDataTypeLocalChangeProcessor() =
-    default;
+ForwardingDataTypeLocalChangeProcessor::
+    ~ForwardingDataTypeLocalChangeProcessor() = default;
 
 void ForwardingDataTypeLocalChangeProcessor::Put(
     const std::string& client_tag,
@@ -92,11 +92,13 @@ std::string ForwardingDataTypeLocalChangeProcessor::TrackedCacheGuid() const {
   return other_->TrackedCacheGuid();
 }
 
-void ForwardingDataTypeLocalChangeProcessor::ReportError(const ModelError& error) {
+void ForwardingDataTypeLocalChangeProcessor::ReportError(
+    const ModelError& error) {
   other_->ReportError(error);
 }
 
-std::optional<ModelError> ForwardingDataTypeLocalChangeProcessor::GetError() const {
+std::optional<ModelError> ForwardingDataTypeLocalChangeProcessor::GetError()
+    const {
   return other_->GetError();
 }
 
@@ -111,7 +113,8 @@ ForwardingDataTypeLocalChangeProcessor::GetPossiblyTrimmedRemoteSpecifics(
   return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
 }
 
-sync_pb::UniquePosition ForwardingDataTypeLocalChangeProcessor::UniquePositionAfter(
+sync_pb::UniquePosition
+ForwardingDataTypeLocalChangeProcessor::UniquePositionAfter(
     const std::string& storage_key_before,
     const ClientTagHash& target_client_tag_hash) const {
   return other_->UniquePositionAfter(storage_key_before,

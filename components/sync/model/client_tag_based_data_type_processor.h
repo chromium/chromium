@@ -48,8 +48,8 @@ class CommitQueue;
 // //docs/website/site/developers/design-documents/sync/client-tag-based-data-type-processor/index.md
 // for a more thorough description.
 class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
-                                         public DataTypeLocalChangeProcessor,
-                                         public DataTypeControllerDelegate {
+                                        public DataTypeLocalChangeProcessor,
+                                        public DataTypeControllerDelegate {
  public:
   ClientTagBasedDataTypeProcessor(DataType type,
                                   const base::RepeatingClosure& dump_stack);

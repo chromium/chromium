@@ -74,7 +74,7 @@ DataTypeController::DataTypeController(
     std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
     : DataTypeController(type, std::move(batch_uploader)) {
   InitDataTypeController(std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode));
+                         std::move(delegate_for_transport_mode));
 }
 
 DataTypeController::~DataTypeController() = default;
@@ -212,7 +212,7 @@ std::unique_ptr<DataTypeActivationResponse> DataTypeController::Connect() {
 }
 
 void DataTypeController::Stop(SyncStopMetadataFate fate,
-                               StopCallback callback) {
+                              StopCallback callback) {
   DCHECK(CalledOnValidThread());
   CHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
 
@@ -268,8 +268,8 @@ DataTypeController::State DataTypeController::state() const {
   return state_;
 }
 
-DataTypeController::PreconditionState
-DataTypeController::GetPreconditionState() const {
+DataTypeController::PreconditionState DataTypeController::GetPreconditionState()
+    const {
   return PreconditionState::kPreconditionsMet;
 }
 
@@ -331,7 +331,7 @@ DataTypeControllerDelegate* DataTypeController::GetDelegateForTesting(
 }
 
 void DataTypeController::ReportModelError(SyncError::ErrorType error_type,
-                                           const ModelError& error) {
+                                          const ModelError& error) {
   DCHECK(CalledOnValidThread());
 
   switch (state_) {

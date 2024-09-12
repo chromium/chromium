@@ -428,8 +428,9 @@ class SyncSchedulerImplTest : public testing::Test {
  private:
   static const base::TickClock* tick_clock_;
   static base::TimeTicks GetMockTimeTicks() {
-    if (!tick_clock_)
+    if (!tick_clock_) {
       return base::TimeTicks();
+    }
     return tick_clock_->NowTicks();
   }
 
@@ -454,8 +455,9 @@ void RecordSyncShareImpl(SyncShareTimes* times) {
 
 ACTION_P2(RecordSyncShare, times, success) {
   RecordSyncShareImpl(times);
-  if (base::RunLoop::IsRunningOnCurrentThread())
+  if (base::RunLoop::IsRunningOnCurrentThread()) {
     QuitLoopNow();
+  }
   return success;
 }
 

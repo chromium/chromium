@@ -56,31 +56,35 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
   std::string details;
 
   if (!nudged_types_.empty()) {
-    if (!details.empty())
+    if (!details.empty()) {
       details.append("\n");
+    }
     details.append(base::StringPrintf(
         "Nudged types: %s", DataTypeSetToDebugString(nudged_types_).c_str()));
   }
 
   if (!notified_types_.empty()) {
-    if (!details.empty())
+    if (!details.empty()) {
       details.append("\n");
+    }
     details.append(
         base::StringPrintf("Notified types: %s",
                            DataTypeSetToDebugString(notified_types_).c_str()));
   }
 
   if (!refresh_requested_types_.empty()) {
-    if (!details.empty())
+    if (!details.empty()) {
       details.append("\n");
+    }
     details.append(base::StringPrintf(
         "Refresh requested types: %s",
         DataTypeSetToDebugString(refresh_requested_types_).c_str()));
   }
 
   if (is_retry_) {
-    if (!details.empty())
+    if (!details.empty()) {
       details.append("\n");
+    }
     details.append(base::StringPrintf("Is retry: True"));
   }
 

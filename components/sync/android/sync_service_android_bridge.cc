@@ -161,8 +161,7 @@ SyncServiceAndroidBridge::SyncServiceAndroidBridge(
   DCHECK(native_sync_service_);
 
   java_ref_.Reset(Java_SyncServiceImpl_Constructor(
-      base::android::AttachCurrentThread(),
-      reinterpret_cast<intptr_t>(this)));
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
 
   native_sync_service_->AddObserver(this);
 }

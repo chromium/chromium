@@ -114,8 +114,9 @@ class SyncerTest : public testing::Test,
   void OnReceivedCustomNudgeDelays(
       const std::map<DataType, base::TimeDelta>& delay_map) override {
     auto iter = delay_map.find(BOOKMARKS);
-    if (iter != delay_map.end() && iter->second.is_positive())
+    if (iter != delay_map.end() && iter->second.is_positive()) {
       last_bookmarks_commit_delay_ = iter->second;
+    }
   }
 
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}

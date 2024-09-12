@@ -100,24 +100,29 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
 
 // Returns true iff |message| is an initial GetUpdates request.
 bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
-  if (!message.has_get_updates())
+  if (!message.has_get_updates()) {
     return false;
+  }
   DCHECK_LT(0, message.get_updates().from_progress_marker_size());
   for (int i = 0; i < message.get_updates().from_progress_marker_size(); ++i) {
-    if (!message.get_updates().from_progress_marker(i).token().empty())
+    if (!message.get_updates().from_progress_marker(i).token().empty()) {
       return false;
+    }
   }
   return true;
 }
 
 // Returns true iff |message| should contain a store birthday.
 bool IsBirthdayRequired(const ClientToServerMessage& message) {
-  if (message.has_clear_server_data())
+  if (message.has_clear_server_data()) {
     return false;
-  if (message.has_commit())
+  }
+  if (message.has_commit()) {
     return true;
-  if (message.has_get_updates())
+  }
+  if (message.has_get_updates()) {
     return !IsVeryFirstGetUpdates(message);
+  }
   NOTIMPLEMENTED();
   return true;
 }
@@ -170,11 +175,13 @@ bool ProcessResponseBirthday(const ClientToServerResponse& response,
 
 void SaveBagOfChipsFromResponse(const sync_pb::ClientToServerResponse& response,
                                 SyncCycleContext* context) {
-  if (!response.has_new_bag_of_chips())
+  if (!response.has_new_bag_of_chips()) {
     return;
+  }
   std::string bag_of_chips;
-  if (response.new_bag_of_chips().SerializeToString(&bag_of_chips))
+  if (response.new_bag_of_chips().SerializeToString(&bag_of_chips)) {
     context->set_bag_of_chips(bag_of_chips);
+  }
 }
 
 // Handle client commands returned by the server.
@@ -472,8 +479,9 @@ void SyncerProtoUtil::AddRequiredFieldsToClientToServerMessage(
   DCHECK(msg);
   SetProtocolVersion(msg);
   const std::string birthday = cycle->context()->birthday();
-  if (!birthday.empty())
+  if (!birthday.empty()) {
     msg->set_store_birthday(birthday);
+  }
   DCHECK(msg->has_store_birthday() || !IsBirthdayRequired(*msg));
   msg->mutable_bag_of_chips()->ParseFromString(
       cycle->context()->bag_of_chips());
@@ -577,8 +585,9 @@ std::string SyncerProtoUtil::ClientToServerResponseDebugString(
     const ClientToServerResponse& response) {
   // Add more handlers as needed.
   std::string output;
-  if (response.has_get_updates())
+  if (response.has_get_updates()) {
     output.append(GetUpdatesResponseString(response.get_updates()));
+  }
   return output;
 }
 

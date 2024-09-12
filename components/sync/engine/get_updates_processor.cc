@@ -47,8 +47,9 @@ std::vector<std::vector<uint8_t>> ExtractKeystoreKeys(
       update_response.get_updates().encryption_keys();
   std::vector<std::vector<uint8_t>> keystore_keys;
   keystore_keys.reserve(encryption_keys.size());
-  for (const std::string& key : encryption_keys)
+  for (const std::string& key : encryption_keys) {
     keystore_keys.emplace_back(key.begin(), key.end());
+  }
   return keystore_keys;
 }
 
@@ -210,8 +211,9 @@ void GetUpdatesProcessor::PrepareGetUpdates(
     DCHECK(!progress_marker->has_gc_directive());
 
     sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
-    if (!context.context().empty())
+    if (!context.context().empty()) {
       *get_updates->add_client_contexts() = std::move(context);
+    }
     if (delegate_->IsNotificationInfoRequired()) {
       handler_it->second->CollectPendingInvalidations(
           progress_marker->mutable_get_update_triggers());
@@ -339,8 +341,9 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
 
     sync_pb::DataTypeContext context;
     auto context_iter = context_by_type.find(type);
-    if (context_iter != context_by_type.end())
+    if (context_iter != context_by_type.end()) {
       context.CopyFrom(gu_response.context_mutations(context_iter->second));
+    }
 
     if (update_handler_iter != update_handler_map_->end()) {
       update_handler_iter->second->ProcessGetUpdatesResponse(

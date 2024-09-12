@@ -257,8 +257,9 @@ bool Syncer::ExitRequested() {
 
 bool Syncer::HandleCycleEnd(SyncCycle* cycle,
                             sync_pb::SyncEnums::GetUpdatesOrigin origin) {
-  if (ExitRequested())
+  if (ExitRequested()) {
     return false;
+  }
 
   bool success =
       !HasSyncerError(cycle->status_controller().model_neutral_state());

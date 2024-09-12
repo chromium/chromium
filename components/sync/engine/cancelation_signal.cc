@@ -18,8 +18,9 @@ bool CancelationSignal::TryRegisterHandler(Observer* handler) {
   base::AutoLock lock(signal_lock_);
   DCHECK(!handler_);
 
-  if (signalled_)
+  if (signalled_) {
     return false;
+  }
 
   handler_ = handler;
   return true;

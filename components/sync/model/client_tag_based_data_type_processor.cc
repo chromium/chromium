@@ -380,7 +380,7 @@ void ClientTagBasedDataTypeProcessor::ReportError(const ModelError& error) {
 }
 
 void ClientTagBasedDataTypeProcessor::ReportErrorImpl(const ModelError& error,
-                                                       ErrorSite site) {
+                                                      ErrorSite site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore all errors after the first.
@@ -530,10 +530,12 @@ void ClientTagBasedDataTypeProcessor::Put(
       entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics),
                                 std::move(unique_position));
     } else {
-      if (data->creation_time.is_null())
+      if (data->creation_time.is_null()) {
         data->creation_time = base::Time::Now();
-      if (data->modification_time.is_null())
+      }
+      if (data->modification_time.is_null()) {
         data->modification_time = data->creation_time;
+      }
 
       entity = entity_tracker_->AddUnsyncedLocal(storage_key, std::move(data),
                                                  std::move(trimmed_specifics),
@@ -850,8 +852,7 @@ void ClientTagBasedDataTypeProcessor::OnCommitFailed(
       // cycle.
       entity_tracker_->ClearTransientSyncState();
       break;
-    case DataTypeSyncBridge::CommitAttemptFailedBehavior::
-        kDontRetryOnNextCycle:
+    case DataTypeSyncBridge::CommitAttemptFailedBehavior::kDontRetryOnNextCycle:
       // Do nothing and leave all entities in a transient state.
       break;
   }
@@ -1088,8 +1089,9 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
         std::move(unique_position));
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
-    if (!storage_key.empty())
+    if (!storage_key.empty()) {
       metadata_changes->UpdateMetadata(storage_key, entity->metadata());
+    }
   }
 
   // If there is already an error (this can happen if one of the metadata

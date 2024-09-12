@@ -145,7 +145,7 @@ SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
   }
 
   InitDataTypeController(std::move(full_sync_delegate),
-                          std::move(transport_delegate));
+                         std::move(transport_delegate));
 }
 
 SyncableServiceBasedDataTypeController::

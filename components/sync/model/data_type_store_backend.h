@@ -113,8 +113,9 @@ class DataTypeStoreBackend
     // For compatibility with std:: deleters.
     template <typename T>
     void operator()(const T* ptr) {
-      if (!ptr)
+      if (!ptr) {
         return;
+      }
 
       if (task_runner_->RunsTasksInCurrentSequence()) {
         delete ptr;
