@@ -641,7 +641,9 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_CALL(
       callback,
       Run(ElementsAre(
-              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion()),
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+                  PlusAddressRequestError::AsNetworkError(
+                      net::HTTP_REQUEST_TIMEOUT))),
           AutofillSuggestionTriggerSource::
               kPlusAddressUpdatedInBrowserProcess));
 

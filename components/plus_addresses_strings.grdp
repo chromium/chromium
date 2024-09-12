@@ -191,7 +191,13 @@
       Lorem Ipsum dolor ...
     </message>
     <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
-      Something went wrong
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT" desc="The error description shown inside the popup when a timeout error occurs while attempting to reserve a plus address." translateable="false">
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+      Can't create any more addresses.
     </message>
 
     <!-- Error modal for inline creation strings -->

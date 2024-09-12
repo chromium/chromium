@@ -21,6 +21,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
@@ -181,13 +182,32 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
 }
 
 // static
-Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion() {
+Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+    const PlusAddressRequestError& error) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kPlusAddressError);
   suggestion.icon = Suggestion::Icon::kError;
-  suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT))}};
+
+  // Refreshing does not make sense for a quota error, since those will persist
+  // for a significant amount of time.
+  Suggestion::PlusAddressPayload payload;
+  payload.offer_refresh = !error.IsQuotaError();
+  suggestion.payload = std::move(payload);
+
+  // The label depends on the error type.
+  std::u16string label_text;
+  if (error.IsQuotaError()) {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT);
+  } else if (error.IsTimeoutError()) {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT);
+  } else {
+    label_text =
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT);
+  }
+  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   return suggestion;
 }
 

@@ -11,6 +11,7 @@ source_set("types") {
     "plus_address_types.cc",
     "plus_address_types.h",
   ]
+  deps = [ "//net" ]
   public_deps = [
     "//base",
     "//components/affiliations/core/browser:affiliations",

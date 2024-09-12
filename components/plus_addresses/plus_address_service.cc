@@ -123,13 +123,6 @@ bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
   return excluded_sites.contains(GetEtldPlusOne(origin));
 }
 
-// Returns whether `error` indicates an exhausted plus address quota.
-bool IsQuotaError(const PlusAddressRequestError& error) {
-  return error.type() == PlusAddressRequestErrorType::kNetworkError &&
-         error.http_response_code().value_or(net::HTTP_REQUEST_TIMEOUT) ==
-             net::HTTP_TOO_MANY_REQUESTS;
-}
-
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -622,7 +615,8 @@ void PlusAddressService::OnShowedInlineSuggestion(
          const PlusProfileOrError& profile_or_error) {
         if (!profile_or_error.has_value()) {
           suggestions[suggestion_index] =
-              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion();
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+                  profile_or_error.error());
           std::move(update_callback)
               .Run(std::move(suggestions),
                    AutofillSuggestionTriggerSource::
@@ -680,7 +674,7 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
         std::move(hide_callback)
             .Run(autofill::SuggestionHidingReason::kAcceptSuggestion);
         if (!profile_or_error.has_value()) {
-          if (IsQuotaError(profile_or_error.error())) {
+          if (profile_or_error.error().IsQuotaError()) {
             std::move(show_error)
                 .Run(PlusAddressErrorDialogType::kQuotaExhausted,
                      /*on_accepted=*/base::DoNothing());

@@ -19,6 +19,7 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,16 +168,40 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 
 TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
   const Suggestion suggestion(
-      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion());
+      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
+          PlusAddressRequestError::AsNetworkError(net::HTTP_BAD_REQUEST)));
   EXPECT_EQ(suggestion.type, SuggestionType::kPlusAddressError);
   EXPECT_EQ(
       suggestion.main_text.value,
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT));
   EXPECT_EQ(suggestion.icon, Suggestion::Icon::kError);
+  EXPECT_TRUE(
+      suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh);
   EXPECT_THAT(
       suggestion.labels,
       ElementsAre(ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT)))));
+}
+
+TEST_F(PlusAddressSuggestionGeneratorTest,
+       GetPlusAddressErrorSuggestionForQuotaError) {
+  const auto error =
+      PlusAddressRequestError::AsNetworkError(net::HTTP_TOO_MANY_REQUESTS);
+  ASSERT_TRUE(error.IsQuotaError());
+
+  const Suggestion suggestion(
+      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(error));
+  EXPECT_EQ(suggestion.type, SuggestionType::kPlusAddressError);
+  EXPECT_EQ(
+      suggestion.main_text.value,
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT));
+  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kError);
+  EXPECT_FALSE(
+      suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh);
+  EXPECT_THAT(
+      suggestion.labels,
+      ElementsAre(ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT)))));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

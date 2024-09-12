@@ -278,6 +278,7 @@ struct Suggestion {
   bool Invariant() const {
     switch (type) {
       case SuggestionType::kCreateNewPlusAddressInline:
+      case SuggestionType::kPlusAddressError:
         return absl::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
