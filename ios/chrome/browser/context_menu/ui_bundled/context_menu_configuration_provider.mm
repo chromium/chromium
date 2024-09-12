@@ -511,9 +511,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) && !isLink) {
     UIAction* shareImage = [actionFactory actionToShareWithBlock:^{
       [weakSelf shareURLFromContextMenu:imageURL
-                               URLTitle:params.title_attribute
-                                            ? params.title_attribute
-                                            : params.alt_text
+                               URLTitle:GetContextMenuTitle(params)
                                  params:params];
     }];
     [imageMenuElements addObject:shareImage];
