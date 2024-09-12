@@ -16,7 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
@@ -219,7 +220,7 @@ class IpProtectionCoreHost
   void OnIpProtectionEnabledChanged() override;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
 
   // The thread pool task runner on which async calls are made to

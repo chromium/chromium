@@ -18,7 +18,7 @@
 #include "components/ip_protection/android/blind_sign_message_android_impl.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -362,9 +362,9 @@ TEST_F(AwIpProtectionCoreHostTest,
 
 TEST_F(AwIpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
   };
   scoped_feature_list_.InitAndEnableFeatureWithParameters(

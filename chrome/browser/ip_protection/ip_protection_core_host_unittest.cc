@@ -20,7 +20,7 @@
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -751,9 +751,9 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
 
 TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
-      ip_protection::IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      ip_protection::IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
   };
   base::test::ScopedFeatureList scoped_feature_list;
@@ -857,7 +857,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   EXPECT_EQ(get_proxy_config_calls, 1);
 
   const base::TimeDelta timeout = ip_protection::
-      IpProtectionProxyConfigFetcher::kGetProxyConfigFailureTimeout;
+      IpProtectionProxyConfigDirectFetcher::kGetProxyConfigFailureTimeout;
 
   // A call after the timeout is allowed to proceed, but fails so the new
   // backoff is 2*timeout.

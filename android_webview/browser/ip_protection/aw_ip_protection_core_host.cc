@@ -29,7 +29,7 @@
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_thread.h"
@@ -71,7 +71,7 @@ void AwIpProtectionCoreHost::SetUp() {
   if (!ip_protection_proxy_config_fetcher_) {
     CHECK(aw_browser_context_);
     ip_protection_proxy_config_fetcher_ =
-        std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
+        std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
@@ -92,7 +92,7 @@ void AwIpProtectionCoreHost::SetUpForTesting(
       base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>(
           token_fetcher_task_runner_, std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
-      std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
+      std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(ip_protection_proxy_config_retriever));
 }
 

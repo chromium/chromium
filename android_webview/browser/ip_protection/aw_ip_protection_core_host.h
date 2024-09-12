@@ -21,7 +21,7 @@
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -134,7 +134,7 @@ class AwIpProtectionCoreHost
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;
 
-  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
 
   // The thread pool task runner on which async calls are made to

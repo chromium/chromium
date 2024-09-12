@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
 #include <string>
 #include <vector>
@@ -23,7 +23,7 @@
 
 namespace ip_protection {
 
-IpProtectionProxyConfigFetcher::IpProtectionProxyConfigFetcher(
+IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string type,
     std::string api_key) {
@@ -33,32 +33,35 @@ IpProtectionProxyConfigFetcher::IpProtectionProxyConfigFetcher(
                                                          type, api_key);
 }
 
-IpProtectionProxyConfigFetcher::IpProtectionProxyConfigFetcher(
+IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
     std::unique_ptr<IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever)
     : ip_protection_proxy_config_retriever_(
           std::move(ip_protection_proxy_config_retriever)) {}
 
-IpProtectionProxyConfigFetcher::~IpProtectionProxyConfigFetcher() = default;
+IpProtectionProxyConfigDirectFetcher::~IpProtectionProxyConfigDirectFetcher() =
+    default;
 
-void IpProtectionProxyConfigFetcher::CallGetProxyConfig(
+void IpProtectionProxyConfigDirectFetcher::CallGetProxyConfig(
     GetProxyListCallback callback,
     std::optional<std::string> oauth_token) {
   ip_protection_proxy_config_retriever_->GetProxyConfig(
       oauth_token,
-      base::BindOnce(&IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted,
-                     base::Unretained(this), std::move(callback)));
+      base::BindOnce(
+          &IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted,
+          base::Unretained(this), std::move(callback)));
 }
 
-void IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted(
+void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
     GetProxyListCallback callback,
     base::expected<ip_protection::GetProxyConfigResponse, std::string>
         response) {
   // If either there is an empty response or no geo hint present, it should be
   // treated as an error and cause a retry.
   if (IsProxyConfigResponseError(response)) {
-    VLOG(2) << "IpProtectionProxyConfigFetcher::CallGetProxyConfig failed: "
-            << response.error();
+    VLOG(2)
+        << "IpProtectionProxyConfigDirectFetcher::CallGetProxyConfig failed: "
+        << response.error();
 
     // Apply exponential backoff to this sort of failure.
     no_get_proxy_config_until_ =
@@ -80,7 +83,7 @@ void IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted(
   std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
 }
 
-bool IpProtectionProxyConfigFetcher::IsProxyConfigResponseError(
+bool IpProtectionProxyConfigDirectFetcher::IsProxyConfigResponseError(
     const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
         response) {
   if (!response.has_value()) {
@@ -96,7 +99,7 @@ bool IpProtectionProxyConfigFetcher::IsProxyConfigResponseError(
 }
 
 std::vector<net::ProxyChain>
-IpProtectionProxyConfigFetcher::GetProxyListFromProxyConfigResponse(
+IpProtectionProxyConfigDirectFetcher::GetProxyListFromProxyConfigResponse(
     ip_protection::GetProxyConfigResponse response) {
   // Shortcut to create a ProxyServer with SCHEME_HTTPS from a string in the
   // proto.
@@ -156,7 +159,7 @@ IpProtectionProxyConfigFetcher::GetProxyListFromProxyConfigResponse(
 }
 
 std::optional<ip_protection::GeoHint>
-IpProtectionProxyConfigFetcher::GetGeoHintFromProxyConfigResponse(
+IpProtectionProxyConfigDirectFetcher::GetGeoHintFromProxyConfigResponse(
     ip_protection::GetProxyConfigResponse& response) {
   if (!response.has_geo_hint()) {
     return std::nullopt;  // No GeoHint available in the response.
@@ -168,7 +171,7 @@ IpProtectionProxyConfigFetcher::GetGeoHintFromProxyConfigResponse(
        .city_name = response.geo_hint().city_name()});
 }
 
-void IpProtectionProxyConfigFetcher::SetUpForTesting(
+void IpProtectionProxyConfigDirectFetcher::SetUpForTesting(
     std::unique_ptr<IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever) {
   ip_protection_proxy_config_retriever_ = nullptr;
@@ -177,7 +180,7 @@ void IpProtectionProxyConfigFetcher::SetUpForTesting(
       std::move(ip_protection_proxy_config_retriever);
 }
 
-net::ProxyChain IpProtectionProxyConfigFetcher::MakeChainForTesting(
+net::ProxyChain IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
     std::vector<std::string> hostnames,
     int chain_id) {
   std::vector<net::ProxyServer> servers;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
-#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_DIRECT_FETCHER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_DIRECT_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -27,22 +27,22 @@ namespace ip_protection {
 // This class is responsible for using the retriever to get the proxy config,
 // retrying if necessary, and creating the corresponding ProxyChain list and
 // GeoHint.
-class IpProtectionProxyConfigFetcher {
+class IpProtectionProxyConfigDirectFetcher {
  public:
   using GetProxyListCallback = base::OnceCallback<void(
       const std::optional<std::vector<::net::ProxyChain>>&,
       const std::optional<ip_protection::GeoHint>&)>;
 
-  explicit IpProtectionProxyConfigFetcher(
+  explicit IpProtectionProxyConfigDirectFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string type,
       std::string api_key);
 
-  explicit IpProtectionProxyConfigFetcher(
+  explicit IpProtectionProxyConfigDirectFetcher(
       std::unique_ptr<IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever);
 
-  ~IpProtectionProxyConfigFetcher();
+  ~IpProtectionProxyConfigDirectFetcher();
 
   // Get proxy configuration that is necessary for IP Protection from the
   // server.
@@ -102,4 +102,4 @@ class IpProtectionProxyConfigFetcher {
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_DIRECT_FETCHER_H_

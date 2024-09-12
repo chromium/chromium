@@ -24,7 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/ip_protection/common/ip_protection_core_host_helper.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/prefs/pref_service.h"
@@ -82,7 +83,7 @@ void IpProtectionCoreHost::SetUp() {
   }
   if (!ip_protection_proxy_config_fetcher_) {
     ip_protection_proxy_config_fetcher_ =
-        std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
+        std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             url_loader_factory_.get(),
             ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
             google_apis::GetAPIKey(chrome::GetChannel()));
@@ -105,7 +106,7 @@ void IpProtectionCoreHost::SetUpForTesting(
           token_fetcher_task_runner_, url_loader_factory->Clone(),
           std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
-      std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
+      std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(ip_protection_proxy_config_retriever));
 }
 

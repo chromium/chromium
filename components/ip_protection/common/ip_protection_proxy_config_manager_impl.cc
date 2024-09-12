@@ -25,10 +25,10 @@ namespace {
 // Default Geo used until caching by geo is enabled.
 constexpr char kDefaultGeo[] = "EARTH";
 
-// Based on the logic in the `IpProtectionProxyConfigFetcher`, if there is a
-// non-empty proxy list with an empty `GeoHint`, it would be considered a failed
-// call which means a `proxy_list` with a value of `std::nullopt` would be
-// returned. Thus, the following function captures all states of failure
+// Based on the logic in the `IpProtectionProxyConfigDirectFetcher`, if there is
+// a non-empty proxy list with an empty `GeoHint`, it would be considered a
+// failed call which means a `proxy_list` with a value of `std::nullopt` would
+// be returned. Thus, the following function captures all states of failure
 // accurately even though we only check the `proxy_chain`.
 void RecordTelemetry(
     const std::optional<std::vector<net::ProxyChain>>& proxy_list,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
 #include <memory>
 #include <optional>
@@ -67,14 +67,14 @@ class MockIpProtectionProxyConfigRetriever
 };
 }  // namespace
 
-class IpProtectionProxyConfigFetcherTest : public testing::Test {
+class IpProtectionProxyConfigDirectFetcherTest : public testing::Test {
  protected:
-  IpProtectionProxyConfigFetcherTest() {}
+  IpProtectionProxyConfigDirectFetcherTest() {}
 
   void SetUp() override {
     geo_hint_ = {
         .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
-    fetcher_ = std::make_unique<IpProtectionProxyConfigFetcher>(
+    fetcher_ = std::make_unique<IpProtectionProxyConfigDirectFetcher>(
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
         kServiceType, kApiKey);
   }
@@ -82,7 +82,7 @@ class IpProtectionProxyConfigFetcherTest : public testing::Test {
   void TearDown() override {}
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher_;
+  std::unique_ptr<IpProtectionProxyConfigDirectFetcher> fetcher_;
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
                          const std::optional<ip_protection::GeoHint>&>
       proxy_list_future_;
@@ -91,7 +91,8 @@ class IpProtectionProxyConfigFetcherTest : public testing::Test {
   ip_protection::GeoHint geo_hint_;
 };
 
-TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
+       CallGetProxyConfigProxyChains) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
@@ -115,10 +116,10 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
       << "CallGetProxyConfig did not call back";
 
   std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionProxyConfigFetcher::MakeChainForTesting({"proxy1", "proxy1b"},
-                                                          1),
-      IpProtectionProxyConfigFetcher::MakeChainForTesting({"proxy2", "proxy2b"},
-                                                          2)};
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxy1", "proxy1b"}, 1),
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxy2", "proxy2b"}, 2)};
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -130,7 +131,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionProxyConfigFetcherTest,
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        CallGetProxyConfigProxyChainsWithPorts) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
@@ -157,7 +158,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
       << "CallGetProxyConfig did not call back";
 
   std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxy1", "proxy1b"})};
   exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
@@ -181,7 +182,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
+       CallGetProxyConfigProxyInvalid) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("]INVALID[");
@@ -203,7 +205,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
       << "CallGetProxyConfig did not call back";
 
   std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionProxyConfigFetcher::MakeChainForTesting({"valid", "valid"})};
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"valid", "valid"})};
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -215,7 +218,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionProxyConfigFetcherTest,
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        CallGetProxyConfigProxyInvalidChainId) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
@@ -237,7 +240,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
 
   // The proxy chain is still used, but the chain ID is set to the default.
   std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionProxyConfigFetcher::MakeChainForTesting(
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
           {"proxya", "proxyb"}, net::ProxyChain::kDefaultIpProtectionChainId)};
 
   // Extract tuple elements for individual comparison.
@@ -250,7 +253,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionProxyConfigFetcherTest,
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        CallGetProxyConfigProxyCountryLevelGeo) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
@@ -274,10 +277,10 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
       << "CallGetProxyConfig did not call back";
 
   std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionProxyConfigFetcher::MakeChainForTesting({"proxy1", "proxy1b"},
-                                                          1),
-      IpProtectionProxyConfigFetcher::MakeChainForTesting({"proxy2", "proxy2b"},
-                                                          2)};
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxy1", "proxy1b"}, 1),
+      IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
+          {"proxy2", "proxy2b"}, 2)};
 
   // Country level geo only.
   ip_protection::GeoHint exp_geo_hint;
@@ -293,7 +296,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   EXPECT_TRUE(geo_hint == exp_geo_hint);
 }
 
-TEST_F(IpProtectionProxyConfigFetcherTest,
+TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        CallGetProxyConfigProxyGeoMissingFailure) {
   // The error case in this situation should be a valid response with a missing
   // geo hint and non-empty proxy chain vector.
