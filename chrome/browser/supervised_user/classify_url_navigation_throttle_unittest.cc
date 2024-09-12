@@ -367,6 +367,72 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
                         {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
+// Checks a scenario where the classification responses arrive in reverse order:
+// Last check is completed first but is blocking, and first check is completed
+// after it and is not blocking. Both checks complete after the response was
+// ready for processing.
+TEST_F(ClassifyUrlNavigationThrottleTest,
+       ReverseOrderOfResponsesAfterContentIsReady) {
+  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
+
+  std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
+  // Check for the first url that will complete last.
+  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&checks](
+              const GURL& url,
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
+              bool skip_manual_parent_filter) {
+            checks.push_back(std::move(callback));
+            return false;
+          });
+  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
+                                    testing::_, testing::_, false))
+      .Times(2);
+
+  SupervisedUserServiceFactory::GetForProfile(profile())
+      ->SetURLFilterForTesting(std::move(mock_url_filter));
+
+  std::unique_ptr<content::NavigationThrottle> throttle =
+      CreateNavigationThrottle({GURL(kExampleURL), GURL(kExample1URL)});
+
+  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  AdvanceRedirect();
+  ASSERT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillRedirectRequest());
+  // As expected, the process navigation is deferred.
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillProcessResponse());
+
+  // Resolve pending checks in reverse order, so that block for 2nd request
+  // comes first.
+  std::move(checks[1]).Run(FilteringBehavior::kBlock,
+                           FilteringBehaviorReason::ASYNC_CHECKER,
+                           /*is_uncertain=*/false);
+  std::move(checks[0]).Run(FilteringBehavior::kAllow,
+                           FilteringBehaviorReason::ASYNC_CHECKER,
+                           /*is_uncertain=*/false);
+
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  histogram_tester()->ExpectBucketCount(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+
+  // Since this is not a success path, no latency metric is recorded.
+  ExpectNoLatencyRecorded(histogram_tester());
+  // This throttle continued on request and redirect, and deferred on response
+  // because the result wasn't there. It never recovered from defer state
+  // (interstitial was presented).
+  ExpectThrottleStatus(histogram_tester(),
+                       {{ClassifyUrlThrottleStatus::kContinue, 2},
+                        {ClassifyUrlThrottleStatus::kDefer, 1}});
+  EXPECT_FALSE(resume_called());
+}
+
 struct TestCase {
   std::string name;
   std::vector<std::string> redirect_chain;

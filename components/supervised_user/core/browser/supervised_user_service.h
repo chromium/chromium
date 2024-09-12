@@ -163,6 +163,8 @@ class SupervisedUserService : public KeyedService {
                            ClassificationIsFasterThanHttp);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
                            ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ReverseOrderOfResponsesAfterContentIsReady);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
                            ClassificationIsFasterThanHttp);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,

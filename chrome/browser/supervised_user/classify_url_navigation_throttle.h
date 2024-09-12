@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CLASSIFY_URL_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CLASSIFY_URL_NAVIGATION_THROTTLE_H_
 
-#include <list>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -51,27 +51,61 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(
       const ClassifyUrlNavigationThrottle&) = delete;
-
   ~ClassifyUrlNavigationThrottle() override;
 
  protected:
   void CancelDeferredNavigation(ThrottleCheckResult result) override;
 
  private:
+  // Smart container that manages list of pending checks and derives overall
+  // verdict for the throttle. The checks are stored in the order in which they
+  // were scheduled. The list can be sealed (marked that no more checks will be
+  // scheduled) which is important to determine the final verdict.
+  class ClassifyUrlCheckList {
+   public:
+    // Named tuple for bits of result.
+    struct FilteringResult {
+      GURL url;
+      FilteringBehavior behavior;
+      FilteringBehaviorReason reason;
+    };
+    using Key = std::vector<FilteringResult>::size_type;
+
+    ClassifyUrlCheckList();
+    ClassifyUrlCheckList(ClassifyUrlCheckList& other) = delete;
+    const ClassifyUrlCheckList& operator=(ClassifyUrlCheckList& other) = delete;
+    ~ClassifyUrlCheckList();
+
+    // Registers new check if the list is not sealed.
+    Key NewCheck();
+    void UpdateCheck(Key key, FilteringResult result);
+
+    // Returns blocking Filtering result if there's one or nothing.
+    std::optional<FilteringResult> GetBlockingResult() const;
+
+    // Returns true if this classification allowed or blocking.
+    bool IsDecided() const;
+
+    // Seals this instance. After calling this method `NewCheck` cannot be
+    // called, but behavior of `IsDecided()` changes.
+    void MarkNavigationRequestsCompleted();
+
+    base::TimeDelta ElapsedSinceDecided() const;
+
+   private:
+    std::vector<std::optional<FilteringResult>> results_;
+
+    // After disabling new checks can't be issued, but it enables positive
+    // verification of all-allow results.
+    bool new_checks_disabled_{false};
+
+    // Tracks time from being updated by the most recent result that had effect
+    // on verdict.
+    std::optional<base::ElapsedTimer> elapsed_;
+  };
+
   explicit ClassifyUrlNavigationThrottle(
       content::NavigationHandle* navigation_handle);
-
-  // Named tuple for bits of result.
-  struct CheckResult {
-    FilteringBehavior behavior;
-    FilteringBehaviorReason reason;
-  };
-
-  // Represents a check. For checks in flight, result is nullopt.
-  struct Check {
-    GURL url;
-    std::optional<CheckResult> result;
-  };
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
@@ -86,32 +120,13 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // when encountering a server redirect.
   const GURL& currently_navigated_url() const;
 
-  // Verdict is decided if either:
-  // * all checks resulted in kAllow
-  // * a prefix of checks resulted in kAllow followed by a kBlock
-  // Verdict is not decided otherwise, if there's a kInvalid not preceded by
-  // kBlock
-
-  // Examples:
-  // * kAllow, kAllow, kAllow is decided,
-  // * kAllow, kAllow, kBlock is decided,
-  // * kAllow, kBlock, kInvalid is decided,
-  // * kAllow, kAllow, kInvalid is not decided (might be allow or block),
-  // * kAllow, kInvalid, kBlock is not decided (unsure what redirect is a
-  // block).
-  bool IsDecided() const;
-
-  // Iterator pointing at first blocking verdict if it's defined, or ::cend()
-  // otherwise.
-  std::list<Check>::const_iterator FirstBlockingCheck() const;
-
-  // Updates the pending_check item with matching check (by url field).
-  void SetCheck(const GURL& url, const CheckResult& result);
-
   // Triggers a URL check; the result might be processed either synchronously
   // or asynchronously.
   void CheckURL();
-  void OnURLCheckDone(const GURL& url,
+
+  // The triggered callback; results will be written onto check.
+  void OnURLCheckDone(ClassifyUrlCheckList::Key key,
+                      const GURL& url,
                       FilteringBehavior behavior,
                       FilteringBehaviorReason reason,
                       bool uncertain);
@@ -122,20 +137,20 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
 
   // Defers the navigation to accommodate the interstitial and shows that
   // interstitial.
-  ThrottleCheckResult DeferAndScheduleInterstitial(Check check);
+  ThrottleCheckResult DeferAndScheduleInterstitial(
+      ClassifyUrlCheckList::FilteringResult result);
 
   // Interstitial handling
-  void ScheduleInterstitial(Check check);
-  void ShowInterstitial(Check check);
+  void ScheduleInterstitial(ClassifyUrlCheckList::FilteringResult result);
+  void ShowInterstitial(ClassifyUrlCheckList::FilteringResult result);
   void OnInterstitialResult(
-      Check check,
+      ClassifyUrlCheckList::FilteringResult result,
       SupervisedUserNavigationThrottle::CallbackActions action,
-
       bool already_sent_request,
       bool is_main_frame);
 
-  // Ordered list of pending and completed checks.
-  std::list<Check> checks_;
+  // All pending and completed checks.
+  ClassifyUrlCheckList list_;
 
   // True iff one of navigation events returned ::DEFER.
   bool deferred_{false};
@@ -143,7 +158,6 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // Timers forming a continuum of time, only recorded in unblocked navigation
   // (success) case.
   std::optional<base::ElapsedTimer> waiting_for_decision_;
-  std::optional<base::ElapsedTimer> waiting_for_process_response_;
 
   raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
   base::WeakPtrFactory<ClassifyUrlNavigationThrottle> weak_ptr_factory_{this};
