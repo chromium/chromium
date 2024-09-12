@@ -183,6 +183,21 @@ const CGFloat kSeparatorHeight = 0.5;
                                                 constant:-kContentBottomInset];
     [NSLayoutConstraint
         activateConstraints:@[ _contentStackViewBottomMarginAnchor ]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf->_title.font = [strongSelf fontForTitle];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -414,13 +429,19 @@ const CGFloat kSeparatorHeight = 0.5;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     _title.font = [self fontForTitle];
   }
 }
+#endif
 
 #pragma mark - MagicStackModuleContentViewDelegate
 
