@@ -160,6 +160,9 @@ class WaylandConnection {
   zcr_extended_drag_v1* extended_drag_v1() const {
     return extended_drag_v1_.get();
   }
+  xdg_toplevel_drag_manager_v1* xdg_toplevel_drag_manager_v1() const {
+    return xdg_toplevel_drag_manager_v1_.get();
+  }
 
   zxdg_output_manager_v1* xdg_output_manager_v1() const {
     return xdg_output_manager_.get();
@@ -500,6 +503,7 @@ class WaylandConnection {
       linux_explicit_synchronization_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
+  wl::Object<::xdg_toplevel_drag_manager_v1> xdg_toplevel_drag_manager_v1_;
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
   wl::Object<wp_fractional_scale_manager_v1> fractional_scale_manager_v1_;
   wl::Object<xdg_toplevel_icon_manager_v1> toplevel_icon_manager_v1_;

@@ -44,6 +44,7 @@
 #include <xdg-foreign-unstable-v2-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
+#include <xdg-toplevel-drag-v1-client-protocol.h>
 #include <xdg-toplevel-icon-v1-client-protocol.h>
 
 #include "base/logging.h"
@@ -257,6 +258,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_popup)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_positioner)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)

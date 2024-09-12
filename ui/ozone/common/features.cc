@@ -37,6 +37,18 @@ BASE_FEATURE(kWaylandFractionalScaleV1,
 #endif
 );
 
+// Controls whether support for the xdg-toplevel-drag protocol should be
+// enabled. On Lacros it will then be used even if the Exo-only extended-drag
+// protocol is supported.
+BASE_FEATURE(kWaylandXdgToplevelDrag,
+             "WaylandXdgToplevelDrag",
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // This debug/dev flag pretty-prints DRM modeset configuration logs for ease
 // of reading. For more information, see: http://b/233006802
 BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
@@ -60,6 +72,10 @@ bool IsWaylandOverlayDelegationEnabled() {
 
 bool IsWaylandFractionalScaleV1Enabled() {
   return base::FeatureList::IsEnabled(kWaylandFractionalScaleV1);
+}
+
+bool IsWaylandXdgToplevelDragEnabled() {
+  return base::FeatureList::IsEnabled(kWaylandXdgToplevelDrag);
 }
 
 bool IsPrettyPrintDrmModesetConfigLogsEnabled() {

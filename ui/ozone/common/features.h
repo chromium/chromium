@@ -18,6 +18,7 @@ BASE_DECLARE_FEATURE(kUseDynamicCursorSize);
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();
+bool IsWaylandXdgToplevelDragEnabled();
 bool IsPrettyPrintDrmModesetConfigLogsEnabled();
 bool IsUseDynamicCursorSizeEnabled();
 

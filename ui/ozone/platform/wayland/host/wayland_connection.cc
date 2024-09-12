@@ -91,6 +91,7 @@ constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
+constexpr uint32_t kMaxXdgToplevelDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
 constexpr uint32_t kMaxStylusVersion = 2;
@@ -743,6 +744,15 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
         registry, name, std::min(version, kMaxExtendedDragVersion));
     if (!extended_drag_v1_) {
       LOG(ERROR) << "Failed to bind to zcr_extended_drag_v1 global";
+      return;
+    }
+  } else if (!xdg_toplevel_drag_manager_v1_ &&
+             strcmp(interface, "xdg_toplevel_drag_manager_v1") == 0 &&
+             IsWaylandXdgToplevelDragEnabled()) {
+    xdg_toplevel_drag_manager_v1_ = wl::Bind<::xdg_toplevel_drag_manager_v1>(
+        registry, name, std::min(version, kMaxXdgToplevelDragVersion));
+    if (!xdg_toplevel_drag_manager_v1_) {
+      LOG(ERROR) << "Failed to bind to xdg_toplevel_drag_manager_v1 global";
       return;
     }
   } else if (!xdg_output_manager_ &&
