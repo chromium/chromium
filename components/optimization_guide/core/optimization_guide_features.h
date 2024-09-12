@@ -40,8 +40,6 @@ BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideFetchingForSRP);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
@@ -152,11 +150,6 @@ bool IsRemoteFetchingEnabled();
 // anonymous data collection is enabled but are not Data Saver users.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsRemoteFetchingForAnonymousDataConsentEnabled();
-
-// Returns true if a feature that explicitly allows remote fetching has been
-// enabled.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo();
 
 // Returns true if the feature to use push notifications is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

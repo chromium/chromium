@@ -184,10 +184,8 @@ class PredictionManagerTestBase : public PlatformTest {
   virtual void SetUpCommandLine(base::CommandLine* cmd) {
     cmd->AppendSwitch("enable-spdy-proxy-auth");
 
-    cmd->AppendSwitch(optimization_guide::switches::
-                          kDisableCheckingUserPermissionsForTesting);
-    cmd->AppendSwitchASCII(optimization_guide::switches::kFetchHintsOverride,
-                           "whatever.com,somehost.com");
+    cmd->AppendSwitch(
+        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
     cmd->AppendSwitchASCII(
         optimization_guide::switches::kOptimizationGuideServiceGetModelsURL,
         models_server_->GetURL("/").spec());

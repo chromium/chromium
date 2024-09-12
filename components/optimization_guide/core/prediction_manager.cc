@@ -46,6 +46,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -112,9 +113,13 @@ void RecordLifecycleState(proto::OptimizationTarget optimization_target,
 
 // Returns whether models should be fetched from the
 // remote Optimization Guide Service.
-bool ShouldFetchModels(bool off_the_record, bool component_updates_enabled) {
+bool ShouldFetchModels(bool off_the_record,
+                       bool component_updates_enabled,
+                       bool should_check_google_api_key_configuration) {
   return features::IsRemoteFetchingEnabled() && !off_the_record &&
-         features::IsModelDownloadingEnabled() && component_updates_enabled;
+         features::IsModelDownloadingEnabled() && component_updates_enabled &&
+         (!should_check_google_api_key_configuration ||
+          google_apis::HasAPIKeyConfigured());
 }
 
 // Returns whether the model metadata proto is on the server allowlist.
@@ -198,7 +203,9 @@ PredictionManager::PredictionManager(
       off_the_record_(off_the_record),
       application_locale_(application_locale),
       model_cache_key_(GetModelCacheKey(application_locale_)),
-      models_dir_path_(models_dir_path) {
+      models_dir_path_(models_dir_path),
+      should_check_google_api_key_configuration_(
+          !switches::ShouldSkipGoogleApiKeyConfigurationCheck()) {
   DCHECK(prediction_model_store_);
   Initialize(std::move(background_download_service_provider));
 }
@@ -293,7 +300,8 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   }
 
   if (ShouldFetchModels(off_the_record_,
-                        component_updates_enabled_provider_.Run())) {
+                        component_updates_enabled_provider_.Run(),
+                        should_check_google_api_key_configuration_)) {
     prediction_model_fetch_timer_.ScheduleFetchOnModelRegistration();
   }
 
@@ -360,7 +368,8 @@ void PredictionManager::FetchModels() {
           *base_model_info.supported_model_engine_versions().begin()));
 
   if (!ShouldFetchModels(off_the_record_,
-                         component_updates_enabled_provider_.Run())) {
+                         component_updates_enabled_provider_.Run(),
+                         should_check_google_api_key_configuration_)) {
     return;
   }
 
@@ -768,7 +777,8 @@ void PredictionManager::MaybeInitializeModelDownloads(
   // Only load models if there are optimization targets registered.
   if (!model_registration_info_map_.empty() &&
       ShouldFetchModels(off_the_record_,
-                        component_updates_enabled_provider_.Run())) {
+                        component_updates_enabled_provider_.Run(),
+                        should_check_google_api_key_configuration_)) {
     prediction_model_fetch_timer_.MaybeScheduleFirstModelFetch();
   }
 }

@@ -357,6 +357,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // The path to the directory containing the models.
   base::FilePath models_dir_path_;
 
+  // Whether to check for Google API key configuration.
+  bool should_check_google_api_key_configuration_ = true;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get |weak_ptr_| to self on the UI thread.
