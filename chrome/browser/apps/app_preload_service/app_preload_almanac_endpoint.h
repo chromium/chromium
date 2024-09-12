@@ -13,16 +13,9 @@
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
 class GURL;
+class Profile;
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
-namespace apps {
-
-struct DeviceInfo;
-
-namespace app_preload_almanac_endpoint {
+namespace apps::app_preload_almanac_endpoint {
 
 using GetInitialAppsCallback =
     base::OnceCallback<void(std::optional<std::vector<PreloadAppDefinition>>,
@@ -33,15 +26,11 @@ using GetInitialAppsCallback =
 // the App Provisioning Service API. `callback` will be called with a list of
 // (possibly zero) apps, or `std::nullopt` if an error occurred while
 // fetching apps.
-void GetAppsForFirstLogin(
-    const DeviceInfo& device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetInitialAppsCallback callback);
+void GetAppsForFirstLogin(Profile* profile, GetInitialAppsCallback callback);
 
 // Gets the URL for the App Provisioning Service endpoint. Exposed for tests.
 GURL GetServerUrl();
 
-}  // namespace app_preload_almanac_endpoint
-}  // namespace apps
+}  // namespace apps::app_preload_almanac_endpoint
 
 #endif  // CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_APP_PRELOAD_ALMANAC_ENDPOINT_H_
