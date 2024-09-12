@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/change_owners_task.h"
 #include "chrome/updater/check_for_updates_task.h"
@@ -661,7 +662,7 @@ void UpdateServiceImplImpl::RegisterApp(
     return;
   }
 
-  if (!base::EqualsCaseInsensitiveASCII(request.app_id, kUpdaterAppId)) {
+  if (!IsUpdaterOrCompanionApp(request.app_id)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }
   config_->GetUpdaterPersistedData()->RegisterApp(request);
@@ -943,7 +944,7 @@ void UpdateServiceImplImpl::Install(
                                  state_update, std::move(callback));
     return;
   }
-  if (!base::EqualsCaseInsensitiveASCII(registration.app_id, kUpdaterAppId)) {
+  if (!IsUpdaterOrCompanionApp(registration.app_id)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }
 

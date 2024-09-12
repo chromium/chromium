@@ -22,6 +22,9 @@ class GURL;
 
 namespace enterprise_companion {
 
+// The app ID to register to the updater.
+extern const char kCompanionAppId[];
+
 // JSON keys for defining overrides. All values are expected to be strings
 // unless otherwise noted.
 extern const char kCrashUploadUrlKey[];

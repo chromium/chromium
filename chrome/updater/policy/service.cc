@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
@@ -306,8 +307,9 @@ PolicyStatus<int> PolicyService::GetPolicyForAppInstalls(
 PolicyStatus<int> PolicyService::GetPolicyForAppUpdates(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (app_id == kUpdaterAppId || app_id == kQualificationAppId) {
-    return {};  // Updater self-updates and qualification can't be disabled.
+  if (IsUpdaterOrCompanionApp(app_id) || app_id == kQualificationAppId) {
+    // Updater itself, companion app and qualification can't be disabled.
+    return {};
   }
   return QueryAppPolicy(
       &PolicyManagerInterface::GetEffectivePolicyForAppUpdates, app_id);

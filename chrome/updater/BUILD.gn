@@ -155,6 +155,8 @@ if (is_win || is_mac || is_linux) {
       "//base:i18n",
       "//build:chromeos_buildflags",
       "//chrome/enterprise_companion:client",
+      "//chrome/enterprise_companion:constants_prod",
+      "//chrome/enterprise_companion:installer_paths",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/enterprise_companion/mojom",
       "//chrome/updater/protos:omaha_proto",

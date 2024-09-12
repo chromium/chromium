@@ -337,6 +337,7 @@ static_library("constants_prod") {
   visibility = [
     ":*",
     "//chrome/enterprise_companion/mac:*",
+    "//chrome/updater:*",
   ]
 }
 

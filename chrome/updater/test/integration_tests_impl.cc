@@ -99,24 +99,18 @@ constexpr char kSelfUpdateCRXName[] = "updater_selfupdate.crx3";
 constexpr char kSelfUpdateCRXRun[] = PRODUCT_FULLNAME_STRING "_test.app";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
-constexpr base::FilePath::CharType kCompanionAppExecutableName[] =
-    FILE_PATH_LITERAL("enterprise_companion");
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test");
 #elif BUILDFLAG(IS_WIN)
 constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test.exe";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
-constexpr base::FilePath::CharType kCompanionAppExecutableName[] =
-    FILE_PATH_LITERAL("enterprise_companion.exe");
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test.exe");
 #elif BUILDFLAG(IS_LINUX)
 constexpr char kSelfUpdateCRXRun[] = "updater_test";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app";
-constexpr base::FilePath::CharType kCompanionAppExecutableName[] =
-    FILE_PATH_LITERAL("enterprise_companion");
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test");
 #endif
@@ -1473,7 +1467,8 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
 }
 
 std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
-  return {kCompanionAppExecutableName, kCompanionAppTestExecutableName};
+  return {base::FilePath::FromASCII(kCompanionAppExecutableName).value(),
+          kCompanionAppTestExecutableName};
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1594,9 +1589,22 @@ void DMCleanup(UpdaterScope scope) {
 
 void InstallEnterpriseCompanionApp(
     const base::Value::Dict& external_overrides) {
+  std::optional<base::FilePath> json_path =
+      enterprise_companion::GetOverridesFilePath();
+  EXPECT_TRUE(json_path);
+  EXPECT_TRUE(base::CreateDirectory(json_path->DirName()));
+  JSONFileValueSerializer json_serializer(*json_path);
+#if BUILDFLAG(IS_WIN)
+  // Allow admin to access companion app's Mojo service named pipe.
+  EXPECT_TRUE(json_serializer.Serialize(external_overrides.Clone().Set(
+      enterprise_companion::kNamedPipeSecurityDescriptorKey,
+      "D:(A;;GA;;;BA)")));
+#else
+  EXPECT_TRUE(json_serializer.Serialize(external_overrides));
+#endif
+
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-
   int exit_code = -1;
   base::CommandLine command(exe_path.Append(kCompanionAppTestExecutableName));
   command.AppendSwitch("install");
@@ -1605,12 +1613,6 @@ void InstallEnterpriseCompanionApp(
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
   EXPECT_EQ(exit_code, 0);
-
-  std::optional<base::FilePath> json_path =
-      enterprise_companion::GetOverridesFilePath();
-  EXPECT_TRUE(json_path);
-  JSONFileValueSerializer json_serializer(*json_path);
-  EXPECT_TRUE(json_serializer.Serialize(external_overrides));
   VLOG(1) << "Enterprise companion app installed.";
 }
 
@@ -1624,8 +1626,8 @@ void UninstallEnterpriseCompanionApp() {
   }
 
   base::CommandLine command_line(
-      install_dir->Append(kCompanionAppExecutableName));
-  command_line.AppendSwitch("uninstall");
+      install_dir->AppendASCII(kCompanionAppExecutableName));
+  command_line.AppendSwitch(kUninstallCompanionAppSwtich);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
   if (!uninstall_process.IsValid()) {
     VLOG(1) << "Failed to launch enterprise companion app for uninstall, "
