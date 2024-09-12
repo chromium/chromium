@@ -330,7 +330,7 @@ ci.thin_tester(
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 12,
+                    shards = 15,
                 ),
             ),
             "blink_wpt_tests": targets.mixin(
