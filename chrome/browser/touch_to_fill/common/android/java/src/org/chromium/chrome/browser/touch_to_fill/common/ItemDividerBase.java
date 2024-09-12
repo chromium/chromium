@@ -6,27 +6,23 @@ package org.chromium.chrome.browser.touch_to_fill.common;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * This is an item decorator for lists of items displayed in Touch to Fill
- * BottomSheets.
- */
+/** This is an item decorator for lists of items displayed in Touch to Fill BottomSheets. */
 public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
     protected final Context mContext;
 
     /**
-     * Returns the proper background for each of the credential items depending on their
-     * position.
+     * Returns the proper background for each of the credential items depending on their position.
      *
      * @param position Position of the credential inside the list, including the header and the
-     *         button.
+     *     button.
      * @param containsFillButton Indicates if the fill button is in the list.
-     * @param itemCount Shows how many items are in the list, including the header and the
-     *         button.
+     * @param itemCount Shows how many items are in the list, including the header and the button.
      * @return The ID of the selected background resource.
      */
     protected int selectBackgroundDrawable(
@@ -44,8 +40,19 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
         return R.drawable.touch_to_fill_credential_background_modern;
     }
 
+    private void loadBackgroundDrawable(
+            View view, int position, boolean containsFillButton, int itemCount) {
+        GradientDrawable background =
+                (GradientDrawable)
+                        AppCompatResources.getDrawable(
+                                mContext,
+                                selectBackgroundDrawable(position, containsFillButton, itemCount));
+        TouchToFillUtil.addColorAndRippleToBackground(view, background, mContext);
+    }
+
     /**
      * Draws the decorations into the Canvas supplied to the RecyclerView.
+     *
      * @param canvas The Canvas to draw into.
      * @param parent The RecyclerView this ItemDecoration is drawing into.
      * @param state The current state of RecyclerView.
@@ -67,16 +74,13 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
             View child = parent.getChildAt(posInView);
             int posInAdapter = parent.getChildAdapterPosition(child);
             if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
-            child.setBackground(
-                    AppCompatResources.getDrawable(
-                            mContext,
-                            selectBackgroundDrawable(
-                                    posInAdapter, containsFillButton(parent), itemCount)));
+            loadBackgroundDrawable(child, posInAdapter, containsFillButton(parent), itemCount);
         }
     }
 
     /**
      * Creates an instance of ItemDividerBase.
+     *
      * @param context Is used to get the drawable resources for the item backgrounds.
      */
     protected ItemDividerBase(Context context) {

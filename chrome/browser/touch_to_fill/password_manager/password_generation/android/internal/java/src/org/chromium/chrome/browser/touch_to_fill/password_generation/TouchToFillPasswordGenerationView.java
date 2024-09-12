@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**
@@ -42,6 +44,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
                         context,
                         PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mPasswordView = mContent.findViewById(R.id.password);
+        TouchToFillUtil.addColorAndRippleToBackground(
+                mPasswordView, (GradientDrawable) mPasswordView.getBackground(), mContext);
     }
 
     void setSheetTitle(String generatedPassword) {
