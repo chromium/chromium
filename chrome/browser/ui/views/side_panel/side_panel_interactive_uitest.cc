@@ -247,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   // Replace the contents of the CustomizeChrome side panel with an empty view
   // so it loads faster.
   auto* registry = browser()
-                       ->browser_window_features()
-                       ->side_panel_coordinator()
-                       ->GetWindowRegistry();
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
   registry->Register(std::make_unique<SidePanelEntry>(

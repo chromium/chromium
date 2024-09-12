@@ -2006,7 +2006,8 @@ void BrowserCommandController::ShowCustomizeChromeSidePanel(
   customize_chrome::SidePanelController* side_panel_controller =
       tab->tab_features()->customize_chrome_side_panel_controller();
 
-  if (!side_panel_controller) {
+  if (!side_panel_controller ||
+      !side_panel_controller->IsCustomizeChromeEntryAvailable()) {
     return;
   }
 

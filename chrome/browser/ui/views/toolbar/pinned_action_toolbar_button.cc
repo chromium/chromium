@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -344,6 +346,13 @@ void PinnedActionToolbarButton::ExecuteCommand(int command_id,
 bool PinnedActionToolbarButton::IsCommandIdEnabled(int command_id) const {
   if (command_id == IDC_UPDATE_SIDE_PANEL_PIN_STATE) {
     return browser_->profile()->IsRegularProfile() && is_pinnable_;
+  }
+  if (command_id == IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR) {
+    tabs::TabModel* tab = browser_->tab_strip_model()->GetActiveTab();
+    customize_chrome::SidePanelController* side_panel_controller =
+        tab->tab_features()->customize_chrome_side_panel_controller();
+    return side_panel_controller &&
+           side_panel_controller->IsCustomizeChromeEntryAvailable();
   }
   return true;
 }
