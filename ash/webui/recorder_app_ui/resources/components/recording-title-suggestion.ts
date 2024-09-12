@@ -9,14 +9,17 @@ import './cra/cra-icon-button.js';
 import './genai-error.js';
 import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
+import './spoken-message.js';
 
 import {Chip} from 'chrome://resources/cros_components/chip/chip.js';
 import {
+  createRef,
   css,
   html,
   map,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
@@ -32,6 +35,7 @@ import {
   assertInstanceof,
 } from '../core/utils/assert.js';
 
+import {CraIconButton} from './cra/cra-icon-button.js';
 import {GenaiResultType} from './genai-error.js';
 
 /**
@@ -125,6 +129,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
 
+  private readonly closeButtonRef = createRef<CraIconButton>();
+
   get firstSuggestedTitleForTest(): Chip {
     return assertExists(this.shadowRoot?.querySelector('.suggestion'));
   }
@@ -134,6 +140,15 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       this.shadowRoot?.querySelectorAll('.suggestion'),
     );
     return assertInstanceof(allSuggestions[index], Chip);
+  }
+
+  override firstUpdated(): void {
+    // Automatically focus on the close button when the dialog is opened to make
+    // screen reader speak the content in the dialog.
+    const closeButton = assertExists(this.closeButtonRef.value);
+    closeButton.updateComplete.then(() => {
+      closeButton.focus();
+    });
   }
 
   private onCloseClick() {
@@ -177,23 +192,34 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
         this.suggestedTitles.value === null) {
       // TOOD(pihsun): Handle error.
       return html`<div id="loading">
-        <genai-placeholder></genai-placeholder>
+        <genai-placeholder
+          aria-label=${i18n.titleSuggestionStartedStatusMessage}
+          aria-live="polite"
+          role="status"
+          tabindex="-1"
+        ></genai-placeholder>
       </div>`;
     }
     const suggestedTitles = this.suggestedTitles.value;
     switch (suggestedTitles.kind) {
       case 'error': {
-        return html`<genai-error
-          .error=${suggestedTitles.error}
-          .resultType=${GenaiResultType.TITLE_SUGGESTION}
-        ></genai-error>`;
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.titleSuggestionFailedStatusMessage}
+          </spoken-message>
+          <genai-error
+            .error=${suggestedTitles.error}
+            .resultType=${GenaiResultType.TITLE_SUGGESTION}
+          ></genai-error>`;
       }
       case 'success': {
         const suggestions = map(
           suggestedTitles.result,
           (s) => this.renderSuggestion(s),
         );
-        return html`<div id="suggestions">${suggestions}</div>
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.titleSuggestionFinishedStatusMessage}
+          </spoken-message>
+          <div id="suggestions">${suggestions}</div>
           ${this.renderSuggestionFooter()}`;
       }
       default:
@@ -221,6 +247,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
         shape="circle"
         @click=${this.onCloseClick}
         aria-label=${i18n.closeDialogButtonTooltip}
+        ${ref(this.closeButtonRef)}
       >
         <cra-icon slot="icon" name="close"></cra-icon>
       </cra-icon-button>

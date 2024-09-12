@@ -399,16 +399,16 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_HEADER">
     Download Gemini model to summarize recordings?
   </message>
-  <message desc="" name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
+  <message desc="Status message for screen reader to update that the summary generation failed." name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
     Failed to generate summary
   </message>
-  <message desc="" name="IDS_RECORDER_SUMMARY_FINISHED_STATUS_MESSAGE">
+  <message desc="Status message for screen reader to update that the summary generation finished successfully." name="IDS_RECORDER_SUMMARY_FINISHED_STATUS_MESSAGE">
     Summary generated successfully
   </message>
   <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
     Summary
   </message>
-  <message desc="" name="IDS_RECORDER_SUMMARY_STARTED_STATUS_MESSAGE">
+  <message desc="Status message for screen reader to update that the summary generation has started." name="IDS_RECORDER_SUMMARY_STARTED_STATUS_MESSAGE">
     Generating summary
   </message>
   <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
@@ -417,8 +417,17 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Tooltip of the button to suggest the recording title." name="IDS_RECORDER_TITLE_SUGGESTION_BUTTON_TOOLTIP">
     Create name using Google AI
   </message>
+  <message desc="Status message for screen reader to update that the recording names generation failed." name="IDS_RECORDER_TITLE_SUGGESTION_FAILED_STATUS_MESSAGE">
+    Failed to generate recording names
+  </message>
+  <message desc="Status message for screen reader to update that the recording names generation finished successfully." name="IDS_RECORDER_TITLE_SUGGESTION_FINISHED_STATUS_MESSAGE">
+    Recording names generated successfully
+  </message>
   <message desc="Header of title suggestion." name="IDS_RECORDER_TITLE_SUGGESTION_HEADER">
     A few options:
+  </message>
+  <message desc="Status message for screen reader to update that the recording names generation has started." name="IDS_RECORDER_TITLE_SUGGESTION_STARTED_STATUS_MESSAGE">
+    Generating recording names
   </message>
   <message desc="Accessibility label for the textfield showing the recording name." meaning="Textfield for the recording name being renamed." name="IDS_RECORDER_TITLE_TEXTFIELD_ARIA_LABEL">
     Recording name
