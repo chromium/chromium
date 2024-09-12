@@ -106,7 +106,7 @@ BASE_FEATURE(kAmbientModeManagedScreensaver,
 // Adds support for allowing or disabling APN modification by policy.
 BASE_FEATURE(kAllowApnModificationPolicy,
              "AllowApnModificationPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the annotator feature is enabled in ChromeOS.
 BASE_FEATURE(kAnnotatorMode,
