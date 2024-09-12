@@ -245,7 +245,14 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
   # When enabling ASAN, we have a `detect_ord_violation` issue when running
   # this tool.
   env["ASAN_OPTIONS"] = 'detect_odr_violation=0'
-  args = [XVFB_PATH, os.path.abspath(dumper_path)]
+  # The binary hosts a single browser test, so use --single-process-tests to
+  # reduce overhead and prevent the test launcher from killing the dumper if
+  # it takes more than 45 seconds (not unheard of in some configurations).
+  args = [
+      XVFB_PATH,
+      os.path.abspath(dumper_path),
+      '--single-process-tests',
+  ]
   # TODO(349980051): crbug.com/349980051: when ubsan is enabled by default in
   # ASAN enabled builds, we had timeout issues running this binary.
   try:
