@@ -676,18 +676,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to encourage users to try out the reading "
                        "mode feature.")));
 
-  // kIPHSidePanelGenericMenuFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHSidePanelGenericMenuFeature,
-          kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH,
-          IDS_SIDE_PANEL_GENERIC_MENU_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(121, "corising@chromium.org",
-                       "Triggered on startup for discovery of "
-                       "side panel entry points in app menu.")));
-
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

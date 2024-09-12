@@ -174,20 +174,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHSidePanelGenericMenuFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show the promo once a year if the side panel was not opened.
-    config->trigger = EventConfig("side_panel_from_menu_trigger",
-                                  Comparator(EQUAL, 0), 360, 360);
-    config->used = EventConfig("side_panel_from_menu_shown",
-                               Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
-
   if (kIPHSidePanelGenericPinnableFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

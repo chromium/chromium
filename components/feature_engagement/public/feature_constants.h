@@ -64,7 +64,6 @@ BASE_DECLARE_FEATURE(kIPHReadingListEntryPointFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListInSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHReadingModeSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHShoppingCollectionFeature);
-BASE_DECLARE_FEATURE(kIPHSidePanelGenericMenuFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelGenericPinnableFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelLensOverlayPinnableFeature);
 BASE_DECLARE_FEATURE(kIPHSidePanelLensOverlayPinnableFollowupFeature);

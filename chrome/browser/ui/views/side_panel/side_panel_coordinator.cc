@@ -287,11 +287,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
                                        window_registry_.get());
   browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
 
-  if (!browser_view_->GetIsWebAppType()) {
-    browser_view_->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHSidePanelGenericMenuFeature);
-  }
-
   // Add observation for the window registry after global entries have been
   // populated. This avoids re-entrancy during construction.
   registry_observations_.AddObservation(window_registry_.get());
@@ -541,10 +536,6 @@ void SidePanelCoordinator::Show(
         feature_engagement::kIPHPowerBookmarksSidePanelFeature);
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
-
-    // Close IPH for side panel menu, if shown.
-    browser_view_->browser()->window()->CloseFeaturePromo(
-        feature_engagement::kIPHSidePanelGenericMenuFeature);
   }
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);

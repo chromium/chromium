@@ -199,7 +199,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       &feature_engagement::kIPHPowerBookmarksSidePanelFeature,
       &feature_engagement::kIPHReadingListInSidePanelFeature,
       &feature_engagement::kIPHReadingModeSidePanelFeature,
-      &feature_engagement::kIPHSidePanelGenericMenuFeature,
       &feature_engagement::kIPHSidePanelGenericPinnableFeature,
       &feature_engagement::kIPHSignoutWebInterceptFeature,
       &feature_engagement::kIPHTabOrganizationSuccessFeature,

@@ -513,8 +513,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ShoppingListMenuItem"
       summary="A text bubble showing that a product can be tracked from the
                overflow menu"/>
-  <variant name="IPH_SidePanelGenericMenuFeature"
-      summary="side panel open from menu"/>
   <variant name="IPH_SidePanelGenericPinnableFeature"
       summary="side panel pinnable"/>
   <variant name="IPH_SidePanelLensOverlayPinnableFeature"
