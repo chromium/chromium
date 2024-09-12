@@ -253,16 +253,18 @@ bool WASAPIAudioOutputStream::Open() {
     if (enable_audio_offload_) {
       audio_client->GetBufferSize(&preferred_frames_per_buffer);
 
-      // if the granted buffer size is not the same as requested buffer size
-      // re-initializing audio bus.
+      // TODO(crbug.com/348468130) : Consider reinitializing `audio_bus_` and
+      // handling mismatch of `packet_size_frames_` and
+      // `preferred_frames_per_buffer`.
+      // If `packet_size_frames_` doesn't match the preferred size, fallback to
+      // not offloading. This might happen after a device change.
       if (packet_size_frames_ != preferred_frames_per_buffer) {
-        AudioParameters params = AudioParameters(params_);
-        params.set_frames_per_buffer(preferred_frames_per_buffer);
-        audio_bus_ = AudioBus::Create(params);
-        // For Offload case GetBuffer API requires the preferred buffer size to
-        // be used or it will fail.
-        packet_size_frames_ = preferred_frames_per_buffer;
-        packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
+        SendLogMessage(
+            "%s => (INFO: Requested buffer size in frames mismatch. "
+            "Disable audio offload for the stream.",
+            __func__);
+        // Return here to allow falling back to non-offload mode.
+        return false;
       }
     } else {
       preferred_frames_per_buffer = AudioTimestampHelper::TimeToFrames(
