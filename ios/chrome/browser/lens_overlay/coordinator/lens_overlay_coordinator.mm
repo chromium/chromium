@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -50,6 +51,7 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
 namespace {
 
 LensEntrypoint LensEntrypointFromOverlayEntrypoint(
@@ -138,6 +140,11 @@ const CGFloat kMenuSymbolSize = 18;
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
+  // The mediator might destory lens UI if the search engine doesn't support
+  // lens.
+  _mediator.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   if ([self termsOfServiceAccepted]) {
     [_selectionViewController start];
