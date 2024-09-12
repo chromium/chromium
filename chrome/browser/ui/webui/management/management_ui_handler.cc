@@ -459,6 +459,20 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                                   kManagementOnPageVisitedVisibleData, &info);
   }
 
+  if (connectors_service
+          ->GetReportingSettings(
+              enterprise_connectors::ReportingConnector::SECURITY_EVENT)
+          .has_value() &&
+      connectors_service
+              ->GetReportingSettings(
+                  enterprise_connectors::ReportingConnector::SECURITY_EVENT)
+              ->enabled_opt_in_events.count(
+                  enterprise_connectors::kExtensionTelemetryEvent) > 0) {
+    AddThreatProtectionPermission(kManagementOnExtensionTelemetryEvent,
+                                  kManagementOnExtensionTelemetryVisibleData,
+                                  &info);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (is_get_all_screens_media_allowed_for_any_origin_) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,

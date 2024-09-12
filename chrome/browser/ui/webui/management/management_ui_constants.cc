@@ -64,6 +64,10 @@ const char kManagementOnPrintVisibleData[] = "managementOnPrintVisibleData";
 const char kManagementOnPageVisitedEvent[] = "managementOnPageVisitedEvent";
 const char kManagementOnPageVisitedVisibleData[] =
     "managementOnPageVisitedVisibleData";
+const char kManagementOnExtensionTelemetryEvent[] =
+    "managementOnExtensionTelemetryEvent";
+const char kManagementOnExtensionTelemetryVisibleData[] =
+    "managementOnExtensionTelemetryVisibleData";
 
 const char kManagementLegacyTechReport[] = "managementLegacyTechReport";
 const char kManagementLegacyTechReportNoLink[] =

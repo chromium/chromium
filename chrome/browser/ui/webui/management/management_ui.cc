@@ -174,6 +174,10 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
       {kManagementLegacyTechReportNoLink,
        IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK},
+      {kManagementOnExtensionTelemetryEvent,
+       IDS_MANAGEMENT_EXTENSION_TELEMETRY_EVENT},
+      {kManagementOnExtensionTelemetryVisibleData,
+       IDS_MANAGEMENT_EXTENSION_TELEMETRY_VISIBLE_DATA},
       // Profile reporting messages
       {kProfileReportingExplanation,
        IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION},

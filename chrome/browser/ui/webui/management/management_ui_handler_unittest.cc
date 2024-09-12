@@ -556,6 +556,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     profile_->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
+
     if (GetTestConfig().legacy_tech_reporting_enabled) {
       base::Value::List allowlist;
       allowlist.Append("www.example.com");
@@ -1858,7 +1859,10 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       "[{\"service_provider\":\"google\"}]");
 #endif
   enterprise_connectors::test::SetOnSecurityEventReporting(
-      profile_no_domain->GetPrefs(), true);
+      /*prefs=*/profile_no_domain->GetPrefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"extensionTelemetryEvent", {"*"}}});
   profile_no_domain->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1877,9 +1881,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
 #if BUILDFLAG(IS_CHROMEOS)
-  const size_t expected_size = 7u;
+  const size_t expected_size = 8u;
 #else
-  const size_t expected_size = 6u;
+  const size_t expected_size = 7u;
 #endif
   EXPECT_EQ(expected_size, info.FindList("info")->size());
   EXPECT_EQ(
@@ -1929,6 +1933,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     base::Value::Dict value;
     value.Set("title", kManagementOnPageVisitedEvent);
     value.Set("permission", kManagementOnPageVisitedVisibleData);
+    expected_info.Append(std::move(value));
+  }
+  {
+    base::Value::Dict value;
+    value.Set("title", kManagementOnExtensionTelemetryEvent);
+    value.Set("permission", kManagementOnExtensionTelemetryVisibleData);
     expected_info.Append(std::move(value));
   }
 
