@@ -508,6 +508,7 @@ void ContinueTaskContainerView::InitializeTabletLayout() {
                   gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
+                      views::LayoutOrientation::kHorizontal,
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }
