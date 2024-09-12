@@ -66,9 +66,19 @@ import java.util.Locale;
  * The Chrome settings activity.
  *
  * <p>This activity displays a single {@link Fragment}, typically a {@link
- * PreferenceFragmentCompat}. As the user navigates through settings, a separate Settings activity
- * is created for each screen. Thus each fragment may freely modify its activity's action bar or
- * title. This mimics the behavior of {@link android.preference.PreferenceActivity}.
+ * PreferenceFragmentCompat}. There are two types of fragments shown in the activity:
+ * <i>embeddable</i> fragments that implement {@link SettingsPage}, and <i>standalone</i> fragments
+ * that do not implement it. Embeddable fragments may be embedded into a column in the multi-column
+ * settings UI, if it is enabled and the window is large enough. Standalone fragments, in contrast,
+ * are always shown as occupying the whole window.
+ *
+ * <p>Embeddable fragments must not modify the activity UI outside of the fragment, e.g. the
+ * activity title and the action bar, because the same activity instance is shared among multiple
+ * fragments as the user navigates through the settings. Instead, fragments should implement methods
+ * in {@link SettingsPage} to ask the activity to update its UI appropriately.
+ *
+ * <p>Standalone fragments may modify the activity UI as needed. A standalone fragment is always
+ * launched with a fresh settings activity instance that is not shared with other fragments.
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
@@ -76,6 +86,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
+    static final String EXTRA_SHOW_FRAGMENT_STANDALONE = "show_fragment_standalone";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */
     private static SettingsActivity sResumedInstance;
@@ -85,8 +96,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private static boolean sActivityNotExportedChecked;
 
+    private boolean mStandalone;
     private Profile mProfile;
-
     private ScrimCoordinator mScrim;
     private ManagedBottomSheetController mManagedBottomSheetController;
     private final OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
@@ -103,6 +114,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mStandalone = getIntent().getBooleanExtra(EXTRA_SHOW_FRAGMENT_STANDALONE, false);
+
         setTitle(R.string.settings);
         ensureActivityNotExported();
 
@@ -125,11 +138,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         getModalDialogManagerSupplier()),
                 true /* recursive */);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new TitleUpdater(), false /* recursive */);
-        fragmentManager.registerFragmentLifecycleCallbacks(
                 new WideDisplayPaddingApplier(), false /* recursive */);
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new SettingsMetricsReporter(), false /* recursive */);
+        if (!mStandalone) {
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    new TitleUpdater(), false /* recursive */);
+        }
 
         super.onCreate(savedInstanceState);
 
@@ -165,6 +180,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // This callback is called only when the settings UI is operating in the single activity
         // mode.
         assert ChromeFeatureList.sSettingsSingleActivity.isEnabled();
+
+        if (mStandalone) {
+            // A standalone activity attempted to launch a non-standalone activity, but the intent
+            // was delivered to the standalone activity itself because of FLAG_ACTIVITY_SINGLE_TOP.
+            // Resend the intent without the flag to start a new activity. Bouncing activities has
+            // some cost in terms of time to launch the final activity, but this is fairly a rare
+            // flow anyway.
+            intent.removeFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            return;
+        }
 
         Fragment fragment = instantiateMainFragment(intent);
         // TODO(b/356743945): Enable transition.
@@ -450,13 +476,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 return;
             }
 
-            // TODO(b/356743945): Enforce that all main fragments implement SettingsPage.
-            // For now, PrivacyGuideFragment is shown with SettingsActivity but it does not
-            // implement
-            // SettingsPage.
-            if (!(fragment instanceof SettingsPage settingsFragment)) {
-                return;
-            }
+            // TitleUpdater is enabled only when the fragment implements SettingsPage.
+            SettingsPage settingsFragment = (SettingsPage) fragment;
 
             if (mCurrentPageTitle != null) {
                 mCurrentPageTitle.removeObserver(mSetTitleCallback);

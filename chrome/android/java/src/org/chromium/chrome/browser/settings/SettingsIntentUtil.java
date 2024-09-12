@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 
 public class SettingsIntentUtil {
     private SettingsIntentUtil() {}
@@ -32,7 +33,13 @@ public class SettingsIntentUtil {
             @Nullable Bundle fragmentArgs) {
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
-        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+        if (isStandaloneFragment(context, fragmentName)) {
+            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_STANDALONE, true);
+        } else if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            // Note that this intent will be delivered to an existing settings activity (if it
+            // exists) even if it is hosting a standalone fragment. In this case, the activity will
+            // resend the intent without the flag to start a new activity. See
+            // SettingsActivity#onNewIntent.
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }
         if (!(context instanceof Activity)) {
@@ -46,5 +53,28 @@ public class SettingsIntentUtil {
             intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragmentArgs);
         }
         return intent;
+    }
+
+    /**
+     * Checks if a given fragment is a standalone fragment.
+     *
+     * <p>A fragment is standalone if it does not implement {@link SettingsPage}. Such fragments are
+     * shown in separate activities and have full control over the whole UI. See {@link
+     * SettingsActivity} for details.
+     */
+    private static boolean isStandaloneFragment(
+            @NonNull Context context, @Nullable String fragmentName) {
+        if (fragmentName == null) {
+            return false;
+        }
+
+        Class<?> fragmentClass;
+        try {
+            fragmentClass = context.getClassLoader().loadClass(fragmentName);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return !SettingsPage.class.isAssignableFrom(fragmentClass);
     }
 }

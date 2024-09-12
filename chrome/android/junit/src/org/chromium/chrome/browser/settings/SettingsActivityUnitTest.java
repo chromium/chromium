@@ -120,20 +120,40 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.RESUMED);
 
         // Simulate opening a new fragment.
-        mActivityScenario.onActivity(
-                (activity) -> {
-                    Bundle args = new Bundle();
-                    args.putString(TestSettingsFragment.EXTRA_TITLE, "new title");
-                    Intent intent =
-                            SettingsIntentUtil.createIntent(
-                                    activity, TestSettingsFragment.class.getName(), args);
-                    activity.onNewIntent(intent);
-                });
+        Bundle args = new Bundle();
+        args.putString(TestSettingsFragment.EXTRA_TITLE, "new title");
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestSettingsFragment.class.getName(), args);
+        mSettingsActivity.onNewIntent(intent);
 
         // Wait for the UI update.
         ShadowLooper.runUiThreadTasks();
 
         assertEquals("Activity title is not updated.", "new title", mSettingsActivity.getTitle());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    public void testIntentFlags() {
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.RESUMED);
+
+        Intent embeddableFragmentIntent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestSettingsFragment.class.getName(), null);
+        assertEquals(
+                "Incorrect intent flags for embeddable fragments",
+                Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                embeddableFragmentIntent.getFlags());
+
+        Intent standaloneFragmentIntent =
+                SettingsIntentUtil.createIntent(
+                        mSettingsActivity, TestStandaloneFragment.class.getName(), null);
+        assertEquals(
+                "Incorrect intent flags for standalone fragments",
+                0,
+                standaloneFragmentIntent.getFlags());
     }
 
     @Test
