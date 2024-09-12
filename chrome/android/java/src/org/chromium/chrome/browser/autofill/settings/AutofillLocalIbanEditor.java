@@ -210,7 +210,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
                         dismissalCause -> {
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                                 deleteEntry();
-                                getActivity().finish();
+                                finishPage();
                             }
                         },
                         /* titleResId= */ R.string.autofill_iban_delete_confirmation_title);
