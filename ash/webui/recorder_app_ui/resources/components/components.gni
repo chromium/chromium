@@ -4,8 +4,6 @@
 
 component_files = [
   "audio-waveform.ts",
-  "cra/cra-accordion-item.ts",
-  "cra/cra-accordion.ts",
   "cra/cra-button.ts",
   "cra/cra-dialog.ts",
   "cra/cra-dropdown.ts",
@@ -20,6 +18,7 @@ component_files = [
   "delete-recording-dialog.ts",
   "expandable-card.ts",
   "export-dialog.ts",
+  "export-dialog-section.ts",
   "genai-error.ts",
   "genai-feedback-buttons.ts",
   "genai-placeholder.ts",
