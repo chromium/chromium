@@ -39,6 +39,12 @@ PartitionedPopinsNavigationThrottle::WillStartRequest() {
   if (!navigation_handle()->GetURL().SchemeIs(url::kHttpsScheme)) {
     return BLOCK_REQUEST;
   }
+  // Partitioned popins are special modal popups that are partitioned as
+  // though they were an iframe embedded in the opener. All main-frame
+  // navigations and redirects must set a request header to notify the loaded
+  // site they are in a partitioned popin and not a standard popup.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  navigation_handle()->SetRequestHeader("Sec-Popin-Context", "partitioned");
   return PROCEED;
 }
 
