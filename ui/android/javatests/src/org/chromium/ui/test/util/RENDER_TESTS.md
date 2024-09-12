@@ -60,6 +60,10 @@ that test class), so you may have to re-triage additional images. If there
 are many images that need to be triaged, you can use the "Bulk Triage" option
 in Gold under the "ACTIONS" menu item.
 
+Also see the [Skia Gold Triage FAQ](https://docs.google.com/document/d/1BnwcxzhT8FFvY3YF-6BT4Mqgrb9U40t0HMfEVSSEpNs/edit#heading=h.7up1pxqhb2se)
+for help with failing tests. If necessary you can also file a bug against Skai
+Gold via [go/gold-bug](go/gold-bug).
+
 ### Failing on CI bots
 
 If a test is failing on the CI bots, i.e. after a CL has already been merged,
@@ -138,4 +142,3 @@ take into account while writing the tests. To help deal with this, you can use
 `ChromeRenderTestRule.sanitize` to modify the View hierarchy and remove some of the
 more troublesome attributes (for example, it disables the blinking cursor in
 `EditText`s).
-
