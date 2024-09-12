@@ -70,11 +70,11 @@ void FormFieldParserTestBase::AddTextFormFieldData(std::string_view name,
 void FormFieldParserTestBase::ClassifyAndVerify(
     ParseResult parse_result,
     const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language) {
+    const LanguageCode& page_language,
+    PatternFile pattern_file) {
   UpdateRanks(fields_);
   AutofillScanner scanner(fields_);
-  ParsingContext context(client_country, page_language,
-                         *GetActivePatternFile());
+  ParsingContext context(client_country, page_language, pattern_file);
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
   if (parse_result == ParseResult::kNotParsed) {

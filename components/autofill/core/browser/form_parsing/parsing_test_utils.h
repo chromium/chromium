@@ -75,7 +75,8 @@ class FormFieldParserTestBase {
   void ClassifyAndVerify(
       ParseResult parse_result = ParseResult::kParsed,
       const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
-      const LanguageCode& page_language = LanguageCode(""));
+      const LanguageCode& page_language = LanguageCode(""),
+      PatternFile pattern_file = *GetActivePatternFile());
 
   // Runs multiple parsing attempts until the end of the form is reached and
   // verifies the expected types.
