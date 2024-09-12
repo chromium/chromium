@@ -11018,6 +11018,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
+      "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
       "//chrome/browser/ui",

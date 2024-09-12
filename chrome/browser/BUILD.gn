@@ -1844,6 +1844,7 @@ static_library("browser") {
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiles:profile_statistics_impl",
+    "//chrome/browser/signin:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1961,6 +1962,7 @@ static_library("browser") {
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
+    "//chrome/browser/signin:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/thumbnail",
@@ -7379,8 +7381,6 @@ static_library("browser") {
       "signin/dice_signed_in_profile_creator.h",
       "signin/dice_tab_helper.cc",
       "signin/dice_tab_helper.h",
-      "signin/dice_web_signin_interceptor.cc",
-      "signin/dice_web_signin_interceptor.h",
       "signin/dice_web_signin_interceptor_factory.cc",
       "signin/dice_web_signin_interceptor_factory.h",
       "signin/logout_tab_helper.cc",
@@ -7389,8 +7389,6 @@ static_library("browser") {
       "signin/process_dice_header_delegate_impl.h",
       "signin/signin_ui_delegate_impl_dice.cc",
       "signin/signin_ui_delegate_impl_dice.h",
-      "signin/web_signin_interceptor.cc",
-      "signin/web_signin_interceptor.h",
     ]
     if (is_win) {
       sources += [

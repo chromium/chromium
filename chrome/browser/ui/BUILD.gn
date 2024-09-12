@@ -435,7 +435,9 @@ static_library("ui") {
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
     "//chrome/browser/share",
+    "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
+    "//chrome/browser/signin:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
@@ -758,6 +760,7 @@ static_library("ui") {
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_util_impl",
+    "//chrome/browser/signin:impl",
   ]
 
   if (enable_vr && is_win) {
