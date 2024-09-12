@@ -1612,16 +1612,22 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
     service_data_map[uuid] = bytes;
   }
 
-  device_ptr->UpdateAdvertisementData(
-      scan_result.rssi, scan_result.flags, service_uuids, scan_result.tx_power,
-      service_data_map,
-      device::BluetoothDevice::ManufacturerDataMap(
-          scan_result.manufacturer_data.begin(),
-          scan_result.manufacturer_data.end()));
+  device::BluetoothDevice::ManufacturerDataMap manufacturer_data_map(
+      scan_result.manufacturer_data.begin(),
+      scan_result.manufacturer_data.end());
+  device_ptr->UpdateAdvertisementData(scan_result.rssi, scan_result.flags,
+                                      service_uuids, scan_result.tx_power,
+                                      service_data_map, manufacturer_data_map);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
+    observer.DeviceAdvertisementReceived(
+        scan_result.address, /*device_name=*/device_ptr->GetName(),
+        /*advertisement_name=*/scan_result.name, scan_result.rssi,
+        scan_result.tx_power, device_ptr->GetAppearance(), service_uuids,
+        service_data_map, manufacturer_data_map);
+  }
 
   // Update properties and emit a |DeviceFound| if newly found.
   // Also explicitly call |DeviceChanged| if already found since
