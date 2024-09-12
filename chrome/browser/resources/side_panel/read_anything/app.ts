@@ -1971,9 +1971,10 @@ export class AppElement extends AppElementBase {
   // TODO(b/301131238): Verify all edge cases.
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean) {
     // Word highlights can be called quite frequently which can create some
-    // misordering, so just make sure we've cleared the previous word highlight
-    // before showing the next one.
-    this.removeCurrentHighlight();
+    // misordering, so just make sure we've cleared the prior current word
+    // highlight before showing the next one.
+    this.resetCurrentHighlight();
+    this.resetPreviousHighlight_();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
     const highlightNodes =
@@ -2280,6 +2281,8 @@ export class AppElement extends AppElementBase {
     this.resetPreviousHighlight_();
   }
 
+  // Resets formatting on the current highlight, including previous highlight
+  // formatting.
   private removeCurrentHighlight() {
     // The most recent highlight could have been spread across multiple segments
     // so clear the formatting for all of the segments.
@@ -2289,6 +2292,16 @@ export class AppElement extends AppElementBase {
         lastElement.classList.remove(currentReadHighlightClass);
       }
     }
+  }
+
+  // Resets the current highlight. Does not change how this element will
+  // be considered for previous highlighting.
+  private resetCurrentHighlight() {
+    const elements =
+        this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
+    elements?.forEach(element => {
+      element.classList.remove(currentReadHighlightClass);
+    });
   }
 
   private resetPreviousHighlight_() {
