@@ -23158,31 +23158,6 @@
             ]
         }
     ],
-    "ThreadPoolCap2": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithRestricted3_20230907",
-                    "params": {
-                        "restricted_count": "3"
-                    },
-                    "enable_features": [
-                        "ThreadPoolCap2"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadedBodyLoader": [
         {
             "platforms": [
