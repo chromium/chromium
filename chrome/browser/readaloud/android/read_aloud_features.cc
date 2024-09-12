@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/readaloud/android/synthetic_trial.h"
 #include "components/metrics/metrics_service.h"
-#include "components/variations/variations_ids_provider.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/features_jni_headers/ReadAloudFeatures_jni.h"
@@ -60,16 +58,6 @@ ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(JNIEnv* env) {
         env, g_browser_process->metrics_service()->GetClientId());
   }
   return ConvertUTF8ToJavaString(env, "");
-}
-
-ScopedJavaLocalRef<jintArray> JNI_ReadAloudFeatures_GetExperimentIds(
-    JNIEnv* env) {
-  auto* variations_ids_provider =
-      variations::VariationsIdsProvider::GetInstance();
-  DCHECK(variations_ids_provider);
-
-  return base::android::ToJavaIntArray(
-      env, variations_ids_provider->GetVariationsVectorForWebPropertiesKeys());
 }
 
 }  // namespace readaloud

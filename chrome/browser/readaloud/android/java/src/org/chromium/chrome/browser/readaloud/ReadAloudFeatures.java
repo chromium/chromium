@@ -183,11 +183,6 @@ public final class ReadAloudFeatures {
         return ReadAloudFeaturesJni.get().getMetricsId();
     }
 
-    /** Returns IDs of all active server-visible experiments. */
-    public static int[] getExperimentIds() {
-        return ReadAloudFeaturesJni.get().getExperimentIds();
-    }
-
     @NativeMethods
     public interface Natives {
         // Create a native readaloud::SyntheticTrial and return its address. It must be
@@ -207,8 +202,5 @@ public final class ReadAloudFeatures {
 
         // Get metrics client ID or empty string if it isn't available.
         String getMetricsId();
-
-        // Get the list of IDs for active server-visible experiments.
-        int[] getExperimentIds();
     }
 }
