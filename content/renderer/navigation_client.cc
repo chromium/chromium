@@ -23,6 +23,14 @@ namespace content {
 NavigationClient::NavigationClient(RenderFrameImpl* render_frame)
     : render_frame_(render_frame) {}
 
+NavigationClient::NavigationClient(
+    RenderFrameImpl* render_frame,
+    blink::mojom::BeginNavigationParamsPtr begin_params,
+    blink::mojom::CommonNavigationParamsPtr common_params)
+    : render_frame_(render_frame),
+      begin_params_(std::move(begin_params)),
+      common_params_(std::move(common_params)) {}
+
 NavigationClient::~NavigationClient() {}
 
 void NavigationClient::CommitNavigation(
