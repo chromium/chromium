@@ -146,9 +146,8 @@ void UserAnnotationsService::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
-    // TODO(crbug.com/366158591): Add this error case to FormSubmissionResult.
-    std::move(callback).Run(/*to_be_upserted_entries=*/{},
-                            /*prompt_acceptance_callback=*/base::DoNothing());
+    RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
+                      UserAnnotationsExecutionResult::kResponseError);
     return;
   }
 
@@ -156,9 +155,8 @@ void UserAnnotationsService::OnModelExecuted(
       maybe_response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsAnnotationsResponse>(result.value());
   if (!maybe_response) {
-    // TODO(crbug.com/366158591): Add this error case to FormSubmissionResult.
-    std::move(callback).Run(/*to_be_upserted_entries=*/{},
-                            /*prompt_acceptance_callback=*/base::DoNothing());
+    RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
+                      UserAnnotationsExecutionResult::kResponseMalformed);
     return;
   }
 

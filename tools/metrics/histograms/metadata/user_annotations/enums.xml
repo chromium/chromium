@@ -28,9 +28,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="UserAnnotationsExecutionResult">
   <int value="0" label="Success"/>
-  <int value="1" label="SQL update failed."/>
-  <int value="2" label="OSCrypt is not initialized at startup."/>
+  <int value="1" label="SQL update failed"/>
+  <int value="2" label="OSCrypt is not initialized at startup"/>
   <int value="3" label="OSCrypt encrypt/decrypt error"/>
+  <int value="4" label="Response error"/>
+  <int value="5" label="Response malformed"/>
 </enum>
 
 </enums>

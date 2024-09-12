@@ -32,10 +32,12 @@ enum class UserAnnotationsExecutionResult {
   kSqlError = 1,
   kCryptNotInitialized = 2,
   kCryptError = 3,
+  kResponseError = 4,
+  kResponseMalformed = 5,
 
   // Insert new values before this line. Should be in sync with
   // UserAnnotationsExecutionResult in user_annotations/enums.xml
-  kMaxValue = kCryptError
+  kMaxValue = kResponseMalformed
 };
 
 using UserAnnotationsEntryRetrievalResult =

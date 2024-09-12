@@ -250,8 +250,9 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
   service()->AddFormSubmission(ax_tree, form_data, import_form_callback.Get());
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "UserAnnotations.AddFormSubmissionResult",
+      UserAnnotationsExecutionResult::kResponseError, 1);
 }
 
 TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
@@ -280,8 +281,9 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
   service()->AddFormSubmission(ax_tree, form_data, import_form_callback.Get());
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "UserAnnotations.AddFormSubmissionResult",
+      UserAnnotationsExecutionResult::kResponseMalformed, 1);
 }
 
 TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
