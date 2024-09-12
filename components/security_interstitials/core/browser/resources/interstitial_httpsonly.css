@@ -2,14 +2,26 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-.https-only #main-content a {
-  color: var(--google-blue-700);
+html {
+  --primary30: #0842A0;
+  --primary90: #D3E3FD;
+  --google-blue-700: #1967d2;
+  --google-blue-300: #8ab4f8;
+
+  /* semantic color declarations */
+  --learn-more-link-color: var(--google-blue-700);
+  --tonal-container: var(--primary90);
+  --on-tonal-container: var(--primary30);
+
+  @media (prefers-color-scheme: dark) {
+    --learn-more-link-color: var(--google-blue-300);
+    --tonal-container: var(--primary30);
+    --on-tonal-container: var(--primary90);
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  .https-only #main-content a {
-    color: var(--google-blue-300);
-  }
+.https-only #main-content a {
+  color: var(--learn-more-link-color);
 }
 
 .https-only .icon {
@@ -25,8 +37,11 @@
   }
 }
 
-/* Override the icon and colors for the August 2024 refresh */
+.https-only ul {
+  padding-inline-start: 1.4rem;
+}
 
+/* Override the icon and colors for the August 2024 refresh */
 .https-only-august2024-refresh .icon {
   background-image: url(images/no_encryption.svg);
   filter: grayscale(1);
@@ -39,16 +54,8 @@
 }
 
 .https-only-august2024-refresh .secondary-button {
-  --secondary-button-fill-color: var(--google-blue-50);
-  --secondary-button-text-color: var(--google-blue-700);
-  --secondary-button-hover-fill-color: var(--google-blue-50);
+  --secondary-button-fill-color: var(--tonal-container);
+  --secondary-button-text-color: var(--on-tonal-container);
+  --secondary-button-hover-fill-color: var(--tonal-container);
   border: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .https-only-august2024-refresh .secondary-button {
-    --secondary-button-fill-color: #3a4558; /* Blue 300 24% on Grey 900 */
-    --secondary-button-text-color: var(--google-blue-100);
-    --secondary-button-hover-fill-color: #3a4558;
-  }
 }
