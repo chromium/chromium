@@ -318,6 +318,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     TouchpadScrollScreenView::kScreenId,
     CategoriesSelectionScreenView::kScreenId,
     PerksDiscoveryScreenView::kScreenId,
+    SplitModifierKeyboardInfoScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
