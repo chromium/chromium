@@ -26,6 +26,7 @@ static_library("browser") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/user_annotations",
+    "//components/user_annotations:user_annotations",
   ]
 }
 
@@ -46,6 +47,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/user_annotations:test_support",
+    "//components/user_annotations:user_annotations",
     "//testing/gmock",
     "//testing/gtest",
   ]

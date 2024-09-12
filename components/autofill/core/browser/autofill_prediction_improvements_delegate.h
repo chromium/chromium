@@ -10,6 +10,10 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
+
 namespace autofill {
 
 class FormData;
@@ -26,6 +30,16 @@ class AutofillPredictionImprovementsDelegate {
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<autofill::Suggestion>,
                                    autofill::AutofillSuggestionTriggerSource)>;
+  // `ImportFormCallback` carries `to_be_upserted_entries` that will be shown in
+  // the Autofill prediction improvements prompt. The prompt then notifies the
+  // `UserAnnotationsService` about the user decision by running
+  // `prompt_acceptance_callback`, that is also provided by
+  // `ImportFormCallback`.
+  using ImportFormCallback = base::OnceCallback<void(
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback)>;
 
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
@@ -56,6 +70,12 @@ class AutofillPredictionImprovementsDelegate {
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
+
+  // Forwards `form` and `callback` to the user annotations service which calls
+  // `callback` with its response.
+  virtual void MaybeImportForm(const autofill::FormData& form,
+                               const autofill::FormStructure& form_structure,
+                               ImportFormCallback callback) = 0;
 };
 
 }  // namespace autofill

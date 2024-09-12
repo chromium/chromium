@@ -21,6 +21,8 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_service.h"
 
 namespace autofill_prediction_improvements {
 
@@ -327,6 +329,27 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
   update_suggestions_callback_.Run(
       suggestions,
       autofill::AutofillSuggestionTriggerSource::kPredictionImprovements);
+}
+
+void AutofillPredictionImprovementsManager::MaybeImportForm(
+    const autofill::FormData& form,
+    const autofill::FormStructure& form_structure,
+    ImportFormCallback callback) {
+  // TODO(crbug.com/365962363): Also return early here if
+  // `!IsFormEligibleByFieldCriteria(form_structure))` once the parser is
+  // implemented.
+  if (!client_->GetUserAnnotationsService() ||
+      !user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
+    std::move(callback).Run(
+        /*to_be_upserted_entries=*/{},
+        /*prompt_acceptance_callback=*/base::DoNothing());
+    return;
+  }
+  // TODO(crbug.com/365911258): Call
+  // `client_->GetUserAnnotationsService()->AddFormSubmission()` once the method
+  // is adjusted in a follow-up CL.
+  std::move(callback).Run(/*to_be_upserted_entries=*/{},
+                          /*prompt_acceptance_callback=*/base::DoNothing());
 }
 
 }  // namespace autofill_prediction_improvements

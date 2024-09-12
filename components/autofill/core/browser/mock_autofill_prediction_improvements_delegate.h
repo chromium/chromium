@@ -45,6 +45,12 @@ class MockAutofillPredictionImprovementsDelegate
                const autofill::FormFieldData& trigger_field,
                UpdateSuggestionsCallback update_suggestions_callback),
               (override));
+  MOCK_METHOD(void,
+              MaybeImportForm,
+              (const autofill::FormData& form,
+               const autofill::FormStructure& form_structure,
+               ImportFormCallback callback),
+              (override));
 };
 
 }  // namespace autofill

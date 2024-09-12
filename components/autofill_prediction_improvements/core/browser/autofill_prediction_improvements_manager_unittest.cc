@@ -15,6 +15,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -265,6 +266,66 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   HasType(SuggestionType::kRetrievePredictionImprovements),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kManageAddress)));
+}
+
+// Tests that `import_form_callback` is run with `false` when
+// `user_annotations::ShouldAddFormSubmissionForURL()` returns `true`.
+// TODO(crbug.com/365911258): Add a test that would also run the callback with
+// `true`, once the `UserAnnotationService` is actually called (requires some
+// changes that will be done in a follow-up CL).
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       MaybeImportFormRunsCallbackWithFalseWhenImportIsAttempted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      user_annotations::kUserAnnotations,
+      {{"allowed_hosts_for_form_submissions", "*"}});
+  autofill::FormData form_data;
+  autofill::FormStructure eligible_form_structure(form_data);
+  autofill::FormStructureTestApi form_test_api(eligible_form_structure);
+
+  autofill::AutofillField& prediction_improvement_field =
+      form_test_api.PushField();
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  prediction_improvement_field.set_heuristic_type(
+      autofill::HeuristicSource::kPredictionImprovementRegexes,
+      autofill::IMPROVED_PREDICTION);
+#else
+  prediction_improvement_field.set_heuristic_type(
+      autofill::GetActiveHeuristicSource(), autofill::IMPROVED_PREDICTION);
+#endif
+  base::MockCallback<
+      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
+      import_form_callback;
+
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
+      user_annotations_entries;
+  EXPECT_CALL(import_form_callback, Run)
+      .WillOnce(SaveArg<0>(&user_annotations_entries));
+  manager_->MaybeImportForm(form_data, eligible_form_structure,
+                            import_form_callback.Get());
+  EXPECT_TRUE(user_annotations_entries.empty());
+}
+
+// Tests that `import_form_callback` is run with `false` when
+// `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      user_annotations::kUserAnnotations,
+      {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
+  base::MockCallback<
+      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
+      import_form_callback;
+
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
+      user_annotations_entries;
+  EXPECT_CALL(import_form_callback, Run)
+      .WillOnce(SaveArg<0>(&user_annotations_entries));
+  manager_->MaybeImportForm(/*form=*/{},
+                            /*form_structure=*/autofill::FormStructure({}),
+                            import_form_callback.Get());
+  EXPECT_TRUE(user_annotations_entries.empty());
 }
 
 class ShouldProvideAutofillPredictionImprovementsTest

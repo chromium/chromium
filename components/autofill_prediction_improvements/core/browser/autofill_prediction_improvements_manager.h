@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
@@ -52,6 +53,9 @@ class AutofillPredictionImprovementsManager
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) override;
+  void MaybeImportForm(const autofill::FormData& form,
+                       const autofill::FormStructure& form_structure,
+                       ImportFormCallback callback) override;
 
  private:
   // Receives prediction improvements for all fields in `form`, then calls
