@@ -119,8 +119,17 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
       // This is a StylableSelect popup. When it is shown, we should focus the
       // selected option.
-      if (auto* option = select->SelectedOption()) {
-        option->Focus(FocusParams(FocusTrigger::kScript));
+      HTMLOptionElement* option_to_focus = select->SelectedOption();
+      if (!option_to_focus || !option_to_focus->IsFocusable()) {
+        for (auto* option : select->GetOptionList()) {
+          if (option->IsFocusable()) {
+            option_to_focus = option;
+            break;
+          }
+        }
+      }
+      if (option_to_focus) {
+        option_to_focus->Focus(FocusParams(FocusTrigger::kScript));
       }
       select->PseudoStateChanged(CSSSelector::kPseudoOpen);
       if (AXObjectCache* cache =
@@ -155,6 +164,12 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
   }
 
   void ShowPopoverForSelectElement() {
+    if (popoverOpen()) {
+      // We can hit this case if focus is moved back to the select's invoker
+      // button and the user presses arrow keys which are supposed to show the
+      // picker.
+      return;
+    }
     ShowPopoverInternal(/*invoker=*/nullptr, /*exception_state=*/nullptr);
   }
 
