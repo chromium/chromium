@@ -187,7 +187,8 @@ views::Builder<views::View> CreateMainRightViewBuilder() {
       .SetLayoutManager(std::move(layout_manager))
       .SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded));
 }
 
