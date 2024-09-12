@@ -49,6 +49,11 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "cast_shell",
+    label = "//chromecast:cast_shell",
+)
+
+targets.compile_target(
     name = "cast_shell_apk",
     label = "//chromecast:cast_shell_apk",
 )
@@ -186,6 +191,16 @@ targets.compile_target(
 targets.compile_target(
     name = "content_nocompile_tests",
     label = "//content/test:content_nocompile_tests",
+)
+
+targets.compile_target(
+    name = "core_runtime_simple",
+    label = "//chromecast/cast_core:core_runtime_simple",
+)
+
+targets.compile_target(
+    name = "core_runtime_starboard",
+    label = "//chromecast/cast_core:core_runtime_starboard",
 )
 
 targets.compile_target(

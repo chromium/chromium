@@ -1,0 +1,4 @@
+ci/linux-cast-x64-dbg
+ci/linux-cast-x64-rel
+try/linux-cast-x64-dbg
+try/linux-cast-x64-rel

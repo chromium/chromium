@@ -299,7 +299,52 @@ targets.binaries.console_test_launcher(
     label = "//fuchsia_web/runners:cast_runner_unittests",
 )
 
-# TODO(crbug.com/41489655): Remove unneeded cast_* suites.
+# TODO(issues.chromium.org/1516671): Remove unneeded cast_* suites.
+
+targets.binaries.console_test_launcher(
+    name = "cast_display_settings_unittests",
+    label = "//chromecast/ui/display_settings:cast_display_settings_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_audio_backend_unittests",
+    label = "//chromecast/media/cma/backend:cast_audio_backend_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_base_unittests",
+    label = "//chromecast/base:cast_base_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_cast_core_unittests",
+    label = "//chromecast/cast_core:cast_cast_core_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_crash_unittests",
+    label = "//chromecast/crash:cast_crash_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_graphics_unittests",
+    label = "//chromecast/graphics:cast_graphics_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_media_unittests",
+    label = "//chromecast/media:cast_media_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_shell_browsertests",
+    label = "//chromecast:cast_shell_browsertests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "cast_shell_unittests",
+    label = "//chromecast:cast_shell_unittests",
+)
 
 targets.binaries.windowed_test_launcher(
     name = "cast_unittests",

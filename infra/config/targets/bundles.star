@@ -149,6 +149,42 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "cast_receiver_gtests",
+    additional_compile_targets = [
+        "cast_shell",
+        "cast_test_lists",
+        "core_runtime_simple",
+        "core_runtime_starboard",
+    ],
+    targets = [
+        "cast_audio_backend_unittests",
+        "cast_base_unittests",
+        "cast_cast_core_unittests",
+        "cast_crash_unittests",
+        "cast_display_settings_unittests",
+        "cast_graphics_unittests",
+        "cast_media_unittests",
+        "cast_shell_browsertests",
+        "cast_shell_unittests",
+    ],
+    mixins = [
+        "linux-jammy",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_linux_cast_receiver_gtests",
+    targets = [
+        "cast_receiver_gtests",
+        "chromium_gtests",
+        "linux_flavor_specific_chromium_gtests",
+    ],
+    mixins = [
+        "linux-jammy",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_dbg_isolated_scripts",
     targets = [
         "desktop_chromium_isolated_scripts",
