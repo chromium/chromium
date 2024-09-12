@@ -4255,6 +4255,7 @@ if (!is_android) {
         sources += [
           "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
+          "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
           "../browser/ui/webui/app_home/app_home_page_handler_browsertest.cc",
           "../browser/ui/webui/app_home/mock_app_home_page.cc",
