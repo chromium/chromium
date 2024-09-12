@@ -7293,23 +7293,6 @@
             ]
         }
     ],
-    "DTCKeyUploadedBySharedAPIEnabled": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DTCKeyUploadedBySharedAPIEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "DXGIWaitableSwapChain": [
         {
             "platforms": [
