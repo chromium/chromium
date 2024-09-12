@@ -335,16 +335,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
             expected);
 }
 
-// TODO(crbug.com/366105910): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_GetFormInteractionsFlowId_BelowMaxFlowTime \
-  DISABLED_GetFormInteractionsFlowId_BelowMaxFlowTime
-#else
-#define MAYBE_GetFormInteractionsFlowId_BelowMaxFlowTime \
-  GetFormInteractionsFlowId_BelowMaxFlowTime
-#endif
-TEST_F(ChromeAutofillClientTest,
-       MAYBE_GetFormInteractionsFlowId_BelowMaxFlowTime) {
+TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {
   base::TimeDelta below_max_flow_time = base::Minutes(10);
 
   FormInteractionsFlowId first_interaction_flow_id =
@@ -368,16 +359,7 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AboveMaxFlowTime) {
             client()->GetCurrentFormInteractionsFlowId());
 }
 
-// TODO(crbug.com/366105910): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_GetFormInteractionsFlowId_AdvancedTwice \
-  DISABLED_GetFormInteractionsFlowId_AdvancedTwice
-#else
-#define MAYBE_GetFormInteractionsFlowId_AdvancedTwice \
-  GetFormInteractionsFlowId_AdvancedTwice
-#endif
-TEST_F(ChromeAutofillClientTest,
-       MAYBE_GetFormInteractionsFlowId_AdvancedTwice) {
+TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
   base::TimeDelta above_half_max_flow_time = base::Minutes(15);
 
   FormInteractionsFlowId first_interaction_flow_id =
