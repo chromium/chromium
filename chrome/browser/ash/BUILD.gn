@@ -663,7 +663,6 @@ static_library("ash") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/ash/tether",
     "//chrome/browser/ash/trusted_vault",
-    "//chrome/browser/ash/url_handler",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/autofill",
     "//chrome/browser/browsing_data:constants",
@@ -1922,7 +1921,6 @@ group("browser_tests") {
     "//chrome/browser/ash/system:browser_tests",
     "//chrome/browser/ash/system_logs:browser_tests",
     "//chrome/browser/ash/system_web_apps:browser_tests",
-    "//chrome/browser/ash/url_handler:browser_tests",
     "//chrome/browser/ash/video_conference:browser_tests",
     "//chrome/browser/ash/wallpaper:browser_tests",
   ]
