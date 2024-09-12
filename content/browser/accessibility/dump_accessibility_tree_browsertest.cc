@@ -108,6 +108,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable CSSReadingFlow, used by AccessibilityCSSReadingFlow.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CSSReadingFlow");
+  // Enable CSSVisibilityInert, used by AccessibilityCSSVisibilityInert
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "CSSVisibilityInert");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -4078,6 +4081,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, IgnoreReflexiveRelations) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        RelationsPreserveAuthorOrder) {
   RunRelationsTest(FILE_PATH_LITERAL("relations-preserve-author-order.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSVisibilityInert) {
+  RunCSSTest(FILE_PATH_LITERAL("visibility-inert.html"));
 }
 
 //

@@ -2045,6 +2045,8 @@ data/accessibility/css/visibility-expected-blink.txt
 data/accessibility/css/visibility-expected-mac.txt
 data/accessibility/css/visibility-expected-uia-win.txt
 data/accessibility/css/visibility-expected-win.txt
+data/accessibility/css/visibility-inert-expected-blink.txt
+data/accessibility/css/visibility-inert.html
 data/accessibility/css/visibility-to-collapsed-expected-blink.txt
 data/accessibility/css/visibility-to-collapsed.html
 data/accessibility/css/visibility-to-hidden-expected-blink.txt
