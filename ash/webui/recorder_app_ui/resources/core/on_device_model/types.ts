@@ -54,8 +54,19 @@ export abstract class ModelLoader<T> {
 
   /**
    * Loads the model.
+   *
+   * TODO(pihsun): Currently no usage reuse loaded models, so the
+   * `loadAndExecute` API is sufficient. Define proper "stages" for the model
+   * API when there's need to reuse the loaded model.
+   *
+   * TODO(pihsun): Returns specific error type when the model failed to load.
    */
-  abstract load(): Promise<Model<T>>;
+  protected abstract load(): Promise<Model<T>|null>;
+
+  /**
+   * Loads the model and execute it on an input.
+   */
+  abstract loadAndExecute(content: string): Promise<ModelResponse<T>>;
 
   /**
    * Requests download of the given model.
@@ -67,7 +78,7 @@ export abstract class ModelLoader<T> {
     // consider adding another API for only downloading the model if the
     // overhead is large.
     void this.load().then((model) => {
-      model.close();
+      model?.close();
     });
   }
 }

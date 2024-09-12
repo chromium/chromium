@@ -164,12 +164,6 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
 export class SummaryModel extends OnDeviceModel<string> {
   override async execute(content: string): Promise<ModelResponse<string>> {
-    if (getWordCount(content) < MIN_WORD_LENGTH) {
-      return {
-        kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
-      };
-    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
@@ -190,12 +184,6 @@ export class SummaryModel extends OnDeviceModel<string> {
 
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   override async execute(content: string): Promise<ModelResponse<string[]>> {
-    if (getWordCount(content) < MIN_WORD_LENGTH) {
-      return {
-        kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
-      };
-    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
@@ -274,17 +262,40 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     update(state);
   }
 
-  override async load(): Promise<Model<T>> {
+  override async load(): Promise<Model<T>|null> {
     const newModel = new OnDeviceModelRemote();
     const {result} = await this.remote.loadModel(
       {value: this.modelId},
       newModel.$.bindNewPipeAndPassReceiver(),
     );
     if (result !== LoadModelResult.kSuccess) {
-      // TODO(pihsun): Dedicated error type?
-      throw new Error(`Load model failed: ${result}`);
+      console.error('Load model failed:', result);
+      // TODO(pihsun): Have dedicated error type.
+      return null;
     }
     return this.createModel(newModel);
+  }
+
+  override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
+    if (getWordCount(content) < MIN_WORD_LENGTH) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+      };
+    }
+    const model = await this.load();
+    if (model === null) {
+      // TODO(pihsun): Specific error type / message for model loading error.
+      return {
+        kind: 'error',
+        error: ModelResponseError.GENERAL,
+      };
+    }
+    try {
+      return await model.execute(content);
+    } finally {
+      model.close();
+    }
   }
 }
 

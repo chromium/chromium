@@ -7,20 +7,13 @@ import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
 import '../components/cra/cra-icon.js';
 
-import {
-  createRef,
-  css,
-  html,
-  nothing,
-  ref,
-  when,
-} from 'chrome://resources/mwc/lit/index.js';
+import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
 import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {Model, ModelResponse} from '../core/on_device_model/types.js';
+import {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 
@@ -61,12 +54,6 @@ export class DevPage extends ReactiveLitElement {
 
   readonly recordingDataManager = useRecordingDataManager();
 
-  // TODO(pihsun): Better loading state handling. The following two should
-  // probably come together from some Promise -> signal utility?
-  private readonly modelLoading = signal(false);
-
-  private readonly titleSuggestionModel = signal<Model<string[]>|null>(null);
-
   private readonly textareaRef = createRef<HTMLTextAreaElement>();
 
   /**
@@ -74,48 +61,20 @@ export class DevPage extends ReactiveLitElement {
    */
   private readonly titles = signal<ModelResponse<string[]>|null>(null);
 
-  override disconnectedCallback(): void {
-    if (this.titleSuggestionModel.value !== null) {
-      this.titleSuggestionModel.value.close();
-      this.titleSuggestionModel.value = null;
-    }
-  }
-
   private async onSuggestTitleClick() {
-    if (this.titleSuggestionModel.value === null) {
-      return;
-    }
     const value = this.textareaRef.value?.value;
     if (value === undefined) {
       return;
     }
     // TODO(shik): Add loading state.
-    this.titles.value = await this.titleSuggestionModel.value.execute(value);
+    this.titles.value =
+      await this.platformHandler.titleSuggestionModelLoader.loadAndExecute(
+        value,
+      );
   }
 
   private async onClearClicked() {
     await this.recordingDataManager.clear();
-  }
-
-  private async onLoadModelClicked() {
-    this.modelLoading.value = true;
-    try {
-      this.titleSuggestionModel.value =
-        await this.platformHandler.titleSuggestionModelLoader.load();
-    } finally {
-      // TODO(pihsun): Display / handle error better.
-      this.modelLoading.value = false;
-    }
-  }
-
-  private renderLoadModelResult() {
-    if (this.modelLoading.value) {
-      return 'Loading...';
-    }
-    if (this.titleSuggestionModel.value !== null) {
-      return 'Model loaded';
-    }
-    return nothing;
   }
 
   override render(): RenderResult {
@@ -131,24 +90,12 @@ export class DevPage extends ReactiveLitElement {
           >
         </div>
         <div class="section">
-          <md-filled-button @click=${this.onLoadModelClicked}
-            >Load Model</md-filled-button
-          >
-          <span>${this.renderLoadModelResult()}</span>
+          <textarea ${ref(this.textareaRef)} rows=${5}></textarea>
+          <pre>Titles: ${JSON.stringify(this.titles.value, null, 2)}</pre>
+          <md-filled-button @click=${this.onSuggestTitleClick}>
+            Suggest Title
+          </md-filled-button>
         </div>
-        ${
-      when(
-        this.titleSuggestionModel.value !== null,
-        () => html`
-            <div class="section">
-              <textarea ${ref(this.textareaRef)} rows=${5}></textarea>
-              <pre>Titles: ${JSON.stringify(this.titles.value, null, 2)}</pre>
-              <md-filled-button @click=${this.onSuggestTitleClick}>
-                Suggest Title
-              </md-filled-button>
-            </div>
-          `,
-      )}
         ${this.platformHandler.renderDevUi()}
       </div>
     `;

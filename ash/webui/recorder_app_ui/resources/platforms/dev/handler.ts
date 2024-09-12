@@ -108,6 +108,15 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
     }
     return this.model;
   }
+
+  override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
+    const model = await this.load();
+    try {
+      return await model.execute(content);
+    } finally {
+      model.close();
+    }
+  }
 }
 
 // Random placeholder text from ChromeOS blog.

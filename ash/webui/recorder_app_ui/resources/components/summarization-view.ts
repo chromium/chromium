@@ -197,13 +197,8 @@ export class SummarizationView extends ReactiveLitElement {
     this.summaryOpened.value = true;
 
     const text = this.transcription?.toPlainText() ?? '';
-    const model = await this.platformHandler.summaryModelLoader.load();
-    try {
-      this.summary.value = await model.execute(text);
-      // TODO(pihsun): Handle error.
-    } finally {
-      model.close();
-    }
+    this.summary.value =
+      await this.platformHandler.summaryModelLoader.loadAndExecute(text);
   }
 
   private renderSummaryFooter() {
