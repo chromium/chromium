@@ -445,6 +445,10 @@ declare global {
       export const onAccessibilityGesture:
           ChromeEvent<(gesture: Gesture, x: number, y: number) => void>;
 
+      export const onTwoFingerTouchStart: ChromeEvent<() => void>;
+
+      export const onTwoFingerTouchStop: ChromeEvent<() => void>;
+
       export const onSelectToSpeakContextMenuClicked: ChromeEvent<() => void>;
 
       export const onSelectToSpeakFocusChanged:
