@@ -310,6 +310,10 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
           type_enabled = false;
         }
+      } else if (type == UserSelectableType::kExtensions) {
+        // Extensions require an explicit sign in.
+        type_enabled =
+            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
       } else {
         // All other types are always enabled by default.
         type_enabled = true;
@@ -748,8 +752,9 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
           kSyncSharedTabGroupDataInTransportMode);
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-    case UserSelectableType::kApps:
     case UserSelectableType::kExtensions:
+      return base::FeatureList::IsEnabled(kSyncEnableExtensionsInTransportMode);
+    case UserSelectableType::kApps:
     case UserSelectableType::kThemes:
     case UserSelectableType::kCookies:
       // These types are not supported in transport mode yet.
