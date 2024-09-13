@@ -6,28 +6,45 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import static org.mockito.Mockito.when;
 
+import android.text.format.DateUtils;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DefaultBrowserPromoImpressionCounterTest {
+    @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
+
     private DefaultBrowserPromoImpressionCounter mCounter;
+    private SharedPreferencesManager mSharedPreferenceManager;
 
     @Before
     public void setUp() {
         mCounter = Mockito.spy(new DefaultBrowserPromoImpressionCounter());
+
+        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
+
+        mSharedPreferenceManager.removeKey(
+                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
+        mSharedPreferenceManager.removeKey(
+                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME);
     }
 
     @After
@@ -123,5 +140,81 @@ public class DefaultBrowserPromoImpressionCounterTest {
 
         // Min session count is session count at least promo (20) plus min interval of 5.
         Assert.assertEquals("Incorrect min session count.", 25, mCounter.getMinSessionCount());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
+    public void testOnPromoShown() {
+        int testSessionCount = 3;
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, testSessionCount);
+
+        mCounter.onPromoShown();
+        Assert.assertEquals(mCounter.getPromoCount(), 1);
+        Assert.assertEquals(mCounter.getLastPromoInterval(), 0);
+        Assert.assertEquals(mCounter.getLastPromoSessionCount(), testSessionCount);
+
+        // Advance 3 days, last interval is 3 days = 4320 minutes
+        mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 3);
+        Assert.assertEquals(mCounter.getLastPromoInterval(), 4320);
+
+        // Increase session count, getLastPromoSessionCount stays the same.
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        Assert.assertEquals(mCounter.getLastPromoSessionCount(), testSessionCount);
+
+        // Show another promo
+        mCounter.onPromoShown();
+        Assert.assertEquals(mCounter.getPromoCount(), 2);
+        Assert.assertEquals(mCounter.getLastPromoInterval(), 0);
+        Assert.assertEquals(mCounter.getLastPromoSessionCount(), testSessionCount + 1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
+    public void testShouldShowPromo() {
+        // Initial state, should not show promo immediately.
+        Assert.assertEquals(mCounter.getSessionCount(), 0);
+        Assert.assertEquals(mCounter.getLastPromoSessionCount(), 0);
+        Assert.assertEquals(mCounter.getLastPromoInterval(), Integer.MAX_VALUE);
+        Assert.assertEquals(mCounter.getMinPromoInterval(), 0);
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        // Increase session to 3, can show promo
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, 3);
+        Assert.assertTrue(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        // Show promo, and check immediately, should not show promo immediately.
+        mCounter.onPromoShown();
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        // Increase session count by 2, still not show promo
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        // Advance 3 days, can show the 2nd promo
+        mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 3);
+        Assert.assertTrue(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        mCounter.onPromoShown();
+
+        // Advance 6 days, not showing the 3rd promo
+        mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 6);
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+        // Increase session count by 2, can show the 3rd promo
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        Assert.assertTrue(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        mCounter.onPromoShown();
+
+        // Increase session count by 2, advance 9 days, not showing the promo because reaching the
+        // max count.
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        DefaultBrowserPromoUtils.incrementSessionCount();
+        mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 9);
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+        Assert.assertTrue(mCounter.shouldShowPromo(/* ignoreMaxCount= */ true));
     }
 }

@@ -75,6 +75,11 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config->session_rate = Comparator(EQUAL, 0);
     config->trigger = EventConfig("default_browser_promos_group_trigger",
                                   Comparator(EQUAL, 0), 7, kMaxStoragePeriod);
+    // Default Browser promos in this groups can be shown only if the Role
+    // Manager promo is not shown in the 7 days period.
+    config->event_configs.insert(
+        EventConfig("role_manager_default_browser_promos_shown",
+                    Comparator(EQUAL, 0), 7, kMaxStoragePeriod));
     return config;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

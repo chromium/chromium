@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -1329,8 +1330,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 VersionInfo.getProductMajorVersion())) {
             return true;
         }
-        if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
-                mActivity, mWindowAndroid, /* ignoreMaxCount= */ false)) {
+        if (DefaultBrowserPromoUtils.getInstance()
+                .prepareLaunchPromoIfNeeded(
+                        mActivity,
+                        mWindowAndroid,
+                        TrackerFactory.getTrackerForProfile(profile),
+                        /* ignoreMaxCount= */ false)) {
             return true;
         }
         return AppLanguagePromoDialog.maybeShowPrompt(
