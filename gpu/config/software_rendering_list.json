@@ -322,16 +322,12 @@
     },
     {
       "id": 68,
-      "description": "VMware Fusion 4 has corrupt rendering on Windows",
-      "cr_bugs": [169470],
+      "description": "Do not use GPU accelerated rendering with VMware on Windows",
+      "cr_bugs": [169470, 879098, 325159675],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x15ad",
-      "driver_version": {
-        "op": "<=",
-        "value": "7.14.1.1134"
-      },
       "features": [
         "all"
       ]
@@ -1148,23 +1144,6 @@
       "test_group": 2,
       "features": [
         "accelerated_webgl"
-      ]
-    },
-    {
-      "id": 157,
-      "description": "VMware can crash with older drivers and WebGL content",
-      "cr_bugs": [879098],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x15ad",
-      "driver_version": {
-        "op": "<=",
-        "value": "7.14.1.1210"
-      },
-      "features": [
-        "accelerated_webgl",
-        "accelerated_webgl2"
       ]
     },
     {
