@@ -1108,6 +1108,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.IsDuplicate" enum="Boolean"
+    expires_after="2025-02-10">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Whether a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same. Logged when the new
+    navigation is triggered and about to take the place of the old navigation.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
     expires_after="2025-02-10">
   <owner>alexmos@chromium.org</owner>
@@ -1826,6 +1837,17 @@ chromium-metrics-reviews@google.com.
     that is not a same document navigation.
   </summary>
   <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
+<histogram name="Navigation.RendererInitiated.IsDuplicate" enum="Boolean"
+    expires_after="2025-02-10">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Whether a new renderer-initiated navigation is a duplicate of a currently
+    ongoing navigation, where the destination and params are the same. Logged
+    when the new navigation is triggered on the renderer side.
+  </summary>
 </histogram>
 
 <histogram

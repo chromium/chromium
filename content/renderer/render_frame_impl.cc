@@ -6251,16 +6251,18 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  is_history_navigation_in_new_child_frame,
                                  request_destination);
 
-  if (base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs) &&
-      navigation_client_impl_ &&
+  bool is_duplicate_navigation = false;
+  if (navigation_client_impl_ &&
       navigation_client_impl_->HasBeginNavigationParams()) {
-    // We ignore user-initiated navigations that are identical to the ongoing
-    // navigation. This is because the navigation is likely to be accidental
-    // (user clicked the same link multiple times, etc).
+    // We ignore navigations that are identical to the ongoing navigation. This
+    // is because the navigation is likely to be accidental (e.g. user clicked
+    // the same link multiple times, etc).
     auto& prev_begin_params = navigation_client_impl_->begin_params();
     auto& prev_common_params = navigation_client_impl_->common_params();
-    if (begin_params->was_initiated_by_link_click &&
-        prev_begin_params.was_initiated_by_link_click &&
+    if (common_params->navigation_start - prev_common_params.navigation_start <=
+            features::kDuplicateNavThreshold.Get() &&
+        begin_params->was_initiated_by_link_click ==
+            prev_begin_params.was_initiated_by_link_click &&
         common_params->url == prev_common_params.url &&
         common_params->method == "GET" && prev_common_params.method == "GET" &&
         common_params->initiator_origin ==
@@ -6273,8 +6275,14 @@ void RenderFrameImpl::BeginNavigationInternal(
             prev_common_params.should_replace_current_entry &&
         begin_params->headers == prev_begin_params.headers &&
         begin_params->has_rel_opener == prev_begin_params.has_rel_opener) {
-      return;
+      is_duplicate_navigation = true;
     }
+  }
+  base::UmaHistogramBoolean("Navigation.RendererInitiated.IsDuplicate",
+                            is_duplicate_navigation);
+  if (is_duplicate_navigation &&
+      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+    return;
   }
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
