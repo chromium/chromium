@@ -1050,6 +1050,9 @@ public final class ProductionSupportedFlagList {
                 "Enable loading include statements when checking digital asset links."),
         Flag.baseFeature("PrefetchNewWaitLoop"),
         Flag.baseFeature("DirectCompositorThreadIpc"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_WEBAUTHN,
+                "Enable WebAuthn setWebAuthenticationSupport / getWebAuthenticationSupport APIs."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

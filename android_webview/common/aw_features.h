@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kWebViewSeparateResourceContext);
 BASE_DECLARE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU);
 BASE_DECLARE_FEATURE(kWebViewHyperlinkContextMenu);
 BASE_DECLARE_FEATURE(kCreateSpareRendererOnBrowserContextCreation);
+BASE_DECLARE_FEATURE(kWebViewWebauthn);
 
 }  // namespace android_webview::features
 

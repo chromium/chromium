@@ -252,4 +252,9 @@ BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              "CreateSpareRendererOnBrowserContextCreation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for WebAuthn usage in WebViews.
+BASE_FEATURE(kWebViewWebauthn,
+             "WebViewWebauthn",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

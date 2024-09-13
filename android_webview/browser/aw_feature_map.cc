@@ -54,6 +54,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewHyperlinkContextMenu,
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
+    &features::kWebViewWebauthn,
 };
 
 // static
