@@ -51,8 +51,12 @@ const char* invalid_variable_reference_value[] = {
 const char* valid_attr_values[] = {
     // clang-format off
     "attr(p)",
+    "attr(p,)",
     "attr(p string)",
     "attr(p color)",
+    "attr(p, color)",
+    "attr(p color,)",
+    "attr(p color, color)",
     "attr(p number)",
     "attr(p color, red)",
     // clang-format on
@@ -61,8 +65,7 @@ const char* valid_attr_values[] = {
 const char* invalid_attr_values[] = {
     // clang-format off
     "attr(p url)",
-    "attr(p, url)",
-    "attr(p url,)",
+    "attr(p !)",
     "attr(p color red)",
     // clang-format on
 };

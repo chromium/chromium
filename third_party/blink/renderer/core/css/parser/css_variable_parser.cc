@@ -187,10 +187,9 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
     return true;
   }
 
-  token = stream.ConsumeIncludingWhitespace();
-
-  // Parse <attr-type>.
-  if (token.GetType() == kIdentToken) {
+  if (stream.Peek().GetType() == kIdentToken) {
+    // Parse <attr-type>.
+    token = stream.ConsumeIncludingWhitespace();
     if (!CSSAttrType::Parse(token.Value()).IsValid()) {
       return false;
     }
@@ -205,7 +204,9 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   }
   stream.Consume();
   if (stream.AtEnd()) {
-    return false;
+    // attr = attr(<attr-name>,) and attr = attr(<attr-name> <attr-type>,) is
+    // allowed, so return true.
+    return true;
   }
 
   // Parse the fallback value.
