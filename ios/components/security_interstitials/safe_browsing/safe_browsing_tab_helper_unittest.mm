@@ -139,6 +139,23 @@ class SafeBrowsingTabHelperTest
         ->StoreUnsafeResource(resource);
   }
 
+  // Helper function to run all async callbacks first then sync callbacks.
+  void RunAsyncCallbacksThenSyncCallbacks() {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_async_callbacks();
+        }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_sync_callbacks();
+        }));
+
+    // TODO(crbug.com/359420122): Remove when clean up is complete.
+    if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
@@ -180,6 +197,22 @@ TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseSyncQuery) {
 }
 
 // Tests the case of a single navigation request and response, for a URL that is
+// safe where the async query completes before the sync query.
+TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseAsyncQueryFirst) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url("http://chromium.test");
+  client_.pause_sync_response();
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  RunAsyncCallbacksThenSyncCallbacks();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
+// Tests the case of a single navigation request and response, for a URL that is
 // unsafe.
 TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponse) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
@@ -207,6 +240,23 @@ TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponseSyncQuery) {
   if (SafeBrowsingDecisionArrivesBeforeResponse()) {
     base::RunLoop().RunUntilIdle();
   }
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a single navigation request and response, for a URL that is
+// unsafe where the async query is completed before the sync query.
+TEST_P(SafeBrowsingTabHelperTest,
+       SingleUnsafeRequestAndResponseAsyncQueryFirst) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  StoreUnsafeResource(url);
+  RunAsyncCallbacksThenSyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);
