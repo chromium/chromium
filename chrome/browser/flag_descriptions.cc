@@ -3902,10 +3902,9 @@ const char kVcTrayMicIndicatorDescription[] =
     "captured by the microphone, after some effects like noise cancellation "
     "is applied.";
 
-const char kVcTrayTitleHeaderName[] = "Adds a title header segment in VC tray";
+const char kVcTrayTitleHeaderName[] = "Adds a sidetone toggle in VC tray";
 const char kVcTrayTitleHeaderDescription[] =
-    "Displays a title header segment in VC Tray that holds an icon, label, "
-    "mic indicator and sidetone button";
+    "Displays a sidetone toggle in VC Tray Title header";
 
 const char kVcLightIntensityName[] = "VC relighting intensity";
 const char kVcLightIntensityDescription[] =

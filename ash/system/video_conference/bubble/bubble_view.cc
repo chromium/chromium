@@ -124,10 +124,8 @@ BubbleView::BubbleView(const InitParams& init_params,
 BubbleView::~BubbleView() = default;
 
 void BubbleView::AddedToWidget() {
-  if (features::IsVcTrayTitleHeaderEnabled()) {
-    AddChildView(std::make_unique<TitleView>(base::BindOnce(
-        &BubbleView::CloseBubbleView, weak_factory_.GetWeakPtr())));
-  }
+  AddChildView(std::make_unique<TitleView>(base::BindOnce(
+      &BubbleView::CloseBubbleView, weak_factory_.GetWeakPtr())));
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).

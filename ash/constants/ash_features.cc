@@ -3269,7 +3269,7 @@ BASE_FEATURE(kVcTrayMicIndicator,
              "VCTrayMicIndicator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables VC tray title header
+// Enables or disables sidetone toggle inside VC tray title header
 BASE_FEATURE(kVcTrayTitleHeader,
              "VCTrayTitleHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);

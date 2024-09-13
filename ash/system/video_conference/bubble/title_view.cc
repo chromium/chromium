@@ -73,31 +73,34 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
                                         *title_label);
   SetFlexForView(title_column, 1);
 
-  auto* mic_test_column =
-      AddChildView(views::Builder<views::BoxLayoutView>()
-                       .SetVisible(VideoConferenceTrayController::Get()
-                                       ->GetHasMicrophonePermissions())
-                       .Build());
+  if (features::IsVcTrayTitleHeaderEnabled()) {
+    auto* mic_test_column =
+        AddChildView(views::Builder<views::BoxLayoutView>()
+                         .SetVisible(VideoConferenceTrayController::Get()
+                                         ->GetHasMicrophonePermissions())
+                         .Build());
 
-  if (features::IsVcTrayMicIndicatorEnabled()) {
-    mic_test_column->AddChildView(std::make_unique<MicIndicator>());
+    if (features::IsVcTrayMicIndicatorEnabled()) {
+      mic_test_column->AddChildView(std::make_unique<MicIndicator>());
+    }
+
+    sidetone_button_ =
+        mic_test_column->AddChildView(std::make_unique<IconButton>(
+            base::BindRepeating(&TitleView::OnSidetoneButtonClicked,
+                                weak_ptr_factory_.GetWeakPtr()),
+            IconButton::Type::kMedium, &kVideoConferenceSidetoneIcon,
+            IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP,
+            /*is_toggleable=*/true,
+            /*has_border=*/false));
+
+    sidetone_button_->SetBackgroundColor(SK_ColorTRANSPARENT);
+    sidetone_button_->SetBackgroundToggledColor(
+        cros_tokens::kCrosSysSystemPrimaryContainer);
+    sidetone_button_->SetToggled(
+        VideoConferenceTrayController::Get()->GetSidetoneEnabled());
+
+    VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
   }
-
-  sidetone_button_ = mic_test_column->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&TitleView::OnSidetoneButtonClicked,
-                          weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium, &kVideoConferenceSidetoneIcon,
-      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP,
-      /*is_toggleable=*/true,
-      /*has_border=*/false));
-
-  sidetone_button_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  sidetone_button_->SetBackgroundToggledColor(
-      cros_tokens::kCrosSysSystemPrimaryContainer);
-  sidetone_button_->SetToggled(
-      VideoConferenceTrayController::Get()->GetSidetoneEnabled());
-
-  VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 
   if (features::IsVcStudioLookEnabled()) {
     AddChildView(
