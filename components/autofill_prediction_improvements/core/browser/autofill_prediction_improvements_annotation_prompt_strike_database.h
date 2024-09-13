@@ -13,9 +13,9 @@
 
 namespace autofill_prediction_improvements {
 
-struct AutofillPrectionImprovementsAnnotionPromptStrikeDatabaseTraits {
+struct AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits {
   static constexpr std::string_view kName =
-      "AutofillPredictionImprovementsAnnotionPrompt";
+      "AutofillPredictionImprovementsAnnotationPrompt";
   static constexpr size_t kMaxStrikeEntities = 200;
   static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
   static constexpr size_t kMaxStrikeLimit = 3;
@@ -31,7 +31,7 @@ struct AutofillPrectionImprovementsAnnotionPromptStrikeDatabaseTraits {
 // form signature.
 using AutofillPrectionImprovementsAnnotationPromptStrikeDatabase =
     autofill::HistoryClearableStrikeDatabase<
-        AutofillPrectionImprovementsAnnotionPromptStrikeDatabaseTraits>;
+        AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits>;
 
 }  // namespace autofill_prediction_improvements
 

@@ -93,13 +93,53 @@ std::vector<autofill::Suggestion> CreateErrorSuggestion() {
 
 AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
     AutofillPredictionImprovementsClient* client,
-    optimization_guide::OptimizationGuideDecider* decider)
+    optimization_guide::OptimizationGuideDecider* decider,
+    autofill::StrikeDatabase* strike_database)
     : client_(CHECK_DEREF(client)), decider_(decider) {
   if (decider_) {
     decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::
              AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST});
   }
+
+  user_annotation_prompt_strike_database_ =
+      strike_database
+          ? std::make_unique<
+                AutofillPrectionImprovementsAnnotationPromptStrikeDatabase>(
+                strike_database)
+          : nullptr;
+}
+
+bool AutofillPredictionImprovementsManager::IsFormBlockedForImport(
+    const autofill::FormStructure& form) const {
+  if (!user_annotation_prompt_strike_database_) {
+    return true;
+  }
+
+  return user_annotation_prompt_strike_database_->ShouldBlockFeature(
+      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+          form.form_signature()));
+}
+void AutofillPredictionImprovementsManager::AddStrikeForImportFromForm(
+    const autofill::FormStructure& form) {
+  if (!user_annotation_prompt_strike_database_) {
+    return;
+  }
+
+  user_annotation_prompt_strike_database_->AddStrike(
+      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+          form.form_signature()));
+}
+
+void AutofillPredictionImprovementsManager::RemoveStrikesForImportFromForm(
+    const autofill::FormStructure& form) {
+  if (!user_annotation_prompt_strike_database_) {
+    return;
+  }
+
+  user_annotation_prompt_strike_database_->ClearStrikes(
+      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+          form.form_signature()));
 }
 
 AutofillPredictionImprovementsManager::

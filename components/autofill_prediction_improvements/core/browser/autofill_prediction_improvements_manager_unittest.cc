@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
@@ -114,6 +115,7 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
   NiceMock<MockAutofillPredictionImprovementsClient> client_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
   base::test::ScopedFeatureList feature_;
+  autofill::TestStrikeDatabase strike_database_;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
@@ -130,13 +132,53 @@ class AutofillPredictionImprovementsManagerTest
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(Return(&user_annotations_service_));
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
-        &client_, &decider_);
+        &client_, &decider_, &strike_database_);
   }
 
  protected:
   user_annotations::TestUserAnnotationsService user_annotations_service_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
 };
+
+TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
+  autofill::FormStructure form1{autofill::FormData()};
+  form1.set_form_signature(autofill::FormSignature(1));
+
+  autofill::FormStructure form2{autofill::FormData()};
+  form1.set_form_signature(autofill::FormSignature(2));
+
+  // Neither of the forms should be blocked in the beginning.
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form1));
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+
+  // After up to two strikes the form should not blocked.
+  manager_->AddStrikeForImportFromForm(form1);
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form1));
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+
+  manager_->AddStrikeForImportFromForm(form1);
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form1));
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+
+  // After the third strike form1 should become blocked but form2 remains
+  // unblocked.
+  manager_->AddStrikeForImportFromForm(form1);
+  EXPECT_TRUE(manager_->IsFormBlockedForImport(form1));
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+
+  // Now the second form received three strikes and gets eventually blocked.
+  manager_->AddStrikeForImportFromForm(form2);
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+  manager_->AddStrikeForImportFromForm(form2);
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+  manager_->AddStrikeForImportFromForm(form2);
+  EXPECT_TRUE(manager_->IsFormBlockedForImport(form2));
+
+  // After resetting form2, form1 should remain blocked.
+  manager_->RemoveStrikesForImportFromForm(form2);
+  EXPECT_TRUE(manager_->IsFormBlockedForImport(form1));
+  EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
+}
 
 // Tests that the `update_suggestions_callback` is called eventually with the
 // `kFillPredictionImprovements` suggestion.
@@ -395,7 +437,8 @@ class ShouldProvideAutofillPredictionImprovementsTest
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        DoesNotExtractImprovedPredictionsIfFlagDisabled) {
   feature_.InitAndDisableFeature(kAutofillPredictionImprovements);
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
@@ -424,7 +467,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        DoesNotExtractImprovedPredictionsIfDeciderIsNull) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
-  AutofillPredictionImprovementsManager manager{&client_, nullptr};
+  AutofillPredictionImprovementsManager manager{&client_, nullptr,
+                                                &strike_database_};
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
@@ -453,7 +497,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        ExtractsImprovedPredictionsIfSkipAllowlistIsTrue) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
@@ -474,7 +519,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        DoesNotExtractImprovedPredictionsIfOptimizationGuideCannotBeApplied) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
@@ -506,7 +552,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
        ExtractsImprovedPredictionsIfOptimizationGuideCanBeApplied) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
@@ -535,7 +582,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   autofill::FormStructure form(form_data);
   autofill::FormStructureTestApi form_test_api(form);
 
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
 
   EXPECT_FALSE(manager.IsFormEligible(form));
 }
@@ -560,7 +608,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       autofill::HeuristicSource::kLegacyRegexes, autofill::IMPROVED_PREDICTION);
 #endif
 
-  AutofillPredictionImprovementsManager manager{&client_, &decider_};
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
 
   EXPECT_TRUE(manager.IsFormEligible(form));
 }

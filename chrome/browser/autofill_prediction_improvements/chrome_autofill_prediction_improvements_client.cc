@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,9 +30,14 @@ ChromeAutofillPredictionImprovementsClient::
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
           *web_contents),
       prediction_improvements_manager_{
-          this, OptimizationGuideKeyedServiceFactory::GetForProfile(
-                    Profile::FromBrowserContext(
-                        GetWebContents().GetBrowserContext()))} {}
+          this,
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetWebContents().GetBrowserContext())),
+          autofill::StrikeDatabaseFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetWebContents().GetBrowserContext())),
+      } {}
 
 ChromeAutofillPredictionImprovementsClient::
     ~ChromeAutofillPredictionImprovementsClient() = default;

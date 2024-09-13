@@ -8,8 +8,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_annotation_prompt_strike_database.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "url/gurl.h"
@@ -31,7 +33,8 @@ class AutofillPredictionImprovementsManager
  public:
   AutofillPredictionImprovementsManager(
       AutofillPredictionImprovementsClient* client,
-      optimization_guide::OptimizationGuideDecider* decider);
+      optimization_guide::OptimizationGuideDecider* decider,
+      autofill::StrikeDatabase* strike_database);
   AutofillPredictionImprovementsManager(
       const AutofillPredictionImprovementsManager&) = delete;
   AutofillPredictionImprovementsManager& operator=(
@@ -57,6 +60,11 @@ class AutofillPredictionImprovementsManager
                        const autofill::FormStructure& form_structure,
                        ImportFormCallback callback) override;
   void HasDataStored(HasDataCallback callback) override;
+
+  // Methods for strike counting of rejected forms.
+  bool IsFormBlockedForImport(const autofill::FormStructure& form) const;
+  void AddStrikeForImportFromForm(const autofill::FormStructure& form);
+  void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
 
  private:
   // Receives prediction improvements for all fields in `form`, then calls
@@ -123,6 +131,11 @@ class AutofillPredictionImprovementsManager
   // applied to the main frame's last committed URL. `decider_` is null if the
   // corresponding feature is not enabled.
   const raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
+
+  // A strike data base used blocking save prompt for specific form signatures
+  // to prevent over prompting.
+  std::unique_ptr<AutofillPrectionImprovementsAnnotationPromptStrikeDatabase>
+      user_annotation_prompt_strike_database_;
 
   base::WeakPtrFactory<AutofillPredictionImprovementsManager> weak_ptr_factory_{
       this};
