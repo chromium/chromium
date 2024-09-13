@@ -10226,9 +10226,15 @@ class StorageAccessHeaderNetworkContextTest
   };
 
   StorageAccessHeaderNetworkContextTest() {
-    features_.InitAndEnableFeature(
-        is_origin_trial_test() ? network::features::kStorageAccessHeadersTrial
-                               : network::features::kStorageAccessHeaders);
+    if (is_origin_trial_test()) {
+      features_.InitWithFeatures(
+          {network::features::kStorageAccessHeadersTrial},
+          {network::features::kStorageAccessHeaders});
+    } else {
+      features_.InitWithFeatures(
+          {network::features::kStorageAccessHeaders},
+          {network::features::kStorageAccessHeadersTrial});
+    }
   }
 
   bool is_origin_trial_test() const { return GetParam(); }
