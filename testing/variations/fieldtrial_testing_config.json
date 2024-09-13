@@ -12357,6 +12357,33 @@
                     "enable_features": [
                         "IOSTipsNotifications"
                     ]
+                },
+                {
+                    "name": "Dismiss_Limit",
+                    "params": {
+                        "tips_notifications_dismiss_limit": "4"
+                    },
+                    "enable_features": [
+                        "IOSTipsNotifications"
+                    ]
+                },
+                {
+                    "name": "Lens_First",
+                    "params": {
+                        "tips_notifications_order": "2"
+                    },
+                    "enable_features": [
+                        "IOSTipsNotifications"
+                    ]
+                },
+                {
+                    "name": "ESB_First",
+                    "params": {
+                        "tips_notifications_order": "3"
+                    },
+                    "enable_features": [
+                        "IOSTipsNotifications"
+                    ]
                 }
             ]
         }
