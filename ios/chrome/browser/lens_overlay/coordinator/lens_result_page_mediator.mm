@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import <memory>
 
 #import "base/functional/bind.h"
@@ -12,9 +14,12 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
@@ -110,11 +115,14 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   /// Whether the inflight request was initiated by Lens.
   BOOL _isInflightRequestLensInitiated;
+  /// WebStateList of the presenting browser.
+  base::WeakPtr<WebStateList> _webStateList;
 }
 
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params
     browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate
+               webStateList:(WebStateList*)webStateList
                 isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
@@ -125,6 +133,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
         std::make_unique<web::WebStateObserverBridge>(self);
     [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
+    if (webStateList) {
+      _webStateList = webStateList->AsWeakPtr();
+    }
   }
   return self;
 }
@@ -317,6 +328,24 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   return _browserWebStateDelegate->GetResponderInputView(webState);
 }
 
+#pragma mark - ContextMenuConfigurationProviderDelegate
+
+- (void)contextMenuConfigurationProvider:
+            (ContextMenuConfigurationProvider*)configurationProvider
+        didOpenNewTabInBackgroundWithURL:(GURL)URL {
+  MDCSnackbarMessage* snackbarMessage =
+      CreateSnackbarMessage(@"**New tab created**");
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  __weak __typeof__(self) weakSelf = self;
+  action.handler = ^() {
+    [weakSelf activateWebStateWithURL:URL];
+  };
+  action.title = @"**Open**";
+  action.accessibilityLabel = @"**Open**";
+  snackbarMessage.action = action;
+  [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
+}
+
 #pragma mark - LensWebProvider
 
 - (web::WebState*)webState {
@@ -355,6 +384,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     [self.consumer setWebView:_webState->GetView()];
   }
   [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
+}
+
+/// Activates the web state with the given `URL`.
+- (void)activateWebStateWithURL:(GURL)URL {
+  if (WebStateList* webStateList = _webStateList.get()) {
+    int index = webStateList->GetIndexOfWebStateWithURL(URL);
+    if (index != WebStateList::kInvalidIndex) {
+      webStateList->ActivateWebStateAt(index);
+    }
+  }
 }
 
 #pragma mark - CRWWebStateObserver

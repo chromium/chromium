@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -531,9 +532,12 @@ const CGFloat kMenuSymbolSize = 18;
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
       browserWebStateDelegate:browserWebStateDelegate
+                 webStateList:browser->GetWebStateList()
                   isIncognito:browserState->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _resultMediator.snackbarHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   _resultMediator.webStateDelegate = self;
   _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
@@ -546,6 +550,7 @@ const CGFloat kMenuSymbolSize = 18;
       baseViewController:_resultViewController
             baseWebState:_resultMediator.webState
            isLensOverlay:YES];
+  _resultContextMenuProvider.delegate = _resultMediator;
 
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;

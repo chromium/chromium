@@ -51,6 +51,7 @@ class LensResultPageMediatorTest : public PlatformTest {
     mediator_ = [[LensResultPageMediator alloc]
          initWithWebStateParams:params
         browserWebStateDelegate:&browser_web_state_delegate_
+                   webStateList:nil
                     isIncognito:NO];
 
     mock_consumer_ =

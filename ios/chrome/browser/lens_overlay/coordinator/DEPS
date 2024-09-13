@@ -13,6 +13,6 @@ include_rules = [
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
-  "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
+  "+ios/chrome/browser/context_menu/ui_bundled",
   "+components/lens",
 ]
