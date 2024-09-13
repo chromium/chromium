@@ -390,8 +390,11 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(
 // a_k > a_{k-1} > ... > a_2 > a_1 >= 0
 // such that `combination_index` = \sum_{i=1}^k {a_i}\choose{i}
 //
-// We find this set via a simple greedy algorithm.
+// For k >= 2, we find this set via a simple greedy algorithm.
 // http://math0.wvstateu.edu/~baker/cs405/code/Combinadics.html
+//
+// The k = 0 case is trivially the empty set, and the k = 1 case is
+// trivially just `combination_index`.
 std::vector<uint32_t> GetKCombinationAtIndex(
     base::StrictNumeric<uint32_t> combination_index,
     base::StrictNumeric<uint32_t> strict_k) {
@@ -401,7 +404,13 @@ std::vector<uint32_t> GetKCombinationAtIndex(
 
   std::vector<uint32_t> output_k_combination;
   output_k_combination.reserve(k);
+
   if (k == 0u) {
+    return output_k_combination;
+  }
+
+  if (k == 1u) {
+    output_k_combination.push_back(combination_index);
     return output_k_combination;
   }
 
