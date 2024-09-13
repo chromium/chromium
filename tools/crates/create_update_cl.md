@@ -109,6 +109,35 @@ closest to `origin/main`):
 1. `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`
 
+## New transitive dependencies
+
+If the roll brings in a new transitive dependency, it will need to be
+audited in its entirety and the results recorded in
+`third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
+
+The addition of transitive Rust dependencies does not need ATL approval,
+but an FYI email should be sent to
+[chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
+in order to record the addition.
+
+### Optional: Adding the transitive dependency in its own CL.
+
+If the crate and/or audit are non-trivial, it's possible to split the
+additional crate into its own CL, however then it will default to global
+visibility and allowing non-test use.
+* `gnrt add` and `gnrt vendor` can add the dependency to a fresh checkout.
+* Mark the crate as being for third-party code only by setting
+  `allow_first_party_usage` to `false` for the crate in
+  `third_party/rust/chromium_crates_io/gnrt_config.toml`.
+* If the crates making use of the transitive dependency are only allowed
+  in tests, then set `group = 'test'` for the crate in
+  `third_party/rust/chromium_crates_io/gnrt_config.toml`. This reduces
+  the level of security review required for the library.
+* `gnrt gen` will then generate the GN rules.
+* Rebase the roll CL on top of the changes to make sure the choices made above
+  are correct. `gn gen` will fail in CQ if the crate was placed in the `'test'`
+  group but needs to be visible outside of tests.
+
 ## Potential additional steps
 
 * If updating `cxx`, you will also need to update its version in
