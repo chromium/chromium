@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.media.MediaDrmSessionManager.SessionId;
 import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
@@ -352,7 +353,8 @@ public class MediaDrmBridge {
         Log.d(TAG, "MediaCrypto Session created: %s", mMediaCryptoSession);
 
         // Create MediaCrypto object.
-        try {
+        // MediaCrypto#isCryptoSchemeSupported may do a disk read.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (MediaCrypto.isCryptoSchemeSupported(mSchemeUUID)) {
                 mMediaCrypto = new MediaCrypto(mSchemeUUID, mMediaCryptoSession.drmId());
                 Log.d(TAG, "MediaCrypto successfully created!");
