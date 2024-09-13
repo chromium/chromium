@@ -489,9 +489,6 @@ void TabSearchContainer::OnTabDeclutterButtonClicked() {
   tab_search_button_->tab_search_bubble_host()->ShowTabSearchBubble(
       false, tab_organization_tab_index);
 
-  tab_declutter_controller_->OnActionUIAccepted(
-      base::PassKey<TabSearchContainer>());
-
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabOrganization(tab_declutter_button_);
 }

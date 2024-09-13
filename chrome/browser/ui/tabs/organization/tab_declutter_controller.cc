@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 
+#include <memory>
+
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -42,11 +44,12 @@ TabDeclutterController::TabDeclutterController(TabStripModel* tab_strip_model)
       declutter_timer_interval_minutes_(kTimerIntervalMinutes),
       nudge_timer_interval_minutes_(kDefaultNudgeTimerIntervalMinutes),
       declutter_timer_(std::make_unique<base::RepeatingTimer>()),
-      nudge_timer_(std::make_unique<base::OneShotTimer>(
+      usage_tick_clock_(std::make_unique<UsageTickClock>(
           base::DefaultTickClock::GetInstance())),
+      next_nudge_valid_time_ticks_(usage_tick_clock_->NowTicks() +
+                                   nudge_timer_interval_minutes_),
       tab_strip_model_(tab_strip_model) {
   StartDeclutterTimer();
-  StartNudgeTimer();
 }
 
 TabDeclutterController::~TabDeclutterController() {}
@@ -90,7 +93,8 @@ void TabDeclutterController::ProcessStaleTabs() {
   }
 
   if (DeclutterNudgeCriteriaMet(tabs)) {
-    StartNudgeTimer();
+    next_nudge_valid_time_ticks_ =
+        usage_tick_clock_->NowTicks() + nudge_timer_interval_minutes_;
     for (auto& observer : observers_) {
       observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
     }
@@ -102,7 +106,7 @@ void TabDeclutterController::ProcessStaleTabs() {
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     const std::vector<tabs::TabModel*> stale_tabs) {
-  if (nudge_timer_->IsRunning()) {
+  if (usage_tick_clock_->NowTicks() < next_nudge_valid_time_ticks_) {
     return false;
   }
 
@@ -134,14 +138,11 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
   return false;
 }
 
-void TabDeclutterController::OnActionUIAccepted(
-    base::PassKey<TabSearchContainer>) {
-  // TODO(shibalik): Reset backoff timer.
-}
-
 void TabDeclutterController::OnActionUIDismissed(
     base::PassKey<TabSearchContainer>) {
-  // TODO(shibalik): Increment the backoff timer.
+  nudge_timer_interval_minutes_ = nudge_timer_interval_minutes_ * 2;
+  next_nudge_valid_time_ticks_ =
+      usage_tick_clock_->NowTicks() + nudge_timer_interval_minutes_;
 }
 
 void TabDeclutterController::SetTimerForTesting(
@@ -152,16 +153,10 @@ void TabDeclutterController::SetTimerForTesting(
   declutter_timer_->SetTaskRunner(task_runner);
   StartDeclutterTimer();
 
-  nudge_timer_->Stop();
-  nudge_timer_ = std::make_unique<base::OneShotTimer>(tick_clock);
-  StartNudgeTimer();
-}
-
-void TabDeclutterController::StartNudgeTimer() {
-  if (!nudge_timer_->IsRunning()) {
-    nudge_timer_->Start(FROM_HERE, nudge_timer_interval_minutes_,
-                        base::BindOnce([]() {}));
-  }
+  usage_tick_clock_.reset();
+  usage_tick_clock_ = std::make_unique<UsageTickClock>(tick_clock);
+  next_nudge_valid_time_ticks_ =
+      usage_tick_clock_->NowTicks() + nudge_timer_interval_minutes_;
 }
 
 }  // namespace tabs

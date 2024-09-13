@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 
 class TabStripModel;
 class TabSearchContainer;
@@ -47,11 +48,14 @@ class TabDeclutterController {
     return declutter_timer_interval_minutes_;
   }
 
+  base::TimeTicks next_nudge_valid_time_ticks() const {
+    return next_nudge_valid_time_ticks_;
+  }
+
   base::TimeDelta nudge_timer_interval_minutes() const {
     return nudge_timer_interval_minutes_;
   }
 
-  void OnActionUIAccepted(base::PassKey<TabSearchContainer>);
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
@@ -72,9 +76,12 @@ class TabDeclutterController {
   // The timer that is responsible for calculating stale tabs on getting
   // triggered.
   std::unique_ptr<base::RepeatingTimer> declutter_timer_;
+  // The usage tick clock that is used for setting
+  // `next_nudge_valid_time_ticks_` and comparing time ticks with
+  // `next_nudge_valid_time_ticks_` to show the nudge.
+  std::unique_ptr<UsageTickClock> usage_tick_clock_;
   // The timer that is responsible for blocking the nudge from showing.
-  std::unique_ptr<base::OneShotTimer> nudge_timer_;
-
+  base::TimeTicks next_nudge_valid_time_ticks_;
   // The list of tabs shown previously in a nudge.
   std::set<tabs::TabModel*> stale_tabs_previous_nudge_;
 
