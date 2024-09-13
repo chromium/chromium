@@ -405,9 +405,10 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, origin,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .is_inline_style = is_inline_style});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .is_inline_style = is_inline_style,
+                     .origin = origin});
   if (!is_cacheable) {
     result_.SetIsCacheable(false);
   }
@@ -420,10 +421,12 @@ void ElementRuleCollector::AddTryStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, CascadeOrigin::kAuthor,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .valid_property_filter = ValidPropertyFilter::kPositionTry,
-       .is_try_style = true});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .valid_property_filter = static_cast<uint8_t>(
+                         ValidPropertyFilter::kPositionTry),
+                     .is_try_style = true,
+                     .origin = CascadeOrigin::kAuthor});
   result_.SetIsCacheable(false);
 }
 
@@ -435,9 +438,10 @@ void ElementRuleCollector::AddTryTacticsStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, CascadeOrigin::kAuthor,
-      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
-       .is_try_tactics_style = true});
+      property_set, {.link_match_type = static_cast<uint8_t>(
+                         AdjustLinkMatchType(inside_link_, link_match_type)),
+                     .origin = CascadeOrigin::kAuthor,
+                     .is_try_tactics_style = true});
   result_.SetIsCacheable(false);
 }
 
@@ -1172,13 +1176,14 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
           static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     result_.AddMatchedProperties(
-        &rule_data->Rule()->Properties(), origin,
-        {.link_match_type =
-             AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
-         .valid_property_filter =
-             rule_data->GetValidPropertyFilter(matching_ua_rules_),
-         .layer_order = matched_rule.LayerOrder(),
-         .is_inline_style = is_vtt_embedded_style});
+        &rule_data->Rule()->Properties(),
+        {.link_match_type = static_cast<uint8_t>(
+             AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType())),
+         .valid_property_filter = static_cast<uint8_t>(
+             rule_data->GetValidPropertyFilter(matching_ua_rules_)),
+         .is_inline_style = static_cast<uint8_t>(is_vtt_embedded_style),
+         .origin = origin,
+         .layer_order = matched_rule.LayerOrder()});
   }
 
   if (tracker) {

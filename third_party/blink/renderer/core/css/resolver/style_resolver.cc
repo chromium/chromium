@@ -1450,7 +1450,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (!style_request.IsPseudoStyleRequest()) {
     if (IsForcedColorsModeEnabled()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          ForcedColorsUserAgentDeclarations(), CascadeOrigin::kUserAgent);
+          ForcedColorsUserAgentDeclarations(),
+          {.origin = CascadeOrigin::kUserAgent});
     }
 
     // UA rule: * { overlay: none !important }
@@ -1461,7 +1462,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // Adding this to the html.css would only do the override in the HTML
     // namespace since the sheet has a default namespace.
     cascade.MutableMatchResult().AddMatchedProperties(
-        UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+        UniversalOverlayUserAgentDeclaration(),
+        {.origin = CascadeOrigin::kUserAgent});
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme
@@ -1472,7 +1474,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // TODO(crbug.com/1046753): Remove this when canvastext is supported.
     if (element == state.GetDocument().documentElement()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          DocumentElementUserAgentDeclarations(), CascadeOrigin::kUserAgent);
+          DocumentElementUserAgentDeclarations(),
+          {.origin = CascadeOrigin::kUserAgent});
     }
   }
 
@@ -1483,7 +1486,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (style_request.IsPseudoStyleRequest()) {
     if (style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+          ScrollMarkerGroupUserAgentDeclaration(),
+          {.origin = CascadeOrigin::kUserAgent});
     }
 
     collector.SetPseudoElementStyleRequest(style_request);
@@ -1773,8 +1777,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     set->SetProperty(property.GetCSSPropertyName(), *value);
     cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
         element.GetTreeScope());
-    cascade.MutableMatchResult().AddMatchedProperties(set,
-                                                      CascadeOrigin::kAuthor);
+    cascade.MutableMatchResult().AddMatchedProperties(
+        set, {.origin = CascadeOrigin::kAuthor});
     cascade.Apply();
   }
   const ComputedStyle* style = state.TakeStyle();
@@ -1849,7 +1853,7 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
     set->SetProperty(CSSPropertyID::kMarginLeft, *value,
                      /*important=*/params.ignore_css_margins);
     cascade.MutableMatchResult().AddMatchedProperties(
-        set, CascadeOrigin::kUserAgent);
+        set, {.origin = CascadeOrigin::kUserAgent});
   }
 
   if (!ignore_author_style) {
@@ -2574,8 +2578,8 @@ const CSSValue* StyleResolver::ComputeValue(
   set->SetProperty(property_name, value);
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
       element->GetTreeScope());
-  cascade.MutableMatchResult().AddMatchedProperties(set,
-                                                    CascadeOrigin::kAuthor);
+  cascade.MutableMatchResult().AddMatchedProperties(
+      set, {.origin = CascadeOrigin::kAuthor});
   cascade.Apply();
 
   CSSPropertyRef property_ref(property_name, element->GetDocument());
