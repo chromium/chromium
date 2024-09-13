@@ -3275,12 +3275,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
                         HasModifiedPath(parent)),
          testing::AllOf(HasPath(report_modified_path() ? child : parent),
                         IsDirectory(), HasModifiedPath(child)),
-         // TODO(crbug.com/40263766): inotify incorrectly reports this
-         // deletion on the path of just "grandchild" rather than on
-         // "/absolute/path/blah/blah/parent/child/grandchild".
-         testing::AllOf(
-             HasPath(report_modified_path() ? grandchild.BaseName() : parent),
-             IsFile(), HasModifiedPath(grandchild.BaseName()))});
+         testing::AllOf(HasPath(report_modified_path() ? grandchild : parent),
+                        IsFile(), HasModifiedPath(grandchild))});
   } else {
     // Do not expect changes to `grandchild` when watching `parent`
     // non-recursively.
