@@ -402,8 +402,9 @@ bool WebRequestPermissions::CanExtensionAccessInitiator(
     const std::optional<url::Origin>& initiator,
     int tab_id,
     bool crosses_incognito) {
-  if (!initiator)
+  if (!initiator) {
     return true;
+  }
 
   return CanExtensionAccessURLInternal(
              permission_helper, extension_id, initiator->GetURL(), tab_id,
