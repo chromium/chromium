@@ -104,6 +104,33 @@ ElementRareDataVector::GetPseudoElements() const {
     return {};
   return data->GetPseudoElements();
 }
+void ElementRareDataVector::AddColumnScrollMarker(
+    ScrollMarkerPseudoElement& column_scroll_marker) {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    data = MakeGarbageCollected<PseudoElementData>();
+    SetField(FieldId::kPseudoElementData, data);
+  }
+  data->AddColumnScrollMarker(column_scroll_marker);
+}
+const PseudoElementData::ColumnScrollMarkersVector*
+ElementRareDataVector::GetColumnScrollMarkers() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetColumnScrollMarkers();
+}
+void ElementRareDataVector::ClearColumnScrollMarkers() {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return;
+  }
+  data->ClearColumnScrollMarkers();
+}
 
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(
     Element* owner_element) {

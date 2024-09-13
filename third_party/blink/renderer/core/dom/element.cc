@@ -4133,6 +4133,17 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
   }
 
+  // If element doesn't have ::column::scroll-marker rules anymore,
+  // clear column scroll markers.
+  if (old_style &&
+      old_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker) &&
+      new_style &&
+      !new_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker)) {
+    if (ElementRareDataVector* data = GetElementRareData()) {
+      data->ClearColumnScrollMarkers();
+    }
+  }
+
   ProcessContainIntrinsicSizeChanges();
 
   if (!child_change.ReattachLayoutTree() &&
@@ -6934,6 +6945,37 @@ void Element::SetHasUndoStack(bool value) {
 
 void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
+}
+
+ScrollMarkerPseudoElement* Element::CreateColumnScrollMarker() {
+  const ComputedStyle* style =
+      CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker);
+  if (!style) {
+    return nullptr;
+  }
+  auto* scroll_marker = MakeGarbageCollected<ScrollMarkerPseudoElement>(
+      /*originating_element=*/this);
+  scroll_marker->SetComputedStyle(style);
+  ElementRareDataVector& data = EnsureElementRareData();
+  data.AddColumnScrollMarker(*scroll_marker);
+  return scroll_marker;
+}
+
+const PseudoElementData::ColumnScrollMarkersVector*
+Element::GetColumnScrollMarkers() const {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetColumnScrollMarkers();
+}
+
+void Element::ClearColumnScrollMarkers() {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return;
+  }
+  data->ClearColumnScrollMarkers();
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
