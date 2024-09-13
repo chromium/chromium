@@ -261,12 +261,12 @@ TEST_F(AccountMenuViewControllerTest, TestTapClose) {
     // There is no close button on ipad.
     return;
   }
-  UIBarButtonItem* closeButton =
-      view_controller_.navigationItem.rightBarButtonItem;
+  UIButton* closeButton = static_cast<UIButton*>(
+      view_controller_.navigationItem.rightBarButtonItem.customView);
   OCMExpect([mutator_ viewControllerWantsToBeClosed:view_controller_]);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [closeButton.target performSelector:closeButton.action];
+  [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 #pragma clang diagnostic pop
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Close"));
 }
@@ -275,7 +275,7 @@ TEST_F(AccountMenuViewControllerTest, TestTapClose) {
 TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
   UIBarButtonItem* ellipsisButton =
       view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = ellipsisButton.menu;
+  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
   UIAction* manageYourAccountAction =
       static_cast<UIAction*>(ellipsisMenu.children[0]);
   // Cast the handler block into a form that we can execute
@@ -292,7 +292,7 @@ TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
 TEST_F(AccountMenuViewControllerTest, TestTapEditAccountsList) {
   UIBarButtonItem* ellipsisButton =
       view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = ellipsisButton.menu;
+  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
   UIAction* editAccountsListAction =
       static_cast<UIAction*>(ellipsisMenu.children[1]);
   // Cast the handler block into a form that we can execute
