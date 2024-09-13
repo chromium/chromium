@@ -51,6 +51,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Otp" summary="OTP auth only"/>
   <variant name="OtpFallbackFromFido"
       summary="OTP fallback from FIDO authentication"/>
+  <variant name="ThreeDomainSecure"
+      summary="3DS (Three Domain Secure) authentication only"/>
 </variants>
 
 <variants name="Autofill.CardMetadataVisible">

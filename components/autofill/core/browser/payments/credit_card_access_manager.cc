@@ -1773,6 +1773,8 @@ void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
         autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
         PaymentsRpcCardType::kVirtualCard,
         autofill_metrics::ServerCardUnmaskFlowType::kThreeDomainSecure);
+    form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
+        unmask_auth_flow_type_);
   } else {
     autofill_metrics::LogServerCardUnmaskResult(
         response.result == payments::PaymentsWindowManager::

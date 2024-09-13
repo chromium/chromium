@@ -2829,6 +2829,7 @@ TEST_F(CreditCardAccessManagerTest,
       features::kAutofillEnableVirtualCards};
 #endif  // BUILDFLAG(IS_IOS)
 
+  base::HistogramTester histogram_tester;
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
@@ -2862,6 +2863,9 @@ TEST_F(CreditCardAccessManagerTest,
   // If VCN 3DS is the only challenge option returned, verify that flow type is
   // kThreeDomainSecure.
   EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kThreeDomainSecure);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.FlowEvents.ThreeDomainSecure",
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 }
 
 // Ensures the virtual card risk-based unmasking response is handled correctly
@@ -2959,8 +2963,9 @@ TEST_F(
 }
 
 // Test that a success response for a VCN 3DS authentication is handled
-// correctly and notifies the caller with the proper fields set, and the
-// authentication unmasked server card result metric bucket is logged to.
+// correctly and notifies the caller with the proper fields set, and both the
+// authentication unmasked server card result and prompt completed better auth
+// flow event metric buckets are logged to.
 TEST_F(CreditCardAccessManagerTest,
        VirtualCardUnmasking_3dsResponseReceived_Success) {
   // Set up the test.
@@ -2969,6 +2974,8 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager().FetchCreditCard(
       &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                             accessor_->GetWeakPtr()));
+  test_api(credit_card_access_manager())
+      .set_unmask_auth_flow_type(UnmaskAuthFlowType::kThreeDomainSecure);
   payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   response.card = card;
   response.result =
@@ -2987,6 +2994,9 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.FlowEvents.ThreeDomainSecure",
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
 }
 
 // Test that a failure response for a VCN 3DS authentication is handled

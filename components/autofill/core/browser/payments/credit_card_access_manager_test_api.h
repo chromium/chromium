@@ -108,6 +108,10 @@ class CreditCardAccessManagerTestApi {
     return credit_card_access_manager_->unmask_auth_flow_type_;
   }
 
+  void set_unmask_auth_flow_type(UnmaskAuthFlowType unmask_auth_flow_type) {
+    credit_card_access_manager_->unmask_auth_flow_type_ = unmask_auth_flow_type;
+  }
+
   void OnUserAcceptedAuthenticationSelectionDialog(
       const std::string& selected_challenge_option_id) {
     credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(

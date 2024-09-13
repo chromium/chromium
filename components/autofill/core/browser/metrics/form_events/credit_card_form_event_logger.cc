@@ -720,7 +720,7 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
 void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
     UnmaskAuthFlowType flow,
     UnmaskAuthFlowEvent event) {
-  std::string flow_type_suffix;
+  std::string_view flow_type_suffix;
   switch (flow) {
     case UnmaskAuthFlowType::kCvc:
       flow_type_suffix = ".Cvc";
@@ -742,19 +742,21 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
       break;
     case UnmaskAuthFlowType::kThreeDomainSecure:
     case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug.com/41494927): Add logging for kThreeDomainSecure and
-      // kThreeDomainSecureConsentAlreadyGiven.
+      flow_type_suffix = ".ThreeDomainSecure";
+      break;
     case UnmaskAuthFlowType::kNone:
       // TODO(crbug.com/40216473): Fix Autofill.BetterAuth logging.
       return;
   }
-  std::string card_type_suffix =
+  std::string_view card_type_suffix =
       latest_selected_card_was_virtual_card_ ? ".VirtualCard" : ".ServerCard";
 
   base::UmaHistogramEnumeration(
-      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix, event);
+      base::StrCat({"Autofill.BetterAuth.FlowEvents", flow_type_suffix}),
+      event);
   base::UmaHistogramEnumeration(
-      "Autofill.BetterAuth.FlowEvents" + flow_type_suffix + card_type_suffix,
+      base::StrCat({"Autofill.BetterAuth.FlowEvents", flow_type_suffix,
+                    card_type_suffix}),
       event);
 }
 
