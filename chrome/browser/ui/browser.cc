@@ -1117,6 +1117,10 @@ const SessionID& Browser::GetSessionID() {
   return session_id_;
 }
 
+TabStripModel* Browser::GetTabStripModel() {
+  return tab_strip_model_.get();
+}
+
 bool Browser::IsTabStripVisible() {
   return window_ && window_->IsToolbarShowing();
 }

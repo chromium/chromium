@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -65,7 +66,7 @@ void BrowserWindowFeatures::ReplaceBrowserWindowFeaturesForTesting(
   f = std::move(factory);
 }
 
-void BrowserWindowFeatures::Init(Browser* browser) {
+void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.
   // Ping erikchen for assistance. This comment will be deleted after there are
@@ -74,25 +75,25 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
-  if (browser->is_type_normal()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
 
-    if (browser->profile()->IsRegularProfile() &&
+    if (browser->GetProfile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
-        browser->tab_strip_model()->SupportsTabGroups()) {
+        browser->GetTabStripModel()->SupportsTabGroups()) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
-              browser->profile(), browser->tab_strip_model(),
-              browser->session_id());
+              browser->GetProfile(), browser->GetTabStripModel(),
+              browser->GetSessionID());
     }
 
     if (features::IsTabstripDeclutterEnabled() &&
-        browser->profile()->IsRegularProfile()) {
+        browser->GetProfile()->IsRegularProfile()) {
       tab_declutter_controller_ =
           std::make_unique<tabs::TabDeclutterController>(
-              browser->tab_strip_model());
+              browser->GetTabStripModel());
     }
   }
 
@@ -102,7 +103,7 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   lens_overlay_entry_point_controller_ =
       std::make_unique<lens::LensOverlayEntryPointController>();
 
-  tab_strip_model_ = browser->tab_strip_model();
+  tab_strip_model_ = browser->GetTabStripModel();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

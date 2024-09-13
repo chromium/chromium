@@ -839,6 +839,7 @@ class Browser : public TabStripModelObserver,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
   const SessionID& GetSessionID() override;
+  TabStripModel* GetTabStripModel() override;
   bool IsTabStripVisible() override;
   views::View* TopContainer() override;
   tabs::TabInterface* GetActiveTabInterface() override;

@@ -11,6 +11,7 @@
 
 class Browser;
 class BrowserView;
+class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
@@ -58,7 +59,7 @@ class BrowserWindowFeatures {
   // Called exactly once to initialize features. This is called prior to
   // instantiating BrowserView, to allow the view hierarchy to depend on state
   // in this class.
-  void Init(Browser* browser);
+  void Init(BrowserWindowInterface* browser);
 
   // Called exactly once to initialize features that depend on the window object
   // being created.

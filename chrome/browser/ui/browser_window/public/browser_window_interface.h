@@ -40,6 +40,7 @@ class ExclusiveAccessManager;
 class GURL;
 class Profile;
 class SessionID;
+class TabStripModel;
 
 class BrowserWindowInterface : public content::PageNavigator {
  public:
@@ -61,6 +62,8 @@ class BrowserWindowInterface : public content::PageNavigator {
 
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() = 0;
+
+  virtual TabStripModel* GetTabStripModel() = 0;
 
   // Returns true if the tab strip is currently visible for this browser window.
   // Will return false on browser initialization before the tab strip is
