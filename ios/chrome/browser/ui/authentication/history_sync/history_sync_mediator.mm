@@ -48,6 +48,9 @@
       _accountCapabilitiesLatencyTracker;
   // Capabilities fetcher to determine minor mode restriction.
   HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
+  // This boolean should help to understand CHECK failure with
+  // crbug.com/366198713. This variable can be removed once the bug is fixed.
+  BOOL _signoutNotificationCalled;
 }
 
 - (instancetype)
@@ -99,7 +102,19 @@
 - (void)enableHistorySyncOptin {
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  CHECK(identity);
+  bool hasPrimaryAccount =
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  // It is possible to have no identity from AuthenticationService here
+  // (see crbug.com/366198713).
+  // The mediator listens for IdentityManagerObserverBridgeDelegate to know
+  // if the user is signed out. If it happens, the dialog is supposed to be
+  // dissmissed automatically.
+  // to understand if there is a difference between AuthenticationService and
+  // IdentityManager, the CHECK logs if there is primary identity
+  // from AuthenticationService and from IdentityManager.
+  CHECK(identity) << "IdentityManager has primary identity: "
+                  << hasPrimaryAccount << ", _signoutNotificationCalled: "
+                  << _signoutNotificationCalled;
   // TODO(crbug.com/40068130): Record the history sync opt-in when the new
   // consent type will be available.
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
@@ -157,6 +172,7 @@
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    _signoutNotificationCalled = YES;
     [self.delegate historySyncMediatorPrimaryAccountCleared:self];
   }
 }
