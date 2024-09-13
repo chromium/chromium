@@ -428,7 +428,8 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
   EXPECT_TRUE(screen_orientation_controller->IsAutoRotationAllowed());
 
-  // The rotation is locked because we locked the orientation of the app.
+  // Since we locked the orientation of the app to landscape, the current
+  // rotation should be the default 0 degree (kLandscapePrimary).
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
   EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
@@ -444,6 +445,17 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
   // Since we locked the device to 90 degrees, the device rotation is locked.
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
+
+  // Simulate rotating device to upside-down landscape.
+  screen_orientation_controller->SetLockToRotation(
+      display::Display::ROTATE_180);
+
+  // The app orientation is changed to 180 degrees (kLandscapeSecondary), which
+  // is still locked in landscape.
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
+            screen_orientation_controller->GetCurrentOrientation());
+  // Since we locked the device to 180 degrees, the device rotation is locked.
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
 }
 

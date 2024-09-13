@@ -2989,7 +2989,7 @@ BASE_FEATURE(kDemoModeGMSCoreWindowCloser,
 // Disable the demo mode app orientation locked in landscape.
 BASE_FEATURE(kDemoModeAppLandscapeLocked,
              "DemoModeAppLandscapeLocked",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Moves toasts to the bottom-side corner where the status area is instead of
 // the center when enabled.
