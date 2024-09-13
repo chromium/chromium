@@ -4,6 +4,7 @@
 
 #include "components/user_annotations/test_user_annotations_service.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -44,6 +45,16 @@ void TestUserAnnotationsService::AddFormSubmission(
 void TestUserAnnotationsService::RetrieveAllEntries(
     base::OnceCallback<void(UserAnnotationsEntries)> callback) {
   std::move(callback).Run(entries_);
+}
+
+void TestUserAnnotationsService::AddHostToFormAnnotationsAllowlist(
+    const std::string& host) {
+  allowed_forms_annotations_hosts_.insert(host);
+}
+
+bool TestUserAnnotationsService::ShouldAddFormSubmissionForURL(
+    const GURL& url) {
+  return base::Contains(allowed_forms_annotations_hosts_, url.host());
 }
 
 }  // namespace user_annotations

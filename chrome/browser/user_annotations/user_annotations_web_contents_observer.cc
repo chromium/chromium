@@ -76,7 +76,7 @@ void UserAnnotationsWebContentsObserver::OnFormSubmitted(
   if (!user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
     return;
   }
-  if (!user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
+  if (!user_annotations_service_->ShouldAddFormSubmissionForURL(form.url())) {
     return;
   }
 

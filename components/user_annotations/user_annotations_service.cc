@@ -5,6 +5,7 @@
 #include "components/user_annotations/user_annotations_service.h"
 
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -68,18 +70,44 @@ void RecordRemoveAllEntriesResult(UserAnnotationsExecutionResult result) {
 UserAnnotationsService::UserAnnotationsService(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
     const base::FilePath& storage_dir,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
-    : model_executor_(model_executor) {
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+    : model_executor_(model_executor),
+      optimization_guide_decider_(optimization_guide_decider),
+      allowed_hosts_for_forms_annotations_(
+          GetAllowedHostsForFormsAnnotations()) {
   if (ShouldPersistUserAnnotations()) {
     encryptor_ready_subscription_ = os_crypt_async->GetInstance(
         base::BindOnce(&UserAnnotationsService::OnOsCryptAsyncReady,
                        weak_ptr_factory_.GetWeakPtr(), storage_dir));
+  }
+
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::FORMS_ANNOTATIONS});
   }
 }
 
 UserAnnotationsService::UserAnnotationsService() = default;
 
 UserAnnotationsService::~UserAnnotationsService() = default;
+
+bool UserAnnotationsService::ShouldAddFormSubmissionForURL(const GURL& url) {
+  if (base::Contains(allowed_hosts_for_forms_annotations_, url.host())) {
+    return true;
+  }
+
+  // Fall back to optimization guide if not in override list.
+  if (optimization_guide_decider_) {
+    optimization_guide::OptimizationGuideDecision decision =
+        optimization_guide_decider_->CanApplyOptimization(
+            url, optimization_guide::proto::FORMS_ANNOTATIONS,
+            /*metadata=*/nullptr);
+    return decision == optimization_guide::OptimizationGuideDecision::kTrue;
+  }
+
+  return false;
+}
 
 void UserAnnotationsService::AddFormSubmission(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,

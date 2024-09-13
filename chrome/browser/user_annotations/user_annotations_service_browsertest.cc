@@ -4,11 +4,15 @@
 
 #include "components/user_annotations/user_annotations_service.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
@@ -167,6 +171,10 @@ IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
 
   GURL url(
       embedded_test_server()->GetURL("a.com", "/autofill_address_form.html"));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, optimization_guide::proto::FORMS_ANNOTATIONS,
+                          std::nullopt);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
@@ -182,9 +190,27 @@ IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
       1);
 }
 
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, NotOnAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("notallowed.com",
+                                          "/autofill_address_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
+  ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      0);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          UserAnnotationsServiceBrowserTest,
                          ::testing::Bool());
+
+// TODO: b/361692317 - Delete below once optimization guide populates list.
 
 class UserAnnotationsServiceExplicitAllowlistBrowserTest
     : public UserAnnotationsServiceBrowserTest {

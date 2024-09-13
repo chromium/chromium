@@ -281,10 +281,7 @@ class AutofillPredictionImprovementsManagerImportFormTest
 // successful.
 TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
        MaybeImportFormRunsCallbackWithAddedEntriesWhenImportWasSuccessful) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      user_annotations::kUserAnnotations,
-      {{"allowed_hosts_for_form_submissions", "*"}});
+  user_annotations_service_.AddHostToFormAnnotationsAllowlist(url_.host());
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST,

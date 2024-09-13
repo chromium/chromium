@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_TEST_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_TEST_USER_ANNOTATIONS_SERVICE_H_
 
+#include <set>
 #include <vector>
 
 #include "components/user_annotations/user_annotations_service.h"
@@ -33,7 +34,11 @@ class TestUserAnnotationsService : public UserAnnotationsService {
     should_import_form_data_ = should_import_form_data;
   }
 
+  // Adds `host` to set of hosts that forms annotations are allowed on.
+  void AddHostToFormAnnotationsAllowlist(const std::string& host);
+
   // UserAnnotationsService:
+  bool ShouldAddFormSubmissionForURL(const GURL& url) override;
   void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
                          const autofill::FormData& form_data,
                          ImportFormCallback callback) override;
@@ -45,6 +50,8 @@ class TestUserAnnotationsService : public UserAnnotationsService {
   std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_;
   // Used in `AddFormSubmission()` to decide if form data should be imported.
   bool should_import_form_data_ = true;
+  // Hosts allowed for forms annotations.
+  std::set<std::string> allowed_forms_annotations_hosts_;
 };
 
 }  // namespace user_annotations

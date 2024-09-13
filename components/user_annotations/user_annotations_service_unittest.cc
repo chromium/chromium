@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -32,6 +33,22 @@ using ::testing::_;
 using ::testing::An;
 using ::testing::IsEmpty;
 
+class TestOptimizationGuideDecider
+    : public optimization_guide::TestOptimizationGuideDecider {
+ public:
+  optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationMetadata* optimization_metadata)
+      override {
+    CHECK_EQ(optimization_type, optimization_guide::proto::FORMS_ANNOTATIONS);
+    if (url.host() == "allowed.com") {
+      return optimization_guide::OptimizationGuideDecision::kTrue;
+    }
+    return optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+};
+
 class UserAnnotationsServiceTest : public testing::Test,
                                    public testing::WithParamInterface<bool> {
  public:
@@ -40,8 +57,11 @@ class UserAnnotationsServiceTest : public testing::Test,
     CHECK(temp_dir_.CreateUniqueTempDir());
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
+    optimization_guide_decider_ =
+        std::make_unique<TestOptimizationGuideDecider>();
     service_ = std::make_unique<UserAnnotationsService>(
-        &model_executor_, temp_dir_.GetPath(), os_crypt_.get());
+        &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
+        optimization_guide_decider_.get());
   }
 
   virtual void InitializeFeatureList() {
@@ -61,6 +81,10 @@ class UserAnnotationsServiceTest : public testing::Test,
     return &model_executor_;
   }
 
+  TestOptimizationGuideDecider* optimization_guide_decider() {
+    return optimization_guide_decider_.get();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -68,8 +92,22 @@ class UserAnnotationsServiceTest : public testing::Test,
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<UserAnnotationsService> service_;
 };
+
+TEST_P(UserAnnotationsServiceTest, FormsAnnotationsTypeRegistered) {
+  EXPECT_TRUE(base::Contains(
+      optimization_guide_decider()->registered_optimization_types(),
+      optimization_guide::proto::FORMS_ANNOTATIONS));
+}
+
+TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
+  EXPECT_FALSE(service()->ShouldAddFormSubmissionForURL(
+      GURL("https://notallowed.com/whatever")));
+  EXPECT_TRUE(service()->ShouldAddFormSubmissionForURL(
+      GURL("https://allowed.com/whatever")));
+}
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
   base::test::TestFuture<UserAnnotationsEntries> test_future;

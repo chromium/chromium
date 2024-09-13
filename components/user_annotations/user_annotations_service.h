@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
+#include <string>
+#include <vector>
+
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -14,15 +17,19 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/user_annotations/user_annotations_types.h"
+#include "url/gurl.h"
 
 namespace autofill {
 class FormData;
 }  // namespace autofill
 
-namespace optimization_guide::proto {
+namespace optimization_guide {
+class OptimizationGuideDecider;
+namespace proto {
 class AXTreeUpdate;
 class UserAnnotationsEntry;
-}  // namespace optimization_guide::proto
+}  // namespace proto
+}  // namespace optimization_guide
 
 namespace os_crypt_async {
 class Encryptor;
@@ -50,11 +57,16 @@ class UserAnnotationsService : public KeyedService {
   UserAnnotationsService(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
       const base::FilePath& storage_dir,
-      os_crypt_async::OSCryptAsync* os_crypt_async);
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
 
   UserAnnotationsService(const UserAnnotationsService&) = delete;
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
+
+  // Whether the form submission for `url` should be added to user annotations.
+  // Virtual for testing.
+  virtual bool ShouldAddFormSubmissionForURL(const GURL& url);
 
   // Adds a form submission to the user annotations. Calls `callback` according
   // to the outcome of the import process. The `callback` will notify Autofill
@@ -117,6 +129,16 @@ class UserAnnotationsService : public KeyedService {
   // The model executor to use to normalize entries. Guaranteed to outlive
   // `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_;
+
+  // The optimization guide decider to determine whether to generate user
+  // annotations for a page. Guaranteed to outlive `this`.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
+
+  // The override list for allowed hosts for forms annotations.
+  // TODO: b/361692317 - Remove this once optimization guide actually populates
+  // list.
+  const std::vector<std::string> allowed_hosts_for_forms_annotations_;
 
   base::WeakPtrFactory<UserAnnotationsService> weak_ptr_factory_{this};
 };

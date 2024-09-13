@@ -340,7 +340,8 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   // implemented.
   if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled() ||
       !client_->GetUserAnnotationsService() ||
-      !user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
+      !client_->GetUserAnnotationsService()->ShouldAddFormSubmissionForURL(
+          form.url())) {
     std::move(callback).Run(
         /*to_be_upserted_entries=*/{},
         /*prompt_acceptance_callback=*/base::DoNothing());
