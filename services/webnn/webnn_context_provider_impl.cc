@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/types/expected_macros.h"
+#include "components/viz/service/gl/gpu_service_impl.h"  // nogncheck
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
@@ -66,7 +67,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
 
   if (!shared_context_state) {
     // Unit tests do not pass in a SharedContextState, since a reference to
-    // a GpuServiceImpl must be initialized to obtain a SharedContextState.
+    // a viz::GpuServiceImpl must be initialized to obtain a SharedContextState.
     // Instead, we just enumerate the first DXGI adapter.
     CHECK_IS_TEST();
     return dml::Adapter::GetGpuInstanceForTesting();
@@ -112,10 +113,12 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
 WebNNContextProviderImpl::WebNNContextProviderImpl() = default;
 #else
 WebNNContextProviderImpl::WebNNContextProviderImpl(
+    viz::GpuServiceImpl* gpu_service,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
     gpu::GPUInfo gpu_info)
-    : shared_context_state_(std::move(shared_context_state)),
+    : gpu_service_(gpu_service),
+      shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
       gpu_info_(std::move(gpu_info)) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -133,13 +136,12 @@ void WebNNContextProviderImpl::Create(
 
 #else
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
-    scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info) {
+    viz::GpuServiceImpl* gpu_service,
+    scoped_refptr<gpu::SharedContextState> shared_context_state) {
   CHECK_NE(shared_context_state, nullptr);
   return base::WrapUnique(new WebNNContextProviderImpl(
-      std::move(shared_context_state), std::move(gpu_feature_info),
-      std::move(gpu_info)));
+      gpu_service, std::move(shared_context_state),
+      gpu_service->gpu_feature_info(), gpu_service->gpu_info()));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
@@ -179,6 +181,7 @@ void WebNNContextProviderImpl::CreateForTesting(
 
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       base::WrapUnique(new WebNNContextProviderImpl(
+          /*gpu_service=*/nullptr,
           /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
           std::move(gpu_info))),
       std::move(receiver));
@@ -190,6 +193,19 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   CHECK(it != impls_.end());
   impls_.erase(it);
 }
+
+#if BUILDFLAG(IS_WIN)
+void WebNNContextProviderImpl::DestroyContextsAndKillGpuProcess(
+    std::string_view reason) {
+  // Send the contexts lost reason to the renderer process.
+  for (const auto& impl : impls_) {
+    impl->ResetReceiverWithReason(reason);
+  }
+
+  // Terminates the GPU process and then all contexts will be destroyed.
+  gpu_service_->LoseAllContexts();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 void WebNNContextProviderImpl::SetBackendForTesting(
