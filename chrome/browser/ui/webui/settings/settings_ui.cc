@@ -409,12 +409,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       download::IsDownloadBubbleEnabled() &&
           download::IsDownloadBubblePartialViewControlledByPref());
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddBoolean(
-      "showGetTheMostOutOfChromeSection",
-      base::FeatureList::IsEnabled(features::kGetTheMostOutOfChrome));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   html_source->AddBoolean(
       "extendedReportingRemovePrefDependency",
       base::FeatureList::IsEnabled(

@@ -10385,11 +10385,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"settings-enable-get-the-most-out-of-chrome",
-     flag_descriptions::kSettingsEnableGetTheMostOutOfChromeName,
-     flag_descriptions::kSettingsEnableGetTheMostOutOfChromeDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfChrome)},
-
     {"ios-promo-refreshed-password-bubble",
      flag_descriptions::kIOSPromoRefreshedPasswordBubbleName,
      flag_descriptions::kIOSPromoRefreshedPasswordBubbleDescription, kOsDesktop,

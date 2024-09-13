@@ -558,19 +558,6 @@ extern const base::FeatureParam<bool>
     kHappinessTrackingSurveysForSecurityPageRequireInteraction{
         &kHappinessTrackingSurveysForSecurityPage,
         "security-page-require-interaction", false};
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables or disables the Happiness Tracking System for the Get the most out of
-// Chrome page.
-BASE_FEATURE(kHappinessTrackingSurveysGetMostChrome,
-             "HappinessTrackingSurveysGetMostChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysGetMostChromeTime{
-        &kHappinessTrackingSurveysGetMostChrome, "get-most-chrome-time",
-        base::Seconds(15)};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

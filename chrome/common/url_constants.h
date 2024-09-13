@@ -493,13 +493,6 @@ inline constexpr char kSafetyTipHelpCenterURL[] =
 inline constexpr char16_t kSearchHistoryUrlInClearBrowsingData[] =
     u"https://myactivity.google.com/product/search?utm_source=chrome_cbd";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Google search history URL that leads users from the "Get the most out of
-// Chrome" to their search history in their Google account.
-inline constexpr char16_t kSearchHistoryUrlInGetTheMostOutOfChrome[] =
-    u"https://myactivity.google.com/product/search?utm_source=chrome_gtmooc";
-#endif
-
 // The URL for the "See more security tips" with advices how to create a strong
 // password.
 inline constexpr char kSeeMoreSecurityTipsURL[] =

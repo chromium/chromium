@@ -112,11 +112,6 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables showing the "Get the most out of Chrome" section in settings.
-BASE_FEATURE(kGetTheMostOutOfChrome,
-             "GetTheMostOutOfChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating passwords.
 BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,

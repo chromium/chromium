@@ -83,8 +83,6 @@ BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-BASE_DECLARE_FEATURE(kGetTheMostOutOfChrome);
-
 BASE_DECLARE_FEATURE(kIOSPromoRefreshedPasswordBubble);
 
 BASE_DECLARE_FEATURE(kIOSPromoAddressBubble);

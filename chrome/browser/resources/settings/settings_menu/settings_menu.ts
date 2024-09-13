@@ -76,17 +76,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   override currentRouteChanged(newRoute: Route) {
-    // <if expr="_google_chrome">
-    if (loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-        newRoute === this.routes_.GET_MOST_CHROME) {
-      const about = this.shadowRoot!.querySelector('#about-menu');
-      assert(about);
-      // Purposefully grabbing the 'href' attribute and not the property.
-      this.setSelectedPath_(about.getAttribute('href')!);
-      return;
-    }
-    // </if>
-
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {

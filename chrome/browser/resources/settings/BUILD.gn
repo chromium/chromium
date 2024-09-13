@@ -267,26 +267,6 @@ build_webui("build") {
   if (is_win || is_mac || is_linux) {
     web_component_files += [ "a11y_page/ax_annotations_section.ts" ]
   }
-  if (is_chrome_branded) {
-    static_files += [
-      "images/gtmooc_computer_dark.svg",
-      "images/gtmooc_computer.svg",
-      "images/gtmooc_cookie_dark.svg",
-      "images/gtmooc_cookie.svg",
-      "images/gtmooc_diagram_cookie_dark.svg",
-      "images/gtmooc_diagram_cookie.svg",
-      "images/gtmooc_diagram_history_dark.svg",
-      "images/gtmooc_diagram_history.svg",
-      "images/gtmooc_diagram_search_dark.svg",
-      "images/gtmooc_diagram_search.svg",
-      "images/gtmooc_search_dark.svg",
-      "images/gtmooc_search.svg",
-    ]
-    web_component_files += [
-      "about_page/get_most_chrome_section.ts",
-      "get_most_chrome_page/get_most_chrome_page.ts",
-    ]
-  }
 
   # -----------------web_component_files end ----------------------------------
 

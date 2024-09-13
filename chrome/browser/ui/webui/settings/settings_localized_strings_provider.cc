@@ -574,107 +574,6 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"getTheMostOutOfChrome", IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME},
-      {"getTheMostOutOfChromeBetterForYou",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_FOR_YOU},
-      {"getTheMostOutOfChromeYourDataInChrome",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME},
-      {"getTheMostOutOfChromeBeyondCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES},
-      {"getTheMostOutOfChromeWorkBetterForYou",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_WORK_BETTER_FOR_YOU},
-      {"getTheMostOutOfChromeSearchHistory",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_SEARCH_HISTORY},
-      {"getTheMostOutOfChromeThirdPartyCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES},
-
-      // Better web section.
-      {"getTheMostOutOfChromeBetterWebMakingTheWeb",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_MAKING_THE_WEB},
-      {"getTheMostOutOfChromeBetterWebSubTitleChromeGivesYouChoice",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_GIVES_YOU_CHOICE},
-      {"getTheMostOutOfChromeBetterWebSubTitleChromeSupportsFreeWeb",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_SUPPORTS_FREE_WEB},
-      {"getTheMostOutOfChromeBetterWebAdsCritical",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_CRITICAL},
-      {"getTheMostOutOfChromeBetterWebAdsAlsoSupport",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT},
-
-      // Your data section.
-      {"getTheMostOutOfChromeYourDataWhenYouBrowse",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_BROWSE},
-      {"getTheMostOutOfChromeYourDataThisInformationUseful",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_THIS_INFORMATION_USEFUL},
-      {"getTheMostOutOfChromeYourDataSubTitleWhatsDifferenceBrowsingSearchHisto"
-       "ry",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_SUB_TITLE_WHATS_DIFFERENCE_BROWSING_SEARCH_HISTORY},
-      {"getTheMostOutOfChromeYourDataBrowsingHistory",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_BROWSING_HISTORY},
-      {"getTheMostOutOfChromeYourDataWhenYouSearch",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_SEARCH},
-
-      // Beyond cookies section.
-      {"getTheMostOutOfChromeBeyondCookiesOnceYouFindASite",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_ONCE_YOU_FIND_ASITE},
-      {"getTheMostOutOfChromeBeyondCookiesDependingOnSitePermissions",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_DEPENDING_ON_SITE_PERMISSIONS},
-      {"getTheMostOutOfChromeBeyondCookiesCookiesCanEnrich",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_CAN_ENRICH},
-      {"getTheMostOutOfChromeBeyondCookiesImagineYouHaveFavoriteCafe",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_IMAGINE_YOU_HAVE_FAVORITE_CAFE},
-      {"getTheMostOutOfChromeBeyondCookiesCookiesAllowSameLevelCustomization",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_ALLOW_SAME_LEVEL_CUSTOMIZATION},
-      {"getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES},
-      {"getTheMostOutOfChromeBeyondCookiesWhatAreThirdPartyCookies",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_WHAT_ARE_THIRD_PARTY_COOKIES},
-  };
-
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddString(
-      "getTheMostOutOfChromeBetterWebYouCanCustomize",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE,
-          base::ASCIIToUTF16(
-              google_util::AppendGoogleLocaleParam(
-                  extension_urls::AppendUtmSource(
-                      GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
-                      extension_urls::kGetMostChromeUtmSource),
-                  g_browser_process->GetApplicationLocale())
-                  .spec())));
-  html_source->AddString(
-      "getTheMostOutOfChromeYourDataVisitChromeHistory",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_CHROME_HISTORY,
-          chrome::kChromeUIHistoryURL16,
-          chrome::kClearBrowsingDataHelpCenterURL));
-  html_source->AddString(
-      "getTheMostOutOfChromeYourDataVisitSearchHistory",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_SEARCH_HISTORY,
-          chrome::kSearchHistoryUrlInGetTheMostOutOfChrome));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesReviewPermissions",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS,
-          chrome::kChromeUIContentSettingsURL16));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesPlanningToPhaseOut",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_PLANNING_TO_PHASE_OUT,
-          chrome::kUKCMAPrivacySandboxURL));
-  html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesChromePartOfEffort",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_CHROME_PART_OF_EFFORT,
-          chrome::kPrivacySandboxURL));
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3726,10 +3625,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddAboutStrings(html_source, profile);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AddGetTheMostOutOfChromeStrings(html_source);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddIncompatibleApplicationsStrings(html_source);

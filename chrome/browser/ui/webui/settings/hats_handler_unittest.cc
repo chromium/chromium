@@ -140,24 +140,6 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   task_environment()->RunUntilIdle();
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(HatsHandlerTest, GetMostChromeHats) {
-  // Check that visiting the "Get the most out of Chrome" page triggers the
-  // corresponding hats.
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchDelayedSurveyForWebContents(
-          kHatsSurveyTriggerGetMostChrome, web_contents(), _, _, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT, _, _, _, _))
-      .Times(1);
-  base::Value::List args;
-  args.Append(static_cast<int>(
-      HatsHandler::TrustSafetyInteraction::OPENED_GET_MOST_CHROME));
-  handler()->HandleTrustSafetyInteractionOccurred(args);
-  task_environment()->RunUntilIdle();
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
   DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsService

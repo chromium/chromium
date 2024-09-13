@@ -5456,12 +5456,6 @@ const char kTabReorganizationDividerDescription[] =
     "indicating which tabs in the group are new.";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kSettingsEnableGetTheMostOutOfChromeName[] =
-    "'Get the most out of Chrome' documentation";
-const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
-    "When enabled, the 'Get the most out of Chrome' documentation section "
-    "will be available.";
-
 const char kIOSPromoRefreshedPasswordBubbleName[] =
     "Chrome for iOS promo : passwords";
 const char kIOSPromoRefreshedPasswordBubbleDescription[] =

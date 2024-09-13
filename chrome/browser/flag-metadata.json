@@ -8143,11 +8143,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "settings-enable-get-the-most-out-of-chrome",
-    "owners": [ "jochen@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "share-in-web-context-menu-ios",
     "owners": [ "aliaaborhamy@google.com", "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 132

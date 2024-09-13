@@ -3160,9 +3160,6 @@ extern const char kTabReorganizationDividerName[];
 extern const char kTabReorganizationDividerDescription[];
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kSettingsEnableGetTheMostOutOfChromeName[];
-extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
-
 extern const char kIOSPromoRefreshedPasswordBubbleName[];
 extern const char kIOSPromoRefreshedPasswordBubbleDescription[];
 

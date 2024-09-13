@@ -254,16 +254,6 @@
                 <settings-reset-page prefs="{{prefs}}"></settings-reset-page>
               </settings-section>
             </template>
-<if expr="_google_chrome">
-            <template is="dom-if"
-                if="[[showGetMostChrome_(pageVisibility.getMostChrome)]]"
-                restamp>
-              <settings-section page-title="$i18n{getTheMostOutOfChrome}"
-                  section="getMostChrome" no-search>
-                <settings-get-most-chrome-page></settings-get-most-chrome-page>
-              </settings-section>
-            </template>
-</if>
           </div>
         </template>
       </settings-idle-load>

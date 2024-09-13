@@ -32,9 +32,6 @@ extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];
 extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kHatsSurveyTriggerGetMostChrome[];
-#endif
 extern const char kHatsSurveyTriggerM1AdPrivacyPage[];
 extern const char kHatsSurveyTriggerM1TopicsSubpage[];
 extern const char kHatsSurveyTriggerM1FledgeSubpage[];

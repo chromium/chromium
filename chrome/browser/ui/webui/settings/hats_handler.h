@@ -53,9 +53,6 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
                            TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerParamTest, AdPrivacyHats);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, GetMostChromeHats);
-#endif
 
   // All Trust & Safety based interactions which may result in a HaTS survey.
   // Must be kept in sync with the enum of the same name in
@@ -71,9 +68,7 @@ class HatsHandler : public SettingsPageUIHandler {
     OPENED_TOPICS_SUBPAGE = 7,
     OPENED_FLEDGE_SUBPAGE = 8,
     OPENED_AD_MEASUREMENT_SUBPAGE = 9,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    OPENED_GET_MOST_CHROME = 10,
-#endif
+    // OPENED_GET_MOST_CHROME = 10, // DEPRECATED
   };
 
   /**

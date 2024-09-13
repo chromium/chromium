@@ -196,12 +196,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsListEntryItems) {
   RunTest("settings/file_system_site_entry_item_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(SettingsTest, GetMostChromePage) {
-  RunTest("settings/get_most_chrome_page_test.js", "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
 }

@@ -33509,6 +33509,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.GetTheMostOutOfChrome.FirstSectionExpanded">
+  <obsolete>Feature was removed.</obsolete>
   <owner>jochen@chromium.org</owner>
   <owner>dwarren@google.com</owner>
   <description>
@@ -33518,6 +33519,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.GetTheMostOutOfChrome.SecondSectionExpanded">
+  <obsolete>Feature was removed.</obsolete>
   <owner>jochen@chromium.org</owner>
   <owner>dwarren@google.com</owner>
   <description>
@@ -33527,6 +33529,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.GetTheMostOutOfChrome.ThirdSectionExpanded">
+  <obsolete>Feature was removed.</obsolete>
   <owner>jochen@chromium.org</owner>
   <owner>dwarren@google.com</owner>
   <description>

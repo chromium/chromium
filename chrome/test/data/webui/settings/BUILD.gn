@@ -211,10 +211,6 @@ build_webui_tests("build") {
     files += [ "incompatible_applications_page_test.ts" ]
   }
 
-  if (is_chrome_branded) {
-    files += [ "get_most_chrome_page_test.ts" ]
-  }
-
   ts_path_mappings = [
     # Settings tests should only be importing from one of the URLs below, so
     # that tests work both in optimize_webui=true/false modes.

@@ -15,9 +15,6 @@ import '../relaunch_confirmation_dialog.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 import '../settings_shared.css.js';
-// <if expr="_google_chrome">
-import './get_most_chrome_section.js';
-// </if>
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -98,22 +95,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         },
       },
 
-      /**
-       * Whether to show the "Get the most out of Chrome" section.
-       */
-      showGetTheMostOutOfChromeSection_: {
-        type: Boolean,
-        value() {
-          let result = false;
-          // <if expr="_google_chrome">
-          result =
-              loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-              !loadTimeData.getBoolean('isGuest');
-          // </if>
-          return result;
-        },
-      },
-
       // <if expr="_google_chrome and is_macosx">
       promoteUpdaterStatus_: Object,
       // </if>
@@ -157,7 +138,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
   private isManaged_: boolean;
-  private showGetTheMostOutOfChromeSection_: boolean;
 
   // <if expr="_google_chrome and is_macosx">
   private promoteUpdaterStatus_: PromoteUpdaterStatus;
