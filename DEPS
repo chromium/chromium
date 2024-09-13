@@ -4189,7 +4189,7 @@ deps = {
     'packages' : [
       {
         'package': 'chromeos_internal/inputs/orca',
-        'version': 'd97yrc6Py_XWkTLNC-shrM8nA4mEAIW42wjPETAPOmUC'
+        'version': '-eNYC0CB6VHyI742LYjZlbbBuTG9cGVNbBCGahV8CRsC'
       }
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
