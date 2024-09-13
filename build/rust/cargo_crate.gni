@@ -429,7 +429,8 @@ template("cargo_crate") {
           rust_abi_target,
         ]
       }
-      if (current_cpu == "arm64" || current_cpu == "x64") {
+      if (current_cpu == "arm64" || current_cpu == "x64" ||
+          current_cpu == "loong64" || current_cpu == "riscv64") {
         args += [
           "--pointer-width",
           "64",
