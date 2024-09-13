@@ -199,6 +199,11 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
             history::mojom::DecorationType::kFrequentlyVisitedAtTime;
         tab_mojom->decoration->display_string = l10n_util::GetStringUTF8(
             IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED);
+      } else if (data_type_param.find("Just Visited") != std::string::npos) {
+        tab_mojom->decoration->type =
+            history::mojom::DecorationType::kVisitedXAgo;
+        tab_mojom->decoration->display_string = l10n_util::GetStringUTF8(
+            IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY);
       } else {
         tab_mojom->decoration->type =
             history::mojom::DecorationType::kVisitedXAgo;

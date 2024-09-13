@@ -2089,6 +2089,10 @@ const FeatureEntry::FeatureParam
     kNtpMostRelevantTabResumptionModuleFakeDataFrequentlyVisitedAtTime[] = {
         {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
          "Fake Data - Frequently Visited At Time Decorator"}};
+const FeatureEntry::FeatureParam
+    kNtpMostRelevantTabResumptionModuleFakeDataJustVisited[] = {
+        {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
+         "Fake Data - Just Visited Decorator"}};
 const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleTabData[] =
     {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "1,2"}};
 const FeatureEntry::FeatureParam
@@ -2111,6 +2115,9 @@ const FeatureEntry::FeatureVariation
          std::size(kNtpMostRelevantTabResumptionModuleFakeData), nullptr},
         {"- Fake Data - Frequently Visited At Time Decorator",
          kNtpMostRelevantTabResumptionModuleFakeDataFrequentlyVisitedAtTime,
+         std::size(kNtpMostRelevantTabResumptionModuleFakeData), nullptr},
+        {"- Fake Data - Just Visited Decorator",
+         kNtpMostRelevantTabResumptionModuleFakeDataJustVisited,
          std::size(kNtpMostRelevantTabResumptionModuleFakeData), nullptr},
         {"- Tabs Only", kNtpMostRelevantTabResumptionModuleTabData,
          std::size(kNtpMostRelevantTabResumptionModuleTabData), nullptr},
