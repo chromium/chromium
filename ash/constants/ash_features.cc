@@ -2590,7 +2590,7 @@ BASE_FEATURE(kPickerDogfood,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses grid view for recent local files.
-BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Show more recent files beyond 30 days.
 BASE_FEATURE(kPickerRecentFiles,
