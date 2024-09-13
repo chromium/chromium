@@ -16,6 +16,7 @@
 #include "components/js_injection/browser/web_message_reply_proxy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_response_headers.h"
@@ -36,6 +37,7 @@ std::set<int64_t>& GetAllOngoingNavigationIds() {
 
 base::Value::Dict CreateBaseMessageFromNavigationHandle(
     content::NavigationHandle* navigation_handle) {
+  bool is_history = (navigation_handle->IsHistory());
   return base::Value::Dict()
       .Set("id", base::NumberToString(navigation_handle->GetNavigationId()))
       .Set("url", navigation_handle->GetURL().spec())
@@ -43,7 +45,13 @@ base::Value::Dict CreateBaseMessageFromNavigationHandle(
       .Set("isPageInitiated", navigation_handle->IsRendererInitiated())
       .Set("isReload",
            navigation_handle->GetReloadType() != content::ReloadType::NONE)
-      .Set("isHistory", navigation_handle->IsHistory());
+      .Set("isHistory", is_history)
+      .Set("isBack",
+           is_history && navigation_handle->GetNavigationEntryOffset() < 0)
+      .Set("isForward",
+           is_history && navigation_handle->GetNavigationEntryOffset() > 0)
+      .Set("isRestore", navigation_handle->GetRestoreType() ==
+                            content::RestoreType::kRestored);
 }
 
 std::string GetURLTypeForCrashKey(const GURL& url) {
@@ -228,10 +236,10 @@ NavigationWebMessageSender::~NavigationWebMessageSender() {
 void NavigationWebMessageSender::DispatchOptInMessage() {
   CHECK(page().IsPrimary());
 
-  base::Value::Dict message_dict =
-      base::Value::Dict()
-          .Set("type", kOptedInMessage)
-          .Set("supports_start_and_redirect", true);
+  base::Value::Dict message_dict = base::Value::Dict()
+                                       .Set("type", kOptedInMessage)
+                                       .Set("supports_start_and_redirect", true)
+                                       .Set("supports_history_details", true);
   PostMessage(std::move(message_dict));
 }
 
