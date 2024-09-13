@@ -429,6 +429,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrowserBackIcon;
     case kKeyboardShortcutBrowserForward:
       return &kKsvBrowserForwardIcon;
+    case kKeyboardShortcutBrowserHome:
+      return &kKsvBrowserHomeIcon;
     case kKeyboardShortcutBrowserRefresh:
       return &kKsvReloadIcon;
     case kKeyboardShortcutBrowserSearch:

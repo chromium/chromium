@@ -100,6 +100,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvBrowserForwardIcon;
     case ui::VKEY_BROWSER_REFRESH:
       return &ash::kKsvReloadIcon;
+    case ui::VKEY_BROWSER_HOME:
+      return &ash::kKsvBrowserHomeIcon;
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:

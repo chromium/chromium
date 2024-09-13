@@ -215,6 +215,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ksv_brightness_up.icon",
     "ksv_browser_back.icon",
     "ksv_browser_forward.icon",
+    "ksv_browser_home.icon",
     "ksv_fullscreen.icon",
     "ksv_mute.icon",
     "ksv_overview.icon",

@@ -73,6 +73,8 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_BACK;
     case ash::SearchResultTextItem::kKeyboardShortcutBrowserForward:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrowserHome:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_HOME;
     case ash::SearchResultTextItem::kKeyboardShortcutBrowserRefresh:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH;
     case ash::SearchResultTextItem::kKeyboardShortcutBrowserSearch:
@@ -184,6 +186,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutBrowserBack;
     case (KeyboardCode::VKEY_BROWSER_FORWARD):
       return IconCode::kKeyboardShortcutBrowserForward;
+    case (KeyboardCode::VKEY_BROWSER_HOME):
+      return IconCode::kKeyboardShortcutBrowserHome;
     case (KeyboardCode::VKEY_BROWSER_REFRESH):
       return IconCode::kKeyboardShortcutBrowserRefresh;
     case (KeyboardCode::VKEY_BROWSER_SEARCH):
@@ -297,6 +301,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"BrightnessUp", IconCode::kKeyboardShortcutBrightnessUp},
        {u"BrowserBack", IconCode::kKeyboardShortcutBrowserBack},
        {u"BrowserForward", IconCode::kKeyboardShortcutBrowserForward},
+       {u"BrowserHome", IconCode::kKeyboardShortcutBrowserHome},
        {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
        {u"BrowserSearch", IconCode::kKeyboardShortcutBrowserSearch},
        {u"EmojiPicker", IconCode::kKeyboardShortcutEmojiPicker},
