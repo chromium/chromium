@@ -345,6 +345,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCreateCSSModuleScript, WebDXFeature::kCssModules},
           {WebFeature::kStreamingDeclarativeShadowDOM,
            WebDXFeature::kDeclarativeShadowDom},
+          {WebFeature::kHTMLDetailsElementNameAttribute,
+           WebDXFeature::kDetailsName},
           {WebFeature::kDialogElement, WebDXFeature::kDialog},
           {WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
            WebDXFeature::kDocumentPictureInPicture},
