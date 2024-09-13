@@ -17426,22 +17426,6 @@
             ]
         }
     ],
-    "PreFreeze": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Both_2024_05_29",
-                    "enable_features": [
-                        "IsTrimMemoryBackgroundCritical",
-                        "OnPreFreezeMemoryTrim"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreInitializePageAndFrameForSVGImage": [
         {
             "platforms": [

@@ -108,11 +108,11 @@ std::optional<uint64_t> Diff(std::optional<uint64_t> before,
 
 BASE_FEATURE(kOnPreFreezeMemoryTrim,
              "OnPreFreezeMemoryTrim",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIsTrimMemoryBackgroundCritical,
              "IsTrimMemoryBackgroundCritical",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
     : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
