@@ -586,6 +586,7 @@ static_library("ash") {
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/extensions/login_screen_ui",
     "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/fileapi:impl",
     "//chrome/browser/ash/floating_sso",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/fwupd",
