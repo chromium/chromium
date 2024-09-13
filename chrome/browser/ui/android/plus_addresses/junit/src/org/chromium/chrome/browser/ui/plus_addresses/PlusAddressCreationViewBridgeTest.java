@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -21,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,31 +60,28 @@ public class PlusAddressCreationViewBridgeTest {
     @Mock private PlusAddressCreationCoordinator mCoordinator;
     @Mock private PlusAddressCreationViewBridge.CoordinatorFactory mCoordinatorFactory;
 
-    private Activity mActivity;
     private MockTabModel mTabModel;
     private PlusAddressCreationViewBridge mPlusAddressCreationViewBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.setupActivity(TestActivity.class);
         mTabModel = new MockTabModel(mProfile, null);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
                         NATIVE_PLUS_ADDRESS_CREATION_VIEW,
-                        mActivity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutManager,
                         mTabModel,
                         mTabModelSelector,
                         mCoordinatorFactory);
-        mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
     }
 
     private void setupCoordinatorFactory() {
         when(mCoordinatorFactory.create(
-                        mActivity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutManager,
                         mTabModel,

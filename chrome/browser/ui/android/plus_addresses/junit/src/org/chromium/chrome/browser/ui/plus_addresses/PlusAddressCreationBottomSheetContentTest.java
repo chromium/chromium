@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowView;
@@ -33,7 +32,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
 
@@ -63,14 +61,13 @@ public class PlusAddressCreationBottomSheetContentTest {
     @Mock private PlusAddressCreationDelegate mDelegate;
     @Mock private BottomSheetController mBottomSheetController;
 
-    private Activity mActivity;
     private PlusAddressCreationBottomSheetContent mBottomSheetContent;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
         mBottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(mActivity, mBottomSheetController);
+                new PlusAddressCreationBottomSheetContent(
+                        RuntimeEnvironment.application, mBottomSheetController);
         mBottomSheetContent.setDelegate(mDelegate);
         mBottomSheetContent.setNormalStateInfo(FIRST_TIME_USAGE_INFO);
     }

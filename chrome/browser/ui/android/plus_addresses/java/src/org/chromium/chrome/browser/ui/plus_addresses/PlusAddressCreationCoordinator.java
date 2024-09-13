@@ -18,7 +18,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 
@@ -34,7 +34,7 @@ public class PlusAddressCreationCoordinator {
     private PlusAddressCreationMediator mMediator;
 
     public PlusAddressCreationCoordinator(
-            Activity activity,
+            Context context,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
@@ -44,7 +44,7 @@ public class PlusAddressCreationCoordinator {
             boolean refreshSupported) {
         mMediator =
                 new PlusAddressCreationMediator(
-                        activity,
+                        context,
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel,
@@ -52,7 +52,7 @@ public class PlusAddressCreationCoordinator {
                         bridge);
         PropertyModel model = createDefaultModel(info, mMediator, refreshSupported);
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(activity, bottomSheetController);
+                new PlusAddressCreationBottomSheetContent(context, bottomSheetController);
 
         mMediator.setModel(model);
 

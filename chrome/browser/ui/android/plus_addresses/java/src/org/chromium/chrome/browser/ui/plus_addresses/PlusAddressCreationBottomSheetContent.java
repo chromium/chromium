@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -29,7 +29,7 @@ import org.chromium.url.GURL;
 
 /** Implements the content for the plus address creation bottom sheet. */
 public class PlusAddressCreationBottomSheetContent implements BottomSheetContent {
-    private final Activity mActivity;
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final ViewGroup mContentView;
     private final LoadingView mLoadingView;
@@ -52,12 +52,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
      * setDelegate must be called before handling those click events.
      */
     public PlusAddressCreationBottomSheetContent(
-            Activity activity, BottomSheetController bottomSheetController) {
-        mActivity = activity;
+            Context context, BottomSheetController bottomSheetController) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
 
         View layout =
-                LayoutInflater.from(activity)
+                LayoutInflater.from(context)
                         .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
         assert (layout instanceof ViewGroup) : "layout is not a ViewGroup!";
         mContentView = (ViewGroup) layout;
@@ -100,7 +100,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         NoUnderlineClickableSpan errorReportLink =
                 new NoUnderlineClickableSpan(
-                        mActivity,
+                        mContext,
                         v -> {
                             mDelegate.openUrl(info.getErrorReportUrl());
                         });
@@ -274,7 +274,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         }
         NoUnderlineClickableSpan settingsLink =
                 new NoUnderlineClickableSpan(
-                        mActivity,
+                        mContext,
                         v -> {
                             mDelegate.openUrl(learnMoreUrl);
                         });

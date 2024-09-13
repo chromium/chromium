@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -18,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +25,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,11 +59,10 @@ public class PlusAddressCreationCoordinatorTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.setupActivity(TestActivity.class);
         mTabModel = new MockTabModel(mProfile, null);
         mCoordinator =
                 new PlusAddressCreationCoordinator(
-                        activity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,

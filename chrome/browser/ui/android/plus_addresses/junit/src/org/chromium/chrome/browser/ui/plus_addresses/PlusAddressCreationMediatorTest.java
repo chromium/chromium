@@ -16,8 +16,6 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
-import android.app.Activity;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -38,7 +36,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -76,13 +73,12 @@ public final class PlusAddressCreationMediatorTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.setupActivity(TestActivity.class);
         mModel =
                 PlusAddressCreationCoordinator.createDefaultModel(
                         FIRST_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
-                        activity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
@@ -43,7 +42,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -89,18 +87,16 @@ public class PlusAddressCreationModuleTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
 
-    private Activity mActivity;
     private PlusAddressCreationCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
         // Disabling animations is necessary to avoid running into issues with
         // delayed hiding of loading views.
         LoadingView.setDisableAnimationForTest(true);
         mCoordinator =
                 new PlusAddressCreationCoordinator(
-                        mActivity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
@@ -266,7 +262,7 @@ public class PlusAddressCreationModuleTest {
     public void testSecondTimeUsage_confirm_showError_close() {
         PlusAddressCreationCoordinator coordinator =
                 new PlusAddressCreationCoordinator(
-                        mActivity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
