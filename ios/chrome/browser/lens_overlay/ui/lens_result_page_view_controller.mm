@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -223,7 +224,26 @@ const CGFloat kProgressBarFull = 1.0f;
   AddSameConstraintsToSides(
       _omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+                       withAction:@selector(updateMutatorDarkMode)];
+  }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    [self updateMutatorDarkMode];
+  }
+}
+#endif
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   CHECK(!_editView, kLensOverlayNotFatalUntil);
@@ -233,6 +253,11 @@ const CGFloat kProgressBarFull = 1.0f;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];
   AddSameConstraints(_editView, _omniboxContainer);
+}
+
+- (void)setMutator:(id<LensResultPageMutator>)mutator {
+  _mutator = mutator;
+  [self updateMutatorDarkMode];
 }
 
 #pragma mark - UIResponder
@@ -356,6 +381,12 @@ const CGFloat kProgressBarFull = 1.0f;
 
 - (void)updateBackButtonVisibility {
   _backButton.hidden = self.omniboxFocused || !self.canGoBack;
+}
+
+/// Updates the user interface style in the mutator.
+- (void)updateMutatorDarkMode {
+  [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
+                              UIUserInterfaceStyleDark];
 }
 
 @end

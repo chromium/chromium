@@ -79,11 +79,19 @@ const CGFloat kProgressBarEmpty = 0.0f;
 // Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
 
+// Query parameter for dark mode.
+inline constexpr char kDarkModeParameterKey[] = "cs";
+inline constexpr char kDarkModeParameterLightValue[] = "0";
+inline constexpr char kDarkModeParameterDarkValue[] = "1";
+
 }  // namespace
 
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
+
+/// Whether the interface is in dark mode.
+@property(nonatomic, assign) BOOL isDarkMode;
 
 @end
 
@@ -150,6 +158,12 @@ const CGFloat kProgressBarFull = 1.0f;
 
 - (void)loadResultsURL:(GURL)URL {
   CHECK(_webState, kLensOverlayNotFatalUntil);
+
+  // Add light/dark mode query parameter.
+  URL = net::AppendOrReplaceQueryParameter(URL, kDarkModeParameterKey,
+                                           self.isDarkMode
+                                               ? kDarkModeParameterDarkValue
+                                               : kDarkModeParameterLightValue);
 
   _isInflightRequestLensInitiated = YES;
   [_consumer setLoadingProgress:kProgressBarLensResponseReceived];

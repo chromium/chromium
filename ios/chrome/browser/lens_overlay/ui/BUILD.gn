@@ -6,6 +6,7 @@ source_set("protocols") {
   sources = [
     "lens_overlay_bottom_sheet_presentation_delegate.h",
     "lens_overlay_result_consumer.h",
+    "lens_result_page_mutator.h",
     "lens_toolbar_consumer.h",
     "lens_toolbar_mutator.h",
   ]

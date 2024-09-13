@@ -539,6 +539,7 @@ const CGFloat kMenuSymbolSize = 18;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
+  _resultViewController.mutator = _resultMediator;
 
   _resultContextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:browser

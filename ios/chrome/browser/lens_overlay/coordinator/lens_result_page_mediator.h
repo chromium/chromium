@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/web/public/web_state.h"
 
 @protocol ApplicationCommands;
@@ -18,8 +19,9 @@
 @protocol LensResultPageWebStateDelegate;
 
 /// Mediator that handles lens result page operations.
-@interface LensResultPageMediator
-    : NSObject <LensOverlayResultConsumer, LensWebProvider>
+@interface LensResultPageMediator : NSObject <LensOverlayResultConsumer,
+                                              LensResultPageMutator,
+                                              LensWebProvider>
 
 @property(nonatomic, weak) id<LensResultPageConsumer> consumer;
 

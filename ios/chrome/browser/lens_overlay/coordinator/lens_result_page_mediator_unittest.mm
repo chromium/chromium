@@ -135,10 +135,20 @@ class LensResultPageMediatorTest : public PlatformTest {
 // Tests that the mediator starts a navigation when loadResultsURL is called.
 TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   GURL result_url = GURL("https://www.google.com");
-  [mediator_ loadResultsURL:result_url];
 
+  // Expect that the light mode query param is added to the URL.
+  mediator_.isDarkMode = NO;
+  [mediator_ loadResultsURL:result_url];
+  GURL light_mode_url = GURL("https://www.google.com?cs=0");
   EXPECT_EQ(browser_web_state_delegate_.last_open_url_request()->params.url,
-            result_url);
+            light_mode_url);
+
+  // Expect that the dark mode query param is added to the URL.
+  mediator_.isDarkMode = YES;
+  [mediator_ loadResultsURL:result_url];
+  GURL dark_mode_url = GURL("https://www.google.com?cs=1");
+  EXPECT_EQ(browser_web_state_delegate_.last_open_url_request()->params.url,
+            dark_mode_url);
 }
 
 // Tests that web navigation to google is allowed.
