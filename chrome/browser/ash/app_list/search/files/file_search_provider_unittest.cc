@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -14,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
@@ -40,18 +38,9 @@ MATCHER_P(Title, title, "") {
 
 }  // namespace
 
-class FileSearchProviderTest : public testing::Test,
-                               public testing::WithParamInterface<bool> {
+class FileSearchProviderTest : public testing::Test {
  public:
-  FileSearchProviderTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
-    }
-  }
+  FileSearchProviderTest() = default;
 
  protected:
   void SetUp() override {
@@ -96,7 +85,6 @@ class FileSearchProviderTest : public testing::Test,
   void Wait() { task_environment_.RunUntilIdle(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
@@ -104,11 +92,7 @@ class FileSearchProviderTest : public testing::Test,
   base::ScopedTempDir scoped_temp_dir_;
 };
 
-INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
-                         FileSearchProviderTest,
-                         testing::Bool());
-
-TEST_P(FileSearchProviderTest, SearchResultsMatchQuery) {
+TEST_F(FileSearchProviderTest, SearchResultsMatchQuery) {
   WriteFile("file_1.txt");
   WriteFile("no_match.png");
   WriteFile("my_file_2.png");
@@ -120,7 +104,7 @@ TEST_P(FileSearchProviderTest, SearchResultsMatchQuery) {
                                                   Title("my_file_2.png")));
 }
 
-TEST_P(FileSearchProviderTest, SearchIsCaseInsensitive) {
+TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
   WriteFile("FILE_1.png");
   WriteFile("FiLe_2.Png");
 
@@ -131,7 +115,7 @@ TEST_P(FileSearchProviderTest, SearchIsCaseInsensitive) {
               UnorderedElementsAre(Title("FILE_1.png"), Title("FiLe_2.Png")));
 }
 
-TEST_P(FileSearchProviderTest, SearchIsAccentAndCaseInsensitive) {
+TEST_F(FileSearchProviderTest, SearchIsAccentAndCaseInsensitive) {
   WriteFile("FĪLE_1.png");
   WriteFile("FīLe_2.Png");
 
@@ -142,7 +126,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentAndCaseInsensitive) {
               UnorderedElementsAre(Title("FĪLE_1.png"), Title("FīLe_2.Png")));
 }
 
-TEST_P(FileSearchProviderTest, SearchIsAccentInsensitive) {
+TEST_F(FileSearchProviderTest, SearchIsAccentInsensitive) {
   WriteFile("FILE_1.png");
   WriteFile("FiLe_2.Png");
   WriteFile("FĪLE_3.png");
@@ -159,7 +143,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentInsensitive) {
                                    Title("FiLË_5.png"), Title("FILê_6.Png")));
 }
 
-TEST_P(FileSearchProviderTest, SearchIsAccentHonored) {
+TEST_F(FileSearchProviderTest, SearchIsAccentHonored) {
   WriteFile("FĪLE_1.png");
   WriteFile("FīLe_2.Png");
   WriteFile("file_3.png");
@@ -171,7 +155,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentHonored) {
               UnorderedElementsAre(Title("FĪLE_1.png"), Title("FīLe_2.Png")));
 }
 
-TEST_P(FileSearchProviderTest, SearchDirectories) {
+TEST_F(FileSearchProviderTest, SearchDirectories) {
   CreateDirectory("my_folder");
 
   StartSearch(u"my_folder");
@@ -180,7 +164,7 @@ TEST_P(FileSearchProviderTest, SearchDirectories) {
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("my_folder")));
 }
 
-TEST_P(FileSearchProviderTest, DoesNotSearchDirectoriesIfTurnedOff) {
+TEST_F(FileSearchProviderTest, DoesNotSearchDirectoriesIfTurnedOff) {
   provider_->SetFileTypeForTesting(base::FileEnumerator::FileType::FILES);
   CreateDirectory("my_folder");
 
@@ -190,7 +174,7 @@ TEST_P(FileSearchProviderTest, DoesNotSearchDirectoriesIfTurnedOff) {
   EXPECT_THAT(LastResults(), IsEmpty());
 }
 
-TEST_P(FileSearchProviderTest, ResultMetadataTest) {
+TEST_F(FileSearchProviderTest, ResultMetadataTest) {
   WriteFile("file.txt");
 
   StartSearch(u"file");
@@ -202,7 +186,7 @@ TEST_P(FileSearchProviderTest, ResultMetadataTest) {
   EXPECT_EQ(result->display_type(), ash::SearchResultDisplayType::kList);
 }
 
-TEST_P(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
+TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
   WriteFile("file.txt");
   WriteFile("file.png");
   WriteFile("file.pdf");
@@ -237,7 +221,7 @@ TEST_P(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
                                    Title("file.png")));
 }
 
-TEST_P(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
+TEST_F(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   // Make two identically named files with different access times.
   const base::Time time = base::Time::Now();
   const base::Time earlier_time = time - base::Days(5);
@@ -267,7 +251,7 @@ TEST_P(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   EXPECT_LE(results[0]->relevance(), 1.0);
 }
 
-TEST_P(FileSearchProviderTest, ResultsNotReturnedAfterClearingSearch) {
+TEST_F(FileSearchProviderTest, ResultsNotReturnedAfterClearingSearch) {
   // Make two identically named files with different access times.
   const base::Time time = base::Time::Now();
   const base::Time earlier_time = time - base::Days(5);
@@ -312,11 +296,7 @@ class FileSearchProviderTrashTest : public FileSearchProviderTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
-                         FileSearchProviderTrashTest,
-                         testing::Values(true));
-
-TEST_P(FileSearchProviderTrashTest, FilesInTrashAreIgnored) {
+TEST_F(FileSearchProviderTrashTest, FilesInTrashAreIgnored) {
   using file_manager::trash::kTrashFolderName;
   CreateDirectory(kTrashFolderName);
   WriteFile("file");
@@ -328,7 +308,7 @@ TEST_P(FileSearchProviderTrashTest, FilesInTrashAreIgnored) {
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("file")));
 }
 
-TEST_P(FileSearchProviderTrashTest, FilesInTrashArentIgnoredIfTrashDisabled) {
+TEST_F(FileSearchProviderTrashTest, FilesInTrashArentIgnoredIfTrashDisabled) {
   using file_manager::trash::kTrashFolderName;
 
   ToggleTrash(false);

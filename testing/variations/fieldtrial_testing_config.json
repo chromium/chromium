@@ -9230,21 +9230,6 @@
             ]
         }
     ],
-    "EnableFuzzyMatchAcrossLauncher": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LauncherFuzzyMatchAcrossProviders"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableImmediateDrawDuringScrollInteraction": [
         {
             "platforms": [

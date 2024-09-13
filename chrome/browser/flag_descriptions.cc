@@ -7797,13 +7797,6 @@ const char kLauncherLocalImageSearchIcaDescription[] =
     "Enables on-device Image Content-based Annotation for local image search "
     "in the launcher.";
 
-const char kLauncherFuzzyMatchAcrossProvidersName[] =
-    "Enable fuzzy match for relevance scores";
-const char kLauncherFuzzyMatchAcrossProvidersDescription[] =
-    "Change relevance score in Drive Files, Local Files, Help App, Keyboard "
-    "shortcuts, OS Settings and personalization app to all be based on a fuzzy "
-    "match";
-
 const char kLauncherFuzzyMatchForOmniboxName[] =
     "Omnibox Results Fuzzy match experiment";
 const char kLauncherFuzzyMatchForOmniboxDescription[] =

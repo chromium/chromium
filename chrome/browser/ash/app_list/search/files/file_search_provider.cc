@@ -35,7 +35,6 @@ using ::ash::string_matching::TokenizedString;
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
 constexpr int kSearchTimeoutMs = 100;
-constexpr double kRelevanceThreshold = 0.79;
 
 // Construct a case-insensitive and accent-insensitive fnmatch query from
 // |query|. E.g. for abc123, the result would be *[aAáàâäāåÁÀÂÄĀÅ][bB][cC]123*.
@@ -198,10 +197,6 @@ void FileSearchProvider::OnSearchComplete(
     double relevance = FileResult::CalculateRelevance(
         last_tokenized_query_, path.path, path.last_accessed);
     DCHECK((relevance >= 0.0) && (relevance <= 1.0));
-    if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled() &&
-        relevance < kRelevanceThreshold) {
-      continue;
-    }
     results.push_back(MakeResult(path, relevance));
   }
 

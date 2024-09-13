@@ -39,7 +39,6 @@ using ::ash::string_matching::TokenizedString;
 constexpr char kDriveSearchSchema[] = "drive_search://";
 constexpr int kMaxResults = 50;
 constexpr size_t kMinQuerySizeForSharedFiles = 5u;
-constexpr double kRelevanceThreshold = 0.79;
 
 // Outcome of a call to DriveSearchProvider::Start. These values persist
 // to logs. Entries should not be renumbered and numeric values should never be
@@ -187,10 +186,6 @@ void DriveSearchProvider::OnSearchDriveByFileName(
 
     double relevance = FileResult::CalculateRelevance(
         last_tokenized_query_, reparented_path, last_accessed);
-    if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled() &&
-        relevance < kRelevanceThreshold) {
-      continue;
-    }
 
     std::unique_ptr<FileResult> result;
     GURL url(item->metadata->alternate_url);
