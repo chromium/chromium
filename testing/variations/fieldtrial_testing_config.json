@@ -21707,6 +21707,34 @@
             ]
         }
     ],
+    "SensitiveContent": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "sensitive_content_use_pwm_heuristics": "false"
+                    },
+                    "enable_features": [
+                        "SensitiveContent"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithPwmHeuristics",
+                    "params": {
+                        "sensitive_content_use_pwm_heuristics": "true"
+                    },
+                    "enable_features": [
+                        "SensitiveContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "SerializeAccessibilityPostLifecycle": [
         {
             "platforms": [
