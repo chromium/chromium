@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 @implementation TabGroupIndicatorView {
@@ -38,6 +41,8 @@
   self = [super init];
   if (self) {
     self.accessibilityIdentifier = kTabGroupIndicatorViewIdentifier;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _containerView = [self containerView];
     _titleView = [self titleView];
@@ -220,8 +225,12 @@
 }
 
 - (void)setGroupTitle:(NSString*)title {
-  _groupTitle = title;
+  _groupTitle = [title copy];
   _titleView.text = title;
+
+  self.accessibilityLabel =
+      l10n_util::GetNSStringF(IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE,
+                              base::SysNSStringToUTF16(title));
 }
 
 - (void)setGroupColor:(UIColor*)color {

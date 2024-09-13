@@ -12,12 +12,14 @@ source_set("ui") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
     "//ui/gfx/ios:uikit_util",
   ]
   frameworks = [ "UIKit.framework" ]
