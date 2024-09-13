@@ -39,12 +39,12 @@ void ExpandCascade(const MatchedProperties& matched_properties,
     const auto& metadata = reference.PropertyMetadata();
     CSSPropertyID id = metadata.PropertyID();
     CascadePriority priority(
-        matched_properties.types_.origin, metadata.important_,
-        matched_properties.types_.tree_order,
-        matched_properties.types_.is_inline_style,
-        matched_properties.types_.is_try_style,
-        matched_properties.types_.is_try_tactics_style,
-        matched_properties.types_.layer_order,
+        matched_properties.data_.origin, metadata.important_,
+        matched_properties.data_.tree_order,
+        matched_properties.data_.is_inline_style,
+        matched_properties.data_.is_try_style,
+        matched_properties.data_.is_try_tactics_style,
+        matched_properties.data_.layer_order,
         EncodeMatchResultPosition(matched_properties_index, property_idx));
 
     if (id == CSSPropertyID::kVariable) {

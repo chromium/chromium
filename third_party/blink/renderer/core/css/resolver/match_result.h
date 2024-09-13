@@ -70,13 +70,13 @@ struct CORE_EXPORT MatchedProperties {
     bool is_try_tactics_style = false;
   };
 
-  MatchedProperties(CSSPropertyValueSet* properties_arg, const Data& types_arg)
-      : properties(properties_arg), types_(types_arg) {}
+  MatchedProperties(CSSPropertyValueSet* properties_arg, const Data& data_arg)
+      : properties(properties_arg), data_(data_arg) {}
 
   void Trace(Visitor*) const;
 
   Member<CSSPropertyValueSet> properties;
-  Data types_;
+  Data data_;
 };
 static_assert(sizeof(MatchedProperties) <= 12,
               "MatchedProperties should not grow without thinking");
@@ -237,7 +237,7 @@ class CORE_EXPORT MatchResult {
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {
   return a.properties == b.properties &&
-         a.types_.link_match_type == b.types_.link_match_type;
+         a.data_.link_match_type == b.data_.link_match_type;
 }
 
 inline bool operator!=(const MatchedProperties& a, const MatchedProperties& b) {

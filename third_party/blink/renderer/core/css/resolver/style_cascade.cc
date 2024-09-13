@@ -126,8 +126,8 @@ const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
   wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
   const MatchedProperties& properties =
       result.GetMatchedProperties()[matched_properties_index];
-  DCHECK_EQ(properties.types_.origin, CascadeOrigin::kAuthor);
-  return result.ScopeFromTreeOrder(properties.types_.tree_order);
+  DCHECK_EQ(properties.data_.origin, CascadeOrigin::kAuthor);
+  return result.ScopeFromTreeOrder(properties.data_.tree_order);
 }
 
 const CSSValue* EnsureScopedValue(const Document& document,

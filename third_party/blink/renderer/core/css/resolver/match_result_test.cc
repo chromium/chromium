@@ -28,13 +28,13 @@ class MatchResultTest : public PageTestBase {
 
   CascadeOrigin OriginAt(const MatchResult& result, wtf_size_t index) const {
     DCHECK_LT(index, LengthOf(result));
-    return result.GetMatchedProperties()[index].types_.origin;
+    return result.GetMatchedProperties()[index].data_.origin;
   }
 
   const TreeScope& TreeScopeAt(const MatchResult& result, wtf_size_t index) {
     DCHECK_EQ(CascadeOrigin::kAuthor, OriginAt(result, index));
     return result.ScopeFromTreeOrder(
-        result.GetMatchedProperties()[index].types_.tree_order);
+        result.GetMatchedProperties()[index].data_.tree_order);
   }
 
  private:
@@ -217,7 +217,7 @@ TEST_F(MatchResultTest, Reset) {
   // Check tree_order of last entry.
   EXPECT_TRUE(result.HasMatchedProperties());
   ASSERT_EQ(5u, result.GetMatchedProperties().size());
-  EXPECT_EQ(2u, result.GetMatchedProperties()[4].types_.tree_order);
+  EXPECT_EQ(2u, result.GetMatchedProperties()[4].data_.tree_order);
 
   EXPECT_TRUE(result.IsCacheable());
   result.SetIsCacheable(false);
@@ -253,7 +253,7 @@ TEST_F(MatchResultTest, Reset) {
   // Check tree_order of last entry.
   EXPECT_TRUE(result.HasMatchedProperties());
   ASSERT_EQ(5u, result.GetMatchedProperties().size());
-  EXPECT_EQ(2u, result.GetMatchedProperties()[4].types_.tree_order);
+  EXPECT_EQ(2u, result.GetMatchedProperties()[4].data_.tree_order);
 
   EXPECT_TRUE(result.IsCacheable());
 }
