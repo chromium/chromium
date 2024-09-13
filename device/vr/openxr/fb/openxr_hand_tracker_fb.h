@@ -31,7 +31,7 @@ class OpenXrHandTrackerFb : public OpenXrHandTracker,
   std::optional<GamepadButton> GetButton(OpenXrButtonType type) const override;
 
  private:
-  void AppendToLocationStruct(XrHandJointLocationsEXT& locations) override;
+  void ExtendHandTrackingNextChain(void** next) override;
 
   XrHandTrackingAimStateFB aim_state_ = {XR_TYPE_HAND_TRACKING_AIM_STATE_FB};
 };

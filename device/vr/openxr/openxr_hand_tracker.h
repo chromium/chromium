@@ -58,6 +58,9 @@ class OpenXrHandTracker {
 
   XrResult Update(XrSpace base_space, XrTime predicted_display_time);
 
+  bool CanSupplyHandTrackingData() const;
+
+  // Must not be overridden by subclasses.
   mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
 
   // Gets an `OpenXrHandController` for this hand tracker if it supports parsing
@@ -67,7 +70,9 @@ class OpenXrHandTracker {
 
  protected:
   bool IsDataValid() const;
-  virtual void AppendToLocationStruct(XrHandJointLocationsEXT& locations) {}
+
+  // Used to allow subclasses to append to the `next` chain.
+  virtual void ExtendHandTrackingNextChain(void** next) {}
 
   // Gets the `base_from_grip` transform, where the `base` space is the one that
   // was passed in to "Update". This is calculated based on the palm position,
@@ -81,9 +86,11 @@ class OpenXrHandTracker {
   XrSession session_;
   OpenXrHandednessType type_;
   XrHandTrackerEXT hand_tracker_{XR_NULL_HANDLE};
+  const bool mesh_scale_enabled_;
 
   XrHandJointLocationEXT joint_locations_buffer_[XR_HAND_JOINT_COUNT_EXT];
   XrHandJointLocationsEXT locations_{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
+  XrHandTrackingScaleFB mesh_scale_{XR_TYPE_HAND_TRACKING_SCALE_FB};
 };
 
 class OpenXrHandTrackerFactory : public OpenXrExtensionHandlerFactory {

@@ -139,9 +139,22 @@ OpenXrHandTracker::OpenXrHandTracker(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     OpenXrHandednessType type)
-    : extension_helper_(extension_helper), session_(session), type_(type) {
+    : extension_helper_(extension_helper),
+      session_(session),
+      type_(type),
+      mesh_scale_enabled_(
+          extension_helper_->ExtensionEnumeration()->ExtensionSupported(
+              XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME)) {
   locations_.jointCount = std::extent<decltype(joint_locations_buffer_)>::value;
   locations_.jointLocations = joint_locations_buffer_;
+
+  // This is only used if mesh_scale_enabled_ is true, but it doesn't hurt to
+  // initialize it anyway.
+  // Setting `overrideHandScale` to true and `overrideValueInput` to 1 will
+  // scale the hands to the size of the "standard" hand mesh per:
+  // https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XrHandTrackingScaleFB
+  mesh_scale_.overrideHandScale = true;
+  mesh_scale_.overrideValueInput = 1.0f;
 }
 
 OpenXrHandTracker::~OpenXrHandTracker() {
@@ -162,7 +175,13 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   locate_info.baseSpace = base_space;
   locate_info.time = predicted_display_time;
 
-  AppendToLocationStruct(locations_);
+  void** next = &locations_.next;
+  if (mesh_scale_enabled_) {
+    *next = &mesh_scale_;
+    next = &mesh_scale_.next;
+  }
+
+  ExtendHandTrackingNextChain(next);
 
   XrResult result = extension_helper_->ExtensionMethods().xrLocateHandJointsEXT(
       hand_tracker_, &locate_info, &locations_);
@@ -173,8 +192,16 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   return result;
 }
 
+bool OpenXrHandTracker::CanSupplyHandTrackingData() const {
+  // We enable the OpenXrHandTracker because we may use it to synthesize a
+  // controller, but if we cannot standardize the bone sizes, then we should not
+  // return the hand tracking data. Note that data being potentially invalid is
+  // a temporary state, and as such does not factor into this calculation.
+  return mesh_scale_enabled_;
+}
+
 mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
-  if (!IsDataValid()) {
+  if (!CanSupplyHandTrackingData() || !IsDataValid()) {
     return nullptr;
   }
 
@@ -239,7 +266,8 @@ OpenXrHandTrackerFactory::GetRequestedExtensions() const {
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
       {XR_EXT_HAND_TRACKING_EXTENSION_NAME,
        XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
-       XR_MSFT_HAND_INTERACTION_EXTENSION_NAME});
+       XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
+       XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME});
   return *kExtensions;
 }
 
