@@ -86,6 +86,7 @@ uint64_t MLTensor::PackedByteLength() const {
 }
 
 ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
@@ -101,14 +102,15 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  remote_tensor_->ReadTensor(WTF::BindOnce(&MLTensor::OnDidReadTensor,
-                                           WrapPersistent(this),
-                                           WrapPersistent(resolver)));
+  remote_tensor_->ReadTensor(
+      WTF::BindOnce(&MLTensor::OnDidReadTensor, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
 
 ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
@@ -131,11 +133,13 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
 
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
 ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
+    ScopedMLTrace scoped_trace,
     ScriptState* script_state,
     DOMArrayBufferView* dst_data,
     ExceptionState& exception_state) {
@@ -158,11 +162,13 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
 
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByobView, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    WrapPersistent(dst_data)));
   return resolver->Promise();
 }
 
 void MLTensor::OnDidReadTensor(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
@@ -178,6 +184,7 @@ void MLTensor::OnDidReadTensor(
 }
 
 void MLTensor::OnDidReadTensorByob(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
     webnn::mojom::blink::ReadTensorResultPtr result) {
@@ -205,6 +212,7 @@ void MLTensor::OnDidReadTensorByob(
 }
 
 void MLTensor::OnDidReadTensorByobView(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
     webnn::mojom::blink::ReadTensorResultPtr result) {

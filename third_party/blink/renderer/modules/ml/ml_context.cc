@@ -1005,6 +1005,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     ScriptState* script_state,
     MLTensor* src_tensor,
     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1023,7 +1024,8 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  return src_tensor->ReadTensorImpl(script_state, exception_state);
+  return src_tensor->ReadTensorImpl(std::move(scoped_trace), script_state,
+                                    exception_state);
 }
 
 ScriptPromise<IDLUndefined> MLContext::readTensor(
@@ -1031,6 +1033,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     MLTensor* src_tensor,
     DOMArrayBufferBase* dst_data,
     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1043,7 +1046,8 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  return src_tensor->ReadTensorImpl(script_state, dst_data, exception_state);
+  return src_tensor->ReadTensorImpl(std::move(scoped_trace), script_state,
+                                    dst_data, exception_state);
 }
 
 ScriptPromise<IDLUndefined> MLContext::readTensor(
@@ -1051,6 +1055,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     MLTensor* src_tensor,
     MaybeShared<DOMArrayBufferView> dst_data,
     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1063,8 +1068,8 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  return src_tensor->ReadTensorImpl(script_state, dst_data.Get(),
-                                    exception_state);
+  return src_tensor->ReadTensorImpl(std::move(scoped_trace), script_state,
+                                    dst_data.Get(), exception_state);
 }
 
 void MLContext::WriteWebNNTensor(ScriptState* script_state,
@@ -1074,6 +1079,7 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
                                  unsigned src_data_type_size_bytes,
                                  std::optional<uint64_t> src_element_count,
                                  ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::writeTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");

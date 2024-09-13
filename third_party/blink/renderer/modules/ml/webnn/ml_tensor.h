@@ -76,14 +76,17 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   // Read data from the MLTensor. The resolver should be resolved with a copy of
   // the tensor data. Otherwise, the resolver should be rejected accordingly.
-  ScriptPromise<DOMArrayBuffer> ReadTensorImpl(ScriptState* script_state,
+  ScriptPromise<DOMArrayBuffer> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                               ScriptState* script_state,
                                                ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadTensorImpl(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                             ScriptState* script_state,
                                              DOMArrayBufferBase* dst_data,
                                              ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadTensorImpl(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> ReadTensorImpl(ScopedMLTrace scoped_trace,
+                                             ScriptState* script_state,
                                              DOMArrayBufferView* dst_data,
                                              ExceptionState& exception_state);
 
@@ -95,12 +98,15 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
  private:
   // The callback of reading from `WebNNTensor` by calling hardware accelerated
   // OS machine learning APIs.
-  void OnDidReadTensor(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+  void OnDidReadTensor(ScopedMLTrace scoped_trace,
+                       ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        webnn::mojom::blink::ReadTensorResultPtr result);
-  void OnDidReadTensorByob(ScriptPromiseResolver<IDLUndefined>* resolver,
+  void OnDidReadTensorByob(ScopedMLTrace scoped_trace,
+                           ScriptPromiseResolver<IDLUndefined>* resolver,
                            DOMArrayBufferBase* dst_data,
                            webnn::mojom::blink::ReadTensorResultPtr result);
-  void OnDidReadTensorByobView(ScriptPromiseResolver<IDLUndefined>* resolver,
+  void OnDidReadTensorByobView(ScopedMLTrace scoped_trace,
+                               ScriptPromiseResolver<IDLUndefined>* resolver,
                                DOMArrayBufferView* dst_data,
                                webnn::mojom::blink::ReadTensorResultPtr result);
 
