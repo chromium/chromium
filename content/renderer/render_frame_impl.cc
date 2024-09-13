@@ -5344,7 +5344,24 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // If this is marked as a same document load but we haven't committed
     // anything, we can't proceed with the load. The browser shouldn't let this
     // happen.
-    CHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    // TODO(crbug.com/41489044): A same-document history navigation was
+    // performed but the renderer does not have a history item. Diagnose this,
+    // make it a CHECK again, and drop the Restart.
+    DCHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    if (GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
+      SCOPED_CRASH_KEY_BOOL("history_no_item", "is_main_frame", IsMainFrame());
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_commit_state",
+                              (int)navigation_commit_state_);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_offset",
+                              commit_params.current_history_list_offset);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_len",
+                              commit_params.current_history_list_length);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_history_len",
+                              GetWebView()->HistoryBackListCount() +
+                                  GetWebView()->HistoryForwardListCount() + 1);
+      base::debug::DumpWithoutCrashing();
+      return blink::mojom::CommitResult::RestartCrossDocument;
+    }
 
     // Additionally, if the current history item's document sequence number
     // doesn't match the one sent from the browser, it is possible that this
