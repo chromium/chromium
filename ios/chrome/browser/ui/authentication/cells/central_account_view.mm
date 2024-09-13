@@ -21,8 +21,6 @@
 
 namespace {
 
-NSString* const kEnterpriseIconName = @"enterprise_icon";
-
 // The space between the enterprise icon and the "Your browser is managed ..."
 // label.
 const CGFloat kEnterpriseIconSpacing = 4.0;
@@ -30,7 +28,13 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
   UIColor* color = [UIColor colorNamed:kTextSecondaryColor];
-  return [[UIImage imageNamed:kEnterpriseIconName] imageWithTintColor:color];
+  return SymbolWithPalette(
+      CustomSymbolWithConfiguration(
+          kEnterpriseSymbol,
+          [UIImageSymbolConfiguration
+              configurationWithFont:
+                  [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]]),
+      @[ color ]);
 }
 
 }  // namespace
