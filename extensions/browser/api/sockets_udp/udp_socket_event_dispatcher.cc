@@ -99,8 +99,9 @@ void UDPSocketEventDispatcher::StartReceive(const ReceiveParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another read if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   int buffer_size = (socket->buffer_size() <= 0 ? 4096 : socket->buffer_size());
   socket->RecvFrom(
@@ -164,8 +165,9 @@ void UDPSocketEventDispatcher::ReceiveCallback(
       // "resumes" it.
       ResumableUDPSocket* socket =
           params.sockets->Get(params.extension_id, params.socket_id);
-      if (socket)
+      if (socket) {
         socket->set_paused(true);
+      }
     }
   }
 }

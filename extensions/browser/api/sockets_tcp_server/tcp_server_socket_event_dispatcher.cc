@@ -116,8 +116,9 @@ void TCPServerSocketEventDispatcher::StartAccept(const AcceptParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another accept if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   socket->Accept(
       base::BindOnce(&TCPServerSocketEventDispatcher::AcceptCallback, params));

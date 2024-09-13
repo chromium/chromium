@@ -112,12 +112,14 @@ void TCPSocketEventDispatcher::StartRead(const ReadParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another read if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   int buffer_size = socket->buffer_size();
-  if (buffer_size <= 0)
+  if (buffer_size <= 0) {
     buffer_size = kDefaultBufferSize;
+  }
   socket->Read(buffer_size,
                base::BindOnce(&TCPSocketEventDispatcher::ReadCallback, params));
 }
@@ -176,8 +178,9 @@ void TCPSocketEventDispatcher::ReadCallback(
       // "resumes" it.
       ResumableTCPSocket* socket =
           params.sockets->Get(params.extension_id, params.socket_id);
-      if (socket)
+      if (socket) {
         socket->set_paused(true);
+      }
     }
   }
 }
