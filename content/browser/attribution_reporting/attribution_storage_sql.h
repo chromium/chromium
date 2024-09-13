@@ -418,8 +418,6 @@ class CONTENT_EXPORT AttributionStorageSql {
     kClosedDueToCatastrophicError,
   };
 
-  void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   [[nodiscard]] bool ReadDedupKeys(
       StoredSource::Id,
       std::vector<uint64_t>& event_level_dedup_keys,

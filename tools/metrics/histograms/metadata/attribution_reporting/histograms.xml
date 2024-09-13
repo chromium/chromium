@@ -1151,25 +1151,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourcesPerSourceOrigin2.{Position}"
-    units="sources" expires_after="2025-03-09">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    When the storage database is initialized upon the API's first use, count and
-    sort in descending order the number of sources per source origin. The metric
-    records the count at the {Position} position. Only recorded if
-    initialization is successful.
-  </summary>
-  <token key="Position">
-    <variant name="1st"/>
-    <variant name="3rd"/>
-    <variant name="7th"/>
-    <variant name="20th"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.SourceStoredStatus8"
     enum="ConversionStorageSourceStatus" expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->
