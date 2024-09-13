@@ -6,10 +6,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
@@ -58,6 +59,8 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
 
 // Tests the header view when the user is signed in.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIdentityDiscAccountMenu);
   [view_controller_ loadViewIfNeeded];
 
   EXPECT_NE(nil, view_controller_.identityDiscButton);
@@ -77,5 +80,32 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn) {
               l10n_util::GetNSStringF(IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
                                       base::SysNSStringToUTF16(@"Some name"),
                                       base::SysNSStringToUTF16(@"someemail")));
+  EXPECT_NE(nil, view_controller_.identityDiscImage);
+}
+
+// Tests the header view when the user is signed in.
+TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn_AccountMenu) {
+  base::test::ScopedFeatureList scoped_feature_list{kIdentityDiscAccountMenu};
+
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_NE(nil, view_controller_.identityDiscButton);
+  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
+
+  // Checks that the identity disc's label is correctly set when
+  // `updateAccountImage:name:email:` is called, which is triggered by the
+  // mediator after checking sign-in status.
+  UIImage* someIdentityImage = UIImageWithSizeAndSolidColor(
+      CGSizeMake(ntp_home::kIdentityAvatarDimension,
+                 ntp_home::kIdentityAvatarDimension),
+      [UIColor redColor]);
+  [view_controller_ updateAccountImage:someIdentityImage
+                                  name:@"Some name"
+                                 email:@"someemail"];
+  EXPECT_NSEQ(view_controller_.identityDiscButton.accessibilityLabel,
+              l10n_util::GetNSStringF(
+                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+                  base::SysNSStringToUTF16(@"Some name"),
+                  base::SysNSStringToUTF16(@"someemail")));
   EXPECT_NE(nil, view_controller_.identityDiscImage);
 }

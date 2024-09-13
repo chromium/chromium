@@ -383,7 +383,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   BOOL primaryIdentityHasError =
       identity && _syncService->GetUserActionableError() !=
                       syncer::SyncService::UserActionableError::kNone;
-  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError];
+  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError
+                                               name:identity.userFullName
+                                              email:identity.userEmail];
 }
 
 @end

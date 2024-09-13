@@ -759,7 +759,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [self updateVoiceSearchDisplay];
 }
 
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError {
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email {
   CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
 
   if (hasAccountError == _hasAccountError) {
@@ -772,6 +774,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   } else {
     [self.headerView removeIdentityDiscErrorBadge];
   }
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate
@@ -799,19 +802,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   DCHECK(email);
 
   self.identityDiscImage = image;
-  if (name) {
-    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
-        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
-  } else {
-    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
-  }
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created yet.
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscState];
-  }
+
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
 #pragma mark UIPointerInteractionDelegate
@@ -853,6 +845,53 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (UIButton*)customizationMenuButton {
   return [self.headerView customizationMenuButton];
+}
+
+#pragma mark - Private
+
+- (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
+                                               email:(NSString*)email {
+  NSString* accountButtonLabel;
+  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    if (name) {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+          base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+    } else {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
+    }
+  } else {
+    if (name) {
+      accountButtonLabel =
+          _hasAccountError
+              ? l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                    base::SysNSStringToUTF16(name),
+                    base::SysNSStringToUTF16(email))
+              : l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+                    base::SysNSStringToUTF16(name),
+                    base::SysNSStringToUTF16(email));
+    } else {
+      accountButtonLabel =
+          _hasAccountError
+              ? l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                    base::SysNSStringToUTF16(email))
+              : l10n_util::GetNSStringF(
+                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
+                    base::SysNSStringToUTF16(email));
+    }
+  }
+
+  self.identityDiscAccessibilityLabel = accountButtonLabel;
+
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created yet.
+  if (self.identityDiscButton) {
+    [self updateIdentityDiscState];
+  }
 }
 
 @end
