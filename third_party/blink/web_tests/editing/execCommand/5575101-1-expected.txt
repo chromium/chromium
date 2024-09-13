@@ -1,7 +1,7 @@
-This tests for a hang when outdenting a list item within a sublist twice.
+This is a testharness.js-based test.
+[FAIL] Outdent nested item three
+  resources/testharness.js:2622:25)\n	 expected <div contenteditable="true"><ol><li>one</li><li id="insert">two</li><li id="outdent">|three<ol><li>four</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li><li id="insert">two<li>|three</li><ol><li>four</li></ol></li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li><li id="insert">two<
+[FAIL] Outdent unnested item three
+  resources/testharness.js:2622:25)\n	 expected <div contenteditable="true"><ol><li>one</li><li id="insert">two</li></ol>|three<ol><li><ol><li>four</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li><li id="insert">two</li></ol>|three<ol><li>four</li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li><li id="insert">two</li></ol>|three<ol><li>
+Harness: the test ran to completion.
 
-one
-two
-three
-
-four

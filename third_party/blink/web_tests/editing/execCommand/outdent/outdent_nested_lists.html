@@ -111,4 +111,18 @@ test(() => assert_selection(
           '<li>three|</li>',
         '</ol>',
     ].join('')), 'Nested list and `two` has children');
+
+test(() => assert_selection(
+    [
+      '<div contenteditable style="white-space: pre-wrap">',
+        '<ol><ol><li>^a</li><li>b<ol>a</ol>',
+        '</li><li>c|</li></ol></ol></div>',
+    ].join(''),
+    'Outdent',
+    [
+      '<div contenteditable style="white-space: pre-wrap">',
+        '<ol><li>^a</li><li>b<ol>a</ol>',
+        '</li><li>c|</li></ol></div>',
+    ].join('')), 'Nested list with white-space: pre-wrap');
+
 </script>
