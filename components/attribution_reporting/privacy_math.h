@@ -197,8 +197,7 @@ GetFakeReportsForSequenceIndex(
 //
 // Takes a `StateMap`, to optimize with the cache from previous calls that
 // pre-compute the number of states (`GetNumStatesRecursive()`).
-using ConfigForCache = uint32_t;
-using StateMap = std::map<ConfigForCache, base::CheckedNumeric<uint32_t>>;
+using StateMap = std::map<uint32_t, uint32_t>;
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,

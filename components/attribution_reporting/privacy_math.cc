@@ -26,6 +26,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -100,8 +101,8 @@ base::CheckedNumeric<uint32_t> GetNumStatesRecursive(TriggerSpecs::Iterator it,
       base::checked_cast<uint8_t>(max_reports_per_type),  //
   };
 
-  base::CheckedNumeric<uint32_t>& cached = map[base::U32FromNativeEndian(key)];
-  if (!cached.IsValid() || cached.ValueOrDie() != 0) {
+  uint32_t& cached = map[base::U32FromNativeEndian(key)];
+  if (cached != 0) {
     return cached;
   }
 
@@ -112,17 +113,23 @@ base::CheckedNumeric<uint32_t> GetNumStatesRecursive(TriggerSpecs::Iterator it,
   // `max_reports` for every type, but in the future it will be specified on the
   // `TriggerSpec` as part of the `summary_buckets` field.
   if (window_val == 0) {
-    cached = GetNumStatesRecursive(
+    base::CheckedNumeric<uint32_t> result = GetNumStatesRecursive(
         it, max_reports, (*it).second.event_report_windows().end_times().size(),
         max_reports, map);
-    return cached;
+    std::ignore = result.AssignIfValid(&cached);
+    return result;
   }
+
   // Case 3.
-  for (int i = 0; i <= std::min(max_reports_per_type, max_reports); i++) {
-    cached += GetNumStatesRecursive(cur, max_reports - i, window_val - 1,
+  base::CheckedNumeric<uint32_t> result = 0;
+  for (int i = 0;
+       result.IsValid() && i <= std::min(max_reports_per_type, max_reports);
+       i++) {
+    result += GetNumStatesRecursive(cur, max_reports - i, window_val - 1,
                                     max_reports_per_type - i, map);
   }
-  return cached;
+  std::ignore = result.AssignIfValid(&cached);
+  return result;
 }
 
 // A variant of the above algorithm which samples a report given an index.
@@ -135,12 +142,13 @@ base::expected<void, RandomizedResponseError> GetReportsFromIndexRecursive(
     uint32_t index,
     std::vector<FakeEventLevelReport>& reports,
     internal::StateMap& map) {
-  // Case 1 and Case 2 -> 1. There are no more valid trigger data value, so
+  // Case 1 and Case 2 -> 1. There are no more valid trigger data values, so
   // generate nothing.
   auto cur = it++;
   if (!cur || (window_val == 0 && !it)) {
     return base::ok();
   }
+
   // Case 2: there are no more windows to consider for the current trigger data,
   // so generate based on the remaining trigger data types.
   //
@@ -177,29 +185,28 @@ base::expected<void, RandomizedResponseError> GetReportsFromIndexRecursive(
     base::CheckedNumeric<uint32_t> num_states = GetNumStatesRecursive(
         cur, max_reports - i, window_val - 1, max_reports_per_type - i, map);
 
-    base::CheckedNumeric<uint32_t> current_sum =
-        base::CheckAdd(prev_sum, num_states);
-    if (!current_sum.IsValid()) {
+    uint32_t current_sum;
+    if (!base::CheckAdd(prev_sum, num_states).AssignIfValid(&current_sum)) {
       return base::unexpected(
           RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
     }
 
     // The index is associated with emitting `i` reports
-    if (current_sum.ValueOrDie() > index) {
+    if (current_sum > index) {
+      DCHECK_GE(index, prev_sum);
+
       for (int k = 0; k < i; k++) {
         reports.push_back(FakeEventLevelReport{.trigger_data = (*cur).first,
                                                .window_index = window_val - 1});
       }
-      DCHECK_GE(index, prev_sum);
 
       // Zoom into all other outputs that are associated with picking `i`
       // reports for this config.
-      RETURN_IF_ERROR(GetReportsFromIndexRecursive(
-          cur, max_reports - i, window_val - 1, max_reports_per_type - i,
-          index - prev_sum, reports, map));
-      return base::ok();
+      return GetReportsFromIndexRecursive(cur, max_reports - i, window_val - 1,
+                                          max_reports_per_type - i,
+                                          index - prev_sum, reports, map);
     }
-    CHECK(current_sum.AssignIfValid(&prev_sum));
+    prev_sum = current_sum;
   }
   NOTREACHED();
 }
@@ -215,23 +222,14 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
   auto it = specs.begin();
   size_t num_windows = (*it).second.event_report_windows().end_times().size();
 
-  // Optimized fast-path.
-  if (specs.SingleSharedSpec()) {
-    if (const base::CheckedNumeric<uint32_t> num_sequences =
-            internal::GetNumberOfStarsAndBarsSequences(
-                /*num_stars=*/static_cast<uint32_t>(max_reports),
-                /*num_bars=*/static_cast<uint32_t>(specs.size() * num_windows));
-        num_sequences.IsValid() &&
-        num_sequences.ValueOrDie() <= g_max_trigger_state_cardinality) {
-      return num_sequences.ValueOrDie();
-    } else {
-      return base::unexpected(
-          RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
-    }
-  }
-
   base::CheckedNumeric<uint32_t> num_states =
-      GetNumStatesRecursive(it, max_reports, num_windows, max_reports, map);
+      specs.SingleSharedSpec()
+          ? internal::GetNumberOfStarsAndBarsSequences(  // Optimized fast path
+                /*num_stars=*/static_cast<uint32_t>(max_reports),
+                /*num_bars=*/static_cast<uint32_t>(specs.size() * num_windows))
+          : GetNumStatesRecursive(it, max_reports, num_windows, max_reports,
+                                  map);
+
   if (!num_states.IsValid() ||
       num_states.ValueOrDie() > g_max_trigger_state_cardinality) {
     return base::unexpected(
@@ -297,8 +295,7 @@ bool GenerateWithRate(double r) {
 double GetRandomizedResponseRate(uint32_t num_states, double epsilon) {
   DCHECK_GT(num_states, 0u);
 
-  double num_states_double = static_cast<double>(num_states);
-  return num_states_double / (num_states_double - 1 + std::exp(epsilon));
+  return num_states / (num_states - 1.0 + std::exp(epsilon));
 }
 
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
@@ -398,9 +395,8 @@ base::CheckedNumeric<uint32_t> BinomialCoefficient(
 std::vector<uint32_t> GetKCombinationAtIndex(
     base::StrictNumeric<uint32_t> combination_index,
     base::StrictNumeric<uint32_t> strict_k) {
-  // `k` can be no more than max number of event level reports per source (20).
   uint32_t k = strict_k;
-  DCHECK_LE(k, 20u);
+  DCHECK_LE(k, kMaxSettableEventLevelAttributionsPerSource);
 
   std::vector<uint32_t> output_k_combination;
   output_k_combination.reserve(k);
@@ -427,7 +423,7 @@ std::vector<uint32_t> GetKCombinationAtIndex(
   // BinomialCoefficient(candidate+1, k)
   uint64_t next_binomial_coefficient = 1;
   while (next_binomial_coefficient <= target) {
-    DCHECK(candidate < std::numeric_limits<uint32_t>::max());
+    DCHECK_LT(candidate, std::numeric_limits<uint32_t>::max());
     candidate++;
     binomial_coefficient = next_binomial_coefficient;
 
@@ -591,7 +587,7 @@ GetFakeReportsForSequenceIndex(
   const int max_reports = specs.max_event_level_reports();
 
   ASSIGN_OR_RETURN(
-      const std::vector<uint32_t> stars,
+      std::vector<uint32_t> stars,
       GetStarIndices(
           /*num_stars=*/static_cast<uint32_t>(max_reports),
           /*num_bars=*/
@@ -604,7 +600,7 @@ GetFakeReportsForSequenceIndex(
       });
 
   const std::vector<uint32_t> bars_preceding_each_star =
-      GetBarsPrecedingEachStar(stars);
+      GetBarsPrecedingEachStar(std::move(stars));
 
   std::vector<FakeEventLevelReport> fake_reports;
 
@@ -641,11 +637,7 @@ DoRandomizedResponseWithCache(
     StateMap& map,
     mojom::SourceType source_type,
     const std::optional<AttributionScopesData>& scopes_data) {
-  ASSIGN_OR_RETURN(uint32_t num_states, GetNumStatesCached(specs, map));
-  if (num_states > g_max_trigger_state_cardinality) {
-    return base::unexpected(
-        RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
-  }
+  ASSIGN_OR_RETURN(const uint32_t num_states, GetNumStatesCached(specs, map));
 
   double rate = GetRandomizedResponseRate(num_states, epsilon);
   double channel_capacity = internal::ComputeChannelCapacity(num_states, rate);

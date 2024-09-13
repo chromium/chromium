@@ -36,7 +36,7 @@ inline constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
 
 static_assert(kMinReportWindow <= kMinSourceExpiry);
 
-inline constexpr int kMaxSettableEventLevelAttributionsPerSource = 20;
+inline constexpr uint8_t kMaxSettableEventLevelAttributionsPerSource = 20;
 
 // https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
 inline constexpr uint8_t kMaxTriggerDataPerSource = 32;
