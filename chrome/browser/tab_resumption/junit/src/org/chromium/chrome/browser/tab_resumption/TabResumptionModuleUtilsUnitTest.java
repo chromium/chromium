@@ -57,6 +57,8 @@ public class TabResumptionModuleUtilsUnitTest extends TestSupportExtended {
         assertTrue(TabResumptionModuleUtils.areSuggestionsFinalized(null));
 
         SuggestionBundle bundle = new SuggestionBundle(CURRENT_TIME_MS);
+        assertTrue(TabResumptionModuleUtils.areSuggestionsFinalized(bundle));
+
         SuggestionEntry entry = createLocalSuggestion(11);
         bundle.entries.add(entry);
         assertTrue(TabResumptionModuleUtils.areSuggestionsFinalized(bundle));

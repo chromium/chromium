@@ -174,7 +174,7 @@ public class TabResumptionModuleUtils {
      * Returns whether the suggestions to show are finalized, i.e., don't need to match local Tabs.
      */
     static boolean areSuggestionsFinalized(SuggestionBundle bundle) {
-        if (bundle == null || bundle.entries == null) return true;
+        if (bundle == null || bundle.entries == null || bundle.entries.isEmpty()) return true;
 
         if (bundle.entries.size() == 1) {
             return !bundle.entries.get(0).getNeedMatchLocalTab();
