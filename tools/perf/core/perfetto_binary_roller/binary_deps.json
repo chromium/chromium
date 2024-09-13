@@ -5,8 +5,8 @@
             "full_remote_path": "perfetto-luci-artifacts/12329cd9546a702b415210b83776d02f2e08d6b6/linux-arm64/trace_processor_shell"
         },
         "win": {
-            "hash": "a9472c3bc74f685212de6cdbe237ca80bd356f10",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/97a5d7ed4d7ddb3844a5cbd184e241b99fe6ebcc/trace_processor_shell.exe"
+            "hash": "af75575b0b34fe161c92e6c542df6420f79cf6e9",
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/e6caca515f67797b08742220f0180fc6728d002d/trace_processor_shell.exe"
         },
         "linux_arm": {
             "hash": "cf5265bf837405a540d5b46ca8ab5abfbdaf1913",
