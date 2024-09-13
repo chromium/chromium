@@ -403,6 +403,13 @@ struct Suggestion {
   // will make the suggestion deactivated and unclickable.
   bool apply_deactivated_style = false;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // If true, selecting a suggestion or, when it exists, expanding its
+  // sub-popup, highlights the background of the suggestion row and its
+  // contained cells.
+  bool highlight_on_select = true;
+#endif
+
   // If true, the user will be presented with the terms message alongside the
   // suggestions.
   bool should_display_terms_available = false;
