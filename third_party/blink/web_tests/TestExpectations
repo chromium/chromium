@@ -2595,6 +2595,8 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Timeout ]
+[ Mac15-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?npu [ Skip Timeout ]
 crbug.com/366323411 external/wpt/css/css-writing-modes/table-progression-htb-002.html [ Failure ]
 crbug.com/366343782 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/background-repeat/background-repeat-repeat-x.xht [ Failure ]
 crbug.com/366307017 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
@@ -5502,7 +5504,8 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 # wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
 # so, please file a bug for that case with details.
 crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
-crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Win10.20h2 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]

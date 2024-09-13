@@ -6860,6 +6860,13 @@
        ]
       },
       "the-frameset-and-frame-elements": {
+       "frame-no-frameset-crash.html": [
+        "b032cab90d32910fe8bfd95f5392ddef3fbf756c",
+        [
+         null,
+         {}
+        ]
+       ],
        "multicol-table-crash.html": [
         "adfb76e15a4d7af987e7d5493ce678a015a8fb87",
         [
@@ -306115,6 +306122,14 @@
      "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
+    "cookieStore_getAll_arguments.https.any-expected.txt": [
+     "31e460be1737dc8d313184a6335a6e95c4533f0c",
+     []
+    ],
+    "cookieStore_get_arguments.https.any-expected.txt": [
+     "1f0ce140a594e8f91f33d87ce760455d2112800b",
+     []
+    ],
     "resources": {
      "always_changing_sw.sub.js": [
       "9fdf99848fa50316e275cd6636a5755270a9bb1e",
@@ -306133,7 +306148,7 @@
       []
      ],
      "helper_iframe.sub.html": [
-      "9017eace44d84112c4e21c35cb6724efa69b1366",
+      "750f19b56d39b25cbe5d770640bd9f2b36c78005",
       []
      ],
      "helpers.js": [
@@ -313583,6 +313598,18 @@
       []
      ],
      "parsing": {
+      "position-try-fallbacks-computed-expected.txt": [
+       "ac7d32e7223064a0e13e964d65b9182c1659b7d1",
+       []
+      ],
+      "position-try-fallbacks-parsing-expected.txt": [
+       "07b1eb8af1e144c5543f1fd2e3e5a2ab84e44e18",
+       []
+      ],
+      "position-try-parsing-expected.txt": [
+       "3c427d225427de51414123ba7d8709c34d30d72e",
+       []
+      ],
       "position-visibility-computed.tentative-expected.txt": [
        "236fd0475a9a531b9215e5be8425e210b2a654c2",
        []
@@ -451062,7 +451089,7 @@
      ]
     ],
     "cookieStore_getAll_arguments.https.any.js": [
-     "5055a42e5d39fea6214baf3e782f5461594a9643",
+     "264b6b7a7f74057703d518bf9eb4db18d80c0e9c",
      [
       "cookie-store/cookieStore_getAll_arguments.https.any.html",
       {
@@ -451161,7 +451188,7 @@
      ]
     ],
     "cookieStore_get_arguments.https.any.js": [
-     "a56032f03e20e87c48e4a20e645f9fd63bdd65cf",
+     "8507682f8ec6a947f67f08d1f59cbe769f6f0e88",
      [
       "cookie-store/cookieStore_get_arguments.https.any.html",
       {
@@ -451271,6 +451298,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "cookieStore_get_set_creation_url.sub.https.html": [
+     "216885298a58829d64653d7e1947fe3e6ec52012",
+     [
+      null,
+      {}
      ]
     ],
     "cookieStore_get_set_ordering.https.any.js": [
@@ -455685,14 +455719,14 @@
        ]
       ],
       "position-try-fallbacks-computed.html": [
-       "ed189016c1d567e371932f3cddae43731f580593",
+       "b0afb504c959ee109a3e307aa7d0a4f178dcdc1b",
        [
         null,
         {}
        ]
       ],
       "position-try-fallbacks-parsing.html": [
-       "4c64b77ca2718a7fc3ecffdcfc8ba8e5979303ef",
+       "92a35c03b0c6df4d57adf380e59ecc48398fbf38",
        [
         null,
         {}
@@ -455713,7 +455747,7 @@
        ]
       ],
       "position-try-parsing.html": [
-       "ef0ede045a47cc6c2d6403e25dc8c28a015ba247",
+       "9da95b0681417b1e26075a66c0e1a30d049fd8ea",
        [
         null,
         {}
