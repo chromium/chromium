@@ -793,7 +793,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
     return internal::SlotStart::FromUntaggedAddr(slot_start)
-        .untagged_slot_start;
+        .untagged_slot_start_;
   }
 
   PA_ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
@@ -804,7 +804,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     uintptr_t untagged_slot_start =
         internal::UntagAddr(reinterpret_cast<uintptr_t>(object));
     return internal::SlotStart::FromUntaggedAddr(untagged_slot_start)
-        .untagged_slot_start;
+        .untagged_slot_start_;
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStartUnchecked(void* object) const {
@@ -1470,7 +1470,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
 
   internal::SlotStart slot_start = internal::SlotStart::FromObject(object);
   PA_DCHECK(slot_span == ReadOnlySlotSpanMetadata::FromSlotStart(
-                             slot_start.untagged_slot_start));
+                             slot_start.untagged_slot_start_));
 
   // We are going to read from |*slot_span| in all branches, but haven't done it
   // yet.
@@ -1499,18 +1499,18 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       // `brp_enabled` will be false only for the aligned partition.
       if (brp_enabled()) {
         auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-            slot_start.untagged_slot_start, slot_span->bucket->slot_size);
+            slot_start.untagged_slot_start_, slot_span->bucket->slot_size);
         ref_count->PreReleaseFromAllocator();
       }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       GetSchedulerLoopQuarantineBranch().Quarantine(
-          object, slot_span, slot_start.untagged_slot_start,
+          object, slot_span, slot_start.untagged_slot_start_,
           GetSlotUsableSize(slot_span));
       return;
     }
   }
 
-  FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start);
+  FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start_);
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
