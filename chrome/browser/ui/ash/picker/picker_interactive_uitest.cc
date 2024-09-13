@@ -8,6 +8,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
@@ -524,6 +525,32 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
           &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedResult),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFileName = "File";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      WaitForShow(ash::kPickerSearchResultsImageItemElementId),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFileName, 0),
+      CheckViewProperty(kFileName, &views::View::GetAccessibleName,
+                        u"Insert test.png"));
 }
 
 // Navigates through the zero-state UI using only the keyboard.
