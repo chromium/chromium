@@ -130,7 +130,7 @@ export class SummarizationView extends ReactiveLitElement {
 
     #footer {
       font: var(--cros-annotation-2-font);
-      padding: 0 82px 12px 12px;
+      padding: 0 96px 12px 12px;
 
       & > a,
       & > a:visited {
