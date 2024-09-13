@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("dwa") {
+  sources = [
+    "dwa_recorder.cc",
+    "dwa_recorder.h",
+    "dwa_recorder_factory_impl.cc",
+    "dwa_recorder_factory_impl.h",
+    "dwa_recorder_interface.cc",
+    "dwa_recorder_interface.h",
+  ]
+  public_deps = [ "//components/metrics/dwa/mojom" ]
+  defines = [ "IS_DWA_IMPL" ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//mojo/public/cpp/bindings",
+  ]
+}
