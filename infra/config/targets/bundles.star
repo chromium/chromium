@@ -203,6 +203,7 @@ targets.bundle(
         "cast_media_unittests",
         "cast_shell_browsertests",
         "cast_shell_unittests",
+        "cast_unittests",
     ],
     mixins = [
         "linux-jammy",
@@ -213,7 +214,6 @@ targets.bundle(
     name = "chromium_linux_cast_receiver_gtests",
     targets = [
         "cast_receiver_gtests",
-        "chromium_gtests",
         "linux_flavor_specific_chromium_gtests",
     ],
     mixins = [
