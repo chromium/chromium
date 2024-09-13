@@ -7,8 +7,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -95,6 +97,13 @@ void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
   // promises must also be created in the current realm while regular promises
   // are created in the relevant realm of the context object.
   ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
+  // If the exception state is rethrowing via a v8::TryCatch, we have either
+  // already applied context information, or intentionally skipped it, so don't
+  // add it here.
+  if (!exception_state_.DidRethrowViaV8TryCatch()) {
+    ApplyContextToException(script_state, exception_state_.GetException(),
+                            exception_state_.GetContext());
+  }
   bindings::V8SetReturnValue(
       info_, ScriptPromiseUntyped::Reject(script_state, exception_state_));
 }
@@ -378,6 +387,23 @@ v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
   for (uint32_t i = 0; i < length; ++i)
     elements.push_back(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
+}
+
+void AddDictionaryContextToException(v8::Isolate* isolate,
+                                     const char* dictionary_name,
+                                     v8::Local<v8::Name> v8_member_name,
+                                     ExceptionState& exception_state) {
+  DCHECK(exception_state.HadException());
+  if (exception_state.GetException().IsEmpty()) {
+    return;
+  }
+
+  CHECK(v8_member_name->IsString());
+  String member_name = ToCoreString(isolate, v8_member_name.As<v8::String>());
+  ExceptionContext exception_context(v8::ExceptionContext::kAttributeGet,
+                                     dictionary_name, member_name);
+  ApplyContextToException(ScriptState::ForCurrentRealm(isolate),
+                          exception_state.GetException(), exception_context);
 }
 
 template <typename IDLType,

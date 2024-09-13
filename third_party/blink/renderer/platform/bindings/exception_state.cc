@@ -60,43 +60,36 @@ void ExceptionState::ThrowException(ExceptionCode exception_code,
   // must be given to the data exposed to JavaScript via |sanitized_message|.
   DCHECK_NE(exception_code, ToExceptionCode(DOMExceptionCode::kSecurityError));
 
-  const String& processed_message = AddExceptionContext(message);
-
   v8::Local<v8::Value> exception;
   switch (static_cast<ESErrorType>(exception_code)) {
     case ESErrorType::kError:
-      exception = V8ThrowException::CreateError(isolate_, processed_message);
+      exception = V8ThrowException::CreateError(isolate_, message);
       break;
     case ESErrorType::kRangeError:
-      exception =
-          V8ThrowException::CreateRangeError(isolate_, processed_message);
+      exception = V8ThrowException::CreateRangeError(isolate_, message);
       break;
     case ESErrorType::kReferenceError:
-      exception =
-          V8ThrowException::CreateReferenceError(isolate_, processed_message);
+      exception = V8ThrowException::CreateReferenceError(isolate_, message);
       break;
     case ESErrorType::kSyntaxError:
-      exception =
-          V8ThrowException::CreateSyntaxError(isolate_, processed_message);
+      exception = V8ThrowException::CreateSyntaxError(isolate_, message);
       break;
     case ESErrorType::kTypeError:
-      exception =
-          V8ThrowException::CreateTypeError(isolate_, processed_message);
+      exception = V8ThrowException::CreateTypeError(isolate_, message);
       break;
     default:
       if (IsDOMExceptionCode(exception_code)) {
         exception = s_create_dom_exception_func_(
-            isolate_, static_cast<DOMExceptionCode>(exception_code),
-            processed_message, String());
+            isolate_, static_cast<DOMExceptionCode>(exception_code), message,
+            String());
       } else {
         NOTREACHED_IN_MIGRATION();
         exception = s_create_dom_exception_func_(
-            isolate_, DOMExceptionCode::kUnknownError, processed_message,
-            String());
+            isolate_, DOMExceptionCode::kUnknownError, message, String());
       }
   }
 
-  SetException(exception_code, processed_message, exception);
+  SetException(exception_code, message, exception);
 }
 
 NOINLINE void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
@@ -189,69 +182,38 @@ void ExceptionState::DoThrowDOMException(DOMExceptionCode exception_code,
   // must be given to the data exposed to JavaScript via |sanitized_message|.
   DCHECK_NE(exception_code, DOMExceptionCode::kSecurityError);
 
-  const String& processed_message = AddExceptionContext(message);
-  SetException(ToExceptionCode(exception_code), processed_message,
-               s_create_dom_exception_func_(isolate_, exception_code,
-                                            processed_message, String()));
+  SetException(ToExceptionCode(exception_code), message,
+               s_create_dom_exception_func_(isolate_, exception_code, message,
+                                            String()));
 }
 
 void ExceptionState::DoThrowSecurityError(const String& sanitized_message,
                                           const String& unsanitized_message) {
-  const String& final_sanitized = AddExceptionContext(sanitized_message);
-  const String& final_unsanitized = AddExceptionContext(unsanitized_message);
   SetException(
-      ToExceptionCode(DOMExceptionCode::kSecurityError), final_sanitized,
+      ToExceptionCode(DOMExceptionCode::kSecurityError), sanitized_message,
       s_create_dom_exception_func_(isolate_, DOMExceptionCode::kSecurityError,
-                                   final_sanitized, final_unsanitized));
+                                   sanitized_message, unsanitized_message));
 }
 
 void ExceptionState::DoThrowRangeError(const String& message) {
   SetException(ToExceptionCode(ESErrorType::kRangeError), message,
-               V8ThrowException::CreateRangeError(
-                   isolate_, AddExceptionContext(message)));
+               V8ThrowException::CreateRangeError(isolate_, message));
 }
 
 void ExceptionState::DoThrowTypeError(const String& message) {
   SetException(ToExceptionCode(ESErrorType::kTypeError), message,
-               V8ThrowException::CreateTypeError(isolate_,
-                                                 AddExceptionContext(message)));
+               V8ThrowException::CreateTypeError(isolate_, message));
 }
 
 void ExceptionState::DoThrowWasmCompileError(const String& message) {
   SetException(ToExceptionCode(ESErrorType::kWasmCompileError), message,
-               V8ThrowException::CreateWasmCompileError(
-                   isolate_, AddExceptionContext(message)));
+               V8ThrowException::CreateWasmCompileError(isolate_, message));
 }
 
 void ExceptionState::DoRethrowV8Exception(v8::Local<v8::Value> value) {
   SetException(
       static_cast<ExceptionCode>(InternalExceptionType::kRethrownException),
       String(), value);
-}
-
-void ExceptionState::PushContextScope(ContextScope* scope) {
-  scope->SetParent(context_stack_top_);
-  context_stack_top_ = scope;
-}
-
-void ExceptionState::PopContextScope() {
-  DCHECK(context_stack_top_);
-  context_stack_top_ = context_stack_top_->GetParent();
-}
-
-String ExceptionState::AddExceptionContext(
-    const String& original_message) const {
-  if (original_message.empty())
-    return original_message;
-
-  String message = original_message;
-  for (const ContextScope* scope = context_stack_top_; scope;
-       scope = scope->GetParent()) {
-    message =
-        ExceptionMessages::AddContextToMessage(scope->GetContext(), message);
-  }
-  message = ExceptionMessages::AddContextToMessage(main_context_, message);
-  return message;
 }
 
 void ExceptionState::PropagateException() {

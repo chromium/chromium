@@ -302,7 +302,10 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
         String result =
                 mRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient, script);
-        Assert.assertEquals("\"TypeError: Illegal constructor\"", result);
+        Assert.assertEquals(
+                "\"TypeError: Failed to construct 'MediaIntegrityTokenProvider': Illegal"
+                        + " constructor\"",
+                result);
     }
 
     @Test
