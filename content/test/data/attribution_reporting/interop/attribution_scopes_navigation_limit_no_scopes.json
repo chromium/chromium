@@ -1,5 +1,5 @@
 {
-  "description": "One unique scopes set per reporting origin per navigation",
+  "description": "One unique scopes set per reporting origin per navigation - no scopes",
   "api_config": {
     "needs_attribution_scopes": true
   },
@@ -24,15 +24,14 @@
               }
             }
           },
-          // S2: Should register as it will be the first source in the
-          // navigation to use scopes.
+          // S2: Non-empty scopes set, should not register.
           {
             "timestamp": "1",
             "url": "https://reporter.test/register-source",
             "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
-                "destination": "https://destination.test",
+                "destination": "https://destination2.test",
                 "source_event_id": "234",
                 "attribution_scopes": {
                   "limit": 3,
@@ -44,28 +43,9 @@
               }
             }
           },
-          // S3: Should be ignored as scopes don't match S2's scopes.
+          // S3: Should register as registration contains no scopes.
           {
             "timestamp": "2",
-            "url": "https://reporter.test/register-source",
-            "debug_permission": true,
-            "response": {
-              "Attribution-Reporting-Register-Source": {
-                "destination": "https://destination.test",
-                "source_event_id": "345",
-                "attribution_scopes": {
-                  "limit": 3,
-                  "values": [
-                    "2"
-                  ]
-                },
-                "debug_reporting": true
-              }
-            }
-          },
-          // S4: Should register as registration contains no scopes.
-          {
-            "timestamp": "3",
             "url": "https://reporter.test/register-source",
             "debug_permission": true,
             "response": {
@@ -76,35 +56,15 @@
               }
             }
           },
-          // S5: Should register as reporting origin is different from S2.
+          // S4: Should register as reporting origin is different from S1.
           {
-            "timestamp": "4",
+            "timestamp": "3",
             "url": "https://reporter2.test/register-source",
             "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "567",
-                "attribution_scopes": {
-                  "limit": 3,
-                  "values": [
-                    "3"
-                  ]
-                },
-                "priorty": "100",
-                "debug_reporting": true
-              }
-            }
-          },
-          // S6: Should register as scopes are same as the S2's scopes
-          {
-            "timestamp": "5",
-            "url": "https://reporter.test/register-source",
-            "debug_permission": true,
-            "response": {
-              "Attribution-Reporting-Register-Source": {
-                "destination": "https://destination.test",
-                "source_event_id": "678",
                 "attribution_scopes": {
                   "limit": 3,
                   "values": [
@@ -117,7 +77,7 @@
           }
         ]
       },
-      // S7: Should register as it's a part of a different navigation.
+      // S5: Should register as it's a part of a different navigation.
       {
         "timestamp": "1000",
         "registration_request": {
@@ -130,12 +90,13 @@
             "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
-                "destination": "https://destination.test",
+                "destination": "https://destination2.test",
                 "source_event_id": "789",
+                "priority": "-1",
                 "attribution_scopes": {
                   "limit": 3,
                   "values": [
-                    "4"
+                    "1"
                   ]
                 },
                 "debug_reporting": true
@@ -144,11 +105,11 @@
           }
         ]
       },
-      // Should register to S7 even though S3 has higher priority.
+      // Should be attributed to S5 as S2 was not registered
       {
         "timestamp": "2000",
         "registration_request": {
-          "context_origin": "https://destination.test"
+          "context_origin": "https://destination2.test"
         },
         "responses": [
           {
@@ -159,6 +120,7 @@
                 "debug_reporting": true,
                 "event_trigger_data": [
                   {
+                    "trigger_data": "1"
                   }
                 ]
               }
@@ -182,12 +144,6 @@
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "111",
-                "attribution_scopes": {
-                  "limit": 3,
-                  "values": [
-                    "1"
-                  ]
-                },
                 "debug_reporting": true
               }
             }
@@ -235,27 +191,13 @@
           {
             "body": {
               "attribution_destination": "https://destination.test",
-              "source_event_id": "234",
-              "source_site": "https://source.test"
-            },
-            "type": "source-success"
-          }
-        ],
-        "report_time": "1",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [
-          {
-            "body": {
-              "attribution_destination": "https://destination.test",
               "source_event_id": "456",
               "source_site": "https://source.test"
             },
             "type": "source-success"
           }
         ],
-        "report_time": "3",
+        "report_time": "2",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
@@ -269,28 +211,14 @@
             "type": "source-success"
           }
         ],
-        "report_time": "4",
+        "report_time": "3",
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": [
           {
             "body": {
-              "attribution_destination": "https://destination.test",
-              "source_event_id": "678",
-              "source_site": "https://source.test"
-            },
-            "type": "source-success"
-          }
-        ],
-        "report_time": "5",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [
-          {
-            "body": {
-              "attribution_destination": "https://destination.test",
+              "attribution_destination": "https://destination2.test",
               "source_event_id": "789",
               "source_site": "https://source.test"
             },
@@ -330,15 +258,15 @@
       },
       {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0024263,
           "scheduled_report_time": "172801",
           "source_event_id": "789",
           "source_type": "navigation",
-          "trigger_data": "0"
+          "trigger_data": "1"
         },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "172801000"
+        "report_time": "172801000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }

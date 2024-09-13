@@ -202,9 +202,23 @@ void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
                                 outcome);
 }
 
-void RecordSourceRegistrationWithScopesOutcome(bool allowed) {
-  base::UmaHistogramBoolean(
-      "Conversions.NavigationSourceRegistrationsWithScopesAllowed", allowed);
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NavigationSourceScopesLimitOutcome)
+enum class NavigationSourceScopesLimitOutcome {
+  kNoScopesAllowed = 0,
+  kNoScopesDropped = 1,
+  kScopesAllowed = 2,
+  kScopesDropped = 3,
+  kMaxValue = kScopesDropped,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionNavigationSourceScopesLimitOutcome)
+
+void RecordNavigationSourceScopesLimitOutcome(
+    NavigationSourceScopesLimitOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Conversions.NavigationSourceScopesLimitOutcome", outcome);
 }
 
 bool BackgroundRegistrationsEnabled() {
@@ -2263,25 +2277,41 @@ bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
   auto [it_inner, inserted_inner] = it->second.try_emplace(
       reporting_origin, ScopesAndCountForReportingOriginPerNavigation());
   it_inner->second.count++;
-  if (!scopes_data.has_value()) {
-    return true;
-  } else if (it_inner->second.scopes == scopes_data->attribution_scopes_set()) {
-    RecordSourceRegistrationWithScopesOutcome(true);
-    return true;
-  } else if (it_inner->second.scopes.scopes().empty()) {
-    it_inner->second.scopes = scopes_data->attribution_scopes_set();
-    RecordSourceRegistrationWithScopesOutcome(true);
-    return true;
+
+  std::optional<base::Value::Dict> invalid_parameter;
+
+  if (scopes_data.has_value()) {
+    if (inserted_inner ||
+        it_inner->second.scopes == scopes_data->attribution_scopes_set()) {
+      RecordNavigationSourceScopesLimitOutcome(
+          NavigationSourceScopesLimitOutcome::kScopesAllowed);
+      if (inserted_inner) {
+        it_inner->second.scopes = scopes_data->attribution_scopes_set();
+      }
+    } else {
+      invalid_parameter = scopes_data->ToJson();
+      RecordNavigationSourceScopesLimitOutcome(
+          NavigationSourceScopesLimitOutcome::kScopesDropped);
+    }
+  } else if (inserted_inner || it_inner->second.scopes.scopes().empty()) {
+    RecordNavigationSourceScopesLimitOutcome(
+        NavigationSourceScopesLimitOutcome::kNoScopesAllowed);
   } else {
-    MaybeLogAuditIssue(
-        render_frame_id,
-        /*request_url=*/reporting_origin->GetURL(), devtools_request_id,
-        /*invalid_parameter=*/SerializeAttributionJson(scopes_data->ToJson()),
-        AttributionReportingIssueType::
-            kNavigationRegistrationUniqueScopeAlreadySet);
-    RecordSourceRegistrationWithScopesOutcome(false);
-    return false;
+    invalid_parameter.emplace();
+    RecordNavigationSourceScopesLimitOutcome(
+        NavigationSourceScopesLimitOutcome::kNoScopesDropped);
   }
+
+  if (invalid_parameter.has_value()) {
+    MaybeLogAuditIssue(render_frame_id,
+                       /*request_url=*/reporting_origin->GetURL(),
+                       devtools_request_id,
+                       SerializeAttributionJson(*invalid_parameter),
+                       AttributionReportingIssueType::
+                           kNavigationRegistrationUniqueScopeAlreadySet);
+  }
+
+  return !invalid_parameter.has_value();
 }
 
 void AttributionDataHostManagerImpl::ClearRegistrationsForNavigationBatch(
