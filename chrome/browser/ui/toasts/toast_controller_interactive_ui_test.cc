@@ -42,14 +42,14 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto FireToastCloseTimer() {
-    return Do([=]() {
+    return Do([=, this]() {
       GetToastController()->GetToastCloseTimerForTesting()->FireNow();
     });
   }
 
   auto CheckShowingToastId(ToastId expected_id) {
     return CheckResult(
-        [=]() {
+        [=, this]() {
           ToastController* const toast_controller = GetToastController();
           std::optional<ToastId> current_toast_id =
               toast_controller->GetCurrentToastId();
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptEphemeralToast) {
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowPersistentToast) {
   RunTestSequence(ShowToast(ToastParams(ToastId::kLensOverlay)),
-                  WaitForShow(toasts::ToastView::kToastViewId), Check([=]() {
+                  WaitForShow(toasts::ToastView::kToastViewId), Check([=, this]() {
                     return GetToastController()->IsShowingToast();
                   }));
 }
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowPersistentToast) {
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PersistentToastHides) {
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLensOverlay)),
-      WaitForShow(toasts::ToastView::kToastViewId), Do([=]() {
+      WaitForShow(toasts::ToastView::kToastViewId), Do([=, this]() {
         GetToastController()->ClosePersistentToast(ToastId::kLensOverlay);
       }),
       WaitForHide(toasts::ToastView::kToastViewId));
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptPersistentToast) {
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLensOverlay)),
       WaitForShow(toasts::ToastView::kToastViewId),
-      Check([=]() { return GetToastController()->IsShowingToast(); }),
+      Check([=, this]() { return GetToastController()->IsShowingToast(); }),
       CheckShowingToastId(ToastId::kLensOverlay),
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       // Ephemeral Toast should force the persistent toast to close
