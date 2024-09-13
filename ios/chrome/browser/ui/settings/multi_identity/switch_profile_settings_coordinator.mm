@@ -13,8 +13,8 @@
 @implementation SwitchProfileSettingsCoordinator {
   // View controller for the tabs settings.
   SwitchProfileSettingsTableViewController* _viewController;
-  // The ChromeBrowserState instance passed to the initializer.
-  ChromeBrowserState* _browserState;
+  // The ProfileIOS instance passed to the initializer.
+  ProfileIOS* _profile;
   // Mediator for the switch profile settings.
   SwitchProfileSettingsMediator* _mediator;
 }
@@ -27,14 +27,14 @@
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     _baseNavigationController = navigationController;
-    _browserState = browser->GetBrowserState();
+    _profile = browser->GetProfile();
   }
   return self;
 }
 
 - (void)start {
   NSString* activeProfileName =
-      base::SysUTF8ToNSString(_browserState->GetProfileName());
+      base::SysUTF8ToNSString(_profile->GetProfileName());
   _mediator = [[SwitchProfileSettingsMediator alloc]
       initWithActiveProfileName:activeProfileName];
   _viewController = [[SwitchProfileSettingsTableViewController alloc] init];

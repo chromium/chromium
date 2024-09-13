@@ -46,8 +46,8 @@
 - (void)openProfileInNewWindowWithSwitchProfileSettingsItem:
     (SwitchProfileSettingsItem*)switchProfileSettingsItem {
   NSString* profileName = switchProfileSettingsItem.profileName;
-  // Update the last used browserState so that the newly created scene is linked
-  // to the selected browserState (and not to the old one).
+  // Update the last used profile so that the newly created scene is linked
+  // to the selected profile (and not to the old one).
   GetApplicationContext()->GetLocalState()->SetString(
       prefs::kLastUsedProfile, base::SysNSStringToUTF8(profileName));
   // TODO(crbug.com/333520714): Add logic to open the profile in the same window
