@@ -539,7 +539,7 @@ def _variant(
 
     graph.add_edge(keys.project(), key)
 
-def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, per_test_modifications = None):
+def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, variants = None, per_test_modifications = None):
     """Define a targets bundle.
 
     A bundle is a grouping of targets to build and test.
@@ -554,6 +554,7 @@ def _bundle(*, name = None, additional_compile_targets = None, targets = None, m
         additional_compile_targets = args.listify(additional_compile_targets),
         targets = args.listify(targets),
         mixins = args.listify(mixins),
+        variants = args.listify(variants),
         per_test_modifications = per_test_modifications or {},
     ))
 
@@ -702,6 +703,7 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
     key = _targets_nodes.LEGACY_MATRIX_COMPOUND_SUITE.add(name)
     graph.add_edge(keys.project(), key)
 
+    dep_targets = []
     for basic_suite_name, config in basic_suites.items():
         # This edge won't actually be used, but it ensures that the basic suite exists
         graph.add_edge(key, _targets_nodes.LEGACY_BASIC_SUITE.key(basic_suite_name))
@@ -710,10 +712,20 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
         config = config or _legacy_matrix_config()
         for m in config.mixins:
             graph.add_edge(matrix_config_key, _targets_nodes.MIXIN.key(m))
-        for v in config.variants:
-            graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
+        if config.variants:
+            dep_targets.append(_bundle(
+                targets = basic_suite_name,
+                variants = config.variants,
+            ))
+            for v in config.variants:
+                graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
+        else:
+            dep_targets.append(basic_suite_name)
 
-    # TODO: crbug.com/1420012 - Make matrix compound suites usable as bundles
+    _targets_common.create_bundle(
+        name = name,
+        targets = dep_targets,
+    )
 
 def _legacy_matrix_config(*, mixins = [], variants = []):
     """Define the matrix details for a basic suite.

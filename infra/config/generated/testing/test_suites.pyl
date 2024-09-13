@@ -4879,10 +4879,6 @@
       },
     },
 
-    'private_code_failure_test_isolated_scripts': {
-      'private_code_failure_test': {},
-    },
-
     'pytype_tests': {
       'blink_pytype': {
         'mixins': [

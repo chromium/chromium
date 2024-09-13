@@ -4515,13 +4515,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "private_code_failure_test_isolated_scripts",
-    tests = {
-        "private_code_failure_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_rel_isolated_scripts",
     tests = {
         "private_code_failure_test": targets.legacy_test_config(),

@@ -250,6 +250,7 @@ def _create_bundle(
         builder_name = None,
         settings = None,
         mixins = [],
+        variants = [],
         per_test_modifications = {}):
     tests_to_remove = []
     for test_name, mods in per_test_modifications.items():
@@ -274,6 +275,8 @@ def _create_bundle(
         graph.add_edge(bundle_key, _targets_nodes.BUNDLE.key(t))
     for m in mixins:
         graph.add_edge(bundle_key, _targets_nodes.MIXIN.key(m))
+    for v in variants:
+        graph.add_edge(bundle_key, _targets_nodes.VARIANT.key(v))
     for test_name, mods in per_test_modifications.items():
         # Use bundle_key.id here instead of name because an inline bundle will
         # have None for name

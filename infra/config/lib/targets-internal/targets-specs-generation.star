@@ -216,6 +216,17 @@ def _get_bundle_resolver():
                     # We don't care if a mixin applied at bundle level doesn't
                     # apply to every test, so ignore errors
                     update_spec_with_mixin(name, test_expansion, mixin, ignore_error = True)
+            variants = graph.children(n.key, _targets_nodes.VARIANT.kind)
+            if variants:
+                non_variant_test_expansion_by_name = test_expansion_by_name
+                test_expansion_by_name = {}
+                for name, test_expansion in non_variant_test_expansion_by_name.items():
+                    for variant in variants:
+                        name_with_variant = "{} {}".format(name, variant.props.identifier)
+                        update_spec_with_mixin(name_with_variant, test_expansion, variant)
+                        spec_value = test_expansion_by_name[name_with_variant].spec.value
+                        spec_value["name"] = name_with_variant
+                        spec_value["variant_id"] = variant.props.identifier
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
 

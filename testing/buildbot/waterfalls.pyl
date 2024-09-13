@@ -455,6 +455,7 @@
     #   Cast Android (dbg)
     #   Oreo Phone Tester
     #   android-10-arm64-rel
+    #   android-12-x64-rel
     #   android-arm64-proguard-rel
     #   android-cronet-arm-dbg
     #   android-cronet-arm-rel
@@ -500,24 +501,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_11_emulator_gtests',
-        }
-      },
-      'android-12-x64-rel': {
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_12_emulator_gtests',
-          'isolated_scripts': 'private_code_failure_test_isolated_scripts',
         }
       },
       'android-12l-landscape-x64-dbg-tests': {
