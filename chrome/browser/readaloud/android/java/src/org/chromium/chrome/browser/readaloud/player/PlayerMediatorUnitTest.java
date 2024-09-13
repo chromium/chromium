@@ -388,6 +388,35 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testPlayClicked_restoresPlayback() {
+        mMediator.setPlayback(null);
+        mMediator.setPlaybackState(STOPPED);
+        mModel.set(PlayerProperties.RESTORABLE_PLAYBACK, true);
+
+        mMediator.onPlayPauseClick();
+        verify(mDelegate).restorePlayback();
+    }
+
+    @Test
+    public void testPlayClicked_restoresPlayback_false() {
+        mMediator.setPlayback(null);
+        mMediator.setPlaybackState(STOPPED);
+        mModel.set(PlayerProperties.RESTORABLE_PLAYBACK, false);
+
+        mMediator.onPlayPauseClick();
+        verify(mDelegate, never()).restorePlayback();
+    }
+
+    @Test
+    public void testSetPlayerRestorable() {
+        mMediator.setPlayerRestorable(true);
+        verify(mModel).set(eq(PlayerProperties.RESTORABLE_PLAYBACK), eq(true));
+
+        mMediator.setPlayerRestorable(false);
+        verify(mModel).set(eq(PlayerProperties.RESTORABLE_PLAYBACK), eq(false));
+    }
+
+    @Test
     public void testPauseClicked() {
         mMediator.setPlayback(mPlayback);
         mMediator.setPlaybackState(PLAYING);

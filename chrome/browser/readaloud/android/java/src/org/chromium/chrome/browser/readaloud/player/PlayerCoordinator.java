@@ -166,8 +166,10 @@ public class PlayerCoordinator implements Player {
         // dismissed when stopping the playback.
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
-        mMiniPlayer.dismiss(/* animate= */ true);
-        mExpandedPlayer.dismiss();
+        if (!mMediator.isPlayerRestorable()) {
+            mMiniPlayer.dismiss(/* animate= */ true);
+            mExpandedPlayer.dismiss();
+        }
         mMediator.setHiddenAndPlaying(false);
     }
 
@@ -220,6 +222,11 @@ public class PlayerCoordinator implements Player {
     @Override
     public void onScreenStatusChanged(boolean isScreenLocked) {
         mMediator.onScreenStatusChanged(isScreenLocked);
+    }
+
+    @Override
+    public void setPlayerRestorable(boolean isPlayerRestorable) {
+        mMediator.setPlayerRestorable(isPlayerRestorable);
     }
 
     /** To be called when the close button is clicked. */

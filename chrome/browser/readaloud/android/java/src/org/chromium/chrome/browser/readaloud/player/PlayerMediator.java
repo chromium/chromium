@@ -226,6 +226,9 @@ class PlayerMediator implements InteractionHandler {
     @Override
     public void onPlayPauseClick() {
         if (mPlayback == null) {
+            if (isPlayerRestorable()) {
+                mDelegate.restorePlayback();
+            }
             return;
         }
 
@@ -268,6 +271,14 @@ class PlayerMediator implements InteractionHandler {
 
     void setHiddenAndPlaying(boolean value) {
         mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, value);
+    }
+
+    public boolean isPlayerRestorable() {
+        return mModel.get(PlayerProperties.RESTORABLE_PLAYBACK);
+    }
+
+    void setPlayerRestorable(boolean value) {
+        mModel.set(PlayerProperties.RESTORABLE_PLAYBACK, value);
     }
 
     @Override

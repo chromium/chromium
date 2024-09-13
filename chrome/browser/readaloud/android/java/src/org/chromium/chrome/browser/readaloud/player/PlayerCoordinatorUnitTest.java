@@ -205,6 +205,23 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testDismissPlayers_restorablePlayer() {
+        mPlayerCoordinator.playTabRequested();
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
+        reset(mMediator);
+
+        doReturn(true).when(mMediator).isPlayerRestorable();
+        mPlayerCoordinator.dismissPlayers();
+
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
+        verify(mMiniPlayer, never()).dismiss(eq(true));
+        verify(mExpandedPlayer, never()).dismiss();
+        verify(mMediator).setHiddenAndPlaying(eq(false));
+    }
+
+    @Test
     public void testHideMiniPlayer_visible() {
         doReturn(VisibilityState.VISIBLE).when(mMiniPlayer).getVisibility();
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
@@ -301,6 +318,12 @@ public class PlayerCoordinatorUnitTest {
     public void testOnScreenStatusChanged() {
         mPlayerCoordinator.onScreenStatusChanged(true);
         verify(mMediator).onScreenStatusChanged(true);
+    }
+
+    @Test
+    public void testSetPlayerRestorable() {
+        mPlayerCoordinator.setPlayerRestorable(true);
+        verify(mMediator).setPlayerRestorable(true);
     }
 
     @Test

@@ -2039,14 +2039,14 @@ public class ReadAloudControllerUnitTest {
         setIsScreenOnAndUnlocked(true);
         mController.onApplicationStateChange(ApplicationState.HAS_PAUSED_ACTIVITIES);
         verify(mPlayback, never()).release();
-        // also the screen is still on, don;t notify about screen state change
+        // also the screen is still on, don't notify about screen state change
         verify(mPlayerCoordinator, never()).onScreenStatusChanged(anyBoolean());
 
         // now turn the screen off.
         setIsScreenOnAndUnlocked(false);
         mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
         verify(mPlayback, never()).release();
-        // also the screen is still on, don;t notify about screen state change
+        // also the screen is still on, don't notify about screen state change
         verify(mPlayerCoordinator).onScreenStatusChanged(true);
     }
 
@@ -2054,7 +2054,7 @@ public class ReadAloudControllerUnitTest {
     @EnableFeatures(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK)
     public void testBackgroundPlayback_doesntCrashWhenNoPlayer() {
         try {
-            // App is backgrounded with the screen of. Playback should continue if the flag is on.
+            // App is backgrounded with the screen off. Playback should continue if the flag is on.
             setIsScreenOnAndUnlocked(false);
             mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
         } catch (NullPointerException ex) {
@@ -2574,6 +2574,7 @@ public class ReadAloudControllerUnitTest {
         // Play in CCT.
         mController2.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
+        verify(mPlayerCoordinator).setPlayerRestorable(true);
 
         // Chrome playback should stop.
         verify(mPlayback).release();
@@ -2596,6 +2597,57 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         // Release CCT playback
         verify(mPlayback).release();
+        // Simulate successful playback creation.
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        // Progress should be restored and play should not have been called.
+        verify(mPlayback).seekToParagraph(2, 1000000L);
+        verify(mPlayback, never()).play();
+    }
+
+    @Test
+    public void testRestorePlayback() {
+        // Play in Chrome, play in CCT, then request to restore playback for original Chrome.
+        // Playback
+        // should be restored.
+
+        // Create a second instance of ReadAloudController to simulate other app's CCT.
+        mController2 = createController();
+
+        // Play in Chrome. requestAndStartPlayback() verifies playback started.
+        requestAndStartPlayback();
+
+        // Simulate some progress.
+        var data = Mockito.mock(PlaybackData.class);
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        resetPlaybackMocks();
+
+        // Play in CCT.
+        mController2.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        // Chrome playback should stop.
+        verify(mPlayback).release();
+
+        // CCT playback should start.
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+
+        resetPlaybackMocks();
+
+        // Return to Chrome. CCT playback should not stop.
+        mController.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        verifyNoInteractions(mPlayback);
+
+        // Request to restore playback. Called by the PlayerMediator when the play pause button is
+        // clicked on a UI without playback.
+        mController.restorePlayback();
         // Simulate successful playback creation.
         verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
         onPlaybackSuccess(mPlayback);
