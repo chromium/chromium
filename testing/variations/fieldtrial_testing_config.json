@@ -12447,6 +12447,22 @@
             ]
         }
     ],
+    "IdentityDiscAccountMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "IdentityDiscAccountMenu",
+                    "enable_features": [
+                        "IdentityConfirmationSnackbar",
+                        "IdentityDiscAccountMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImageDescriptionsAlternativeRouting": [
         {
             "platforms": [
