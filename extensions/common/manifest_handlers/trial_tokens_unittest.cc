@@ -7,8 +7,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
-#include "components/version_info/version_info.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/trial_tokens_handler.h"
 #include "extensions/common/manifest_test.h"
@@ -95,9 +93,6 @@ class TrialTokensManifestTest : public ManifestTest {
     RunTestCase(manifest_trial_tokens, &expected_trial_tokens,
                 expected_warnings);
   }
-
- private:
-  ScopedCurrentChannel channel_{version_info::Channel::CANARY};
 };
 
 }  // namespace
@@ -167,16 +162,6 @@ TEST_F(TrialTokensManifestTest, VerifyParse) {
       TrialTokens::GetTrialTokens(*good.get());
   ASSERT_TRUE(tokens);
   EXPECT_EQ(std::set({std::string(kValidToken1)}), *tokens);
-}
-
-// TODO(crbug.com/40282364): remove this test before launch to stable
-TEST_F(TrialTokensManifestTest, NotAvailableInStable) {
-  ScopedCurrentChannel channel{version_info::Channel::STABLE};
-
-  scoped_refptr<Extension> good = LoadAndExpectSuccess(ManifestData(
-      CreateManifest(base::StringPrintf(R"(["%s"])", kValidToken1))));
-  EXPECT_FALSE(TrialTokens::HasTrialTokens(*good.get()));
-  EXPECT_EQ(TrialTokens::GetTrialTokens(*good.get()), nullptr);
 }
 
 }  // namespace extensions
