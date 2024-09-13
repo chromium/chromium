@@ -3608,6 +3608,10 @@
       status: "stable",
     },
     {
+      name: "RTCRtpScaleResolutionDownTo",
+      status: "test",
+    },
+    {
       name: "RTCRtpScriptTransform",
       status: "experimental",
     },

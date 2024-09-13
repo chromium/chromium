@@ -1068,6 +1068,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_resolution_restriction.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_resolution_restriction.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_init.cc",

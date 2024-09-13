@@ -288,6 +288,8 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       new_parameters.encodings[i].rid = encoding.rid;
       new_parameters.encodings[i].scale_resolution_down_by =
           encoding.scale_resolution_down_by;
+      new_parameters.encodings[i].requested_resolution =
+          encoding.requested_resolution;
       new_parameters.encodings[i].scalability_mode = encoding.scalability_mode;
       new_parameters.encodings[i].adaptive_ptime = encoding.adaptive_ptime;
       new_parameters.encodings[i].codec = encoding.codec;
