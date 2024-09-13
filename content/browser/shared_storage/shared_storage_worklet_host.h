@@ -132,6 +132,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
 
+  void ReportNoBinderForInterface(const std::string& error);
+
   // Returns the process host associated with the worklet. Returns nullptr if
   // the process has gone (e.g. during shutdown).
   RenderProcessHost* GetProcessHost() const;
@@ -354,6 +356,19 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Handles code cache requests after being proxied from
   // `SharedStorageCodeCacheHostProxy`.
   std::unique_ptr<CodeCacheHostImpl::ReceiverSet> code_cache_host_receivers_;
+
+  // BrowserInterfaceBroker implementation through which this
+  // SharedStorageWorkletHost exposes Mojo services to the corresponding worklet
+  // in the renderer.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `SharedStorageWorkletHost*` parameter.
+  BrowserInterfaceBrokerImpl<SharedStorageWorkletHost,
+                             SharedStorageWorkletHost*>
+      broker_{this};
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
+      &broker_};
 
   base::WeakPtrFactory<SharedStorageWorkletHost> weak_ptr_factory_{this};
 };

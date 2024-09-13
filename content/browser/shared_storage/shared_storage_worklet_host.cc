@@ -1133,6 +1133,12 @@ void SharedStorageWorkletHost::RecordUseCounters(
   }
 }
 
+void SharedStorageWorkletHost::ReportNoBinderForInterface(
+    const std::string& error) {
+  broker_receiver_.ReportBadMessage(error +
+                                    " for the shared storage worklet scope");
+}
+
 RenderProcessHost* SharedStorageWorkletHost::GetProcessHost() const {
   return driver_->GetProcessHost();
 }
@@ -1397,12 +1403,18 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
         script_source_url_);
 
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+        browser_interface_broker;
+    broker_receiver_.Bind(
+        browser_interface_broker.InitWithNewPipeAndPassReceiver());
+
     auto global_scope_creation_params =
         blink::mojom::WorkletGlobalScopeCreationParams::New(
             script_source_url_, shared_storage_origin_, origin_trial_features_,
             devtools_handle_->devtools_token(),
             devtools_handle_->BindNewPipeAndPassRemote(),
             std::move(proxied_code_cache_host),
+            std::move(browser_interface_broker),
             devtools_handle_->wait_for_debugger());
 
     driver_->StartWorkletService(

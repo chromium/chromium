@@ -58,6 +58,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/speech/speech_recognition_dispatcher_host.h"
 #include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
@@ -1522,6 +1523,26 @@ void PopulateBinderMapWithContext(
 
 void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
   PopulateSharedWorkerBinders(host, map);
+}
+
+// Shared storage worklets
+SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host) {
+  return host;
+}
+
+void PopulateSharedStorageWorkletBinders(SharedStorageWorkletHost* host,
+                                         mojo::BinderMap* map) {
+  // Ignore requests to bind UKM recorder, since there is no current plan to
+  // support it for worklets and the renderer always tries to bind it.
+  map->Add<ukm::mojom::UkmRecorderFactory>(base::DoNothing());
+}
+
+void PopulateBinderMapWithContext(
+    SharedStorageWorkletHost* host,
+    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map) {}
+
+void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map) {
+  PopulateSharedStorageWorkletBinders(host, map);
 }
 
 // Service workers

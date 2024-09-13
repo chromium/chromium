@@ -99,7 +99,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
         /*worker_settings=*/nullptr,
         /*v8_cache_options=*/mojom::blink::V8CacheOptions::kDefault,
         /*module_responses_map=*/nullptr,
-        /*browser_interface_broker=*/mojo::NullRemote(),
+        std::move(client_provided_global_scope_creation_params
+                      ->browser_interface_broker),
         std::move(
             client_provided_global_scope_creation_params->code_cache_host));
 
