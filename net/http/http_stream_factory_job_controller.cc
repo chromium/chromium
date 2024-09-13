@@ -1512,9 +1512,10 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
 
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        HttpStreamPoolSwitchingInfo(
-            stream_key, alternative_service_info_, quic_version,
-            request_info_.is_http1_allowed, proxy_info_),
+        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
+                                    quic_version,
+                                    request_info_.is_http1_allowed,
+                                    request_info_.load_flags, proxy_info_),
         num_streams_,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
@@ -1550,7 +1551,7 @@ void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
 
   delegate_->OnSwitchesToHttpStreamPool(HttpStreamPoolSwitchingInfo(
       std::move(stream_key), std::move(alternative_service_info), quic_version,
-      request_info_.is_http1_allowed, proxy_info_));
+      request_info_.is_http1_allowed, request_info_.load_flags, proxy_info_));
 }
 
 }  // namespace net

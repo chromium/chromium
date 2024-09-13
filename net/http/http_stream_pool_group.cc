@@ -114,6 +114,7 @@ void HttpStreamPool::Group::StartJob(
     Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    RespectLimits respect_limits,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
@@ -138,7 +139,7 @@ void HttpStreamPool::Group::StartJob(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
   EnsureAttemptManager();
   attempt_manager_->StartJob(
-      job, priority, allowed_bad_certs, enable_ip_based_pooling,
+      job, priority, allowed_bad_certs, respect_limits, enable_ip_based_pooling,
       enable_alternative_services, quic_version, net_log);
 }
 
@@ -166,8 +167,6 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
     StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
-  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
-
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 

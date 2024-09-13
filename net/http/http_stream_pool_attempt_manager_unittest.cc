@@ -21,6 +21,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
@@ -171,7 +172,7 @@ class Preconnector {
     int rv = pool.Preconnect(
         HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
                                     quic_version_, is_http1_allowed_,
-                                    proxy_info_),
+                                    load_flags_, proxy_info_),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -210,6 +211,7 @@ class Preconnector {
       quic::ParsedQuicVersion::Unsupported();
   bool is_http1_allowed_ = true;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
+  int load_flags_ = 0;
 
   std::optional<int> result_;
   base::OnceClosure wait_result_closure_;
@@ -261,6 +263,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
+  StreamRequester& set_load_flags(int load_flags) {
+    load_flags_ = load_flags;
+    return *this;
+  }
+
   StreamRequester& set_proxy_info(ProxyInfo proxy_info) {
     proxy_info_ = std::move(proxy_info);
     return *this;
@@ -290,7 +297,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
         this,
         HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
                                     quic_version_, is_http1_allowed_,
-                                    proxy_info_),
+                                    load_flags_, proxy_info_),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
         enable_alternative_services_, NetLogWithSource());
     return request_.get();
@@ -404,6 +411,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   bool enable_ip_based_pooling_ = true;
   bool enable_alternative_services_ = true;
   bool is_http1_allowed_ = true;
+  int load_flags_ = 0;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
   quic::ParsedQuicVersion quic_version_ =
@@ -1481,6 +1489,33 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestStreamIdleStreamSocket) {
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+// Tests that the group and pool limits are ignored when requests set
+// LOAD_IGNORE_LIMITS.
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimits) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> data_providers;
+
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+    requesters.emplace_back(std::move(requester));
+  }
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {

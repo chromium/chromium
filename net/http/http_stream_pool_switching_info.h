@@ -19,6 +19,7 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolSwitchingInfo {
                               AlternativeServiceInfo alternative_service_info,
                               quic::ParsedQuicVersion quic_version,
                               bool is_http1_allowed,
+                              int load_flags,
                               ProxyInfo proxy_info);
 
   HttpStreamPoolSwitchingInfo(HttpStreamPoolSwitchingInfo&&);
@@ -34,6 +35,7 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolSwitchingInfo {
   AlternativeServiceInfo alternative_service_info;
   quic::ParsedQuicVersion quic_version;
   bool is_http1_allowed;
+  int load_flags = 0;
   ProxyInfo proxy_info;
 };
 

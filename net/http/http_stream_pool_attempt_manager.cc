@@ -120,6 +120,7 @@ void HttpStreamPool::AttemptManager::StartJob(
     Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    RespectLimits respect_limits,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
@@ -140,6 +141,10 @@ void HttpStreamPool::AttemptManager::StartJob(
         FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
+  }
+
+  if (respect_limits == RespectLimits::kIgnore) {
+    respect_limits_ = RespectLimits::kIgnore;
   }
 
   if (!enable_ip_based_pooling) {
@@ -814,12 +819,14 @@ HttpStreamPool::AttemptManager::CanAttemptConnection() {
     return CanAttemptResult::kBlockedStreamAttempt;
   }
 
-  if (group_->ReachedMaxStreamLimit()) {
-    return CanAttemptResult::kReachedGroupLimit;
-  }
+  if (respect_limits_ == RespectLimits::kRespect) {
+    if (group_->ReachedMaxStreamLimit()) {
+      return CanAttemptResult::kReachedGroupLimit;
+    }
 
-  if (pool()->ReachedMaxStreamLimit()) {
-    return CanAttemptResult::kReachedPoolLimit;
+    if (pool()->ReachedMaxStreamLimit()) {
+      return CanAttemptResult::kReachedPoolLimit;
+    }
   }
 
   return CanAttemptResult::kAttempt;
@@ -1026,6 +1033,10 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
     std::unique_ptr<StreamSocket> stream_socket,
     StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
+  CHECK(respect_limits_ == RespectLimits::kIgnore ||
+        group_->ActiveStreamSocketCount() <=
+            pool()->max_stream_sockets_per_group());
+
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
 

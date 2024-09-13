@@ -15,11 +15,13 @@ HttpStreamPoolSwitchingInfo::HttpStreamPoolSwitchingInfo(
     AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version,
     bool is_http1_allowed,
+    int load_flags,
     ProxyInfo proxy_info)
     : stream_key(std::move(stream_key)),
       alternative_service_info(std::move(alternative_service_info)),
       quic_version(quic_version),
       is_http1_allowed(is_http1_allowed),
+      load_flags(load_flags),
       proxy_info(std::move(proxy_info)) {}
 
 HttpStreamPoolSwitchingInfo::HttpStreamPoolSwitchingInfo(

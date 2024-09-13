@@ -42,6 +42,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
+  // Indicates whether per pool/group limits should be respected or not.
+  enum class RespectLimits {
+    kRespect,
+    kIgnore,
+  };
+
   // Observes events on the HttpStreamPool and may intercept preconnects. Used
   // only for tests.
   class NET_EXPORT_PRIVATE TestDelegate {

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
@@ -56,6 +57,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
       HttpStreamRequest::HTTP_STREAM);
   request_ = request.get();
 
+  RespectLimits respect_limits =
+      (switching_info.load_flags & LOAD_IGNORE_LIMITS)
+          ? RespectLimits::kIgnore
+          : RespectLimits::kRespect;
+
   // Currently we only support a single HTTP/2 alternative service. This
   // behavior is the same as HttpStreamFactory::JobController.
   if (switching_info.alternative_service_info.protocol() ==
@@ -77,7 +83,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
             .CreateJob(this, alternative_service_info_.protocol(),
                        switching_info.is_http1_allowed,
                        switching_info.proxy_info);
-    alternative_job_->Start(priority, allowed_bad_certs,
+    alternative_job_->Start(priority, allowed_bad_certs, respect_limits,
                             enable_ip_based_pooling,
                             enable_alternative_services,
                             quic::ParsedQuicVersion::Unsupported(), net_log);
@@ -89,9 +95,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
                     .CreateJob(this, NextProto::kProtoUnknown,
                                switching_info.is_http1_allowed,
                                switching_info.proxy_info);
-  origin_job_->Start(priority, allowed_bad_certs, enable_ip_based_pooling,
-                     enable_alternative_services, switching_info.quic_version,
-                     net_log);
+  origin_job_->Start(priority, allowed_bad_certs, respect_limits,
+                     enable_ip_based_pooling, enable_alternative_services,
+                     switching_info.quic_version, net_log);
 
   return request;
 }
