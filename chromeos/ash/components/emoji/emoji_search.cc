@@ -50,6 +50,16 @@ bool operator<(std::u16string_view a, PrefixMatcher b) {
   return a.substr(0, b.prefix.size()) < b.prefix;
 }
 
+// Represents a score for an emoji match.
+struct EmojiScore {
+  // Scores are compared by the language score first (the higher the better).
+  // The relevance score is only used when the language scores are equal.
+  int language_score;
+  double relevance_score;
+
+  auto operator<=>(const EmojiScore& other) const = default;
+};
+
 // Map from keyword -> sum of position weightings
 std::map<std::u16string, double, std::less<>> CombineSearchTerms(
     base::span<const std::string_view> long_search_terms) {
@@ -121,12 +131,13 @@ void AddDataFromFileToMap(
   }
 }
 
-std::map<std::string_view, double> GetResultsFromMap(
+std::map<std::string_view, EmojiScore> GetResultsFromMap(
     const EmojiEntryMap& map,
-    base::span<const std::u16string_view> lowercase_words) {
-  std::map<std::string_view, double> scored_emoji;
+    base::span<const std::u16string_view> lowercase_words,
+    int language_score) {
+  std::map<std::string_view, EmojiScore> scored_emoji;
   for (const std::u16string_view lowercase_word : lowercase_words) {
-    std::map<std::string_view, double> word_scored_emoji;
+    std::map<std::string_view, EmojiScore> word_scored_emoji;
     for (auto [matches, end] = map.equal_range(PrefixMatcher{lowercase_word});
          matches != end; ++matches) {
       for (const auto& match : matches->second) {
@@ -137,13 +148,15 @@ std::map<std::string_view, double> GetResultsFromMap(
         } else if (const auto& it = scored_emoji.find(match.emoji_string);
                    it != scored_emoji.end()) {
           // Second+ word, and emoji was previously found.
-          previous_score = it->second;
+          previous_score = it->second.relevance_score;
         } else {
           // Second+ word, and emoji was not previously found.
           continue;
         }
         // Will zero initialize if entry missing
-        word_scored_emoji[match.emoji_string] +=
+        EmojiScore& score = word_scored_emoji[match.emoji_string];
+        score.language_score = language_score;
+        score.relevance_score +=
             previous_score * match.weighting / matches->first.size();
       }
     }
@@ -158,27 +171,22 @@ std::map<std::string_view, double> GetResultsFromMap(
 }
 
 std::vector<EmojiSearchEntry> SortEmojiResultsByScore(
-    std::map<std::string_view, double> scored_emoji) {
+    std::map<std::string_view, EmojiScore> scored_emoji) {
+  std::vector<std::pair<EmojiScore, std::string_view>> emojis_by_score;
+  emojis_by_score.reserve(scored_emoji.size());
+  base::ranges::transform(scored_emoji, std::back_inserter(emojis_by_score),
+                          [](const auto& entry) {
+                            return std::make_pair(entry.second, entry.first);
+                          });
+  base::ranges::sort(emojis_by_score, std::greater<>());
   std::vector<EmojiSearchEntry> ret;
   ret.reserve(scored_emoji.size());
-  for (const auto& [emoji, weighting] : scored_emoji) {
-    ret.push_back({weighting, std::string(emoji)});
-  }
-  base::ranges::sort(
-      ret, base::ranges::greater(),
-      [](const EmojiSearchEntry& entry) { return entry.weighting; });
+  base::ranges::transform(emojis_by_score, std::back_inserter(ret),
+                          [](const auto& entry) {
+                            return EmojiSearchEntry{entry.first.relevance_score,
+                                                    std::string(entry.second)};
+                          });
   return ret;
-}
-
-void MergeResults(std::vector<EmojiSearchEntry>& accumulator,
-                  std::set<std::string>& seen,
-                  base::span<EmojiSearchEntry> new_results) {
-  for (EmojiSearchEntry& new_result : new_results) {
-    auto [it, inserted] = seen.emplace(new_result.emoji_string);
-    if (inserted) {
-      accumulator.push_back(std::move(new_result));
-    }
-  }
 }
 
 std::optional<EmojiLanguageCode> GetLanguageCode(std::string_view code) {
@@ -329,12 +337,9 @@ EmojiLanguageData::EmojiLanguageData(EmojiLanguageData&& emoji_language_data) =
 EmojiSearchResult EmojiSearch::SearchEmoji(
     std::u16string_view query,
     base::span<const std::string> language_codes) {
-  std::vector<EmojiSearchEntry> emojis;
-  std::set<std::string> seen_emojis;
-  std::vector<EmojiSearchEntry> symbols;
-  std::set<std::string> seen_symbols;
-  std::vector<EmojiSearchEntry> emoticons;
-  std::set<std::string> seen_emoticons;
+  std::map<std::string_view, EmojiScore> emojis;
+  std::map<std::string_view, EmojiScore> symbols;
+  std::map<std::string_view, EmojiScore> emoticons;
 
   // Make search case insensitive.
   std::u16string lowercase_query = base::i18n::ToLower(query);
@@ -343,6 +348,9 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
           lowercase_query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
           base::SplitResult::SPLIT_WANT_NONEMPTY);
 
+  // `language_codes` are sorted in order of preference, so start with a high
+  // language score then go down.
+  int language_score = 0;
   for (const std::string& code_str : language_codes) {
     std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
     if (!code.has_value()) {
@@ -350,18 +358,18 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     }
     if (const auto& it = language_data_.find(*code);
         it != language_data_.end()) {
-      std::vector<EmojiSearchEntry> new_emojis = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.emojis, lowercase_words));
-      MergeResults(emojis, seen_emojis, new_emojis);
-      std::vector<EmojiSearchEntry> new_symbols = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.symbols, lowercase_words));
-      MergeResults(symbols, seen_symbols, new_symbols);
-      std::vector<EmojiSearchEntry> new_emoticons = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.emoticons, lowercase_words));
-      MergeResults(emoticons, seen_emoticons, new_emoticons);
+      emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
+                                     language_score));
+      symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
+                                      language_score));
+      emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
+                                        language_score));
+      --language_score;
     }
   }
-  return EmojiSearchResult(emojis, symbols, emoticons);
+  return EmojiSearchResult(SortEmojiResultsByScore(emojis),
+                           SortEmojiResultsByScore(symbols),
+                           SortEmojiResultsByScore(emoticons));
 }
 
 void EmojiSearch::LoadEmojiLanguages(
