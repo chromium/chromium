@@ -4561,15 +4561,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
+<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus2"
     enum="ServiceWorkerStatusCode" expires_after="2025-02-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks when a background service worker fails to register what is the
     ServiceWorkerStatusCode that occurred. Logged each time a service worker
-    fails to register. Some failures are expected and are not counted by this
-    metric.
+    fails to register.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could change the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4604,7 +4606,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus"
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus2"
     enum="ServiceWorkerStatusCode" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4616,6 +4618,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Emitted when
     Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated is false.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could increase the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4767,18 +4772,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
+<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState2"
     enum="Boolean" expires_after="2025-02-23">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Tracks whether background service worker registration ultimately succeeded
-    or unexpectedly not. It can be emitted whenever an extension is enabled
-    (including updates).
+    Tracks whether background service worker registration succeeded or not. It
+    is emitted whenever an extension is enabled (including updates).
 
-    If there are attempts to retry registration, those are not emitted. See
-    Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult for
-    a metric on retry attempts.
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which will likely increase the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4797,15 +4800,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}3"
     enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The ServiceWorkerStatusCode when unregistering a worker for an extension
-    fails unexpectedly.
+    fails.
 
-    Emitted when Extensions.ServiceWorkerBackground.WorkerUnregistrationState is
+    Emitted when Extensions.ServiceWorkerBackground.WorkerRegistrationState is
     false.
 
     It is emitted when this failure happens in two scenarios when a worker may
@@ -4821,18 +4824,23 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 due to the #2 case no longer
+    emitting the not found error if there was no previous worker registered. The
+    logic for #2 does not check if a worker was previously registered before
+    attempting to unregister it so the error is not considered a failure.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}2"
     enum="Boolean" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    The success (true) or unexpected failure (false) of attempting to unregister
-    a worker for an extension.
+    The success (true) or failure (false) of attempting to unregister a worker
+    for an extension.
 
     This is emitted for two scenarios when a worker may be unregistered:
 
@@ -4846,6 +4854,12 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 due to the #2 case emitting true
+    if the error status is not found and there was no previous worker registered
+    (instead of the previous false). The logic for #2 does not check if a worker
+    was previously registered before attempting to unregister it so the error is
+    considered an unregistration success.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>

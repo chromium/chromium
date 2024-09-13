@@ -67,6 +67,32 @@ ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 // Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
 
+// Worker unregistrations can fail in expected and unexpected ways, this
+// determines if the unregistration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status,
+                                   bool worker_previously_registered) {
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    return true;
+  }
+
+  if (status != blink::ServiceWorkerStatusCode::kErrorNotFound) {
+    return false;
+  }
+
+  // If worker was not successfully registered before then a not found error
+  // is expected, but can occur because unregistration requests do not check
+  // current registration status.
+  return !worker_previously_registered;
+}
+
+// Worker registrations can fail in expected and unexpected ways, this
+// determines if the registration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerRegistrationSuccess(blink::ServiceWorkerStatusCode status) {
+  return status == blink::ServiceWorkerStatusCode::kOk;
+}
+
 }  // namespace
 
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
@@ -664,23 +690,12 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   if (!extension) {
-    // No extension and failed registration can expectedly happen if an
-    // extension is deactivated when worker activation/registration request is
-    // in-flight. But if registration was successful then that could interfere
-    // with future worker registrations for the extension.
-    base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.WorkerRegistrationState", !success);
     if (g_test_observer) {
       g_test_observer->OnWorkerRegistered(context_id.extension_id);
     }
     return;
   }
   if (!IsCurrentActivation(extension_id, context_id.token)) {
-    // TODO(crbug.com/346732739): This shouldn't be happening since we seem to
-    // always remove extension from enabled extension before we delete the
-    // extension activation token, but lets confirm that.
-    base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.WorkerRegistrationState", false);
     if (g_test_observer) {
       g_test_observer->OnWorkerRegistered(context_id.extension_id);
     }
@@ -698,7 +713,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
       // TODO(crbug.com/346732739): Create a test for this if it is feasible.
       base::UmaHistogramEnumeration(
           "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_"
-          "FailStatus",
+          "FailStatus2",
           status_code);
     }
     if (g_test_observer) {
@@ -717,30 +732,29 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     return;
   }
 
-  // We aren't retrying anymore so emit metrics specifically about the retries.
+  // We aren't retrying anymore so record success and emit metrics.
   if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
-    base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground."
-        "WorkerRegistrationRetryAttemptsResult",
-        success);
+    if (success) {
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          true);
+    } else {
+      // We've exhausted all retry attempts or hit a status code on retry other
+      // than blink::ServiceWorkerStatusCode::kErrorTimeout that we will not
+      // retry.
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          false);
+    }
     worker_reregistration_attempts_.erase(context_id.token);
   }
 
-  // After retries are exhausted, emit the ultimate end result.
-  base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
-
   if (!success) {
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+        "Extensions.ServiceWorkerBackground.Registration_FailStatus2",
         status_code);
-  }
-
-  if (!success ||
-      // Still show script evaluate error to developer so that it can be fixed,
-      // despite it not being considered an internal failure.
-      status_code ==
-          blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed) {
     std::string msg = base::StringPrintf(
         "Service worker registration failed. Status code: %d",
         static_cast<int>(status_code));
@@ -789,10 +803,10 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
       IsWorkerUnregistrationSuccess(status, worker_previously_registered);
 
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       success);
 
   // TODO(crbug.com/346732739): Handle this better than just logging an error
@@ -801,32 +815,16 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     LOG(ERROR) << "Failed to unregister service worker for extension id: "
                << extension_id << " error status was: " << (int)status;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus3",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "DeactivateExtension",
+        "DeactivateExtension3",
         status);
   }
 
   if (g_test_observer) {
     g_test_observer->WorkerUnregistered(extension_id);
-  }
-}
-
-bool ServiceWorkerTaskQueue::IsWorkerRegistrationSuccess(
-    blink::ServiceWorkerStatusCode status) {
-  switch (status) {
-    case blink::ServiceWorkerStatusCode::kOk:
-      return true;
-    case blink::ServiceWorkerStatusCode::kErrorAbort:
-      return browser_context_shutting_down_;
-    case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
-      // Developer script syntax errors are considered user errors.
-      return true;
-    default:
-      // All other registration failures are unexpected.
-      return false;
   }
 }
 
@@ -1015,38 +1013,6 @@ void ServiceWorkerTaskQueue::OnStopped(
   CHECK(worker_state);
   worker_state->browser_state_ = BrowserState::kInitial;
   worker_state->worker_id_.reset();
-}
-
-bool ServiceWorkerTaskQueue::IsWorkerUnregistrationSuccess(
-    blink::ServiceWorkerStatusCode status,
-    bool worker_previously_registered) {
-  switch (status) {
-    case blink::ServiceWorkerStatusCode::kOk:
-      return true;
-    case blink::ServiceWorkerStatusCode::kErrorNotFound:
-      return !worker_previously_registered;
-    case blink::ServiceWorkerStatusCode::kErrorAbort:
-      return browser_context_shutting_down_;
-    default:
-      // All other unregistration failures are unexpected.
-      return false;
-  }
-}
-
-bool ServiceWorkerTaskQueue::IsWorkerRegistered(
-    const ExtensionId extension_id) {
-  // TODO(crbug.com/346732739): Key worker_registered_ by extension_id so that
-  // this check isn't necessary anymore.
-  std::optional<base::UnguessableToken> activation_token =
-      GetCurrentActivationToken(extension_id);
-  if (!activation_token) {
-    // This implies that a request to register the worker hasn't been sent yet,
-    // or a worker unregistration has, at least, been sent.
-    return false;
-  }
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         *activation_token};
-  return base::Contains(worker_registered_, context_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
