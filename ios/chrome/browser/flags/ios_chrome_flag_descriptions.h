@@ -61,6 +61,12 @@ extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
 extern const char
     kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[];
 
+// When enabled, a form event will log to all of the parsed forms of the same
+// type on a webpage. This means credit card form events will log to all credit
+// card form types and address form events will log to all address form types.
+extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
+extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
+
 // Title and description for the flag to send merchant_domain as a top-level
 // parameter in card unmask requests.
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];

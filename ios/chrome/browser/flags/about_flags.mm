@@ -1972,6 +1972,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewSyncOptInIllustrationName,
      flag_descriptions::kNewSyncOptInIllustrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNewSyncOptInIllustration)},
+    {"autofill-enable-log-form-events-to-all-parsed-form-types",
+     flag_descriptions::kAutofillEnableLogFormEventsToAllParsedFormTypesName,
+     flag_descriptions::
+         kAutofillEnableLogFormEventsToAllParsedFormTypesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableLogFormEventsToAllParsedFormTypes)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

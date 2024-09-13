@@ -95,6 +95,14 @@ BASE_FEATURE(kAutofillEnableLocalIban,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, a form event will log to all of the parsed forms of the same
+// type on a webpage. This means credit card form events will log to all credit
+// card form types and address form events will log to all address form types."
+// TODO(crbug.com/359934323): Clean up when launched
+BASE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes,
+             "AutofillEnableLogFormEventsToAllParsedFormTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the merchant_domain field is included in requests to unmask a
 // card.
 BASE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest,

@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill::autofill_metrics {
@@ -302,7 +303,11 @@ void FormEventLoggerBase::
 void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   DCHECK_LT(event, NUM_FORM_EVENTS);
   form_events_set_[form.global_id()].insert(event);
-  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+  for (FormTypeNameForLogging form_type :
+       base::FeatureList::IsEnabled(
+           features::kAutofillEnableLogFormEventsToAllParsedFormTypes)
+           ? parsed_form_types_
+           : GetFormTypesForLogging(form)) {
     std::string name(
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));

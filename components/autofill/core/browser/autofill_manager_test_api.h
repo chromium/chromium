@@ -37,6 +37,10 @@ class AutofillManagerTestApi {
     manager_->OnLoadedServerPredictions(std::move(response));
   }
 
+  void OnFormsParsed(const std::vector<FormData>& forms) {
+    manager_->OnFormsParsed(forms);
+  }
+
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {
     return manager_->mutable_form_structures();

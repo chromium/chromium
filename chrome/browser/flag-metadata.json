@@ -736,6 +736,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "autofill-enable-log-form-events-to-all-parsed-form-types",
+    "owners": [ "alexandertekle@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "autofill-enable-manual-fallback-iph",
     "owners": [ "theocristea@google.com", "brunobraga@chromium.org" ],
     "expiry_milestone": 135

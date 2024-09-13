@@ -3021,7 +3021,8 @@ void BrowserAutofillManager::OnFormProcessed(
   }
   // Log the type of form that was parsed.
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
-  bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
+  bool card_form = base::Contains(form_types, FormType::kCreditCardForm) ||
+                   base::Contains(form_types, FormType::kStandaloneCvcForm);
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
   if (card_form) {
     metrics_->credit_card_form_event_logger.OnDidParseForm(form_structure);

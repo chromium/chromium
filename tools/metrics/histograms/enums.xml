@@ -16018,6 +16018,8 @@ from previous Chrome versions.
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1725376391"
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:disabled"/>
+  <int value="-1724238554"
+      label="AutofillEnableLogFormEventsToAllParsedFormTypes:enabled"/>
   <int value="-1723086446"
       label="AccessibilityMagnifyAcceleratorDialog:enabled"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
@@ -22997,6 +22999,8 @@ from previous Chrome versions.
   <int value="1185029400" label="AndroidBottomToolbar:disabled"/>
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
+  <int value="1186484930"
+      label="AutofillEnableLogFormEventsToAllParsedFormTypes:disabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1187692916" label="TheoraVideoCodec:enabled"/>
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
