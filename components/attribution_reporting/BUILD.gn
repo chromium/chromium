@@ -546,7 +546,10 @@ mojom("data_host_mojom") {
 test("privacy_math_fuzztest") {
   sources = [ "privacy_math_fuzztest.cc" ]
 
-  fuzztests = [ "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive" ]
+  fuzztests = [
+    "PrivacyMathTest.GetKCombinationAtIndex",
+    "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive",
+  ]
 
   deps = [
     ":attribution_reporting",

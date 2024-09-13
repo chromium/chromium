@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <vector>
 
@@ -42,6 +43,15 @@ FUZZ_TEST(PrivacyMathTest, SingleSpecNumStatesMatchesRecursive)
         /*max_reports=*/AnyMaxEventLevelReports(),
         /*num_windows=*/fuzztest::InRange<int>(1, kMaxEventLevelReportWindows),
         /*num_types=*/fuzztest::InRange<size_t>(0, 32));
+
+void GetKCombinationAtIndex(uint32_t combination_index, uint32_t k) {
+  internal::GetKCombinationAtIndex(combination_index, k);
+}
+
+FUZZ_TEST(PrivacyMathTest, GetKCombinationAtIndex)
+    .WithDomains(
+        /*combination_index=*/fuzztest::Arbitrary<uint32_t>(),
+        /*k=*/fuzztest::InRange<uint32_t>(0, 20));
 
 }  // namespace
 }  // namespace attribution_reporting
