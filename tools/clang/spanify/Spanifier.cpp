@@ -189,6 +189,17 @@ clang::SourceRange getExprRange(const clang::Expr* expr) {
   return {expr->getBeginLoc(), expr->getEndLoc().getLocWithOffset(1)};
 }
 
+std::string GetTypeAsString(const clang::QualType& qual_type,
+                            const clang::ASTContext& ast_context) {
+  clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+  printing_policy.SuppressScope = 0;
+  printing_policy.SuppressUnwrittenScope = 1;
+  printing_policy.SuppressInlineNamespace = 1;
+  printing_policy.SuppressDefaultTemplateArgs = 1;
+  printing_policy.PrintCanonicalTypes = 1;
+  return qual_type.getAsString(printing_policy);
+}
+
 // This functions generates a string representing the converted type from a
 // raw pointer type to a base::span type. It handles preservation of
 // const/volatile qualifiers and uses a specific printing policy to format the
@@ -247,16 +258,8 @@ std::string GenerateSpanType(clang::SourceManager& source_manager,
   // For example, if we have the following code:
   //   const auto* p = get_buffer<uint16_t>();
   // we will get:`unsigned short` instead of `uint16_t`.
-  clang::QualType pointee_type = pointer_type->getPointeeType();
-
-  clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
-  printing_policy.SuppressScope = 0;
-  printing_policy.SuppressUnwrittenScope = 1;
-  printing_policy.SuppressInlineNamespace = 1;
-  printing_policy.SuppressDefaultTemplateArgs = 1;
-  printing_policy.PrintCanonicalTypes = 1;
-
-  std::string type = pointee_type.getAsString(printing_policy);
+  std::string type =
+      GetTypeAsString(pointer_type->getPointeeType(), ast_context);
   return qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
 }
 
@@ -668,10 +671,65 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
   return std::make_pair(unnamed_class, class_definition);
 }
 
+// Checks if we can extract the arrays' element type from the source text
+// by using the array's `type_loc`. The `type_loc` is obtained by the
+// `array_variables` matcher.
+// `out_element_loc` points to the source range of the array's element
+// type if we can extract.
+bool CanGetArrayTypeFromSourceText(const clang::TypeLoc* type_loc,
+                                   clang::TypeLoc* out_element_loc) {
+  auto array_type_loc = type_loc->getAs<clang::ArrayTypeLoc>();
+  if (!array_type_loc) {
+    // The cast sometimes fails, because the matcher binds `qualType`
+    // to "array_type_loc" (not `arrayTypeLoc`).
+    // For example, if `int buf3[size]` is given, the "array_type_loc"
+    // is QualifiedTypeLoc. c.f.
+    //
+    //   QualifiedTypeLoc 'const int[5]' 5
+    //   `-ConstantArrayTypeLoc 'int[5]' 5
+    //     `-BuiltinTypeLoc 'int'
+    //
+    // In the case, try `getNextTypeLoc()` to obtain `ArrayTypeLoc`.
+    auto next_type_loc = type_loc->getNextTypeLoc();
+    if (next_type_loc) {
+      array_type_loc = next_type_loc.getAs<clang::ArrayTypeLoc>();
+    }
+  }
+  // If `array_type_loc` is not valid, we are not able to obtain
+  // `element_loc`.
+  if (!array_type_loc) {
+    return false;
+  }
+
+  auto element_loc = array_type_loc.getElementLoc();
+  if (!element_loc) {
+    return false;
+  }
+  *out_element_loc = element_loc;
+
+  // If the `element_loc.getSourceRange()` contains `getBracketsRange()`,
+  // we use `element_type.getAsString()`.
+  // E.g.
+  //  `int(**buf8[16])[]`
+  //             <-->
+  //               array_type_loc.getBracketsRange()
+  //   <---------------> element_loc.getSourceRange()
+  //
+  // If not contains, we extract the element type text from the source text.
+  // E.g.
+  //  `int arr[16]`
+  //          <--> array_type_loc.getBracketsRange()
+  //   <->
+  //    element_loc.getSourceRange()
+  //
+  return !element_loc.getSourceRange().fullyContains(
+      array_type_loc.getBracketsRange());
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
-  const clang::SourceManager& source_manager = *result.SourceManager;
+  clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
   auto* array_type_loc =
@@ -682,11 +740,8 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
 
   auto element_type = array_type->getElementType();
 
-  clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
-  printing_policy.SuppressScope = 1;
-  printing_policy.PrintCanonicalTypes = 1;
   std::string element_type_as_string =
-      element_type.getAsString(printing_policy);
+      GetTypeAsString(element_type, ast_context);
   std::string array_size_as_string = getArraySize(result);
   std::string array_variable_as_string = array_variable->getNameAsString();
 
@@ -694,24 +749,44 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       array_type_loc->getSourceRange().getBegin(),
       array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
-  // Structs/classes can be defined alongside an option list of variable
-  // declarations.
-  //
-  // struct <OptionalName> { ... } var1[3];
-  //
-  // In this case we need the class_definition and in the case of unnamed types,
-  // we have to construct a name to use instead of the compiler generated one.
-  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      element_type_as_string, array_variable_as_string, replacement_range,
-      source_manager, ast_context);
+  std::string replacement_text;
+  if (element_type->hasUnnamedOrLocalType()) {
+    // Structs/classes can be defined alongside an option list of variable
+    // declarations.
+    //
+    // struct <OptionalName> { ... } var1[3];
+    //
+    // In this case we need the class_definition and in the case of unnamed
+    // types, we have to construct a name to use instead of the compiler
+    // generated one.
+    const auto& [unnamed_class, class_definition] =
+        maybeGetUnnamedAndDefinition(
+            element_type_as_string, array_variable_as_string, replacement_range,
+            source_manager, ast_context);
 
-  // If this isn't an inline declaration with a class_definition than both
-  // |unnamed_class| and |class_definition| will be empty strings and not change
-  // the below format.
-  std::string replacement_text = llvm::formatv(
-      "{0}std::array<{1},{2}>{3}", class_definition,
-      unnamed_class.empty() ? element_type_as_string : unnamed_class,
-      array_size_as_string, array_variable_as_string);
+    // If this isn't an inline declaration with a class_definition than both
+    // |unnamed_class| and |class_definition| will be empty strings and not
+    // change the below format.
+    replacement_text = llvm::formatv(
+        "{0}std::array<{1},{2}>{3}", class_definition,
+        unnamed_class.empty() ? element_type_as_string : unnamed_class,
+        array_size_as_string, array_variable_as_string);
+  } else {
+    // It is difficult to use the original text when an array of function
+    // pointers or an array of pointer of arrays. E.g. `int (**arr[16])[]` or
+    // `int
+    // (*arr[])(int)` However, if `using Arr = int (**)[];` and `Arr
+    // arr[size];`, we should replace the array with `std::array<Arr, size>`.
+    clang::TypeLoc element_loc;
+    if (CanGetArrayTypeFromSourceText(array_type_loc, &element_loc)) {
+      clang::Rewriter rw(source_manager, ast_context.getLangOpts());
+      element_type_as_string =
+          rw.getRewrittenText(element_loc.getSourceRange());
+    }
+    replacement_text =
+        llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
+                      array_size_as_string, array_variable_as_string);
+  }
 
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range, replacement_text, source_manager, "array",
