@@ -85,6 +85,7 @@ class ASH_EXPORT KeyboardBrightnessController
 
   // Restore keyboard brightness settings during reboot.
   void RestoreKeyboardBrightnessSettings(const AccountId& account_id);
+  void MaybeRestoreKeyboardBrightnessSettings();
 
   // Restore keyboard ambient light sensor setting when first login.
   void RestoreKeyboardAmbientLightSensorSettingOnFirstLogin();
@@ -121,7 +122,10 @@ class ASH_EXPORT KeyboardBrightnessController
   bool has_keyboard_ambient_light_sensor_status_been_recorded_ = false;
 
   // True if the keyboard has an ambient light sensor.
-  bool has_sensor_ = false;
+  std::optional<bool> has_sensor_ = false;
+
+  // True if the keyboard has keyboard backlight.
+  std::optional<bool> has_keyboard_backlight_ = false;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the keyboard ambient light sensor value has finished syncing.
