@@ -101,9 +101,10 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
     return true;
   }
 
-  if (stream.Consume().GetType() != kCommaToken) {
+  if (stream.Peek().GetType() != kCommaToken) {
     return false;
   }
+  stream.Consume();  // kCommaToken
 
   // Parse the fallback value.
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
@@ -149,14 +150,13 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
     if (stream.AtEnd()) {
       return true;
     }
-    token = stream.ConsumeIncludingWhitespace();
-  } else {
-    token = stream.Consume();
   }
+
   // Otherwise we need a comma followed by an optional fallback value.
-  if (token.GetType() != kCommaToken) {
+  if (stream.Peek().GetType() != kCommaToken) {
     return false;
   }
+  stream.Consume();  // kCommaToken
 
   // Parse the fallback value.
   if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
