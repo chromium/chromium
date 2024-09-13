@@ -389,7 +389,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate
-                               address:(const autofill::AutofillProfile*)address
+                               address:(autofill::AutofillProfile)address
                             inEditMode:(BOOL)editMode
                  offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   SettingsNavigationController* navigationController =
@@ -397,7 +397,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showAddressDetails:address
+  [navigationController showAddressDetails:std::move(address)
                                 inEditMode:editMode
                      offerMigrateToAccount:offerMigrateToAccount];
   return navigationController;
@@ -1145,13 +1145,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self showSavedPasswordsAndShowCancelButton:showCancelButton];
 }
 
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(const autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser
-                               profile:*address
+                               profile:std::move(address)
                 migrateToAccountButton:offerMigrateToAccount];
   self.autofillProfileEditCoordinator.delegate = self;
   self.autofillProfileEditCoordinator.openInEditMode = editMode;

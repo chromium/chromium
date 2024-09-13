@@ -612,13 +612,13 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 #pragma mark - AddressCoordinatorDelegate
 
-- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   [self reset];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
-  [settingsHandler showAddressDetails:address
+  [settingsHandler showAddressDetails:std::move(address)
                            inEditMode:YES
                 offerMigrateToAccount:offerMigrateToAccount];
 }

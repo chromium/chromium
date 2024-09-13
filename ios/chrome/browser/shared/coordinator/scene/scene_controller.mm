@@ -17,6 +17,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -2290,13 +2291,13 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-           showAddressDetails:address
+           showAddressDetails:std::move(address)
                    inEditMode:editMode
         offerMigrateToAccount:offerMigrateToAccount];
     return;
@@ -2305,7 +2306,7 @@ using UserFeedbackDataCallback =
   self.settingsNavigationController = [SettingsNavigationController
       addressDetailsControllerForBrowser:browser
                                 delegate:self
-                                 address:address
+                                 address:std::move(address)
                               inEditMode:editMode
                    offerMigrateToAccount:offerMigrateToAccount];
   [baseViewController presentViewController:self.settingsNavigationController

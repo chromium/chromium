@@ -60,7 +60,7 @@ enum class PasswordCheckReferrer;
 // Shows the address details view. `editMode` indicates whether the details page
 // should be opened in edit mode. `offerMigrateToAccount` indicates whether or
 // not the option to migrate the address to the account should be available.
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 

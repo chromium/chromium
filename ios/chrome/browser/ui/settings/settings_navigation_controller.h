@@ -143,7 +143,7 @@ extern NSString* const kSettingsDoneButtonId;
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate
-                               address:(const autofill::AutofillProfile*)address
+                               address:(autofill::AutofillProfile)address
                             inEditMode:(BOOL)editMode
                  offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 

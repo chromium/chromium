@@ -107,13 +107,19 @@
   }];
 }
 
-- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAddressDetailsInEditMode:address
-                              offerMigrateToAccount:offerMigrateToAccount];
-  }];
+  auto callback = base::BindOnce(
+      [](__weak __typeof(self) weak_self, autofill::AutofillProfile address,
+         BOOL offer_migrate_to_account) {
+        [weak_self.delegate
+            openAddressDetailsInEditMode:std::move(address)
+                   offerMigrateToAccount:offer_migrate_to_account];
+      },
+      weakSelf, std::move(address), offerMigrateToAccount);
+  [self dismissIfNecessaryThenDoCompletion:base::CallbackToBlock(
+                                               std::move(callback))];
 }
 
 #pragma mark - PlusAddressListNavigator
