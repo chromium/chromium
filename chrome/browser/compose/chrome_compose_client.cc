@@ -510,8 +510,7 @@ void ChromeComposeClient::CreateNewSession(
     page_ukm_tracker_->ProactiveNudgeOpened();
     compose::LogComposeProactiveNudgeCtr(
         compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
-    compose::LogStartSessionEntryPoint(
-        compose::ComposeEntryPoint::kProactiveNudge);
+    compose::LogStartSessionEntryPoint(most_recent_nudge_entry_point_);
   } else {
     compose::LogStartSessionEntryPoint(
         compose::ComposeEntryPoint::kContextMenu);
@@ -899,8 +898,10 @@ void ChromeComposeClient::OnFocusChangedInPage(
   return nudge_tracker_.FocusChangedInPage();
 }
 
-void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
-                                             autofill::FieldGlobalId field) {
+void ChromeComposeClient::ShowProactiveNudge(
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    compose::ComposeEntryPoint entry_point) {
   if (autofill::AutofillDriver* driver =
           autofill::ContentAutofillDriver::GetForRenderFrameHost(
               GetWebContents().GetPrimaryMainFrame())) {
@@ -908,6 +909,7 @@ void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
         field, autofill::AutofillSuggestionTriggerSource::
                    kComposeDelayedProactiveNudge);
   }
+  most_recent_nudge_entry_point_ = entry_point;
 }
 
 compose::ComposeHintMetadata ChromeComposeClient::GetComposeHintMetadata() {

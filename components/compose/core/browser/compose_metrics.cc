@@ -198,12 +198,22 @@ void LogOpenComposeDialogResult(OpenComposeDialogResult result) {
 void LogStartSessionEntryPoint(ComposeEntryPoint entry_point) {
   base::UmaHistogramEnumeration(kComposeStartSessionEntryPoint, entry_point);
 
-  if (entry_point == ComposeEntryPoint::kProactiveNudge) {
-    base::RecordAction(
-        base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
-  } else if (entry_point == ComposeEntryPoint::kContextMenu) {
-    base::RecordAction(
-        base::UserMetricsAction("Compose.StartedSession.ContextMenu"));
+  switch (entry_point) {
+    case ComposeEntryPoint::kContextMenu:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.ContextMenu"));
+      break;
+    case ComposeEntryPoint::kProactiveNudge:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
+      break;
+    case ComposeEntryPoint::kSelectionNudge:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.StartedSession.SelectionNudge"));
+      break;
+    case ComposeEntryPoint::kSavedStateNudge:
+    case ComposeEntryPoint::kSavedStateNotification:
+      break;
   }
 }
 
