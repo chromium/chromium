@@ -30,6 +30,10 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
 
     private DefaultBrowserPromoBottomSheetContent mDefaultBrowserBottomSheetContent;
 
+    /**
+     * @param onModuleClickedCallback The callback to be called when the bottom sheet is clicked.
+     * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
+     */
     public DefaultBrowserPromoCoordinator(
             @NonNull Runnable onModuleClickedCallback,
             @NonNull EducationTipModuleActionDelegate actionDelegate) {
@@ -37,6 +41,7 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
         mActionDelegate = actionDelegate;
     }
 
+    // EducationalTipCardProvider implementation.
     @Override
     public String getCardTitle() {
         return mActionDelegate
@@ -80,6 +85,14 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
                             StateChangeReason.INTERACTION_COMPLETE);
                     mOnModuleClickedCallback.run();
                 });
+    }
+
+    @Override
+    public void destroy() {
+        if (mDefaultBrowserBottomSheetContent != null) {
+            mDefaultBrowserBottomSheetContent.destroy();
+            mDefaultBrowserBottomSheetContent = null;
+        }
     }
 
     private Intent createBottomSheetOnClickIntent() {

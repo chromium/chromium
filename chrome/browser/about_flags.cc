@@ -2236,6 +2236,8 @@ const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
      std::size(kMagicStackAndroid_show_all_modules), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEducationalTipModule_force_default_browser[] =
+    {{"force_default_browser", "true"}};
 const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group[] = {
     {"force_tab_group", "true"}};
 const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group_sync[] =
@@ -2244,6 +2246,8 @@ const FeatureEntry::FeatureParam kEducationalTipModule_force_quick_delete[] = {
     {"force_quick_delete", "true"}};
 
 const FeatureEntry::FeatureVariation kEducationalTipModuleVariations[] = {
+    {"Show default browser promo", kEducationalTipModule_force_default_browser,
+     std::size(kEducationalTipModule_force_default_browser), nullptr},
     {"Show tab group promo", kEducationalTipModule_force_tab_group,
      std::size(kEducationalTipModule_force_tab_group), nullptr},
     {"Show tab group sync promo", kEducationalTipModule_force_tab_group_sync,
