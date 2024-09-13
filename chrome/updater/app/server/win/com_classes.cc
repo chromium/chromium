@@ -210,7 +210,7 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
 }
 
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
-  return IsCOMCallerAllowed();
+  return S_OK;
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
@@ -261,6 +261,10 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterCallback* callback) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -572,6 +576,10 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -689,6 +697,10 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_data,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   VLOG(1) << __func__;
 
   if (!observer) {
@@ -821,7 +833,7 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
-  return IsCOMCallerAllowed();
+  return S_OK;
 }
 
 // See the comment for the UpdaterImpl::Update.
