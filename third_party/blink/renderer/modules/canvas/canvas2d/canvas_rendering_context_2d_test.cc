@@ -254,6 +254,9 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   }
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
+  cc::PaintCanvas& Canvas() {
+    return CanvasElement().ResourceProvider()->Canvas();
+  }
   CanvasRenderingContext2D* Context2D() const {
     return static_cast<CanvasRenderingContext2D*>(
         CanvasElement().RenderingContext());
@@ -2084,6 +2087,26 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   // There should not be any Recorded ops at this point.
   EXPECT_FALSE(
       CanvasElement().ResourceProvider()->Recorder().HasRecordedDrawOps());
+}
+
+TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {
+  CreateContext(kNonOpaque);
+
+  // Ensure that the ResourceProvider and canvas are created.
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+
+  // Set a transform.
+  Context2D()->translate(5, 0);
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
+
+  // Draw something so that there is something to flush.
+  cc::PaintFlags flags;
+  Canvas().drawLine(0, 0, 2, 2, flags);
+
+  // Flush the canvas and verify that a new drawing canvas is created that has
+  // the transform restored.
+  EXPECT_TRUE(Context2D()->FlushCanvas(FlushReason::kTesting));
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
