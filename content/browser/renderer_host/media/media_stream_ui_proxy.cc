@@ -246,12 +246,7 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<MediaStreamUI> stream_ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If SYSTEM_PERMISSION_DENIED it is not guarantied that
-  // `stream_devices_set.stream_devices` is empty. E.g. might be not empty on
-  // CrOS and in tests.
-  DCHECK((result ==
-          blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED) ||
-         (result != blink::mojom::MediaStreamRequestResult::OK &&
+  DCHECK((result != blink::mojom::MediaStreamRequestResult::OK &&
           stream_devices_set.stream_devices.empty()) ||
          (result == blink::mojom::MediaStreamRequestResult::OK &&
           stream_devices_set.stream_devices.size() == 1u));
@@ -259,9 +254,7 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   blink::mojom::StreamDevicesSetPtr filtered_devices_set =
       blink::mojom::StreamDevicesSet::New();
   blink::mojom::StreamDevices devices;
-  if (!stream_devices_set.stream_devices.empty() &&
-      result !=
-          blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED) {
+  if (!stream_devices_set.stream_devices.empty()) {
     devices = *stream_devices_set.stream_devices[0];
     filtered_devices_set->stream_devices.emplace_back(
         blink::mojom::StreamDevices::New());
