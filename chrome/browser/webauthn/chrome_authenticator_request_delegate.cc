@@ -1259,22 +1259,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
 #if BUILDFLAG(IS_MAC)
-  {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-    // Not all contexts in which this code runs have a BrowserWindow.
-    // Notably the dialog containing a WebContents that is used for signing
-    // into a new profile does not. Thus the NSWindow is fetched more directly.
-    const views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
-        web_contents->GetNativeView());
-    if (widget) {
-      const gfx::NativeWindow window = widget->GetNativeWindow();
-      if (window) {
-        discovery_factory->set_nswindow(
-            reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
-      }
-    }
-  }
+  ConfigureNSWindow(discovery_factory);
 #endif
 
   if (enclave_controller_) {
@@ -1756,6 +1741,32 @@ bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
   return base::FeatureList::IsEnabled(*feature);
 }
 
+void ChromeAuthenticatorRequestDelegate::ConfigureNSWindow(
+    device::FidoDiscoveryFactory* discovery_factory) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (browser && browser->is_type_app()) {
+    // PWAs render the UI in an out-of-process window, thus there is no valid
+    // NSWindow* available in the browser process.
+    // TODO: crbug.com/364926914 - potentially do iCloud Keychain operations out
+    // of process so that they can work in PWAs.
+    return;
+  }
+
+  // Not all contexts in which this code runs have a BrowserWindow.
+  // Notably the dialog containing a WebContents that is used for signing
+  // into a new profile does not. Thus the NSWindow is fetched more directly.
+  const views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents->GetNativeView());
+  if (widget) {
+    const gfx::NativeWindow window = widget->GetNativeWindow();
+    if (window) {
+      discovery_factory->set_nswindow(
+          reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
+    }
+  }
+}
 void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
     RequestSource request_source,
     const std::string& rp_id) {

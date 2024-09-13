@@ -350,6 +350,10 @@ class ChromeAuthenticatorRequestDelegate
       bool request_is_for_google_com,
       std::optional<bool> preference);
 
+  // Configure the NSWindow* for the current RenderFrameHost. This is used by
+  // some macOS system APIs to center dialogs on the pertinent Chrome window.
+  void ConfigureNSWindow(device::FidoDiscoveryFactory* discovery_factory);
+
   // ConfigureICloudKeychain is called by `ConfigureDiscoveries` to configure
   // the `AuthenticatorRequestDialogController` with iCloud Keychain-related
   // values.
