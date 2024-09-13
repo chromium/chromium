@@ -361,7 +361,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
   void OnUpdateHostOwner(const std::string& host_owner) override;
-  void OnUpdateIsCorpUser(bool is_corp_user) override;
   void OnUpdateRequireSessionAuthorization(bool require_session_auth) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
@@ -1077,10 +1076,6 @@ void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
   LOG(INFO) << "Updating host_owner from '" << host_owner_ << "' to '"
             << host_owner << "'";
   host_owner_ = host_owner;
-}
-
-void HostProcess::OnUpdateIsCorpUser(bool is_corp_user) {
-  // TODO: joedow - Remove this helper since the host config defines this now.
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {

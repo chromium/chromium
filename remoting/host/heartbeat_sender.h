@@ -61,9 +61,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     // Invoked when the host owner changes.
     virtual void OnUpdateHostOwner(const std::string& host_owner) = 0;
 
-    // Invoked when |is_corp_user| is set in HeartbeatResponse.
-    virtual void OnUpdateIsCorpUser(bool is_corp_user) = 0;
-
     // Invoked when |require_session_authorization| is set in HeartbeatResponse.
     virtual void OnUpdateRequireSessionAuthorization(bool require) = 0;
 

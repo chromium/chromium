@@ -415,9 +415,6 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
       if (!response->primary_user_email().empty()) {
         delegate_->OnUpdateHostOwner(response->primary_user_email());
       }
-      if (response->has_is_corp_user()) {
-        delegate_->OnUpdateIsCorpUser(response->is_corp_user());
-      }
       if (response->has_require_session_authorization()) {
         bool require = response->require_session_authorization();
         delegate_->OnUpdateRequireSessionAuthorization(require);
