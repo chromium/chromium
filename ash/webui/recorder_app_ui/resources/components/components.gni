@@ -10,6 +10,7 @@ component_files = [
   "cra/cra-feature-tour-dialog.ts",
   "cra/cra-icon-button.ts",
   "cra/cra-icon-dropdown.ts",
+  "cra/cra-icon-dropdown-option.ts",
   "cra/cra-icon.ts",
   "cra/cra-image.ts",
   "cra/cra-menu.ts",

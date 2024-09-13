@@ -2,33 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MenuItem} from 'chrome://resources/cros_components/menu/menu_item.js';
+import {
+  IconDropdownOption,
+} from
+  'chrome://resources/cros_components/icon_dropdown/icon-dropdown-option.js';
 import {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
-export class CraMenuItem extends MenuItem {
-  // TODO(pihsun): Remove this once the upstream fix is merged and pulled in
-  // Chromium.
-  override set switchSelected(value: boolean) {
-    const crosSwitch = this.renderRoot?.querySelector('cros-switch');
-    if (!crosSwitch) {
-      this.missedPropertySets.switchSelected = value;
-    } else {
-      crosSwitch.selected = value;
-    }
-  }
-
-  override get switchSelected(): boolean {
-    return (
-      this.renderRoot?.querySelector('cros-switch')?.selected ??
-      this.missedPropertySets.switchSelected ?? false
-    );
-  }
-
+export class CraIconDropdownOption extends IconDropdownOption {
   private setAriaChecked(): void {
     this.listItem?.setAttribute('aria-checked', this.checked.toString());
   }
 
-  override firstUpdated(changedProperties: PropertyValues): void {
+  override firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     const role = this.getAttribute('data-role');
     if (role === 'menuitemradio' || role === 'menuitemcheckbox') {
@@ -47,10 +32,13 @@ export class CraMenuItem extends MenuItem {
   }
 }
 
-window.customElements.define('cra-menu-item', CraMenuItem);
+window.customElements.define(
+  'cra-icon-dropdown-option',
+  CraIconDropdownOption,
+);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cra-menu-item': CraMenuItem;
+    'cra-icon-dropdown-option': CraIconDropdownOption;
   }
 }

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import
-  'chrome://resources/cros_components/icon_dropdown/icon-dropdown-option.js';
 import 'chrome://resources/cros_components/menu/menu_separator.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-dropdown.js';
+import './cra/cra-icon-dropdown-option.js';
 
 import {css, html, map, nothing} from 'chrome://resources/mwc/lit/index.js';
 
@@ -51,14 +50,15 @@ export class MicSelectionButton extends ReactiveLitElement {
     };
     // TODO(kamchonlathorn): Get status and render noise cancellation warning.
     return html`
-      <cros-icon-dropdown-option
+      <cra-icon-dropdown-option
         headline=${mic.label}
         itemStart="icon"
         ?checked=${isSelectedMic}
         @cros-icon-dropdown-option-triggered=${onSelectMic}
+        data-role="menuitemcheckbox"
       >
         <cra-icon slot="start" name=${micIcon}></cra-icon>
-      </cros-icon-dropdown-option>
+      </cra-icon-dropdown-option>
     `;
   }
 
@@ -71,7 +71,7 @@ export class MicSelectionButton extends ReactiveLitElement {
 
     return html`
       <cros-menu-separator></cros-menu-separator>
-      <cros-icon-dropdown-option
+      <cra-icon-dropdown-option
         headline=${i18n.micSelectionMenuChromebookAudioOption}
         itemStart="icon"
         itemEnd="switch"
@@ -79,7 +79,7 @@ export class MicSelectionButton extends ReactiveLitElement {
         @cros-menu-item-triggered=${this.toggleSystemAudio}
       >
         <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
-      </cros-icon-dropdown-option>
+      </cra-icon-dropdown-option>
     `;
   }
 
@@ -93,7 +93,7 @@ export class MicSelectionButton extends ReactiveLitElement {
         shape="circle"
         anchor-corner="start-start"
         menu-corner="end-start"
-        role="combobox"
+        menu-type="menu"
         aria-label=${i18n.micSelectionMenuButtonTooltip}
       >
         <cra-icon slot="button-icon" name="mic"></cra-icon>
