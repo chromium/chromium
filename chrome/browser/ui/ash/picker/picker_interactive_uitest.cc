@@ -413,6 +413,47 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFileCategory) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  // TODO: b/360229206 - Use a contenteditable input field so the file can be
+  // inserted.
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFileCategoryResultName = "FileCategoryResult";
+  constexpr std::string_view kFileResultName = "FileResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      // Search for the file category
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"file"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kFileCategoryResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"Files"),
+      // Press the file category and check the file grid.
+      PressButton(kFileCategoryResultName),
+      WaitForShow(ash::kPickerSearchResultsImageItemElementId),
+      // Search for a file and insert it.
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kFileResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
+      PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
+}
+
 // Searches for 'today', checks the top result is the date, and inserts it
 // into a web input field.
 IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {

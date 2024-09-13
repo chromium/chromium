@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -33,6 +35,8 @@ PickerImageItemView::PickerImageItemView(
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerImageItemCornerRadius);
   GetViewAccessibility().SetName(accessible_name_);
+  SetProperty(views::kElementIdentifierKey,
+              kPickerSearchResultsImageItemElementId);
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);

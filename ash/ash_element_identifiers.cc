@@ -60,6 +60,8 @@ DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kPickerSearchFieldTextfieldElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kPickerSearchResultsPageElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kPickerSearchResultsListItemElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    kPickerSearchResultsImageItemElementId);
+DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     kQuickSettingsAudioDetailedViewButtonElementId);

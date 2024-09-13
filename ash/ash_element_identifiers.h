@@ -165,6 +165,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kPickerSearchResultsListItemElementId);
 
+// Identifies an image result in the search results page of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kPickerSearchResultsImageItemElementId);
+
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);
