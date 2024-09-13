@@ -69,7 +69,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
 
   // `groups_manager` can be null in tests.
   GoogleGroupsManager* groups_manager =
-      GoogleGroupsManagerFactory::GetForBrowserState(profile);
+      GoogleGroupsManagerFactory::GetForProfile(profile);
   plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
       feature_check =
           (groups_manager &&
