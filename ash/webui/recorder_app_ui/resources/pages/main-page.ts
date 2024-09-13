@@ -222,7 +222,10 @@ export class MainPage extends ReactiveLitElement {
   }
 
   private onDeleteRecordingClick(ev: CustomEvent<string>) {
-    this.lastDeleteId = ev.detail;
+    const recordingId = ev.detail;
+    this.lastDeleteId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     // TODO(pihsun): Separate delete recording dialog while recording and while
     // playback/on main page, so the latter can take a recordingId and does
     // deletion inside the component.
@@ -241,13 +244,19 @@ export class MainPage extends ReactiveLitElement {
 
   private onExportRecordingClick(ev: CustomEvent<string>) {
     const dialog = assertExists(this.exportDialog.value);
-    dialog.recordingId = ev.detail;
+    const recordingId = ev.detail;
+    dialog.recordingId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     dialog.show();
   }
 
   private onShowRecordingInfoClick(ev: CustomEvent<string>) {
     const dialog = assertExists(this.recordingInfoDialog.value);
-    dialog.recordingId = ev.detail;
+    const recordingId = ev.detail;
+    dialog.recordingId = recordingId;
+    // The dialog will focus back to last focused item when closed.
+    this.recordingFileList.value?.focusOnOptionOfRecordingId(recordingId);
     dialog.show();
   }
 

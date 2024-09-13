@@ -36,6 +36,7 @@ import {
 import {stopPropagation} from '../core/utils/event_handler.js';
 import {clamp} from '../core/utils/utils.js';
 
+import {CraIconButton} from './cra/cra-icon-button.js';
 import {
   getNumSpeakerClass,
   SPEAKER_LABEL_COLORS,
@@ -230,8 +231,14 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   private readonly recordingCard = createRef<Card>();
 
+  private readonly optionsButtonRef = createRef<CraIconButton>();
+
   get recordingCardForTest(): Card {
     return assertExists(this.recordingCard.value);
+  }
+
+  focusOnOption(): void {
+    this.optionsButtonRef.value?.focus();
   }
 
   private onRecordingClick() {
@@ -462,6 +469,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             @click=${this.onOptionsClick}
             aria-label=${i18n.recordingItemOptionsButtonAriaLabel(title)}
             aria-expanded=${this.menuShown.value}
+            ${ref(this.optionsButtonRef)}
           >
             <cra-icon slot="icon" name="more_vertical"></cra-icon>
           </cra-icon-button>

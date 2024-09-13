@@ -35,7 +35,11 @@ import {
   RecordingMetadataMap,
 } from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
-import {assertExhaustive, assertExists} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 import {
   getMonthLabel,
   getToday,
@@ -175,6 +179,25 @@ export class RecordingFileList extends ReactiveLitElement {
 
   recordingFileCountForTest(): number {
     return Object.keys(this.recordingMetadataMap).length;
+  }
+
+  /**
+   * Try to focus onto the "more options" button of the recording.
+   *
+   * Does nothing if the specific recording doesn't exist.
+   */
+  focusOnOptionOfRecordingId(recordingId: string|null): void {
+    if (recordingId === null) {
+      return;
+    }
+    const item =
+      this.shadowRoot?.querySelector(
+        `recording-file-list-item[data-recording-id="${recordingId}"]`,
+      ) ??
+      null;
+    if (item !== null) {
+      assertInstanceof(item, RecordingFileListItem).focusOnOption();
+    }
   }
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
@@ -403,6 +426,7 @@ export class RecordingFileList extends ReactiveLitElement {
             })();
             return html`
               <recording-file-list-item
+                data-recording-id=${recording.id}
                 .recording=${recording}
                 .searchHighlight=${searchHighlight}
                 .playing=${playing}
