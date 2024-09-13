@@ -76,15 +76,6 @@ public class SearchEngineChoiceServiceUnitTest {
 
         assertFalse(service.isDeviceChoiceDialogEligible());
         assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
-
-        var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
-        ShadowLooper.runUiThreadTasks();
-        if (mIsClayBlockingEnabled) {
-            assertTrue(shouldShowDeviceDialogPromise.isFulfilled());
-            assertFalse(shouldShowDeviceDialogPromise.getResult());
-        } else {
-            assertTrue(shouldShowDeviceDialogPromise.isRejected());
-        }
     }
 
     @Test
@@ -99,22 +90,12 @@ public class SearchEngineChoiceServiceUnitTest {
 
             assertTrue(service.isDeviceChoiceDialogEligible());
             assertTrue(service.getIsDeviceChoiceRequiredSupplier().get());
-
-            var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
-            ShadowLooper.runUiThreadTasks();
-            assertTrue(shouldShowDeviceDialogPromise.isFulfilled());
-            assertTrue(shouldShowDeviceDialogPromise.getResult());
         } else {
             // Same as the abstract delegate.
             assertTrue(service.getDeviceCountry().isRejected());
 
             assertFalse(service.isDeviceChoiceDialogEligible());
             assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
-
-            var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
-            ShadowLooper.runUiThreadTasks();
-
-            assertTrue(shouldShowDeviceDialogPromise.isRejected());
         }
 
         // The calls below should be fine to run without triggering anything.
@@ -225,36 +206,12 @@ public class SearchEngineChoiceServiceUnitTest {
     }
 
     @Test
-    public void testShouldShowDeviceChoiceDialog() {
-        var service = new SearchEngineChoiceService(mDelegate);
-
-        ObservableSupplierImpl<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
-
-        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
-        var promise = service.shouldShowDeviceChoiceDialog();
-        ShadowLooper.runUiThreadTasks();
-
-        if (mIsClayBlockingEnabled) {
-            assertTrue(promise.isPending());
-            verify(mDelegate).getIsDeviceChoiceRequiredSupplier();
-
-            fakeSupplier.set(true);
-            ShadowLooper.runUiThreadTasks();
-            assertTrue(promise.isFulfilled());
-            assertTrue(promise.getResult());
-        } else {
-            assertTrue(promise.isRejected());
-            verify(mDelegate, never()).getIsDeviceChoiceRequiredSupplier();
-        }
-    }
-
-    @Test
     public void testNotifyDeviceChoiceBlockShown() {
         var service = new SearchEngineChoiceService(mDelegate);
 
         service.notifyDeviceChoiceBlockShown();
         verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
-                .log(DeviceChoiceEventType.BLOCK_SHOWN);
+                .notifyDeviceChoiceEvent(DeviceChoiceEventType.BLOCK_SHOWN);
     }
 
     @Test
@@ -263,7 +220,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         service.notifyDeviceChoiceBlockCleared();
         verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
-                .log(DeviceChoiceEventType.BLOCK_CLEARED);
+                .notifyDeviceChoiceEvent(DeviceChoiceEventType.BLOCK_CLEARED);
     }
 
     private static void configureClayBlockingFeature(

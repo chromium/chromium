@@ -68,5 +68,5 @@ public abstract class SearchEngineCountryDelegate {
      * {@link DeviceChoiceEventType} values for more details.
      */
     @MainThread
-    public void log(@DeviceChoiceEventType int eventType) {}
+    public void notifyDeviceChoiceEvent(@DeviceChoiceEventType int eventType) {}
 }

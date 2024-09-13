@@ -18,7 +18,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
@@ -130,8 +129,8 @@ public class SearchEngineChoiceService {
      * default apps.
      *
      * <p>This call might be relying on cached data, and the result of {@link
-     * #shouldShowDeviceChoiceDialog} or {@link #getIsDeviceChoiceRequiredSupplier} should be
-     * checked afterwards to ensure that the dialog is actually required.
+     * #getIsDeviceChoiceRequiredSupplier} should be checked afterwards to ensure that the dialog is
+     * actually required.
      */
     @MainThread
     public boolean isDeviceChoiceDialogEligible() {
@@ -140,25 +139,6 @@ public class SearchEngineChoiceService {
         assert mDelegate != null;
 
         return mDelegate.isDeviceChoiceDialogEligible();
-    }
-
-    /**
-     * Returns a {@link Promise} that will be fulfilled with a determination of whether the user is
-     * required to complete their choices of system default apps before continuing to use this app.
-     *
-     * @deprecated Prefer using {@link #getIsDeviceChoiceRequiredSupplier()} instead.
-     */
-    @Deprecated
-    @MainThread
-    public Promise<Boolean> shouldShowDeviceChoiceDialog() {
-        ThreadUtils.checkUiThread();
-        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            return Promise.rejected();
-        }
-
-        var promise = new Promise<Boolean>();
-        new OneShotCallback<>(getIsDeviceChoiceRequiredSupplier(), promise::fulfill);
-        return promise;
     }
 
     /**
@@ -237,8 +217,8 @@ public class SearchEngineChoiceService {
         }
 
         assert mDelegate != null;
-        Log.i(TAG, "log(%d)", eventType);
-        mDelegate.log(eventType);
+        Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        mDelegate.notifyDeviceChoiceEvent(eventType);
     }
 
     private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {

@@ -103,14 +103,14 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
 
     @Override
     @MainThread
-    public void log(@DeviceChoiceEventType int eventType) {
+    public void notifyDeviceChoiceEvent(@DeviceChoiceEventType int eventType) {
         ThreadUtils.assertOnUiThread();
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            super.log(eventType);
+            super.notifyDeviceChoiceEvent(eventType);
         }
 
         if (mEnableLogging) {
-            Log.i(TAG, "log(%d)", eventType);
+            Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
         }
     }
 }
