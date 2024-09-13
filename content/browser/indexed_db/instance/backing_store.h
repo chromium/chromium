@@ -564,9 +564,6 @@ class CONTENT_EXPORT BackingStore {
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found);
 
-  // Public for ActiveBlobRegistry::MarkBlobInactive.
-  virtual void ReportBlobUnused(int64_t database_id, int64_t blob_number);
-
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 
   virtual std::unique_ptr<Cursor> OpenObjectStoreKeyCursor(
@@ -697,6 +694,9 @@ class CONTENT_EXPORT BackingStore {
                                  const blink::IndexedDBKey& key,
                                  std::string* found_encoded_primary_key,
                                  bool* found);
+
+  // Used by ActiveBlobRegistry::MarkBlobInactive.
+  void ReportBlobUnused(int64_t database_id, int64_t blob_number);
 
   // Remove the blob directory for the specified database and all contained
   // blob files.
