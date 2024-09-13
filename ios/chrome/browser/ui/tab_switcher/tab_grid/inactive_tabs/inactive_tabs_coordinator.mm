@@ -384,6 +384,16 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // No-op.
 }
 
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate
 
 - (void)inactiveTabsUserEducationCoordinatorDidTapSettingsButton:

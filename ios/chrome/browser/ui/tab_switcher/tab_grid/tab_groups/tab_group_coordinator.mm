@@ -307,4 +307,14 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController {
+  // No-op
+}
+
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController {
+  // No-op
+}
+
 @end

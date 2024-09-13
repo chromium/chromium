@@ -1819,6 +1819,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.topToolbar unfocusSearchBar];
 }
 
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController {
+  [self.mutator dragAndDropSessionStarted];
+}
+
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController {
+  [self.mutator dragAndDropSessionEnded];
+}
+
 #pragma mark - TabGridToolbarsMainTabGridDelegate
 
 - (void)pageControlChangedValue:(id)sender {

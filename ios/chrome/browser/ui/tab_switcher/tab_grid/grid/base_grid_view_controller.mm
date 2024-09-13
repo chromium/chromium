@@ -945,6 +945,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // Notify the delegate that a drag cames from another app.
     [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
   }
+  if (!_localDragActionInProgress) {
+    // Disable buttons toolbar if no items are dragged in the current collection
+    // view.
+    [self.delegate gridViewControllerDropSessionDidEnter:self];
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidExit:(id<UIDropSession>)session {
+  if (!_localDragActionInProgress) {
+    // Enable back toolbar buttons if no items are dragged in the current
+    // collection view.
+    [self.delegate gridViewControllerDropSessionDidExit:self];
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView

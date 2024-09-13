@@ -73,6 +73,12 @@ class WebStateID;
 // Tells the delegate that a drop animation did end.
 - (void)gridViewControllerDropAnimationDidEnd:
     (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did enter.
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did exit.
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs button was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs (in
