@@ -25,10 +25,10 @@
       Lorem Ipsum or whatever
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID" desc="Cancel button text for the experimental enterprise plus addresses feature on Android" translateable="false">
-      Dolor
+      Cancel
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID" desc="Ok button text for the experimental enterprise plus addresses feature on Android" translateable="false">
-      Sit
+      Use address
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID" desc="The error message shown on the android bottom sheet." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -37,7 +37,7 @@
       Refresh
     </message>
     <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT_ANDROID" desc="The content shown in the plus address label of the modal while a refresh is ongoing" formatter_data="android_java" translateable="false">
-      Refreshing ...
+      Refreshing...
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android used when the modal is shown for the first time." translateable="false">
       First time usage title placeholder.
@@ -81,16 +81,16 @@
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS" desc="Cancel button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
-      Dolor
+      Cancel
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS" desc="Ok button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
-      Sit
+      Use Address
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
-      Loading ...
+      Loading...
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
-      Refreshing ...
+      Refreshing...
     </message>
     <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CELL_INDEX_IOS" desc="Accessibility label for the plus address suggestions in the manual fallback view to indicate the position of the plus address suggestion in the list of plus address suggestions." translateable="false">
       {count, plural,
@@ -136,10 +136,10 @@
       Lorem Ipsum or whatever
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
-      Dolor
+      Cancel
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
-      Sit
+      Use address
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
       Refresh
