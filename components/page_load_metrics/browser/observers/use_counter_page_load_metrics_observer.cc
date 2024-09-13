@@ -347,6 +347,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kDeclarativeShadowDom},
           {WebFeature::kHTMLDetailsElementNameAttribute,
            WebDXFeature::kDetailsName},
+          {WebFeature::kElementCheckVisibility,
+           WebDXFeature::kElementCheckVisibility},
           {WebFeature::kDialogElement, WebDXFeature::kDialog},
           {WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
            WebDXFeature::kDocumentPictureInPicture},

@@ -170,6 +170,7 @@ enum WebDXFeature {
   kOverflowShorthand = 112,
   kFieldSizing = 113,
   kDetailsName = 114,
+  kElementCheckVisibility = 115,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
