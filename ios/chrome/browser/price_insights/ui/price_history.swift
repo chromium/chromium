@@ -99,38 +99,39 @@ struct GraphGesture: ViewModifier {
   let recordGraphInteraction: () -> Void
 
   func body(content: Content) -> some View {
+    // The minimum distance amount here allows scrolling to take precedence over
+    // dragging when the user is scrolling vertically.
+    // There are 3 gestures interacting here: dragging on the graph, scrolling
+    // the panel, and dragging to expand the panel. The solution uses 2
+    // different methods to handle the graph drag's interaction with each of
+    // the other two gestures. First, vs scrolling the panel, using a
+    // DragGesture with a minimum distance allows the scrolling to supercede
+    // the drag if the user moves their finger vertically, but still allows the
+    // drag to go off if the user moves their finger horizontally. The scroll
+    // view looks like it requires the user to move their finger some short
+    // distance vertically before scrolling begins. So if the user moves
+    // vertically, the scroll gesture activates before the minimum distance is
+    // hit. But if the user moves horiztonally, the graph's minimum distance
+    // is hit first, activating that one.
+    //
+    // For the interaction with the gesture to expand the sheet,
+    // UIGestureRecognizerDelegate methods are used elsewhere to add a
+    // hierarchical relationship. This makes sure that the expansion gesture
+    // doesn't activate until after the graph drag gesture fails. It doesn't
+    // matter whether the graph gesture actually fails or not because the sheet
+    // expand gesture should never activate when dragging on the graph.
+    let gesture = DragGesture(minimumDistance: 15, coordinateSpace: .local)
+      .onChanged { value in
+        updateSelectionData(value.location, geometry, proxy)
+        updateTooltipPosition(geometry, proxy)
+      }
+      .onEnded { _ in
+        recordGraphInteraction()
+      }
     if #available(iOS 18, *) {
-      /// To avoid conflicts between vertical scrolling and horizontal dragging
-      /// to display the tooltip, a long press is necessary. Once a long press
-      /// is detected, the system starts listening for a drag event, which we
-      /// interpret as the user's intent to horizontally drag the tooltip on the graph.
-      /// The heuristic for the long press was chosen after manual testing.
-      content.gesture(
-        LongPressGesture(minimumDuration: 0.07)
-          .sequenced(before: DragGesture())
-          .onChanged { value in
-            if case .second(_, let drag) = value, let drag = drag {
-              updateSelectionData(drag.location, geometry, proxy)
-              updateTooltipPosition(geometry, proxy)
-            }
-          }
-          .onEnded { _ in
-            recordGraphInteraction()
-          }
-      )
+      content.gesture(gesture, name: kPanelContentGestureRecognizerName)
     } else {
-      /// TODO(b/364871144): Investigate a solution that allows for both vertical
-      /// scrolling and horizontal dragging on iOS versions earlier than 18.
-      content.gesture(
-        DragGesture()
-          .onChanged { value in
-            updateSelectionData(value.location, geometry, proxy)
-            updateTooltipPosition(geometry, proxy)
-          }
-          .onEnded { _ in
-            recordGraphInteraction()
-          }
-      )
+      content.gesture(gesture)
     }
   }
 }

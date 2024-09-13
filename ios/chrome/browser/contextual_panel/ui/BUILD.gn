@@ -30,6 +30,8 @@ source_set("ui") {
 
 source_set("public") {
   sources = [
+    "contextual_panel_view_constants.h",
+    "contextual_panel_view_constants.mm",
     "panel_block_data.h",
     "panel_block_data.mm",
     "panel_item_collection_view_cell.h",
