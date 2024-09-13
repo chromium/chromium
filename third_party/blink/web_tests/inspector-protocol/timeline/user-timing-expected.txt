@@ -8,6 +8,9 @@ FYI: startTime in args is the equivalent DOMHighResTimeStamp.
 Marks:
 ph name                offset from ~zero   args
 I  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","stackTrace":[{"columnNumber":34,"functionName":"pageFunction","lineNumber":3,"scriptId":"5","url":""}],"startTime":0}}
+I  clearMarks                       0 ms   {"name":"@1000"}
+I  clearMeasures                    0 ms   {"name":"@1500 for 200"}
+I  clearMeasures                    0 ms   {"name":""}
 I  @500                           500 ms   {"data":{"navigationId":"xNavIdx","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":9,"scriptId":"5","url":""}],"startTime":500}}
 I  @1000                         1000 ms   {"data":{"navigationId":"xNavIdx","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":8,"scriptId":"5","url":""}],"startTime":1000}}
 I  @1200                         1200 ms   {"data":{"navigationId":"xNavIdx","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":7,"scriptId":"5","url":""}],"startTime":1200}}
@@ -19,7 +22,7 @@ b  ~zero to @500                    0 ms   {"stackTrace":[{"columnNumber":17,"fu
 e  ~zero to @500                  500 ms   {}
 b  @1000 to @1200                1000 ms   {"detail":"\"its @1000 to @1200\"","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":13,"scriptId":"5","url":""}],"startTime":1000}
 e  @1000 to @1200                1200 ms   {}
-b  @1500 for 200                 1500 ms   {"detail":"{\"key\":\"val\",\"num\":123}","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":17,"scriptId":"5","url":""}],"startTime":1500}
+b  @1500 for 200                 1500 ms   {"detail":"{\"key\":\"val\",\"num\":123}","stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":19,"scriptId":"5","url":""}],"startTime":1500}
 e  @1500 for 200                 1700 ms   {}
 b  @2000 for 300                 2000 ms   {"stackTrace":[{"columnNumber":17,"functionName":"pageFunction","lineNumber":16,"scriptId":"5","url":""}],"startTime":2000}
 e  @2000 for 300                 2300 ms   {}
