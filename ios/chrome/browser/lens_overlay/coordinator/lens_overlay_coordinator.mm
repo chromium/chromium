@@ -544,6 +544,7 @@ const CGFloat kMenuSymbolSize = 18;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
   _resultViewController.mutator = _resultMediator;
+  _resultViewController.toolbarMutator = _mediator;
 
   _resultContextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:browser
@@ -588,7 +589,6 @@ const CGFloat kMenuSymbolSize = 18;
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
-  _resultViewController.toolbarMutator = _mediator;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 

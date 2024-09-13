@@ -22,7 +22,7 @@
 namespace {
 
 /// Top padding for the view content.
-const CGFloat kViewTopPadding = 19;
+const CGFloat kViewTopPadding = 22;
 
 /// Width of the back button.
 const CGFloat kBackButtonWidth = 44;
@@ -35,12 +35,14 @@ const CGFloat kCancelButtonHorizontalInset = 8;
 const CGFloat kCancelButtonFontSize = 15;
 
 /// Minimum leading and trailing padding for the omnibox container.
-const CGFloat kOmniboxContainerHorizontalPadding = 12;
+const CGFloat kOmniboxContainerHorizontalPadding = 10;
+
 /// Minimum height of the omnibox container.
-const CGFloat kOmniboxContainerMinimumHeight = 42;
-/// Minimum padding between the top of the view and the top of the web
-/// container.
-const CGFloat kWebContainerTopPadding = 8;
+const CGFloat kOmniboxContainerMinimumHeight = 52;
+/// Corner radius of the omnibox container.
+const CGFloat kOmniboxContainerCornerRadius = 26;
+/// Padding between the omnibox and the web container.
+const CGFloat kWebContainerTopPadding = 16;
 
 /// Height of the progress bar.
 const CGFloat kProgressBarHeight = 2.0f;
@@ -120,21 +122,28 @@ const CGFloat kProgressBarFull = 1.0f;
   [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
-  _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _backButton.hidden = YES;
   UIImage* image =
       DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
-  [_backButton setImage:image forState:UIControlStateNormal];
-  [_backButton addTarget:self
-                  action:@selector(didTapBackButton:)
-        forControlEvents:UIControlEventTouchUpInside];
+  UIButtonConfiguration* backButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  backButtonConfiguration.image = image;
+  // Constant to visually center the image as it's slightly left aligned.
+  backButtonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(0, 4, 0, 0);
+  __weak id<LensToolbarMutator> weakToolbarMutator = self.toolbarMutator;
+  _backButton = [UIButton
+      buttonWithConfiguration:backButtonConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakToolbarMutator goBack];
+                }]];
+  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.hidden = YES;
 
   // Omnibox container.
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxContainer.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
-  _omniboxContainer.layer.cornerRadius = 21;
+  _omniboxContainer.layer.cornerRadius = kOmniboxContainerCornerRadius;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
@@ -358,11 +367,6 @@ const CGFloat kProgressBarFull = 1.0f;
 }
 
 #pragma mark - Private
-
-/// Handles back button taps.
-- (void)didTapBackButton:(UIView*)button {
-  [self.toolbarMutator goBack];
-}
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
