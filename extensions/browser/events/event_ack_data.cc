@@ -202,8 +202,9 @@ void EventAckData::DecrementInflightEvent(
       result);
   // If the worker was already stopped or StartExternalRequest didn't succeed,
   // the FinishedExternalRequest will legitimately fail.
-  if (worker_stopped || !start_ok)
+  if (worker_stopped || !start_ok) {
     return;
+  }
 
   base::UmaHistogramEnumeration(
       "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"

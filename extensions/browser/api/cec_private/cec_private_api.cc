@@ -29,11 +29,13 @@ CecPrivateFunction::~CecPrivateFunction() = default;
 
 // Only allow calls from kiosk mode extensions.
 bool CecPrivateFunction::PreRunValidation(std::string* error) {
-  if (!ExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error)) {
     return false;
+  }
 
-  if (KioskModeInfo::IsKioskEnabled(extension()))
+  if (KioskModeInfo::IsKioskEnabled(extension())) {
     return true;
+  }
 
   *error = kKioskOnlyError;
   return false;

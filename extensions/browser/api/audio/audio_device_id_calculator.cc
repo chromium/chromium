@@ -20,13 +20,15 @@ AudioDeviceIdCalculator::~AudioDeviceIdCalculator() = default;
 
 std::string AudioDeviceIdCalculator::GetStableDeviceId(
     uint64_t audio_service_stable_id) {
-  if (!stable_id_map_loaded_)
+  if (!stable_id_map_loaded_) {
     LoadStableIdMap();
+  }
   std::string audio_service_stable_id_str =
       base::NumberToString(audio_service_stable_id);
   const auto& it = stable_id_map_.find(audio_service_stable_id_str);
-  if (it != stable_id_map_.end())
+  if (it != stable_id_map_.end()) {
     return it->second;
+  }
   return GenerateNewStableDeviceId(audio_service_stable_id_str);
 }
 

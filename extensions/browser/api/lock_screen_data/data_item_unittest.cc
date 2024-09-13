@@ -214,8 +214,9 @@ class DataItemTest : public testing::Test {
     item->Read(base::BindOnce(&ReadCallback, run_loop.QuitClosure(), &result,
                               &read_content));
     run_loop.Run();
-    if (data)
+    if (data) {
       *data = std::move(read_content);
+    }
     return result;
   }
 
@@ -263,8 +264,9 @@ class DataItemTest : public testing::Test {
                        &result, &items_dict));
     run_loop.Run();
 
-    if (result != OperationResult::kSuccess)
+    if (result != OperationResult::kSuccess) {
       return result;
+    }
 
     items->clear();
     for (const auto item : items_dict) {

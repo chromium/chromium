@@ -109,8 +109,9 @@ bool CanRendererActOnBehalfOfExtension(
   // TODO(lukasza): Investigate if the exception below can be avoided if
   // `render_process_host` hosts HTTP origins (i.e. if the exception can be
   // restricted to NTP, and/or chrome://... cases.
-  if (extension_id.empty())
+  if (extension_id.empty()) {
     return true;
+  }
 
   // Did `render_process_id` run a content script or user script from
   // `extension_id`?
@@ -426,8 +427,9 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
       render_frame_host_url, params.context_type,
       ExtensionAPI::GetSharedInstance(), std::move(callback),
       render_frame_host);
-  if (!function.get())
+  if (!function.get()) {
     return;
+  }
 
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(

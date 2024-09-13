@@ -82,12 +82,14 @@ int ContentHashReader::block_size() const {
 
 bool ContentHashReader::GetHashForBlock(int block_index,
                                         const std::string** result) const {
-  if (status_ != InitStatus::SUCCESS)
+  if (status_ != InitStatus::SUCCESS) {
     return false;
+  }
   DCHECK(block_index >= 0);
 
-  if (static_cast<unsigned>(block_index) >= hashes_.size())
+  if (static_cast<unsigned>(block_index) >= hashes_.size()) {
     return false;
+  }
   *result = &hashes_[block_index];
 
   return true;

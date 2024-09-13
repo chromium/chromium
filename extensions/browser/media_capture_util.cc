@@ -77,8 +77,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices(),
         request.requested_audio_device_ids);
-    if (device)
+    if (device) {
       devices.audio_device = *device;
+    }
   }
 
   if (request.video_type ==
@@ -87,8 +88,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices(),
         request.requested_video_device_ids);
-    if (device)
+    if (device) {
       devices.video_device = *device;
+    }
   }
 
   // TODO(jamescook): Should we show a recording icon somewhere? If so, where?

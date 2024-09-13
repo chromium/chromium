@@ -30,8 +30,9 @@ class ViewTypeUserData : public base::SupportsUserData::Data {
 }  // namespace
 
 mojom::ViewType GetViewType(WebContents* tab) {
-  if (!tab)
+  if (!tab) {
     return mojom::ViewType::kInvalid;
+  }
 
   ViewTypeUserData* user_data = static_cast<ViewTypeUserData*>(
       tab->GetUserData(&kViewTypeUserDataKey));
@@ -46,11 +47,12 @@ void SetViewType(WebContents* tab, mojom::ViewType type) {
   ExtensionsBrowserClient::Get()->AttachExtensionTaskManagerTag(tab, type);
 
   if (auto* ewco = ExtensionWebContentsObserver::GetForWebContents(tab)) {
-    tab->ForEachRenderFrameHost(
-        [ewco, type](content::RenderFrameHost* frame_host) {
-          if (mojom::LocalFrame* local_frame = ewco->GetLocalFrame(frame_host))
-            local_frame->NotifyRenderViewType(type);
-        });
+    tab->ForEachRenderFrameHost([ewco,
+                                 type](content::RenderFrameHost* frame_host) {
+      if (mojom::LocalFrame* local_frame = ewco->GetLocalFrame(frame_host)) {
+        local_frame->NotifyRenderViewType(type);
+      }
+    });
   }
 }
 

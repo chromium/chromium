@@ -81,8 +81,9 @@ void AppWindowContentsImpl::NativeWindowChanged(
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
   // Return early if this method is called when the render frame is not live.
-  if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive())
+  if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive()) {
     return;
+  }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
       ->GetLocalFrameChecked(web_contents_->GetPrimaryMainFrame())
       .AppWindowClosed(send_onclosed);
@@ -98,8 +99,9 @@ WindowController* AppWindowContentsImpl::GetWindowController() const {
 
 void AppWindowContentsImpl::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // The callback inside app_window will be moved after the first call.
   host_->OnDidFinishFirstNavigation();

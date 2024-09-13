@@ -120,10 +120,11 @@ LifetimeEnforcerFactories::GetLifetimeEnforcer(
         notify_inactive_callback) {
   if (g_testing_override) {
     auto iter = g_testing_override->map().find(reason);
-    if (iter != g_testing_override->map().end())
+    if (iter != g_testing_override->map().end()) {
       return iter->second.Run(offscreen_document,
                               std::move(termination_callback),
                               std::move(notify_inactive_callback));
+    }
   }
 
   auto& factories = GetFactoriesInstance();

@@ -201,12 +201,14 @@ std::optional<ComputedHashes::Data> ComputedHashes::Compute(
   // First discover all the file paths and put them in a sorted set.
   SortedFilePathSet paths;
   while (true) {
-    if (is_cancelled && is_cancelled.Run())
+    if (is_cancelled && is_cancelled.Run()) {
       return std::nullopt;
+    }
 
     base::FilePath full_path = enumerator.Next();
-    if (full_path.empty())
+    if (full_path.empty()) {
       break;
+    }
     paths.insert(full_path);
   }
 

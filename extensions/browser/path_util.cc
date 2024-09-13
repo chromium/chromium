@@ -72,8 +72,9 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   }
 
   base::FilePath display_path = base::FilePath(kHomeShortcut);
-  if (source_path == home_path)
+  if (source_path == home_path) {
     return display_path;
+  }
 
 #if BUILDFLAG(IS_MAC)
   DCHECK(source_path.IsAbsolute());
@@ -101,8 +102,9 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   DCHECK_EQ(actual_path.value(), source_path.value());
   return display_path;
 #else   // BUILDFLAG(IS_MAC)
-  if (home_path.AppendRelativePath(source_path, &display_path))
+  if (home_path.AppendRelativePath(source_path, &display_path)) {
     return display_path;
+  }
   return source_path;
 #endif  // BUILDFLAG(IS_MAC)
 }

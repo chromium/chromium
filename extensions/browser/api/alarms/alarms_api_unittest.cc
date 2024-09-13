@@ -98,8 +98,9 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   // JsAlarms.
   std::vector<JsAlarm> ToAlarmList(const std::optional<base::Value>& value) {
     std::vector<JsAlarm> list;
-    if (!value)
+    if (!value) {
       return list;
+    }
     for (const auto& item : value->GetList()) {
       auto alarm = JsAlarm::FromValue(item);
       if (!alarm) {
@@ -419,8 +420,9 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
 
     // Test the "7" alarm.
     JsAlarm* alarm = &alarms[0];
-    if (alarm->name != "7")
+    if (alarm->name != "7") {
       alarm = &alarms[1];
+    }
     EXPECT_EQ("7", alarm->name);
     EXPECT_THAT(alarm->period_in_minutes, testing::Eq(7));
   }

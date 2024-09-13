@@ -107,8 +107,9 @@ void DedupingFactory<BaseClassT, ValueT>::RegisterFactoryMethod(
     FactoryMethod factory_method) {
   DCHECK(!base::Contains(factory_methods_, instance_type));
   factory_methods_[instance_type] = factory_method;
-  if (parameterized == IS_PARAMETERIZED)
+  if (parameterized == IS_PARAMETERIZED) {
     parameterized_types_.insert(instance_type);
+  }
 }
 
 template <typename BaseClassT, typename ValueT>
@@ -137,8 +138,9 @@ DedupingFactory<BaseClassT, ValueT>::Instantiate(
     if (prototypes.empty()) {
       scoped_refptr<const BaseClassT> new_object =
           (*factory_method)(instance_type, value, error, bad_message);
-      if (!new_object.get() || !error->empty() || *bad_message)
+      if (!new_object.get() || !error->empty() || *bad_message) {
         return scoped_refptr<const BaseClassT>();
+      }
       prototypes.push_back(new_object);
     }
     return prototypes.front();
@@ -147,8 +149,9 @@ DedupingFactory<BaseClassT, ValueT>::Instantiate(
   // Handle parameterized objects.
   scoped_refptr<const BaseClassT> new_object =
       (*factory_method)(instance_type, value, error, bad_message);
-  if (!new_object.get() || !error->empty() || *bad_message)
+  if (!new_object.get() || !error->empty() || *bad_message) {
     return scoped_refptr<const BaseClassT>();
+  }
 
   size_t length = 0;
   for (typename PrototypeList::iterator i = prototypes.begin();
