@@ -8,6 +8,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_image_item_row_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
@@ -30,6 +31,8 @@
 #include "ui/views/view_observer.h"
 
 namespace {
+
+using ::testing::SizeIs;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebInputFieldFocusedEvent);
@@ -528,12 +531,16 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
 }
 
 IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
-  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test1.png"));
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test2.png"));
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test3.png"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
       chrome::FindLastActive()->window()->GetElementContext();
-  constexpr std::string_view kFileName = "File";
+  constexpr std::string_view kFile1Name = "File1";
+  constexpr std::string_view kFile2Name = "File2";
+  constexpr std::string_view kFile3Name = "File3";
   views::Textfield* picker_search_field = nullptr;
 
   RunTestSequence(
@@ -546,11 +553,21 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
                 }),
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
-      WaitForShow(ash::kPickerSearchResultsImageItemElementId),
+      WaitForShow(ash::kPickerSearchResultsImageRowElementId),
+      WaitForViewProperty(ash::kPickerSearchResultsImageRowElementId,
+                          ash::PickerImageItemRowView, Items, SizeIs(3)),
       NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
-                                                         kFileName, 0),
-      CheckViewProperty(kFileName, &views::View::GetAccessibleName,
-                        u"Insert test.png"));
+                                                         kFile1Name, 0),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFile2Name, 1),
+      NameDescendantViewByType<ash::PickerImageItemView>(ash::kPickerElementId,
+                                                         kFile3Name, 2),
+      CheckViewProperty(kFile1Name, &views::View::GetAccessibleName,
+                        u"Insert test1.png"),
+      CheckViewProperty(kFile2Name, &views::View::GetAccessibleName,
+                        u"Insert test2.png"),
+      CheckViewProperty(kFile3Name, &views::View::GetAccessibleName,
+                        u"Insert test3.png"));
 }
 
 // Navigates through the zero-state UI using only the keyboard.
