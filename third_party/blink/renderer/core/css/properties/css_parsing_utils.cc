@@ -2949,10 +2949,11 @@ static bool ConsumeDeprecatedGradientColorStop(
 
 static CSSValue* ConsumeDeprecatedGradient(CSSParserTokenStream& stream,
                                            const CSSParserContext& context) {
-  CSSValueID id = stream.ConsumeIncludingWhitespace().Id();
+  CSSValueID id = stream.Peek().Id();
   if (id != CSSValueID::kRadial && id != CSSValueID::kLinear) {
     return nullptr;
   }
+  stream.ConsumeIncludingWhitespace();  // id
 
   if (!ConsumeCommaIncludingWhitespace(stream)) {
     return nullptr;
