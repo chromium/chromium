@@ -85,6 +85,11 @@ public interface NativePage {
      */
     boolean needsToolbarShadow();
 
+    /** Whether the native page supports drawing edge to edge. */
+    default boolean supportsEdgeToEdge() {
+        return false;
+    }
+
     /** Updates the native page based on the given url. */
     void updateForUrl(String url);
 

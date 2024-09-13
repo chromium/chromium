@@ -19,6 +19,7 @@ import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -94,6 +95,11 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isEdgeToEdgeWebOptInEnabled() {
         return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+    }
+
+    /** Whether key native pages should draw to edge. */
+    public static boolean isDrawKeyNativePageToEdgeEnabled() {
+        return isEnabled() && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
     }
 
     /**
@@ -180,7 +186,7 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isPageOptedIntoEdgeToEdge(Tab tab) {
         if (tab == null || tab.isNativePage()) {
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+            return isNativeTabDrawingToEdge(tab);
         }
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
@@ -202,6 +208,20 @@ public class EdgeToEdgeUtils {
             return false;
         }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
+    }
+
+    /** Whether a native tab will be drawn edge to to edge. */
+    static boolean isNativeTabDrawingToEdge(Tab activeTab) {
+        // sDrawNativeEdgeToEdge will draw all native page to edge forcefully.
+        if (ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()) return true;
+
+        if (!ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled()) return false;
+
+        // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
+        if (activeTab == null) return false;
+
+        NativePage nativePage = activeTab.getNativePage();
+        return nativePage != null && nativePage.supportsEdgeToEdge();
     }
 
     /**

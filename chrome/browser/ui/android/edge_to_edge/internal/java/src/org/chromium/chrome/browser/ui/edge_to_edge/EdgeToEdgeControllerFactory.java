@@ -110,7 +110,8 @@ public class EdgeToEdgeControllerFactory {
      * @param view The view to be adjusted.
      */
     public static EdgeToEdgePadAdjuster createForView(View view) {
-        return new SimpleEdgeToEdgePadAdjuster(view);
+        return new SimpleEdgeToEdgePadAdjuster(
+                view, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
     }
 
     /**

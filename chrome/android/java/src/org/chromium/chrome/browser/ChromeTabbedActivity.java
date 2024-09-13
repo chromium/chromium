@@ -2537,7 +2537,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mHomeSurfaceTracker,
                             getTabContentManagerSupplier(),
                             getToolbarManager().getTabStripHeightSupplier(),
-                            mModuleRegistrySupplier);
+                            mModuleRegistrySupplier,
+                            mEdgeToEdgeControllerSupplier);
         }
         return mTabDelegateFactory;
     }

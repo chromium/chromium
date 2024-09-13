@@ -273,6 +273,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/FeedPositionUtilUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/NewTabPageUtilUnitTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/ClientIdTest.java",
