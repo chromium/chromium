@@ -7513,7 +7513,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15-arm64 ] wpt_internal/webxr/ar/iframe-oopif.sub.https.html [ Timeout ]
 
 # 2024-04-10 Flaky Suppressor on ci/mac-osxbeta-rel
-[ Mac14 ] external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html [ Failure Pass ]
 [ Mac14 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Timeout ]
 [ Mac14 ] external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure Pass ]
 [ Mac14 ] external/wpt/css/css-text/text-transform/text-transform-capitalize-005.html [ Failure Pass ]
@@ -7572,10 +7571,6 @@ external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.
 
 # Gardener 2024-03-21 (PST)
 crbug.com/330668788 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Failure Pass ]
-
-# Gardener 2024-03-26
-crbug.com/331244082 virtual/threaded/external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html [ Failure Pass ]
-crbug.com/349959399 virtual/threaded-synchronous-animation-cancel/external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html [ Failure Pass ]
 
 crbug.com/331291856 [ Mac ] storage/indexeddb/key-cursor-request-cycle.html [ Failure Pass ]
 crbug.com/331291856 [ Mac ] storage/indexeddb/cursor-request-cycle.html [ Failure Pass ]
