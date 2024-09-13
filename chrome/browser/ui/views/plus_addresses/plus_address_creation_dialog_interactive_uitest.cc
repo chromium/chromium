@@ -1040,6 +1040,51 @@ IN_PROC_BROWSER_TEST_P(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest,
+    CreateTimeout) {
+  // Simulate server not responding after successful plus address reservation.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().path() == kReservePath) {
+          std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+              new net::test_server::BasicHttpResponse);
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("application/json");
+          http_response->set_content(
+              PlusAddressResponseContent(false, kFakePlusAddress));
+          return http_response;
+        }
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  embedded_test_server()->StartAcceptingConnections();
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForViewProperty(
+          PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+          views::View, Enabled, true)),
+      InSameContext(Steps(
+          PressButton(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
+          // Ensure that progress indicator is shown while waiting for response
+          // to confirm request.
+          WaitForHide(PlusAddressCreationView::kPlusAddressProgressBarId, true),
+          // UI should time out and eventually show an error state.
+          WaitForShow(PlusAddressCreationView::kPlusAddressCreateErrorId),
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSuppressedScreenshotError),
+          Screenshot(PlusAddressCreationView::kTopViewId,
+                     /*screenshot_name=*/"create_timeout",
+                     /*baseline_cl=*/"5860697"),
+          // Simulate canceling after confirm failure.
+          PressButton(
+              PlusAddressCreationView::kPlusAddressCancelButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest,

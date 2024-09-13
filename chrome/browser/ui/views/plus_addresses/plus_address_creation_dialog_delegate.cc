@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -84,6 +86,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressRefreshButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressReserveErrorId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressCreateErrorId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressSuggestedEmailElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
@@ -190,6 +194,20 @@ std::unique_ptr<views::View> CreateDescription(
                            : l10n_util::GetStringFUTF16(
                                  IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
                                  {base::UTF8ToUTF16(primary_email_address)}))
+      .Build();
+}
+
+std::unique_ptr<views::Label> CreateErrorMessageLabel() {
+  return views::Builder<views::Label>()
+      .SetText(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR))
+      .SetTextContext(views::style::CONTEXT_LABEL)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetProperty(views::kElementIdentifierKey,
+                   PlusAddressCreationView::kPlusAddressCreateErrorId)
+      .SetEnabledColorId(ui::kColorSysError)
+      .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 16, 0))
+      .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
+      .SetVisible(false)
       .Build();
 }
 
@@ -457,7 +475,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     const std::string& primary_email_address,
     bool show_notice)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
-                                  views::BubbleBorder::Arrow::NONE),
+                                  views::BubbleBorder::Arrow::NONE,
+                                  views::BubbleBorder::DIALOG_SHADOW,
+                                  /*autosize=*/true),
       controller_(controller),
       web_contents_(web_contents) {
   // This delegate is owned & deleted by the PlusAddressCreationController.
@@ -503,6 +523,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       std::make_unique<PlusAddressContainerView>(CreateRefreshButton()));
 
   // The error report label is hidden by default.
+  create_error_message_label_ =
+      primary_view->AddChildView(CreateErrorMessageLabel());
   error_report_label_ =
       primary_view->AddChildView(CreateErrorReportLabel(web_contents));
 
@@ -564,6 +586,14 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
   if (maybe_plus_profile.has_value()) {
     GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kAcceptButtonClicked);
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kPlusAddressUpdatedErrorStatesInOnboardingModal)) {
+    ShowCreateErrorMessage();
+    confirm_button_->SetText(
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON));
+    confirm_button_->SetEnabled(true);
   } else {
     ShowErrorStateUI();
     confirm_button_->SetEnabled(false);
@@ -576,8 +606,10 @@ void PlusAddressCreationDialogDelegate::HandleButtonPress(
 
   switch (type) {
     case PlusAddressViewButtonType::kConfirm: {
-      controller_->OnConfirmed();
+      confirm_button_->SetEnabled(false);
+      HideCreateErrorMessage();
       SetProgressBarVisibility(true);
+      controller_->OnConfirmed();
       return;
     }
     case PlusAddressViewButtonType::kCancel: {
@@ -685,11 +717,28 @@ void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
           ->GetWebContentsModalDialogHost());
 }
 
+void PlusAddressCreationDialogDelegate::ShowCreateErrorMessage() {
+  plus_address_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0, 0, 0));
+  plus_address_container_->ShowIcon(PlusAddressContainerView::Icon::kError);
+  create_error_message_label_->SetVisible(true);
+}
+
+void PlusAddressCreationDialogDelegate::HideCreateErrorMessage() {
+  plus_address_container_->SetProperty(
+      views::kMarginsKey, gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
+  plus_address_container_->ShowIcon(
+      PlusAddressContainerView::Icon::kPlusAddress);
+  create_error_message_label_->SetVisible(false);
+}
+
 void PlusAddressCreationDialogDelegate::OnRefreshClicked() {
   plus_address_container_->ShowGenerationMessage();
   plus_address_container_->SetEnabledForRefreshButton(false);
   confirm_button_->SetEnabled(false);
   SetProgressBarVisibility(true);
+  HideCreateErrorMessage();
   controller_->OnRefreshClicked();
 }
 

@@ -159,8 +159,14 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT" desc="The text of the link to learn more about plus addresses." translateable="false">
       Learn more
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR" desc="The error shown instead of the suggested plus address if no plus address could be reserved." translateable="false">
-      Can't get address. Try again
+    <message name="IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR" desc="The error text shown instead of the suggested plus address if no plus address could be reserved." translateable="false">
+      Can't get address. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created." translateable="false">
+      Can't create plus address address. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON" desc="The message on the accept button after an error has occurred during an attempt to create a plus address." translateable="false">
+      Try again
     </message>
 
     <!-- Settings strings -->
