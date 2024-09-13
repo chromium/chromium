@@ -606,7 +606,14 @@
       // features in the `implied_by` list will enable this feature as well.
       origin_trial_feature_name: "AISummarizationAPI",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["AIPromptAPI", "AIRewriterAPI", "AISummarizationAPI", "AIWriterAPI"]
+      implied_by: [
+        "AIPromptAPI",
+        "AIRewriterAPI",
+        "AISummarizationAPI",
+        "AIWriterAPI",
+        "LanguageDetectionAPI",
+        "TranslationAPIEntryPoint",
+      ]
     },
     {
       // Bypasses the enforcement of the Page Embedded Permission Control
@@ -2473,6 +2480,9 @@
     {
       name: "LanguageDetectionAPI",
       status: "experimental",
+      origin_trial_feature_name: "LanguageDetectionAPI",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "LayoutFlexNewRowAlgorithmV3",
@@ -4286,6 +4296,7 @@
     {
       name: "TranslationAPIEntryPoint",
       status: "test",
+      origin_trial_feature_name: "TranslationAPIEntryPoint",
       implied_by: ["TranslationAPI", "LanguageDetectionAPI"],
     },
     {
