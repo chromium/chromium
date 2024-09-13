@@ -242,6 +242,16 @@ AccountSelectionViewBase::AccountSelectionViewBase(
 AccountSelectionViewBase::AccountSelectionViewBase() = default;
 AccountSelectionViewBase::~AccountSelectionViewBase() {}
 
+void AccountSelectionViewBase::OnOcclusionStateChanged(bool occluded) {
+  if (dialog_widget_) {
+    dialog_widget_->GetContentsView()->SetEnabled(!occluded);
+  }
+  // SetEnabled does not always seem sufficient for unknown reasons, so we
+  // also set this boolean to ignore input. But we still call SetEnabled
+  // to visually indicate that input is disabled where possible.
+  is_occluded_ = occluded;
+}
+
 void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
