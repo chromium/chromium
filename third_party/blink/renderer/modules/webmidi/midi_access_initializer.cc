@@ -137,7 +137,7 @@ void MIDIAccessInitializer::OnPermissionsUpdated(
     StartSession();
   } else {
     resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kSecurityError));
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError));
   }
 }
 
@@ -148,7 +148,7 @@ void MIDIAccessInitializer::OnPermissionUpdated(
     StartSession();
   } else {
     resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kSecurityError));
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError));
   }
 }
 
