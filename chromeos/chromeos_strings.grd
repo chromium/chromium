@@ -3261,7 +3261,7 @@
         </message>
         <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
           Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
-          Your default search engine will be reset, but your tabs, files, cookies, and history won’t be changed.
+          Your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
