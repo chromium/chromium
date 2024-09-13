@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,15 +35,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-bool IsShowingInterstitial(content::WebContents* contents) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          contents);
-  return helper &&
-         (helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-          nullptr);
-}
 
 std::vector<net::CanonicalCookie> GetCookies(
     network::mojom::NetworkContext* network_context) {
@@ -146,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(IsShowingInterstitial(contents));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
@@ -175,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(IsShowingInterstitial(contents));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, DoesNotSaveCookies) {

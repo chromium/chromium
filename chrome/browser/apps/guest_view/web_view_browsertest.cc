@@ -39,6 +39,7 @@
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -435,18 +436,6 @@ class LeftMouseClick {
 };
 
 #endif
-
-bool IsShowingInterstitial(content::WebContents* tab) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          tab);
-  if (!helper) {
-    return false;
-  } else {
-    return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-           nullptr;
-  }
-}
 
 // Wraps around the browser-initiated |NavigateToURL| to hide direct guest
 // WebContents access. For MPArch GuestView migration pre-work, we do not have
@@ -2166,11 +2155,13 @@ class WebViewSSLErrorTest : public WebViewTest {
     // Guest's `target_url` is served by an HTTP server with a cert error.
     // A security error within a guest should not cause an interstitial to be
     // shown in the embedder.
-    ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+    ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+        GetFirstAppWindowWebContents()));
 
     auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
     ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
-    ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+    ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+        guest->web_contents()));
   }
 
   void LoadEmptyGuest() {
@@ -2261,7 +2252,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, NavigateBackFromSSLError) {
   auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
   EXPECT_FALSE(WaitForLoadStop(guest->web_contents()));
   ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
-  ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      guest->web_contents()));
 
   // Simulate invoking the "Back to safety" button.  This should dismiss the
   // interstitial and navigate the guest to a known safe URL that can always
@@ -2278,7 +2270,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, NavigateBackFromSSLError) {
 
   EXPECT_TRUE(WaitForLoadStop(guest->web_contents()));
   ASSERT_FALSE(guest->GetGuestMainFrame()->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(guest->web_contents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      guest->web_contents()));
 }
 
 // Test makes sure that the interstitial is registered in the
@@ -2429,7 +2422,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
 
   ASSERT_FALSE(guest_main_frame->IsErrorDocument());
   ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetFirstAppWindowWebContents()));
 }
 
 // Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
@@ -2452,7 +2446,8 @@ IN_PROC_BROWSER_TEST_F(WebViewSSLErrorTest, GuestLoadsHttpWithoutError) {
 
   ASSERT_FALSE(guest_main_frame->IsErrorDocument());
   ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
-  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetFirstAppWindowWebContents()));
 }
 
 // Verify that guests cannot be navigated to disallowed URLs, such as

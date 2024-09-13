@@ -37,6 +37,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -217,7 +218,7 @@ bool WaitForReady(Browser* browser) {
   if (!content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame())) {
     return false;
   }
-  return IsShowingInterstitial(contents);
+  return chrome_browser_interstitials::IsShowingInterstitial(contents);
 }
 
 Visibility GetVisibility(Browser* browser, const std::string& node_id) {
@@ -527,7 +528,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
 
 void AssertNoInterstitial(Browser* browser) {
   WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
-  ASSERT_FALSE(IsShowingInterstitial(contents));
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
   return;
 }
 
@@ -1453,7 +1454,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   WebContents* new_tab = browser()->tab_strip_model()->GetWebContentsAt(1);
   ASSERT_TRUE(new_tab);
-  EXPECT_FALSE(IsShowingInterstitial(new_tab));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
 
   // Interstitial still displays in the background tab.
   browser()->tab_strip_model()->ActivateTabAt(
@@ -1462,7 +1463,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(interstitial_tab,
             browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(IsShowingInterstitial(
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
@@ -1920,7 +1921,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(
       content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
-  EXPECT_FALSE(IsShowingInterstitial(contents));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1998,7 +1999,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   base::RunLoop threat_report_sent_loop;
   SetReportSentCallback(threat_report_sent_loop.QuitClosure());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Send CSBRR without interactions.
@@ -2122,7 +2123,7 @@ IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
       new content::MessageLoopRunner);
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Send CSBRR without interactions.
@@ -2213,7 +2214,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_CALL(*GetSafeBrowsingUiManager(), OnAttachThreatDetailsAndLaunchSurvey)
       .Times(1);
@@ -2244,7 +2245,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
       new content::MessageLoopRunner);
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_CALL(*GetSafeBrowsingUiManager(), OnAttachThreatDetailsAndLaunchSurvey)
       .Times(1);
@@ -2271,7 +2272,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_CALL(*GetSafeBrowsingUiManager(), OnAttachThreatDetailsAndLaunchSurvey)
       .Times(0);
@@ -2298,7 +2299,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   SetupWarningAndNavigate(browser());
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_CALL(*GetSafeBrowsingUiManager(), OnAttachThreatDetailsAndLaunchSurvey)
       .Times(0);
@@ -3219,7 +3220,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
   WebContents* interstitial_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(interstitial_tab);
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   content::TestNavigationObserver nav_observer(nullptr);
@@ -3235,7 +3236,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // Assert the interstitial is not present in the foreground tab.
-  ASSERT_FALSE(IsShowingInterstitial(
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Foreground tab displays the setting page.
@@ -3250,7 +3251,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(interstitial_tab,
             browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(IsShowingInterstitial(
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Set threat report sent runner, since a report will be sent when web
@@ -3271,7 +3272,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
-  EXPECT_TRUE(IsShowingInterstitial(
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   // Check enhanced protection message is not shown.
   EXPECT_EQ(HIDDEN, ::safe_browsing::GetVisibility(
@@ -3289,7 +3290,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
   SetupWarningAndNavigateToURL(embedded_test_server()->GetURL("/empty.html"),
                                browser());
 
-  EXPECT_TRUE(IsShowingInterstitial(
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
   // Check enhanced protection message is not shown.
   EXPECT_EQ(HIDDEN, ::safe_browsing::GetVisibility(
@@ -3381,7 +3382,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
   SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
                                         /*is_unsafe=*/false);
   NavigateToURLAndWaitForAsyncChecks(url);
-  ASSERT_FALSE(IsShowingInterstitial(
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Whether or not async checks are enabled, only a sync check is performed
@@ -3404,7 +3405,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
   SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
                                         /*is_unsafe=*/false);
   NavigateToURLAndWaitForAsyncChecks(url);
-  ASSERT_FALSE(IsShowingInterstitial(
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   bool is_async_check_enabled = GetParam();
@@ -3571,7 +3572,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents());
 
-    EXPECT_TRUE(IsShowingInterstitial(
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
         browser()->tab_strip_model()->GetActiveWebContents()));
 
     // Reset dangerous response so future URLs are not accidentally flagged
@@ -3618,7 +3619,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
         factory_.test_safe_browsing_service()->ui_manager().get(),
         /*wait_for_load_stop=*/true);
 
-    EXPECT_TRUE(IsShowingInterstitial(
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
         browser()->tab_strip_model()->GetActiveWebContents()));
 
     // Reset dangerous response so future URLs are not accidentally
@@ -4267,7 +4268,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
   NavigateToURL(url);
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
@@ -4282,7 +4283,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetupUnsafeVerdict(url, browser()->profile());
 
   NavigateToURL(url);
-  ASSERT_TRUE(IsShowingInterstitial(
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
@@ -4297,7 +4298,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetupUnsafeVerdict(url, browser()->profile());
 
   NavigateToURL(url);
-  ASSERT_FALSE(IsShowingInterstitial(
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
@@ -4545,7 +4546,8 @@ class SafeBrowsingPrerenderBrowserTest
     prerender_helper().AddPrerenderAsync(prerender_url);
     observer.WaitForDestroyed();
 
-    EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingInterstitial(GetWebContents()));
     ExpectNoSecurityIndicatorDowngrade(GetWebContents());
   }
 
