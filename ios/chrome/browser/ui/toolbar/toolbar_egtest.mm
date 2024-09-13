@@ -362,8 +362,7 @@ void WaitForEmpyOmnibox() {
 }
 
 // Tests typing in the omnibox.
-// TODO(crbug.com/365987488): Enable when bug is fixed.
-- (void)DISABLED_testToolbarOmniboxTyping {
+- (void)testToolbarOmniboxTyping {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 
