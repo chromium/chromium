@@ -89,6 +89,7 @@ class UserAnnotationsServiceTest : public testing::Test,
               entries = upserted_entries;
               std::move(prompt_acceptance_callback).Run(true);
             }));
+    task_environment_.RunUntilIdle();
     return entries;
   }
 

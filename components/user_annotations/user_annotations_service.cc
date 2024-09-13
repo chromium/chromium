@@ -110,10 +110,18 @@ void UserAnnotationsService::AddFormSubmission(
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
   *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
-  for (const auto& entry : entries_) {
-    *request.add_entries() = entry.entry_proto;
-  }
+  RetrieveAllEntries(base::BindOnce(
+      &UserAnnotationsService::ExecuteModelWithEntries,
+      weak_ptr_factory_.GetWeakPtr(), request, std::move(callback)));
+}
 
+void UserAnnotationsService::ExecuteModelWithEntries(
+    optimization_guide::proto::FormsAnnotationsRequest request,
+    ImportFormCallback callback,
+    UserAnnotationsEntries entries) {
+  for (const auto& entry : entries) {
+    *request.add_entries() = entry;
+  }
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
       base::BindOnce(&UserAnnotationsService::OnModelExecuted,

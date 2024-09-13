@@ -119,6 +119,13 @@ class UserAnnotationsService : public KeyedService {
                            os_crypt_async::Encryptor encryptor,
                            bool success);
 
+  // Called after the `entries` are retrieved, to submit the form `request`
+  // filling the entries.
+  void ExecuteModelWithEntries(
+      optimization_guide::proto::FormsAnnotationsRequest request,
+      ImportFormCallback callback,
+      UserAnnotationsEntries entries);
+
   // Sends the result of form submission.
   void SendFormSubmissionResult(
       UserAnnotationsService::ImportFormCallback callback,
