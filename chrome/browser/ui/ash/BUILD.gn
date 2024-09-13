@@ -14,8 +14,6 @@ static_library("ash") {
     "crosapi_new_window_delegate.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
-    "system_sounds_delegate_impl.cc",
-    "system_sounds_delegate_impl.h",
     "window_pin_util_ash.cc",
   ]
 

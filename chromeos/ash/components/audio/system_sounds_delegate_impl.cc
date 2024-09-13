@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/system_sounds_delegate_impl.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 
-#include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_SYSTEM_SOUNDS_DELEGATE_H_
-#define ASH_PUBLIC_CPP_SYSTEM_SOUNDS_DELEGATE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "chromeos/ash/components/audio/sounds.h"
 
 namespace ash {
 
 // Defines the interface for the delegate of `SystemSoundsDelegateImpl` and
 // `TestSystemSoundsDelegate`. The `Shell` owns the instance of this delegate.
-class ASH_PUBLIC_EXPORT SystemSoundsDelegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) SystemSoundsDelegate {
  public:
   virtual ~SystemSoundsDelegate() = default;
 
@@ -25,4 +25,4 @@ class ASH_PUBLIC_EXPORT SystemSoundsDelegate {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_SYSTEM_SOUNDS_DELEGATE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_H_

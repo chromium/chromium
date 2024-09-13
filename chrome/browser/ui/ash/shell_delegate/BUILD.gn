@@ -46,6 +46,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/chromeos",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/services/multidevice_setup",
     "//components/ui_devtools",

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/message_center/message_center.h"

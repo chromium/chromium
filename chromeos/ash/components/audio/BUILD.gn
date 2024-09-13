@@ -15,10 +15,12 @@ component("audio") {
     "//base",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/resources",
     "//components/prefs",
     "//device/bluetooth",
     "//media/base:video_facing",
     "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
     "//services/media_session/public/mojom",
     "//ui/base",
     "//ui/events/devices",
@@ -49,6 +51,9 @@ component("audio") {
     "cros_audio_config_impl.h",
     "device_activate_type.h",
     "sounds.h",
+    "system_sounds_delegate.h",
+    "system_sounds_delegate_impl.cc",
+    "system_sounds_delegate_impl.h",
   ]
 }
 

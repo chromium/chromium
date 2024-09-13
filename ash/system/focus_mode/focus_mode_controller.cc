@@ -33,6 +33,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

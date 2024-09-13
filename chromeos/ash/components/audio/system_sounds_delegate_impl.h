@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
 
-#include "ash/public/cpp/system_sounds_delegate.h"
+#include "base/component_export.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate.h"
 
 // Handles initializing and playing ash system sounds when requested.
-class SystemSoundsDelegateImpl : public ash::SystemSoundsDelegate {
+// TODO(b:365893870): Remove SystemSoundsDelegate and unify the implementation
+// with tests.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) SystemSoundsDelegateImpl
+    : public ash::SystemSoundsDelegate {
  public:
   SystemSoundsDelegateImpl();
   SystemSoundsDelegateImpl(const SystemSoundsDelegateImpl&) = delete;
@@ -21,4 +25,4 @@ class SystemSoundsDelegateImpl : public ash::SystemSoundsDelegate {
   void Play(ash::Sound sound_key) override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_SYSTEM_SOUNDS_DELEGATE_IMPL_H_
