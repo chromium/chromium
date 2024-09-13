@@ -52,7 +52,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -74,8 +73,6 @@ using sessions_helper::SyncedSessionVector;
 using sessions_helper::WaitForTabsToLoad;
 using sessions_helper::WindowsMatch;
 using sync_sessions::SessionSyncTestHelper;
-using testing::IsEmpty;
-using testing::UnorderedElementsAre;
 
 static const char* kBaseFragmentURL =
     "data:text/html,<html><title>Fragment</title><body></body></html>";
@@ -97,26 +94,6 @@ std::unique_ptr<net::test_server::HttpResponse> FaviconServerRequestHandler(
   http_response->set_code(net::HTTP_OK);
   return std::move(http_response);
 }
-
-class IsHistoryURLSyncedChecker : public SingleClientStatusChangeChecker {
- public:
-  IsHistoryURLSyncedChecker(const std::string& url,
-                            fake_server::FakeServer* fake_server,
-                            syncer::SyncServiceImpl* service)
-      : SingleClientStatusChangeChecker(service),
-        url_(url),
-        fake_server_(fake_server) {}
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for URLs to be commited to the server";
-    return fake_server_->GetCommittedHistoryURLs().count(url_) != 0;
-  }
-
- private:
-  const std::string url_;
-  const raw_ptr<fake_server::FakeServer> fake_server_;
-};
 
 class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
  public:
@@ -331,9 +308,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
   EXPECT_TRUE(WindowsMatch(old_windows, new_windows));
 
   WaitForURLOnServer(url);
-
-  EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(),
-              UnorderedElementsAre(url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
@@ -415,9 +389,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
 
   NavigateTab(0, url2);
   WaitForHierarchyOnServer(SessionsHierarchy({{url2.spec()}}));
-
-  EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(),
-              UnorderedElementsAre(url1.spec(), url2.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
@@ -440,87 +411,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 
   NavigateTab(0, url2);
   WaitForHierarchyOnServer(SessionsHierarchy({{url2.spec()}}));
-
-  EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(), IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NoSessions) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   WaitForHierarchyOnServer(SessionsHierarchy());
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(CheckInitialState(0));
-
-  GURL url1 =
-      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
-  GURL url2 =
-      embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
-  GURL url3 =
-      embedded_test_server()->GetURL("www.host3.com", "/sync/simple.html");
-  GURL url4 =
-      embedded_test_server()->GetURL("www.host4.com", "/sync/simple.html");
-
-  // Two tabs are opened initially.
-  ASSERT_TRUE(OpenTab(0, url1));
-  ASSERT_TRUE(OpenTab(0, url2));
-  WaitForHierarchyOnServer(SessionsHierarchy({{url1.spec(), url2.spec()}}));
-
-  // Close one of the two tabs immediately after issuing an navigation. We also
-  // issue another navigation to make sure association logic kicks in.
-  NavigateTab(0, url3);
-  ASSERT_TRUE(WaitForTabsToLoad(0, {url1, url3}));
-  CloseTab(/*browser_index=*/0, /*tab_index=*/1);
-  NavigateTab(0, url4);
-
-  ASSERT_TRUE(
-      IsHistoryURLSyncedChecker(url4.spec(), GetFakeServer(), GetSyncService(0))
-          .Wait());
-
-  // All URLs should be synced, for synced history to be complete. In
-  // particular, |url3| should be synced despite the tab being closed.
-  EXPECT_TRUE(
-      IsHistoryURLSyncedChecker(url3.spec(), GetFakeServer(), GetSyncService(0))
-          .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
-                       NavigateThenCloseTabThenOpenTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(CheckInitialState(0));
-
-  GURL url1 =
-      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
-  GURL url2 =
-      embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
-  GURL url3 =
-      embedded_test_server()->GetURL("www.host3.com", "/sync/simple.html");
-  GURL url4 =
-      embedded_test_server()->GetURL("www.host4.com", "/sync/simple.html");
-
-  // Two tabs are opened initially.
-  ASSERT_TRUE(OpenTab(0, url1));
-  ASSERT_TRUE(OpenTab(0, url2));
-  WaitForHierarchyOnServer(SessionsHierarchy({{url1.spec(), url2.spec()}}));
-
-  // Close one of the two tabs immediately after issuing an navigation. In
-  // addition, a new tab is opened.
-  NavigateTab(0, url3);
-  ASSERT_TRUE(WaitForTabsToLoad(0, {url1, url3}));
-  CloseTab(/*browser_index=*/0, /*tab_index=*/1);
-  ASSERT_TRUE(OpenTab(0, url4));
-
-  ASSERT_TRUE(
-      IsHistoryURLSyncedChecker(url4.spec(), GetFakeServer(), GetSyncService(0))
-          .Wait());
-
-  // All URLs should be synced, for synced history to be complete. In
-  // particular, |url3| should be synced despite the tab being closed.
-  EXPECT_TRUE(
-      IsHistoryURLSyncedChecker(url3.spec(), GetFakeServer(), GetSyncService(0))
-          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TimestampMatchesHistory) {

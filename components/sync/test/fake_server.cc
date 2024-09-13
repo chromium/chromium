@@ -643,10 +643,6 @@ void FakeServer::OnCommit(syncer::DataTypeSet committed_data_types) {
   }
 }
 
-void FakeServer::OnHistoryCommit(const std::string& url) {
-  committed_history_urls_.insert(url);
-}
-
 void FakeServer::OnCommittedDeletionOrigin(
     syncer::DataType type,
     const sync_pb::DeletionOrigin& deletion_origin) {
@@ -681,10 +677,6 @@ void FakeServer::AddCollaboration(const std::string& collaboration_id) {
 void FakeServer::RemoveCollaboration(const std::string& collaboration_id) {
   collaborations_.erase(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
-}
-
-const std::set<std::string>& FakeServer::GetCommittedHistoryURLs() const {
-  return committed_history_urls_;
 }
 
 std::string FakeServer::GetStoreBirthday() const {

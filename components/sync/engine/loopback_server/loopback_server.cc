@@ -688,17 +688,7 @@ bool LoopbackServer::HandleCommitRequest(
     CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
     committed_data_types.Put(iter->second->GetDataType());
 
-    // Notify observers about history having been synced.
     if (observer_for_tests_) {
-      if (iter->second->GetDataType() == HISTORY) {
-        const sync_pb::HistorySpecifics& specifics =
-            client_entity.specifics().history();
-        // The last entry of the redirect chain is the "actual" URL. In the case
-        // of no redirects, the "chain" has only a single entry.
-        observer_for_tests_->OnHistoryCommit(
-            specifics.redirect_entries(specifics.redirect_entries_size() - 1)
-                .url());
-      }
       if (client_entity.deleted() && client_entity.has_deletion_origin()) {
         observer_for_tests_->OnCommittedDeletionOrigin(
             iter->second->GetDataType(), client_entity.deletion_origin());
