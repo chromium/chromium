@@ -140,18 +140,10 @@ std::string GetSourceTitleForMediaControls(const SelectedPlaylist& playlist) {
     return "";
   }
 
-  std::string playlist_type = l10n_util::GetStringUTF8(
+  return l10n_util::GetStringUTF8(
       playlist.type == SoundType::kYouTubeMusic
           ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON
           : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON);
-
-  if (playlist.title.empty()) {
-    return playlist_type;
-  }
-
-  return l10n_util::GetStringFUTF8(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_MEDIA_CONTROLS_SOURCE_TITLE,
-      base::UTF8ToUTF16(playlist_type), base::UTF8ToUTF16(playlist.title));
 }
 
 std::u16string GetCongratulatoryText(const size_t index) {
