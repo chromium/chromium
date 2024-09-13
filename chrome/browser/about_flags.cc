@@ -2027,6 +2027,13 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
      std::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpOutlookCalendarModuleFakeData[] = {
+    {ntp_features::kNtpOutlookCalendarModuleDataParam, "fake"}};
+const FeatureEntry::FeatureVariation kNtpOutlookCalendarModuleVariations[] = {
+    {"- Fake Data", kNtpOutlookCalendarModuleFakeData,
+     std::size(kNtpOutlookCalendarModuleFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
     {ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpMiddleSlotPromoDismissalVariations[] =
@@ -7071,7 +7078,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-outlook-calendar-module",
      flag_descriptions::kNtpOutlookCalendarModuleName,
      flag_descriptions::kNtpOutlookCalendarModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpOutlookCalendarModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpOutlookCalendarModule,
+                                    kNtpOutlookCalendarModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-realbox-contextual-and-trending-suggestions",
      flag_descriptions::kNtpRealboxContextualAndTrendingSuggestionsName,
