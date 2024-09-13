@@ -1327,7 +1327,8 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
           return;
         }
 
-        DoPerformCapture();  // `this` can be deleted after this.
+        active_behavior_
+            ->OnEnterKeyPressed();  // `this` can be deleted after this.
       }
       return;
     }
@@ -2211,12 +2212,15 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
-  if (active_behavior_->OnRegionSelected()) {
-    // If the behavior handled the event, stop propagation.
+
+  // Notify the behavior that the region was selected, in case it needs to do
+  // specific handling. Note `this` may be destroyed by `OnRegionSelected()`.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  active_behavior_->OnRegionSelected();
+  if (!weak_ptr) {
     return;
   }
-  // TODO(b/359317857): Determine whether to show the capture label view after
-  // drag release.
+
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 
   A11yAlertCaptureSource(/*trigger_now=*/true);

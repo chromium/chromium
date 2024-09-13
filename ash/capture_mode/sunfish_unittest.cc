@@ -84,6 +84,37 @@ TEST_F(SunfishTest, PressEscapeKey) {
   EXPECT_FALSE(controller->capture_mode_session());
 }
 
+// Tests that the Enter key does not attempt to perform capture or image search.
+TEST_F(SunfishTest, PressEnterKey) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  // While we are in waiting to select a capture region phase, pressing the
+  // Enter key will do nothing.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* capture_button =
+      session_test_api.GetCaptureLabelView()->capture_button_container();
+  auto* capture_label = session_test_api.GetCaptureLabelInternalView();
+  ASSERT_TRUE(!capture_button->GetVisible() && capture_label->GetVisible());
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_TRUE(controller->IsActive());
+
+  // Immediately upon region selection, `PerformImageSearch()` and
+  // `OnCaptureImageAttempted()` will be called once.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/true);
+  ASSERT_TRUE(capture_button->GetVisible() && !capture_label->GetVisible());
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
+
+  // Test that pressing the Enter key does not attempt image capture again.
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
+}
+
 // Tests the session UI after a region is dragged and the results panel is
 // shown.
 TEST_F(SunfishTest, OnRegionSelected) {
@@ -136,9 +167,9 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 
-  // Release the drag. The label and button are both hidden.
+  // Release the drag. Only the button is shown.
   event_generator->ReleaseLeftButton();
-  EXPECT_FALSE(capture_button->GetVisible());
+  EXPECT_TRUE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 }
 

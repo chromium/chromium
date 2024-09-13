@@ -118,7 +118,9 @@ void TestCaptureModeDelegate::StopObservingRestrictedContent(
 }
 
 void TestCaptureModeDelegate::OnCaptureImageAttempted(aura::Window const*,
-                                                      gfx::Rect const&) {}
+                                                      gfx::Rect const&) {
+  ++num_capture_image_attempts_;
+}
 
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {
