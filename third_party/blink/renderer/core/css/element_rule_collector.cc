@@ -35,6 +35,8 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include <utility>
+
 #include "base/containers/span.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -1153,8 +1155,8 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   SortMatchedRules();
 
   if (mode_ == SelectorChecker::kCollectingStyleRules) {
-    for (unsigned i = 0; i < matched_rules_.size(); ++i) {
-      EnsureStyleRuleList()->push_back(matched_rules_[i].GetRuleData()->Rule());
+    for (const MatchedRule& matched_rule : matched_rules_) {
+      EnsureStyleRuleList()->push_back(matched_rule.GetRuleData()->Rule());
     }
     return;
   }
@@ -1168,8 +1170,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   }
 
   // Now transfer the set of matched rules over to our list of declarations.
-  for (unsigned i = 0; i < matched_rules_.size(); i++) {
-    const MatchedRule& matched_rule = matched_rules_[i];
+  for (const MatchedRule& matched_rule : matched_rules_) {
     const RuleData* rule_data = matched_rule.GetRuleData();
     if (rule_data->IsStartingStyle()) {
       result_.AddFlags(
@@ -1298,32 +1299,27 @@ void ElementRuleCollector::DumpAndClearRulesPerfMap() {
   GetSelectorStatisticsRuleMap().clear();
 }
 
-inline bool ElementRuleCollector::CompareRules(
-    const MatchedRule& matched_rule1,
-    const MatchedRule& matched_rule2) {
-  unsigned layer1 = matched_rule1.LayerOrder();
-  unsigned layer2 = matched_rule2.LayerOrder();
-  if (layer1 != layer2) {
-    return layer1 < layer2;
+struct ElementRuleCollector::CompareRules {
+  inline bool operator()(const MatchedRule& matched_rule1,
+                         const MatchedRule& matched_rule2) const {
+#ifdef __SIZEOF_INT128__
+    // https://github.com/llvm/llvm-project/issues/108418
+    __uint128_t key1 = (__uint128_t{matched_rule1.SortKey()} << 64) |
+                       matched_rule1.GetPosition();
+    __uint128_t key2 = (__uint128_t{matched_rule2.SortKey()} << 64) |
+                       matched_rule2.GetPosition();
+#else
+    std::pair key1{matched_rule1.SortKey(), matched_rule1.GetPosition()};
+    std::pair key2{matched_rule2.SortKey(), matched_rule2.GetPosition()};
+#endif
+    return key1 < key2;
   }
-
-  unsigned specificity1 = matched_rule1.Specificity();
-  unsigned specificity2 = matched_rule2.Specificity();
-  if (specificity1 != specificity2) {
-    return specificity1 < specificity2;
-  }
-
-  unsigned proximity1 = matched_rule1.Proximity();
-  unsigned proximity2 = matched_rule2.Proximity();
-  if (proximity1 != proximity2) {
-    return proximity1 > proximity2;
-  }
-
-  return matched_rule1.GetPosition() < matched_rule2.GetPosition();
-}
+};
 
 void ElementRuleCollector::SortMatchedRules() {
-  std::sort(matched_rules_.begin(), matched_rules_.end(), CompareRules);
+  if (matched_rules_.size() > 1) {
+    std::sort(matched_rules_.begin(), matched_rules_.end(), CompareRules());
+  }
 }
 
 void ElementRuleCollector::AddMatchedRulesToTracker(
