@@ -461,6 +461,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             id="options"
             @click=${this.onOptionsClick}
             aria-label=${i18n.recordingItemOptionsButtonAriaLabel(title)}
+            aria-expanded=${this.menuShown.value}
           >
             <cra-icon slot="icon" name="more_vertical"></cra-icon>
           </cra-icon-button>
