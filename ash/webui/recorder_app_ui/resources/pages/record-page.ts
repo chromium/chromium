@@ -35,6 +35,7 @@ import {
 } from '../components/transcription-consent-dialog.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
+  useMicrophoneManager,
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
@@ -47,6 +48,7 @@ import {
   settings,
   SpeakerLabelEnableState,
   TranscriptionEnableState,
+  TranscriptionLanguage,
 } from '../core/state/settings.js';
 import {
   assertExhaustive,
@@ -358,6 +360,8 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly microphoneManager = useMicrophoneManager();
+
   // TODO: b/336963138 - Handle when transcription isn't available.
   private readonly transcriptionShown = signal(false);
 
@@ -390,6 +394,8 @@ export class RecordPage extends ReactiveLitElement {
   private readonly recordingPaused = signal(false);
 
   private readonly recordingControlQueue = new AsyncJobQueue('enqueue');
+
+  private recordStartTime: number|null = null;
 
   get stopRecordingButtonForTest(): CraButton {
     return assertExists(this.stopRecordingButton.value);
@@ -430,6 +436,7 @@ export class RecordPage extends ReactiveLitElement {
       }
       return;
     }
+    this.recordStartTime = performance.now();
 
     this.transcriptionEnableDispose = effect(() => {
       // TODO(pihsun): This is a bit fragile now since this relies on the
@@ -473,12 +480,47 @@ export class RecordPage extends ReactiveLitElement {
     });
   }
 
+  private usingInternalMicrophone(): boolean {
+    const microphones = this.microphoneManager.getMicrophoneList().value;
+    const info = microphones.find((device) => device.deviceId === this.micId);
+    return info?.isInternal ?? false;
+  }
+
+  private sendRecordEvent(recordingSaved: boolean) {
+    const session = this.recordingSession.value;
+    if (session === null || this.recordStartTime === null) {
+      return;
+    }
+
+    const transcription = session.progress.value.transcription;
+    const locale = this.transcriptionEnabled.value ?
+      TranscriptionLanguage.EN_US :
+      TranscriptionLanguage.NONE;
+
+    this.platformHandler.eventsSender.sendRecordEvent({
+      audioDuration: Math.round(session.progress.value.length * 1000),
+      everMuted: session.everMuted,
+      everPaused: session.everPaused,
+      includeSystemAudio: this.includeSystemAudio,
+      isInternalMicrophone: this.usingInternalMicrophone(),
+      recordDuration: Math.round(performance.now() - this.recordStartTime),
+      recordingSaved,
+      speakerCount: transcription?.getSpeakerLabels().length ?? 0,
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      transcriptionAvailable: this.transcriptionAvailable.value,
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+      transcriptionLocale: locale,
+      wordCount: transcription?.wordCount ?? 0,
+    });
+  }
+
   private async cancelRecording() {
     if (this.recordingSession.value === null) {
       return;
     }
     this.releaseWakeLock();
     await this.recordingSession.value.finish();
+    this.sendRecordEvent(/* recordingSaved= */ false);
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;
     this.recordingSession.value = null;
@@ -507,6 +549,7 @@ export class RecordPage extends ReactiveLitElement {
       params,
       audioData,
     );
+    this.sendRecordEvent(/* recordingSaved= */ true);
 
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;

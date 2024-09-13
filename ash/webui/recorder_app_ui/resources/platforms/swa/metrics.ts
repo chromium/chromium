@@ -4,11 +4,14 @@
 
 import {
   // Events
+  CrOSEvents_RecorderApp_Record,
   CrOSEvents_RecorderApp_StartSession,
   // Enums
+  CrOSEvents_RecorderAppMicrophoneType,
   CrOSEvents_RecorderAppSpeakerLabelEnableState,
   CrOSEvents_RecorderAppSummaryEnableState,
   CrOSEvents_RecorderAppTranscriptionEnableState,
+  CrOSEvents_RecorderAppTranscriptionLocale,
 } from 'chrome://resources/ash/common/metrics/structured_events.js';
 import {
   record,
@@ -16,12 +19,14 @@ import {
 
 import {
   EventsSender as EventsSenderBase,
+  RecordEventParams,
   StartSessionEventParams,
 } from '../../core/events_sender.js';
 import {
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
+  TranscriptionLanguage,
 } from '../../core/state/settings.js';
 import {assertExhaustive} from '../../core/utils/assert.js';
 
@@ -89,6 +94,24 @@ function getTranscriptionEnableState(
   }
 }
 
+function convertToMicrophoneType(isInternalMicrophone: boolean
+): CrOSEvents_RecorderAppMicrophoneType {
+  return isInternalMicrophone ? CrOSEvents_RecorderAppMicrophoneType.INTERNAL :
+                                CrOSEvents_RecorderAppMicrophoneType.EXTERNAL;
+}
+
+function convertTranscriptionLocaleType(language: TranscriptionLanguage
+): CrOSEvents_RecorderAppTranscriptionLocale {
+  switch (language) {
+    case TranscriptionLanguage.NONE:
+      return CrOSEvents_RecorderAppTranscriptionLocale.NONE;
+    case TranscriptionLanguage.EN_US:
+      return CrOSEvents_RecorderAppTranscriptionLocale.EN_US;
+    default:
+      assertExhaustive(language);
+  }
+}
+
 export class EventsSender extends EventsSenderBase {
   override sendStartSessionEvent({
     speakerLabelEnableState,
@@ -117,6 +140,34 @@ export class EventsSender extends EventsSenderBase {
                     .setSpeakerLabelEnableState(speakerLabel)
                     .setSummaryEnableState(summary)
                     .setTranscriptionEnableState(transcription)
+                    .build();
+
+    record(event);
+  }
+
+  override sendRecordEvent(params: RecordEventParams): void {
+    const mic = convertToMicrophoneType(params.isInternalMicrophone);
+    const locale = convertTranscriptionLocaleType(params.transcriptionLocale);
+    const speakerLabel = getSpeakerLabelEnableState(
+      params.transcriptionAvailable, params.speakerLabelEnableState
+    );
+    const transcription = getTranscriptionEnableState(
+      params.transcriptionAvailable, params.transcriptionEnableState
+    );
+
+    const event = new CrOSEvents_RecorderApp_Record()
+                    .setAudioDuration(BigInt(params.audioDuration))
+                    .setEverMuted(BigInt(params.everMuted))
+                    .setEverPaused(BigInt(params.everPaused))
+                    .setIncludeSystemAudio(BigInt(params.includeSystemAudio))
+                    .setMicrophoneType(mic)
+                    .setRecordDuration(BigInt(params.recordDuration))
+                    .setRecordingSaved(BigInt(params.recordingSaved))
+                    .setSpeakerCount(BigInt(params.speakerCount))
+                    .setSpeakerLabelEnableState(speakerLabel)
+                    .setTranscriptionLabelEnableState(transcription)
+                    .setTranscriptionLocale(locale)
+                    .setWordCount(BigInt(params.wordCount))
                     .build();
 
     record(event);

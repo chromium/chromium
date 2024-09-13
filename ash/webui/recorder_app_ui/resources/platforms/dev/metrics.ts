@@ -4,9 +4,12 @@
 
 import {
   EventsSender as EventsSenderBase,
+  RecordEventParams,
   StartSessionEventParams,
 } from '../../core/events_sender.js';
 
 export class EventsSender extends EventsSenderBase {
   override sendStartSessionEvent(_: StartSessionEventParams): void {}
+
+  override sendRecordEvent(_: RecordEventParams): void {}
 }

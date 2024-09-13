@@ -1298,6 +1298,16 @@
     <variant value="3">UNKNOWN</variant>
     <variant value="4">NOT_AVAILABLE</variant>
   </enum>
+
+  <enum name="RecorderAppMicrophoneType">
+    <variant value="0">INTERNAL</variant>
+    <variant value="1">EXTERNAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionLocale">
+    <variant value="0">NONE</variant>
+    <variant value="1">EN_US</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -2710,6 +2720,74 @@
     <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
       <summary>
         Enable state of the transcription feature.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Record">
+    <summary>
+      Event recorded when users stop or cancel an audio recording session.
+    </summary>
+    <metric name="MicrophoneType" type="RecorderAppMicrophoneType">
+      <summary>
+        Type of the microphone used in the recording.
+      </summary>
+    </metric>
+    <metric name="IncludeSystemAudio" type="int">
+      <summary>
+        Boolean indicating whether the system audio is included in the recording.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the recorded audio in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordDuration" type="int">
+      <summary>
+        The total duration in recording session, including paused duration,
+        in milliseconds.
+      </summary>
+    </metric>
+    <metric name="EverPaused" type="int">
+      <summary>
+        Boolean indicating whether the recording has ever been paused.
+      </summary>
+    </metric>
+    <metric name="EverMuted" type="int">
+      <summary>
+        Boolean indicating whether the microphone input has ever been muted
+        during the recording.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale used for the recording transcription.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLabelEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="RecordingSaved" type="int">
+      <summary>
+        Boolean indicating whether the recording is saved.
+      </summary>
+    </metric>
+    <metric name="SpeakerCount" type="int">
+      <summary>
+        Number of speakers detected in the recording.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription.
       </summary>
     </metric>
   </event>

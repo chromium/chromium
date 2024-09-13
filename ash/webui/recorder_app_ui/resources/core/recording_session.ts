@@ -111,6 +111,10 @@ export class RecordingSession {
 
   private micMuted = false;
 
+  private everPausedInternal = false;
+
+  private everMutedInternal = false;
+
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
     const length = (powers.length * SAMPLES_PER_SLICE) / SAMPLE_RATE;
@@ -169,11 +173,22 @@ export class RecordingSession {
    */
   setMicMuted(muted: boolean): void {
     this.micMuted = muted;
+    if (muted) {
+      this.everMutedInternal = true;
+    }
     if (this.micAudioSourceNode !== null) {
       for (const track of this.micAudioSourceNode.mediaStream.getTracks()) {
         track.enabled = !muted;
       }
     }
+  }
+
+  get everPaused(): boolean {
+    return this.everPausedInternal;
+  }
+
+  get everMuted(): boolean {
+    return this.everMutedInternal;
   }
 
   private connectSourceNode(node: MediaStreamAudioSourceNode) {
@@ -243,6 +258,7 @@ export class RecordingSession {
       this.mediaRecorder.pause();
       // Close the mic when paused, so the "mic in use" indicator would go away.
       this.closeMicAudioSourceNode();
+      this.everPausedInternal = true;
     } else {
       await this.initMicAudioSourceNode();
       this.mediaRecorder.resume();
