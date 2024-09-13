@@ -17305,12 +17305,16 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
   if (document_associated_data_->is_discarded()) {
     return true;
   }
+  if (must_be_replaced()) {
+    return true;
+  }
+  if (!GetContentClient()->browser()->ShouldAllowSameSiteRenderFrameHostChange(
+          *this)) {
+    return false;
+  }
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
-             is_main_frame(), is_local_root(), has_committed_any_navigation(),
-             must_be_replaced()) &&
-         GetContentClient()
-             ->browser()
-             ->ShouldAllowSameSiteRenderFrameHostChange(*this);
+      is_main_frame(), is_local_root(), has_committed_any_navigation(),
+      must_be_replaced());
 }
 
 bool RenderFrameHostImpl::CanReadFromSharedStorage() {
