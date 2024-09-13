@@ -7810,6 +7810,21 @@
             ]
         }
     ],
+    "DelegatedCompositingOnWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DelegatedCompositing"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprecateUnload": [
         {
             "platforms": [
