@@ -1827,7 +1827,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Video call controls
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
-        Toggle sidetone
+        Toggle mic test
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_PREFERENCE_STATE_ACCESSIBLE_NAME" desc="Text for screen readers describing the state of a Studio Look preference. The commas are significant as they will introduce a pause in the spoken text.">
         <ph name="PREFERENCE_TITLE">$1<ex>Studio Look preference</ex></ph>, <ph name="EFFECT_NAME">$2<ex>Face retouch</ex></ph>, toggle button, <ph name="STATE">$3<ex>on</ex></ph>
@@ -1851,10 +1851,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
-        Listen to your mic sound
+        Test your mic sound
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
-        You can monitor your microphone sound from wired headphones. Close panel to stop.
+        You can test your microphone sound. Close panel to stop.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
         Connect wired headphone
@@ -1863,7 +1863,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
-        <ph name="TITLE">$1<ex>Listen to your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can monitor your microphone sound from wired headphones. Close panel to stop.</ex></ph>
+        <ph name="TITLE">$1<ex>Test your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can test your microphone sound. Close panel to stop.</ex></ph>
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
