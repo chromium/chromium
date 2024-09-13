@@ -818,6 +818,9 @@ public final class ChromePreferenceKeys {
     public static final String TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT =
             "Chrome.TabTearing.MaxInstancesFailureCount";
 
+    // If the toolbar should be shown on top.
+    public static final String TOOLBAR_TOP_ANCHORED = "Chrome.Toolbar.TopAnchored";
+
     public static final String TOS_ACKED_ACCOUNTS = "ToS acknowledged accounts";
 
     /**
@@ -1045,6 +1048,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
                 TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
                 TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT,
+                TOOLBAR_TOP_ANCHORED,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_POSTCREATE_COUNTER,
                 UMA_ON_RESUME_COUNTER,

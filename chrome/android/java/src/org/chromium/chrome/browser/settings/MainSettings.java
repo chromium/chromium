@@ -114,6 +114,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
     public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
     public static final String PREF_SAFETY_HUB = "safety_hub";
+    public static final String PREF_ADDRESS_BAR = "address_bar";
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
@@ -348,6 +349,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
             addPreferenceIfAbsent(PREF_TABS);
         } else {
             removePreferenceIfPresent(PREF_TABS);
+        }
+
+        if (ChromeFeatureList.sAndroidBottomToolbar.isEnabled()) {
+            addPreferenceIfAbsent(PREF_ADDRESS_BAR);
+        } else {
+            removePreferenceIfPresent(PREF_ADDRESS_BAR);
         }
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);

@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -1207,6 +1208,24 @@ public class MainSettingsFragmentTest {
                     "Safety hub setting should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testAndroidAdressBarFlagOn() {
+        launchSettingsActivity();
+        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testAndroidAdressBarFlagOff() {
+        launchSettingsActivity();
+        Assert.assertNull(
+                "Address Bar should not be shown when flag is off",
+                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
     }
 
     private void launchSettingsActivity() {
