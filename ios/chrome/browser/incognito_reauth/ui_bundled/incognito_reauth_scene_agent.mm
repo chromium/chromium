@@ -40,7 +40,7 @@
 // backgrounding.
 @property(nonatomic, assign) BOOL windowHadIncognitoContentWhenBackgrounded;
 
-// Tracks wether the user authenticated for incognito since last launch.
+// Tracks whether the user authenticated for incognito since last launch.
 @property(nonatomic, assign) BOOL authenticatedSinceLastForeground;
 
 // Container for observers.

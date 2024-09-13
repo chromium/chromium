@@ -151,7 +151,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     NSArray<NSLayoutConstraint*>* pinnedTabsConstraints;
 // The configuration for tab grid pages.
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
-// Wether there is a search being performed in the tab grid or not.
+// Whether there is a search being performed in the tab grid or not.
 @property(nonatomic, assign) BOOL isPerformingSearch;
 // Pan gesture for when the search results view is scrolled during the search
 // mode.

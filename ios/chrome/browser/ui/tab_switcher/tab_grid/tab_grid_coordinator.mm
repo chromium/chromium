@@ -1844,7 +1844,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return self.baseViewController.view.bounds;
 }
 
-// Returns wether there is a selected pinned cell.
+// Returns whether there is a selected pinned cell.
 - (BOOL)isPinnedCellSelected {
   if (!IsPinnedTabsEnabled() ||
       self.baseViewController.currentPage != TabGridPageRegularTabs) {

@@ -74,10 +74,10 @@ class BookmarkMediatorUnitTest
 
   // Number of bookmark saved.
   int GetBookmarkCountParam() { return std::get<0>(GetParam()); }
-  // Wether the bookmarks are saved in the default folder or not.
+  // Whether the bookmarks are saved in the default folder or not.
   bool GetFolderWasSelectedByUserParam() { return std::get<1>(GetParam()); }
   SignInStatus GetSignInStatusParam() { return std::get<2>(GetParam()); }
-  // Wether to display the number of bookmarks when it’s not 1.
+  // Whether to display the number of bookmarks when it’s not 1.
   bool GetDisplayTheNumberOfBookmarksParam() { return std::get<3>(GetParam()); }
 
  protected:

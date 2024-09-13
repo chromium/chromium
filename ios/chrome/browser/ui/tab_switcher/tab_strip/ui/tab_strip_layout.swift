@@ -7,7 +7,7 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 
 /// Layout used for the TabStrip.
 class TabStripLayout: UICollectionViewFlowLayout {
-  /// Wether the size of the items in the flow layout needs to be updated.
+  /// Whether the size of the items in the flow layout needs to be updated.
   public var needsSizeUpdate: Bool = true
 
   /// Static decoration views that border the collection view.
