@@ -7,10 +7,12 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/fake_text_input_client.h"
@@ -189,6 +191,8 @@ TEST_F(PickerSuggestionsControllerTest,
 
 TEST_F(PickerSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsOneSuggestionPerCategory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
       .WillRepeatedly(
@@ -225,6 +229,54 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerDriveFileResult>(_))))
       .Times(1);
   EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerLocalFileResult>(_))))
+      .Times(1);
+
+  controller.GetSuggestions(model, callback.Get());
+}
+
+TEST_F(PickerSuggestionsControllerTest,
+       GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
+  base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
+  NiceMock<MockPickerClient> client;
+  EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
+      .WillRepeatedly(
+          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerBrowsingHistoryResult(GURL("a.com"), u"a",
+                                          /*icon=*/{}),
+              PickerBrowsingHistoryResult(GURL("b.com"), u"b",
+                                          /*icon=*/{}),
+          })));
+  EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
+      .WillRepeatedly(
+          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                    /*file_path=*/{}),
+              PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                    /*file_path=*/{}),
+          })));
+  EXPECT_CALL(client, GetRecentLocalFileResults(3, _, _))
+      .WillRepeatedly(
+          WithArg<2>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerLocalFileResult(u"a", /*file_path=*/{}),
+              PickerLocalFileResult(u"b", /*file_path=*/{}),
+              PickerLocalFileResult(u"c", /*file_path=*/{}),
+              PickerLocalFileResult(u"d", /*file_path=*/{}),
+          })));
+  PickerSuggestionsController controller(&client);
+  input_method::FakeImeKeyboard keyboard;
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(AnyNumber());
+  EXPECT_CALL(callback,
+              Run(ElementsAre(VariantWith<PickerBrowsingHistoryResult>(_))))
+      .Times(1);
+  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerDriveFileResult>(_))))
+      .Times(1);
+  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerLocalFileResult>(_),
+                                        VariantWith<PickerLocalFileResult>(_),
+                                        VariantWith<PickerLocalFileResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
