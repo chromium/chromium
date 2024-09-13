@@ -289,7 +289,6 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
   TableViewDetailIconItem* _plusAddressesItem;
-  TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -314,6 +313,10 @@ struct EnhancedSafeBrowsingActivePromoData
 @property(nonatomic, strong, readonly)
     TableViewInfoButtonItem* managedFeedSettingsItem;
 
+// YES if the default browser settings row is currently showing the notification
+// dot.
+@property(nonatomic, assign) BOOL showingDefaultBrowserNotificationDot;
+
 // YES if the sign-in is in progress.
 @property(nonatomic, assign) BOOL isSigninInProgress;
 
@@ -333,7 +336,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
 #pragma mark Initialization
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+       hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -341,6 +345,7 @@ struct EnhancedSafeBrowsingActivePromoData
   if (self) {
     _browser = browser;
     _browserState = _browser->GetBrowserState();
+    self.showingDefaultBrowserNotificationDot = hasDefaultBrowserBlueDot;
     self.title = l10n_util::GetNSStringWithFixup(IDS_IOS_SETTINGS_TITLE);
     _searchEngineObserverBridge.reset(new SearchEngineObserverBridge(
         self,
@@ -468,8 +473,6 @@ struct EnhancedSafeBrowsingActivePromoData
     // time it's shown.
     [self updateAddressBarNewIPHBadge];
   }
-  // Update blue dot on default browser settings item.
-  [self updateDefaultBrowserSettingsBlueDot];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -799,22 +802,20 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
-  _defaultBrowserCellItem = [[TableViewDetailIconItem alloc]
+  TableViewDetailIconItem* defaultBrowser = [[TableViewDetailIconItem alloc]
       initWithType:SettingsItemTypeDefaultBrowser];
-  _defaultBrowserCellItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  _defaultBrowserCellItem.text =
+  defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  _defaultBrowserCellItem.iconImage =
-      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  _defaultBrowserCellItem.iconBackgroundColor =
-      [UIColor colorNamed:kPurple500Color];
-  _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
-  _defaultBrowserCellItem.iconCornerRadius =
-      kColorfulBackgroundSymbolCornerRadius;
+  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
+  defaultBrowser.iconTintColor = UIColor.whiteColor;
+  defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 
-  return _defaultBrowserCellItem;
+  [self maybeActivateDefaultBrowserBlueDotPromo:defaultBrowser];
+
+  return defaultBrowser;
 }
 
 - (TableViewItem*)accountCellItem {
@@ -1409,7 +1410,7 @@ struct EnhancedSafeBrowsingActivePromoData
       base::RecordAction(
           base::UserMetricsAction("Settings.ShowDefaultBrowser"));
 
-      if (_defaultBrowserCellItem.badgeType == BadgeType::kNotificationDot) {
+      if (self.showingDefaultBrowserNotificationDot) {
         feature_engagement::Tracker* tracker =
             feature_engagement::TrackerFactory::GetForBrowserState(
                 _browserState);
@@ -2025,15 +2026,13 @@ struct EnhancedSafeBrowsingActivePromoData
              : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
 }
 
-- (void)updateDefaultBrowserSettingsBlueDot {
-  id<PopupMenuCommands> handler =
-      HandlerForProtocol(_browser->GetCommandDispatcher(), PopupMenuCommands);
-  // Blue dot should be displayed if the path to default browser settings had
-  // blue dot.
-  if ([handler hasBlueDotForOverflowMenu]) {
-    _defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
-  } else {
-    _defaultBrowserCellItem.badgeType = BadgeType::kNone;
+// Decides whether the default browser blue dot promo should be active, and adds
+// the blue dot badge to the right settings row if it is.
+- (void)maybeActivateDefaultBrowserBlueDotPromo:
+    (TableViewDetailIconItem*)defaultBrowserCellItem {
+  if (self.showingDefaultBrowserNotificationDot) {
+    // Add the blue dot promo badge to the default browser row.
+    defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
   }
 }
 

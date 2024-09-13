@@ -20,8 +20,6 @@
 - (void)updateToolsMenuBlueDotVisibility;
 // Notifies that IPH bubble will be presenting on tools menu button.
 - (void)notifyIPHBubblePresenting;
-// Returns whether overflow menu button (e.g tools menu button) has blue dot.
-- (BOOL)hasBlueDotForOverflowMenu;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_POPUP_MENU_COMMANDS_H_

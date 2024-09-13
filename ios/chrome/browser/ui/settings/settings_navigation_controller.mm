@@ -171,9 +171,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 + (instancetype)
     mainSettingsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
-                                         delegate {
-  SettingsTableViewController* controller =
-      [[SettingsTableViewController alloc] initWithBrowser:browser];
+                                         delegate
+            hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
+  SettingsTableViewController* controller = [[SettingsTableViewController alloc]
+               initWithBrowser:browser
+      hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:controller

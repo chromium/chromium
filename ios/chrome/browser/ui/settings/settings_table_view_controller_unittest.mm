@@ -215,8 +215,6 @@ class SettingsTableViewControllerTest
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
     mock_popup_menu_handler_ = OCMProtocolMock(@protocol(PopupMenuCommands));
-    OCMStub([mock_popup_menu_handler_ hasBlueDotForOverflowMenu])
-        .andReturn(has_default_browser_blue_dot_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
@@ -229,7 +227,9 @@ class SettingsTableViewControllerTest
                              forProtocol:@protocol(PopupMenuCommands)];
 
     SettingsTableViewController* controller =
-        [[SettingsTableViewController alloc] initWithBrowser:browser_.get()];
+        [[SettingsTableViewController alloc]
+                     initWithBrowser:browser_.get()
+            hasDefaultBrowserBlueDot:has_default_browser_blue_dot_];
     controller.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
     controller.settingsHandler =
@@ -265,17 +265,10 @@ class SettingsTableViewControllerTest
     return GetApplicationContext()->GetLocalState();
   }
 
-  void InstantiateAndSimulateControllerViewAppear() {
+  void VerifyDefaultBrowwserBlueDot(bool has_default_browser_blue_dot) {
+    has_default_browser_blue_dot_ = has_default_browser_blue_dot;
     CreateController();
     CheckController();
-
-    // Simulate the view appearing.
-    [controller() viewWillAppear:YES];
-  }
-
-  void VerifyDefaultBrowserBlueDot(bool has_default_browser_blue_dot) {
-    has_default_browser_blue_dot_ = has_default_browser_blue_dot;
-    InstantiateAndSimulateControllerViewAppear();
 
     NSArray<TableViewItem*>* default_section_items =
         [controller().tableViewModel
@@ -623,12 +616,12 @@ TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
 
 // Verifies that the default browser blue dot is displayed when indicated.
 TEST_F(SettingsTableViewControllerTest, TestHasDefaultBrowserBlueDot) {
-  VerifyDefaultBrowserBlueDot(true);
+  VerifyDefaultBrowwserBlueDot(true);
 }
 
 // Verifies that the default browser blue dot is not displayed when indicated.
 TEST_F(SettingsTableViewControllerTest, TestHasNoDefaultBrowserBlueDot) {
-  VerifyDefaultBrowserBlueDot(false);
+  VerifyDefaultBrowwserBlueDot(false);
 }
 
 // Verifies that blue dot will be updated when default browser settings are
@@ -636,7 +629,8 @@ TEST_F(SettingsTableViewControllerTest, TestHasNoDefaultBrowserBlueDot) {
 TEST_F(SettingsTableViewControllerTest,
        TestUpdateToolsMenuBlueDotVisibilityCalled) {
   has_default_browser_blue_dot_ = true;
-  InstantiateAndSimulateControllerViewAppear();
+  CreateController();
+  CheckController();
 
   OCMExpect([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
@@ -652,7 +646,8 @@ TEST_F(SettingsTableViewControllerTest,
 TEST_F(SettingsTableViewControllerTest,
        TestUpdateToolsMenuBlueDotVisibilityNotCalled) {
   has_default_browser_blue_dot_ = false;
-  InstantiateAndSimulateControllerViewAppear();
+  CreateController();
+  CheckController();
 
   OCMReject([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
