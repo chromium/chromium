@@ -131,7 +131,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kLocalFiles:
       client_->GetRecentLocalFileResults(
           kMaxRecentFiles,
-          base::FeatureList::IsEnabled(ash::features::kPickerGrid)
+          base::FeatureList::IsEnabled(ash::features::kPickerRecentFiles)
               ? kMaxLocalFileCategoryRecencyDelta
               : kMaxLocalFileSuggestionRecencyDelta,
           std::move(callback));
