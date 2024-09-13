@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/visitsegment_database.h"
 
-#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/page_usage_data.h"
+#include "components/history/core/browser/segment_scorer.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -95,29 +95,6 @@ class SegmentVisitor {
   // call. Indicates end of data if value is |kEmptySegmentID|.
   SegmentID cur_segment_id_;
 };
-
-// Scoring function for a segment.
-float ComputeSegmentScore(const SegmentInfo& segment_info, base::Time now) {
-  float score = 0.0f;
-  size_t n = segment_info.time_slots.size();
-  for (size_t i = 0; i < n; ++i) {
-    base::Time time_slot = segment_info.time_slots[i];
-    int visit_count = segment_info.visit_counts[i];
-    // Score for this day in isolation.
-    float day_visits_score = (visit_count <= 0.0f)
-                                 ? 0.0f
-                                 : 1.0f + log(static_cast<float>(visit_count));
-    // Recent visits count more than historical ones, so we multiply in a boost
-    // related to how long ago this day was.
-    // This boost is a curve that smoothly goes through these values:
-    // Today gets 3x, a week ago 2x, three weeks ago 1.5x, falling off to 1x at
-    // the limit of how far we reach into the past.
-    int days_ago = (now - time_slot).InDays();
-    float recency_boost = 1.0f + (2.0f * (1.0f / (1.0f + days_ago / 7.0f)));
-    score += recency_boost * day_visits_score;
-  }
-  return score;
-}
 
 }  // namespace
 
@@ -298,6 +275,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
 
   SegmentVisitor segment_visitor(&statement);
   SegmentInfo segment_info;
+  std::unique_ptr<SegmentScorer> scorer =
+      SegmentScorer::CreateFromFeatureFlags();
   while (segment_visitor.Step(&segment_info)) {
     DCHECK(!segment_info.time_slots.empty());
     DCHECK_EQ(segment_info.time_slots.size(), segment_info.visit_counts.size());
@@ -308,7 +287,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
         segment_info.time_slots.begin(), segment_info.time_slots.end()));
     segment->SetVisitCount(std::accumulate(segment_info.visit_counts.begin(),
                                            segment_info.visit_counts.end(), 0));
-    segment->SetScore(ComputeSegmentScore(segment_info, now));
+    segment->SetScore(scorer->Compute(segment_info.time_slots,
+                                      segment_info.visit_counts, now));
     segments.push_back(std::move(segment));
   }
 
