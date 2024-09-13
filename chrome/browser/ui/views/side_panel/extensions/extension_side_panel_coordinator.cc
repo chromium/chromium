@@ -313,6 +313,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
   auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
   extension_view->SetVisible(true);
 
+  scoped_view_observation_.Reset();
   scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
 }

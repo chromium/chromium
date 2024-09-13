@@ -67,6 +67,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
+  // Exposed for testing.
+  static constexpr int kSidePanelContentWrapperViewId = 43;
+
   void TearDownPreBrowserViewDestruction();
 
   SidePanelRegistry* GetWindowRegistry();
@@ -158,9 +161,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key) const;
-
-  // Returns the current loading entry or nullptr if none exists.
-  SidePanelEntry* GetLoadingEntry() const;
 
   // Creates header and SidePanelEntry content container within the side panel.
   void InitializeSidePanel();

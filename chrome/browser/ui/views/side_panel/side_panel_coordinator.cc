@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -71,8 +72,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-constexpr int kSidePanelContentWrapperViewId = 43;
 
 void ConfigureControlButton(views::ImageButton* button) {
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
@@ -180,10 +179,8 @@ using PopulateSidePanelCallback = base::OnceCallback<void(
     std::optional<std::unique_ptr<views::View>> content_view)>;
 
 // SidePanelContentSwappingContainer is used as the content wrapper for views
-// hosted in the side panel. This uses the SidePanelContentProxy to check if or
-// wait for a SidePanelEntry's content view to be ready to be shown then only
-// swaps the views when the content is ready. If the SidePanelContextProxy
-// doesn't exist, the content is swapped immediately.
+// hosted in the side panel. This uses the SidePanelContentProxy to wait for the
+// SidePanelEntry's content view to be ready to be shown.
 class SidePanelContentSwappingContainer : public views::View {
   METADATA_HEADER(SidePanelContentSwappingContainer, views::View)
 
@@ -197,12 +194,14 @@ class SidePanelContentSwappingContainer : public views::View {
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
-    SetID(kSidePanelContentWrapperViewId);
+    SetID(SidePanelCoordinator::kSidePanelContentWrapperViewId);
   }
 
-  ~SidePanelContentSwappingContainer() override { loading_entry_ = nullptr; }
+  ~SidePanelContentSwappingContainer() override = default;
 
-  void RequestEntry(SidePanelEntry* entry, PopulateSidePanelCallback callback) {
+  // Calling this method cancels all previous calls to this method.
+  // If the entry is destroyed while waiting, the callback is not invoked.
+  void WaitForEntry(SidePanelEntry* entry, PopulateSidePanelCallback callback) {
     DCHECK(entry);
     ResetLoadingEntryIfNecessary();
     auto content_view = entry->GetContent();
@@ -213,54 +212,41 @@ class SidePanelContentSwappingContainer : public views::View {
     } else {
       entry->CacheView(std::move(content_view));
       loading_entry_ = entry->GetWeakPtr();
-      loaded_callback_ = std::move(callback);
-      content_proxy->SetAvailableCallback(
+      loaded_callback_.Reset(
           base::BindOnce(&SidePanelContentSwappingContainer::RunLoadedCallback,
-                         base::Unretained(this)));
+                         base::Unretained(this), std::move(callback)));
+      content_proxy->SetAvailableCallback(loaded_callback_.callback());
     }
   }
 
   void ResetLoadingEntryIfNecessary() {
-    if (loading_entry_) {
-      loading_entry_->ResetLoadTimestamp();
-      if (loading_entry_->CachedView()) {
-        // The available callback here is used for showing the entry once it has
-        // loaded. We need to reset this to make sure it is not triggered to be
-        // shown once available.
-        SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
-            ->ResetAvailableCallback();
-      }
-    }
-    loading_entry_ = nullptr;
+    loading_entry_.reset();
+    loaded_callback_.Cancel();
   }
 
   void SetNoDelaysForTesting(bool no_delays_for_testing) {
     show_immediately_for_testing_ = no_delays_for_testing;
   }
 
-  SidePanelEntry* loading_entry() const {
-    return loading_entry_ ? loading_entry_.get() : nullptr;
-  }
+  SidePanelEntry* loading_entry() const { return loading_entry_.get(); }
 
  private:
-  void RunLoadedCallback() {
-    // |loading_entry_| could be a nullptr here if it has been reset during
-    // SidePanelContentSwappingContainer destruction.
-    if (!loading_entry_) {
-      return;
-    }
-    DCHECK(!loaded_callback_.is_null());
+  void RunLoadedCallback(PopulateSidePanelCallback callback) {
+    // content_proxy is owned by content_view which is owned by SidePanelEntry.
+    // If this callback runs then loading_entry_ must be valid.
+    CHECK(loading_entry_);
     SidePanelEntry* entry = loading_entry_.get();
-    loading_entry_ = nullptr;
-    std::move(loaded_callback_).Run(entry, std::nullopt);
+    loading_entry_.reset();
+    std::move(callback).Run(entry, std::nullopt);
   }
 
   // When true, don't delay switching panels.
   bool show_immediately_for_testing_;
-  // Use a weak pointer so that loading side panel entry can be reset
-  // automatically if the entry is destroyed.
-  base::WeakPtr<SidePanelEntry> loading_entry_ = nullptr;
-  PopulateSidePanelCallback loaded_callback_;
+  // Tracks the entry that is loading.
+  base::WeakPtr<SidePanelEntry> loading_entry_;
+  // This class will load at most one entry at a time. If a new one is
+  // requested, the old one is canceled automatically.
+  base::CancelableOnceClosure loaded_callback_;
 };
 
 BEGIN_METADATA(SidePanelContentSwappingContainer)
@@ -502,7 +488,12 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return GetLoadingEntry();
+  SidePanelContentSwappingContainer* content_wrapper =
+      static_cast<SidePanelContentSwappingContainer*>(
+          browser_view_->unified_side_panel()->GetViewByID(
+              kSidePanelContentWrapperViewId));
+  DCHECK(content_wrapper);
+  return content_wrapper->loading_entry();
 }
 
 void SidePanelCoordinator::Show(
@@ -555,35 +546,23 @@ void SidePanelCoordinator::Show(
               kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
 
-  // If we are already loading this entry, do nothing.
-  if (content_wrapper->loading_entry() == entry) {
-    return;
-  }
-
-  // If we are already showing this entry, make sure we prevent any loading
-  // entry from showing once the load has finished. Say if we are showing A then
-  // trigger B to show but switch back to A while B is still loading (and not
-  // yet shown) we want to make sure B will not then be shown when it has
-  // finished loading. Note, this does not cancel the triggered load of B, B
-  // remains cached.
+  // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key_ && *current_key_ == input) {
+    content_wrapper->ResetLoadingEntryIfNecessary();
+
+    // If the side panel is in the process of closing, show it instead.
     content_wrapper->SetProperty(
         kSidePanelContentStateKey,
         static_cast<std::underlying_type_t<SidePanelContentState>>(
             SidePanelContentState::kReadyToShow));
-    if (content_wrapper->loading_entry()) {
-      content_wrapper->ResetLoadingEntryIfNecessary();
-    }
-    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-      NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
-    }
+    NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
     return;
   }
 
   SidePanelUtil::RecordEntryShowTriggeredMetrics(
       browser_view_->browser(), entry->key().id(), open_trigger);
 
-  content_wrapper->RequestEntry(
+  content_wrapper->WaitForEntry(
       entry,
       base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
                      base::Unretained(this), suppress_animations, input));
@@ -666,15 +645,6 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
   return GetActiveContextualRegistry()
              ? GetActiveContextualRegistry()->GetEntryForKey(entry_key)
              : nullptr;
-}
-
-SidePanelEntry* SidePanelCoordinator::GetLoadingEntry() const {
-  SidePanelContentSwappingContainer* content_wrapper =
-      static_cast<SidePanelContentSwappingContainer*>(
-          browser_view_->unified_side_panel()->GetViewByID(
-              kSidePanelContentWrapperViewId));
-  DCHECK(content_wrapper);
-  return content_wrapper->loading_entry();
 }
 
 void SidePanelCoordinator::InitializeSidePanel() {
