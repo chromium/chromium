@@ -346,6 +346,37 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   EXPECT_TRUE(user_annotations_entries.empty());
 }
 
+// Tests that the callback passed to `HasDataStored()` is called with
+// `HasData(true)` if there's data stored in the user annotations.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       HasDataStoredReturnsTrueIfDataIsStored) {
+  base::MockCallback<
+      autofill::AutofillPredictionImprovementsDelegate::HasDataCallback>
+      has_data_callback;
+  user_annotations_service_.ReplaceAllEntries(
+      {optimization_guide::proto::UserAnnotationsEntry()});
+  manager_->HasDataStored(has_data_callback.Get());
+  EXPECT_CALL(
+      has_data_callback,
+      Run(autofill::AutofillPredictionImprovementsDelegate::HasData(true)));
+  manager_->HasDataStored(has_data_callback.Get());
+}
+
+// Tests that the callback passed to `HasDataStored()` is called with
+// `HasData(false)` if there's no data stored in the user annotations.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       HasDataStoredReturnsFalseIfDataIsNotStored) {
+  base::MockCallback<
+      autofill::AutofillPredictionImprovementsDelegate::HasDataCallback>
+      has_data_callback;
+  user_annotations_service_.ReplaceAllEntries({});
+  manager_->HasDataStored(has_data_callback.Get());
+  EXPECT_CALL(
+      has_data_callback,
+      Run(autofill::AutofillPredictionImprovementsDelegate::HasData(false)));
+  manager_->HasDataStored(has_data_callback.Get());
+}
+
 class ShouldProvideAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {
  public:

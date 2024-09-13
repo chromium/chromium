@@ -24,6 +24,9 @@ class FormStructure;
 // //components/autofill/autofill_prediction_improvements.
 class AutofillPredictionImprovementsDelegate {
  public:
+  using HasData = base::StrongAlias<class HasDataTag, bool>;
+  using HasDataCallback = base::OnceCallback<void(HasData)>;
+
   // Specifies the types of feedback users can give.
   enum class UserFeedback { kThumbsUp, kThumbsDown };
 
@@ -76,6 +79,10 @@ class AutofillPredictionImprovementsDelegate {
   virtual void MaybeImportForm(const autofill::FormData& form,
                                const autofill::FormStructure& form_structure,
                                ImportFormCallback callback) = 0;
+
+  // Checks if there is any data stored in the profile's user annotations that can be used for
+  // filling and runs the `callback` accordingly.
+  virtual void HasDataStored(HasDataCallback callback) = 0;
 };
 
 }  // namespace autofill

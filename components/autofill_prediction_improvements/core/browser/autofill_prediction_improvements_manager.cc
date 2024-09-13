@@ -368,4 +368,19 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
                           /*prompt_acceptance_callback=*/base::DoNothing());
 }
 
+void AutofillPredictionImprovementsManager::HasDataStored(
+    HasDataCallback callback) {
+  if (user_annotations::UserAnnotationsService* user_annotations_service =
+          client_->GetUserAnnotationsService()) {
+    user_annotations_service->RetrieveAllEntries(base::BindOnce(
+        [](HasDataCallback callback,
+           const user_annotations::UserAnnotationsEntries entries) {
+          std::move(callback).Run(HasData(!entries.empty()));
+        },
+        std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(HasData(false));
+}
+
 }  // namespace autofill_prediction_improvements

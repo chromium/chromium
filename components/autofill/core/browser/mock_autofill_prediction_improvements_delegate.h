@@ -51,6 +51,7 @@ class MockAutofillPredictionImprovementsDelegate
                const autofill::FormStructure& form_structure,
                ImportFormCallback callback),
               (override));
+  MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
 };
 
 }  // namespace autofill

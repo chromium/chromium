@@ -56,6 +56,7 @@ class AutofillPredictionImprovementsManager
   void MaybeImportForm(const autofill::FormData& form,
                        const autofill::FormStructure& form_structure,
                        ImportFormCallback callback) override;
+  void HasDataStored(HasDataCallback callback) override;
 
  private:
   // Receives prediction improvements for all fields in `form`, then calls
