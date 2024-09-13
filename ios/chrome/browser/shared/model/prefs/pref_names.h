@@ -509,6 +509,11 @@ inline constexpr char kDetectUnitsEnabled[] =
 inline constexpr char kNetworkPredictionSetting[] =
     "ios.prerender.network_prediction_settings";
 
+// True if user has ever explicitly disabled Send Tab push notifications. Does
+// not reflect the current permission state of Send Tab push notifications.
+inline constexpr char kSendTabNotificationsPreviouslyDisabled[] =
+    "push_notifications.send_tab_push_notifications_disabled";
+
 // True if the memory debugging tools should be visible.
 inline constexpr char kShowMemoryDebuggingTools[] =
     "ios.memory.show_debugging_tools";

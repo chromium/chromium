@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -258,22 +259,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
                                 true);
       if (base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
-          browserState) {
-        syncer::DeviceInfoSyncService* deviceInfoSyncService =
-            DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
-        deviceInfoSyncService->RefreshLocalDeviceInfo();
-
-        // Since Send Tab is a high intent notification, enroll user in
-        // provisional notifications.
-        AuthenticationService* authService =
-            AuthenticationServiceFactory::GetForBrowserState(browserState);
-        [ProvisionalPushNotificationUtil
-            enrollUserToProvisionalNotificationsForClientIds:
-                {PushNotificationClientId::kSendTab}
-                                             withAuthService:authService
-                                       deviceInfoSyncService:
-                                           deviceInfoSyncService];
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+        [self enableSendTabNotificationsWithBrowserState:browserState];
       }
     }
   });
@@ -408,6 +395,47 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     }
   }
   return NO;
+}
+
+// If user has not previously disabled Send Tab notifications, either 1) If user
+// has authorized full notification permissions, enables Send Tab notifications
+// OR 2) enrolls user in provisional notifications for Send Tab notification
+// type.
+- (void)enableSendTabNotificationsWithBrowserState:
+    (ChromeBrowserState*)browserState {
+  if (!browserState || browserState->GetPrefs()->GetBoolean(
+                           prefs::kSendTabNotificationsPreviouslyDisabled)) {
+    return;
+  }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  NSString* gaiaID =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID;
+
+  // Early return if Send Tab notifications are already enabled.
+  if (push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSendTab,
+              base::SysNSStringToUTF8(gaiaID))) {
+    return;
+  }
+
+  syncer::DeviceInfoSyncService* deviceInfoSyncService =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
+
+  if ([PushNotificationUtil getSavedPermissionSettings] ==
+      UNAuthorizationStatusAuthorized) {
+    GetApplicationContext()->GetPushNotificationService()->SetPreference(
+        gaiaID, PushNotificationClientId::kSendTab, true);
+    deviceInfoSyncService->RefreshLocalDeviceInfo();
+  } else {
+    [ProvisionalPushNotificationUtil
+        enrollUserToProvisionalNotificationsForClientIds:
+            {PushNotificationClientId::kSendTab}
+                                         withAuthService:authService
+                                   deviceInfoSyncService:deviceInfoSyncService];
+  }
 }
 
 @end

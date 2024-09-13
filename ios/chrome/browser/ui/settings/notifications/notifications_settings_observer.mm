@@ -126,6 +126,10 @@
       _sendTabNotificationEnabled = [self isSendTabNotificationEnabled];
       [self.delegate notificationsSettingsDidChangeForClient:
                          PushNotificationClientId::kSendTab];
+      if (!_sendTabNotificationEnabled) {
+        _prefService->SetBoolean(prefs::kSendTabNotificationsPreviouslyDisabled,
+                                 true);
+      }
     }
   } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions) {
     if (_tipsNotificationEnabled != [self isTipsNotificationEnabled]) {
