@@ -21559,23 +21559,21 @@
             ]
         }
     ],
-    "SearchPrefetchHighPriorityPrefetchesAndroid": [
+    "SearchPrefetchHighPriorityPrefetchesAndroid_WithVariousCacheSizes": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledWith100CacheEntries_20240806",
+                    "name": "Enabled_20240913",
                     "params": {
-                        "cache_size": "100",
                         "navigation_prefetch_param": "op",
                         "touch_down": "true"
                     },
                     "enable_features": [
                         "OmniboxTouchDownTriggerForPrefetch",
-                        "SearchNavigationPrefetch",
-                        "SearchPrefetchServicePrefetching"
+                        "SearchNavigationPrefetch"
                     ]
                 }
             ]
