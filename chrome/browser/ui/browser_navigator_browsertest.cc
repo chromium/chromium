@@ -2162,12 +2162,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
 // Test typical popin UX flow.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
-  // Setup browser.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  const GURL url = https_server.GetURL("a.test", "/empty.html");
+  // Setup server.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate to a.test.
+  const GURL url = embedded_https_test_server().GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2194,16 +2195,17 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
 
 // Verify that a popin must not be insecure nor opened from an insecure context.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
-  // Start Servers
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  const GURL secure_url = https_server.GetURL("a.test", "/empty.html");
-  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
-  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(http_server.Start());
-  const GURL insecure_url = http_server.GetURL("a.test", "/empty.html");
+  // Setup servers.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a.test.
+  const GURL secure_url =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL insecure_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -2240,12 +2242,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
 
 // Test that a popin cannot be opened from a popin
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
-  // Setup browser.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  const GURL url = https_server.GetURL("a.test", "/empty.html");
+  // Setup server.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate to a.test.
+  const GURL url = embedded_https_test_server().GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2270,12 +2273,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
 
 // Test only one popin can be opened by a given context.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
-  // Setup browser.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  const GURL url = https_server.GetURL("a.test", "/empty.html");
+  // Setup server.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate to a.test.
+  const GURL url = embedded_https_test_server().GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2310,22 +2314,25 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
 
 // Test that a popin cannot navigate to an HTTP page
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
-  // Setup browser.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
-  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(http_server.Start());
-  const GURL secure_url = https_server.GetURL("a.test", "/empty.html");
-  const GURL insecure_url = http_server.GetURL("a.test", "/empty.html");
+  // Setup servers.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a.test.
+  const GURL secure_url =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL insecure_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       tab_web_contents,
       "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
@@ -2336,13 +2343,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
   // Navigating to HTTP page fails.
+  nav_observer.Wait();
   EXPECT_TRUE(content::ExecJs(
       popin_web_contents, "window.location = '" + insecure_url.spec() + "';"));
-  EXPECT_EQ("about:blank",
+  EXPECT_EQ(secure_url.spec(),
             content::EvalJs(popin_web_contents, "window.location.href")
                 .ExtractString());
 }
 
+// Intercepts requests with a 'redirect' query parameter and 302's the request
+// to the location specified.
 std::unique_ptr<net::test_server::HttpResponse> HandlePopinServerRedirect(
     const net::test_server::HttpRequest& request) {
   const GURL& url = request.GetURL();
@@ -2363,24 +2373,27 @@ std::unique_ptr<net::test_server::HttpResponse> HandlePopinServerRedirect(
 
 // Test that a popin cannot navigate to an HTTP page
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
-  // Setup browser.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  https_server.RegisterRequestHandler(
+  // Setup servers.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
       base::BindRepeating(&HandlePopinServerRedirect));
-  ASSERT_TRUE(https_server.Start());
-  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
-  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(http_server.Start());
-  const GURL secure_url = https_server.GetURL("a.test", "/empty.html");
-  const GURL insecure_url = http_server.GetURL("a.test", "/empty.html");
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a.test.
+  const GURL secure_url =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL insecure_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       tab_web_contents,
       "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
@@ -2390,11 +2403,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
   EXPECT_NE(popin_browser_window, browser()->window());
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
-  // Navigating to HTTP page fails.
+  // Navigating to HTTPS page that redirects to HTTP which fails.
+  nav_observer.Wait();
   EXPECT_TRUE(content::ExecJs(popin_web_contents,
                               "window.location = '" + secure_url.spec() +
                                   "?redirect=" + insecure_url.spec() + "';"));
-  EXPECT_EQ("about:blank",
+  EXPECT_EQ(secure_url.spec(),
             content::EvalJs(popin_web_contents, "window.location.href")
                 .ExtractString());
 }
