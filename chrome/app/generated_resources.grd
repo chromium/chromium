@@ -16520,23 +16520,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_STORAGE_FULL_DESC" desc="The description on a dialog informing the user that the security key (an external physical device for user authentication) that they selected does not have enough storage capacity to create the requested account.">
         Your security key does not have enough space for any more accounts.
       </message>
-      <message name="IDS_WEBAUTHN_REQUEST_ATTESTATION_PERMISSION_TITLE" desc="Title of a dialog informing the user that the website wants to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
-        Allow this site to see your security key?
+      <message name="IDS_WEBAUTHN_ATTESTATION_WARNING" desc="This message is included on a dialog that asks a user to touch their security key. It tells the user that the website has requested 'attestation' information from the security key which will disclose the make and model of the security key to the site if they tap it.">
+        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> will learn the make and model of your security key
       </message>
-      <message name="IDS_WEBAUTHN_REQUEST_ATTESTATION_PERMISSION_DESC" desc="The description on a dialog informing the user that the website wants to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
-        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> wants to see the make and model of your security key
-      </message>
-      <message name="IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_TITLE" desc="Title of a dialog informing the user that the website wants to read the serial number of the user's security key. A security key is a physical device used for authentication.">
-        Allow this site to identify your security key?
-      </message>
-      <message name="IDS_WEBAUTHN_REQUEST_ENTERPRISE_ATTESTATION_PERMISSION_DESC" desc="The description on a dialog informing the user that the website wants to wants to read the serial number of the user's security key. A security key is a physical device used for authentication. The word 'issued' here means that the company linked to the website had the security key specially manufactured and, typically, the user is an employee of that company who received the security key as part of their employment.">
-        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> issued your security key and wants to learn its ID number. The site will know exactly which security key you're using.
-      </message>
-      <message name="IDS_WEBAUTHN_ALLOW_ATTESTATION" desc="Label on button to allow a website to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
-        Allow
-      </message>
-      <message name="IDS_WEBAUTHN_DENY_ATTESTATION" desc="Label on button to deny a website's request to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key. This was previously the word 'Block', but that is used in contexts where the decision is persistent so we wanted a different word for this because it is a one-time decision: the user will be asked again if the website requests again. Thus the translation would hopefully be distinct from the translation for 'Block' as used, for example, in IDS_COLLECTED_COOKIES_BLOCK_BUTTON.">
-        Skip
+      <message name="IDS_WEBAUTHN_ENTERPRISE_ATTESTATION_WARNING" desc="This message is included on a dialog that asks a user to touch their security key. It tells the user that the website has requested 'attestation' information from the security key which will disclose the make and model of the security key to the site if they tap it. Additionally, Chrome will send the name of the site to the security key and the site has requested that, if the security key recognizes and trusts that site, it return its serial number. This will uniquely identity the security key.">
+        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> wants to learn the ID number of your security key. The site will know exactly which security key you're using.
       </message>
       <message name="IDS_WEBAUTHN_RETRY" desc="Button text. The user clicks this to retry the authentication flow after an error happened, e.g. to try with a different Security Key.">
         Try again

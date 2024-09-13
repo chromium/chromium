@@ -71,10 +71,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
 
   ~WinWebAuthnApiAuthenticator() override;
 
-  // ShowsPrivacyNotice returns true if the Windows native UI will show a
-  // privacy notice dialog before a MakeCredential request that might create
-  // a resident key or that requests attestation.
-  bool ShowsPrivacyNotice() const;
+  // ShowsResidentCredentialNotice returns true if the Windows native UI will
+  // show a privacy notice dialog before a MakeCredential request that might
+  // create a resident key or that requests attestation.
+  bool ShowsResidentCredentialNotice() const;
 
  private:
   // FidoAuthenticator:

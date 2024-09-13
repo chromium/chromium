@@ -776,9 +776,6 @@ struct AuthenticatorCommonImpl::RequestState {
                 device::MakeCredentialOptions,
                 device::CtapGetAssertionOptions>
       request_options;
-  // awaiting_attestation_response_ is true if the embedder has been queried
-  // about an attestsation decision and the response is still pending.
-  bool awaiting_attestation_response = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   bool discoverable_credential_request = false;
@@ -2103,99 +2100,47 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
           GetBrowserContext(), req_state_->caller_origin,
           req_state_->relying_party_id)) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+  } else if (response_data->attestation_object
+                 .IsAttestationCertificateInappropriatelyIdentifying() &&
+             !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+                 GetBrowserContext(), req_state_->caller_origin,
+                 req_state_->relying_party_id)) {
+    // If the RP sees a "none" attestation with a zero AAGUID after requesting
+    // "direct" attestation then they can reasonably conclude that it was one of
+    // the tokens with inappropriate certs. But this is better than disclosing
+    // the certificate itself, and these tokens are vanishingly rare now.
+    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
   } else if (attestation == device::AttestationConveyancePreference::
                                 kEnterpriseApprovedByBrowser) {
     // If enterprise attestation was approved by policy then it can be
     // returned immediately.
     attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-  } else if (attestation == device::AttestationConveyancePreference::
-                                kEnterpriseIfRPListedOnAuthenticator &&
-             !response_data->enterprise_attestation_returned) {
-    // If enterprise attestation was requested, not approved by policy, and
-    // not approved by the authenticator, then any attestation is stripped.
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  } else if (is_transport_used_cable) {
-    // Attestation is not returned when caBLEv2 is used, but the AAGUID is
-    // maintained.
-    attestation_erasure =
-        AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-  } else if (is_transport_used_internal) {
+  } else if (response_data->attestation_object.IsSelfAttestation()) {
+    // Self attestation is just a self-signature and carries no identifying
+    // information.
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+  } else if (is_transport_used_internal || is_transport_used_cable) {
     // Direct attestation from platform authenticators is known to be
-    // privacy preserving, so we always return it when requested. Also,
-    // counter to what the WebAuthn spec says, we do not erase the AAGUID
+    // privacy preserving, so we always return it when requested. We follow the
+    // same rule when the platform authenticator is used over hybrid so that
+    // sites see a consistent experience between syncing and using the phone.
+    // Also, counter to what the WebAuthn spec says, we do not erase the AAGUID
     // even when attestation wasn't requested.
     attestation_erasure =
         attestation != device::AttestationConveyancePreference::kNone
             ? AttestationErasureOption::kIncludeAttestation
             : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-  } else if (attestation == device::AttestationConveyancePreference::kNone &&
-             response_data->attestation_object.IsSelfAttestation()) {
-    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   } else if (attestation == device::AttestationConveyancePreference::kNone) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  }
-
-  if (attestation_erasure.has_value()) {
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::SUCCESS,
-        CreateMakeCredentialResponse(std::move(*response_data),
-                                     *attestation_erasure),
-        nullptr, Focus::kDoCheck);
   } else {
-    req_state_->awaiting_attestation_response = true;
-    req_state_->request_delegate->ShouldReturnAttestation(
-        req_state_->relying_party_id, authenticator,
-        response_data->enterprise_attestation_returned,
-        base::BindOnce(
-            &AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided,
-            weak_factory_.GetWeakPtr(),
-            attestation_erasure.value_or(
-                AttestationErasureOption::kIncludeAttestation),
-            std::move(*response_data)));
-  }
-}
-
-void AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided(
-    AttestationErasureOption attestation_erasure,
-    device::AuthenticatorMakeCredentialResponse response_data,
-    bool attestation_permitted) {
-  req_state_->awaiting_attestation_response = false;
-  if (!req_state_->request_handler) {
-    // The request has already been cleaned up, probably because a navigation
-    // occurred while the permissions prompt was pending.
-    return;
-  }
-
-  if (!attestation_permitted) {
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  }
-
-  // The check for IsAttestationCertificateInappropriatelyIdentifying is
-  // performed after the permissions prompt, even though we know the answer
-  // before, because this still effectively discloses the make & model of
-  // the authenticator: If an RP sees a "none" attestation from Chrome after
-  // requesting direct attestation then it knows that it was one of the
-  // tokens with inappropriate certs.
-  if (response_data.attestation_object
-          .IsAttestationCertificateInappropriatelyIdentifying() &&
-      !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(), req_state_->caller_origin,
-          req_state_->relying_party_id)) {
-    // The attestation response is incorrectly individually identifiable, but
-    // the consent is for make & model information about a token, not for
-    // individually-identifiable information. Erase the attestation to stop it
-    // begin a tracking signal.
-
-    // The only way to get the underlying attestation will be to list the RP ID
-    // in the enterprise policy, because that enables the individual attestation
-    // bit in the register request and permits individual attestation generally.
-    attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+    // The UI will have shown a notification that attestation was requested.
+    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
   }
 
   CompleteMakeCredentialRequest(
       blink::mojom::AuthenticatorStatus::SUCCESS,
-      CreateMakeCredentialResponse(std::move(response_data),
-                                   attestation_erasure),
+      CreateMakeCredentialResponse(std::move(*response_data),
+                                   *attestation_erasure),
       nullptr, Focus::kDoCheck);
 }
 
@@ -2397,10 +2342,6 @@ void AuthenticatorCommonImpl::BeginRequestTimeout(
 // TODO(crbug.com/41371792): Add web tests to verify timeouts are
 // indistinguishable from NOT_ALLOWED_ERROR cases.
 void AuthenticatorCommonImpl::OnTimeout() {
-  if (req_state_->awaiting_attestation_response) {
-    req_state_->awaiting_attestation_response = false;
-  }
-
   if (!req_state_->request_delegate) {
     // If no UI has been shown yet (likely because we timed out waiting for RP
     // ID validation) then simply cancel the request.

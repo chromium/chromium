@@ -126,6 +126,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           device::AuthenticatorAttachment::kAny;
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
+      transport_availability.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     } else if (name == "activate_usb") {
@@ -348,10 +350,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->SelectAccount(
           std::move(responses),
           base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
-    } else if (name == "request_attestation_permission") {
-      controller_->RequestAttestationPermission(false, base::DoNothing());
-    } else if (name == "request_enterprise_attestation_permission") {
-      controller_->RequestAttestationPermission(true, base::DoNothing());
     } else if (name == "server_link_title_UNLOCK_YOUR_PHONE") {
       controller_->set_cable_transport_info(
           /*extension_is_v2=*/true, /*paired_phones=*/{},
@@ -587,16 +585,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
-                       InvokeUi_request_attestation_permission) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
-                       InvokeUi_request_enterprise_attestation_permission) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_server_link_title_UNLOCK_YOUR_PHONE) {
   ShowAndVerifyUi();
 }
@@ -757,6 +745,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
+      transport_availability.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kDirect;
       transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
@@ -769,6 +759,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
+      transport_availability.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kDirect;
       transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,

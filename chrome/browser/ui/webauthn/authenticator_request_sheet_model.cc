@@ -6,9 +6,9 @@
 
 #include <string>
 
-std::u16string AuthenticatorRequestSheetModel::GetAdditionalDescription()
-    const {
-  return std::u16string();
+std::vector<std::u16string>
+AuthenticatorRequestSheetModel::GetAdditionalDescriptions() const {
+  return {};
 }
 
 std::u16string AuthenticatorRequestSheetModel::GetError() const {

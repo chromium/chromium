@@ -382,11 +382,6 @@ class ScopedNavigationCancellingThrottleInstaller : public WebContentsObserver {
 };
 
 struct WebAuthBrowserTestState {
-  // Called when the browser is asked to display an attestation prompt. There is
-  // no default so if no callback is installed then the test will crash.
-  base::OnceCallback<void(base::OnceCallback<void(bool)>)>
-      attestation_prompt_callback_;
-
   // Set when |IsFocused| is called.
   bool focus_checked = false;
 
@@ -421,15 +416,6 @@ class WebAuthBrowserTestClientDelegate
       delete;
   WebAuthBrowserTestClientDelegate& operator=(
       const WebAuthBrowserTestClientDelegate&) = delete;
-
-  void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const ::device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback) override {
-    std::move(test_state_->attestation_prompt_callback_)
-        .Run(std::move(callback));
-  }
 
  private:
   const raw_ptr<WebAuthBrowserTestState> test_state_;
@@ -816,65 +802,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   EXPECT_TRUE(get_future2.Wait());
   EXPECT_EQ(std::get<0>(get_future2.Get()),
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
-}
-
-enum class AttestationCallbackBehavior {
-  IGNORE_CALLBACK,
-  BEFORE_NAVIGATION,
-  AFTER_NAVIGATION,
-};
-
-const char* AttestationCallbackBehaviorToString(
-    AttestationCallbackBehavior behavior) {
-  switch (behavior) {
-    case AttestationCallbackBehavior::IGNORE_CALLBACK:
-      return "IGNORE_CALLBACK";
-    case AttestationCallbackBehavior::BEFORE_NAVIGATION:
-      return "BEFORE_NAVIGATION";
-    case AttestationCallbackBehavior::AFTER_NAVIGATION:
-      return "AFTER_NAVIGATION";
-  }
-}
-
-const AttestationCallbackBehavior kAllAttestationCallbackBehaviors[] = {
-    AttestationCallbackBehavior::IGNORE_CALLBACK,
-    AttestationCallbackBehavior::BEFORE_NAVIGATION,
-    AttestationCallbackBehavior::AFTER_NAVIGATION,
-};
-
-// Tests navigating while an attestation permission prompt is showing.
-IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
-                       PromptForAttestationThenNavigateAway) {
-  for (auto behavior : kAllAttestationCallbackBehaviors) {
-    SCOPED_TRACE(AttestationCallbackBehaviorToString(behavior));
-
-    InjectVirtualFidoDeviceFactory();
-    TestCreateFuture create_future;
-    auto options = BuildBasicCreateOptions();
-    options->attestation = device::AttestationConveyancePreference::kDirect;
-    authenticator()->MakeCredential(std::move(options),
-                                    create_future.GetCallback());
-    bool attestation_callback_was_invoked = false;
-    test_state()->attestation_prompt_callback_ = base::BindLambdaForTesting(
-        [&](base::OnceCallback<void(bool)> callback) {
-          attestation_callback_was_invoked = true;
-
-          if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
-            std::move(callback).Run(false);
-            // Silence the erroneous bugprone-use-after-move.
-            callback = base::OnceCallback<void(bool)>();
-          }
-          EXPECT_TRUE(NavigateToURL(
-              shell(), GetHttpsURL("www.acme.com", "/title2.html")));
-          if (behavior == AttestationCallbackBehavior::AFTER_NAVIGATION) {
-            std::move(callback).Run(false);
-          }
-        });
-
-    WaitForConnectionError();
-    ASSERT_TRUE(attestation_callback_was_invoked);
-    ConnectToAuthenticator();
-  }
 }
 
 // Tests that the blink::mojom::Authenticator connection is not closed on a
@@ -1632,50 +1559,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
             EvalJs(shell()->web_contents(),
                    BuildCreateCallWithParameters(CreateParameters())));
   ASSERT_TRUE(prompt_callback_was_invoked);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
-                       NavigateSubframeDuringAttestationPrompt) {
-  InjectVirtualFidoDeviceFactory();
-
-  for (auto behavior : kAllAttestationCallbackBehaviors) {
-    if (behavior == AttestationCallbackBehavior::IGNORE_CALLBACK) {
-      // If the callback is ignored, then the registration will not complete and
-      // that hangs the test.
-      continue;
-    }
-
-    SCOPED_TRACE(AttestationCallbackBehaviorToString(behavior));
-
-    bool prompt_callback_was_invoked = false;
-    test_state()->attestation_prompt_callback_ = base::BindOnce(
-        [](WebContents* web_contents, bool* prompt_callback_was_invoked,
-           AttestationCallbackBehavior behavior,
-           base::OnceCallback<void(bool)> callback) {
-          *prompt_callback_was_invoked = true;
-
-          if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
-            std::move(callback).Run(true);
-            // Silence the erroneous bugprone-use-after-move.
-            callback = base::OnceCallback<void(bool)>();
-          }
-          EXPECT_TRUE(NavigateIframeToURL(web_contents, "test_iframe",
-                                          GURL("/title2.html")));
-          if (behavior == AttestationCallbackBehavior::AFTER_NAVIGATION) {
-            std::move(callback).Run(true);
-          }
-        },
-        shell()->web_contents(), &prompt_callback_was_invoked, behavior);
-
-    EXPECT_TRUE(NavigateToURL(
-        shell(), GetHttpsURL("www.acme.com", "/page_with_iframe.html")));
-
-    CreateParameters parameters;
-    parameters.attestation = "direct";
-    ASSERT_EQ(kOkMessage, EvalJs(shell()->web_contents(),
-                                 BuildCreateCallWithParameters(parameters)));
-    ASSERT_TRUE(prompt_callback_was_invoked);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,

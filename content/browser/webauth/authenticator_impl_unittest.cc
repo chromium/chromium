@@ -2060,14 +2060,6 @@ enum class EnterprisePolicy {
   NOT_LISTED,
 };
 
-enum class AttestationConsent {
-  GRANTED,
-  DENIED,
-  GRANTED_FOR_ENTERPRISE_ATTESTATION,
-  DENIED_FOR_ENTERPRISE_ATTESTATION,
-  NOT_USED,
-};
-
 enum class AttestationType {
   ANY,
   NONE,
@@ -2112,21 +2104,6 @@ const char* AttestationConveyancePreferenceToString(
   }
 }
 
-const char* AttestationConsentToString(AttestationConsent ac) {
-  switch (ac) {
-    case AttestationConsent::GRANTED:
-      return "GRANTED";
-    case AttestationConsent::DENIED:
-      return "DENIED";
-    case AttestationConsent::GRANTED_FOR_ENTERPRISE_ATTESTATION:
-      return "GRANTED_FOR_ENTERPRISE_ATTESTATION";
-    case AttestationConsent::DENIED_FOR_ENTERPRISE_ATTESTATION:
-      return "DENIED_FOR_ENTERPRISE_ATTESTATION";
-    case AttestationConsent::NOT_USED:
-      return "NOT_USED";
-  }
-}
-
 // TestAuthenticatorRequestDelegate is a test fake implementation of the
 // AuthenticatorRequestClientDelegate embedder interface.
 class TestAuthenticatorRequestDelegate
@@ -2135,12 +2112,10 @@ class TestAuthenticatorRequestDelegate
   TestAuthenticatorRequestDelegate(
       RenderFrameHost* render_frame_host,
       base::OnceClosure action_callbacks_registered_callback,
-      AttestationConsent attestation_consent,
       base::OnceClosure started_over_callback,
       bool simulate_user_cancelled)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
-        attestation_consent_(attestation_consent),
         started_over_callback_(std::move(started_over_callback)),
         does_block_request_on_failure_(!started_over_callback_.is_null()),
         simulate_user_cancelled_(simulate_user_cancelled) {}
@@ -2149,11 +2124,6 @@ class TestAuthenticatorRequestDelegate
       delete;
   TestAuthenticatorRequestDelegate& operator=(
       const TestAuthenticatorRequestDelegate&) = delete;
-
-  ~TestAuthenticatorRequestDelegate() override {
-    CHECK(attestation_consent_queried_ ||
-          attestation_consent_ == AttestationConsent::NOT_USED);
-  }
 
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
@@ -2172,36 +2142,6 @@ class TestAuthenticatorRequestDelegate
       action_callbacks_registered_callback_ = std::move(started_over_callback_);
       start_over_callback_ = start_over_callback;
     }
-  }
-
-  void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback) override {
-    bool result = false;
-    switch (attestation_consent_) {
-      case AttestationConsent::NOT_USED:
-        CHECK(false);
-        break;
-      case AttestationConsent::DENIED:
-        CHECK(!is_enterprise_attestation);
-        break;
-      case AttestationConsent::GRANTED:
-        CHECK(!is_enterprise_attestation);
-        result = true;
-        break;
-      case AttestationConsent::DENIED_FOR_ENTERPRISE_ATTESTATION:
-        CHECK(is_enterprise_attestation);
-        break;
-      case AttestationConsent::GRANTED_FOR_ENTERPRISE_ATTESTATION:
-        CHECK(is_enterprise_attestation);
-        result = true;
-        break;
-    }
-
-    attestation_consent_queried_ = true;
-    std::move(callback).Run(result);
   }
 
   void OnTransportAvailabilityEnumerated(
@@ -2228,11 +2168,9 @@ class TestAuthenticatorRequestDelegate
 
   base::OnceClosure action_callbacks_registered_callback_;
   base::OnceClosure cancel_callback_;
-  const AttestationConsent attestation_consent_;
   base::OnceClosure started_over_callback_;
   base::OnceClosure start_over_callback_;
   bool does_block_request_on_failure_ = false;
-  bool attestation_consent_queried_ = false;
   bool simulate_user_cancelled_ = false;
 };
 
@@ -2267,8 +2205,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        attestation_consent, std::move(started_over_callback_),
-        simulate_user_cancelled_);
+        std::move(started_over_callback_), simulate_user_cancelled_);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -2276,8 +2213,6 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   // If set, this closure will be called when the subsequently constructed
   // delegate is informed that the request has started.
   base::OnceClosure action_callbacks_registered_callback;
-
-  AttestationConsent attestation_consent = AttestationConsent::NOT_USED;
 
   // This emulates scenarios where a nullptr RequestClientDelegate is returned
   // because a request is already in progress.
@@ -2314,7 +2249,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   struct TestCase {
     AttestationConveyancePreference attestation_requested;
     EnterprisePolicy enterprise_policy;
-    AttestationConsent attestation_consent;
     AuthenticatorStatus expected_status;
     AttestationType expected_attestation;
     const char* expected_certificate_substring;
@@ -2333,11 +2267,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   void RunTestCases(const std::vector<TestCase>& tests) {
     for (size_t i = 0; i < tests.size(); i++) {
       const auto& test = tests[i];
-      if (test.attestation_consent != AttestationConsent::NOT_USED) {
-        SCOPED_TRACE(test.attestation_consent == AttestationConsent::GRANTED
-                         ? "consent granted"
-                         : "consent denied");
-      }
       SCOPED_TRACE(test.enterprise_policy == EnterprisePolicy::LISTED
                        ? "individual attestation"
                        : "no individual attestation");
@@ -2348,7 +2277,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
       test_client_.GetTestWebAuthenticationDelegate()
           ->permit_individual_attestation =
           test.enterprise_policy == EnterprisePolicy::LISTED;
-      test_client_.attestation_consent = test.attestation_consent;
 
       PublicKeyCredentialCreationOptionsPtr options =
           GetTestPublicKeyCredentialCreationOptions();
@@ -2659,7 +2587,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::NONE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::NONE,
           "",
@@ -2667,7 +2594,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::NONE,
           EnterprisePolicy::LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::NONE,
           "",
@@ -2675,23 +2601,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::INDIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          AttestationConveyancePreference::INDIRECT,
-          EnterprisePolicy::LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          AttestationConveyancePreference::INDIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::GRANTED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kStandardCommonName,
@@ -2699,7 +2608,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::INDIRECT,
           EnterprisePolicy::LISTED,
-          AttestationConsent::GRANTED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kStandardCommonName,
@@ -2707,23 +2615,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::GRANTED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kStandardCommonName,
@@ -2731,25 +2622,20 @@ TEST_F(AuthenticatorContentBrowserClientTest, AttestationBehaviour) {
       {
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::LISTED,
-          AttestationConsent::GRANTED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kStandardCommonName,
       },
       {
-          // Requesting enterprise attestation and not being approved results in
-          // no attestation.
           AttestationConveyancePreference::ENTERPRISE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
+          AttestationType::U2F,
+          kStandardCommonName,
       },
       {
           AttestationConveyancePreference::ENTERPRISE,
           EnterprisePolicy::LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kIndividualCommonName,
@@ -2785,20 +2671,16 @@ TEST_F(AuthenticatorContentBrowserClientTest, Ctap2EnterpriseAttestation) {
         {
             AttestationConveyancePreference::ENTERPRISE,
             EnterprisePolicy::LISTED,
-            AttestationConsent::NOT_USED,
             AuthenticatorStatus::SUCCESS,
             AttestationType::PACKED,
             kIndividualCommonName,
         },
         {
-            // Requesting enterprise attestation and not being approved results
-            // in no attestation.
             AttestationConveyancePreference::ENTERPRISE,
             EnterprisePolicy::NOT_LISTED,
-            AttestationConsent::NOT_USED,
             AuthenticatorStatus::SUCCESS,
-            AttestationType::NONE,
-            "",
+            AttestationType::PACKED,
+            kStandardCommonName,
         },
     };
 
@@ -2820,20 +2702,16 @@ TEST_F(AuthenticatorContentBrowserClientTest, Ctap2EnterpriseAttestation) {
             // returned.
             AttestationConveyancePreference::ENTERPRISE,
             EnterprisePolicy::NOT_LISTED,
-            AttestationConsent::GRANTED_FOR_ENTERPRISE_ATTESTATION,
             AuthenticatorStatus::SUCCESS,
             AttestationType::PACKED,
             kIndividualCommonName,
         },
         {
-            // Consent is required in the case that an enterprise attestation is
-            // approved by an authenticator, however.
             AttestationConveyancePreference::ENTERPRISE,
-            EnterprisePolicy::NOT_LISTED,
-            AttestationConsent::DENIED_FOR_ENTERPRISE_ATTESTATION,
+            EnterprisePolicy::LISTED,
             AuthenticatorStatus::SUCCESS,
-            AttestationType::NONE,
-            "",
+            AttestationType::PACKED,
+            kIndividualCommonName,
         },
     };
 
@@ -2877,26 +2755,13 @@ TEST_F(AuthenticatorContentBrowserClientTest,
       {
           AttestationConveyancePreference::ENTERPRISE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::GRANTED,
-          AuthenticatorStatus::SUCCESS,
-          // If individual attestation was not requested then the attestation
-          // certificate will be removed, even if consent is given, because the
-          // consent isn't to be tracked.
           AttestationType::NONE,
           "",
       },
       {
           AttestationConveyancePreference::ENTERPRISE,
           EnterprisePolicy::LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::U2F,
           kCommonName,
@@ -2935,7 +2800,6 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           // because the transport is kInternal, the AAGUID will be preserved.
           AttestationConveyancePreference::NONE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::NONE_WITH_NONZERO_AAGUID,
           "",
@@ -2945,7 +2809,6 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           // preserving. The AttestationConsent value is irrelevant.
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::SELF_WITH_NONZERO_AAGUID,
           "",
@@ -2967,27 +2830,14 @@ TEST_F(AuthenticatorContentBrowserClientTest, Ctap2SelfAttestation) {
           // rather than erasing it.
           AttestationConveyancePreference::NONE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::SELF,
           "",
       },
       {
-          // If attestation is requested, but denied, we'll return none
-          // attestation.
+          // And if direct attestation was requested.
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE,
-          "",
-      },
-      {
-          // If attestation is requested and granted, the self attestation will
-          // be returned.
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::GRANTED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::SELF,
           "",
@@ -3013,7 +2863,6 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           // attestation.
           AttestationConveyancePreference::NONE,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::NONE,
           "",
@@ -3116,8 +2965,6 @@ TEST_F(AuthenticatorContentBrowserClientTest, BlockedAttestation) {
         {
             test.attestation,
             test.enterprise_policy,
-            test.result == AttestationType::U2F ? AttestationConsent::GRANTED
-                                                : AttestationConsent::NOT_USED,
             AuthenticatorStatus::SUCCESS,
             test.result,
             "",
@@ -3833,7 +3680,6 @@ class MockAuthenticatorRequestDelegateObserver
       : TestAuthenticatorRequestDelegate(
             nullptr /* render_frame_host */,
             base::DoNothing() /* did_start_request_callback */,
-            AttestationConsent::NOT_USED,
             /*started_over_callback=*/base::OnceClosure(),
             /*simulate_user_cancelled=*/false),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}

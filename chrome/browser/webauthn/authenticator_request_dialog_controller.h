@@ -248,8 +248,6 @@ class AuthenticatorRequestDialogController
   void OnRetryUserVerification(int attempts);
 
   void OnResidentCredentialConfirmed() override;
-  void OnAttestationPermissionResponse(
-      bool attestation_permission_granted) override;
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
@@ -324,9 +322,6 @@ class AuthenticatorRequestDialogController
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
   void OnSampleCollected(int bio_samples_remaining);
   void OnBioEnrollmentDone() override;
-
-  void RequestAttestationPermission(bool is_enterprise_attestation,
-                                    base::OnceCallback<void(bool)> callback);
 
   void set_is_non_webauthn_request(bool is_non_webauthn_request) {
     is_non_webauthn_request_ = is_non_webauthn_request;
@@ -522,8 +517,6 @@ class AuthenticatorRequestDialogController
   base::OnceClosure bio_enrollment_callback_;
 
   base::OnceCallback<void(std::u16string)> pin_callback_;
-
-  base::OnceCallback<void(bool)> attestation_callback_;
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;

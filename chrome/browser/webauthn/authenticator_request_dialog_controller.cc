@@ -465,6 +465,10 @@ void AuthenticatorRequestDialogController::StartFlow(
     bool use_conditional_mediation) {
   DCHECK(!started_);
   DCHECK_EQ(model_->step(), Step::kNotStarted);
+  DCHECK_EQ(
+      transport_availability.attestation_conveyance_preference.has_value(),
+      transport_availability.request_type ==
+          device::FidoRequestType::kMakeCredential);
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
@@ -1241,14 +1245,6 @@ void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
   HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
 }
 
-void AuthenticatorRequestDialogController::OnAttestationPermissionResponse(
-    bool attestation_permission_granted) {
-  if (!attestation_callback_) {
-    return;
-  }
-  std::move(attestation_callback_).Run(attestation_permission_granted);
-}
-
 void AuthenticatorRequestDialogController::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
   // Only the webauthn.dll authenticator omits a transport completely. This
@@ -1448,16 +1444,6 @@ void AuthenticatorRequestDialogController::OnSampleCollected(
 
 void AuthenticatorRequestDialogController::OnBioEnrollmentDone() {
   std::move(bio_enrollment_callback_).Run();
-}
-
-void AuthenticatorRequestDialogController::RequestAttestationPermission(
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(model_->step() != Step::kClosed);
-  attestation_callback_ = std::move(callback);
-  SetCurrentStep(is_enterprise_attestation
-                     ? Step::kEnterpriseAttestationPermissionRequest
-                     : Step::kAttestationPermissionRequest);
 }
 
 void AuthenticatorRequestDialogController::set_cable_transport_info(
@@ -2406,6 +2392,8 @@ void AuthenticatorRequestDialogController::
   model_->request_type = transport_availability_.request_type;
   model_->resident_key_requirement =
       transport_availability_.resident_key_requirement;
+  model_->attestation_conveyance_preference =
+      transport_availability_.attestation_conveyance_preference;
   model_->ble_adapter_is_powered =
       transport_availability_.ble_status == BleStatus::kOn;
   model_->show_security_key_on_qr_sheet =

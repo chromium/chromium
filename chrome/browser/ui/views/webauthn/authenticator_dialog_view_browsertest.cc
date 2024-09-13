@@ -56,10 +56,6 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
            u"Line Because Life Would Be Just Too Simple That Way";
   }
 
-  std::u16string GetAdditionalDescription() const override {
-    return u"More description text.";
-  }
-
   std::u16string GetError() const override {
     return u"You must construct additional pylons.";
   }
@@ -105,31 +101,30 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
     dialog_model_ =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(nullptr);
     dialog_model_->relying_party_id = "example.com";
-      content::WebContents* const web_contents =
-          browser()->tab_strip_model()->GetActiveWebContents();
-      dialog_model_->SetStep(AuthenticatorRequestDialogModel::Step::kTimedOut);
-      AuthenticatorRequestDialogView* dialog =
-          test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
-              web_contents, dialog_model_.get());
-      if (name == "default") {
-        test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
-            dialog, std::make_unique<TestSheetView>(
-                        std::make_unique<TestSheetModel>()));
-      } else if (name == "manage_devices") {
-        // Add a paired phone. That should be sufficient for the "Manage
-        // devices" button to be shown.
-        dialog_model_->mechanisms.emplace_back(
-            AuthenticatorRequestDialogModel::Mechanism::Phone("Phone"),
-            u"Phone", u"Phone", kSmartphoneIcon, base::DoNothing());
-        dialog_model_->SetStep(
-            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+    content::WebContents* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    dialog_model_->SetStep(AuthenticatorRequestDialogModel::Step::kTimedOut);
+    AuthenticatorRequestDialogView* dialog =
+        test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
+            web_contents, dialog_model_.get());
+    if (name == "default") {
+      test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
+          dialog,
+          std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
+    } else if (name == "manage_devices") {
+      // Add a paired phone. That should be sufficient for the "Manage
+      // devices" button to be shown.
+      dialog_model_->mechanisms.emplace_back(
+          AuthenticatorRequestDialogModel::Mechanism::Phone("Phone"), u"Phone",
+          u"Phone", kSmartphoneIcon, base::DoNothing());
+      dialog_model_->SetStep(
+          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 
-        // The "manage devices" button should have been shown on this sheet.
-        EXPECT_TRUE(
-            test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
-                ->model()
-                ->IsManageDevicesButtonVisible());
-      }
+      // The "manage devices" button should have been shown on this sheet.
+      EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
+                      ->model()
+                      ->IsManageDevicesButtonVisible());
+    }
   }
 
   scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;

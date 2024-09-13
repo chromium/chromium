@@ -26,6 +26,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 
 namespace device {
@@ -169,6 +170,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Indicates the UserVerificationRequirement of the current request.
     UserVerificationRequirement user_verification_requirement =
         UserVerificationRequirement::kDiscouraged;
+
+    // The attestation preference. Present if, and only if, |request_type| is
+    // |kMakeCredential|.
+    std::optional<AttestationConveyancePreference>
+        attestation_conveyance_preference;
 
     // transport_list_did_include_internal is set to true during a getAssertion
     // request if at least one element of the allowList included the "internal"

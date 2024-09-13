@@ -1053,46 +1053,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       request_ble_permission_callback);
 }
 
-void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
-    const std::string& relying_party_id,
-    const device::FidoAuthenticator* authenticator,
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  if (disable_ui_ && IsVirtualEnvironmentEnabled()) {
-    std::move(callback).Run(true);
-    return;
-  }
-  if (IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
-          GetBrowserContext(), relying_party_id)) {
-    // Enterprise attestations should have been approved already and not reach
-    // this point.
-    DCHECK(!is_enterprise_attestation);
-    std::move(callback).Run(true);
-    return;
-  }
-
-  // AuthenticatorCommon can't evaluate attestation decisions with the UI
-  // disabled.
-  if (disable_ui_) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback).Run(false);
-    return;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == device::AuthenticatorType::kWinNative &&
-      static_cast<const device::WinWebAuthnApiAuthenticator*>(authenticator)
-          ->ShowsPrivacyNotice()) {
-    // The OS' native API includes an attestation prompt.
-    std::move(callback).Run(true);
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  dialog_controller_->RequestAttestationPermission(is_enterprise_attestation,
-                                                   std::move(callback));
-}
-
 std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
 ChromeAuthenticatorRequestDelegate::CreatePlatformDiscoveries() {
   std::vector<std::unique_ptr<device::FidoDiscoveryBase>> discoveries;

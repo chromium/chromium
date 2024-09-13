@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace gfx {
 struct VectorIcon;
@@ -61,7 +62,7 @@ class AuthenticatorRequestSheetModel {
 
   virtual std::u16string GetStepTitle() const = 0;
   virtual std::u16string GetStepDescription() const = 0;
-  virtual std::u16string GetAdditionalDescription() const;
+  virtual std::vector<std::u16string> GetAdditionalDescriptions() const;
   virtual std::u16string GetError() const;
   virtual std::u16string GetHint() const;
 

@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -153,6 +154,7 @@ class ChromeWebAuthnCredentialsDelegateTest
   void SetCredList(std::vector<device::DiscoverableCredentialMetadata> creds) {
 #if !BUILDFLAG(IS_ANDROID)
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai;
+    tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.recognized_credentials = std::move(creds);
     dialog_controller()->StartFlow(std::move(tai),
                                    /*is_conditional_mediation=*/true);

@@ -340,7 +340,7 @@ base::WeakPtr<FidoAuthenticator> WinWebAuthnApiAuthenticator::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool WinWebAuthnApiAuthenticator::ShowsPrivacyNotice() const {
+bool WinWebAuthnApiAuthenticator::ShowsResidentCredentialNotice() const {
   return win_api_->Version() >= WEBAUTHN_API_VERSION_2;
 }
 

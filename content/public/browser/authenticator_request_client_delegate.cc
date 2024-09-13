@@ -169,14 +169,6 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
         void(device::FidoRequestHandlerBase::BlePermissionCallback)>
         request_ble_permission_callback) {}
 
-void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
-    const std::string& relying_party_id,
-    const device::FidoAuthenticator* authenticator,
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(!is_enterprise_attestation);
-}
-
 void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     const std::string& rp_id,

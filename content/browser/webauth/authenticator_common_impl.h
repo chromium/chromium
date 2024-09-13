@@ -313,13 +313,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       std::optional<device::AuthenticatorMakeCredentialResponse> response_data,
       const device::FidoAuthenticator* authenticator);
 
-  // Callback to complete the registration process once a decision about
-  // whether or not to return attestation data has been made.
-  void OnRegisterResponseAttestationDecided(
-      AttestationErasureOption attestation_erasure,
-      device::AuthenticatorMakeCredentialResponse response_data,
-      bool attestation_permitted);
-
   // Callback to handle the async response from a U2fDevice.
   void OnSignResponse(
       device::GetAssertionStatus status_code,

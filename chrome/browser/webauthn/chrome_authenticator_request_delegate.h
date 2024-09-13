@@ -215,11 +215,6 @@ class ChromeAuthenticatorRequestDelegate
   void OnTransactionSuccessful(RequestSource request_source,
                                device::FidoRequestType,
                                device::AuthenticatorType) override;
-  void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback) override;
   void ConfigureDiscoveries(
       const url::Origin& origin,
       const std::string& rp_id,
