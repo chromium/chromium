@@ -39,11 +39,11 @@ ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env,
 ScopedJavaLocalRef<jobject> ConvertToJavaDiscountInfo(
     JNIEnv* env,
     const DiscountInfo& info) {
-  ScopedJavaLocalRef<jobject> terms_and_conditions_java_object =
+  ScopedJavaLocalRef<jstring> terms_and_conditions_java_string =
       info.terms_and_conditions.has_value()
           ? ConvertUTF8ToJavaString(env, info.terms_and_conditions.value())
           : nullptr;
-  ScopedJavaLocalRef<jobject> discount_code_java_object =
+  ScopedJavaLocalRef<jstring> discount_code_java_string =
       info.discount_code.has_value()
           ? ConvertUTF8ToJavaString(env, info.discount_code.value())
           : nullptr;
@@ -52,27 +52,27 @@ ScopedJavaLocalRef<jobject> ConvertToJavaDiscountInfo(
       env, static_cast<int>(info.cluster_type), static_cast<int>(info.type),
       ConvertUTF8ToJavaString(env, info.language_code),
       ConvertUTF8ToJavaString(env, info.description_detail),
-      terms_and_conditions_java_object,
+      terms_and_conditions_java_string,
       ConvertUTF8ToJavaString(env, info.value_in_text),
-      discount_code_java_object, info.id, info.is_merchant_wide,
+      discount_code_java_string, info.id, info.is_merchant_wide,
       info.expiry_time_sec, info.offer_id);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaDiscountInfos(
     JNIEnv* env,
     const std::vector<DiscountInfo>& info) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_discount_infos;
+
   jclass discount_info_clazz =
       org_chromium_components_commerce_core_DiscountInfo_clazz(env);
-  ScopedJavaLocalRef<jobjectArray> discount_info_array(
-      env, env->NewObjectArray(info.size(), discount_info_clazz, nullptr));
 
   for (size_t i = 0; i < info.size(); i++) {
     ScopedJavaLocalRef<jobject> discount_info_java =
         ConvertToJavaDiscountInfo(env, info[i]);
-    env->SetObjectArrayElement(discount_info_array.obj(), i,
-                               discount_info_java.obj());
+    j_discount_infos.push_back(discount_info_java);
   }
-  return discount_info_array;
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, base::make_span(j_discount_infos), discount_info_clazz);
 }
 
 }  // namespace

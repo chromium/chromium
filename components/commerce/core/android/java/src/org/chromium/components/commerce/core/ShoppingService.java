@@ -578,8 +578,9 @@ public class ShoppingService {
 
     @CalledByNative
     private static void runDiscountInfoCallback(
-            DiscountInfoCallback callback, GURL url, List<DiscountInfo> infos) {
-        callback.onResult(url, infos);
+            DiscountInfoCallback callback, GURL url, DiscountInfo[] infos) {
+        List<DiscountInfo> list = infos == null ? null : List.of(infos);
+        callback.onResult(url, list);
     }
 
     @CalledByNative
