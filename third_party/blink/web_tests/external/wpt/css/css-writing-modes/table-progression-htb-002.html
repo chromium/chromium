@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Test: sideways-rl Table Column/Colgroup Ordering</title>
-<link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+<title>CSS Test: horizontal-tb Table Column/Colgroup Ordering</title>
 <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
+<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/"> <!-- 2016-01-15 -->
 <link rel="match" href="table-progression-002-ref.html">
-<meta name="assert" content="This test checks that sideways-rl tables order columns top-to-bottom (LTR) or bottom-to-top (RTL) per the table's 'direction'. This test also checks that 'writing-mode' and 'direction' do not apply to table columns and column groups.">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-4/#block-flow" title="3.1 Block Flow Direction: the 'writing-mode' property">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-4/#direction" title="2.1 Specifying Directionality: the 'direction' property">
+<meta name="assert" content="This test checks that horizontal-tb tables order columns left-to-right (LTR) or right-to-left (RTL) per the table's 'direction'. This test also checks that 'writing-mode' and 'direction' do not apply to table columns and column groups.">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#block-flow" title="3.1 Block Flow Direction: the 'writing-mode' property">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#direction" title="2.1 Specifying Directionality: the 'direction' property">
 
 <style>
-  .test {
-    writing-mode: sideways-rl;
-  }
   [dir=rtl] {
     direction: rtl;
   }
@@ -20,7 +17,6 @@
     border-spacing: 0;
     border: solid gray;
     margin: 1em;
-    float: left;
   }
   td {
     width: 1em;
@@ -35,13 +31,12 @@
   /* These declarations must have no effect. */
   .test col,
   .test colgroup {
-    writing-mode: horizontal-tb;
-    writing-mode: sideways-lr;
+    writing-mode: vertical-rl;
     direction: rtl;
   }
   .test[dir=rtl] col,
   .test[dir=rtl] colgroup {
-    writing-mode: horizontal-tb;
+    writing-mode: vertical-lr;
     direction: ltr;
   }
 </style>
@@ -79,9 +74,10 @@
 </table>
 
 <table class="reference">
-  <tr><td class="navy">
-  <tr><td class="navy">
-  <tr><td class="blue">
-  <tr><td class="aqua">
-  <tr><td class="aqua">
+  <tr>
+    <td class="navy">
+    <td class="navy">
+    <td class="blue">
+    <td class="aqua">
+    <td class="aqua">
 </table>

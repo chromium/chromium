@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Test: sideways-rl Table Row/Rowgroup/Cell Ordering</title>
-<link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+<title>CSS Test: horizontal-tb Table Row/Rowgroup/Cell Ordering</title>
 <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
-<link rel="match" href="table-progression-001-ref.html">
-<meta name="assert" content="This test checks that sideways-rl tables order rows/rowgroups right to left and cells top-to-bottom (LTR) or bottom-to-top (RTL) per 'direction'. This test also checks that 'writing-mode' and 'direction' do not apply to table rows and row groups.">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-4/#block-flow" title="3.1 Block Flow Direction: the 'writing-mode' property">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-4/#direction" title="2.1 Specifying Directionality: the 'direction' property">
+<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/"> <!-- 2016-01-15 -->
+<link rel="match" href="table-progression-htb-001-ref.html">
+<meta name="assert" content="This test checks that horizontal-tb tables order rows/rowgroups top to bottom and cells left-to-right (LTR) or right-to-left (RTL) per 'direction'. This test also checks that 'writing-mode' and 'direction' do not apply to table rows and row groups.">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#block-flow" title="3.1 Block Flow Direction: the 'writing-mode' property">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#direction" title="2.1 Specifying Directionality: the 'direction' property">
 
 <style>
-  .test {
-    writing-mode: sideways-rl;
-  }
   [dir=rtl] {
     direction: rtl;
   }
@@ -19,6 +16,7 @@
   table {
     border-spacing: 0;
     margin: 1em;
+    float: left;
   }
   td {
     width: 1em;
@@ -41,8 +39,7 @@
   .test tbody,
   .test tr,
   .test td {
-    writing-mode: horizontal-tb; /* For UAs not supporting sideways-lr */
-    writing-mode: sideways-lr;
+    writing-mode: vertical-rl;
     direction: rtl;
   }
   .test[dir=rtl] thead,
@@ -50,7 +47,7 @@
   .test[dir=rtl] tbody,
   .test[dir=rtl] tr,
   .test[dir=rtl] td {
-    writing-mode: horizontal-tb;
+    writing-mode: vertical-lr;
     direction: ltr;
   }
 </style>
@@ -112,22 +109,28 @@
 </table>
 
 <table class="reference">
-  <tr>
-    <td rowspan=2>
-    <td class="orng">
-    <td colspan="3">
-    <td class="navy">
-  <tr>
-    <td rowspan="3">
-    <td class="yllw">
-    <td class="pink">
-    <td rowspan="2">
-    <td class="blue">
-  <tr>
-    <td class="aqua">
-    <td rowspan=2 colspan=2>
-    <td rowspan=2>
-  <tr>
-    <td class="teal">
-    <td class="purp">
+  <thead>
+    <tr>
+      <td class="navy">
+      <td class="blue">
+      <td colspan=2>
+  <tfoot>
+    <tr>
+      <td colspan=2>
+      <td class="aqua">
+      <td class="teal">
+  <tbody>
+    <tr>
+      <td rowspan=3>
+      <td colspan=2>
+      <td class="purp">
+    <tr>
+      <td class="pink">
+      <td rowspan=2 colspan=2>
+    <tr>
+      <td class="yllw">
+  <tbody>
+    <tr>
+      <td class="orng">
+      <td colspan=3>
 </table>

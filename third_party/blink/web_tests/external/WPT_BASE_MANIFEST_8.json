@@ -695,6 +695,13 @@
        {}
       ]
      ],
+     "chrome-365594098-crash.html": [
+      "44cfe30467355ef7a8a1111d4265e445229c2a39",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-40286059-crash.html": [
       "cee9d2d97775dacbd7583edf143fd5b06de31bff",
       [
@@ -38358,6 +38365,19 @@
       ],
       "new-fc-beside-float-with-margin.html": [
        "ead8e548be95df87220881a8e66e5f3a47c93f9b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "new-fc-beside-float-with-min-width.html": [
+       "6337a1f9ff88c2fe27c1c4e26a51d49c68901836",
        [
         null,
         [
@@ -123888,6 +123908,19 @@
        }
       ]
      ],
+     "justify-content-sideways-001.html": [
+      "dc91f049979deff7273715c37e550ff9a9cbc9d5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "layout-algorithm_algo-cross-line-001.html": [
       "7fcc96f3c0c07068a00ed6a3a8007d44cca021fb",
       [
@@ -166062,7 +166095,7 @@
       ]
      ],
      "overflow-auto-scrollbar-gutter-intrinsic-003.html": [
-      "6827773543b48ecdc39e46e8239292b9e7885256",
+      "ecfd85f588454a445db8fe11b3e0d1b7613f37ce",
       [
        null,
        [
@@ -166078,11 +166111,11 @@
           [
            [
             0,
-            40
+            70
            ],
            [
             0,
-            5
+            10
            ]
           ]
          ]
@@ -245535,6 +245568,19 @@
         {}
        ]
       ],
+      "canvas.html": [
+       "dbde2eda26a097e522f4f929b6ddec6c0e2a424c",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/canvas-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "container-queries.html": [
        "cc8cefdd6c03a2f0da838ef1f35bfda9c1a7af48",
        [
@@ -258796,8 +258842,34 @@
        {}
       ]
      ],
+     "table-progression-htb-001.html": [
+      "14ea0da292e2e9f303099dc4b2f91f20363a05bd",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-htb-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-progression-htb-002.html": [
+      "4007e0400f892dcd591a54197f59a5a03a874f97",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "table-progression-slr-001.html": [
-      "25050b8e371530c6c4c055e053f3cf3799956597",
+      "ae27d395e34495a2fcc99d56eb18253a5e802a2c",
       [
        null,
        [
@@ -258810,7 +258882,7 @@
       ]
      ],
      "table-progression-slr-002.html": [
-      "1525e2423d538adeb42b01e8c30393b1ec75daca",
+      "582877efa29a11498a4b18cf049a34e52da2c4d2",
       [
        null,
        [
@@ -258823,7 +258895,7 @@
       ]
      ],
      "table-progression-srl-001.html": [
-      "b74b2caee53262ae15dd98e63d4b21f9029ebb0a",
+      "06c00f12501b643794ef6666be69593d840052c3",
       [
        null,
        [
@@ -258836,7 +258908,7 @@
       ]
      ],
      "table-progression-srl-002.html": [
-      "7d5df32cc2629dc82a111904408b864d735f7558",
+      "117fef84dc84bc9c4e2c01e9237351d342e42772",
       [
        null,
        [
@@ -258849,7 +258921,7 @@
       ]
      ],
      "table-progression-vlr-001.html": [
-      "6b9d3c1f443cdde8f2aa8650bb40782554ff7657",
+      "2efdf7dd54e47fb5e406ce2dbb79afdba4185b0d",
       [
        null,
        [
@@ -258862,7 +258934,7 @@
       ]
      ],
      "table-progression-vlr-002.html": [
-      "a3668178a93b5237f3ab08ffaa5c551fbb9c1fdf",
+      "708ce7032633f32c3ca0428019db39c126965eac",
       [
        null,
        [
@@ -258901,7 +258973,7 @@
       ]
      ],
      "table-progression-vrl-001.html": [
-      "c5c309005852e47070b39883ce2baaf79db6dfb9",
+      "b46ee9fd38186357c6529b9066f005d0c353bfb9",
       [
        null,
        [
@@ -258914,7 +258986,7 @@
       ]
      ],
      "table-progression-vrl-002.html": [
-      "99fe8153e591f0ab1de09699868b0e09cb734614",
+      "e78682c2cb382361c811a26a3b03706918cce16d",
       [
        null,
        [
@@ -353521,6 +353593,10 @@
        "5de90caf7f0c72041334349b7c4b1044d373bc22",
        []
       ],
+      "canvas-ref.html": [
+       "d1b9a0d68dd5cf15d035896a6e4deac59b950310",
+       []
+      ],
       "font-size-ref.html": [
        "30eaa4aeb9fcae4e42ca2061358bd976e9144eee",
        []
@@ -355868,6 +355944,14 @@
      ],
      "table-progression-002-ref.html": [
       "37445460b878e7fe24290f6e80d7cac6a9cb31b4",
+      []
+     ],
+     "table-progression-htb-001-ref.html": [
+      "15654f85c4d3d3bbeeb9ebea4e94ac99e8b8823e",
+      []
+     ],
+     "table-progression-htb-002-ref.html": [
+      "7a94fc6a77d8462b85f633ee7f89c196dba4bfda",
       []
      ],
      "table-progression-slr-001-ref.html": [
@@ -367442,12 +367526,16 @@
       "aa9f1b29da9fe3c8dfe36185d619cceeab9ff33d",
       []
      ],
+     "get-interest-group-auction-data.https.window_13-16-expected.txt": [
+      "dd637cae6433bddf72e77b6bb9373771169d3e8b",
+      []
+     ],
      "get-interest-group-auction-data.https.window_5-8-expected.txt": [
       "9c4ee81ef4036c55997935c7777904c91292becc",
       []
      ],
      "get-interest-group-auction-data.https.window_9-12-expected.txt": [
-      "e7099c58ecb7108dc5b3abbd5591fadb92a0abcd",
+      "0345bac01587641d00fa4f5d232cbd0818a337af",
       []
      ],
      "kanon-status-below-threshold.https.window-expected.txt": [
@@ -367557,15 +367645,15 @@
       ]
      },
      "server-response.https.window_1-4-expected.txt": [
-      "b2d8ccff9132560d14a7da31a17c05722328b82a",
+      "47f443cddbf9c35c98870fe60cbf88f703f6906b",
       []
      ],
      "server-response.https.window_5-8-expected.txt": [
-      "9c5a0ceb6e8d1e85fc17fe82698b8c8658d31083",
+      "f0df388ba58c1b15351b95bf6db9f705272551d6",
       []
      ],
      "server-response.https.window_9-12-expected.txt": [
-      "32703368c4337abebd67e1d6f27384e947532828",
+      "0859f2aa7f2b77cebd595277afb96c1355453645",
       []
      ],
      "third_party": {
@@ -408930,7 +409018,7 @@
      []
     ],
     "helpers.js": [
-     "5b30749bf377ca03aaa791b3a815033f9460cbda",
+     "a45b686ca775c94dc015d6d59a4a6d0bd598ce73",
      []
     ],
     "remote-desktop-client-override.tentative.https-expected.txt": [
@@ -411275,14 +411363,6 @@
      "cc9dee42ac98211bee90b51bd9dc129122d549fd",
      []
     ],
-    "RTCRtpScriptTransform-encoded-transform-different-order-worker.js": [
-     "0de9796b06837c3f989b43f91f267d2b9430ad29",
-     []
-    ],
-    "RTCRtpScriptTransform-encoded-transform-different-owner-worker.js": [
-     "e8ded2ec658bdff9f9de785a3660bcacf10aeba5",
-     []
-    ],
     "RTCRtpScriptTransform-encoded-transform-drop-frames-worker.js": [
      "617dd47f97d32f94a548cc4b1c1e65625a066c24",
      []
@@ -411292,7 +411372,7 @@
      []
     ],
     "RTCRtpScriptTransform-encoded-transform-worker.js": [
-     "a87b2f257ede59d6c185e1bd6f95475ce75d5481",
+     "89e421ae9aa07b0e16eea497589463f2943aee2c",
      []
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.js": [
@@ -411300,7 +411380,7 @@
      []
     ],
     "helper.js": [
-     "8418b284a77a120d684bf2ea80148262058da6a2",
+     "d4cec39ffce0f58b76da653c78dc384f22ffa43d",
      []
     ],
     "idlharness.https.window-expected.txt": [
@@ -418678,7 +418758,7 @@
      ]
     ],
     "idbcursor_continue_objectstore.any.js": [
-     "76e1c7afe79c966cec9cbbf8632dcda807f32ff6",
+     "dc6f6b4132ac2f8438407f561c7ba2b3c4c4c7df",
      [
       "IndexedDB/idbcursor_continue_objectstore.any.html",
       {
@@ -418914,25 +418994,83 @@
       }
      ]
     ],
-    "idbcursor_iterating.htm": [
-     "4930d1eb1e9011246f62dfacc8ce10d06114abd1",
+    "idbcursor_iterating.any.js": [
+     "521ed821c9a82c91aa720ab8b1d3a209201c6821",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_iterating_objectstore.htm": [
-     "12cec145703e4d103bbfe97fad0f87f1db2d761a",
+      "IndexedDB/idbcursor_iterating.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_iterating_objectstore2.htm": [
-     "2bd9749edf032abbbf133ef224491b629bfe705d",
+      "IndexedDB/idbcursor_iterating.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbcursor_iterating.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_iterating.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_update_index.any.js": [
@@ -527332,7 +527470,7 @@
         ]
        ],
        "fetch-destination-no-load-event.https.html": [
-        "1778bf2581a29e1ae049869f4a56e030339159e6",
+        "2fb4aaebc048222c561e8161143c161c27f47978",
         [
          null,
          {}
@@ -541025,7 +541163,7 @@
       ]
      ],
      "get-interest-group-auction-data.https.window.js": [
-      "457533f31f929797b497a6afaa5971c003be768d",
+      "ec7a873fd511547682bdbed9c97df53ae12e33d3",
       [
        "fledge/tentative/get-interest-group-auction-data.https.window.html?1-4",
        {
@@ -541069,6 +541207,62 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/get-interest-group-auction-data.https.window.html?13-16",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
          ]
         ],
         "timeout": "long"
@@ -541117,6 +541311,10 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
          ]
         ],
         "timeout": "long"
@@ -541165,6 +541363,10 @@
          [
           "variant",
           "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
          ]
         ],
         "timeout": "long"
@@ -545124,7 +545326,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "1556b5c1f8a7f814643b9b7dabe2d4914fa557ea",
+      "3e1011d422926c4747540bc98a8179d61b2eba67",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -598262,6 +598464,15 @@
           }
          ]
         ],
+        "select-keyboard-hidden-option.tentative.html": [
+         "b9d7cfbd3c0fc0c8ab67e045e3fae896115bdc51",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-mouse-behavior.tentative.html": [
          "b6463b57b750a216fc7e89b895d66c9fe80a602b",
          [
@@ -626631,7 +626842,7 @@
      ]
     ],
     "partitioned-popins.secure.tentative.sub.http.window.js": [
-     "1f73e7824fcaebd166f672a1b359a154b5b84927",
+     "384a41f2e49b583f60e89fb11d30fa2f2429cb99",
      [
       "partitioned-popins/partitioned-popins.secure.tentative.sub.http.window.html",
       {
@@ -626649,7 +626860,7 @@
      ]
     ],
     "partitioned-popins.secure.tentative.sub.https.window.js": [
-     "6358e6215f2effcf8391ba28d3c26dfc0aba5a9c",
+     "bea1b0f074a343ec31ac7af20314ac2816e01840",
      [
       "partitioned-popins/partitioned-popins.secure.tentative.sub.https.window.html",
       {
@@ -686603,6 +686814,36 @@
       {}
      ]
     ],
+    "signal-all-accepted-credentials.https.html": [
+     "45519b13e35a6fdae1cbf3d82d741b4dcbb222de",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "signal-current-user-details.https.html": [
+     "b4027377272e4921693eeb71af7eda3f9f7acb96",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "signal-unknown-credential.https.html": [
+     "a01dd3e692a8dc310da32dbb3c23c6147db07905",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "storecredential.https.html": [
      "726b289fbd18e8bd7646f2d6ad0b88b718c16293",
      [
@@ -701718,6 +701959,225 @@
          [
           "title",
           "test WebNN API element-wise identity operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "inputs-are-not-modified.https.any.js": [
+      "9bb21f88c33eaa0893aa2e71bc5ca47132cabeb8",
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test that input tensors are not modified during a call to dispatch()"
          ],
          [
           "global",
@@ -726131,7 +726591,7 @@
      ]
     ],
     "RTCRtpScriptTransform-encoded-transform.https.html": [
-     "76aaced9bfc9d4066148f3e739cc62ffc2a2485b",
+     "c935644f0c6f7e71b50cd241bebdea9cc92826e7",
      [
       null,
       {
