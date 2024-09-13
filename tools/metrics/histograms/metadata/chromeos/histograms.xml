@@ -2827,6 +2827,20 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.Used" enum="MahiFeature"
+    expires_after="2025-06-01">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Records overall Mahi usage per feature. Recorded each time a feature within
+    Mahi is used, concurrently with its network request, but after any
+    client-side checks that could disable the feature.
+
+    This is counted regardless of whether the server returns success or failure.
+    For that, see ChromeOS.Mahi.ResponseStatusOnRequest.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
     enum="ChromeOSMessageCenterScrollActionReason" expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
