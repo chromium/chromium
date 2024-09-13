@@ -159,7 +159,7 @@ export function makePasswordManagerPrefs() {
       },
     },
     password_manager: {
-      // <if expr="is_win or is_macosx">
+      // <if expr="is_win or is_macosx or is_chromeos">
       biometric_authentication_filling: {
         key: 'password_manager.biometric_authentication_filling',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,

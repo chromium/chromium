@@ -748,7 +748,7 @@ TEST_F(ChromePasswordManagerClientTest,
       GURL("https://passwords.google.com/path?query=1")));
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(

@@ -18,8 +18,11 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // clang-format off
-// <if expr="is_win or is_macosx">
+// <if expr="is_win or is_macosx or is_chromeos">
 import type { PrefToggleButtonElement } from 'chrome://password-manager/password_manager.js';
+// </if>
+
+// <if expr="is_win or is_macosx">
 import { PasskeysBrowserProxyImpl } from 'chrome://password-manager/password_manager.js';
 
 import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
@@ -142,7 +145,7 @@ suite('SettingsSectionTest', function() {
     assertFalse(settings.$.autosigninToggle.checked);
   });
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   // Tests that biometric auth pref is visible, and clicking on it triggers
   // biometric auth validation instead of directly updating the pref value.
   test('biometric auth prefs when feature is available', async function() {

@@ -304,7 +304,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [password_manager::prefs::kPasswordDismissCompromisedAlertEnabled] =
           settings_api::PrefType::kBoolean;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)
       [password_manager::prefs::kBiometricAuthenticationBeforeFilling] =
           settings_api::PrefType::kBoolean;

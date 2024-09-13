@@ -387,7 +387,7 @@ class PasswordFormManagerTest : public testing::Test,
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
         false);
 #endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
 #endif

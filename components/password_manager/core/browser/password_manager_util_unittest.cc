@@ -157,8 +157,6 @@ class PasswordManagerUtilTest : public testing::Test {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kHadBiometricsAvailable, false);
-#endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
     ON_CALL(mock_client_, GetLocalStatePrefs())
@@ -170,7 +168,7 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(mock_client_, GetSyncService).WillByDefault(Return(&sync_service_));
   }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void SetBiometricAuthenticationBeforeFilling(bool available) {
     pref_service_.SetBoolean(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling,

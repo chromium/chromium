@@ -220,7 +220,7 @@ TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 struct TestCase {
   const char* description;
@@ -277,4 +277,4 @@ INSTANTIATE_TEST_SUITE_P(
             .feature_flag = true,
             .pref_value = true,
         }));
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)  || BUILDFLAG(IS_CHROMEOS)

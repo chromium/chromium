@@ -91,7 +91,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1411,7 +1411,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
                 int{password_manager::ImportResults::Status::CONFLICTS});
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Checks if authentication is triggered.
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingState) {
