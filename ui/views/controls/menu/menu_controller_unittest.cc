@@ -3087,6 +3087,28 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 2);
 }
 
+TEST_F(MenuControllerTest, AccessibilityEmitsMenuOpenedClosedEvents) {
+  const test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuStart));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuEnd));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd));
+
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft, false, false);
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuStart));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuEnd));
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd));
+
+  menu_controller()->Cancel(MenuController::ExitType::kAll);
+
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuStart));
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuEnd));
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart));
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd));
+}
+
 // Test that in accessibility mode disabled menu items are taken into account
 // during items indices assignment.
 TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
