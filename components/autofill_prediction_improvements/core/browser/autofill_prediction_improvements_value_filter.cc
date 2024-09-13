@@ -41,9 +41,8 @@ bool HasTypeSensitiveGroup(AutofillType type) {
   }
 }
 
-// TODO(crbug.com/366270011): Replace the filtering by value with adding a tag.
 void ApplyFilter(autofill::AutofillField& field) {
-  field.set_value(u"");
+  field.set_value_identified_as_potentially_sensitive(true);
 }
 
 // Filter all values that are contained in fields with a type from a sensitive

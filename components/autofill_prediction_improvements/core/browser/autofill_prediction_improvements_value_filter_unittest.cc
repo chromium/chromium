@@ -19,9 +19,8 @@ using autofill::FormData;
 using autofill::FormStructure;
 using autofill::FormStructureTestApi;
 
-// TODO(crbug.com/366270011): Replace the filtering by value with adding a tag.
 bool is_filtered(const AutofillField& field) {
-  return field.value().empty();
+  return field.value_identified_as_potentially_sensitive();
 }
 
 struct FieldFilterTestCase {
@@ -72,9 +71,6 @@ TEST_P(PredictionImprovementsFieldFilterTest, TestFilter) {
   if (test_case.is_password_field) {
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
   }
-
-  // Always assign a non-empty values to fields.
-  field.set_value(u"some_random_string");
 
   // Apply the actual filter logic and check if the field was filtered.
   FilterSensitiveValues(form);
