@@ -16,6 +16,8 @@ static_library("browser") {
     "autofill_prediction_improvements_manager.h",
     "autofill_prediction_improvements_utils.cc",
     "autofill_prediction_improvements_utils.h",
+    "autofill_prediction_improvements_value_filter.cc",
+    "autofill_prediction_improvements_value_filter.h",
   ]
 
   deps = [
@@ -36,6 +38,7 @@ source_set("unit_tests") {
     "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
     "autofill_prediction_improvements_manager_unittest.cc",
     "autofill_prediction_improvements_utils_unittest.cc",
+    "autofill_prediction_improvements_value_filter_unittest.cc",
   ]
   deps = [
     ":browser",
