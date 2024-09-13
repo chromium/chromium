@@ -1075,6 +1075,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser);
               }))
+          .SetCustomActionIsDefault(true)
           .SetMetadata(129, "ydago@chromium.org",
                        "Triggered after a user uses managed browser where the "
                        "toolbar management button is visible.")));
