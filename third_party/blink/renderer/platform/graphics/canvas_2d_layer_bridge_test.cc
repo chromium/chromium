@@ -852,6 +852,26 @@ class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
   }
 };
 
+TEST_F(Canvas2DLayerBridgeTest, FlushRestoresClipStack) {
+  gfx::Size size(300, 300);
+  auto host = std::make_unique<CustomFakeCanvasResourceHost>(size);
+  std::unique_ptr<Canvas2DLayerBridge> bridge =
+      MakeBridge(size, RasterModeHint::kPreferGPU, kOpaque, std::move(host));
+  cc::PaintFlags flags;
+
+  // MakeBridge() results in a call to restore the matrix.
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
+
+  // Draw a line so that there is something to flush and then flush the
+  // recording.
+  Canvas().drawLine(0, 0, 2, 2, flags);
+  Host()->ResourceProvider()->FlushCanvas(FlushReason::kTesting);
+
+  // Post flush, a new drawing canvas is created that should have the matrix
+  // restored onto it.
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
+}
+
 TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
   gfx::Size size(300, 300);
   auto host = std::make_unique<CustomFakeCanvasResourceHost>(size);
@@ -867,13 +887,6 @@ TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
   // WritePixels flushes recording. Post flush, a new drawing canvas is created
   // that should have the matrix restored onto it.
   bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  // Standard flush recording. Post flush, a new drawing canvas is created that
-  // should have the matrix restored onto it.
-  DrawSomething(bridge.get());
-
   EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
 }
 
