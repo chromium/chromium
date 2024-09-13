@@ -20,6 +20,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -29,6 +30,7 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Batch(Batch.UNIT_TESTS)
 public class PlusAddressCreationCoordinatorTest {
     private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
             new PlusAddressCreationNormalStateInfo(

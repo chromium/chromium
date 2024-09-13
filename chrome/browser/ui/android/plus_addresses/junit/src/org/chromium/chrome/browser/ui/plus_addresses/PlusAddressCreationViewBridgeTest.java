@@ -23,6 +23,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +34,7 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Batch(Batch.UNIT_TESTS)
 public class PlusAddressCreationViewBridgeTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =

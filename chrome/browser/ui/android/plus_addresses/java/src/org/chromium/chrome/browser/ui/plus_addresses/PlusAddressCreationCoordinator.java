@@ -60,9 +60,6 @@ public class PlusAddressCreationCoordinator {
                 model,
                 bottomSheetContent,
                 PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
-
-        // TODO: crbug.com/364181540 - Make the UI info a property of the model.
-        bottomSheetContent.setProposedPlusAddress(info.getProposedPlusAddressPlaceholder());
     }
 
     public void requestShowContent() {
@@ -103,7 +100,7 @@ public class PlusAddressCreationCoordinator {
                 .with(DELEGATE, delegate)
                 .with(SHOW_ONBOARDING_NOTICE, showOnboardingNotice)
                 .with(VISIBLE, false)
-                .with(PROPOSED_PLUS_ADDRESS, "")
+                .with(PROPOSED_PLUS_ADDRESS, normalStateInfo.getProposedPlusAddressPlaceholder())
                 .with(REFRESH_ICON_ENABLED, false)
                 .with(REFRESH_ICON_VISIBLE, refreshSupported)
                 .with(CONFIRM_BUTTON_ENABLED, false)

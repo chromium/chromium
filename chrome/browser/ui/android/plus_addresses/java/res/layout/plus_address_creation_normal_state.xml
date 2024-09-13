@@ -104,7 +104,8 @@ found in the LICENSE file.
         android:textAlignment="center"
         android:breakStrategy="simple"
         android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/plus_address_confirm_button"

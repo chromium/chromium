@@ -18,10 +18,16 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binds the {@code PlusAddressCreationProperties} to the {@PlusAddressCreationView}. */
+/**
+ * Binds the {@code PlusAddressCreationProperties} to the {@PlusAddressCreationBottomSheetContent}.
+ */
 class PlusAddressCreationViewBinder {
 
     static void bindPlusAddressCreationBottomSheet(
@@ -29,7 +35,18 @@ class PlusAddressCreationViewBinder {
             PlusAddressCreationBottomSheetContent view,
             PropertyKey propertyKey) {
         if (propertyKey == NORMAL_STATE_INFO) {
-            view.setNormalStateInfo(model.get(NORMAL_STATE_INFO));
+            PlusAddressCreationNormalStateInfo info = model.get(NORMAL_STATE_INFO);
+            view.mTitleView.setText(info.getTitle());
+            view.mDescriptionView.setText(info.getDescription());
+            if (model.get(SHOW_ONBOARDING_NOTICE)) {
+                view.setOnboardingNotice(info.getNotice(), info.getLearnMoreUrl());
+            } else {
+                view.mFirstTimeNotice.setVisibility(View.GONE);
+            }
+            view.setLegacyErrorReportingInstruction(
+                    info.getErrorReportInstruction(), info.getErrorReportUrl());
+            view.mPlusAddressConfirmButton.setText(info.getConfirmText());
+            view.mPlusAddressCancelButton.setText(info.getCancelText());
         } else if (propertyKey == DELEGATE) {
             view.setDelegate(model.get(DELEGATE));
         } else if (propertyKey == SHOW_ONBOARDING_NOTICE) {
@@ -54,7 +71,24 @@ class PlusAddressCreationViewBinder {
         } else if (propertyKey == LOADING_INDICATOR_VISIBLE) {
             view.setLoadingIndicatorVisible(model.get(LOADING_INDICATOR_VISIBLE));
         } else if (propertyKey == ERROR_STATE_INFO) {
-            view.setErrorStateInfo(model.get(ERROR_STATE_INFO));
+            // Hide the normal state content.
+            view.mPlusAddressContent.setVisibility(View.GONE);
+            // Show the error state content.
+            view.mErrorContentStub.setLayoutResource(R.layout.plus_address_creation_error_state);
+            view.mErrorContentStub.inflate();
+
+            TextView errorTitle = view.mContentView.findViewById(R.id.plus_address_error_title);
+            TextView errorDescription =
+                    view.mContentView.findViewById(R.id.plus_address_error_description);
+            Button okButton = view.mContentView.findViewById(R.id.plus_address_error_ok_button);
+            Button cancelButton =
+                    view.mContentView.findViewById(R.id.plus_address_error_cancel_button);
+
+            PlusAddressCreationErrorStateInfo info = model.get(ERROR_STATE_INFO);
+            errorTitle.setText(info.getTitle());
+            errorDescription.setText(info.getDescription());
+            okButton.setText(info.getOkText());
+            cancelButton.setText(info.getCancelText());
         } else {
             assert false : "Every possible property update needs to be handled!";
         }
