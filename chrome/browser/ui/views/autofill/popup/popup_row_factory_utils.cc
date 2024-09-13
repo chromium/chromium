@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_details_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
@@ -641,6 +642,19 @@ CreatePredictionImprovementsFeedbackRow(
       a11y_selection_delegate, selection_delegate, controller, line_number);
 }
 
+// Creates the row for the `SuggestionType::kRetrievePredictionImprovements`
+// suggestion.
+std::unique_ptr<PopupRowPredictionImprovementsDetailsView>
+CreatePredictionImprovementsDetailsRow(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    PopupRowView::SelectionDelegate& selection_delegate,
+    int line_number,
+    std::optional<user_education::DisplayNewBadge> show_new_badge) {
+  return std::make_unique<PopupRowPredictionImprovementsDetailsView>(
+      a11y_selection_delegate, selection_delegate, controller, line_number);
+}
+
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -664,6 +678,12 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   if (type == SuggestionType::kPredictionImprovementsFeedback) {
     return CreatePredictionImprovementsFeedbackRow(
         controller, a11y_selection_delegate, selection_delegate, line_number);
+  }
+
+  if (type == SuggestionType::kPredictionImprovementsDetails) {
+    return CreatePredictionImprovementsDetailsRow(
+        controller, a11y_selection_delegate, selection_delegate, line_number,
+        std::nullopt);
   }
 
   if (IsFooterSuggestionType(type)) {

@@ -114,6 +114,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
       return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();

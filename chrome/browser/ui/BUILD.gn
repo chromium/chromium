@@ -4109,6 +4109,8 @@ static_library("ui") {
       "views/autofill/popup/popup_row_content_view.h",
       "views/autofill/popup/popup_row_factory_utils.cc",
       "views/autofill/popup/popup_row_factory_utils.h",
+      "views/autofill/popup/popup_row_prediction_improvements_details_view.cc",
+      "views/autofill/popup/popup_row_prediction_improvements_details_view.h",
       "views/autofill/popup/popup_row_prediction_improvements_feedback_view.cc",
       "views/autofill/popup/popup_row_prediction_improvements_feedback_view.h",
       "views/autofill/popup/popup_row_view.cc",

@@ -148,12 +148,13 @@ enum class SuggestionType {
   kPredictionImprovementsLoadingState = 54,
   // Fill prediction improvements.
   kFillPredictionImprovements = 55,
-
   // Suggestion that provides users the possibility to give feedback about
   // predictions improvements.
   kPredictionImprovementsFeedback = 56,
+  // Allows the users to navigate to more details about improved predictions.
+  kPredictionImprovementsDetails = 58,
 
-  kMaxValue = kPlusAddressError
+  kMaxValue = kPredictionImprovementsDetails
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

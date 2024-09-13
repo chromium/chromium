@@ -246,6 +246,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
       return false;
   }
 }
@@ -672,30 +673,31 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // TODO(crbug.com/361414075): Implement previewing prediction
       // improvements.
       break;
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kPredictionImprovementsLoadingState:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kManageAddress:
-    case SuggestionType::kManageCreditCard:
-    case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kDatalistEntry:
-    case SuggestionType::kShowAccountCards:
-    case SuggestionType::kInsecureContextPaymentDisabledMessage:
-    case SuggestionType::kScanCreditCard:
     case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kPlusAddressError:
-    case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kShowAccountCards:
       break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -873,6 +875,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kPredictionImprovementsDetails:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -932,6 +935,21 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
           delegate->UserClickedLearnMore();
           break;
       }
+      break;
+    }
+    case SuggestionType::kPredictionImprovementsDetails: {
+      AutofillPredictionImprovementsDelegate* delegate =
+          manager_->client().GetAutofillPredictionImprovementsDelegate();
+      if (!delegate) {
+        break;
+      }
+      CHECK(absl::holds_alternative<PredictionImprovementsButtonActions>(
+          button_action));
+      PredictionImprovementsButtonActions action =
+          absl::get<PredictionImprovementsButtonActions>(button_action);
+      CHECK_EQ(action, PredictionImprovementsButtonActions::kLearnMoreClicked);
+
+      delegate->UserClickedLearnMore();
       break;
     }
     default:
@@ -1006,6 +1024,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
       return false;
   }
 }
