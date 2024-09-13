@@ -117,7 +117,9 @@ class ScopedPlusAddressFeatureList {
         features::kPlusAddressesEnabled, plus_addresses_enabled_params_);
   }
 
-  void Reinit(const std::string& server_url, bool enable_onboarding = false) {
+  void Reinit(const std::string& server_url,
+              bool enable_onboarding = false,
+              bool enable_updated_error_states = false) {
     CHECK(!server_url.empty());
     features_.Reset();
       // Don't enable the 'sync-with-server' param so that the dialog is the
@@ -135,6 +137,14 @@ class ScopedPlusAddressFeatureList {
           {features::kPlusAddressUserOnboardingEnabled, {}});
     } else {
       disabled_features.push_back(features::kPlusAddressUserOnboardingEnabled);
+    }
+
+    if (enable_updated_error_states) {
+      enabled_features.push_back(
+          {features::kPlusAddressUpdatedErrorStatesInOnboardingModal, {}});
+    } else {
+      disabled_features.push_back(
+          features::kPlusAddressUpdatedErrorStatesInOnboardingModal);
     }
 
     features_.InitWithFeaturesAndParameters(enabled_features,
@@ -852,11 +862,19 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
                                                 GURL(kFakeLearnMoreUrl))));
 }
 
-class PlusAddressCreationDialogUiVariationsTest
+class PlusAddressCreationDialogUiVariationsTestBase
     : public PlusAddressCreationDialogInteractiveTest,
       public testing::WithParamInterface<std::tuple</*force_dark_mode=*/bool,
                                                     /*is_rtl=*/bool>> {
  public:
+  static std::string GetTextSuffix(
+      const ::testing::TestParamInfo<std::tuple</*force_dark_mode=*/bool,
+                                                /*is_rtl=*/bool>>& info) {
+    return base::StrCat(
+        {std::get<0>(info.param) ? "DarkMode_" : "LightMode_",
+         std::get<1>(info.param) ? "RightToLeft" : "LeftToRight"});
+  }
+
   bool IsDarkModeOn() { return std::get<0>(GetParam()); }
 
   bool IsBrowserLanguageRTL() { return std::get<1>(GetParam()); }
@@ -870,7 +888,11 @@ class PlusAddressCreationDialogUiVariationsTest
                                       switches::kForceDirectionRTL);
     }
   }
+};
 
+class PlusAddressCreationDialogUiVariationsTest
+    : public PlusAddressCreationDialogUiVariationsTestBase {
+ public:
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     // Reinit `feature_list_` here since the test server URL isn't ready at the
@@ -960,12 +982,70 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PlusAddressCreationDialogUiVariationsTest,
     testing::Combine(testing::Bool(), testing::Bool()),
-    [](const ::testing::TestParamInfo<std::tuple</*force_dark_mode=*/bool,
-                                                 /*is_rtl=*/bool>>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "DarkMode_" : "LightMode_",
-           std::get<1>(info.param) ? "RightToLeft" : "LeftToRight"});
-    });
+    PlusAddressCreationDialogUiVariationsTest::GetTextSuffix);
+
+class PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest
+    : public PlusAddressCreationDialogUiVariationsTestBase {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    // Reinit `feature_list_` here since the test server URL isn't ready at the
+    // time we must first initialize the ScopedFeatureList.
+    feature_list_.Reinit(embedded_test_server()->base_url().spec(),
+                         /*enable_onboarding=*/true,
+                         /*enable_updated_error_states=*/true);
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest,
+    ReserveTimeout) {
+  // Simulate server not responding.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  embedded_test_server()->StartAcceptingConnections();
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForShow(
+          PlusAddressCreationView::kPlusAddressGenerationMessageElementId)),
+      InSameContext(Steps(
+          // Ensure that modal shows a placeholder & disables the confirm button
+          // while `Reserve()` is pending.
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressGenerationMessageElementId,
+              &views::Label::GetText,
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT)),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+              &views::View::GetEnabled, false),
+          // UI should time out and eventually show an error state.
+          WaitForShow(PlusAddressCreationView::kPlusAddressReserveErrorId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId),
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSuppressedScreenshotError),
+          Screenshot(PlusAddressCreationView::kTopViewId,
+                     /*screenshot_name=*/"reserve_timeout",
+                     /*baseline_cl=*/"5860415"),
+          // Simulate canceling after reservation failure.
+          PressButton(
+              PlusAddressCreationView::kPlusAddressCancelButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest::
+        GetTextSuffix);
 
 }  // namespace
 }  // namespace plus_addresses

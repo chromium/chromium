@@ -138,6 +138,14 @@ BASE_FEATURE(kPlusAddressSuggestionRedesign,
              "PlusAddressSuggestionRedesign",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When enabled, we show refined error states in the onboarding dialog on
+// Desktop.
+BASE_FEATURE(kPlusAddressUpdatedErrorStatesInOnboardingModal,
+             "PlusAddressUpdatedErrorStatesInOnboardingModal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,

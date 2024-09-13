@@ -159,6 +159,9 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT" desc="The text of the link to learn more about plus addresses." translateable="false">
       Learn more
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR" desc="The error shown instead of the suggested plus address if no plus address could be reserved." translateable="false">
+      Can't get address. Try again
+    </message>
 
     <!-- Settings strings -->
     <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="The label for the link in settings to manage plus addresses" translateable="false">

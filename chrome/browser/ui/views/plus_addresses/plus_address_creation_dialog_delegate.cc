@@ -66,6 +66,30 @@
 
 namespace plus_addresses {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressCancelButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressConfirmButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressDescriptionTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressErrorTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressGenerationMessageElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressNoticeElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressProgressBarId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressRefreshButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressReserveErrorId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressSuggestedEmailElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressTitleElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
+
 namespace {
 
 constexpr int kProposedPlusAddressBackgroundCornerRadius = 8;
@@ -249,6 +273,13 @@ class PlusAddressCreationDialogDelegate::PlusAddressContainerView final
   // Shows the suggested `address`.
   void ShowPlusAddress(const std::u16string& address);
 
+  // Shows `error` instead of an address.
+  void ShowError(const std::u16string& error);
+
+  enum class Icon { kError, kPlusAddress };
+  // Shows `icon` in the container for the suggested plus address.
+  void ShowIcon(Icon icon);
+
   // Hides the container for the suggested plus address and instead shows
   // a "Generating ..." message.
   void ShowGenerationMessage();
@@ -266,7 +297,11 @@ class PlusAddressCreationDialogDelegate::PlusAddressContainerView final
 
   // A container for the plus address icon and the suggested plus address
   raw_ptr<views::View> icon_and_plus_address_container_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  // A label with mono-spaced font for the suggested plus address.
   raw_ptr<views::Label> plus_address_ = nullptr;
+  // A label with red font for error messages.
+  raw_ptr<views::Label> error_message_ = nullptr;
 
   // A container for the plus address generation message.
   raw_ptr<views::Label> generation_message_ = nullptr;
@@ -319,7 +354,7 @@ PlusAddressCreationDialogDelegate::PlusAddressContainerView::
 
 std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
     PlusAddressContainerView::CreatePlusAddressLabelWithIcon() {
-  auto label =
+  auto address_label =
       views::Builder<views::Label>()
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
@@ -329,8 +364,20 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
           .SetSelectable(true)
           .CopyAddressTo(&plus_address_)
           .Build();
-  label->SetLineHeight(2 * label->GetLineHeight());
+  address_label->SetLineHeight(2 * address_label->GetLineHeight());
 
+  auto error_label =
+      views::Builder<views::Label>()
+          .SetTextContext(views::style::CONTEXT_LABEL)
+          .SetProperty(views::kElementIdentifierKey,
+                       PlusAddressCreationView::kPlusAddressReserveErrorId)
+          .SetEnabledColorId(ui::kColorSysError)
+          .SetSelectable(true)
+          .CopyAddressTo(&error_message_)
+          .Build();
+  error_label->SetLineHeight(2 * error_label->GetLineHeight());
+
+  views::BoxLayoutView* label_container = nullptr;
   auto label_with_icon =
       views::Builder<views::TableLayoutView>()
           .AddColumn(Alignment::kCenter, Alignment::kCenter,
@@ -339,13 +386,14 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
           .AddColumn(Alignment::kStart, Alignment::kCenter, 1.0f,
                      ColumnSize::kUsePreferred, 0, 0)
           .AddRows(1, views::TableLayout::kFixedSize, /*height=*/0)
-          .AddChild(views::Builder<views::ImageView>().SetImage(
-              ui::ImageModel::FromVectorIcon(kLogoLargeIcon, ui::kColorIcon,
-                                             kPlusAddressIconWidth)))
+          .AddChild(views::Builder<views::ImageView>().CopyAddressTo(&icon_))
+          .AddChild(views::Builder<views::BoxLayoutView>().CopyAddressTo(
+              &label_container))
           .CopyAddressTo(&icon_and_plus_address_container_)
           .SetVisible(false)
           .Build();
-  label_with_icon->AddChildView(std::move(label));
+  label_container->AddChildView(std::move(address_label));
+  label_container->AddChildView(std::move(error_label));
   return label_with_icon;
 }
 
@@ -358,8 +406,36 @@ void PlusAddressCreationDialogDelegate::PlusAddressContainerView::
 void PlusAddressCreationDialogDelegate::PlusAddressContainerView::
     ShowPlusAddress(const std::u16string& address) {
   generation_message_->SetVisible(false);
+  ShowIcon(Icon::kPlusAddress);
   icon_and_plus_address_container_->SetVisible(true);
+  error_message_->SetVisible(false);
+  plus_address_->SetVisible(true);
   plus_address_->SetText(address);
+}
+
+void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowError(
+    const std::u16string& error) {
+  generation_message_->SetVisible(false);
+  ShowIcon(Icon::kError);
+  icon_and_plus_address_container_->SetVisible(true);
+  plus_address_->SetVisible(false);
+  error_message_->SetVisible(true);
+  error_message_->SetText(error);
+}
+
+void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowIcon(
+    Icon icon) {
+  switch (icon) {
+    case Icon::kPlusAddress:
+      icon_->SetImage(ui::ImageModel::FromVectorIcon(
+          kLogoLargeIcon, ui::kColorIcon, kPlusAddressIconWidth));
+      return;
+    case Icon::kError:
+      icon_->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::kColorSysError, kPlusAddressIconWidth));
+      return;
+  }
+  NOTREACHED();
 }
 
 void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowRefresh(
@@ -374,28 +450,6 @@ void PlusAddressCreationDialogDelegate::PlusAddressContainerView::
 
 BEGIN_METADATA(PlusAddressCreationDialogDelegate, PlusAddressContainerView)
 END_METADATA
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressCancelButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressConfirmButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressDescriptionTextElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressErrorTextElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressGenerationMessageElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressNoticeElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressProgressBarId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressRefreshButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressSuggestedEmailElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressTitleElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
@@ -421,10 +475,10 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // GetWidget()->Close() to close the UI when ready.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  // This view will act as the contents view for the bubble. It is used to be
-  // able to set empty margins on `this` and, instead, set them on
-  // `primary_view`. This allows adding an element at the top of the dialog that
-  // has no margins.
+  // This view will act as the contents view for the bubble. It is used to
+  // be able to set empty margins on `this` and, instead, set them on
+  // `primary_view`. This allows adding an element at the top of the
+  // dialog that has no margins.
   std::unique_ptr<views::View> wrapper_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -486,6 +540,14 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
     plus_address_container_->ShowPlusAddress(
         base::UTF8ToUTF16(*maybe_plus_profile->plus_address));
     confirm_button_->SetEnabled(true);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPlusAddressUpdatedErrorStatesInOnboardingModal)) {
+    // Show error in plus address container.
+    plus_address_container_->ShowError(
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR));
   } else {
     ShowErrorStateUI();
   }

@@ -93,6 +93,7 @@ PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PlusAddressCreationDialogUiVariationsTest*
+*PlusAddressCreationDialogUiVariationsOnboardingErrorStatesTest*
 PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
