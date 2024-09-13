@@ -3458,69 +3458,6 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kPasswordGenerationTrustedAdvice[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[0]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationSafetyFirst[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[1]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationTrySomethingNew[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[2]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationConvenience[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[3]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationCrossDevice[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[4]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationEditPassword[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[5]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationChunkPassword[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[6]
-         .name}};
-const FeatureEntry::FeatureParam kPasswordGenerationNudgePassword[] = {
-    {password_manager::features::kPasswordGenerationExperimentVariationParam
-         .name,
-     password_manager::features::kPasswordGenerationExperimentVariationOption[7]
-         .name}};
-
-const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
-    {
-        {"Trusted advice", kPasswordGenerationTrustedAdvice,
-         std::size(kPasswordGenerationTrustedAdvice), nullptr},
-        {"Safety first", kPasswordGenerationSafetyFirst,
-         std::size(kPasswordGenerationSafetyFirst), nullptr},
-        {"Try something new", kPasswordGenerationTrySomethingNew,
-         std::size(kPasswordGenerationTrySomethingNew), nullptr},
-        {"Convenience", kPasswordGenerationConvenience,
-         std::size(kPasswordGenerationConvenience), nullptr},
-        {"Cross device", kPasswordGenerationCrossDevice,
-         std::size(kPasswordGenerationCrossDevice), nullptr},
-        {"Edit password", kPasswordGenerationEditPassword,
-         std::size(kPasswordGenerationEditPassword), nullptr},
-        {"Chunk password", kPasswordGenerationChunkPassword,
-         std::size(kPasswordGenerationChunkPassword), nullptr},
-        {"Nudge password", kPasswordGenerationNudgePassword,
-         std::size(kPasswordGenerationNudgePassword), nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 const FeatureEntry::FeatureParam kEnableBoundSessionCredentialsWithDice[] = {
     {"dice-support", "enabled"}};
@@ -9349,16 +9286,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(::features::kFocusFollowsCursor)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"password-generation-experiment",
-     flag_descriptions::kPasswordGenerationExperimentName,
-     flag_descriptions::kPasswordGenerationExperimentDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kPasswordGenerationExperiment,
-         kPasswordGenerationExperimentVariations,
-         "PasswordGenerationExperiment")},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"print-preview-cros-primary",

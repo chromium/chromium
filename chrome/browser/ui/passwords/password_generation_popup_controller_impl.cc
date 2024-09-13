@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -52,10 +53,6 @@
 
 using autofill::SuggestionHidingReason;
 using autofill::password_generation::PasswordGenerationType;
-#if !BUILDFLAG(IS_ANDROID)
-using password_manager::features::kPasswordGenerationExperimentVariationParam;
-using password_manager::features::PasswordGenerationVariation;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Handles registration for key events with RenderFrameHost.
 class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
@@ -301,12 +298,10 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     }
   }
 
-  // In `kNudgePassword` Desktop experiment password is previewed straight away
-  // in offer generation state.
+  // With `kPasswordGenerationSoftNudge` feature enabled password is previewed
+  // straight away in offer generation state.
 #if !BUILDFLAG(IS_ANDROID)
-  if (state == kOfferGeneration &&
-      kPasswordGenerationExperimentVariationParam.Get() ==
-          PasswordGenerationVariation::kNudgePassword) {
+  if (ShouldShowNudgePassword()) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -395,8 +390,8 @@ std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
 
 bool PasswordGenerationPopupControllerImpl::ShouldShowNudgePassword() const {
   return state_ == kOfferGeneration &&
-         kPasswordGenerationExperimentVariationParam.Get() ==
-             PasswordGenerationVariation::kNudgePassword;
+         base::FeatureList::IsEnabled(
+             password_manager::features::kPasswordGenerationSoftNudge);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

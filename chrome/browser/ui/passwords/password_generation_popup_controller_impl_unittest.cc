@@ -38,10 +38,6 @@ using autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
 using ::testing::Return;
 
-#if !BUILDFLAG(IS_ANDROID)
-using password_manager::features::kPasswordGenerationExperiment;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 PasswordGenerationUIData CreatePasswordGenerationUIData() {
   return PasswordGenerationUIData(
       gfx::RectF(100, 20), /*max_length=*/20, u"element",
@@ -326,15 +322,8 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
                 IDS_PASSWORD_GENERATION_SUGGESTION_GPM_WITHOUT_STRONG));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordGenerationPopupControllerImplTest,
        AdvancesFieldFocusOnUseStrongPassword) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kPasswordGenerationExperiment,
-        {{"password_generation_variation", "edit_password"}}}},
-      {});
-
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
           /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
@@ -346,13 +335,12 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->PasswordAccepted();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewsGeneratedPasswordOnShowInNudgePassword) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kPasswordGenerationExperiment,
-        {{"password_generation_variation", "nudge_password"}}}},
-      {});
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordGenerationSoftNudge);
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(

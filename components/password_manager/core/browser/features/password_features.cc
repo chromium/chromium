@@ -73,9 +73,15 @@ BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kPasswordGenerationExperiment,
-             "PasswordGenerationExperiment",
+
+BASE_FEATURE(kPasswordGenerationChunking,
+             "PasswordGenerationChunkPassword",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPasswordGenerationSoftNudge,
+             "PasswordGenerationSoftNudge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 BASE_FEATURE(kPasswordManagerLogToTerminal,

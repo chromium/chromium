@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1352,14 +1353,13 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     return;
   }
 
-  // In `kNudgePassword` experiment generated password is previewed when the
-  // popup is visible and any character typed by the user is treated as
+  // With `kPasswordGenerationSoftNudge` enabled generated password is previewed
+  // when the popup is visible and any character typed by the user is treated as
   // rejection.
-  if (password_manager::features::kPasswordGenerationExperimentVariationParam
-          .Get() ==
-      password_manager::features::PasswordGenerationVariation::kNudgePassword) {
-    // TODO(crbug.com/40267520): Rewrite the AutomaticGenerationAvailable
-    // triggering instead of checking a boolean if the experiment is launched.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationSoftNudge)) {
+    // TODO(crbug.com/366198626): Rewrite the AutomaticGenerationAvailable
+    // triggering instead of checking a boolean when the feature is launched.
     if (ui_data.input_field_empty) {
       ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
                                   ui_data);

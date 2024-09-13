@@ -314,12 +314,8 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
 class PasswordGeneratorChunkingTest : public testing::Test {
  public:
   PasswordGeneratorChunkingTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{password_manager::features::
-                                   kPasswordGenerationExperiment,
-                               {{"password_generation_variation",
-                                 "chunk_password"}}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordGenerationChunking);
   }
   ~PasswordGeneratorChunkingTest() override = default;
 
