@@ -68,14 +68,20 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OmniboxProviders">
+<!--
+Keep consistent with active providers. Doesn't need to include every provider in
+`AutocompleteProvider::Type`, but should include every provider in
+`AutocompleteProvider::TypeToString()`.
+-->
+
   <variant name="Bookmark"/>
   <variant name="Builtin"/>
+  <variant name="Calculator"/>
   <variant name="Clipboard"/>
-  <variant name="Contact"/>
   <variant name="Document"/>
-  <variant name="ExtensionApp"/>
+  <variant name="FeaturedSearch"/>
   <variant name="HistoryCluster"/>
-  <variant name="HistoryContents"/>
+  <variant name="HistoryEmbeddings"/>
   <variant name="HistoryFuzzy"/>
   <variant name="HistoryQuick"/>
   <variant name="HistoryURL"/>
