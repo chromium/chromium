@@ -845,8 +845,7 @@ void ParkableStringImpl::CompressInBackground(
       compressed = std::make_unique<Vector<uint8_t>>();
       // Not using realloc() as we want the compressed data to be a regular
       // WTF::Vector.
-      compressed->Append(reinterpret_cast<const uint8_t*>(buffer.data()),
-                         base::checked_cast<wtf_size_t>(compressed_size));
+      compressed->AppendSpan(base::as_byte_span(buffer).first(compressed_size));
     }
   }
   base::TimeDelta thread_elapsed = thread_timer.Elapsed();

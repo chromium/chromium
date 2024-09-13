@@ -225,8 +225,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
 
   // Let valueVector be a copy of the bytes held by value.
   Vector<uint8_t> value_vector;
-  value_vector.Append(value.Bytes(),
-                      static_cast<wtf_size_t>(value.ByteLength()));
+  value_vector.AppendSpan(value.ByteSpan());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());

@@ -49,8 +49,7 @@ SharedBufferChunkReader::SharedBufferChunkReader(
 
 void SharedBufferChunkReader::SetSeparator(std::string_view separator) {
   separator_.clear();
-  separator_.Append(separator.data(),
-                    base::checked_cast<wtf_size_t>(separator.size()));
+  separator_.AppendSpan(base::span(separator));
 }
 
 bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
@@ -64,8 +63,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       char current_character = segment_[segment_index_++];
       if (current_character != separator_[separator_index_]) {
         if (separator_index_ > 0) {
-          SECURITY_DCHECK(separator_index_ <= separator_.size());
-          chunk.Append(separator_.data(), separator_index_);
+          chunk.AppendSpan(base::span(separator_).first(separator_index_));
           separator_index_ = 0;
         }
         chunk.push_back(current_character);
@@ -88,7 +86,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       segment_ = {};
       reached_end_of_file_ = true;
       if (separator_index_ > 0)
-        chunk.Append(separator_.data(), separator_index_);
+        chunk.AppendSpan(base::span(separator_).first(separator_index_));
       return !chunk.empty();
     }
     segment_ = *it;
@@ -122,11 +120,10 @@ size_t SharedBufferChunkReader::Peek(Vector<char>& data,
   for (auto it = buffer_->GetIteratorAt(buffer_position_ + segment_.size());
        it != buffer_->cend(); ++it) {
     if (requested_size <= data.size() + it->size()) {
-      data.Append(it->data(),
-                  base::checked_cast<wtf_size_t>(requested_size - data.size()));
+      data.AppendSpan((*it).first(requested_size - data.size()));
       break;
     }
-    data.Append(it->data(), base::checked_cast<wtf_size_t>(it->size()));
+    data.AppendSpan(*it);
   }
   return data.size();
 }

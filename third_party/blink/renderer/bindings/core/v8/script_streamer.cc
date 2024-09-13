@@ -167,9 +167,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
-          copy_for_decoder.Append(
-              base::as_chars(buffer).data(),
-              base::checked_cast<wtf_size_t>(buffer.size()));
+          copy_for_decoder.AppendSpan(base::as_chars(buffer));
           if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
             absl::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));

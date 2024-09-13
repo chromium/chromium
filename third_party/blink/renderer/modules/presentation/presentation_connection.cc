@@ -36,11 +36,10 @@ mojom::blink::PresentationConnectionMessagePtr MakeBinaryMessage(
   // Mutating the data field on the message instead of passing in an already
   // populated Vector into message constructor is more efficient since the
   // latter does not support moves.
-  auto message = mojom::blink::PresentationConnectionMessage::NewData(
-      WTF::Vector<uint8_t>());
-  WTF::Vector<uint8_t>& data = message->get_data();
-  data.Append(static_cast<const uint8_t*>(buffer->Data()),
-              base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+  auto message =
+      mojom::blink::PresentationConnectionMessage::NewData(Vector<uint8_t>());
+  Vector<uint8_t>& data = message->get_data();
+  data.AppendSpan(buffer->ByteSpan());
   return message;
 }
 

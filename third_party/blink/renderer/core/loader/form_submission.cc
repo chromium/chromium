@@ -84,7 +84,7 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
   }
 
   Vector<char> body_data;
-  body_data.Append("body=", 5);
+  body_data.AppendSpan(base::span_from_cstring("body="));
   FormDataEncoder::EncodeStringAsFormData(body_data, body.Utf8(),
                                           FormDataEncoder::kNormalizeCRLF);
   body = String(body_data.data(), body_data.size()).Replace('+', "%20");

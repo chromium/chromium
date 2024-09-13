@@ -399,8 +399,7 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::control(
   // Note that there are control codes which require no input data.
   // Thus sending an empty data vector is fine.
   if (!data.IsDetached() && !data.IsNull() && data.ByteLength() > 0u) {
-    data_vector.Append(data.Bytes(),
-                       static_cast<wtf_size_t>(data.ByteLength()));
+    data_vector.AppendSpan(data.ByteSpan());
   }
 
   connection_->Control(
@@ -451,7 +450,7 @@ ScriptPromise<IDLUndefined> SmartCardConnection::setAttribute(
   SetOperationInProgress(resolver);
 
   Vector<uint8_t> data_vector;
-  data_vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+  data_vector.AppendSpan(data.ByteSpan());
 
   connection_->SetAttrib(
       tag, data_vector,

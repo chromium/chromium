@@ -99,7 +99,7 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
     return;
 
   if (new_len == from.length()) {
-    buffer.Append(from.c_str(), from.length());
+    buffer.AppendSpan(base::span(from));
     return;
   }
 

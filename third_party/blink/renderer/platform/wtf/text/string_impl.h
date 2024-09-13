@@ -961,9 +961,9 @@ inline void StringImpl::AppendTo(BufferType& result,
   if (!number_of_characters_to_copy)
     return;
   if (Is8Bit())
-    result.Append(Characters8() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span8().subspan(start, number_of_characters_to_copy));
   else
-    result.Append(Characters16() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
 }
 
 template <typename BufferType>
