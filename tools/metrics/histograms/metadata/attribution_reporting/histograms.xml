@@ -1102,6 +1102,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.ScopesPer{Type}Registration" units="scopes"
+    expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many attribution scopes are in a {Type} registration. Recorded
+    when a {Type} registration is successfully parsed.
+  </summary>
+  <token key="Type">
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.SentVerboseDebugReportType4"
     enum="ConversionVerboseDebugReportType" expires_after="2025-01-05">
   <owner>tquintanilla@chromium.org</owner>

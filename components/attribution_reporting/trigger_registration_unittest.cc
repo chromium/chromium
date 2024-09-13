@@ -573,6 +573,12 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
                         AttributionScopesSet({"123"}))),
       },
       {
+          "empty",
+          R"json({})json",
+          ValueIs(Field(&TriggerRegistration::attribution_scopes,
+                        AttributionScopesSet())),
+      },
+      {
           "attribution_scopes_set_invalid",
           R"json({
             "attribution_scopes": [123]
@@ -585,9 +591,17 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
       features::kAttributionScopes);
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
     SCOPED_TRACE(test_case.desc);
 
-    EXPECT_THAT(TriggerRegistration::Parse(test_case.json), test_case.matches);
+    auto trigger = TriggerRegistration::Parse(test_case.json);
+    EXPECT_THAT(trigger, test_case.matches);
+
+    if (trigger.has_value()) {
+      histograms.ExpectUniqueSample("Conversions.ScopesPerTriggerRegistration",
+                                    trigger->attribution_scopes.scopes().size(),
+                                    1);
+    }
   }
 }
 

@@ -176,6 +176,16 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
 
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
+
+  base::UmaHistogramExactLinear(
+      "Conversions.ScopesPerSourceRegistration",
+      result.attribution_scopes_data.has_value()
+          ? result.attribution_scopes_data->attribution_scopes_set()
+                .scopes()
+                .size()
+          : 0,
+      /*exclusive_max=*/attribution_reporting::kMaxScopesPerSource + 1);
+
   return result;
 }
 
