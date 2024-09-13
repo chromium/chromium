@@ -96,6 +96,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const override;
+  bool IsLocalUnpartitionedDataAccessAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      content::RenderFrameHost* console_frame) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin,

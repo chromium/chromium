@@ -77,6 +77,8 @@ constexpr char kIsSharedStorageAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageAllowed";
 constexpr char kIsSharedStorageSelectURLAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageSelectURLAllowed";
+constexpr char kIsLocalUnpartitionedDataAccessAllowedHistogram[] =
+    "PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed";
 constexpr char kIsPrivateAggregationAllowedHistogram[] =
     "PrivacySandbox.IsPrivateAggregationAllowed";
 
@@ -709,6 +711,40 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
          "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
          "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
   }
+  return IsAllowed(status);
+}
+
+bool PrivacySandboxSettingsImpl::IsLocalUnpartitionedDataAccessAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    content::RenderFrameHost* console_frame) const {
+  // TODO(crbug.com/365788691): Before checking the attestation status, check
+  // the 3PC setting here. If the toggle "Block all third-party cookies" is
+  // enabled, the local unpartitioned data access feature will be disabled.
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(accessing_origin),
+          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsLocalUnpartitionedDataAccessAllowedHistogram,
+                  attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          base::StrCat(
+              {"Attestation check for local unpartitioned data access on ",
+               accessing_origin.Serialize(), " failed."}));
+    }
+    return false;
+  }
+
+  Status status = GetPrivacySandboxAllowedStatus();
+  if (IsAllowed(status)) {
+    status =
+        GetSiteAccessAllowedStatus(top_frame_origin, accessing_origin.GetURL());
+  }
+  JoinHistogram(kIsLocalUnpartitionedDataAccessAllowedHistogram, status);
+
   return IsAllowed(status);
 }
 

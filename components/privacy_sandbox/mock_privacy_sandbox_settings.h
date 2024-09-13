@@ -90,6 +90,12 @@ class MockPrivacySandboxSettings
               (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
   MOCK_METHOD(bool,
+              IsLocalUnpartitionedDataAccessAllowed,
+              (const url::Origin&,
+               const url::Origin&,
+               content::RenderFrameHost*),
+              (override, const));
+  MOCK_METHOD(bool,
               IsPrivateAggregationAllowed,
               (const url::Origin&, const url::Origin&, bool*),
               (override, const));
