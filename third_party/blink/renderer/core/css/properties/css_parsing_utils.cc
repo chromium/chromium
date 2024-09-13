@@ -327,7 +327,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
     StepsTimingFunction::StepPosition position =
         StepsTimingFunction::StepPosition::END;
     if (ConsumeCommaIncludingWhitespace(stream)) {
-      switch (stream.ConsumeIncludingWhitespace().Id()) {
+      switch (stream.Peek().Id()) {
         case CSSValueID::kStart:
           position = StepsTimingFunction::StepPosition::START;
           break;
@@ -355,6 +355,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
         default:
           return nullptr;
       }
+      stream.ConsumeIncludingWhitespace();  // kIdentToken
     }
 
     if (!stream.AtEnd()) {
