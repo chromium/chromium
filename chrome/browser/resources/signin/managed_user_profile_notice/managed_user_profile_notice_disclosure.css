@@ -13,6 +13,7 @@
 
 :host {
   color: var(--cr-primary-text-color);
+  --cr-secondary-text-color: var(--google-grey-700);
 }
 
 main {
@@ -60,7 +61,8 @@ main {
   margin: 12px 0;
 }
 
-.subtitle {
+.tangible-sync-style .subtitle {
+  color: var(--cr-secondary-text-color);
   margin: 0;
 }
 
@@ -112,6 +114,10 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
+  :host {
+    --cr-secondary-text-color: var(--google-grey-500);
+  }
+
   .work-badge {
     border-color: var(--md-background-color);
   }

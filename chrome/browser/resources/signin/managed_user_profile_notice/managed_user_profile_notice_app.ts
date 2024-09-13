@@ -201,10 +201,6 @@ export class ManagedUserProfileNoticeAppElement extends
     this.showError_ = state === State.ERROR;
     this.showUserDataHandling_ = state === State.USER_DATA_HANDLING;
     this.disableProceedButton_ = false;
-    if (this.showError_ || this.showSuccess_ || this.showTimeout_) {
-      this.shadowRoot!.querySelector<HTMLButtonElement>(
-                          '#proceed-button')!.focus();
-    }
   }
 
   protected allowCancel_() {

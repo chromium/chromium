@@ -11,13 +11,16 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  color: var(--cr-primary-text-color);
-}
-
-main {
-  align-items: center;
+  height: 100%;
   display: flex;
-  flex-direction: column;
+ }
+
+ main {
+  margin:auto;
+ }
+
+.icon-container {
+  text-align: center;
 }
 
 .text-container {
@@ -44,4 +47,11 @@ main {
 .tangible-sync-style .subtitle {
   font-size: 16px;
   line-height: 24px;
+  color: var(--google-grey-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tangible-sync-style .subtitle {
+    color: var(--google-grey-500);
+  }
 }

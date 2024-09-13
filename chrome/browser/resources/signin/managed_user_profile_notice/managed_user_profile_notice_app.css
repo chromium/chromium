@@ -99,10 +99,14 @@
   .error-icon {
     content: url(images/enrollment_failure_dark.svg);
   }
+
+  paper-spinner-lite {
+    --paper-spinner-color: var(--google-blue-300);
+  }
 }
 
 paper-spinner-lite {
-  --paper-spinner-stroke-width: 6px;
+  --paper-spinner-stroke-width: 8px;
   height: 60px;
   width: 60px;
 }
