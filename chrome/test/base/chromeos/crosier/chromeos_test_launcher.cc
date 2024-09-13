@@ -9,9 +9,11 @@
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 #include "chrome/utility/chrome_content_utility_client.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "services/test/echo/echo_service.h"
@@ -85,6 +87,10 @@ ChromeOSTestChromeMainDelegate::CreateContentUtilityClient() {
 
 void ChromeOSTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
   base::test::TaskEnvironment::CreateThreadPool();
+  // The ThreadProfiler client must be set before main thread profiling is
+  // started (below).
+  sampling_profiler::ThreadProfiler::SetClient(
+      std::make_unique<ChromeThreadProfilerClient>());
   // Start the sampling profiler as early as possible - namely, once the thread
   // pool has been created.
   sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();

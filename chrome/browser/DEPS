@@ -269,6 +269,7 @@ include_rules = [
   "+components/performance_manager/embedder",
   "+components/performance_manager/test_support",
   "+components/permissions",
+  "+components/sampling_profiler",
   "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",

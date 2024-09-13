@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/profiler/thread_profiler.h"
+#include "components/sampling_profiler/thread_profiler.h"
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace sampling_profiler {
 namespace {
 
-class TestScheduler : public PeriodicSamplingScheduler {
+class TestScheduler : public sampling_profiler::PeriodicSamplingScheduler {
  public:
   TestScheduler(base::TimeDelta sampling_duration,
                 double fraction_of_execution_time_to_sample)
@@ -38,8 +39,6 @@ class TestScheduler : public PeriodicSamplingScheduler {
 };
 
 constexpr base::TimeTicks TestScheduler::kStartTime;
-
-}  // namespace
 
 TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
   const base::TimeDelta sampling_duration = base::Seconds(30);
@@ -93,3 +92,6 @@ TEST(ThreadProfilerTest, PeriodicSamplingSchedulerWithJumpInTimeTicks) {
   EXPECT_EQ(0.5 * (expected_period - sampling_duration),
             scheduler.GetTimeToNextCollection());
 }
+
+}  // namespace
+}  // namespace sampling_profiler

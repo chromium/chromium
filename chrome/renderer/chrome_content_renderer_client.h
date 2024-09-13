@@ -51,7 +51,10 @@ class ChromeRenderThreadObserver;
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 class SpellCheck;
 #endif
+
+namespace sampling_profiler {
 class ThreadProfiler;
+}  // namespace sampling_profiler
 
 namespace blink {
 class WebServiceWorkerContextProxy;
@@ -286,7 +289,7 @@ class ChromeContentRendererClient
 #endif
 
   // Used to profile main thread.
-  std::unique_ptr<ThreadProfiler> main_thread_profiler_;
+  std::unique_ptr<sampling_profiler::ThreadProfiler> main_thread_profiler_;
 
   std::unique_ptr<ChromeRenderThreadObserver> chrome_observer_;
   std::unique_ptr<web_cache::WebCacheImpl> web_cache_impl_;

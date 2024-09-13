@@ -61,6 +61,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/unwind_util.h"
@@ -79,6 +80,7 @@
 #include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -1098,6 +1100,12 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
   base::ThreadPoolInstance::Create(name);
+
+  // The ThreadProfiler client must be set before main thread profiling is
+  // started (below).
+  sampling_profiler::ThreadProfiler::SetClient(
+      std::make_unique<ChromeThreadProfilerClient>());
+
 // `ChromeMainDelegateAndroid::PreSandboxStartup` creates the profiler a little
 // later.
 #if !BUILDFLAG(IS_ANDROID)

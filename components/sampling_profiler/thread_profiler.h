@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_PROFILER_THREAD_PROFILER_H_
-#define CHROME_COMMON_PROFILER_THREAD_PROFILER_H_
+#ifndef COMPONENTS_SAMPLING_PROFILER_THREAD_PROFILER_H_
+#define COMPONENTS_SAMPLING_PROFILER_THREAD_PROFILER_H_
 
 #include <memory>
 
@@ -17,6 +17,10 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+
+namespace sampling_profiler {
+
+class ThreadProfilerClient;
 
 // PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
 // thread through calls to GetTimeToNextCollection(). This class is exposed
@@ -89,15 +93,13 @@ class ThreadProfiler {
   // thread start. The thread will be profiled until exit.
   static void StartOnChildThread(base::ProfilerThreadType thread);
 
-  // Returns true if called within a child process that will collect profiles
-  // through a CallStackProfileCollector. If so,
-  // metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess
-  // must be called to to bind the interface through which a profile is sent
-  // back to the browser process.
-  //
-  // Note that the metrics::CallStackProfileCollector interface also must be
-  // exposed to the child process.
-  static bool ShouldCollectProfilesForChildProcess();
+  // Sets the instance of ThreadProfilerClient to provide embedder-specific
+  // implementation logic. This instance must be set early, before any of the
+  // above static methods are called.
+  static void SetClient(std::unique_ptr<ThreadProfilerClient> client);
+
+  // Retrieve the ThreadProfilerClient instance provided via SetClient().
+  static ThreadProfilerClient* GetClient();
 
  private:
   class WorkIdRecorder;
@@ -108,6 +110,12 @@ class ThreadProfiler {
       base::ProfilerThreadType thread,
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
+
+  // Creates a sampling profiler, for either the startup or periodic profiling.
+  std::unique_ptr<base::StackSamplingProfiler> CreateSamplingProfiler(
+      base::StackSamplingProfiler::SamplingParams sampling_params,
+      base::CallStackProfileParams::Trigger trigger,
+      base::OnceClosure builder_completed_callback);
 
   // Posts a task on |owning_thread_task_runner| to start the next periodic
   // sampling collection on the completion of the previous collection.
@@ -146,4 +154,6 @@ class ThreadProfiler {
   base::WeakPtrFactory<ThreadProfiler> weak_factory_{this};
 };
 
-#endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_H_
+}  // namespace sampling_profiler
+
+#endif  // COMPONENTS_SAMPLING_PROFILER_THREAD_PROFILER_H_

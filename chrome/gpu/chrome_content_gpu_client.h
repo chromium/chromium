@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/profiler/thread_profiler.h"
 #include "content/public/gpu/content_gpu_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -18,6 +17,10 @@ namespace arc {
 class ProtectedBufferManager;
 }  // namespace arc
 #endif
+
+namespace sampling_profiler {
+class ThreadProfiler;
+}
 
 class ChromeContentGpuClient : public content::ContentGpuClient {
  public:
@@ -46,7 +49,8 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
 
  private:
   // Used to profile main thread startup.
-  std::unique_ptr<ThreadProfiler> main_thread_profiler_;
+  std::unique_ptr<sampling_profiler::ThreadProfiler> main_thread_profiler_ =
+      nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;

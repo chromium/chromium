@@ -317,6 +317,7 @@ test("components_unittests") {
     "//components/safe_browsing/core/common:unit_tests",
     "//components/safe_browsing/core/common/hashprefix_realtime:unit_tests",
     "//components/safe_search_api:unit_tests",
+    "//components/sampling_profiler:unit_tests",
     "//components/saved_tab_groups:unit_tests",
     "//components/search:unit_tests",
     "//components/search_engines:unit_tests",

@@ -118,7 +118,6 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "chrome/grit/branded_strings.h"
@@ -154,6 +153,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -903,7 +903,7 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   UpgradeDetector::GetInstance()->Init();
 #endif
 
-  ThreadProfiler::SetMainThreadTaskRunner(
+  sampling_profiler::ThreadProfiler::SetMainThreadTaskRunner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // TODO(sebmarchand): Allow this to be created earlier if startup tracing is
@@ -1224,8 +1224,9 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   // BrowserThreadsStarted as it matches the PreCreateThreads and CreateThreads
   // stages.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                base::ProfilerThreadType::kIo));
+      FROM_HERE,
+      base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                     base::ProfilerThreadType::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)
