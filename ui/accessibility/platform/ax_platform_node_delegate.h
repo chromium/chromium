@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
  public:
   using AXPosition = AXNodePosition::AXPositionInstance;
   using SerializedPosition = AXNodePosition::SerializedPosition;
-  using AXRange = AXRange<AXPosition::element_type>;
+  using AXRange = ui::AXRange<AXPosition::element_type>;
 
   AXPlatformNodeDelegate();
 
