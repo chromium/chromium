@@ -405,7 +405,7 @@ size_t MaxHostKeyedHintCacheSize() {
 
 size_t MaxURLKeyedHintCacheSize() {
   size_t max_url_keyed_hint_cache_size = GetFieldTrialParamByFeatureAsInt(
-      kOptimizationHints, "max_url_keyed_hint_cache_size", 30);
+      kOptimizationHints, "max_url_keyed_hint_cache_size", 50);
   DCHECK_GE(max_url_keyed_hint_cache_size,
             MaxUrlsForOptimizationGuideServiceHintsFetch());
   return max_url_keyed_hint_cache_size;
