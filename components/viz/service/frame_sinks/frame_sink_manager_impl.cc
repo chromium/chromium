@@ -229,6 +229,12 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
     root_frame_sink_id_ = frame_sink_id;
   }
 
+  bool create_input_receiver = false;
+#if BUILDFLAG(IS_ANDROID)
+  create_input_receiver = params->create_input_receiver;
+#endif
+  gpu::SurfaceHandle widget = params->widget;
+
   // Creating RootCompositorFrameSinkImpl can fail and return null.
   auto root_compositor_frame_sink = RootCompositorFrameSinkImpl::Create(
       std::move(params), this, output_surface_provider_, restart_id_,
@@ -238,15 +244,11 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
   if (root_compositor_frame_sink) {
     root_sink_map_[frame_sink_id] = std::move(root_compositor_frame_sink);
     if (GetInputManager()) {
-      bool create_input_receiver = false;
-#if BUILDFLAG(IS_ANDROID)
-      create_input_receiver = params->create_input_receiver;
-#endif
       GetInputManager()->OnCreateCompositorFrameSink(
           frame_sink_id,
           /*is_root=*/true,
           /*render_input_router_config=*/nullptr, create_input_receiver,
-          params->widget);
+          widget);
     }
   }
 
