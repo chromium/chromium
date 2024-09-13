@@ -2744,8 +2744,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when SiteProtectionMetricsObserver has finished asynchronously
     fetching data from local databases in order to compute the user-familiarity
-    for a given website. The computation occurs after each page navigation. Logs
-    the duration of fetching the data and doing the computation.
+    for a given website. The computation occurs after each non-off-the-record
+    page navigation. Logs the duration of fetching the data and doing the
+    computation.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration.OffTheRecord"
+    units="ms" expires_after="2025-01-05">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged when SiteProtectionMetricsObserver has finished asynchronously
+    fetching data from local databases in order to compute the user-familiarity
+    for a given website. The computation occurs after each off-the-record page
+    navigation. Logs the duration of fetching the data and doing the
+    computation.
   </summary>
 </histogram>
 

@@ -229,7 +229,10 @@ void SiteProtectionMetricsObserver::LogMetrics(
   }
 
   base::UmaHistogramTimes(
-      "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration",
+      profile_->IsOffTheRecord()
+          ? "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration."
+            "OffTheRecord"
+          : "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration",
       (base::Time::Now() - metrics_data->data_fetch_start_time));
 
   for (SiteFamiliarityHeuristicName heuristic :
