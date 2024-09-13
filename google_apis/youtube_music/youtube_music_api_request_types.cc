@@ -282,7 +282,8 @@ HttpRequestMethod SignedRequest::GetRequestType() const {
 }
 
 std::vector<std::string> SignedRequest::GetExtraRequestHeaders() const {
-  CHECK(!headers_.empty());
+  // TODO(b/343737170): CHECK that headers are non-empty when we can guarntee
+  // that the headers are always present.
   return headers_;
 }
 
