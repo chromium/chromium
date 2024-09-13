@@ -418,10 +418,17 @@ TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
             background_blur->dependency_flags());
 
-  auto* portrait_relight = camera_effects_controller()->GetEffectById(
-      VcEffectId::kPortraitRelighting);
-  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
-            portrait_relight->dependency_flags());
+  if (features::IsVcStudioLookEnabled()) {
+    auto* studio_look =
+        camera_effects_controller()->GetEffectById(VcEffectId::kStudioLook);
+    EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+              studio_look->dependency_flags());
+  } else {
+    auto* portrait_relight = camera_effects_controller()->GetEffectById(
+        VcEffectId::kPortraitRelighting);
+    EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+              portrait_relight->dependency_flags());
+  }
 }
 
 TEST_F(CameraEffectsControllerTest, BackgroundBlurEnums) {
