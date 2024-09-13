@@ -260,6 +260,8 @@ chromium-metrics-reviews@google.com.
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSInlineEnhancedSafeBrowsingPromoFeature"
       summary="Showing the Enhanced Safe Browsing Promo on iOS"/>
+  <variant name="IPH_iOSLensOverlayEntrypointTip"
+      summary="IOS Lens overlay toolbar entrypoint"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSOverflowMenuCustomization"

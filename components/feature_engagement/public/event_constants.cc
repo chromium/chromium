@@ -157,6 +157,7 @@ const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =
 const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
+const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

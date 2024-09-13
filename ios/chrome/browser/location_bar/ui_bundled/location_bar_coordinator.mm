@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
@@ -57,7 +58,9 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
@@ -182,6 +185,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+  [self.viewController setHelpCommandsHandler:helpHandler];
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -234,6 +240,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (!isIncognito && IsLensOverlayAvailable()) {
     UIButton* lensOverlayEntrypoint = LensOverlay::NewEntrypointButton();
 
+    [LayoutGuideCenterForBrowser(self.browser)
+        referenceView:lensOverlayEntrypoint
+            underName:kLensOverlayEntrypointGuide];
     [lensOverlayEntrypoint addTarget:self
                               action:@selector(openLensOverlay)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -642,6 +651,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 // Creates and shows the lens overlay UI.
 - (void)openLensOverlay {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->NotifyEvent(feature_engagement::events::kLensOverlayEntrypointUsed);
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensOverlayCommands)
       createAndShowLensUI:YES
                entrypoint:LensOverlayEntrypoint::kLocationBar

@@ -44,7 +44,9 @@ enum class InProductHelpType : NSInteger {
   kBackForwardSwipe,
   /// Fullscreen help bubble for the gesture to swipe horizontally on the
   /// toolbar to switch tabs.
-  kToolbarSwipe
+  kToolbarSwipe,
+  /// Help bubble for the lens overlay feature entrypoint.
+  kLensOverlayEntrypoint
 };
 
 /// Commands to control the display of in-product help UI ("bubbles").

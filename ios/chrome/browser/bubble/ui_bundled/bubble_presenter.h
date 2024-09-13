@@ -135,6 +135,11 @@ class DeviceSwitcherResultDispatcher;
                                            DeviceSwitcherResultDispatcher>)
                                   deviceSwitcherResultDispatcher;
 
+// Optionally present a bubble associated with the lens overlay.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble.
+- (void)presentLensOverlayTipBubble;
+
 // Optionally presents a gesture IPH associated with the pull-to-refresh
 // feature. The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.

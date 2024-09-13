@@ -300,6 +300,9 @@ extern const char
 // The user has tapped the Home customization menu's entrypoint.
 extern const char kHomeCustomizationMenuUsed[];
 
+// The user has tapped on the lens overlay entrypoint.
+extern const char kLensOverlayEntrypointUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

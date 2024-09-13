@@ -26,3 +26,4 @@ GuideName* const kMagicStackGuide = @"kMagicStackGuide";
 GuideName* const kContextualPanelLargeEntrypointGuide =
     @"kContextualPanelLargeEntrypointGuide";
 GuideName* const kFakeboxLensIconGuide = @"kFakeboxLensIconGuide";
+GuideName* const kLensOverlayEntrypointGuide = @"kLensOverlayEntrypointGuide";

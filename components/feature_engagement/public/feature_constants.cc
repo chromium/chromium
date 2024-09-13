@@ -618,6 +618,9 @@ BASE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature,
 BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
              "IPH_HomeCustomizationMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSLensOverlayEntrypointTipFeature,
+             "IPH_iOSLensOverlayEntrypointTip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

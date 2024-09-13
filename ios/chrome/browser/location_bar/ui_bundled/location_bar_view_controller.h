@@ -16,10 +16,11 @@
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol BadgeViewVisibilityDelegate;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
+@protocol HelpCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol TextFieldViewContaining;
-@protocol ContextualPanelEntrypointVisibilityDelegate;
 
 @protocol LocationBarViewControllerDelegate<NSObject>
 
@@ -141,6 +142,9 @@
 
 // Returns the badge view visibility delegate.
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
+
+// The help command handler.
+@property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
 
 @end
 

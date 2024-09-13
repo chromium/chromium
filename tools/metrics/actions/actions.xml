@@ -45409,6 +45409,8 @@ should be able to be added at any place in this file.
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
       label="For Enhanced Safe Browsing Promo feature"/>
+  <suffix name="iOSLensOverlayEntrypointTip"
+      label="For iOSLensOverlayEntrypoint IPH feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOverflowMenuCustomization"

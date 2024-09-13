@@ -1792,6 +1792,33 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_IOS)
+  if (kIPHiOSLensOverlayEntrypointTipFeature.name == feature->name) {
+    // A config that allows the Lens overlay IPH to be shown to users. This will
+    // be triggered a maximum of 2 times (once per week), and if the user has
+    // not used lens overlay.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+
+    constexpr char kLensOverlayFeatureTriggerEvent[] =
+        "lens_overlay_feature_trigger";
+
+    config->trigger =
+        EventConfig(kLensOverlayFeatureTriggerEvent, Comparator(LESS_THAN, 2),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    config->event_configs.emplace(kLensOverlayFeatureTriggerEvent,
+                                  Comparator(EQUAL, 0), 7, 7);
+
+    config->used =
+        EventConfig(feature_engagement::events::kLensOverlayEntrypointUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
+  }
   if (kIPHiOSContextualPanelPriceInsightsFeature.name == feature->name) {
     // The contextual panel's price insights entrypoint IPH config to control
     // the impressions of the IPH for this infoblock. Shows the IPH 3 times

@@ -209,6 +209,8 @@ DEFINE_VARIATION_PARAM(kIPHRestoreTabsOnFREFeature, "IPH_RestoreTabsOnFRE");
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
 DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");
+DEFINE_VARIATION_PARAM(kIPHiOSLensOverlayEntrypointTipFeature,
+                       "IPH_iOSLensOverlayEntrypointTip");
 DEFINE_VARIATION_PARAM(kIPHLongPressToolbarTipFeature,
                        "IPH_LongPressToolbarTip");
 DEFINE_VARIATION_PARAM(kIPHBadgedReadingListFeature, "IPH_BadgedReadingList");
@@ -642,6 +644,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
         VARIATION_ENTRY(kIPHHomeCustomizationMenuFeature),
+        VARIATION_ENTRY(kIPHiOSLensOverlayEntrypointTipFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

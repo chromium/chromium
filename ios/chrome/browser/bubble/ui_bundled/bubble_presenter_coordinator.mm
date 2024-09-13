@@ -181,6 +181,10 @@
       [_presenter presentToolbarSwipeGestureInProductHelp];
       break;
     }
+    case InProductHelpType::kLensOverlayEntrypoint: {
+      [_presenter presentLensOverlayTipBubble];
+      break;
+    }
   }
 }
 

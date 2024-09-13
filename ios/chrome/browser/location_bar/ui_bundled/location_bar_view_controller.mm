@@ -194,6 +194,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   return self.locationBarSteadyView.badgeViewVisibilityDelegate;
 }
 
+- (void)setHelpCommandsHandler:(id<HelpCommands>)helpCommandsHandler {
+  _helpCommandsHandler = helpCommandsHandler;
+  self.locationBarSteadyView.badgesContainerView.helpCommandsHandler =
+      helpCommandsHandler;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
