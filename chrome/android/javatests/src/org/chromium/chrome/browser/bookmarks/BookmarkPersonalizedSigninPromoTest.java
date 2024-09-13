@@ -199,6 +199,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
     })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -213,6 +215,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
     })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void shouldShowBookmarksSigninPromoIfBookmarksIsNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -227,6 +231,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
     })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -243,6 +249,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
     })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -258,6 +266,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
     })
+    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
