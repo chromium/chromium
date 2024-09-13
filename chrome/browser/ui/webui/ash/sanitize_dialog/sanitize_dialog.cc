@@ -26,7 +26,7 @@ GURL GetUrlForPage(SanitizeDialog::SanitizePage page) {
 }  // namespace
 
 const int kSanitizeWindowWidth = 680;
-const int kSanitizeWindowHeight = 672;
+const int kSanitizeWindowHeight = 680;
 
 // static
 void SanitizeDialog::ShowDialog(SanitizeDialog::SanitizePage page,

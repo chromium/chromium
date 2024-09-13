@@ -6,9 +6,32 @@
 
   cr-expand-button {
     background-color: var(--cros-sys-app_base);
-    border-top-left-radius: var(--cr-card-border-radius);
-    border-top-right-radius: var(--cr-card-border-radius);
-    padding: 14px 16px 0px 14px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    height: 32px;
+    padding: 16px 16px 0px 16px;
+  }
+
+  #dialog:focus-visible {
+    outline: none;
+  }
+
+  #expandExtensionsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
+  }
+
+  #expandChromeOsSettingsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
+  }
+
+  #expandChromeSettingsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
   }
 
   .expand-buttons {
@@ -17,20 +40,20 @@
     border-bottom-right-radius: 16px;
     height: 290px;
     padding: 12px;
-    overflow-y: scroll;
+    overflow:auto;
   }
 
   .expand-button-ending {
     background-color: var(--cros-sys-app_base);
-    border-bottom-left-radius: var(--cr-card-border-radius);
-    border-bottom-right-radius: var(--cr-card-border-radius);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
     margin-bottom: 8px;
     padding-bottom: 16px;
   }
 
   .expand-container-icon {
     height: 24px;
-    margin-right: 12px;
+    margin: 4px;
     width: 24px;
   }
 
@@ -48,6 +71,41 @@
     line-height: var(--cros-button-1-line-height);
   }
 
+  .expand-title-ending {
+    background-color: var(--cros-sys-app_base);
+    border-bottom: var(--cr-separator-line);
+    border-bottom-width: 1px;
+    padding-bottom: 16px;
+  }
+
+  .icon-background {
+    background-color: var(--cros-sys-primary_container);
+    border-radius: 50%;
+    height: 32px;
+    margin-inline-end: 16px;
+    width: 32px;
+  }
+
+  .list-container {
+    align-items: center;
+    background-color: var(--cros-sys-app_base);
+    color: var(--cros-sys-on_surface);
+    display: flex;
+    font: var(--cros-button-1-font);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    height: 32px;
+    line-height: var(--cros-button-1-line-height);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+  }
+
+  .list-container:not(:last-child) {
+    padding-bottom: 16px;
+  }
+
   .sanitize-done-info {
     background-color: var(--cros-sys-secondary_container);
     border-radius: 16px;
@@ -60,36 +118,16 @@
     font-size: var(--cros-button-2-font-size);
     font-weight: var(--cros-button-2-font-weight);
     line-height: var(--cros-button-2-line-height);
-    padding: 12px 12px 16px 12px;
+    padding: 12px 16px;
   }
 
   .secondary-button-container {
     margin-left: auto;
   }
-
-  .list-container {
-    align-items: center;
-    background-color: var(--cros-sys-app_base);
-    border-top: var(--cr-separator-line);
-    color: var(--cros-sys-on_surface);
-    display: flex;
-    font: var(--cros-button-1-font);
-    font-family: var(--cros-button-1-font-family);
-    font-size: var(--cros-button-1-font-size);
-    font-weight: var(--cros-button-1-font-weight);
-    line-height: var(--cros-button-1-line-height);
-    min-height: var(--settings-row-min-height);
-    padding-left: 14px;
-    padding-right: 16px;
-    padding-top: 4px;
-  }
-
-  .list-container:not(:last-child) {
-    padding-bottom: 4px;
-  }
 </style>
 
-<div slot="body" role="dialog">
+<div slot="body" role="dialog" id="dialog" autofocus tabindex="-1"
+     aria-labelledby="title">
   <div class="completed-icon-div">
     <svg class="completed-icon"
         preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 32 32">
@@ -105,21 +143,23 @@
       $i18n{sanitizeDoneRollback}
     </div>
     <div class="expand-buttons">
-      <cr-expand-button class="expand-container"
-          expanded="{{extensionsExpanded_}}"
-          id="expandExtensions">
+      <cr-expand-button class="expand-container" id="expandExtensionsInfo"
+          expanded="{{extensionsExpanded_}}">
         <div class="expand-div">
-          <svg class="expand-container-icon extensions-icon"
-               preserveAspectRatio="xMidYMid meet"
-               role="img" viewBox="0 0 32 32">
-            <use href="svg/extension_off_32.svg#extension_off_32"></use>
-          </svg>
+          <div class="icon-background">
+            <svg class="expand-container-icon extensions-icon"
+                 preserveAspectRatio="xMidYMid meet"
+                 role="img" viewBox="0 0 24 24">
+              <use href="svg/card_extension_off.svg#card_extension_off"></use>
+            </svg>
+          </div>
           <span class="expand-title" id="accordionExtensionsTitle">
             $i18n{sanitizeDoneAccordionExtensionsTitle}
           </span>
         </div>
       </cr-expand-button>
       <template is="dom-if" if="[[extensionsExpanded_]]">
+        <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionExtensionsTitle">
           <div class="list-container">
             <div id="accordionExtensionsTitle">
@@ -142,17 +182,20 @@
           expanded="{{chromeOSSettingsInfoExpanded_}}"
           id="expandChromeOsSettingsInfo">
         <div class="expand-div">
-          <svg class="expand-container-icon chromeos-icon"
-              preserveAspectRatio="xMidYMid meet"
-              role="img" viewBox="0 0 24 24">
-            <use href="svg/card_settings.svg#card_settings"></use>
-          </svg>
+          <div class="icon-background">
+            <svg class="expand-container-icon chromeos-icon"
+                preserveAspectRatio="xMidYMid meet"
+                role="img" viewBox="0 0 24 24">
+              <use href="svg/card_settings.svg#card_settings"></use>
+            </svg>
+          </div>
           <span class="expand-title" id="accordionChromeOsTitle">
             $i18n{sanitizeDoneAccordionChromeOsTitle}
           </span>
         </div>
       </cr-expand-button>
       <template is="dom-if" if="[[chromeOSSettingsInfoExpanded_]]">
+        <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionChromeOsTitle">
           <div class="list-container">
             <div id="accordionChromeOsInputTitle">
@@ -189,17 +232,20 @@
           expanded="{{chromeSettingsInfoExpanded_}}"
           id="expandChromeSettingsInfo">
         <div class="expand-div">
-          <svg class="expand-container-icon chrome-icon"
-              preserveAspectRatio="xMidYMid meet"
-              role="img" viewBox="0 0 24 24">
-            <use href="svg/card_chrome_product.svg#card_chrome_product"></use>
-          </svg>
+          <div class="icon-background">
+            <svg class="expand-container-icon chrome-icon"
+                preserveAspectRatio="xMidYMid meet"
+                role="img" viewBox="0 0 24 24">
+              <use href="svg/card_chrome_product.svg#card_chrome_product"></use>
+            </svg>
+          </div>
           <span class="expand-title" id="accordionChromeTitle">
             $i18n{sanitizeDoneAccordionChromeTitle}
           </span>
         </div>
       </cr-expand-button>
       <template is="dom-if" if="[[chromeSettingsInfoExpanded_]]">
+        <div class="expand-title-ending"></div>
         <div role="region" aria-labelledby="accordionChromeTitle">
           <div class="list-container">
             <div id="accordionChromeSiteContentTitle">

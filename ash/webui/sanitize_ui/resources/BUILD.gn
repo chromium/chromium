@@ -12,6 +12,7 @@ build_webui("build") {
     "index.html",
     "app_icon_192.png",
     "svg/card_chrome_product.svg",
+    "svg/card_extension_off.svg",
     "svg/card_settings.svg",
     "svg/extension_off_32.svg",
     "svg/finished_32.svg",

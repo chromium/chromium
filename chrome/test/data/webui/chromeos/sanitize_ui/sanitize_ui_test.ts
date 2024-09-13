@@ -41,7 +41,7 @@ suite('SanitizeUITest', function() {
     // Check accordions exist
     const extensionsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(
-            '#expandExtensions');
+            '#expandExtensionsInfo');
     assert(!!extensionsAccordion);
     const chromeOSSettingsAccordion =
         doneElement.shadowRoot!.querySelector<CrExpandButtonElement>(
