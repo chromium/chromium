@@ -139,9 +139,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Annotations.Percentage" units="%"
-    expires_after="2023-07-04">
-  <owner>djean@google.com</owner>
-  <owner>bling-team@chromium.org</owner>
+    expires_after="2025-09-12">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     The percentage of annotations the are decorated against the number of
     annotations found.
@@ -156,6 +156,18 @@ chromium-metrics-reviews@google.com.
     Whether or not a user tap on an annotation got cancelled because some other
     script in the web page triggered some mutations on the same tap.
   </summary>
+</histogram>
+
+<histogram name="IOS.Annotations.{Action}.Type" enum="IOSAnnotationType"
+    expires_after="2025-09-12">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>The type of an annotation that is {Action}.</summary>
+  <token key="Action">
+    <variant name="Detected" summary="detected"/>
+    <variant name="LongPress" summary="long pressed"/>
+    <variant name="OneTapped" summary="tapped"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
