@@ -500,7 +500,9 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }  // namespace
 
 void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(*request_)) {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+          request_->url())) {
     return;
   }
   // Avoid attaching the header in cases where the Cookie header is not included
@@ -1594,7 +1596,9 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(*request_)) {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+          request_->url())) {
     return false;
   }
   if (!ShouldAddCookieHeader() ||
@@ -1610,7 +1614,11 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
   }
 
   HttpResponseHeaders* headers = request_->response_headers();
-  return headers && headers->HasStorageAccessRetryHeader();
+  // We use the Origin header's value directly, rather than
+  // `request_.initiator()`, because the header may be "null" in some cases.
+  return headers && headers->HasStorageAccessRetryHeader(base::OptionalToPtr(
+                        request_info_.extra_headers.GetHeader(
+                            HttpRequestHeaders::kOrigin)));
 }
 
 void URLRequestHttpJob::SetSharedDictionaryGetter(

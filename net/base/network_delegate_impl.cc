@@ -76,7 +76,8 @@ NetworkDelegateImpl::OnGetStorageAccessStatus(const URLRequest& request) const {
 }
 
 bool NetworkDelegateImpl::OnIsStorageAccessHeaderEnabled(
-    const URLRequest& request) const {
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
   return false;
 }
 

@@ -565,7 +565,8 @@ TestNetworkDelegate::OnGetStorageAccessStatus(const URLRequest& request) const {
 }
 
 bool TestNetworkDelegate::OnIsStorageAccessHeaderEnabled(
-    const URLRequest& request) const {
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
   return is_storage_access_header_enabled_;
 }
 

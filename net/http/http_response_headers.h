@@ -312,9 +312,10 @@ class NET_EXPORT HttpResponseHeaders
   // location of the redirect is optionally returned if location is non-null.
   bool IsRedirect(std::string* location) const;
 
-  // Returns true if this response included the `Activate-Storage-Access: retry`
-  // header.
-  bool HasStorageAccessRetryHeader() const;
+  // Returns true if this response included the `Activate-Storage-Access: retry;
+  // allowed-origin=...` header and the "allowed-origin" parameter matched the
+  // `expected_origin`.
+  bool HasStorageAccessRetryHeader(const std::string* expected_origin) const;
 
   // Returns true if this response included the `Activate-Storage-Access: load`
   // header.

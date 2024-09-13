@@ -264,7 +264,8 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("text/plain");
-    http_response->AddCustomHeader("Activate-Storage-Access", "retry");
+    http_response->AddCustomHeader("Activate-Storage-Access",
+                                   "retry; allowed-origin=*");
 
     auto lookup_header_value =
         [&](std::string_view header_name) -> std::string {

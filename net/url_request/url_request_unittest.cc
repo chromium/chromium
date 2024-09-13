@@ -162,6 +162,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -13443,6 +13444,11 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
     response_sequence_ = kinds;
   }
 
+  void set_activate_storage_access_value(std::string_view value) {
+    base::AutoLock auto_lock(lock_);
+    activate_storage_access_value_ = value;
+  }
+
  protected:
   static constexpr char kStorageAccessRetryPath[] =
       "/retry-with-storage-access";
@@ -13459,11 +13465,12 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
     // We add this header in all cases (including auth challenges and redirects)
     // in order to verify that it's ignored for auth challenges, and respected
     // for redirects.
-    http_response->AddCustomHeader("Activate-Storage-Access", "retry");
-
     ResponseKind response_kind;
     {
       base::AutoLock auto_lock(lock_);
+      http_response->AddCustomHeader("Activate-Storage-Access",
+                                     activate_storage_access_value_);
+
       CHECK(!response_sequence_.empty());
       response_kind = response_sequence_.front();
       response_sequence_.erase(response_sequence_.begin());
@@ -13521,43 +13528,149 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
 
   base::Lock lock_;
   std::vector<ResponseKind> response_sequence_ GUARDED_BY(lock_);
+
+  std::string activate_storage_access_value_ GUARDED_BY(lock_) =
+      "retry; allowed-origin=*";
 };
 
-// This test case makes a request to `kStorageAccessRetryPath`, which responds
-// with the "Activate-Storage-Access: retry" header. The browser then retries
-// the request (including unpartitioned cookies, if applicable). The second
-// response still includes the header, but the browser ignores it the second
-// time, since retrying would not make any difference.
-TEST_F(StorageAccessHeaderURLRequestTest, StorageAccessHeaderRetry) {
-  set_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+struct StorageAccessHeaderRetryData {
+  std::optional<url::Origin> origin_header;
+  std::string activate_storage_access_value;
+
+  bool expect_retry;
+};
+
+class StorageAccessHeaderRetryURLRequestTest
+    : public StorageAccessHeaderURLRequestTest,
+      public testing::WithParamInterface<StorageAccessHeaderRetryData> {};
+
+TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
+  const StorageAccessHeaderRetryData test = GetParam();
+  set_activate_storage_access_value(test.activate_storage_access_value);
+
+  std::vector<bool> pattern;
+  if (test.expect_retry) {
+    set_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+    pattern = {false, true};
+  } else {
+    set_response_sequence({ResponseKind::kOk});
+    pattern = {false};
+  }
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive));
+          pattern, cookie_util::StorageAccessStatus::kInactive));
   auto context = context_builder->Build();
   TestDelegate d;
 
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  if (test.origin_header) {
+    req->SetExtraRequestHeaderByName(HttpRequestHeaders::kOrigin,
+                                     test.origin_header->Serialize(),
+                                     /*overwrite=*/true);
+  }
 
   req->Start();
   d.RunUntilComplete();
 
-  // This expects 4 records for 2 requests, since each request records the
-  // overrides in both `OnForcePrivacyMode` and in
-  // `OnAnnotateAndMoveUserBlockedCookies`.
-  EXPECT_THAT(
-      network_delegate.cookie_setting_overrides_records(),
-      ElementsAre(
-          CookieSettingOverrides(), CookieSettingOverrides(),
-          CookieSettingOverrides(
-              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
-          CookieSettingOverrides(
-              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
+  if (test.expect_retry) {
+    // Expect 4 records for 2 requests, since each request records the overrides
+    // in both `OnForcePrivacyMode` and in
+    // `OnAnnotateAndMoveUserBlockedCookies`.
+    EXPECT_THAT(
+        network_delegate.cookie_setting_overrides_records(),
+        ElementsAre(
+            CookieSettingOverrides(), CookieSettingOverrides(),
+            CookieSettingOverrides(
+                {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
+            CookieSettingOverrides(
+                {CookieSettingOverride::
+                     kStorageAccessGrantEligibleViaHeader})));
+  } else {
+    // Expect 2 records for 1 request, since the request is not retried.
+    EXPECT_THAT(
+        network_delegate.cookie_setting_overrides_records(),
+        ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
+  }
 }
+
+const StorageAccessHeaderRetryData storage_access_header_retry_tests[] = {
+    // No origin header, no item.
+    {std::nullopt, "", false},
+    // No origin header, empty string param.
+    {std::nullopt, "retry; allowed-origin=\"\"", false},
+    // No origin header, "null" origin param.
+    {std::nullopt, "retry; allowed-origin=\"null\"", false},
+    // No origin header, wildcard param.
+    {std::nullopt, "retry; allowed-origin=*", true},
+    // No origin header, non-wildcard param.
+    {std::nullopt, "retry; allowed-origin=\"https://example.test\"", false},
+    // Opaque origin header, "null" origin param.
+    {url::Origin(), "retry; allowed-origin=\"null\"", true},
+    // Origin header, no item.
+    {url::Origin::Create(GURL("https://example.test")), "", false},
+    // Origin header, wildcard.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=*", true},
+    // Origin header, quoted wildcard.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"*\"", false},
+    // Origin header, non-wildcard (matching).
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"https://example.test\"", true},
+    // Origin header, non-wildcard (non-matching).
+    {url::Origin::Create(GURL("https://example.test:123")),
+     "retry; allowed-origin=\"https://example.test\"", false},
+    // Origin header, multiple items, first matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"https://example.test\", foo, bar", true},
+    // Origin header, multiple items, non-first non-last matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "foo, retry; allowed-origin=\"https://example.test\", bar", true},
+    // Origin header, multiple items, last matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "foo, bar, retry; allowed-origin=\"https://example.test\"", true},
+    // Origin header, multiple params, first matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"https://example.test\"; foo; bar", true},
+    // Origin header, multiple params, non-first non-last matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; foo; allowed-origin=\"https://example.test\"; bar", true},
+    // Origin header, multiple params, last matches.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; foo; bar; allowed-origin=\"https://example.test\"", true},
+    // Origin header, multiple params with same key, first matches but is
+    // ignored.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"https://example.test\"; "
+     "allowed-origin=\"https://foo.test\"",
+     false},
+    // Origin header, multiple params with same key, last matches and is not
+    // ignored.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed-origin=\"https://foo.test\"; "
+     "allowed-origin=\"https://example.test\"",
+     true},
+    // Origin header, matching origin, wrong item.
+    {url::Origin::Create(GURL("https://example.test")),
+     "bogus; allowed-origin=\"https://example.test\"", false},
+    // Origin header, matching origin, wrong param.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; allowed=\"https://example.test\"", false},
+    // Origin header, matching origin, malformed param.
+    {url::Origin::Create(GURL("https://example.test")),
+     "retry; %=\"https://example.test\"", false},
+    // Origin header, matching origin, not a token.
+    {url::Origin::Create(GURL("https://example.test")),
+     "\"retry\"; allowed-origin=\"https://example.test\"", false},
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         StorageAccessHeaderRetryURLRequestTest,
+                         testing::ValuesIn(storage_access_header_retry_tests));
 
 TEST_F(StorageAccessHeaderURLRequestTest,
        StorageAccessHeaderRetry_RedirectPrioritizesRetryHeader) {

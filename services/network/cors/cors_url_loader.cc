@@ -17,11 +17,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/types/optional_util.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_values.h"
 #include "net/shared_dictionary/shared_dictionary.h"
+#include "net/url_request/url_request_context.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
@@ -856,18 +858,44 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
-  // If the `CORS flag` is set, `httpRequest`’s method is neither `GET` nor
-  // `HEAD`, or `httpRequest`’s mode is "websocket", then append
-  // `Origin`/the result of serializing a request origin with `httpRequest`, to
-  // `httpRequest`’s header list.
-  //
-  // We exclude navigation requests to keep the existing behavior.
-  // TODO(yhirano): Reconsider this.
-  if (request_.mode != network::mojom::RequestMode::kNavigate &&
-      request_.request_initiator &&
-      (fetch_cors_flag_ ||
-       (request_.method != net::HttpRequestHeaders::kGetMethod &&
-        request_.method != net::HttpRequestHeaders::kHeadMethod))) {
+  auto should_include_origin_header = [&]() -> bool {
+    if (!request_.request_initiator) {
+      return false;
+    }
+
+    if (context_->url_request_context()
+            ->network_delegate()
+            ->IsStorageAccessHeaderEnabled(
+                base::OptionalToPtr(isolation_info_.top_frame_origin()),
+                request_.url) &&
+        !request_.site_for_cookies.IsFirstParty(request_.url)) {
+      // TODO(https://crbug.com/366284840): CorsURLLoader ought to be aware of
+      // the Sec-Fetch-Storage-Access state, so that it can only add the Origin
+      // header to requests with the "inactive" state (That delegates this logic
+      // to the proper place instead of duplicating it, and limits the set of
+      // requests that have the Origin header. For now, we have to add the
+      // Origin header regardless of the `StorageAccessStatus`.
+      return true;
+    }
+
+    // If the `CORS flag` is set, `httpRequest`’s method is neither `GET` nor
+    // `HEAD`, or `httpRequest`’s mode is "websocket", then append
+    // `Origin`/the result of serializing a request origin with `httpRequest`,
+    // to `httpRequest`’s header list.
+    //
+    // We exclude navigation requests to keep the existing behavior.
+    // TODO(yhirano): Reconsider this.
+    if (request_.mode == network::mojom::RequestMode::kNavigate) {
+      return false;
+    }
+    if (fetch_cors_flag_) {
+      return true;
+    }
+    return request_.method != net::HttpRequestHeaders::kGetMethod &&
+           request_.method != net::HttpRequestHeaders::kHeadMethod;
+  };
+
+  if (should_include_origin_header()) {
     if (tainted_) {
       request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
                                  url::Origin().Serialize());

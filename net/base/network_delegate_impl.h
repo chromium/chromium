@@ -87,7 +87,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
       const URLRequest& request) const override;
 
-  bool OnIsStorageAccessHeaderEnabled(const URLRequest& request) const override;
+  bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
+                                      const GURL& url) const override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const override;

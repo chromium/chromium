@@ -338,7 +338,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const GURL& referrer_url) const override;
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
       const URLRequest& request) const override;
-  bool OnIsStorageAccessHeaderEnabled(const URLRequest& request) const override;
+  bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
+                                      const GURL& url) const override;
 
   void InitRequestStatesIfNew(int request_id);
 

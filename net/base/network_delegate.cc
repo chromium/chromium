@@ -142,9 +142,10 @@ NetworkDelegate::GetStorageAccessStatus(const URLRequest& request) const {
 }
 
 bool NetworkDelegate::IsStorageAccessHeaderEnabled(
-    const URLRequest& request) const {
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnIsStorageAccessHeaderEnabled(request);
+  return OnIsStorageAccessHeaderEnabled(top_frame_origin, url);
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(

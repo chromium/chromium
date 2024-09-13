@@ -35,6 +35,7 @@
 #include "net/http/http_log_util.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/http/structured_headers.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 
@@ -1118,8 +1119,32 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
   return true;
 }
 
-bool HttpResponseHeaders::HasStorageAccessRetryHeader() const {
-  return HasHeaderValue(kActivateStorageAccessHeader, "retry");
+bool HttpResponseHeaders::HasStorageAccessRetryHeader(
+    const std::string* expected_origin) const {
+  size_t iter = 0;
+  std::string header_value;
+  while (EnumerateHeader(&iter, kActivateStorageAccessHeader, &header_value)) {
+    const std::optional<structured_headers::ParameterizedItem> item =
+        structured_headers::ParseItem(header_value);
+    if (!item || !item->item.is_token() || item->item.GetString() != "retry") {
+      continue;
+    }
+    if (base::ranges::any_of(
+            item->params, [&](const auto& key_and_value) -> bool {
+              const auto [key, value] = key_and_value;
+              if (key != "allowed-origin") {
+                return false;
+              }
+              if (value.is_token() && value.GetString() == "*") {
+                return true;
+              }
+              return expected_origin && value.is_string() &&
+                     value.GetString() == *expected_origin;
+            })) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool HttpResponseHeaders::HasStorageAccessLoadHeader() const {

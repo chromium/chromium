@@ -207,7 +207,13 @@ namespace network {
 namespace {
 
 using net::CreateTestURLRequestContextBuilder;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::IsSupersetOf;
+using ::testing::Key;
+using ::testing::Not;
 using ::testing::Optional;
+using ::testing::Pair;
 
 constexpr char kMockHost[] = "mock.host";
 constexpr char kTopFrameOriginForFetchRequest[] = "https://abc.com";
@@ -3066,7 +3072,7 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
   EXPECT_EQ(1u, policy_keys.size());
   EXPECT_THAT(
       policy_keys,
-      testing::ElementsAre(net::NetworkErrorLoggingService::NelPolicyKey(
+      ElementsAre(net::NetworkErrorLoggingService::NelPolicyKey(
           net::NetworkAnonymizationKey(), url::Origin::Create(domain2))));
 }
 
@@ -4853,7 +4859,7 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
-              testing::ElementsAre(CreateExpectedEndPoint(kResult, 80)));
+              ElementsAre(CreateExpectedEndPoint(kResult, 80)));
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -10246,7 +10252,8 @@ class StorageAccessHeaderNetworkContextTest
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_content_type("text/plain");
-    http_response->AddCustomHeader("Activate-Storage-Access", "retry");
+    http_response->AddCustomHeader("Activate-Storage-Access",
+                                   "retry; allowed-origin=*");
     http_response->set_content("");
     http_response->set_code(net::HTTP_OK);
     return http_response;
@@ -10413,7 +10420,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None"));
 }
 
 // This test fetches `kStorageAccessRetryPath`, but the browser does not retry
@@ -10456,7 +10463,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("3PCookie=1"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("3PCookie=1"));
 }
 
 // This test case makes a request to `kStorageAccessRetryPath`, which responds
@@ -10511,7 +10518,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Retry) {
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
 // Regression test for https://crbug.com/352722603.
@@ -10574,7 +10581,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
@@ -10625,7 +10632,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
   client->RunUntilComplete();
 
   // Cookies were blocked on the request, since the server did not request them.
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None"));
   // But the server *is* able to request that the response is loaded with
   // storage access.
   EXPECT_TRUE(client->response_head()->load_with_storage_access);
@@ -10692,7 +10699,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
   loader->FollowRedirect({}, {}, {}, {});
   client.RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "None"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "None"));
   // The redirect response included the `load` header, but the final response
   // did not, so the URLLoader should not propagate it.
   EXPECT_FALSE(client.response_head()->load_with_storage_access);
@@ -10720,8 +10727,8 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
                          mojom::URLLoaderFactoryParams::New(), request);
 
   EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Not(testing::Contains(testing::Key(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess)))));
+              ElementsAre(Not(Contains(
+                  Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextTest,
@@ -10755,8 +10762,8 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   // Since all cookies are blocked, no header should be attached.
   EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Not(testing::Contains(testing::Key(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess)))));
+              ElementsAre(Not(Contains(
+                  Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextTest,
@@ -10787,7 +10794,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
   EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Contains(testing::Pair(
+              ElementsAre(Contains(Pair(
                   net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
 }
 
@@ -10797,6 +10804,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = test_server()->GetURL("/defaultresponse");
+  request.request_initiator = url::Origin::Create(GURL("https://c.test"));
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
 
@@ -10828,8 +10836,10 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   EXPECT_THAT(
       most_recent_request_headers(),
-      testing::ElementsAre(testing::Contains(testing::Pair(
-          net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive"))));
+      ElementsAre(IsSupersetOf({
+          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive"),
+          Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+      })));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextTest,
@@ -10871,7 +10881,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
                          request);
 
   EXPECT_THAT(most_recent_request_headers(),
-              testing::ElementsAre(testing::Contains(testing::Pair(
+              ElementsAre(Contains(Pair(
                   net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
 }
 
@@ -10884,6 +10894,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = test_server()->GetURL("a.test", kStorageAccessRetryPath);
+  request.request_initiator = url::Origin::Create(GURL("https://c.test"));
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
 
@@ -10920,13 +10931,15 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 
   EXPECT_THAT(
       most_recent_request_headers(),
-      testing::ElementsAre(
-          testing::Contains(testing::Pair(
-              net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive")),
-          testing::Contains(testing::Pair(
-              net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+      ElementsAre(
+          IsSupersetOf({
+              Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive"),
+              Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+          }),
+          Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
+                        "active"))));
   // Values we expect after the request has been retried
-  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
+  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
 }  // namespace

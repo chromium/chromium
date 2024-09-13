@@ -205,17 +205,17 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
 }
 
 bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled(
-    const net::URLRequest& request) const {
+    const url::Origin* top_frame_origin,
+    const GURL& url) const {
   return base::FeatureList::IsEnabled(
              network::features::kStorageAccessHeaders) ||
          (base::FeatureList::IsEnabled(
               network::features::kStorageAccessHeadersTrial) &&
-          request.isolation_info().top_frame_origin().has_value() &&
+          top_frame_origin &&
           network_context_->cookie_manager()
               ->cookie_settings()
               .IsStorageAccessHeaderOriginTrialEnabled(
-                  request.url(),
-                  request.isolation_info().top_frame_origin()->GetURL()));
+                  url, top_frame_origin->GetURL()));
 }
 
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
