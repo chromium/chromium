@@ -774,6 +774,7 @@ const CGFloat kMenuSymbolSize = 18;
     [UISheetPresentationControllerDetent largeDetent]
   ];
   sheet.prefersGrabberVisible = YES;
+  sheet.preferredCornerRadius = 20;
 
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
