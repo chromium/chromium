@@ -1014,9 +1014,6 @@ if (!limit_android_deps) {
     supports_android = true
     enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-    if (defined(temporary_fix_for_kotlinx_coroutines)) {
-      jar_excluded_patterns = [ "_COROUTINE/*" ]
-    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
