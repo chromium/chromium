@@ -20226,6 +20226,21 @@
             ]
         }
     ],
+    "SafeBrowsingSyncCheckerCheckAllowlist": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingSyncCheckerCheckAllowlist"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyCheckMagicStackWithCaching": [
         {
             "platforms": [

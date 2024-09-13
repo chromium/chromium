@@ -41,6 +41,10 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
   // is_async_blocklist_check_in_progress_ if the check is asynchronous.
   StartCheckResult StartBlocklistCheck();
 
+  // Similar to |StartBlocklistCheck|, but delivers the result through
+  // the callback.
+  void StartBlocklistCheckAfterAllowlistCheck();
+
   // SafeBrowsingDatabaseManager::Client implementation:
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type,

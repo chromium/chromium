@@ -63,7 +63,7 @@ void DatabaseManagerMechanism::OnCheckUrlForHighConfidenceAllowlist(
     // this object, so there is nothing safe to do here but return.
     return;
   } else {
-    StartBlocklistCheck();
+    StartBlocklistCheckAfterAllowlistCheck();
   }
 }
 
@@ -77,6 +77,24 @@ DatabaseManagerMechanism::StartBlocklistCheck() {
     is_async_blocklist_check_in_progress_ = true;
   }
   return StartCheckResult(is_safe_synchronously, GetThreatSource());
+}
+
+void DatabaseManagerMechanism::StartBlocklistCheckAfterAllowlistCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool is_safe_synchronously =
+      database_manager_->CheckBrowseUrl(url_, threat_types_, this, check_type_);
+  if (is_safe_synchronously) {
+    CompleteCheck(std::make_unique<CompleteCheckResult>(
+        url_, SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        /*threat_source=*/std::nullopt,
+        /*url_real_time_lookup_response=*/nullptr));
+    // NOTE: Calling CompleteCheck results in the synchronous destruction of
+    // this object, so there is nothing safe to do here but return.
+    return;
+  } else {
+    is_async_blocklist_check_in_progress_ = true;
+  }
 }
 
 void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
