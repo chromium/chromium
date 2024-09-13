@@ -57,8 +57,7 @@ class SubresourceFilterSafeBrowsingClient {
   SubresourceFilterSafeBrowsingClient(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      SafeBrowsingPageActivationThrottle* throttle,
       scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner);
 
   SubresourceFilterSafeBrowsingClient(
@@ -81,12 +80,8 @@ class SubresourceFilterSafeBrowsingClient {
       requests_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-
-  // TODO(crbug.com/359420122): Now that kSafeBrowsingOnUIThread has shipped,
-  // make this object owned by SafeBrowsingPageActivationThrottle and then we
-  // can replace the weak pointer with a raw pointer to its owning class.
-  base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle_;
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  // A raw_ptr is safe because `throttle_` owns `this`.
+  raw_ptr<SafeBrowsingPageActivationThrottle> throttle_;
   scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner_;
 };
 

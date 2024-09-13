@@ -68,7 +68,6 @@ class SafeBrowsingPageActivationThrottle final
   SafeBrowsingPageActivationThrottle(
       content::NavigationHandle* handle,
       Delegate* delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
 
@@ -128,11 +127,7 @@ class SafeBrowsingPageActivationThrottle final
 
   std::vector<SubresourceFilterSafeBrowsingClient::CheckResult> check_results_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  std::unique_ptr<SubresourceFilterSafeBrowsingClient,
-                  base::OnTaskRunnerDeleter>
-      database_client_;
+  std::unique_ptr<SubresourceFilterSafeBrowsingClient> database_client_;
 
   // May be null. If non-null, must outlive this class.
   raw_ptr<Delegate> delegate_;

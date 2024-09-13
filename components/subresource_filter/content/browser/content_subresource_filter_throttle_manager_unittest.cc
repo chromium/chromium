@@ -195,13 +195,7 @@ class ContentSubresourceFilterThrottleManagerTest
       public content::WebContentsObserver,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
-  ContentSubresourceFilterThrottleManagerTest()
-      // We need the task environment to use a separate IO thread so that the
-      // ChildProcessSecurityPolicy checks which perform different logic
-      // based on whether they are called on the UI thread or the IO thread do
-      // the right thing.
-      : content::RenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+  ContentSubresourceFilterThrottleManagerTest() {}
 
   ContentSubresourceFilterThrottleManagerTest(
       const ContentSubresourceFilterThrottleManagerTest&) = delete;

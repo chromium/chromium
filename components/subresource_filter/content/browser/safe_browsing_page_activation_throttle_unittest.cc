@@ -168,7 +168,6 @@ class SafeBrowsingPageActivationThrottleTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     Configure();
-    test_io_task_runner_ = new base::TestMockTimeTaskRunner();
     // Note: Using NiceMock to allow uninteresting calls and suppress warnings.
     std::vector<url_pattern_index::proto::UrlRule> rules;
     rules.push_back(testing::CreateSuffixRule("disallowed.html"));
@@ -215,9 +214,7 @@ class SafeBrowsingPageActivationThrottleTest
     RunUntilIdle();
     RunUntilIdle();
 
-    // RunUntilIdle() called once more, to delete the database on the IO thread.
     fake_safe_browsing_database_ = nullptr;
-    RunUntilIdle();
 
     content::RenderViewHostTestHarness::TearDown();
 
@@ -234,8 +231,7 @@ class SafeBrowsingPageActivationThrottleTest
     if (IsInSubresourceFilterRoot(navigation_handle)) {
       navigation_handle->RegisterThrottleForTesting(
           std::make_unique<SafeBrowsingPageActivationThrottle>(
-              navigation_handle, delegate(), test_io_task_runner_,
-              fake_safe_browsing_database_));
+              navigation_handle, delegate(), fake_safe_browsing_database_));
     }
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
@@ -303,15 +299,6 @@ class SafeBrowsingPageActivationThrottleTest
 
   content::NavigationThrottle::ThrottleCheckResult SimulateCommit(
       content::NavigationSimulator* simulator) {
-    // Need to post a task to flush the IO thread because calling Commit()
-    // blocks until the throttle checks are complete.
-    // TODO(csharrison): Consider adding finer grained control to the
-    // NavigationSimulator by giving it an option to be driven by a
-    // TestMockTimeTaskRunner. Also see https://crbug.com/703346.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&base::TestMockTimeTaskRunner::RunUntilIdle,
-                       base::Unretained(test_io_task_runner_.get())));
     simulator->Commit();
     return simulator->GetLastThrottleCheckResult();
   }
@@ -350,7 +337,6 @@ class SafeBrowsingPageActivationThrottleTest
 
   void RunUntilIdle() {
     base::RunLoop().RunUntilIdle();
-    test_io_task_runner_->RunUntilIdle();
   }
 
   content::NavigationSimulator* navigation_simulator() {
@@ -360,9 +346,6 @@ class SafeBrowsingPageActivationThrottleTest
   const base::HistogramTester& tester() const { return tester_; }
 
   TestSafeBrowsingActivationThrottleDelegate* delegate() { return &delegate_; }
-  base::TestMockTimeTaskRunner* test_io_task_runner() const {
-    return test_io_task_runner_.get();
-  }
 
   testing::ScopedSubresourceFilterConfigurator* scoped_configuration() {
     return &scoped_configuration_;
@@ -375,7 +358,6 @@ class SafeBrowsingPageActivationThrottleTest
 
  private:
   testing::ScopedSubresourceFilterConfigurator scoped_configuration_;
-  scoped_refptr<base::TestMockTimeTaskRunner> test_io_task_runner_;
 
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;

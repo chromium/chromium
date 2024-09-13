@@ -147,8 +147,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
     if (subresource_filter::IsInSubresourceFilterRoot(handle)) {
       return std::make_unique<
           subresource_filter::SafeBrowsingPageActivationThrottle>(
-          handle, /*delegate=*/nullptr, content::GetIOThreadTaskRunner({}),
-          fake_safe_browsing_database_);
+          handle, /*delegate=*/nullptr, fake_safe_browsing_database_);
     }
 
     return nullptr;

@@ -35,12 +35,10 @@ SubresourceFilterSafeBrowsingClient::CheckResult::ToTracedValue() const {
 
 SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    SafeBrowsingPageActivationThrottle* throttle,
     scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner)
     : database_manager_(std::move(database_manager)),
-      throttle_(std::move(throttle)),
-      io_task_runner_(std::move(io_task_runner)),
+      throttle_(throttle),
       throttle_task_runner_(std::move(throttle_task_runner)) {
   CHECK(database_manager_, base::NotFatalUntil::M129);
 }
@@ -54,7 +52,7 @@ void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
   CHECK(!url.is_empty(), base::NotFatalUntil::M129);
 
   auto request = std::make_unique<SubresourceFilterSafeBrowsingClientRequest>(
-      request_id, start_time, database_manager_, io_task_runner_, this);
+      request_id, start_time, database_manager_, this);
   auto* raw_request = request.get();
   CHECK(requests_.find(raw_request) == requests_.end(),
         base::NotFatalUntil::M129);
