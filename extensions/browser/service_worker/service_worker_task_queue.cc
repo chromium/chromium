@@ -210,20 +210,12 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
     return;
   }
 
-  if (IsStartWorkerFailureUnexpected(status_code)) {
-    base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.StartWorkerStatus", false);
-    base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
-        status_code);
-    base::UmaHistogramTimes(
-        "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
-        base::Time::Now() - start_time);
-    LOG(ERROR)
-        << "DidStartWorkerFail " << context_id.extension_id << ": "
-        << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
-               status_code);
-  }
+  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
+                        false);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Extensions.ServiceWorkerBackground.StartWorker_FailStatus", status_code);
+  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+                      base::Time::Now() - start_time);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -236,18 +228,13 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
   // TODO(https://crbug/1062936): Needs more thought: extension would be in
   // perma-broken state after this as the registration wouldn't be stored if
   // this happens.
+  LOG(ERROR)
+      << "DidStartWorkerFail " << context_id.extension_id << ": "
+      << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
+             status_code);
 
   // If there was a pending registration for this extension, erase it.
   pending_registrations_.erase(context_id.extension_id);
-}
-
-bool ServiceWorkerTaskQueue::IsStartWorkerFailureUnexpected(
-    blink::ServiceWorkerStatusCode status) {
-  if (status != blink::ServiceWorkerStatusCode::kErrorAbort) {
-    return true;
-  }
-
-  return browser_context_shutting_down_;
 }
 
 void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
