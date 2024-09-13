@@ -477,11 +477,12 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
   for (int i = 0; i < num_samples; i++) {
     // Use epsilon = 0 to ensure that random data is always sampled from the RR
     // mechanism.
-    ASSERT_OK_AND_ASSIGN(RandomizedResponseData response,
-                         internal::DoRandomizedResponseWithCache(
-                             specs,
-                             /*epsilon=*/0, map, SourceType::kNavigation,
-                             /*scopes_data=*/std::nullopt));
+    ASSERT_OK_AND_ASSIGN(
+        RandomizedResponseData response,
+        internal::DoRandomizedResponseWithCache(
+            specs,
+            /*epsilon=*/0, map, SourceType::kNavigation,
+            /*scopes_data=*/std::nullopt, PrivacyMathConfig()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
         output_counts.try_emplace(std::move(*response.response()), 0);
@@ -674,11 +675,12 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   do {
     internal::StateMap map;
 
-    ASSERT_OK_AND_ASSIGN(RandomizedResponseData response_data,
-                         internal::DoRandomizedResponseWithCache(
-                             kSpecs,
-                             /*epsilon=*/0, map, SourceType::kNavigation,
-                             /*scopes_data=*/std::nullopt));
+    ASSERT_OK_AND_ASSIGN(
+        RandomizedResponseData response_data,
+        internal::DoRandomizedResponseWithCache(
+            kSpecs,
+            /*epsilon=*/0, map, SourceType::kNavigation,
+            /*scopes_data=*/std::nullopt, PrivacyMathConfig()));
     response = std::move(response_data.response());
   } while (!response.has_value() || response->empty());
 
@@ -686,14 +688,13 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
 }
 
 TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
-  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
-      scoped_max_navigation_channel_capacity(1u);
+  constexpr PrivacyMathConfig kConfig{.max_channel_capacity_navigation = 1};
 
   auto channel_capacity_response = DoRandomizedResponse(
       TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
                    /*max_reports=*/MaxEventLevelReports(1)),
       /*epsilon=*/14, SourceType::kNavigation,
-      /*scopes_data=*/std::nullopt);
+      /*scopes_data=*/std::nullopt, kConfig);
 
   EXPECT_THAT(channel_capacity_response,
               ErrorIs(RandomizedResponseError::kExceedsChannelCapacityLimit));
@@ -707,7 +708,8 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
       /*epsilon=*/14, SourceType::kNavigation,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
                                     /*attribution_scope_limit=*/100u,
-                                    /*max_event_states=*/100u));
+                                    /*max_event_states=*/100u),
+      PrivacyMathConfig());
 
   EXPECT_THAT(
       channel_capacity_response,
@@ -720,7 +722,8 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
       /*epsilon=*/14, SourceType::kEvent,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
                                     /*attribution_scope_limit=*/100u,
-                                    /*max_event_states=*/3u));
+                                    /*max_event_states=*/3u),
+      PrivacyMathConfig());
 
   EXPECT_THAT(
       channel_capacity_response,
@@ -760,7 +763,8 @@ TEST(PrivacyMathTest, UnaryChannel) {
                   /*response=*/std::vector<FakeEventLevelReport>()),
               DoRandomizedResponse(test_case.trigger_specs,
                                    /*epsilon=*/0, SourceType::kNavigation,
-                                   /*scopes_data=*/std::nullopt));
+                                   /*scopes_data=*/std::nullopt,
+                                   PrivacyMathConfig()));
   }
 }
 

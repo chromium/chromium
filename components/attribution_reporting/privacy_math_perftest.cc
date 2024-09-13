@@ -154,21 +154,19 @@ TEST_P(PrivacyMathPerfTest, NumStates) {
 }
 
 TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
-  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
-      scoped_max_navigation_channel_capacity(
-          std::numeric_limits<double>::infinity());
-
-  attribution_reporting::ScopedMaxScopesNavigationChannelCapacityForTesting
-      scoped_max_scopes_navigation_channel_capacity(
-          std::numeric_limits<double>::infinity());
+  constexpr PrivacyMathConfig kConfig{
+      .max_channel_capacity_navigation =
+          std::numeric_limits<double>::infinity(),
+      .max_channel_capacity_event = std::numeric_limits<double>::infinity(),
+  };
 
   Run("AttributionReporting.RandomizedResponse",
-      [](const TriggerSpecs& specs,
-         const std::optional<AttributionScopesData>& scopes) {
+      [&](const TriggerSpecs& specs,
+          const std::optional<AttributionScopesData>& scopes) {
         return DoRandomizedResponse(
             specs,
             /*epsilon=*/0,
-            /*source_type=*/mojom::SourceType::kNavigation, scopes);
+            /*source_type=*/mojom::SourceType::kNavigation, scopes, kConfig);
       });
 }
 

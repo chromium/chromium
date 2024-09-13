@@ -87,6 +87,21 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
     const TriggerSpecs& specs);
 
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) PrivacyMathConfig {
+  // Controls the max number bits of information that can be associated with
+  // a single source.
+  double max_channel_capacity_navigation = 11.5;
+  double max_channel_capacity_scopes_navigation = 11.55;
+  double max_channel_capacity_event = 6.5;
+  double max_channel_capacity_scopes_event = 6.5;
+
+  double GetMaxChannelCapacity(mojom::SourceType) const;
+  double GetMaxChannelCapacityScopes(mojom::SourceType) const;
+
+  friend bool operator==(const PrivacyMathConfig&,
+                         const PrivacyMathConfig&) = default;
+};
+
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
 //
@@ -97,15 +112,10 @@ base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
                      double epsilon,
                      mojom::SourceType,
-                     const std::optional<AttributionScopesData>&);
+                     const std::optional<AttributionScopesData>&,
+                     const PrivacyMathConfig&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING) uint32_t MaxTriggerStateCardinality();
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double GetMaxChannelCapacity(mojom::SourceType);
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double GetMaxChannelCapacityScopes(mojom::SourceType);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -213,7 +223,8 @@ DoRandomizedResponseWithCache(
     double epsilon,
     StateMap& map,
     mojom::SourceType,
-    const std::optional<AttributionScopesData>& scopes_data);
+    const std::optional<AttributionScopesData>& scopes_data,
+    const PrivacyMathConfig&);
 
 }  // namespace internal
 
@@ -236,90 +247,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 
  private:
   uint32_t previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxNavigationChannelCapacityForTesting {
- public:
-  explicit ScopedMaxNavigationChannelCapacityForTesting(double);
-
-  ~ScopedMaxNavigationChannelCapacityForTesting();
-
-  ScopedMaxNavigationChannelCapacityForTesting(
-      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
-  ScopedMaxNavigationChannelCapacityForTesting& operator=(
-      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
-
-  ScopedMaxNavigationChannelCapacityForTesting(
-      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
-  ScopedMaxNavigationChannelCapacityForTesting& operator=(
-      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxEventChannelCapacityForTesting {
- public:
-  explicit ScopedMaxEventChannelCapacityForTesting(double);
-
-  ~ScopedMaxEventChannelCapacityForTesting();
-
-  ScopedMaxEventChannelCapacityForTesting(
-      const ScopedMaxEventChannelCapacityForTesting&) = delete;
-  ScopedMaxEventChannelCapacityForTesting& operator=(
-      const ScopedMaxEventChannelCapacityForTesting&) = delete;
-
-  ScopedMaxEventChannelCapacityForTesting(
-      ScopedMaxEventChannelCapacityForTesting&&) = delete;
-  ScopedMaxEventChannelCapacityForTesting& operator=(
-      ScopedMaxEventChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxScopesNavigationChannelCapacityForTesting {
- public:
-  explicit ScopedMaxScopesNavigationChannelCapacityForTesting(double);
-
-  ~ScopedMaxScopesNavigationChannelCapacityForTesting();
-
-  ScopedMaxScopesNavigationChannelCapacityForTesting(
-      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
-  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
-      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
-
-  ScopedMaxScopesNavigationChannelCapacityForTesting(
-      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
-  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
-      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
-};
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-    ScopedMaxScopesEventChannelCapacityForTesting {
- public:
-  explicit ScopedMaxScopesEventChannelCapacityForTesting(double);
-
-  ~ScopedMaxScopesEventChannelCapacityForTesting();
-
-  ScopedMaxScopesEventChannelCapacityForTesting(
-      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
-  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
-      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
-
-  ScopedMaxScopesEventChannelCapacityForTesting(
-      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
-  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
-      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
-
- private:
-  double previous_;
 };
 
 }  // namespace attribution_reporting

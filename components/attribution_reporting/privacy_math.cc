@@ -51,13 +51,6 @@ namespace {
 // registration.
 uint32_t g_max_trigger_state_cardinality = std::numeric_limits<uint32_t>::max();
 
-// Controls the max number bits of information that can be associated with
-// a single source.
-double g_max_channel_capacity_navigation = 11.5;
-double g_max_channel_capacity_scopes_navigation = 11.55;
-double g_max_channel_capacity_event = 6.5;
-double g_max_channel_capacity_scopes_event = 6.5;
-
 // Let B be the trigger data cardinality.
 // For every trigger data i, there are wi windows and ci maximum reports.
 // Let A[C, w1, ..., wB, c1, ..., cB] be the function which counts the number
@@ -266,22 +259,24 @@ uint32_t MaxTriggerStateCardinality() {
   return g_max_trigger_state_cardinality;
 }
 
-double GetMaxChannelCapacity(mojom::SourceType source_type) {
+double PrivacyMathConfig::GetMaxChannelCapacity(
+    mojom::SourceType source_type) const {
   switch (source_type) {
     case mojom::SourceType::kNavigation:
-      return g_max_channel_capacity_navigation;
+      return max_channel_capacity_navigation;
     case mojom::SourceType::kEvent:
-      return g_max_channel_capacity_event;
+      return max_channel_capacity_event;
   }
   NOTREACHED();
 }
 
-double GetMaxChannelCapacityScopes(mojom::SourceType source_type) {
+double PrivacyMathConfig::GetMaxChannelCapacityScopes(
+    mojom::SourceType source_type) const {
   switch (source_type) {
     case mojom::SourceType::kNavigation:
-      return g_max_channel_capacity_scopes_navigation;
+      return max_channel_capacity_scopes_navigation;
     case mojom::SourceType::kEvent:
-      return g_max_channel_capacity_scopes_event;
+      return max_channel_capacity_scopes_event;
   }
   NOTREACHED();
 }
@@ -308,10 +303,11 @@ base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
                      double epsilon,
                      mojom::SourceType source_type,
-                     const std::optional<AttributionScopesData>& scopes_data) {
+                     const std::optional<AttributionScopesData>& scopes_data,
+                     const PrivacyMathConfig& config) {
   internal::StateMap map;
-  return internal::DoRandomizedResponseWithCache(specs, epsilon, map,
-                                                 source_type, scopes_data);
+  return internal::DoRandomizedResponseWithCache(
+      specs, epsilon, map, source_type, scopes_data, config);
 }
 
 bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
@@ -636,12 +632,13 @@ DoRandomizedResponseWithCache(
     double epsilon,
     StateMap& map,
     mojom::SourceType source_type,
-    const std::optional<AttributionScopesData>& scopes_data) {
+    const std::optional<AttributionScopesData>& scopes_data,
+    const PrivacyMathConfig& config) {
   ASSIGN_OR_RETURN(const uint32_t num_states, GetNumStatesCached(specs, map));
 
   double rate = GetRandomizedResponseRate(num_states, epsilon);
   double channel_capacity = internal::ComputeChannelCapacity(num_states, rate);
-  if (channel_capacity > GetMaxChannelCapacity(source_type)) {
+  if (channel_capacity > config.GetMaxChannelCapacity(source_type)) {
     return base::unexpected(
         RandomizedResponseError::kExceedsChannelCapacityLimit);
   }
@@ -656,7 +653,8 @@ DoRandomizedResponseWithCache(
     double scopes_channel_capacity = internal::ComputeChannelCapacityScopes(
         num_states, scopes_data->max_event_states(),
         scopes_data->attribution_scope_limit());
-    if (scopes_channel_capacity > GetMaxChannelCapacityScopes(source_type)) {
+    if (scopes_channel_capacity >
+        config.GetMaxChannelCapacityScopes(source_type)) {
       return base::unexpected(
           RandomizedResponseError::kExceedsScopesChannelCapacityLimit);
     }
@@ -696,58 +694,6 @@ ScopedMaxTriggerStateCardinalityForTesting::
 ScopedMaxTriggerStateCardinalityForTesting::
     ~ScopedMaxTriggerStateCardinalityForTesting() {
   g_max_trigger_state_cardinality = previous_;
-}
-
-ScopedMaxNavigationChannelCapacityForTesting::
-    ScopedMaxNavigationChannelCapacityForTesting(
-        double max_navigation_channel_capacity)
-    : previous_(g_max_channel_capacity_navigation) {
-  CHECK_GT(max_navigation_channel_capacity, 0);
-  g_max_channel_capacity_navigation = max_navigation_channel_capacity;
-}
-
-ScopedMaxNavigationChannelCapacityForTesting::
-    ~ScopedMaxNavigationChannelCapacityForTesting() {
-  g_max_channel_capacity_navigation = previous_;
-}
-
-ScopedMaxEventChannelCapacityForTesting::
-    ScopedMaxEventChannelCapacityForTesting(double max_event_channel_capacity)
-    : previous_(g_max_channel_capacity_event) {
-  CHECK_GT(max_event_channel_capacity, 0);
-  g_max_channel_capacity_event = max_event_channel_capacity;
-}
-
-ScopedMaxEventChannelCapacityForTesting::
-    ~ScopedMaxEventChannelCapacityForTesting() {
-  g_max_channel_capacity_event = previous_;
-}
-
-ScopedMaxScopesNavigationChannelCapacityForTesting::
-    ScopedMaxScopesNavigationChannelCapacityForTesting(
-        double max_scoped_navigation_channel_capacity)
-    : previous_(g_max_channel_capacity_scopes_navigation) {
-  CHECK_GT(max_scoped_navigation_channel_capacity, 0);
-  g_max_channel_capacity_scopes_navigation =
-      max_scoped_navigation_channel_capacity;
-}
-
-ScopedMaxScopesNavigationChannelCapacityForTesting::
-    ~ScopedMaxScopesNavigationChannelCapacityForTesting() {
-  g_max_channel_capacity_scopes_navigation = previous_;
-}
-
-ScopedMaxScopesEventChannelCapacityForTesting::
-    ScopedMaxScopesEventChannelCapacityForTesting(
-        double max_scoped_event_channel_capacity)
-    : previous_(g_max_channel_capacity_scopes_event) {
-  CHECK_GT(max_scoped_event_channel_capacity, 0);
-  g_max_channel_capacity_scopes_event = max_scoped_event_channel_capacity;
-}
-
-ScopedMaxScopesEventChannelCapacityForTesting::
-    ~ScopedMaxScopesEventChannelCapacityForTesting() {
-  g_max_channel_capacity_scopes_event = previous_;
 }
 
 }  // namespace attribution_reporting

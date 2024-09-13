@@ -177,7 +177,8 @@ AttributionResolverDelegateImpl::GetRandomizedResponse(
 
   ASSIGN_OR_RETURN(auto response,
                    attribution_reporting::DoRandomizedResponse(
-                       trigger_specs, epsilon, source_type, scopes_data));
+                       trigger_specs, epsilon, source_type, scopes_data,
+                       config_.privacy_math_config));
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
