@@ -28,7 +28,7 @@ void StyleRuleFontFeature::UpdateAlias(AtomicString alias,
                                        const Vector<uint32_t>& features) {
   feature_aliases_.Set(
       alias, FeatureIndicesWithPriority{features,
-                                        std::numeric_limits<unsigned>::max()});
+                                        std::numeric_limits<uint16_t>::max()});
 }
 
 void StyleRuleFontFeature::OverrideAliasesIn(FontFeatureAliases& destination) {
@@ -80,7 +80,7 @@ Vector<uint32_t> FontFeatureValuesStorage::ResolveAnnotation(
   return ResolveInternal(annotation_, alias);
 }
 
-void FontFeatureValuesStorage::SetLayerOrder(unsigned layer_order) {
+void FontFeatureValuesStorage::SetLayerOrder(uint16_t layer_order) {
   auto set_layer_order = [layer_order](FontFeatureAliases& aliases) {
     for (auto& entry : aliases) {
       entry.value.layer_order = layer_order;

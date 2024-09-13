@@ -69,7 +69,7 @@ class MatchedRule {
   // RuleData itself never escapes SortAndTransferMatchedRules() -- only
   // the other elements that it points to.
   MatchedRule(const RuleData* rule_data,
-              unsigned layer_order,
+              uint16_t layer_order,
               unsigned proximity,
               unsigned style_sheet_index)
       : rule_data_(rule_data),
@@ -83,12 +83,12 @@ class MatchedRule {
   const RuleData* GetRuleData() const { return rule_data_; }
   uint64_t GetPosition() const { return position_; }
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
-  unsigned LayerOrder() const { return layer_order_; }
+  uint16_t LayerOrder() const { return layer_order_; }
   unsigned Proximity() const { return proximity_; }
 
  private:
   const RuleData* rule_data_;
-  unsigned layer_order_;
+  uint16_t layer_order_;
   // https://drafts.csswg.org/css-cascade-6/#weak-scoping-proximity
   unsigned proximity_;
   uint64_t position_;
@@ -286,7 +286,7 @@ class CORE_EXPORT ElementRuleCollector {
              const SelectorChecker::SelectorCheckingContext&,
              MatchResult&);
   void DidMatchRule(const RuleData*,
-                    unsigned layer_order,
+                    uint16_t layer_order,
                     const ContainerQuery*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,

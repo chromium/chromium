@@ -87,7 +87,7 @@ class TestCascadeResolver {
 struct AddOptions {
   CascadeOrigin origin = CascadeOrigin::kAuthor;
   unsigned link_match_type = CSSSelector::kMatchAll;
-  unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
+  uint16_t layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_try_style = false;
   bool is_try_tactics_style = false;

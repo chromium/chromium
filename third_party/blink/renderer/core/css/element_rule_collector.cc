@@ -234,7 +234,7 @@ class CascadeLayerSeeker {
                                 matching_rules_from_no_style_sheet,
                                 document)) {}
 
-  unsigned SeekLayerOrder(unsigned rule_position) {
+  uint16_t SeekLayerOrder(unsigned rule_position) {
     if (!layer_map_) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
     }
@@ -1188,7 +1188,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
 
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
-    unsigned layer_order,
+    uint16_t layer_order,
     const ContainerQuery* container_query,
     unsigned proximity,
     const SelectorChecker::MatchResult& result,

@@ -2624,7 +2624,7 @@ class StyleEngine::AtRuleCascadeMap {
   struct Priority {
     DISALLOW_NEW();
     bool is_user_style;
-    unsigned layer_order;
+    uint16_t layer_order;
 
     bool operator<(const Priority& other) const {
       if (is_user_style != other.is_user_style) {
@@ -2653,7 +2653,7 @@ class StyleEngine::AtRuleCascadeMap {
   }
 
  private:
-  unsigned GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
+  uint16_t GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
     if (!layer) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
     }
