@@ -11,6 +11,14 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/descriptors.proto";
 
+enum ControlToken {
+  CONTROL_TOKEN_UNKNOWN = 0;
+  CONTROL_TOKEN_SYSTEM = 1;
+  CONTROL_TOKEN_MODEL = 2;
+  CONTROL_TOKEN_USER = 3;
+  CONTROL_TOKEN_END = 4;
+}
+
 message SubstitutedString {
   reserved 2, 3;
 
@@ -55,6 +63,7 @@ message StringArg {
     ProtoField proto_field = 2;
     RangeExpr range_expr = 4;
     IndexExpr index_expr = 5;
+    ControlToken control_token = 6;
   }
 
   // TODO(b/302402959): Add support for max number of characters to apply.

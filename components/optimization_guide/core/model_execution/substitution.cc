@@ -101,7 +101,7 @@ bool DoConditionsApply(const ResolutionContext& ctx,
 // Resolve various expression in proto::SubstitutedString by appending
 // appropriate text to an output string and updating state.
 // Methods return false on error.
-class InputBuilder {
+class InputBuilder final {
  public:
   enum class Error {
     OK = 0,
@@ -130,9 +130,13 @@ class InputBuilder {
                          const proto::RangeExpr& expr);
   Error ResolveIndexExpr(const ResolutionContext& ctx,
                          const proto::IndexExpr& field);
+  Error ResolveControlToken(const ResolutionContext& ctx,
+                            proto::ControlToken token);
 
-  void AddString(std::string_view s) {
-    out_->pieces.emplace_back(std::string(s));
+  void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
+
+  void AddString(std::string_view str) {
+    out_->pieces.emplace_back(std::string(str));
   }
 
   InputPtr out_;
@@ -179,6 +183,28 @@ InputBuilder::Error InputBuilder::ResolveIndexExpr(
   return Error::OK;
 }
 
+InputBuilder::Error InputBuilder::ResolveControlToken(
+    const ResolutionContext& ctx,
+    proto::ControlToken token) {
+  switch (token) {
+    case proto::CONTROL_TOKEN_SYSTEM:
+      AddToken(ml::Token::kSystem);
+      break;
+    case proto::CONTROL_TOKEN_MODEL:
+      AddToken(ml::Token::kModel);
+      break;
+    case proto::CONTROL_TOKEN_USER:
+      AddToken(ml::Token::kUser);
+      break;
+    case proto::CONTROL_TOKEN_END:
+      AddToken(ml::Token::kEnd);
+      break;
+    default:
+      return Error::FAILED;
+  }
+  return Error::OK;
+}
+
 InputBuilder::Error InputBuilder::ResolveStringArg(
     const ResolutionContext& ctx,
     const proto::StringArg& candidate) {
@@ -192,6 +218,8 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
       return ResolveRangeExpr(ctx, candidate.range_expr());
     case proto::StringArg::kIndexExpr:
       return ResolveIndexExpr(ctx, candidate.index_expr());
+    case proto::StringArg::kControlToken:
+      return ResolveControlToken(ctx, candidate.control_token());
     case proto::StringArg::ARG_NOT_SET:
       DVLOG(1) << "StringArg is incomplete.";
       return Error::FAILED;
@@ -253,6 +281,20 @@ InputBuilder::Error InputBuilder::ResolveSubstitutedString(
   return Error::OK;
 }
 
+// Placeholder strings for a control token in MQLS logs / display.
+std::string PlaceholderForToken(ml::Token token) {
+  switch (token) {
+    case ml::Token::kSystem:
+      return "<system>";
+    case ml::Token::kModel:
+      return "<model>";
+    case ml::Token::kUser:
+      return "<user>";
+    case ml::Token::kEnd:
+      return "<end>";
+  }
+}
+
 }  // namespace
 
 SubstitutionResult::SubstitutionResult() = default;
@@ -264,6 +306,9 @@ std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
+    }
+    if (std::holds_alternative<ml::Token>(piece)) {
+      oss << PlaceholderForToken(std::get<ml::Token>(piece));
     }
   }
   return oss.str();

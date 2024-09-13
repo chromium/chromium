@@ -103,6 +103,28 @@ TEST_F(SubstitutionTest, RawString) {
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
+TEST_F(SubstitutionTest, ControlTokens) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  auto* substitution = subs.Add();
+  substitution->set_string_template("%s%s%s%s");
+  substitution->add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_SYSTEM);
+  substitution->add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_MODEL);
+  substitution->add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_USER);
+  substitution->add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_END);
+
+  base::test::TestMessage request;
+  request.set_test("some test");
+  auto result = CreateSubstitutions(request, subs);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "<system><model><user><end>");
+  EXPECT_FALSE(result->should_ignore_input_context);
+}
+
 TEST_F(SubstitutionTest, BadTemplate) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   auto* substitution = subs.Add();
