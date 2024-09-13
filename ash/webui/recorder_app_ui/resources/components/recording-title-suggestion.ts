@@ -44,19 +44,22 @@ import {GenaiResultType} from './genai-error.js';
 export class RecordingTitleSuggestion extends ReactiveLitElement {
   static override styles = css`
     :host {
+      display: block;
+      z-index: 10;
+    }
+
+    #container {
       background-color: var(--cros-sys-base_elevated);
       border-radius: 12px;
       box-shadow: var(--cros-sys-app_elevation3);
-      display: block;
 
       /* To have the border-radius applied to content. */
       overflow: hidden;
-      z-index: 30;
 
       & > cra-icon-button {
         position: absolute;
-        top: 4px;
         right: 4px;
+        top: 4px;
       }
     }
 
@@ -231,27 +234,29 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     if (this.suggestedTitles?.value?.kind === 'error') {
       return nothing;
     }
-    return html`
-    <div id="header">
-      ${i18n.titleSuggestionHeader}
-    </div>
-    `;
+    return html`<div id="header">${i18n.titleSuggestionHeader}</div>`;
   }
 
   override render(): RenderResult {
     return html`
-      ${this.renderHeader()}
-      <cra-icon-button
-        buttonstyle="floating"
-        size="small"
-        shape="circle"
-        @click=${this.onCloseClick}
-        aria-label=${i18n.closeDialogButtonTooltip}
-        ${ref(this.closeButtonRef)}
+      <div
+        id="container"
+        role="dialog"
+        aria-label=${i18n.titleSuggestionHeader}
       >
-        <cra-icon slot="icon" name="close"></cra-icon>
-      </cra-icon-button>
-      ${this.renderContent()}
+        ${this.renderHeader()}
+        <cra-icon-button
+          buttonstyle="floating"
+          size="small"
+          shape="circle"
+          @click=${this.onCloseClick}
+          aria-label=${i18n.closeDialogButtonTooltip}
+          ${ref(this.closeButtonRef)}
+        >
+          <cra-icon slot="icon" name="close"></cra-icon>
+        </cra-icon-button>
+        ${this.renderContent()}
+      </div>
     `;
   }
 }

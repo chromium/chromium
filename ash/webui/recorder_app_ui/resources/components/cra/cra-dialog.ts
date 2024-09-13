@@ -38,6 +38,13 @@ export class CraDialog extends MdDialog {
 
         /* The opacity is already included in --cros-sys-scrim */
         opacity: 1;
+
+        /*
+         * The default z-index is 1, which makes it hard for anything below to
+         * be ordered by z-index and not accidentally being "over" the scrim.
+         * Change it to a higher value to make styling easier.
+         */
+        z-index: 100;
       }
 
       dialog {

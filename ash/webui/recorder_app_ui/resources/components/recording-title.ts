@@ -167,10 +167,6 @@ export class RecordingTitle extends ReactiveLitElement {
     return this.shadowRoot?.querySelector('cros-textfield') ?? null;
   }
 
-  private get titleSuggestionDialog(): RecordingTitleSuggestion|null {
-    return this.shadowRoot?.querySelector('recording-title-suggestion') ?? null;
-  }
-
   private async startEditTitle() {
     this.editing.value = true;
     // TODO(pihsun): This somehow requires three updates before the
@@ -184,16 +180,17 @@ export class RecordingTitle extends ReactiveLitElement {
   }
 
   private onFocusout(ev: FocusEvent) {
+    if (this.suggestionShown.value) {
+      // Suggestion dialog is shown, don't auto-close everything on focus out.
+      return;
+    }
     const newTarget = ev.relatedTarget;
-    if (newTarget !== null && newTarget instanceof Node &&
-        (this.editTextfield?.contains(newTarget) ||
-         this.titleSuggestionDialog?.contains(newTarget))) {
+    if (newTarget instanceof Node && this.editTextfield?.contains(newTarget)) {
       // New target is a child of the textfield or title suggestion, don't stop
       // editing.
       return;
     }
     this.editing.value = false;
-    this.suggestionShown.value = false;
     // TODO(pihsun): The focusout/blur event got triggered synchronously on
     // render when an element is removed, which breaks the assumption in the
     // reactive/lit.ts implementation of ReactiveLitElement, so setting values
@@ -243,7 +240,6 @@ export class RecordingTitle extends ReactiveLitElement {
     }
 
     return html`<recording-title-suggestion
-      @focusout=${this.onFocusout}
       @close=${this.closeSuggestionDialog}
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
