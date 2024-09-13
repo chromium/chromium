@@ -57,4 +57,11 @@ bool TestUserAnnotationsService::ShouldAddFormSubmissionForURL(
   return base::Contains(allowed_forms_annotations_hosts_, url.host());
 }
 
+void TestUserAnnotationsService::RemoveAnnotationsInRange(
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
+  last_received_remove_annotations_in_range_ =
+      std::make_pair(delete_begin, delete_end);
+}
+
 }  // namespace user_annotations

@@ -44,14 +44,26 @@ class TestUserAnnotationsService : public UserAnnotationsService {
                          ImportFormCallback callback) override;
   void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback) override;
+  void RemoveAnnotationsInRange(const base::Time& delete_begin,
+                                const base::Time& delete_end) override;
+
+  std::pair<base::Time, base::Time> last_received_remove_annotations_in_range()
+      const {
+    return last_received_remove_annotations_in_range_;
+  }
 
  private:
   // An in-memory representation of the "database" of user annotation entries.
   std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_;
+
   // Used in `AddFormSubmission()` to decide if form data should be imported.
   bool should_import_form_data_ = true;
+
   // Hosts allowed for forms annotations.
   std::set<std::string> allowed_forms_annotations_hosts_;
+
+  // Saves the last call for `RemoveAnnotationsInRange`.
+  std::pair<base::Time, base::Time> last_received_remove_annotations_in_range_;
 };
 
 }  // namespace user_annotations

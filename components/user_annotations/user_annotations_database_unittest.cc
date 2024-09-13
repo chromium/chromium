@@ -62,7 +62,8 @@ class UserAnnotationsDatabaseTest : public testing::Test {
     std::move(on_database_created_closure_).Run();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::CallbackListSubscription encryptor_ready_subscription_;
@@ -113,6 +114,69 @@ TEST_F(UserAnnotationsDatabaseTest, RemoveAllEntries) {
             database_->UpdateEntries(entries));
   EXPECT_TRUE(database_->RemoveAllEntries());
   EXPECT_TRUE(database_->RemoveAllEntries());
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
+}
+
+TEST_F(UserAnnotationsDatabaseTest, RemoveAllAnnotationsInRange) {
+  auto foo_entry = CreateUserAnnotationsEntry(1, "foo", "foo_value");
+  auto bar_entry = CreateUserAnnotationsEntry(2, "bar", "bar_value");
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({foo_entry}));
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({bar_entry}));
+  EXPECT_EQ(2u, database_->RetrieveAllEntries()->size());
+
+  // Delete all.
+  database_->RemoveAnnotationsInRange(base::Time::Min(), base::Time::Max());
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
+}
+
+TEST_F(UserAnnotationsDatabaseTest, RemoveAnnotationsInRange) {
+  auto foo_entry = CreateUserAnnotationsEntry(1, "foo", "foo_value");
+  auto bar_entry = CreateUserAnnotationsEntry(2, "bar", "bar_value");
+  auto foo_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({foo_entry}));
+  task_environment_.FastForwardBy(base::Hours(1));
+  auto bar_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({bar_entry}));
+  EXPECT_EQ(2u, database_->RetrieveAllEntries()->size());
+
+  // Delete foo.
+  database_->RemoveAnnotationsInRange(foo_create_time - base::Seconds(1),
+                                      foo_create_time + base::Seconds(1));
+  EXPECT_THAT(*database_->RetrieveAllEntries(),
+              UnorderedElementsAre(EqualsProto(bar_entry)));
+
+  // Delete bar.
+  database_->RemoveAnnotationsInRange(bar_create_time - base::Seconds(1),
+                                      bar_create_time + base::Seconds(1));
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
+}
+
+TEST_F(UserAnnotationsDatabaseTest, RemoveAnnotationsInRangeBackward) {
+  auto foo_entry = CreateUserAnnotationsEntry(1, "foo", "foo_value");
+  auto bar_entry = CreateUserAnnotationsEntry(2, "bar", "bar_value");
+  auto foo_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({foo_entry}));
+  task_environment_.FastForwardBy(base::Hours(1));
+  auto bar_create_time = base::Time::Now();
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries({bar_entry}));
+  EXPECT_EQ(2u, database_->RetrieveAllEntries()->size());
+
+  // Delete bar.
+  database_->RemoveAnnotationsInRange(bar_create_time - base::Seconds(1),
+                                      bar_create_time + base::Seconds(1));
+  EXPECT_THAT(*database_->RetrieveAllEntries(),
+              UnorderedElementsAre(EqualsProto(foo_entry)));
+
+  // Delete foo.
+  database_->RemoveAnnotationsInRange(foo_create_time - base::Seconds(1),
+                                      foo_create_time + base::Seconds(1));
   EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
 }
 

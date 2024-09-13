@@ -88,9 +88,15 @@ class UserAnnotationsService : public KeyedService {
   // completion.
   void RemoveEntry(EntryID entry_id, base::OnceClosure callback);
 
-  // Removes all the user annotation entries` and calls `callback` upon
+  // Removes all the user annotation entries and calls `callback` upon
   // completion.
   void RemoveAllEntries(base::OnceClosure callback);
+
+  // Removes the user annotation entries that were last modified from
+  // `delete_begin` to `delete_end`.
+  // Virtual for testing.
+  virtual void RemoveAnnotationsInRange(const base::Time& delete_begin,
+                                        const base::Time& delete_end);
 
   // KeyedService:
   void Shutdown() override;

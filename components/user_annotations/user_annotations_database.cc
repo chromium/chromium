@@ -37,7 +37,11 @@ namespace {
       // The key of the entry.
       "key VARCHAR NOT NULL,"
       // An opaque encrypted blob of value.
-      "value BLOB NOT NULL);";
+      "value BLOB NOT NULL,"
+      // The time the entry was created.
+      "creation_time INTEGER NOT NULL,"
+      // The time the entry was last modified.
+      "last_modified_time INTEGER NOT NULL);";
 
   return db.Execute(kSqlCreateTablePassages);
 }
@@ -116,9 +120,12 @@ UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
       return UserAnnotationsExecutionResult::kSqlError;
     }
   }
+  auto now_time = base::Time::Now();
   for (const auto& entry : entries) {
     static constexpr char kSqlInsertEntries[] =
-        "INSERT OR REPLACE INTO entries(key, value) VALUES(?,?)";
+        "INSERT OR REPLACE INTO entries(key, value, creation_time, "
+        "last_modified_time) "
+        "VALUES(?,?,?,?)";
     sql::Statement statement(
         db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertEntries));
     statement.BindString(0, entry.key());
@@ -127,6 +134,8 @@ UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
       return UserAnnotationsExecutionResult::kCryptError;
     }
     statement.BindBlob(1, *encrypted_value);
+    statement.BindTime(2, now_time);
+    statement.BindTime(3, now_time);
     if (!statement.Run()) {
       return UserAnnotationsExecutionResult::kSqlError;
     }
@@ -174,6 +183,19 @@ bool UserAnnotationsDatabase::RemoveAllEntries() {
   sql::Statement delete_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
   return delete_statement.Run();
+}
+
+void UserAnnotationsDatabase::RemoveAnnotationsInRange(
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "DELETE FROM entries WHERE last_modified_time > ? "
+                             "AND last_modified_time < ?"));
+  delete_statement.BindTime(0, delete_begin);
+  delete_statement.BindTime(1, delete_end);
+  delete_statement.Run();
 }
 
 }  // namespace user_annotations

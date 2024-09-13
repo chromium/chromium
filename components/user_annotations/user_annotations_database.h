@@ -48,6 +48,11 @@ class UserAnnotationsDatabase {
   // entries to delete.
   bool RemoveAllEntries();
 
+  // Removes the user annotation entries that were last modified from
+  // `delete_begin` to `delete_end`.
+  void RemoveAnnotationsInRange(const base::Time& delete_begin,
+                                const base::Time& delete_end);
+
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
 

@@ -6971,6 +6971,7 @@ test("unit_tests") {
     "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
+    "//components/user_annotations:test_support",
     "//components/user_education/common",
     "//components/user_education/test",
     "//components/user_manager",

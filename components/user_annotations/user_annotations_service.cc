@@ -291,4 +291,15 @@ void UserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
           std::move(callback)));
 }
 
+void UserAnnotationsService::RemoveAnnotationsInRange(
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
+  if (!user_annotations_database_) {
+    return;
+  }
+  user_annotations_database_
+      .AsyncCall(&UserAnnotationsDatabase::RemoveAnnotationsInRange)
+      .WithArgs(delete_begin, delete_end);
+}
+
 }  // namespace user_annotations
