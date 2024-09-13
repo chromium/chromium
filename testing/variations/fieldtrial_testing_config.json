@@ -26052,6 +26052,30 @@
             ]
         }
     ],
+    "WebRTC-Video-ReceiveAndSendH265": [
+        {
+            "platforms": [
+                "android",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SendReceive",
+                    "enable_features": [
+                        "WebRtcAllowH265Receive",
+                        "WebRtcAllowH265Send"
+                    ]
+                },
+                {
+                    "name": "Enabled_ReceiveOnly",
+                    "enable_features": [
+                        "WebRtcAllowH265Receive"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Vp9ExternalRefCtrl": [
         {
             "platforms": [
