@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -275,6 +276,7 @@ void TipsNotificationClient::MaybeRequestNotification(
       TipsNotificationType::kWhatsNew,
       TipsNotificationType::kLens,
       TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kEnhancedSafeBrowsing,
       TipsNotificationType::kDefaultBrowser,
       TipsNotificationType::kDocking,
       TipsNotificationType::kSignin,
@@ -349,6 +351,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kLens:
       return ShouldSendLens();
     case TipsNotificationType::kEnhancedSafeBrowsing:
+      return ShouldSendEnhancedSafeBrowsing();
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -418,6 +421,7 @@ bool TipsNotificationClient::ShouldSendDocking() {
 }
 
 bool TipsNotificationClient::ShouldSendOmniboxPosition() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // OmniboxPositionChoice is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
@@ -427,6 +431,7 @@ bool TipsNotificationClient::ShouldSendOmniboxPosition() {
 }
 
 bool TipsNotificationClient::ShouldSendLens() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Early return if Lens is not available.
   if (!ios::provider::IsLensSupported()) {
     return false;
@@ -435,6 +440,16 @@ bool TipsNotificationClient::ShouldSendLens() {
   base::Time last_opened =
       GetApplicationContext()->GetLocalState()->GetTime(prefs::kLensLastOpened);
   return base::Time::Now() - last_opened > kLensOpenedRecency;
+}
+
+bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
+  PrefService* user_prefs = browser->GetBrowserState()->GetPrefs();
+  return !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {

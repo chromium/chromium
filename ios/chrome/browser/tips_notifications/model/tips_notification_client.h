@@ -96,6 +96,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a Lens promo notification should be sent.
   bool ShouldSendLens();
 
+  // Returns true if an Enhanced Safe Browsing promo notification should be
+  // sent.
+  bool ShouldSendEnhancedSafeBrowsing();
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
