@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"

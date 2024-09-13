@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
 #include "components/plus_addresses/metrics/plus_address_submission_logger.h"
@@ -102,8 +103,7 @@ class PlusAddressService : public KeyedService,
   void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
-      const autofill::AutofillClient::PasswordFormClassification&
-          focused_form_classification,
+      const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) override;
@@ -115,7 +115,7 @@ class PlusAddressService : public KeyedService,
       autofill::FormGlobalId form,
       autofill::FieldGlobalId field,
       SuggestionContext suggestion_context,
-      autofill::AutofillClient::PasswordFormClassification::Type form_type,
+      autofill::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
   void OnClickedRefreshInlineSuggestion(
       const url::Origin& last_committed_primary_main_frame_origin,
@@ -253,8 +253,7 @@ class PlusAddressService : public KeyedService,
   // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGetAffiliatedPlusProfiles(
       url::Origin origin,
-      const autofill::AutofillClient::PasswordFormClassification&
-          focused_form_classification,
+      const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       bool is_off_the_record,

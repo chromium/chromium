@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
@@ -70,13 +71,12 @@
 namespace plus_addresses {
 namespace {
 
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
 using affiliations::FacetURI;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
 using autofill::FormFieldData;
+using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::base::test::RunOnceCallback;

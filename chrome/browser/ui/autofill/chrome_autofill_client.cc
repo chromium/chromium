@@ -67,7 +67,6 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
@@ -94,8 +93,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
-#include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/content/browser/password_form_classification_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
@@ -879,50 +877,11 @@ base::span<const AutofillProfile> ChromeAutofillClient::GetTestAddresses()
   return test_addresses_;
 }
 
-AutofillClient::PasswordFormClassification
-ChromeAutofillClient::ClassifyAsPasswordForm(AutofillManager& manager,
-                                             FormGlobalId form_id,
-                                             FieldGlobalId field_id) const {
-  // Find the form with `form_id` and decompose into renderer forms.
-  std::optional<RendererFormsWithServerPredictions> forms_and_predictions =
-      RendererFormsWithServerPredictions::FromBrowserForm(manager, form_id);
-  if (!forms_and_predictions) {
-    return {};
-  }
-
-  // Find the form to which `field_id` belongs.
-  auto it = base::ranges::find_if(
-      forms_and_predictions->renderer_forms,
-      [field_id](const std::pair<FormData, content::GlobalRenderFrameHostId>&
-                     form_rfh_pair) {
-        const FormData& form = form_rfh_pair.first;
-        return base::ranges::find(form.fields(), field_id,
-                                  &FormFieldData::global_id) !=
-               form.fields().end();
-      });
-  if (it == forms_and_predictions->renderer_forms.end()) {
-    return {};
-  }
-
-  password_manager::FormDataParser parser;
-  // The driver id is irrelevant here because it would only be used by password
-  // manager logic that handles the `PasswordForm` returned by the parser.
-  parser.set_predictions(password_manager::ConvertToFormPredictions(
-      /*driver_id=*/0, it->first, forms_and_predictions->predictions));
-  // The parser can use stored usernames to identify a filled username field by
-  // the value it contains. Here it remains empty.
-  std::unique_ptr<password_manager::PasswordForm> pw_form =
-      parser.Parse(it->first, password_manager::FormDataParser::Mode::kFilling,
-                   /*stored_usernames=*/{});
-  if (!pw_form) {
-    return {};
-  }
-  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
-  if (!pw_form->username_element_renderer_id.is_null()) {
-    result.username_field = FieldGlobalId(
-        field_id.frame_token, pw_form->username_element_renderer_id);
-  }
-  return result;
+PasswordFormClassification ChromeAutofillClient::ClassifyAsPasswordForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) const {
+  return password_manager::ClassifyAsPasswordForm(manager, form_id, field_id);
 }
 
 }  // namespace autofill

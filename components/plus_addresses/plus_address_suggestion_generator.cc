@@ -29,10 +29,9 @@ namespace plus_addresses {
 namespace {
 
 using autofill::FormFieldData;
+using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
 
 // Returns `true` when we wish to offer plus address creation on a form with
 // password manager classification `form_classification` and a focused field
@@ -124,8 +123,7 @@ PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
 std::vector<autofill::Suggestion>
 PlusAddressSuggestionGenerator::GetSuggestions(
     bool is_creation_enabled,
-    const autofill::AutofillClient::PasswordFormClassification&
-        focused_form_classification,
+    const autofill::PasswordFormClassification& focused_form_classification,
     const autofill::FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     std::vector<PlusProfile> affiliated_profiles) {

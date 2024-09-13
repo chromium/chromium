@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -501,42 +502,12 @@ class AutofillClient {
 
   virtual base::span<const AutofillProfile> GetTestAddresses() const;
 
-  // `PasswordFormClassification` describes the different outcomes of Password
-  // Manager's form parsing heuristics (see `FormDataParser`). Note that these
-  // are all predictions and may be inaccurate.
-  struct PasswordFormClassification {
-    bool operator==(const PasswordFormClassification&) const = default;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    enum class Type {
-      // The form is not password-related.
-      kNoPasswordForm = 0,
-      // The form is a predicted to be a login form, i.e. it has a username and
-      // a
-      // password field.
-      kLoginForm = 1,
-      // The form is predicted to be a signup form, i.e. it has a username field
-      // and a new password field.
-      kSignupForm = 2,
-      // The form is predicted to be a change password form, i.e. it has a
-      // current
-      // password field and a new password field.
-      kChangePasswordForm = 3,
-      // The form is predicted to be a reset password form, i.e. it has a new
-      // password field.
-      kResetPasswordForm = 4,
-      // The form is predicted to be the username form of a username-first flow,
-      // i.e. there is only a username field.
-      kSingleUsernameForm = 5
-    } type = Type::kNoPasswordForm;
-    std::optional<FieldGlobalId> username_field;
-  };
   // Returns the heuristics predictions for the renderer form to which
   // `field_id` belongs inside the form with `form_id`. The browser form with
   // `form_id` is decomposed into renderer forms prior to running Password
   // Manager heuristics.
-  // If the form cannot be found, `kNoPasswordForm` is returned.
+  // If the form cannot be found, `PasswordFormClassification::kNoPasswordForm`
+  // is returned.
   virtual PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,

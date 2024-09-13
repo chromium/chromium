@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -80,7 +81,6 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Ref;
 using ::testing::Return;
-using PasswordFormClassification = AutofillClient::PasswordFormClassification;
 using user_education::test::MockFeaturePromoController;
 
 #if BUILDFLAG(IS_ANDROID)

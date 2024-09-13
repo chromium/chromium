@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "url/origin.h"
 
@@ -43,8 +43,7 @@ class PlusAddressSuggestionGenerator final {
   // origin.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
       bool is_creation_enabled,
-      const autofill::AutofillClient::PasswordFormClassification&
-          focused_form_classification,
+      const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       std::vector<PlusProfile> affiliated_profiles);

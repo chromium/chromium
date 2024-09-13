@@ -187,10 +187,10 @@ base::span<const AutofillProfile> AutofillClient::GetTestAddresses() const {
   return {};
 }
 
-AutofillClient::PasswordFormClassification
-AutofillClient::ClassifyAsPasswordForm(AutofillManager& manager,
-                                       FormGlobalId form_id,
-                                       FieldGlobalId field_id) const {
+PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) const {
   return {};
 }
 

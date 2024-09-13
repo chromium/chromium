@@ -13,8 +13,8 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/password_form_classification.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
@@ -134,8 +134,8 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
   const FormStructure& form =
       *(main_frame_manager()->form_structures().begin()->second);
   FormData form_data = form.ToFormData();
-  const auto expected = AutofillClient::PasswordFormClassification{
-      .type = AutofillClient::PasswordFormClassification::Type::kLoginForm,
+  const auto expected = PasswordFormClassification{
+      .type = PasswordFormClassification::Type::kLoginForm,
       .username_field = form_data.fields()[0].global_id()};
   EXPECT_EQ(client().ClassifyAsPasswordForm(*main_frame_manager(),
                                             form_data.global_id(),
@@ -175,8 +175,8 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm_AcrossFrames) {
   ASSERT_THAT(browser_form.fields(), ::testing::SizeIs(3));
 
   // Verify that the password renderer form is classified as a password form.
-  const auto expected = AutofillClient::PasswordFormClassification{
-      .type = AutofillClient::PasswordFormClassification::Type::kLoginForm,
+  const auto expected = PasswordFormClassification{
+      .type = PasswordFormClassification::Type::kLoginForm,
       .username_field = browser_form.fields()[0].global_id()};
   EXPECT_EQ(client().ClassifyAsPasswordForm(
                 *main_frame_manager(), browser_form.global_id(),
@@ -218,14 +218,14 @@ TEST_F(ChromeAutofillClientIOSTest,
   EXPECT_EQ(client().ClassifyAsPasswordForm(
                 *main_frame_manager(), browser_form.global_id(),
                 browser_form.fields()[2].global_id()),
-            AutofillClient::PasswordFormClassification{});
+            PasswordFormClassification{});
 
   // Verify that a field with no corresponding form isn't classified.
   FieldGlobalId random_field_id = test::MakeFieldGlobalId();
   EXPECT_EQ(
       client().ClassifyAsPasswordForm(
           *main_frame_manager(), browser_form.global_id(), random_field_id),
-      AutofillClient::PasswordFormClassification{});
+      PasswordFormClassification{});
 }
 
 }  // namespace autofill

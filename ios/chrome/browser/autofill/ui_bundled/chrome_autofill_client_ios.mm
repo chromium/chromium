@@ -394,10 +394,10 @@ std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   return std::nullopt;
 }
 
-AutofillClient::PasswordFormClassification
-ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
-                                                FormGlobalId form_id,
-                                                FieldGlobalId field_id) const {
+PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) const {
   FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure) {
     return {};

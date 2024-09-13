@@ -20,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -59,8 +58,7 @@ using autofill::AutofillSuggestionTriggerSource;
 using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
+using PasswordFormClassification = autofill::PasswordFormClassification;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -581,7 +579,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     SuggestionContext suggestion_context,
-    autofill::AutofillClient::PasswordFormClassification::Type form_type,
+    autofill::PasswordFormClassification::Type form_type,
     autofill::SuggestionType suggestion_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   submission_logger_.OnPlusAddressSuggestionShown(

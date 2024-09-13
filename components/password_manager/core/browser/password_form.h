@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -522,8 +522,7 @@ struct PasswordForm {
   // Returns the `PasswordFormClassification::Type` classification of this form.
   // Note that just as `IsLikelyLoginForm()`, `IsLikelySignupForm()`, etc. this
   // prediction is based on heuristics and may be inaccurate.
-  autofill::AutofillClient::PasswordFormClassification::Type
-  GetPasswordFormType() const;
+  autofill::PasswordFormClassification::Type GetPasswordFormType() const;
 
   // Returns true if current password element is set.
   bool HasUsernameElement() const;

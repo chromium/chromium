@@ -393,6 +393,7 @@ static_library("browser") {
     "metrics/stored_profile_metrics.h",
     "metrics/suggestions_list_metrics.cc",
     "metrics/suggestions_list_metrics.h",
+    "password_form_classification.h",
     "payments/account_info_getter.h",
     "payments/autofill_error_dialog_context.cc",
     "payments/autofill_error_dialog_context.h",

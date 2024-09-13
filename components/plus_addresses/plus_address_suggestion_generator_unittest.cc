@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -31,6 +32,7 @@ namespace {
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
 using autofill::FormFieldData;
+using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::testing::AllOf;
@@ -38,8 +40,6 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Property;
-using PasswordFormClassification =
-    autofill::AutofillClient::PasswordFormClassification;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 auto IsCreateInlineSuggestion(

@@ -1490,9 +1490,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // suggestions are mixed with profile suggestions if these exist.
   if (IsPlusAddressesManuallyTriggered(trigger_source) ||
       should_offer_plus_addresses_with_profiles) {
-    const AutofillClient::PasswordFormClassification
-        password_form_classification = client().ClassifyAsPasswordForm(
-            *this, form.global_id(), field.global_id());
+    const PasswordFormClassification password_form_classification =
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id());
     const AutofillPlusAddressDelegate::SuggestionContext suggestions_context =
         IsPlusAddressesManuallyTriggered(trigger_source)
             ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
@@ -1571,9 +1571,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  const AutofillClient::PasswordFormClassification
-      password_form_classification = client().ClassifyAsPasswordForm(
-          *this, form.global_id(), field.global_id());
+  const PasswordFormClassification password_form_classification =
+      client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                      field.global_id());
   // The barrier callback bundles requests to generate suggestions for plus
   // addresses and single field form fill suggestions.
   auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
@@ -1614,7 +1614,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-        AutofillClient::PasswordFormClassification::Type password_form_type,
+        PasswordFormClassification::Type password_form_type,
         const FormData& form,
         const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
@@ -1733,7 +1733,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
 
 void BrowserAutofillManager::OnGetPlusAddressSuggestions(
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-    AutofillClient::PasswordFormClassification::Type password_form_type,
+    PasswordFormClassification::Type password_form_type,
     const FormData& form,
     const FormFieldData& field,
     std::vector<Suggestion> address_suggestions,

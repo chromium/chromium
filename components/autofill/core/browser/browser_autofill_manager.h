@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -641,7 +642,7 @@ class BrowserAutofillManager : public AutofillManager {
   // `OnGenerateSuggestionsCallback`.
   void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormClassification::Type password_form_type,
+      PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       OnGenerateSuggestionsCallback callback,
@@ -673,7 +674,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   void OnGetPlusAddressSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormClassification::Type password_form_type,
+      PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       std::vector<Suggestion> address_suggestions,
