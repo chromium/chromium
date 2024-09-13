@@ -30,6 +30,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
+import {HELP_URL} from '../core/url_constants.js';
 import {
   assert,
   assertExhaustive,
@@ -205,8 +206,7 @@ export class SummarizationView extends ReactiveLitElement {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
-        <!-- TODO: b/336963138 - Add correct link -->
-        <a href="javascript:;">${i18n.genAiLearnMoreLink}</a>
+        <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
       </div>
       <genai-feedback-buttons></genai-feedback-buttons>
     `;

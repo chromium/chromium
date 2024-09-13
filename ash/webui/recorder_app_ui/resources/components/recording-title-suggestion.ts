@@ -29,6 +29,7 @@ import {
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
+import {HELP_URL} from '../core/url_constants.js';
 import {
   assertExhaustive,
   assertExists,
@@ -180,8 +181,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
-        <!-- TODO: b/336963138 - Add correct link -->
-        <a href="javascript:;">${i18n.genAiLearnMoreLink}</a>
+        <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
       </div>
       <genai-feedback-buttons></genai-feedback-buttons>
     `;

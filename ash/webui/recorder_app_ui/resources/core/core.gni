@@ -28,6 +28,7 @@ core_files = [
   "state/route.ts",
   "state/settings.ts",
   "test_helper.ts",
+  "url_constants.ts",
   "utils/animation_frame_controller.ts",
   "utils/assert.ts",
   "utils/async_job_queue.ts",

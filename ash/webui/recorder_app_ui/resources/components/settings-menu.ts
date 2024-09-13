@@ -33,6 +33,7 @@ import {
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
+import {HELP_URL} from '../core/url_constants.js';
 import {
   assertExhaustive,
   assertInstanceof,
@@ -189,8 +190,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <span slot="description">
           ${i18n.settingsOptionsSummaryDescription}
-          <!-- TODO: b/336963138 - Add correct link -->
-          <a href="javascript:;">
+          <a href=${HELP_URL} target="_blank">
             ${i18n.settingsOptionsSummaryLearnMoreLink}
           </a>
         </span>
@@ -446,9 +446,7 @@ export class SettingsMenu extends ReactiveLitElement {
     }
     return html`
       <div class="section">
-        <h3 class="title">
-          ${i18n.settingsSectionTranscriptionSummaryHeader}
-        </h3>
+        <h3 class="title">${i18n.settingsSectionTranscriptionSummaryHeader}</h3>
         <div class="body">
           <settings-row>
             <span slot="label">
@@ -511,9 +509,7 @@ export class SettingsMenu extends ReactiveLitElement {
       >
         <div slot="content">
           <div id="header">
-            <h2 id="dialog-label">
-              ${i18n.settingsHeader}
-            </h2>
+            <h2 id="dialog-label">${i18n.settingsHeader}</h2>
             <cra-icon-button
               buttonstyle="floating"
               size="small"
