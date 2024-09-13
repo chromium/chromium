@@ -490,7 +490,6 @@ public class NewTabPage
                 activity,
                 windowAndroid,
                 snackbarManager,
-                uma,
                 isInNightMode,
                 shareDelegateSupplier,
                 url);
@@ -560,7 +559,6 @@ public class NewTabPage
      * @param activity The activity used to initialize the view.
      * @param windowAndroid Provides the current active tab.
      * @param snackbarManager {@link SnackbarManager} object.
-     * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
      */
@@ -568,7 +566,6 @@ public class NewTabPage
             Activity activity,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
-            NewTabPageUma uma,
             boolean isInNightMode,
             Supplier<ShareDelegate> shareDelegateSupplier,
             String url) {
