@@ -223,9 +223,12 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
   gradient_layer.colors = @[
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.6].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.4].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.6]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.4]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.0]
+        .CGColor,
   ];
 
   // The gradient shouldn't be visible at the start.
@@ -266,9 +269,12 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   colors_animation.duration = kColorGradientOpacityDuration;
   colors_animation.byValue = gradient_layer.colors;
   colors_animation.toValue = @[
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.7].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.45].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.7]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.45]
+        .CGColor,
+    (id)[[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.0]
+        .CGColor,
   ];
 
   // Prolong the end state of the animation, so the window continues to be blue.

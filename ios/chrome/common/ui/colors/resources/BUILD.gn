@@ -73,6 +73,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/solid_button_text_color.colorset/Contents.json",
     "Assets.xcassets/solid_white_color.colorset/Contents.json",
     "Assets.xcassets/static_blue_400_color.colorset/Contents.json",
+    "Assets.xcassets/static_blue_color.colorset/Contents.json",
     "Assets.xcassets/static_green_50_color.colorset/Contents.json",
     "Assets.xcassets/static_green_700_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_300_color.colorset/Contents.json",
