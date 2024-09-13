@@ -150,7 +150,7 @@ public class DataSharingTabManager {
         JoinActionStateAndroid.PROFILE_AVAILABLE,
         JoinActionStateAndroid.PARSE_URL_FAILED,
         JoinActionStateAndroid.SYNCED_TAB_GROUP_EXISTS,
-        JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISITS,
+        JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISTS,
         JoinActionStateAndroid.LOCAL_TAB_GROUP_ADDED,
         JoinActionStateAndroid.LOCAL_TAB_GROUP_OPENED,
         JoinActionStateAndroid.ADD_MEMBER_FAILED,
@@ -163,7 +163,7 @@ public class DataSharingTabManager {
         int PROFILE_AVAILABLE = 1;
         int PARSE_URL_FAILED = 2;
         int SYNCED_TAB_GROUP_EXISTS = 3;
-        int LOCAL_TAB_GROUP_EXISITS = 4;
+        int LOCAL_TAB_GROUP_EXISTS = 4;
         int LOCAL_TAB_GROUP_ADDED = 5;
         int LOCAL_TAB_GROUP_OPENED = 6;
         int ADD_MEMBER_FAILED = 7;
@@ -317,7 +317,7 @@ public class DataSharingTabManager {
         if (isInLocalTabGroup) {
             RecordHistogram.recordEnumeratedHistogram(
                     "DataSharing.Android.JoinActionFlowState",
-                    JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISITS,
+                    JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISTS,
                     JoinActionStateAndroid.COUNT);
             switchToTabGroup(group);
             return;
