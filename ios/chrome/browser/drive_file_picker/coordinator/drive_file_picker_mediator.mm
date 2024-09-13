@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -204,7 +204,8 @@ DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
 
 // Returns whether an item can be selected in the picker.
 bool ItemShouldBeEnabled(const DriveItem& item,
-                         NSArray<UTType*>* accepted_types) {
+                         NSArray<UTType*>* accepted_types,
+                         BOOL ignore_accepted_types) {
   // Folders can be selected so their contents can be inspected.
   if (item.is_folder) {
     return true;
@@ -213,9 +214,9 @@ bool ItemShouldBeEnabled(const DriveItem& item,
   if (!item.can_download) {
     return false;
   }
-  // If the list of accepted types is empty, then any downloadable file can be
-  // selected.
-  if (accepted_types.count == 0) {
+  // If the list of accepted types is empty, or the user opted to ignore it,
+  // then any downloadable file can be selected.
+  if (ignore_accepted_types || accepted_types.count == 0) {
     return true;
   }
   // If there is a non-empty list of accepted types, then any downloadable file
@@ -229,10 +230,10 @@ bool ItemShouldBeEnabled(const DriveItem& item,
   return false;
 }
 
-// Returns a `DriveItemIdentifier` based on a `DriveItem`.
-DriveItemIdentifier* DriveItemToDriveItemIdentifier(
+// Returns a `DriveFilePickerItem` based on a `DriveItem`.
+DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     const DriveItem& driveItem) {
-  DriveItemIdentifier* driveItemIdentifier = [[DriveItemIdentifier alloc]
+  DriveFilePickerItem* driveItemIdentifier = [[DriveFilePickerItem alloc]
       initWithIdentifier:driveItem.identifier
                    title:driveItem.name
                     icon:nil
@@ -283,7 +284,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   DriveListQuery _originalQuery;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // The service responsible for fetching a `DriveItemIdentifier`'s image data.
+  // The service responsible for fetching a `DriveFilePickerItem`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   // File URL to which the selected file is being downloaded.
   NSURL* _selectedFileDestinationURL;
@@ -384,83 +385,94 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 
 #pragma mark - DriveFilePickerMutator
 
-- (void)selectDriveItem:(DriveItemIdentifier*)driveItem {
-  if (driveItem.type != DriveItemType::kFile && _selectedIdentifier != nil) {
+- (void)selectDriveItem:(NSString*)driveItemIdentifier {
+  std::optional<DriveItem> driveItem =
+      FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
+  // If this is a real file, select and download it.
+  if (driveItem && !driveItem->is_folder) {
+    if ([_selectedIdentifier isEqual:driveItemIdentifier]) {
+      // If the file is already selected, do nothing.
+      return;
+    }
+    _selectedIdentifier = driveItemIdentifier;
+    [self.consumer setSelectedItemIdentifier:driveItemIdentifier];
+    [self downloadDriveItem:*driveItem];
+    return;
+  }
+
+  // If the user tries to browse into a folder or collection while an item is
+  // already selected, show an alert to ask for confirmation to clear the
+  // selection.
+  if (_selectedIdentifier != nil) {
     __weak __typeof(self) weakSelf = self;
     [self.consumer showInterruptionAlertWithBlock:^{
       [weakSelf clearSelection];
-      [weakSelf selectDriveItem:driveItem];
+      [weakSelf selectDriveItem:driveItemIdentifier];
     }];
     return;
   }
 
   DriveListQuery itemQuery;
-  switch (driveItem.type) {
-    case DriveItemType::kFolder:
-      itemQuery.folder_identifier = driveItem.identifier;
-      [self.delegate browseDriveCollectionWithMediator:self
-                                                 title:driveItem.title
-                                                 query:itemQuery
-                                                filter:_filter
-                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                       sortingCriteria:_sortingCriteria
-                                      sortingDirection:_sortingDirection];
-      break;
-    case DriveItemType::kMyDrive:
-      itemQuery.folder_identifier = kMyDriveFolderIdentifier;
-      [self.delegate browseDriveCollectionWithMediator:self
-                                                 title:driveItem.title
-                                                 query:itemQuery
-                                                filter:_filter
-                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                       sortingCriteria:_sortingCriteria
-                                      sortingDirection:_sortingDirection];
-      break;
-    case DriveItemType::kStarred:
-      itemQuery.extra_term = kStarredExtraTerm;
-      [self.delegate browseDriveCollectionWithMediator:self
-                                                 title:driveItem.title
-                                                 query:itemQuery
-                                                filter:_filter
-                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                       sortingCriteria:_sortingCriteria
-                                      sortingDirection:_sortingDirection];
-      break;
-    case DriveItemType::kRecent:
-      itemQuery.extra_term = kRecentExtraTerm;
-      itemQuery.order_by = kRecentOrderBy;
-      [self.delegate browseDriveCollectionWithMediator:self
-                                                 title:driveItem.title
-                                                 query:itemQuery
-                                                filter:_filter
-                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                       sortingCriteria:_sortingCriteria
-                                      sortingDirection:_sortingDirection];
-      break;
-    case DriveItemType::kSharedWithMe:
-      itemQuery.extra_term = kSharedWithMeExtraTerm;
-      itemQuery.order_by = kSharedWithMeOrderBy;
-      [self.delegate browseDriveCollectionWithMediator:self
-                                                 title:driveItem.title
-                                                 query:itemQuery
-                                                filter:_filter
-                                   ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                       sortingCriteria:_sortingCriteria
-                                      sortingDirection:_sortingDirection];
-      break;
+  if (driveItem && driveItem->is_folder) {
+    // If this is a real folder, then browse this folder.
+    itemQuery.folder_identifier = driveItem->identifier;
+    [self.delegate browseDriveCollectionWithMediator:self
+                                               title:driveItem->name
+                                               query:itemQuery
+                                              filter:_filter
+                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                     sortingCriteria:_sortingCriteria
+                                    sortingDirection:_sortingDirection];
+    return;
+  } else if ([driveItemIdentifier
+                 isEqual:[DriveFilePickerItem myDriveItem].identifier]) {
+    itemQuery.folder_identifier = kMyDriveFolderIdentifier;
+    DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
+    [self.delegate browseDriveCollectionWithMediator:self
+                                               title:myDriveItem.title
+                                               query:itemQuery
+                                              filter:_filter
+                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                     sortingCriteria:_sortingCriteria
+                                    sortingDirection:_sortingDirection];
+  } else if ([driveItemIdentifier
+                 isEqual:[DriveFilePickerItem starredItem].identifier]) {
+    itemQuery.extra_term = kStarredExtraTerm;
+    DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
+    [self.delegate browseDriveCollectionWithMediator:self
+                                               title:starredItem.title
+                                               query:itemQuery
+                                              filter:_filter
+                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                     sortingCriteria:_sortingCriteria
+                                    sortingDirection:_sortingDirection];
+  } else if ([driveItemIdentifier
+                 isEqual:[DriveFilePickerItem recentItem].identifier]) {
+    itemQuery.extra_term = kRecentExtraTerm;
+    itemQuery.order_by = kRecentOrderBy;
+    DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
+    [self.delegate browseDriveCollectionWithMediator:self
+                                               title:recentItem.title
+                                               query:itemQuery
+                                              filter:_filter
+                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                     sortingCriteria:_sortingCriteria
+                                    sortingDirection:_sortingDirection];
+  } else if ([driveItemIdentifier
+                 isEqual:[DriveFilePickerItem sharedWithMeItem].identifier]) {
+    itemQuery.extra_term = kSharedWithMeExtraTerm;
+    itemQuery.order_by = kSharedWithMeOrderBy;
+    DriveFilePickerItem* sharedWithMeItem =
+        [DriveFilePickerItem sharedWithMeItem];
+    [self.delegate browseDriveCollectionWithMediator:self
+                                               title:sharedWithMeItem.title
+                                               query:itemQuery
+                                              filter:_filter
+                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                     sortingCriteria:_sortingCriteria
+                                    sortingDirection:_sortingDirection];
+  } else {
     // TODO(crbug.com/344813593): Add support for Shared Drives.
-    case DriveItemType::kSharedDrives:
-    case DriveItemType::kComputers:
-    case DriveItemType::kFile:
-      if ([_selectedIdentifier isEqual:driveItem.identifier]) {
-        // If the file is already selected, do nothing.
-        break;
-      }
-      _selectedIdentifier = driveItem.identifier;
-      [self downloadDriveItem:driveItem];
-      [self.consumer setSelectedItemIdentifier:driveItem.identifier];
-
-      break;
   }
 }
 
@@ -480,10 +492,10 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [self fetchItemsAppending:NO];
 }
 
-- (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem {
-  std::optional<DriveItem> itemForIdentifier =
-      FindDriveItemFromIdentifier(_fetchedDriveItems, driveItem.identifier);
-  CHECK(itemForIdentifier);
+- (void)fetchIconForDriveItem:(NSString*)itemIdentifier {
+  std::optional<DriveItem> driveItem =
+      FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
+  CHECK(driveItem);
   __weak __typeof(self) weakSelf = self;
 
   // By default drive api provides a 16 resolution icons, replacing 16 by 64 in
@@ -491,14 +503,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   // the URL https://drive-thirdparty.googleusercontent.com/16/type/video/mp4
   // becomes https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
   NSString* resizedIconLink =
-      [itemForIdentifier->icon_link stringByReplacingOccurrencesOfString:@"16"
-                                                              withString:@"64"];
+      [driveItem->icon_link stringByReplacingOccurrencesOfString:@"16"
+                                                      withString:@"64"];
   GURL iconURL = GURL(base::SysNSStringToUTF16(resizedIconLink));
   _imageFetcher->FetchImageData(
       iconURL,
       base::BindOnce(^(const std::string& imageData,
                        const image_fetcher::RequestMetadata& metadata) {
-        [weakSelf updateDriveItem:driveItem withImageData:imageData];
+        [weakSelf updateDriveItem:itemIdentifier withImageData:imageData];
       }),
       NO_TRAFFIC_ANNOTATION_YET);
 }
@@ -526,7 +538,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   _ignoreAcceptedTypes = ignoreAcceptedTypes;
   NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
-    if (_ignoreAcceptedTypes || ItemShouldBeEnabled(item, _acceptedTypes)) {
+    if (ItemShouldBeEnabled(item, _acceptedTypes, _ignoreAcceptedTypes)) {
       [enabledItemsIdentifiers addObject:item.identifier];
     }
   }
@@ -564,20 +576,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   _selectedIdentifier = nil;
 }
 
-- (void)downloadDriveItem:(DriveItemIdentifier*)driveItemIdentifier {
-  std::optional<DriveItem> driveItem = FindDriveItemFromIdentifier(
-      _fetchedDriveItems, driveItemIdentifier.identifier);
-  if (!driveItem.has_value()) {
-    return;
-  }
-
+- (void)downloadDriveItem:(const DriveItem&)driveItem {
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kInProgress];
   _driveDownloader = _driveService->CreateFileDownloader(_identity);
-  NSURL* fileURL = GenerateDownloadFileURL(driveItemIdentifier.title);
+  NSURL* fileURL = GenerateDownloadFileURL(driveItem.name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
   _driveDownloader->DownloadFile(
-      driveItem.value(), fileURL,
+      driveItem, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
       }),
@@ -623,18 +629,32 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   } else {
     _fetchedDriveItems = result.items;
   }
-  NSMutableArray* res = [[NSMutableArray alloc] init];
-  for (auto item : _fetchedDriveItems) {
-    DriveItemIdentifier* itemIdentifier = DriveItemToDriveItemIdentifier(item);
-    itemIdentifier.enabled = ItemShouldBeEnabled(item, _acceptedTypes);
-    [res addObject:itemIdentifier];
+  NSMutableArray<DriveFilePickerItem*>* res = [[NSMutableArray alloc] init];
+  for (const DriveItem& item : result.items) {
+    DriveFilePickerItem* filePickerItem = DriveItemToDriveFilePickerItem(item);
+    filePickerItem.enabled =
+        ItemShouldBeEnabled(item, _acceptedTypes, _ignoreAcceptedTypes);
+    [res addObject:filePickerItem];
   }
-  [self.consumer populateItems:res nextPageAvailable:(_pageToken != nil)];
+  [self.consumer populateItems:res
+                        append:appendItems
+             nextPageAvailable:(_pageToken != nil)];
 }
 
 - (void)identityUpdatedWithSelectedIdentity:
     (id<SystemIdentity>)selectedIdentity {
   if (_identity == selectedIdentity) {
+    return;
+  }
+
+  // If the user tries to select a different identity while the selection is not
+  // empty, ask for confirmation first with an alert.
+  if (_selectedIdentifier != nil) {
+    __weak __typeof(self) weakSelf = self;
+    [self.consumer showInterruptionAlertWithBlock:^{
+      [weakSelf clearSelection];
+      [weakSelf identityUpdatedWithSelectedIdentity:selectedIdentity];
+    }];
     return;
   }
 
@@ -664,8 +684,13 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
                  ]]];
 }
 
-- (void)updateDriveItem:(DriveItemIdentifier*)driveItem
+- (void)updateDriveItem:(NSString*)itemIdentifier
           withImageData:(const std::string&)imageData {
+  std::optional<DriveItem> driveItem =
+      FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
+  if (!driveItem) {
+    return;
+  }
   UIImage* driveIcon =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.data()
                                             length:imageData.size()]
@@ -675,8 +700,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   if (!driveIcon) {
     return;
   }
-  driveItem.icon = driveIcon;
-  [self.consumer reconfigureDriveItem:driveItem];
+
+  [self.consumer setIcon:driveIcon forItem:itemIdentifier];
 }
 
 @end

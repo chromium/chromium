@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"

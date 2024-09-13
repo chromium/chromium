@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_ITEM_IDENTIFIER_H_
-#define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_ITEM_IDENTIFIER_H_
+#ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_ITEM_H_
+#define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
@@ -19,7 +19,7 @@ enum class DriveItemType : NSUInteger {
 };
 
 // Model object representing a drive item.
-@interface DriveItemIdentifier : NSObject
+@interface DriveFilePickerItem : NSObject
 
 // Drive item identifier.
 @property(nonatomic, readonly) NSString* identifier;
@@ -59,4 +59,4 @@ enum class DriveItemType : NSUInteger {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_ITEM_IDENTIFIER_H_
+#endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_ITEM_H_

@@ -7,9 +7,9 @@
 #import "base/check.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @end
 
 @implementation RootDriveFilePickerTableViewController {
-  UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
+  UITableViewDiffableDataSource<NSNumber*, DriveFilePickerItem*>*
       _diffableDataSource;
 
   // Account chooser button.
@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   __weak __typeof(self) weakSelf = self;
   auto cellProvider = ^UITableViewCell*(UITableView* tableView,
                                         NSIndexPath* indexPath,
-                                        DriveItemIdentifier* itemIdentifier) {
+                                        DriveFilePickerItem* itemIdentifier) {
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
 
@@ -173,9 +173,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DriveItemIdentifier* driveItem =
+  DriveFilePickerItem* item =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  [self.mutator selectDriveItem:driveItem];
+  [self.mutator selectDriveItem:item.identifier];
 }
 #pragma mark - Private
 
@@ -240,23 +240,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Returns the items in the main folder section (My drive, shared drives and
 // starred).
-- (NSArray<DriveItemIdentifier*>*)mainFoldersSectionItems {
+- (NSArray<DriveFilePickerItem*>*)mainFoldersSectionItems {
   return @[
-    [DriveItemIdentifier myDriveItem], [DriveItemIdentifier sharedDrivesItem],
-    [DriveItemIdentifier computersItem], [DriveItemIdentifier starredItem]
+    [DriveFilePickerItem myDriveItem], [DriveFilePickerItem sharedDrivesItem],
+    [DriveFilePickerItem computersItem], [DriveFilePickerItem starredItem]
   ];
 }
 
 // Returns the items in the secondary folder section (recent and shared drives).
-- (NSArray<DriveItemIdentifier*>*)secondaryFoldersSectionItems {
+- (NSArray<DriveFilePickerItem*>*)secondaryFoldersSectionItems {
   return @[
-    [DriveItemIdentifier recentItem], [DriveItemIdentifier sharedWithMeItem]
+    [DriveFilePickerItem recentItem], [DriveFilePickerItem sharedWithMeItem]
   ];
 }
 
 // Deques and sets up a cell for a drive item.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(DriveItemIdentifier*)itemIdentifier {
+                      itemIdentifier:(DriveFilePickerItem*)itemIdentifier {
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -281,7 +281,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
 }
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
+               append:(BOOL)append
     nextPageAvailable:(BOOL)nextPageAvailable {
 }
 
@@ -289,7 +290,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _accountButton.menu = emailsMenu;
 }
 
-- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
+- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {

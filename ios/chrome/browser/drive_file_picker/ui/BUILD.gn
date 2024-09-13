@@ -5,14 +5,14 @@
 source_set("ui") {
   sources = [
     "drive_file_picker_consumer.h",
+    "drive_file_picker_item.h",
+    "drive_file_picker_item.mm",
     "drive_file_picker_mutator.h",
     "drive_file_picker_navigation_controller.h",
     "drive_file_picker_navigation_controller.mm",
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
     "drive_file_picker_table_view_controller_delegate.h",
-    "drive_item_identifier.h",
-    "drive_item_identifier.mm",
     "root_drive_file_picker_table_view_controller.h",
     "root_drive_file_picker_table_view_controller.mm",
   ]

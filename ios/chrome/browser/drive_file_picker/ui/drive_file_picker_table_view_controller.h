@@ -11,7 +11,6 @@
 @protocol DriveFilePickerCommands;
 @protocol DriveFilePickerMutator;
 @protocol DriveFilePickerTableViewControllerDelegate;
-@class DriveItemIdentifier;
 
 // TableViewController presenting a list of Drive files and folders. This should
 // be pushed onto the DriveFilePickerNavigationController.

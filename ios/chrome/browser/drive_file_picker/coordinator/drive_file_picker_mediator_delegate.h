@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 @class DriveFilePickerMediator;
-@class DriveItemIdentifier;
 
 // Handles the browsing and searching a drive folder.
 @protocol DriveFilePickerMediatorDelegate

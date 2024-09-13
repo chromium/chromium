@@ -10,7 +10,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 
-@class DriveItemIdentifier;
+@class DriveFilePickerItem;
 
 // Consumer interface for the Drive file picker.
 @protocol DriveFilePickerConsumer <NSObject>
@@ -21,14 +21,15 @@
 // Sets the consumer's title.
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle;
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
+               append:(BOOL)append
     nextPageAvailable:(BOOL)nextPageAvailable;
 
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
 
-// Reconfigures a given drive item when one of its properties changes.
-- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem;
+// Sets the icon to `iconImage` for item with identifier `itemIdentifier`.
+- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier;
 
 // Sets the consumer's download status.
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus;
