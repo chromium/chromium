@@ -224,23 +224,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
     mixer[kColorTabBackgroundHighlightedFocused] =
         SetAlpha(std::move(tab_background_base), 0x53);
   }
-  mixer[kColorTabBorderSelected] =
-      PickGoogleColor(kColorAccent, kColorDialogBackground,
-                      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorTabContentSeparator] = {kColorMidground};
-  mixer[kColorTabForeground] = {kColorSecondaryForeground};
-  mixer[kColorTabForegroundSelected] =
-      PickGoogleColor(kColorAccent, kColorDialogBackground,
-                      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorTableBackground] = {kColorPrimaryBackground};
-  mixer[kColorTableBackgroundAlternate] = {kColorTableBackground};
-  mixer[kColorTableBackgroundSelectedFocused] = {kColorItemSelectionBackground};
-  mixer[kColorTableBackgroundSelectedUnfocused] = {
-      kColorTableBackgroundSelectedFocused};
-  mixer[kColorTableForeground] = {kColorPrimaryForeground};
-  mixer[kColorTableForegroundSelectedFocused] = {kColorTableForeground};
-  mixer[kColorTableForegroundSelectedUnfocused] = {
-      kColorTableForegroundSelectedFocused};
   mixer[kColorTableGroupingIndicator] = {kColorItemHighlight};
   mixer[kColorTableHeaderBackground] = {kColorTableBackground};
   mixer[kColorTableHeaderForeground] = {kColorTableForeground};

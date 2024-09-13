@@ -143,6 +143,18 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSliderTrackMinimal] = {kColorSysOnSecondary};
   mixer[kColorSuggestionChipBorder] = {kColorSysTonalOutline};
   mixer[kColorSuggestionChipIcon] = {kColorSysPrimary};
+  mixer[kColorTabBorderSelected] = {kColorSysPrimary};
+  mixer[kColorTabForeground] = {kColorSecondaryForeground};
+  mixer[kColorTabForegroundSelected] = {kColorSysPrimary};
+  mixer[kColorTableBackground] = {kColorPrimaryBackground};
+  mixer[kColorTableBackgroundAlternate] = {kColorTableBackground};
+  mixer[kColorTableBackgroundSelectedFocused] = {kColorSysTonalContainer};
+  mixer[kColorTableBackgroundSelectedUnfocused] = {
+      kColorTableBackgroundSelectedFocused};
+  mixer[kColorTableForeground] = {kColorPrimaryForeground};
+  mixer[kColorTableForegroundSelectedFocused] = {kColorTableForeground};
+  mixer[kColorTableForegroundSelectedUnfocused] = {
+      kColorTableForegroundSelectedFocused};
   // TODO(colehorvitz): Rename textfield color IDs to specify which
   // textfield variation they are used for ('filled' or 'stroked').
   mixer[kColorTextfieldBackground] = {kColorSysSurface};
