@@ -7942,6 +7942,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "safe-browsing-sync-checker-check-allowlist",
+    "owners": [
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "safety-check-extensions",
     "owners": [
       "zackhan@chromium.org",

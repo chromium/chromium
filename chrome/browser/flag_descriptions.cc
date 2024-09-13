@@ -4784,6 +4784,12 @@ const char kRichAutocompletionAndroidDescription[] =
     "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
     "to any type of input that users repeatedly use to get to specific URLs.";
 
+const char kSafeBrowsingSyncCheckerCheckAllowlistName[] =
+    "Safe Browsing Sync Checker Check Allowlist";
+const char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =
+    "Enables Safe Browsing sync checker to check the allowlist before checking "
+    "the blocklist.";
+
 const char kShareCustomActionsInCCTName[] = "Custom Actions in CCT";
 const char kShareCustomActionsInCCTDescription[] =
     "Display share custom actions Chrome Custom Tabs.";

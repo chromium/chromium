@@ -22312,6 +22312,8 @@ from previous Chrome versions.
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="887129902" label="AdvancedPeripheralsSupportTabStrip:disabled"/>
+  <int value="889098303"
+      label="SafeBrowsingSyncCheckerCheckAllowlist:disabled"/>
   <int value="889816966"
       label="TrustedWebActivityNotificationPermissionDelegation:disabled"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
@@ -23353,6 +23355,8 @@ from previous Chrome versions.
       label="TabbedAppOverflowMenuThreeButtonActionbar:enabled"/>
   <int value="1313850691" label="Metal:disabled"/>
   <int value="1314067176" label="FederatedService:disabled"/>
+  <int value="1314407143"
+      label="SafeBrowsingSyncCheckerCheckAllowlist:enabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1314797690"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>
