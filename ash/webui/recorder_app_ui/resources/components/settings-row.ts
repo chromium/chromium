@@ -113,6 +113,7 @@ export class SettingsRow extends ReactiveLitElement {
         @click=${stopPropagation}
         @slotchange=${this.onSlotChange}
       ></slot>
+      <slot name="status"></slot>
     </div>`;
   }
 }

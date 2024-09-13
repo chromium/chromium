@@ -180,6 +180,8 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly summaryContainer = createRef<HTMLDivElement>();
 
+  private readonly downloadRequested = signal(false);
+
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
   }
@@ -191,6 +193,14 @@ export class SummarizationView extends ReactiveLitElement {
     );
     assert(summary.kind === 'success', `Summary status is ${summary.kind}`);
     return summary.result;
+  }
+
+  override updated(): void {
+    const summaryState = this.platformHandler.summaryModelLoader.state;
+    if (settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
+      summaryState.value.kind === 'installing') {
+      this.downloadRequested.value = true;
+    }
   }
 
   private async requestSummary() {
@@ -264,6 +274,11 @@ export class SummarizationView extends ReactiveLitElement {
 
   private renderSummary() {
     // TODO: b/336963138 - Implement error state.
+    const downloadStatus = html`<spoken-message
+      role="status"
+      aria-live="polite">
+        ${i18n.summaryDownloadFinishedStatusMessage}
+      </spoken-message>`;
     return html`
       <cros-accordion variant="compact">
         <cros-accordion-item
@@ -278,12 +293,18 @@ export class SummarizationView extends ReactiveLitElement {
           <div id="main">${this.renderSummaryContent()}</div>
         </cros-accordion-item>
       </cros-accordion>
+      ${this.downloadRequested.value ? downloadStatus : nothing}
     `;
   }
 
   private renderSummaryInstalling(progress: number) {
     return html`
-      <cros-accordion variant="compact">
+      <cros-accordion
+        variant="compact"
+        aria-label=${i18n.summaryDownloadStartedStatusMessage}
+        aria-live="polite"
+        role="status"
+      >
         <cros-accordion-item disabled>
           <cra-icon name="summarize_auto" slot="leading"></cra-icon>
           <div slot="title">

@@ -390,6 +390,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Description of the download progress when the summary model is downloading in summary." name="IDS_RECORDER_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
     <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
   </message>
+  <message desc="Status message for screen reader to update that the model finished downloading." name="IDS_RECORDER_SUMMARY_DOWNLOAD_FINISHED_STATUS_MESSAGE">
+    Model download completed
+  </message>
   <message desc="Description of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DESCRIPTION">
     The Gemini model requires 2GB of storage to process transcripts and create summaries
   </message>
@@ -401,6 +404,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Header of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_HEADER">
     Download Gemini model to summarize recordings?
+  </message>
+  <message desc="Status message for screen reader to update that the model is downloading." name="IDS_RECORDER_SUMMARY_DOWNLOAD_STARTED_STATUS_MESSAGE">
+    Model download in progress
   </message>
   <message desc="Status message for screen reader to update that the summary generation failed." name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
     Failed to generate summary

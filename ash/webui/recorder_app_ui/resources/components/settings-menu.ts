@@ -10,6 +10,7 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
 import './speaker-label-consent-dialog.js';
+import './spoken-message.js';
 import './transcription-consent-dialog.js';
 
 import {
@@ -27,6 +28,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
 import {
   settings,
   SpeakerLabelEnableState,
@@ -150,6 +152,8 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraDialog>();
 
+  private readonly summaryDownloadRequested = signal(false);
+
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
@@ -171,6 +175,7 @@ export class SettingsMenu extends ReactiveLitElement {
     this.platformHandler.summaryModelLoader.download();
     // The settings download both the model for summary and title suggestion.
     this.platformHandler.titleSuggestionModelLoader.download();
+    this.summaryDownloadRequested.value = true;
   }
 
   private onSummaryToggle(ev: Event) {
@@ -215,6 +220,10 @@ export class SettingsMenu extends ReactiveLitElement {
     if (!this.summaryEnabled) {
       return summaryToggle;
     }
+    const downloadedStatus =
+      html`<spoken-message slot="status" role="status" aria-live="polite">
+        ${i18n.summaryDownloadFinishedStatusMessage}
+      </spoken-message>`;
 
     switch (state.kind) {
       case 'unavailable':
@@ -240,10 +249,16 @@ export class SettingsMenu extends ReactiveLitElement {
             <md-circular-progress indeterminate slot="leading-icon">
             </md-circular-progress>
           </cra-button>
+          <spoken-message slot="status" role="status" aria-live="polite">
+            ${i18n.summaryDownloadStartedStatusMessage}
+          </spoken-message>
         `;
       }
       case 'installed':
-        return summaryToggle;
+        return [
+          summaryToggle,
+          this.summaryDownloadRequested.value ? downloadedStatus : nothing,
+        ];
       default:
         assertExhaustive(state.kind);
     }
@@ -322,6 +337,7 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private onCloseClick() {
     this.dialog.value?.close();
+    this.summaryDownloadRequested.value = false;
   }
 
   private onTranscriptionToggle() {
