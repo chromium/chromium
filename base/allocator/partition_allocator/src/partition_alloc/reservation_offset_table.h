@@ -110,10 +110,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 #endif
 
   struct _ReservationOffsetTable tables[kNumPools];
-  static PA_CONSTINIT ReservationOffsetTable singleton_;
+  PA_CONSTINIT static ReservationOffsetTable singleton_;
 #else
   // A single table for the entire 32-bit address space.
-  static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
+  PA_CONSTINIT static struct _ReservationOffsetTable reservation_offset_table_;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 };
 

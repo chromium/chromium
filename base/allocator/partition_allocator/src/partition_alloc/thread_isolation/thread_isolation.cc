@@ -19,7 +19,7 @@
 namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-ThreadIsolationSettings ThreadIsolationSettings::settings;
+PA_CONSTINIT ThreadIsolationSettings ThreadIsolationSettings::settings;
 #endif
 
 void WriteProtectThreadIsolatedMemory(ThreadIsolationOption thread_isolation,

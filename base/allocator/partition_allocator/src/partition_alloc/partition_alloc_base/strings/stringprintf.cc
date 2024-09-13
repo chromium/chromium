@@ -12,8 +12,8 @@
 
 namespace partition_alloc::internal::base {
 
-std::string PA_PRINTF_FORMAT(1, 2)
-    TruncatingStringPrintf(const char* format, ...) {
+PA_PRINTF_FORMAT(1, 2)
+std::string TruncatingStringPrintf(const char* format, ...) {
   base::ScopedClearLastError last_error;
   char stack_buf[kMaxLengthOfTruncatingStringPrintfResult + 1];
   va_list arguments;

@@ -913,8 +913,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   //
   // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
   // this.
-  PA_ALWAYS_INLINE const Bucket& PA_NO_SANITIZE("undefined")
-      bucket_at(size_t i) const {
+  PA_ALWAYS_INLINE PA_NO_SANITIZE("undefined") const Bucket& bucket_at(
+      size_t i) const {
     PA_DCHECK(i <= internal::kNumBuckets);
     return buckets[i];
   }
