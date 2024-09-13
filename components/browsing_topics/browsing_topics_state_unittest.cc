@@ -73,6 +73,15 @@ class BrowsingTopicsStateTest : public testing::Test {
   BrowsingTopicsStateTest()
       : task_environment_(new base::test::TaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
+    // Configure a long epoch_retention_duration to prevent epochs from expiring
+    // during tests where expiration is irrelevant.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kBrowsingTopics, {}},
+         {blink::features::kBrowsingTopicsParameters,
+          {{"epoch_retention_duration", "3650000d"}}}},
+        /*disabled_features=*/{});
+
     OverrideHmacKeyForTesting(kTestKey);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -829,6 +838,103 @@ TEST_F(BrowsingTopicsStateTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
       "{\"epochs\": [ ],\"hex_encoded_hmac_key\": "
       "\"0100000000000000000000000000000000000000000000000000000000000000\","
       "\"next_scheduled_calculation_time\": \"0\"}");
+}
+
+TEST_F(BrowsingTopicsStateTest, ScheduleEpochsExpiration) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> epochs;
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(29),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(28),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(27),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(26),
+                            /*from_manually_triggered_calculation=*/false));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 4u);
+
+  state.ScheduleEpochsExpiration();
+
+  // Verify that two epochs have been removed immediately due to expiration.
+  EXPECT_EQ(state.epochs().size(), 2u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time - base::Seconds(27));
+  EXPECT_EQ(state.epochs()[1].calculation_time(),
+            start_time - base::Seconds(26));
+
+  // Process any pending tasks to ensure any asynchronous expirations are
+  // handled.
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Trigger another epoch expiration.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time - base::Seconds(26));
+
+  // Trigger the final epoch expiration.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 0u);
+}
+
+TEST_F(BrowsingTopicsStateTest, AddEpochAndVerifyExpiration) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(
+      base::Time::Now(), /*from_manually_triggered_calculation=*/false));
+
+  task_environment_->FastForwardBy(base::Seconds(1));
+  state.AddEpoch(CreateTestEpochTopics(
+      base::Time::Now(), /*from_manually_triggered_calculation=*/false));
+
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Verify epochs haven't expired prematurely.
+  task_environment_->FastForwardBy(base::Seconds(26));
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Verify the first epoch expired at the expected expiration time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time + base::Seconds(1));
+
+  // Verify the second epoch has also expired at the expected expiration time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 0u);
 }
 
 }  // namespace browsing_topics

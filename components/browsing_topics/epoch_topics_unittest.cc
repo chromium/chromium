@@ -6,8 +6,12 @@
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -37,10 +41,11 @@ std::vector<TopicAndDomains> CreateTestTopTopics() {
   return top_topics_and_observing_domains;
 }
 
-EpochTopics CreateTestEpochTopics() {
+EpochTopics CreateTestEpochTopics(
+    base::Time calculation_time = kCalculationTime) {
   EpochTopics epoch_topics(CreateTestTopTopics(), kPaddedTopTopicsStartIndex,
                            kConfigVersion, kTaxonomyVersion, kModelVersion,
-                           kCalculationTime,
+                           calculation_time,
                            /*from_manually_triggered_calculation=*/true);
 
   return epoch_topics;
@@ -48,7 +53,15 @@ EpochTopics CreateTestEpochTopics() {
 
 }  // namespace
 
-class EpochTopicsTest : public testing::Test {};
+class EpochTopicsTest : public testing::Test {
+ public:
+  EpochTopicsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
+};
 
 TEST_F(EpochTopicsTest, CandidateTopicForSite_InvalidIndividualTopics) {
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -389,6 +402,34 @@ TEST_F(EpochTopicsTest,
   EXPECT_EQ(epoch_topics.calculator_result_status(),
             CalculatorResultStatus::kFailureAnnotationExecutionError);
   EXPECT_FALSE(read_epoch_topics.calculator_result_status());
+}
+
+TEST_F(EpochTopicsTest, ScheduleExpiration) {
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+  EpochTopics epoch_topics = CreateTestEpochTopics(start_time);
+
+  bool expiration_callback_invoked = false;
+  base::OnceClosure expiration_callback =
+      base::BindLambdaForTesting([&]() { expiration_callback_invoked = true; });
+
+  // Schedule expiration 1 second after the calculation time.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  epoch_topics.ScheduleExpiration(std::move(expiration_callback));
+
+  // Verify the callback isn't invoked prematurely.
+  task_environment_.FastForwardBy(base::Seconds(26));
+  EXPECT_FALSE(expiration_callback_invoked);
+
+  // Verify the callback is invoked at the expected expiration time.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(expiration_callback_invoked);
 }
 
 }  // namespace browsing_topics

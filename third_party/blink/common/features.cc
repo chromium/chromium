@@ -346,6 +346,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kBrowsingTopicsParameters,
                    "max_epoch_introduction_delay",
                    base::Days(2));
+// The duration an epoch is retained before deletion.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBrowsingTopicsEpochRetentionDuration,
+                   &kBrowsingTopicsParameters,
+                   "epoch_retention_duration",
+                   base::Days(28));
 // How many epochs (weeks) of API usage data (i.e. topics observations) will be
 // based off for the filtering of topics for a calling context.
 BASE_FEATURE_PARAM(

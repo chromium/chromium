@@ -214,6 +214,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kBrowsingTopicsMaxEpochIntroductionDelay);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBrowsingTopicsEpochRetentionDuration);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

@@ -81,6 +81,11 @@ class BrowsingTopicsState
   // epoch calculation. If an old EpochTopics is removed as a result, return it.
   std::optional<EpochTopics> AddEpoch(EpochTopics epoch_topics);
 
+  // Remove expired epochs synchronously. For unexpired epochs, let each one
+  // schedule its own expiration task. Upon expiration of each epoch,
+  // `OnEpochExpired` will be called to remove it from `epochs_`.
+  void ScheduleEpochsExpiration();
+
   // Calculates the new scheduled time by adding the provided `delay`
   // to the current time (`base::Time::Now()`), and stores the result to
   // `next_scheduled_calculation_time_`.
@@ -131,6 +136,8 @@ class BrowsingTopicsState
 
   void DidLoadFile(base::OnceClosure loaded_callback,
                    std::unique_ptr<LoadResult> load_result);
+
+  void OnEpochExpired(base::Time calculation_time);
 
   // Parse `value` and populate the state member variables.
   ParseResult ParseValue(const base::Value& value);
