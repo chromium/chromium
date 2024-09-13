@@ -15,4 +15,6 @@ bool AXPlatformTreeManager::IsPlatformTreeManager() const {
   return true;
 }
 
+void AXPlatformTreeManager::FireSentinelEventForTesting() {}
+
 }  // namespace ui

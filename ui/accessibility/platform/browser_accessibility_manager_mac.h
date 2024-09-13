@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
 
   bool OnAccessibilityEvents(const AXUpdatesAndEvents& details) override;
 
+  void FireSentinelEventForTesting() override;
+
   id GetParentView();
   id GetWindow();
 
