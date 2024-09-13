@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -806,26 +808,39 @@ void RenderViewTest::SimulateUserTypingASCIICharacter(char ascii_character,
 }
 
 void RenderViewTest::SimulateUserInputChangeForElement(
-    blink::WebInputElement* input,
-    const std::string& new_value) {
+    blink::WebInputElement input,
+    std::string_view new_value) {
   ASSERT_TRUE(base::IsStringASCII(new_value));
-  while (!input->Focused())
-    input->GetDocument().GetFrame()->View()->AdvanceFocus(false);
+  while (!input.Focused()) {
+    input.GetDocument().GetFrame()->View()->AdvanceFocus(false);
+  }
   SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
 
-  size_t previous_length = input->Value().length();
-  for (size_t i = 0; i < previous_length; ++i)
+  size_t previous_length = input.Value().length();
+  for (size_t i = 0; i < previous_length; ++i) {
     SimulateUserTypingASCIICharacter(ui::VKEY_BACK, false);
-
-  EXPECT_TRUE(input->Value().Utf8().empty());
-  for (size_t i = 0; i < new_value.size(); ++i)
-    SimulateUserTypingASCIICharacter(new_value[i], false);
-
+  }
+  EXPECT_TRUE(input.Value().Utf8().empty());
+  for (char c : new_value) {
+    SimulateUserTypingASCIICharacter(c, false);
+  }
   // Compare only beginning, because autocomplete may have filled out the
   // form.
-  EXPECT_EQ(new_value, input->Value().Utf8().substr(0, new_value.length()));
+  EXPECT_EQ(new_value, input.Value().Utf8().substr(0, new_value.length()));
 
   base::RunLoop().RunUntilIdle();
+}
+
+void RenderViewTest::SimulateUserInputChangeForElementById(
+    std::string_view id,
+    std::string_view new_value) {
+  blink::WebInputElement element =
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById(WebString(base::UTF8ToUTF16(id)))
+          .DynamicTo<blink::WebInputElement>();
+  ASSERT_TRUE(element);
+  SimulateUserInputChangeForElement(element, new_value);
 }
 
 void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,

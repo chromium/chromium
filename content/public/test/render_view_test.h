@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "v8/include/v8-forward.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -45,7 +46,6 @@ class WebThreadScheduler;
 struct VisualProperties;
 class WebFrameWidget;
 class WebGestureEvent;
-class WebInputElement;
 class WebMouseEvent;
 }
 
@@ -194,8 +194,13 @@ class RenderViewTest : public testing::Test {
   // Simulates user focusing |input|, erasing all text, and typing the
   // |new_value| instead. Will process input events for autofill. This is a user
   // gesture.
-  void SimulateUserInputChangeForElement(blink::WebInputElement* input,
-                                         const std::string& new_value);
+  void SimulateUserInputChangeForElement(blink::WebInputElement input,
+                                         std::string_view new_value);
+
+  // Same as SimulateUserInputChangeForElement, but takes the element's HTML id
+  // attribute instead of the blink element.
+  void SimulateUserInputChangeForElementById(std::string_view id,
+                                             std::string_view new_value);
 
   // These are all methods from RenderViewImpl that we expose to testing code.
   void OnSameDocumentNavigation(blink::WebLocalFrame* frame,

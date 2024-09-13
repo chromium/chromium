@@ -660,7 +660,7 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   // is deleted.
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(_));
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  SimulateUserInputChangeForElement(&first_password_element, std::string());
+  SimulateUserInputChangeForElement(first_password_element, std::string());
   EXPECT_EQ(std::u16string(), first_password_element.Value().Utf16());
   EXPECT_EQ(std::u16string(), second_password_element.Value().Utf16());
   EXPECT_FALSE(first_password_element.IsAutofilled());
@@ -765,7 +765,7 @@ TEST_F(PasswordGenerationAgentTest, MaximumCharsForGenerationOffer) {
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
       .Times(AtMost(1));
   SimulateUserInputChangeForElement(
-      &first_password_element,
+      first_password_element,
       std::string(PasswordGenerationAgent::kMaximumCharsForGenerationOffer,
                   'a'));
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
