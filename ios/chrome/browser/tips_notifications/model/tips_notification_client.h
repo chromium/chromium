@@ -93,6 +93,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if an Omnibox Position promo notification should be sent.
   bool ShouldSendOmniboxPosition();
 
+  // Returns true if a Lens promo notification should be sent.
+  bool ShouldSendLens();
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 

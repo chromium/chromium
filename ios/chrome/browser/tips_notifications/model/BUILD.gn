@@ -28,6 +28,7 @@ source_set("client") {
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/content_suggestions:commands",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
   ]
   frameworks = [ "UserNotifications.framework" ]
 }

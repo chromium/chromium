@@ -690,6 +690,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 
+  registry->RegisterTimePref(prefs::kLensLastOpened, base::Time());
+
   // Deprecated 09/2024.
   registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
 

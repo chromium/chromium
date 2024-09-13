@@ -40,9 +40,13 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
+
+// The amount of time used to determine if Lens was opened recently.
+const base::TimeDelta kLensOpenedRecency = base::Days(30);
 
 // Returns the first notification from `requests` whose identifier matches
 // `identifier`.
@@ -269,6 +273,7 @@ void TipsNotificationClient::MaybeRequestNotification(
   static const TipsNotificationType kTypes[] = {
       TipsNotificationType::kSetUpListContinuation,
       TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kLens,
       TipsNotificationType::kOmniboxPosition,
       TipsNotificationType::kDefaultBrowser,
       TipsNotificationType::kDocking,
@@ -342,6 +347,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kOmniboxPosition:
       return ShouldSendOmniboxPosition();
     case TipsNotificationType::kLens:
+      return ShouldSendLens();
     case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -418,6 +424,17 @@ bool TipsNotificationClient::ShouldSendOmniboxPosition() {
   }
   return !GetApplicationContext()->GetLocalState()->GetUserPrefValue(
       prefs::kBottomOmnibox);
+}
+
+bool TipsNotificationClient::ShouldSendLens() {
+  // Early return if Lens is not available.
+  if (!ios::provider::IsLensSupported()) {
+    return false;
+  }
+
+  base::Time last_opened =
+      GetApplicationContext()->GetLocalState()->GetTime(prefs::kLensLastOpened);
+  return base::Time::Now() - last_opened > kLensOpenedRecency;
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
