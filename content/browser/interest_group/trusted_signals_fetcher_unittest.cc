@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -94,8 +95,11 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
 class TrustedSignalsFetcherTest : public testing::Test {
  public:
   // This is the expected request body that corresponds to the request returned
-  // by CreateBasicBiddingSignalsRequest(). It is the deterministic CBOR
-  // representation of the following, with a prefix and padding added:
+  // by CreateBasicBiddingSignalsRequest(). Stored as a raw hex string to
+  // provide better coverage of padding logic than using
+  // CreateKVv2RequestBody(), which uses the same padding code as the fetcher.
+  // It is the deterministic CBOR representation of the following, with a prefix
+  // and padding added:
   // {
   //   "acceptCompression": [ "none", "gzip" ],
   //   "partitions": [
@@ -216,17 +220,28 @@ class TrustedSignalsFetcherTest : public testing::Test {
     return encrypted_request_body_length_;
   }
 
-  void ValidateRequestBody(std::string_view expected_response_hex) {
+  // Checks that the request body matches the provided string, which contains a
+  // hex-encoded representation of the expected result.
+  void ValidateRequestBodyHex(std::string_view expected_request_hex) {
     std::string actual_response = GetBiddingSignalsRequestBody();
-    EXPECT_EQ(base::HexEncode(actual_response), expected_response_hex);
+    EXPECT_EQ(base::HexEncode(actual_response), expected_request_hex);
     // If there's a mismatch, compare the non-hex-encoded string as well. This
     // may give a better idea what's wrong when looking at test output.
     if (HasNonfatalFailure()) {
       std::string expected_response;
       EXPECT_TRUE(
-          base::HexStringToString(expected_response_hex, &expected_response));
+          base::HexStringToString(expected_request_hex, &expected_response));
       EXPECT_EQ(actual_response, expected_response);
     }
+  }
+
+  // Checks that the request body matches the provided JSON. Converts the JSON
+  // input to a cbor string, adds a framing header and padding, and then check
+  // that matches the request body.
+  void ValidateRequestBodyJson(std::string_view expected_request_json) {
+    auto expected_request = auction_worklet::test::CreateKVv2RequestBody(
+        auction_worklet::test::ToCborString(expected_request_json));
+    ValidateRequestBodyHex(base::HexEncode(expected_request));
   }
 
   // Sets the response body string.
@@ -395,7 +410,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignals404) {
       base::StringPrintf(
           "Failed to load %s error = net::ERR_HTTP_RESPONSE_CODE_FAILURE.",
           TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
@@ -423,7 +438,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMimeType) {
       result.error(),
       base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCanSetNoCookies) {
@@ -482,92 +497,80 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsHasNoCookies) {
   // Request trusted bidding signals. The request handler will cause the test to
   // fail if it sees a cookie header.
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   bidding_signals_request[0][0].keys.clear();
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": []
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000A4A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "80647461677381646B65797372636F6D7072657373696F6E47726F757049640071616363"
-      "657074436F6D7072657373696F6E82646E6F6E6564677A69700000000000000000000000"
-      "000000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": []
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneKey) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   bidding_signals_request[0][0].keys = {"key1", "key2", "key3"};
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1", "key2", "key3" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000B3A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "83646B657931646B657932646B657933647461677381646B65797372636F6D7072657373"
-      "696F6E47726F757049640071616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A69700000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1", "key2", "key3" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
@@ -575,78 +578,66 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
   bidding_signals_request[0][0].interest_group_names = {"group1", "group2",
                                                         "group3"};
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1", "group2", "group3" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000B7A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461836667"
-      "726F7570316667726F7570326667726F75703364746167738172696E7465726573744772"
-      "6F75704E616D6573A2646461746181646B657931647461677381646B65797372636F6D70"
-      "72657373696F6E47726F757049640071616363657074436F6D7072657373696F6E82646E"
-      "6F6E6564677A697000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1", "group2", "group3" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   bidding_signals_request[0][0].additional_params.Set("foo", "bar");
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test", "foo": "bar" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000B1A26A706172746974696F6E7381A462696400686D65746164617461A263666F"
-      "6F6362617268686F73746E616D6569686F73742E7465737469617267756D656E747382A2"
-      "6464617461816667726F75703164746167738172696E74657265737447726F75704E616D"
-      "6573A2646461746181646B657931647461677381646B65797372636F6D7072657373696F"
-      "6E47726F757049640071616363657074436F6D7072657373696F6E82646E6F6E6564677A"
-      "697000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test", "foo": "bar" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
@@ -655,44 +646,38 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
   bidding_signals_request[0][0].additional_params.Set("Foo", "bAr");
   bidding_signals_request[0][0].additional_params.Set("oof", "rab");
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": {
-  //         "hostname": "host.test",
-  //         "foo": "bar",
-  //         "Foo": "bAr",
-  //         "oof": "rab",
-  //       },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000C1A26A706172746974696F6E7381A462696400686D65746164617461A463466F"
-      "6F6362417263666F6F63626172636F6F666372616268686F73746E616D6569686F73742E"
-      "7465737469617267756D656E747382A26464617461816667726F75703164746167738172"
-      "696E74657265737447726F75704E616D6573A2646461746181646B657931647461677381"
-      "646B65797372636F6D7072657373696F6E47726F757049640071616363657074436F6D70"
-      "72657373696F6E82646E6F6E6564677A6970000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": {
+                 "hostname": "host.test",
+                 "foo": "bar",
+                 "Foo": "bAr",
+                 "oof": "rab",
+               },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 // Test a single compression group with a single partition, where neither has
@@ -708,35 +693,29 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
       bidding_signals_request;
   bidding_signals_request.emplace(3, std::move(bidding_partitions));
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 3,
-  //       "id": 7,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group7" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000A9A26A706172746974696F6E7381A462696407686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703764746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "0371616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
-      "000000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 3,
+               "id": 7,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group7" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   // The response similarly only includes information for compression group 3.
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
@@ -756,7 +735,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 // Test that the expected amount of padding is added to requests.
@@ -783,8 +762,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.interest_group_name_length);
-    bidding_signals_request[0][0].interest_group_names = {
-        std::string(test_case.interest_group_name_length, 'a')};
+    std::string name = std::string(test_case.interest_group_name_length, 'a');
+    bidding_signals_request[0][0].interest_group_names = {name};
     ValidateDefaultFetchResult(
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
     EXPECT_EQ(GetEncryptedRequestBodyLength(),
@@ -794,6 +773,36 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
         request_body.size() - request_body.find_last_not_of('\0') - 1;
     EXPECT_EQ(request_body.size(), test_case.expected_body_length);
     EXPECT_EQ(padding, test_case.expected_padding);
+
+    // Also test the entire request body directly. The above checks provide some
+    // protection against issues in CreateKVv2RequestBody(), which is largely
+    // copied from TrustedSignalsFetcher.
+    EXPECT_EQ(request_body, auction_worklet::test::CreateKVv2RequestBody(
+                                auction_worklet::test::ToCborString(JsReplace(
+                                    R"(
+                                    {
+                                      "acceptCompression": [ "none", "gzip" ],
+                                      "partitions": [
+                                        {
+                                          "compressionGroupId": 0,
+                                          "id": 0,
+                                          "metadata": {
+                                            "hostname": "host.test"
+                                          },
+                                          "arguments": [
+                                            {
+                                              "tags": [ "interestGroupNames" ],
+                                              "data": [ $1 ]
+                                            },
+                                            {
+                                              "tags": [ "keys" ],
+                                              "data": [ "key1" ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    })",
+                                    name))));
   }
 }
 
@@ -809,7 +818,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyShorterThanHeader) {
                   "Failed to load %s: Response body is shorter than a "
                   "message/ad-auction-trusted-signals-response header.",
                   TrustedBiddingSignalsUrl().spec().c_str()));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -822,7 +831,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyUnencrypted) {
   EXPECT_EQ(result.error(),
             base::StringPrintf("Failed to load %s: OHTTP decryption failed.",
                                TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 // Receiving CBOR without a header in the response body should result in
@@ -834,7 +843,7 @@ TEST_F(TrustedSignalsFetcherTest, NoResponseBodyHeader) {
   // Don't check the specific error - it depends on the specific details of the
   // CBOR representation of DefaultResponseBody().
   ASSERT_FALSE(result.has_value());
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 // This test does not actually gzip the body. The fetcher doesn't try to
@@ -854,7 +863,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeGzip) {
   ValidateFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request),
       expected_result);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeUnsupported) {
@@ -871,7 +880,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeUnsupported) {
         base::StringPrintf(
             "Failed to load %s: Unsupported compression scheme: %u.",
             TrustedBiddingSignalsUrl().spec().c_str(), compression_scheme));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -892,7 +901,7 @@ TEST_F(TrustedSignalsFetcherTest,
   ValidateFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request),
       expected_result);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 // If the advertised length is longer than the response, the request should
@@ -913,7 +922,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooLong) {
               base::StringPrintf(
                   "Failed to load %s: Length header exceeds body size.",
                   TrustedBiddingSignalsUrl().spec().c_str()));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -929,7 +938,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooShort) {
       result.error(),
       base::StringPrintf("Failed to load %s: Failed to parse response as CBOR.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponsePadding) {
@@ -942,7 +951,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponsePadding) {
     auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
     ValidateDefaultFetchResult(
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -984,7 +993,7 @@ TEST_F(TrustedSignalsFetcherTest, NotCbor) {
               base::StringPrintf(
                   "Failed to load %s: Failed to parse response as CBOR.",
                   TrustedBiddingSignalsUrl().spec().c_str()));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -1010,7 +1019,7 @@ TEST_F(TrustedSignalsFetcherTest, NotCborMap) {
         result.error(),
         base::StringPrintf("Failed to load %s: Response body is not a map.",
                            TrustedBiddingSignalsUrl().spec().c_str()));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -1026,7 +1035,7 @@ TEST_F(TrustedSignalsFetcherTest, NoCompressionGroupMap) {
       base::StringPrintf(
           "Failed to load %s: Response is missing compressionGroups array.",
           TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupsNotArray) {
@@ -1040,7 +1049,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupsNotArray) {
       base::StringPrintf(
           "Failed to load %s: Response is missing compressionGroups array.",
           TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, NoCompressionGroups) {
@@ -1053,7 +1062,7 @@ TEST_F(TrustedSignalsFetcherTest, NoCompressionGroups) {
   ValidateFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request),
       TrustedSignalsFetcher::CompressionGroupResultMap());
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupNotMap) {
@@ -1066,7 +1075,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupNotMap) {
             base::StringPrintf(
                 "Failed to load %s: Compression group is not of type map.",
                 TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest,
@@ -1121,7 +1130,7 @@ TEST_F(TrustedSignalsFetcherTest,
         base::StringPrintf("Failed to load %s: Compression group must have a "
                            "non-negative integer compressionGroupId.",
                            TrustedBiddingSignalsUrl().spec().c_str()));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -1186,7 +1195,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadOrNoContent) {
               base::StringPrintf("Failed to load %s: Compression group %" PRIuS
                                  " missing binary string \"content\".",
                                  TrustedBiddingSignalsUrl().spec().c_str(), i));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -1230,7 +1239,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
               base::StringPrintf("Failed to load %s: Compression group %" PRIuS
                                  " ttlMs value is not an integer.",
                                  TrustedBiddingSignalsUrl().spec().c_str(), i));
-    ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
   }
 }
 
@@ -1254,7 +1263,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNoTtl) {
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
@@ -1276,7 +1285,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 // Negative TTLs are allows, and are treated as if they were zero.
@@ -1299,7 +1308,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNegativeTtl) {
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
@@ -1320,90 +1329,63 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
   bidding_partition3->keys = {"key1", "key2", "key3"};
   bidding_partition3->additional_params.Set("foo2", "bar2");
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 1,
-  //       "metadata": { "hostname": "host2.test", "foo": "bar" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group2" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key2" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 2,
-  //       "metadata": { "hostname": "host3.test", "foo2": "bar2"  },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1", "group2", "group3" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1", "key2", "key3" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000001D3A26A706172746974696F6E7383A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "00A462696401686D65746164617461A263666F6F6362617268686F73746E616D656A686F"
-      "7374322E7465737469617267756D656E747382A26464617461816667726F757032647461"
-      "67738172696E74657265737447726F75704E616D6573A2646461746181646B6579326474"
-      "61677381646B65797372636F6D7072657373696F6E47726F7570496400A462696402686D"
-      "65746164617461A264666F6F32646261723268686F73746E616D656A686F7374332E7465"
-      "737469617267756D656E747382A26464617461836667726F7570316667726F7570326667"
-      "726F75703364746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "83646B657931646B657932646B657933647461677381646B65797372636F6D7072657373"
-      "696F6E47726F757049640071616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A69700000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 0,
+               "id": 1,
+               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group2" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key2" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 0,
+               "id": 2,
+               "metadata": { "hostname": "host3.test", "foo2": "bar2"  },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1", "group2", "group3" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1", "key2", "key3" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 // Test that a fetch fails when there are two compression groups with the same
@@ -1430,7 +1412,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsDuplicateCompressionGroups) {
             base::StringPrintf("Failed to load %s: Response contains two "
                                "compression groups with id 0.",
                                TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
@@ -1454,86 +1436,59 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
   bidding_partition3->additional_params.Set("foo2", "bar2");
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 1,
-  //       "metadata": { "hostname": "host2.test", "foo", "bar" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group2" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key2" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 2,
-  //       "metadata": { "hostname": "host3.test", "foo2", "bar2" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1", "group2", "group3" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1", "key2", "key3" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000001D3A26A706172746974696F6E7383A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "00A462696400686D65746164617461A263666F6F6362617268686F73746E616D656A686F"
-      "7374322E7465737469617267756D656E747382A26464617461816667726F757032647461"
-      "67738172696E74657265737447726F75704E616D6573A2646461746181646B6579326474"
-      "61677381646B65797372636F6D7072657373696F6E47726F7570496401A462696400686D"
-      "65746164617461A264666F6F32646261723268686F73746E616D656A686F7374332E7465"
-      "737469617267756D656E747382A26464617461836667726F7570316667726F7570326667"
-      "726F75703364746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "83646B657931646B657932646B657933647461677381646B65797372636F6D7072657373"
-      "696F6E47726F757049640271616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A69700000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 1,
+               "id": 0,
+               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group2" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key2" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 2,
+               "id": 0,
+               "metadata": { "hostname": "host3.test", "foo2": "bar2" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1", "group2", "group3" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1", "key2", "key3" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
@@ -1570,7 +1525,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
              "content3", base::Milliseconds(150)));
   ValidateFetchResult(result, expected_result);
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 // Test that the entire fetch fails when one of the requested partitions has an
@@ -1597,86 +1552,59 @@ TEST_F(TrustedSignalsFetcherTest,
   bidding_partition3->additional_params.Set("foo2", "bar2");
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 1,
-  //       "metadata": { "hostname": "host2.test", "foo", "bar" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group2" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key2" ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 2,
-  //       "metadata": { "hostname": "host3.test", "foo2", "bar2" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1", "group2", "group3" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1", "key2", "key3" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000001D3A26A706172746974696F6E7383A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "00A462696400686D65746164617461A263666F6F6362617268686F73746E616D656A686F"
-      "7374322E7465737469617267756D656E747382A26464617461816667726F757032647461"
-      "67738172696E74657265737447726F75704E616D6573A2646461746181646B6579326474"
-      "61677381646B65797372636F6D7072657373696F6E47726F7570496401A462696400686D"
-      "65746164617461A264666F6F32646261723268686F73746E616D656A686F7374332E7465"
-      "737469617267756D656E747382A26464617461836667726F7570316667726F7570326667"
-      "726F75703364746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "83646B657931646B657932646B657933647461677381646B65797372636F6D7072657373"
-      "696F6E47726F757049640271616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A69700000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000";
+  // Request body as a JSON string. Will be converted to CBOR and have a framing
+  // header and padding added before beign compared to actual body.
+  const std::string_view kExpectedRequestBodyJson =
+      R"({
+           "acceptCompression": [ "none", "gzip" ],
+           "partitions": [
+             {
+               "compressionGroupId": 0,
+               "id": 0,
+               "metadata": { "hostname": "host.test" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 1,
+               "id": 0,
+               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group2" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key2" ]
+                 }
+               ]
+             },
+             {
+               "compressionGroupId": 2,
+               "id": 0,
+               "metadata": { "hostname": "host3.test", "foo2": "bar2" },
+               "arguments": [
+                 {
+                   "tags": [ "interestGroupNames" ],
+                   "data": [ "group1", "group2", "group3" ]
+                 },
+                 {
+                   "tags": [ "keys" ],
+                   "data": [ "key1", "key2", "key3" ]
+                 }
+               ]
+             }
+           ]
+         })";
 
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
@@ -1703,7 +1631,7 @@ TEST_F(TrustedSignalsFetcherTest,
             base::StringPrintf("Failed to load %s: Compression group 1 missing "
                                "binary string \"content\".",
                                TrustedBiddingSignalsUrl().spec().c_str()));
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBodyJson(kExpectedRequestBodyJson);
 }
 
 }  // namespace

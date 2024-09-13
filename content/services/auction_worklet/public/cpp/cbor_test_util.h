@@ -32,6 +32,13 @@ std::string ToCborString(std::string_view json);
 // CHECKs on error.
 std::string ToKVv2ResponseCborString(std::string_view json);
 
+// Takes response body string as a CBOR-encoded string, adds padding so that the
+// body size will be a power of 2 when prefixed by OHTTP headers, and adds a
+// framing header (compression format, length). This uses logic taken from
+// TrustedSiganlsFetcher, so tests specifically of framing should not use this
+// method.
+std::string CreateKVv2RequestBody(std::string_view cbor_request_body);
+
 // Takes response body string as a CBOR-encoded string, adds a framing header
 // (compression format, length) and, optionally, padding, and returns it as a
 // string. If `advertised_cbor_length` is std::nullopt, uses the length of the

@@ -11,7 +11,10 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/cbor/values.h"
@@ -19,6 +22,11 @@
 
 namespace auction_worklet::test {
 namespace {
+
+// Lengths of various components of request and response header components.
+constexpr size_t kCompressionFormatSize = 1;  // bytes
+constexpr size_t kCborStringLengthSize = 4;   // bytes
+constexpr size_t kOhttpHeaderSize = 55;       // bytes
 
 // If `convert_content_to_binary_cbor_string` is true, converts "content" values
 // in dictionaries to binary CBOR strings. See documentation of
@@ -91,6 +99,30 @@ std::string ToKVv2ResponseCborString(std::string_view json) {
              /*convert_content_to_binary_cbor_string=*/true));
   CHECK(vector);
   return std::string(vector->begin(), vector->end());
+}
+
+std::string CreateKVv2RequestBody(std::string_view cbor_request_body) {
+  std::string request_body;
+  size_t size_before_padding = kOhttpHeaderSize + kCompressionFormatSize +
+                               kCborStringLengthSize + cbor_request_body.size();
+  size_t size_with_padding = std::bit_ceil(size_before_padding);
+  size_t request_body_size = size_with_padding - kOhttpHeaderSize;
+  request_body.resize(request_body_size, 0x00);
+
+  base::SpanWriter writer(
+      base::as_writable_bytes(base::make_span(request_body)));
+
+  // Add framing header. First byte includes version and compression format.
+  // Always set first byte to 0x00 because request body is uncompressed.
+  writer.WriteU8BigEndian(0x00);
+  writer.WriteU32BigEndian(
+      base::checked_cast<uint32_t>(cbor_request_body.size()));
+
+  // Add CBOR string.
+  writer.Write(base::as_bytes(base::make_span(cbor_request_body)));
+
+  DCHECK_EQ(writer.num_written(), size_before_padding - kOhttpHeaderSize);
+  return request_body;
 }
 
 std::string CreateKVv2ResponseBody(std::string_view cbor_response_body,
