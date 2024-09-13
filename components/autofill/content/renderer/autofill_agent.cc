@@ -1322,19 +1322,10 @@ void AutofillAgent::ShowSuggestions(
   }
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element) {
-    if (!input_element.IsTextField()) {
-      return;
-    }
-    if (!input_element.SuggestedValue().IsEmpty()) {
-      return;
-    }
-  } else {
-    DCHECK(form_util::IsTextAreaElement(element));
-    if (!element.To<WebFormControlElement>().SuggestedValue().IsEmpty()) {
-      return;
-    }
+  if (input_element && !input_element.IsTextField()) {
+    return;
   }
+  DCHECK(input_element || form_util::IsTextAreaElement(element));
 
   const bool show_for_empty_value =
       config_.uses_keyboard_accessory_for_suggestions ||
