@@ -659,14 +659,16 @@ std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
 
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     int allowed_yuv_overlay_count,
+    bool disable_video_overlay_if_moving,
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
               ->AddPowerStateObserverAndReturnOnBatteryState(this)),
-      no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
-          features::kNoUndamagedOverlayPromotion)) {
+      no_undamaged_overlay_promotion_(
+          base::FeatureList::IsEnabled(features::kNoUndamagedOverlayPromotion)),
+      disable_video_overlay_if_moving_(disable_video_overlay_if_moving) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
     UpdateSystemHDRStatus();
@@ -1123,8 +1125,7 @@ void DCLayerOverlayProcessor::Process(
   // Recount the YUV overlays when they are added to the overlay list
   // successfully.
   global_overlay_state.processed_yuv_overlay_count = 0;
-
-  if (base::FeatureList::IsEnabled(features::kDisableVideoOverlayIfMoving)) {
+  if (disable_video_overlay_if_moving_) {
     RemoveClearVideoQuadCandidatesIfMoving(
         resource_provider, render_pass_overlay_data_map, render_pass_state_map);
   }

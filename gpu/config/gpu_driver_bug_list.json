@@ -3399,6 +3399,29 @@
       "features": [
         "disable_accelerated_h264_encode"
       ]
+    },
+    {
+      "id": 436,
+      "cr_bugs": [40677119],
+      "description": "Disable overlay promotion for clear video quads when their MPO quads would move",
+      "os": {
+        "type" : "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "os": {
+            "type" : "win"
+          },
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.101.4471"
+          }
+        }
+      ],
+      "features": [
+        "disable_video_overlay_if_moving"
+      ]
     }
   ]
 }
