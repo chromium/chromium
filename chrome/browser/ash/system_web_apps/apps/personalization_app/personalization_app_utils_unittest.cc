@@ -66,7 +66,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPen, features::kSeaPenDemoMode,
-         features::kFeatureManagementSeaPen},
+         features::kSeaPenEnterprise, features::kFeatureManagementSeaPen},
         {});
   }
 
@@ -139,13 +139,12 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenManaged) {
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kRegular);
-  ASSERT_FALSE(IsAllowedToInstallSeaPen(managed_profile));
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
        IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsTrue) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -173,7 +172,6 @@ TEST_F(PersonalizationAppUtilsTest,
 
 TEST_F(PersonalizationAppUtilsTest,
        IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsFalse) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -201,7 +199,6 @@ TEST_F(PersonalizationAppUtilsTest,
 
 TEST_F(PersonalizationAppUtilsTest,
        IsEligibleForSeaPenManagedSeaPenEnterpriseEnabledCapabilityIsUnknown) {
-  base::test::ScopedFeatureList features(features::kSeaPenEnterprise);
   const std::string email = "managed@example.com";
   auto* managed_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -240,7 +237,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kPublicAccount);
-  ASSERT_FALSE(IsAllowedToInstallSeaPen(managed_profile));
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 
