@@ -215,8 +215,7 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testSignOut) {
   CGRect rect = CGRect();
   OCMExpect([delegate_ acountMenuCoordinatorShouldStop:coordinator_]);
   OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessage:[OCMArg isNotNil]
-             bottomOffset:0]);
+      showSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
   [coordinator_ signOutFromTargetRect:rect
                              callback:^(BOOL success) {
                                EXPECT_TRUE(success);
@@ -262,8 +261,8 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testMediatorWantsToBeDismissed) {
 // Tests that `triggerSignoutWithTargetRect` shows a snackbar and calls its
 // completion.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
-  OCMExpect([mock_snackbar_commands_handler_ showSnackbarMessage:[OCMArg any]
-                                                    bottomOffset:0]);
+  OCMExpect([mock_snackbar_commands_handler_
+      showSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
 
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
