@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_suggest",
     "//chrome/browser/ash/file_suggest:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/file_system_access",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks",

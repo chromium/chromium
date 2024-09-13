@@ -258,6 +258,7 @@ if (is_chromeos_ash) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/file_system_access",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/common:constants",

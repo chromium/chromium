@@ -105,6 +105,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/file_system_access",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
