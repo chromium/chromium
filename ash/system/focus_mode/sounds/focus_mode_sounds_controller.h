@@ -182,6 +182,8 @@ class ASH_EXPORT FocusModeSoundsController
     simulate_playback_for_testing_ = true;
   }
 
+  void SetIsMinorUserForTesting(bool is_minor_user);
+
  private:
   bool IsPlaylistAllowed(
       const focus_mode_util::SelectedPlaylist& playlist) const;
@@ -225,6 +227,9 @@ class ASH_EXPORT FocusModeSoundsController
       base::UnguessableToken::Null();
 
   bool simulate_playback_for_testing_ = false;
+
+  // Sets the value to true or false in browertest.
+  std::optional<bool> is_minor_user_for_testing_;
 
   base::ObserverList<Observer> observers_;
 

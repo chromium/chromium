@@ -16,4 +16,8 @@ TestFocusModeDelegate::CreateYouTubeMusicClient(const AccountId&) {
   return nullptr;
 }
 
+bool TestFocusModeDelegate::IsMinorUser() {
+  return false;
+}
+
 }  // namespace ash

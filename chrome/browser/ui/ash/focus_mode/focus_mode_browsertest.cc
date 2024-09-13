@@ -116,6 +116,13 @@ class FocusModeBrowserTest : public InProcessBrowserTest {
   FocusModeBrowserTest(const FocusModeBrowserTest&) = delete;
   FocusModeBrowserTest& operator=(const FocusModeBrowserTest&) = delete;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    FocusModeController::Get()
+        ->focus_mode_sounds_controller()
+        ->SetIsMinorUserForTesting(false);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };

@@ -107,3 +107,23 @@ ChromeFocusModeDelegate::CreateYouTubeMusicClient(const AccountId& account_id) {
       base::BindRepeating(&CreateRequestSenderForClient),
       std::make_unique<RequestSignerImpl>(account_id));
 }
+
+bool ChromeFocusModeDelegate::IsMinorUser() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    // Identity manager is not available (e.g:guest mode).
+    return false;
+  }
+
+  std::string gaia_id = user_manager::UserManager::Get()
+                            ->GetActiveUser()
+                            ->GetAccountId()
+                            .GetGaiaId();
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+  // TODO(b/366042251): Update minor targeting to use a better signal.
+  return account_info.capabilities.can_use_manta_service() !=
+         signin::Tribool::kTrue;
+}
