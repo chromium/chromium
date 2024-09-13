@@ -256,21 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.LegacyCodePathUsage.{Location}"
-    enum="BooleanCodePathUsage" expires_after="2023-07-09">
-  <owner>hardikgoyal@chromium.org</owner>
-  <owner>cros-security-cryptohome+uma@google.com</owner>
-  <summary>
-    This will report usage of {Location} paths to see if it is actually being
-    used or not to enable us to decide if we want to continue supporting
-    {Location} or not.
-  </summary>
-  <token key="Location">
-    <variant name="AddKeyResetSeedGeneration"
-        summary="Reset seed generated during Add Key operation"/>
-  </token>
-</histogram>
-
 <histogram name="Cryptohome.LoginDiskCleanupAvailableSpace" units="MiB"
     expires_after="2024-12-01">
   <owner>vsavu@google.com</owner>
@@ -700,7 +685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{AuthBlockType}.PrepareForRemovalResult"
-    enum="CryptohomeCryptoError" expires_after="2024-09-15">
+    enum="CryptohomeCryptoError" expires_after="2025-03-15">
   <owner>hardikgoyal@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -928,12 +913,14 @@ chromium-metrics-reviews@google.com.
   <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2024-07-24">
+<histogram name="CryptohomeClient" units="ms" expires_after="2025-03-24">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
     Records the time duration of every dbus outgoing calls issued from the
     client of Crypthome in Chrome side.
+
+    Some data maybe missing between 2024-07 and 2024-09.
   </summary>
 </histogram>
 
