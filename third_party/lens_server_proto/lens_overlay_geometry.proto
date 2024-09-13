@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -12,23 +12,25 @@ import "lens_overlay_polygon.proto";
 
 // Information about a center bounding box rotated around its center.
 message CenterRotatedBox {
-  optional float center_x = 1;
-  optional float center_y = 2;
-  optional float width = 3;
-  optional float height = 4;
+  float center_x = 1;
+  float center_y = 2;
+  float width = 3;
+  float height = 4;
+
   // Clockwise rotation around the center in radians. The rotation angle is
   // computed before normalizing the coordinates.
-  optional float rotation_z = 5;
+  float rotation_z = 5;
+
   // Specifies the coordinate type of center and size.
   // @note default is COORDINATE_TYPE_UNSPECIFIED, please initialize this value
   // to NORMALIZED or IMAGE for Lens detection API usage.
-  optional CoordinateType coordinate_type = 6;
+  CoordinateType coordinate_type = 6;
 }
 
 // Geometric shape(s) used for tracking and detection.
 message Geometry {
   // Specifies the bounding box for this geometry.
-  optional CenterRotatedBox bounding_box = 1;
+  CenterRotatedBox bounding_box = 1;
 
   // Specifies the segmentation polygon. The vertices of the outer-boundaries
   // are in clockwise, and the ones of inner-boundaries are in counter-clockwise
@@ -42,12 +44,15 @@ message Geometry {
 // canonical image.
 message ZoomedCrop {
   // The cropped region of the parent image in parent coordinates.
-  optional CenterRotatedBox crop = 1;
+  CenterRotatedBox crop = 1;
+
   // Width of the parent image.
-  optional int32 parent_width = 2;
+  int32 parent_width = 2;
+
   // Height of the parent image.
-  optional int32 parent_height = 3;
+  int32 parent_height = 3;
+
   // The ratio of the pixel dimensions of the child image to the pixel
   // dimensions of the 'crop' in parent coordinates.
-  optional float zoom = 4;
+  float zoom = 4;
 }

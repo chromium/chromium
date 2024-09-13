@@ -2390,7 +2390,7 @@ IN_PROC_BROWSER_TEST_F(
   // Loading another url in the side panel should update the results page.
   const GURL third_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&vsint=KgwKAggHEgIIAxgAIAI&q=kiwi&lns_fp=1"
+      "search?source=chrome.cr.menu&vsint=KgoKAggHEgIIAyAC&q=kiwi&lns_fp=1"
       "&lns_mode=text&gsc=2&hl=en-US&cs=0");
   content::TestNavigationObserver third_search_observer(
       controller->GetSidePanelWebContentsForTesting());

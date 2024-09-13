@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -12,8 +12,10 @@ package lens;
 enum CoordinateType {
   // Unspecified default value, per proto best practice.
   COORDINATE_TYPE_UNSPECIFIED = 0;
+
   // Normalized coordinates.
   NORMALIZED = 1;
+
   // Image pixel coordinates.
   IMAGE = 2;
 }
@@ -22,9 +24,10 @@ enum CoordinateType {
 message Polygon {
   // Represents a single vertex in the polygon.
   message Vertex {
-    optional float x = 1;
-    optional float y = 2;
+    float x = 1;
+    float y = 2;
   }
+
   repeated Vertex vertex = 1;
 
   // Specifies the vertex ordering.
@@ -33,8 +36,9 @@ message Polygon {
     CLOCKWISE = 1;
     COUNTER_CLOCKWISE = 2;
   }
-  optional VertexOrdering vertex_ordering = 2;
+
+  VertexOrdering vertex_ordering = 2;
 
   // Specifies the coordinate type of vertices.
-  optional CoordinateType coordinate_type = 3;
+  CoordinateType coordinate_type = 3;
 }

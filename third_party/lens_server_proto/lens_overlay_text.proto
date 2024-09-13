@@ -57,6 +57,7 @@ message TextLayout {
     enum Type {
       // Printed text.
       TEXT = 0;
+
       // Formula type, including mathematical or chemical formulas.
       FORMULA = 1;
     }

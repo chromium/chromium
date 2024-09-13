@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
-enum ClientPlatform {
-  CLIENT_PLATFORM_UNSPECIFIED = 0;
-  CLIENT_PLATFORM_LENS_OVERLAY = 2;
+message LensOverlayVideoContextInputParams {
+  // Url of the video.
+  string url = 1;
 }
