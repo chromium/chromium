@@ -163,6 +163,10 @@ enum class RenderPassDamage {
 // chosen to be smaller than 1/255.
 constexpr float kOpacityEpsilon = 0.001f;
 
+// Used as a limit for the amount of times the same delegated ink metadata can
+// be attached to the aggregated frame.
+constexpr int kMaxFramesWithIdenticalInkMetadata = 3;
+
 void MoveMatchingRequests(
     CompositorRenderPassId render_pass_id,
     std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>*
@@ -2334,8 +2338,26 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   }
 
   if (delegated_ink_metadata_) {
-    frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
-    last_frame_had_delegated_ink_ = true;
+    // If the aggregated frame is getting a metadata that matches the one it
+    // received last frame, increment the counter. Once the limit of frames
+    // with the same metadata `kMaxFramesWithIdenticalInkMetadata` is
+    // reached, the metadata is no longer attached. This prevents the
+    // delegated ink trail from persisting on the screen if no new
+    // compositor frames are received by Viz. The purpose of this hysteresis
+    // is to prevent flickering in the case where the compositor frame is
+    // delayed due to a late main frame in the renderer process.
+    if (previous_ink_metadata_time_ == delegated_ink_metadata_->timestamp()) {
+      identical_ink_metadata_count_++;
+    } else {
+      identical_ink_metadata_count_ = 0;
+    }
+    if (identical_ink_metadata_count_ < kMaxFramesWithIdenticalInkMetadata) {
+      previous_ink_metadata_time_ = delegated_ink_metadata_->timestamp();
+      frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
+      last_frame_had_delegated_ink_ = true;
+    } else {
+      last_frame_had_delegated_ink_ = false;
+    }
   } else {
     last_frame_had_delegated_ink_ = false;
   }
