@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * require an annotation processor).
  */
 @Target({ElementType.TYPE})
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.SOURCE)
 public @interface ServiceImpl {
     /** The service implemented by this class. */
     Class<?> value();
