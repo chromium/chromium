@@ -2365,7 +2365,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPhone 7 15.4.1",
+        "name": "base_unittests iPhone 15 Pro 18.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2380,7 +2380,7 @@
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "device": "iPhone9,1",
+            "device": "iPhone15 Pro",
             "os": "Mac-14"
           },
           "expiration": 21600,
@@ -2394,7 +2394,7 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone 7 15.4.1"
+        "variant_id": "iPhone 15 Pro 18.0"
       }
     ]
   },

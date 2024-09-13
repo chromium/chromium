@@ -1041,9 +1041,8 @@ targets.legacy_matrix_compound_suite(
     name = "ios_clang_tot_device_tests",
     basic_suites = {
         "clang_tot_gtests": targets.legacy_matrix_config(
-            # TODO(b/337049057): Change to iOS16+ devices once ready.
             variants = [
-                "IPHONE_7_15_4_1",
+                "IPHONE_15_PRO_18_0",
             ],
         ),
     },

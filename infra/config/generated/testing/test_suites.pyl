@@ -7443,7 +7443,7 @@
     'ios_clang_tot_device_tests': {
       'clang_tot_gtests': {
         'variants': [
-          'IPHONE_7_15_4_1',
+          'IPHONE_15_PRO_18_0',
         ],
       },
     },
