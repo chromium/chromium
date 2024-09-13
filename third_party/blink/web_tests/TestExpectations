@@ -8044,3 +8044,4 @@ crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 
 # Prepare for https://crrev.com/c/5854179
 crbug.com/364917763 external/wpt/wasm/jsapi/gc/casts.tentative.any.html [ Failure Pass ]
+crbug.com/364917763 external/wpt/wasm/jsapi/gc/casts.tentative.any.worker.html [ Failure Pass ]
