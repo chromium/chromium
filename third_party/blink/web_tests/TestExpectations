@@ -3132,7 +3132,6 @@ crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-f
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
-crbug.com/626703 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
@@ -8000,6 +7999,9 @@ crbug.com/365487889 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeE
 
 # Gardener 2024-09-10
 crbug.com/364306254 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
+
+# Skip one slow timeout test
+crbug.com/366311855 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Skip Timeout ]
 
 # Temporarily add TestExpectation for win11-23h2-rel try builder testing
 # To be removed once crbug.com/359039651 is resolved
