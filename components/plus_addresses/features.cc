@@ -131,14 +131,6 @@ BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
              "PlusAddressProfileAwareFeatureCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// When enabled, plus address settings on Desktop are nested under address
-// autofill and the label for the autofill settings entry gains a subtitle.
-BASE_FEATURE(kPlusAddressSettingsRefreshDesktop,
-             "PlusAddressSettingsRefreshDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // When enabled, creation suggestions do not contain a label prior to the user
 // acknowledging the notice. When labels are shown, they contain information
 // about the forwarding address.
