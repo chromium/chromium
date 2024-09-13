@@ -19,7 +19,7 @@ if 'NO_MOCK_SERVER' not in os.environ:
   maybe_patch = patch
 else:
   # SetupEnvironment for gsutil to connect to real server.
-  options, _ = bisect_builds.ParseCommandLine(['-a', 'linux64'])
+  options, _ = bisect_builds.ParseCommandLine(['-a', 'linux64', '-g', '1'])
   bisect_builds.SetupEnvironment(options)
   bisect_builds.SetupAndroidEnvironment()
 
@@ -328,19 +328,78 @@ class ArchiveBuildTest(BisectTestCase):
       self, mock_abspath, mock_glob, mock_UnzipFilenameToDir):
     build = self.create_build()
     self.assertEqual(build._install_revision('some-file.zip', 'temp-dir'),
-                     '/tmp/temp-dir/linux64/chrome')
+                     {'chrome': '/tmp/temp-dir/linux64/chrome'})
     mock_UnzipFilenameToDir.assert_called_once_with('some-file.zip', 'temp-dir')
     mock_glob.assert_called_once_with('temp-dir/*/chrome')
     mock_abspath.assert_called_once_with('temp-dir/linux64/chrome')
+
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('glob.glob',
+         side_effect=[['temp-dir/chrome-linux64/chrome'],
+                      ['temp-dir/chromedriver_linux64/chromedriver']])
+  @patch('os.path.abspath',
+         side_effect=[
+             '/tmp/temp-dir/chrome-linux64/chrome',
+             '/tmp/temp-dir/chromedriver_linux64/chromedriver'
+         ])
+  def test_install_chromedriver(self, mock_abspath, mock_glob,
+                                mock_UnzipFilenameToDir):
+    build = self.create_build(
+        ['-a', 'linux64', '-g', '0', '-b', '9', '--chromedriver'])
+    self.assertEqual(
+        build._install_revision(
+            {
+                'chrome': 'some-file.zip',
+                'chromedriver': 'some-other-file.zip',
+            }, 'temp-dir'),
+        {
+            'chrome': '/tmp/temp-dir/chrome-linux64/chrome',
+            'chromedriver': '/tmp/temp-dir/chromedriver_linux64/chromedriver',
+        })
+    mock_UnzipFilenameToDir.assert_has_calls([
+        call('some-file.zip', 'temp-dir'),
+        call('some-other-file.zip', 'temp-dir'),
+    ])
+    mock_glob.assert_has_calls([
+        call('temp-dir/*/chrome'),
+        call('temp-dir/*/chromedriver'),
+    ])
+    mock_abspath.assert_has_calls([
+        call('temp-dir/chrome-linux64/chrome'),
+        call('temp-dir/chromedriver_linux64/chromedriver')
+    ])
 
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_run_command(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
     mock_Popen.return_value.returncode = 0
     build = self.create_build()
-    build._launch_revision('temp-dir', 'temp-dir/linux64/chrome', [])
+    build._launch_revision('temp-dir', {'chrome': 'temp-dir/linux64/chrome'},
+                           [])
     mock_Popen.assert_called_once_with(
-        'temp-dir/linux64/chrome --user-data-dir=profile',
+        'temp-dir/linux64/chrome --user-data-dir=temp-dir/profile',
+        cwd=None,
+        shell=True,
+        bufsize=-1,
+        stdout=ANY,
+        stderr=ANY)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_command_replacement(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    build = self.create_build([
+        '-a', 'linux64', '-g', '0', '-b', '9', '--chromedriver', '-c',
+        'CHROMEDRIVER=%d BROWSER_EXECUTABLE_PATH=%p pytest %a'
+    ])
+    build._launch_revision('/tmp', {
+        'chrome': '/tmp/chrome',
+        'chromedriver': '/tmp/chromedriver'
+    }, ['--args', '--args2="word 1"', 'word 2'])
+    mock_Popen.assert_called_once_with(
+        'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
+        'pytest --user-data-dir=/tmp/profile --args \'--args2="word 1"\' '
+        '\'word 2\'',
         cwd=None,
         shell=True,
         bufsize=-1,
@@ -421,6 +480,50 @@ class ReleaseBuildTest(BisectTestCase):
         '/127.0.6533.77/linux64/chrome-linux64.zip',
         ignore_fail=True)
 
+  def test_get_download_url(self):
+    options, args = bisect_builds.ParseCommandLine(
+        ['-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.77'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
+    download_urls = build.get_download_url('127.0.6533.74')
+    self.assertEqual(
+        download_urls, 'gs://chrome-unsigned/desktop-5c0tCh'
+        '/127.0.6533.74/linux64/chrome-linux64.zip')
+
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.77',
+        '--chromedriver'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
+    download_urls = build.get_download_url('127.0.6533.74')
+    self.assertEqual(
+        download_urls, {
+            'chrome':
+            'gs://chrome-unsigned/desktop-5c0tCh'
+            '/127.0.6533.74/linux64/chrome-linux64.zip',
+            'chromedriver':
+            'gs://chrome-unsigned/desktop-5c0tCh'
+            '/127.0.6533.74/linux64/chromedriver_linux64.zip',
+        })
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision_with_real_zipfile(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.77',
+        '--chromedriver', '-c', 'driver=%d prog=%p'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
+    download_job = build.get_download_job('127.0.6533.74')
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    self.assertRegex(mock_run.call_args.args[0],
+                     r'driver=.+/chromedriver prog=.+/chrome')
+
 
 class ArchiveBuildWithCommitPositionTest(BisectTestCase):
 
@@ -469,6 +572,22 @@ class OfficialBuildTest(BisectTestCase):
     mock_GsutilList.assert_called_once_with(
         'gs://chrome-test-builds/official-by-commit/linux-builder-perf/')
 
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision_with_real_zipfile(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'linux64', '-g', '1313161', '-b', '1313163',
+        '--chromedriver', '-c', 'driver=%d prog=%p'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.OfficialBuild)
+    download_job = build.get_download_job(1334339)
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    self.assertRegex(mock_run.call_args.args[0],
+                     r'driver=.+/chromedriver prog=.+/chrome')
 
 class SnapshotBuildTest(BisectTestCase):
 
@@ -551,6 +670,50 @@ class SnapshotBuildTest(BisectTestCase):
     mock_fetch_and_parse.assert_called_once_with(
         'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
         '?delimiter=/&prefix=Linux_x64/')
+
+  def test_get_download_url(self):
+    options, args = bisect_builds.ParseCommandLine(
+        ['-a', 'linux64', '-g', '3', '-b', '11'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    download_urls = build.get_download_url(123)
+    self.assertEqual(
+        download_urls,
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots'
+        '/Linux_x64/123/chrome-linux.zip',
+    )
+
+    options, args = bisect_builds.ParseCommandLine(
+        ['-a', 'linux64', '-g', '3', '-b', '11', '--chromedriver'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    download_urls = build.get_download_url(123)
+    self.assertDictEqual(
+        download_urls, {
+            'chrome':
+            'http://commondatastorage.googleapis.com/chromium-browser-snapshots'
+            '/Linux_x64/123/chrome-linux.zip',
+            'chromedriver':
+            'http://commondatastorage.googleapis.com/chromium-browser-snapshots'
+            '/Linux_x64/123/chromedriver_linux64.zip'
+        })
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision_with_real_zipfile(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-a', 'linux64', '-g', '1313161', '-b', '1313185', '--chromedriver',
+        '-c', 'driver=%d prog=%p'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    download_job = build.get_download_job(1313161)
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    self.assertRegex(mock_run.call_args.args[0],
+                     r'driver=.+/chromedriver prog=.+/chrome')
 
 
 class ASANBuildTest(BisectTestCase):
@@ -687,7 +850,7 @@ class AndroidSnapshotBuildTest(AndroidBuildTest):
 
   @patch('bisect-builds.InstallOnAndroid')
   @patch('bisect-builds.ArchiveBuild._install_revision',
-         return_value='chrome.apk')
+         return_value={'chrome': 'chrome.apk'})
   def test_install_revision(self, mock_install_revision, mock_InstallOnAndroid):
     options, args = bisect_builds.ParseCommandLine([
         '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
@@ -873,9 +1036,10 @@ class LinuxReleaseBuildTest(BisectTestCase):
         ['-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.LinuxReleaseBuild)
-    build._launch_revision('temp-dir', 'temp-dir/linux64/chrome', [])
+    build._launch_revision('temp-dir', {'chrome': 'temp-dir/linux64/chrome'},
+                           [])
     mock_Popen.assert_called_once_with(
-        'temp-dir/linux64/chrome --user-data-dir=profile --no-sandbox',
+        'temp-dir/linux64/chrome --user-data-dir=temp-dir/profile --no-sandbox',
         cwd=None,
         shell=True,
         bufsize=-1,

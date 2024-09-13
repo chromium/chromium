@@ -153,39 +153,49 @@ PATH_CONTEXT = {
             'binary_name': 'chrome',
             'listing_platform_dir': 'linux64/',
             'archive_name': 'chrome-linux64.zip',
-            'archive_extract_dir': 'chrome-linux64'
+            'archive_extract_dir': 'chrome-linux64',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_linux64.zip',
         },
         'mac': {
             'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
             'listing_platform_dir': 'mac/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
         },
         'mac64': {
             'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
             'listing_platform_dir': 'mac64/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
         },
         'mac-arm': {
             'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
             'listing_platform_dir': 'mac-arm64/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
         },
         'win': {
             'binary_name': 'chrome.exe',
             # Release builds switched to -clang in M64.
             'listing_platform_dir': 'win-clang/',
             'archive_name': 'chrome-win-clang.zip',
-            'archive_extract_dir': 'chrome-win-clang'
+            'archive_extract_dir': 'chrome-win-clang',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
         },
         'win64': {
             'binary_name': 'chrome.exe',
             # Release builds switched to -clang in M64.
             'listing_platform_dir': 'win64-clang/',
             'archive_name': 'chrome-win64-clang.zip',
-            'archive_extract_dir': 'chrome-win64-clang'
+            'archive_extract_dir': 'chrome-win64-clang',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win64.zip',
         },
     },
     'official': {
@@ -211,25 +221,29 @@ PATH_CONTEXT = {
             'binary_name': 'chrome',
             'listing_platform_dir': 'linux-builder-perf/',
             'archive_name': 'chrome-perf-linux.zip',
-            'archive_extract_dir': 'full-build-linux'
+            'archive_extract_dir': 'full-build-linux',
+            'chromedriver_binary_name': 'chromedriver',
         },
         'mac': {
             'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
             'listing_platform_dir': 'mac-builder-perf/',
             'archive_name': 'chrome-perf-mac.zip',
-            'archive_extract_dir': 'full-build-mac'
+            'archive_extract_dir': 'full-build-mac',
+            'chromedriver_binary_name': 'chromedriver',
         },
         'mac-arm': {
             'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
             'listing_platform_dir': 'mac-arm-builder-perf/',
             'archive_name': 'chrome-perf-mac.zip',
-            'archive_extract_dir': 'full-build-mac'
+            'archive_extract_dir': 'full-build-mac',
+            'chromedriver_binary_name': 'chromedriver',
         },
         'win64': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'win64-builder-perf/',
             'archive_name': 'chrome-perf-win.zip',
-            'archive_extract_dir': 'full-build-win32'
+            'archive_extract_dir': 'full-build-win32',
+            'chromedriver_binary_name': 'chromedriver.exe',
         },
     },
     'snapshot': {
@@ -249,7 +263,9 @@ PATH_CONTEXT = {
             'binary_name': 'chrome',
             'listing_platform_dir': 'Linux_x64/',
             'archive_name': 'chrome-linux.zip',
-            'archive_extract_dir': 'chrome-linux'
+            'archive_extract_dir': 'chrome-linux',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_linux64.zip',
         },
         'linux-arm': {
             'binary_name': 'chrome',
@@ -267,37 +283,49 @@ PATH_CONTEXT = {
             'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
             'listing_platform_dir': 'Mac/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
         },
         'mac64': {
             'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
             'listing_platform_dir': 'Mac/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
         },
         'mac-arm': {
             'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
             'listing_platform_dir': 'Mac_Arm/',
             'archive_name': 'chrome-mac.zip',
-            'archive_extract_dir': 'chrome-mac'
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
         },
         'win': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'Win/',
             'archive_name': 'chrome-win.zip',
-            'archive_extract_dir': 'chrome-win'
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
         },
         'win64': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'Win_x64/',
             'archive_name': 'chrome-win.zip',
-            'archive_extract_dir': 'chrome-win'
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
         },
         'win-arm64': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'Win_Arm64/',
             'archive_name': 'chrome-win.zip',
-            'archive_extract_dir': 'chrome-win'
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win64.zip',
         },
     },
     'asan': {},
@@ -490,12 +518,20 @@ class ArchiveBuild(abc.ABC):
     self.good_revision = options.good
     self.bad_revision = options.bad
     self.use_local_cache = options.use_local_cache
+    self.chromedriver = options.chromedriver
     # PATH_CONTEXT
     path_context = PATH_CONTEXT[self.build_type].get(self.platform, {})
     self.binary_name = path_context.get('binary_name')
     self.listing_platform_dir = path_context.get('listing_platform_dir')
     self.archive_name = path_context.get('archive_name')
     self.archive_extract_dir = path_context.get('archive_extract_dir')
+    self.chromedriver_binary_name = path_context.get('chromedriver_binary_name')
+    self.chromedriver_archive_name = path_context.get(
+        'chromedriver_archive_name')
+    if self.chromedriver and not self.chromedriver_binary_name:
+      raise BisectException(
+          'Could not find chromedriver_binary_name, '
+          f'--chromedriver might not supported on {self.platform}.')
     # run_revision options
     self.profile = options.profile
     self.command = options.command
@@ -662,6 +698,12 @@ class ArchiveBuild(abc.ABC):
     """Get the pathname for extracted chrome binary"""
     return '%s/*/%s' % (tempdir, self.binary_name)
 
+  def _get_chromedriver_binary_glob(self, tempdir):
+    """Get the pathname for extracted chromedriver binary"""
+    if not self.chromedriver_binary_name:
+      raise BisectException(f"chromedriver is not supported on {self.platform}")
+    return '%s/*/%s' % (tempdir, self.chromedriver_binary_name)
+
   def _run(self, runcommand, cwd=None, shell=False):
     # is_verbos is a global variable.
     if is_verbose:
@@ -682,32 +724,50 @@ class ArchiveBuild(abc.ABC):
       sys.stderr.flush()
     return subproc.returncode, stdout, stderr
 
-  def _install_revision(self, download, tempdir):
-    """Unzip and/or install the given download to tempdir. Return executable
-    binary."""
-    UnzipFilenameToDir(download, tempdir)
-    # Searching for the executable, it's unlikely the zip file contains multiple
-    # folders with the binary_name.
-    executables = glob.glob(self._get_extract_binary_glob(tempdir))
+  @staticmethod
+  def _glob_with_unique_match(executable_name, tempdir, pathname):
+    executables = glob.glob(pathname)
     if len(executables) == 0:
-      raise BisectException('Can not find the executable binary from %s' %
-                            tempdir)
+      raise BisectException(
+          f'Can not find the {executable_name} binary from {tempdir}')
     elif len(executables) > 1:
-      raise BisectException('Multiple executables found: %s' % executables)
+      raise BisectException(
+          f'Multiple {executable_name} executables found: {executables}')
     return os.path.abspath(executables[0])
 
-  def _launch_revision(self, tempdir, executable, args=()):
+  def _install_revision(self, download, tempdir):
+    """Unzip and/or install the given download to tempdir. Return executable
+    binaries in a dict."""
+    if isinstance(download, dict):
+      for each in download.values():
+        UnzipFilenameToDir(each, tempdir)
+    else:
+      UnzipFilenameToDir(download, tempdir)
+    # Searching for the executable, it's unlikely the zip file contains multiple
+    # folders with the binary_name.
+    result = {}
+    result['chrome'] = self._glob_with_unique_match(
+        'chrome', tempdir, self._get_extract_binary_glob(tempdir))
+    if self.chromedriver:
+      result['chromedriver'] = self._glob_with_unique_match(
+          'chromedriver', tempdir, self._get_chromedriver_binary_glob(tempdir))
+    return result
+
+  def _launch_revision(self, tempdir, executables, args=()):
     args = [*self._get_extra_args(), *args]
-    command = self.command.replace(r'%p', executable).replace(
-        r'%s', shlex.join(args)).replace(r'%a', shlex.join(args))
+    args_str = shlex.join(args)
+    command = (self.command.replace(r'%p', executables['chrome']).replace(
+        r'%s', args_str).replace(r'%a', args_str).replace(r'%t', tempdir))
+    if self.chromedriver:
+      command = command.replace(r'%d', executables['chromedriver'])
     return self._run(command, shell=True)
 
   def run_revision(self, download, tempdir, args=()):
     """Run downloaded archive"""
-    executable = self._install_revision(download, tempdir)
+    executables = self._install_revision(download, tempdir)
     result = None
     for _ in range(self.num_runs):
-      returncode, _, _ = result = self._launch_revision(tempdir, executable,
+      returncode, _, _ = result = self._launch_revision(tempdir, executables,
                                                         args)
       if returncode:
         break
@@ -791,6 +851,13 @@ class ReleaseBuild(ArchiveBuild):
     return [LooseVersion(x) for x in revisions]
 
   def get_download_url(self, revision):
+    if self.chromedriver:
+      return {
+          'chrome':
+          self._get_archive_path(revision),
+          'chromedriver':
+          self._get_archive_path(revision, self.chromedriver_archive_name),
+      }
     return self._get_archive_path(revision)
 
 
@@ -955,8 +1022,15 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
         archive_name = 'chrome-linux.zip'
       elif self.platform in ('win', 'win64'):
         archive_name = 'chrome-win32.zip'
-    return '%s/%s%s/%s' % (self.base_url, self.listing_platform_dir, revision,
-                           archive_name)
+    url_prefix = '%s/%s%s/' % (self.base_url, self.listing_platform_dir,
+                               revision)
+    chrome_url = url_prefix + archive_name
+    if self.chromedriver:
+      return {
+          'chrome': chrome_url,
+          'chromedriver': url_prefix + self.chromedriver_archive_name,
+      }
+    return chrome_url
 
 
 class ASANBuild(SnapshotBuild):
@@ -1049,10 +1123,10 @@ class AndroidBuildMixin:
     return apk_mapping[self.apk]
 
   def _install_revision(self, download, tempdir):
-    apk_path = super()._install_revision(download, tempdir)
-    InstallOnAndroid(self.device, apk_path)
+    apk_paths = super()._install_revision(download, tempdir)
+    InstallOnAndroid(self.device, apk_paths['chrome'])
 
-  def _launch_revision(self, tempdir, executable, args=()):
+  def _launch_revision(self, tempdir, executables, args=()):
     self.flags.ReplaceFlags(args)
     LaunchOnAndroid(self.device, self.apk)
     return (0, sys.stdout, sys.stderr)
@@ -1300,7 +1374,8 @@ class IOSSimulatorReleaseBuild(ReleaseBuild):
     return f'{tempdir}/{self.binary_name}'
 
   def _install_revision(self, download, tempdir):
-    executable = super()._install_revision(download, tempdir)
+    executables = super()._install_revision(download, tempdir)
+    executable = executables['chrome']
     # install app
     retcode, stdout, stderr = self._run(
         ['xcrun', 'simctl', 'install', self.device_id, executable])
@@ -1984,11 +2059,15 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     help='A good revision to start bisection. ' +
                     'May be earlier or later than the bad revision. ' +
                     'Default is 0.')
+  parser.add_option('--chromedriver',
+                    action='store_true',
+                    help='Also download ChromeDriver. Use %d in --command to '
+                    'reference the ChromeDriver path in the command line.')
   parser.add_option('-p',
                     '--profile',
                     '--user-data-dir',
                     type='str',
-                    default='profile',
+                    default='%t/profile',
                     help='Profile to use; this will not reset every run. '
                     'Defaults to a clean profile.')
   parser.add_option('-t',
@@ -2002,10 +2081,11 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     type='str',
                     default='%p %a',
                     help='Command to execute. %p and %a refer to Chrome '
-                    'executable and specified extra arguments '
-                    'respectively. Use %s to specify all extra arguments '
-                    'as one string. Defaults to "%p %a". Note that any '
-                    'extra paths specified should be absolute.')
+                    'executable and specified extra arguments respectively. '
+                    'Use %t for tempdir where Chrome extracted. '
+                    'Use %d for chromedriver path when --chromedriver enabled. '
+                    'Defaults to "%p %a". Note that any extra paths specified '
+                    'should be absolute.')
   parser.add_option('-l',
                     '--blink',
                     action='store_true',
