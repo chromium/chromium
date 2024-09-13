@@ -85,7 +85,10 @@ class EmojiSearch {
   // of this, `weighting` is NOT guaranteed to be in non-increasing order.
   [[nodiscard]] EmojiSearchResult SearchEmoji(
       std::u16string_view query,
-      base::span<const std::string> language_codes);
+      base::span<const std::string> language_codes,
+      std::optional<size_t> max_emojis = std::nullopt,
+      std::optional<size_t> max_symbols = std::nullopt,
+      std::optional<size_t> max_emoticons = std::nullopt);
 
   void LoadEmojiLanguages(base::span<const std::string> language_codes);
 

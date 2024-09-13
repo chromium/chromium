@@ -336,7 +336,10 @@ EmojiLanguageData::EmojiLanguageData(EmojiLanguageData&& emoji_language_data) =
 
 EmojiSearchResult EmojiSearch::SearchEmoji(
     std::u16string_view query,
-    base::span<const std::string> language_codes) {
+    base::span<const std::string> language_codes,
+    std::optional<size_t> max_emojis,
+    std::optional<size_t> max_symbols,
+    std::optional<size_t> max_emoticons) {
   std::map<std::string_view, EmojiScore> emojis;
   std::map<std::string_view, EmojiScore> symbols;
   std::map<std::string_view, EmojiScore> emoticons;
@@ -358,12 +361,20 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     }
     if (const auto& it = language_data_.find(*code);
         it != language_data_.end()) {
-      emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
-                                     language_score));
-      symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
-                                      language_score));
-      emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
+      // Languages are ordered by preference, so once there are enough results,
+      // we can stop adding to the map.
+      if (!max_emojis.has_value() || emojis.size() < *max_emojis) {
+        emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
+                                       language_score));
+      }
+      if (!max_symbols.has_value() || symbols.size() < *max_symbols) {
+        symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
                                         language_score));
+      }
+      if (!max_emoticons.has_value() || emoticons.size() < *max_emoticons) {
+        emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
+                                          language_score));
+      }
       --language_score;
     }
   }

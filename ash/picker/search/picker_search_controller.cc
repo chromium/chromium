@@ -187,7 +187,8 @@ void PickerSearchController::StartEmojiSearch(
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results = emoji_search_.SearchEmoji(
-      query, GetLanguageCodesFromPrefs(client_->GetPrefs()));
+      query, GetLanguageCodesFromPrefs(client_->GetPrefs()), kMaxEmojiResults,
+      kMaxSymbolResults, kMaxEmoticonResults);
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
   base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime", elapsed);
