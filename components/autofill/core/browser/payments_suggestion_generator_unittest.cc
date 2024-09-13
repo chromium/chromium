@@ -2852,6 +2852,37 @@ TEST_F(
       summary.ranking_context.suggestion_rankings_difference_map.empty());
 }
 
+// Tests that BrowserAutofillManager correctly returns virtual cards with usage
+// data and VCN last four for a standalone cvc field.
+TEST_F(
+    PaymentsSuggestionGeneratorTest,
+    GetSuggestionsForCreditCards_GetVirtualCreditCardsForStandaloneCvcField) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
+
+  // Set up virtual card usage data and credit cards.
+  payments_data().ClearCreditCards();
+  CreditCard masked_server_card = test::GetVirtualCard();
+  masked_server_card.set_guid("1234");
+  VirtualCardUsageData virtual_card_usage_data =
+      test::GetVirtualCardUsageData1();
+  masked_server_card.set_instrument_id(
+      *virtual_card_usage_data.instrument_id());
+
+  // Add credit card and usage data to personal data manager.
+  payments_data().AddVirtualCardUsageData(virtual_card_usage_data);
+  payments_data().AddServerCreditCard(masked_server_card);
+
+  // Call GetCreditCardsForStandaloneCvcField, should return credit card.
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      matches = GetVirtualCreditCardsForStandaloneCvcField(
+          payments_data(), virtual_card_usage_data.merchant_origin(), {"1234"});
+
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches[masked_server_card.guid()],
+            virtual_card_usage_data.virtual_card_last_four());
+}
+
 // Params of GetFilteredCardsToSuggestTest:
 // -- bool IsCvcStorageEnhancementEnabled: Indicates if the flag is enabled.
 // -- FieldType get_trigger_field_type: Indicates triggered field type.

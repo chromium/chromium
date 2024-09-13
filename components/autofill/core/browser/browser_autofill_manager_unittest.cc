@@ -1949,44 +1949,6 @@ TEST_F(BrowserAutofillManagerTest,
        CreateSeparator(), CreateManageAddressesSuggestion()});
 }
 
-// Tests that BrowserAutofillManager correctly returns virtual cards with usage
-// data and VCN last four for a standalone cvc field.
-TEST_F(BrowserAutofillManagerTest, GetVirtualCreditCardsForStandaloneCvcField) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
-  // Set up four_digit_combinations_in_dom, essentially mocking logic in
-  // AutofillAgent.
-  std::vector<std::string> combinations = {"1234"};
-  test_api(*browser_autofill_manager_)
-      .SetFourDigitCombinationsInDOM(combinations);
-
-  // Set up virtual card usage data and credit cards.
-  personal_data().test_payments_data_manager().ClearCreditCards();
-  CreditCard masked_server_card = test::GetVirtualCard();
-  masked_server_card.set_guid("1234");
-  VirtualCardUsageData virtual_card_usage_data =
-      test::GetVirtualCardUsageData1();
-  masked_server_card.set_instrument_id(
-      *virtual_card_usage_data.instrument_id());
-
-  // Add credit card and usage data to personal data manager.
-  personal_data().test_payments_data_manager().AddVirtualCardUsageData(
-      virtual_card_usage_data);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      masked_server_card);
-
-  // Call GetCreditCardsForStandaloneCvcField, should return credit card.
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-      matches = test_api(*browser_autofill_manager_)
-                    .GetVirtualCreditCardsForStandaloneCvcField(
-                        virtual_card_usage_data.merchant_origin());
-
-  ASSERT_EQ(matches.size(), 1u);
-  EXPECT_EQ(matches[masked_server_card.guid()],
-            virtual_card_usage_data.virtual_card_last_four());
-}
-
 // Test that we return all address profile suggestions when all form fields
 // are empty.
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {

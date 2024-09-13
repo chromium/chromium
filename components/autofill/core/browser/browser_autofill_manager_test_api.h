@@ -78,11 +78,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
                                   credit_card);
   }
 
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin) {
-    return manager_->GetVirtualCreditCardsForStandaloneCvcField(origin);
-  }
-
   std::optional<FormData>& pending_form_data() {
     return manager_->pending_form_data_;
   }

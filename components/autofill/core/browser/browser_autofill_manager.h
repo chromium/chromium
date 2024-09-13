@@ -561,13 +561,6 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
-  // Returns a mapping of credit card guid values to virtual card last fours for
-  // standalone CVC field. Cards will only be added to the returned map if they
-  // have usage data on the webpage and the VCN last four was found on webpage
-  // DOM.
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin) const;
-
   // If `metrics_->initial_interaction_timestamp` is unset or is set to a later
   // time than `interaction_timestamp`, updates the cached timestamp.  The
   // latter check is needed because IPC messages can arrive out of order.
