@@ -798,7 +798,7 @@ ci.builder(
     execution_timeout = 18 * time.hour,
     notifies = ["codeql-infra"],
     properties = {
-        "codeql_version": "latest",
+        "codeql_version": "version:3@2.18.1",
     },
 )
 
@@ -821,6 +821,6 @@ ci.builder(
     execution_timeout = 18 * time.hour,
     notifies = ["codeql-infra"],
     properties = {
-        "codeql_version": "latest",
+        "codeql_version": "version:3@2.18.1",
     },
 )
