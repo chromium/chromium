@@ -97,8 +97,8 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
   // Returns sorted saved tab groups with the most recently created as the
-  // first.
-  std::vector<base::Uuid> GetSortedTabGroupsByCreationTime(
+  // first, filtering out empty groups.
+  std::vector<base::Uuid> GetGroupsForDisplay(
       TabGroupSyncService* wrapper_service);
 
   // Because all the menu items (i.e. tab group items in the Everything menu -
@@ -130,7 +130,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   int GetAndIncrementLatestCommandId();
 
   // Saved tab groups with the most recently created as the first.
-  std::vector<base::Uuid> sorted_tab_groups_;
+  std::vector<base::Uuid> groups_for_display_;
 
   // Owned by the Everything button.
   raw_ptr<views::MenuButtonController> menu_button_controller_;

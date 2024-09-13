@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -182,6 +184,23 @@ class SavedTabGroupInteractiveTest
       service->AddGroup(
           SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_group));
       ASSERT_TRUE(service->GetGroup(local_group).has_value());
+    });
+  }
+
+  StepBuilder CreateEmptySavedGroup() {
+    return Do([=, this]() {
+      TabGroupSyncService* service =
+          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+      service->AddGroup({u"Test Test",
+                         tab_groups::TabGroupColorId::kBlue,
+                         {},
+                         /*position=*/std::nullopt,
+                         base::Uuid::GenerateRandomV4(),
+                         /*local_group_id=*/std::nullopt,
+                         /*creator_cache_guid=*/std::nullopt,
+                         /*last_updater_cache_guid=*/std::nullopt,
+                         /*created_before_syncing_tab_groups=*/false,
+                         /*creation_time_windows_epoch_micros=*/std::nullopt});
     });
   }
 
@@ -1152,6 +1171,43 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       // Ensure the menu is no longer visible / present.
       WaitForHide(kSavedTabGroupOverflowMenuId),
       EnsureNotPresent(kSavedTabGroupOverflowMenuId));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       EverythingMenuDoesntDisplayEmptyGroups) {
+  // The everything menu is only enabled in V2.
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  RunTestSequence(
+      // Create an empty group
+      FinishTabstripAnimations(), ShowBookmarksBar(), CreateEmptySavedGroup(),
+      // Open the everything menu and expect the group to not show up.
+      CheckEverythingButtonVisibility(IsV2UIEnabled()),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(STGEverythingMenu::kCreateNewTabGroup),
+      EnsureNotPresent(STGEverythingMenu::kTabGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       AppMenuDoesntDisplayEmptyGroups) {
+  // The everything menu is only enabled in V2.
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  RunTestSequence(
+      // Create an empty group
+      FinishTabstripAnimations(), ShowBookmarksBar(), CreateEmptySavedGroup(),
+      // Open the app menu tab group menu.
+      PressButton(kToolbarAppMenuButtonElementId),
+
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kCreateNewTabGroup),
+      // Expect the group to not be displayed.
+      EnsureNotPresent(STGEverythingMenu::kTabGroup));
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,

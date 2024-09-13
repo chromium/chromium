@@ -148,6 +148,12 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // Attempts to add the tabs found in `tabs_missing_groups_` to local storage.
   void ResolveTabsMissingGroups(syncer::DataTypeStore::WriteBatch* write_batch);
 
+  // Iterates through groups saved in the model, and decides whether the group
+  // is orphaned and needs to be destroyed. If it does, destroys the group.
+  // An orphaned group is described as a group that has no tabs, and the last
+  // update time has been long enough ago that its likely to never get a tab.
+  void ResolveGroupsMissingTabs(syncer::DataTypeStore::WriteBatch* write_batch);
+
   // Adds the entry into `batch`.
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        proto::SavedTabGroupData specifics);

@@ -30,7 +30,7 @@ class SavedTabGroup {
       const std::u16string& title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
-      std::optional<size_t> position,
+      std::optional<size_t> position = std::nullopt,
       std::optional<base::Uuid> saved_guid = std::nullopt,
       std::optional<LocalTabGroupID> local_group_id = std::nullopt,
       std::optional<std::string> creator_cache_guid = std::nullopt,

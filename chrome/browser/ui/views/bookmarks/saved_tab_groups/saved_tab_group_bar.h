@@ -136,9 +136,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // `SavedTabGroupBar`.
   void SavedTabGroupRemoved(const base::Uuid& guid);
 
-  // Updates the button (color, name, tab list) denoted by `guid` in the
-  // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
-  void SavedTabGroupUpdated(const base::Uuid& guid);
+  // Updates (adds/updates/removes) the button denoted by `guid` when calling
+  // add/update methods.
+  void UpsertSavedTabGroupButton(const base::Uuid& guid);
 
   // Reorders all groups in the bookmarks to match the state of
   // `saved_tab_group_model_`.

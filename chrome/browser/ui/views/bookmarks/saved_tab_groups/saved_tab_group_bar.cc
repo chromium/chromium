@@ -477,7 +477,7 @@ void SavedTabGroupBar::SavedTabGroupRemovedLocally(
 
 void SavedTabGroupBar::SavedTabGroupLocalIdChanged(
     const base::Uuid& saved_group_id) {
-  SavedTabGroupUpdated(saved_group_id);
+  UpsertSavedTabGroupButton(saved_group_id);
 
   MaybeShowClosePromo(saved_group_id);
 }
@@ -485,7 +485,7 @@ void SavedTabGroupBar::SavedTabGroupLocalIdChanged(
 void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  SavedTabGroupUpdated(group_guid);
+  UpsertSavedTabGroupButton(group_guid);
 }
 
 void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
@@ -499,11 +499,11 @@ void SavedTabGroupBar::SavedTabGroupReorderedFromSync() {
 void SavedTabGroupBar::SavedTabGroupTabMovedLocally(
     const base::Uuid& group_guid,
     const base::Uuid& tab_guid) {
-  SavedTabGroupUpdated(group_guid);
+  UpsertSavedTabGroupButton(group_guid);
 }
 
 void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
-  SavedTabGroupAdded(guid);
+  UpsertSavedTabGroupButton(guid);
 }
 
 void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
@@ -514,7 +514,7 @@ void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
 void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  SavedTabGroupUpdated(group_guid);
+  UpsertSavedTabGroupButton(group_guid);
 }
 
 void SavedTabGroupBar::OnInitialized() {
@@ -531,13 +531,13 @@ void SavedTabGroupBar::OnTabGroupAdded(const SavedTabGroup& group,
 
 void SavedTabGroupBar::OnTabGroupUpdated(const SavedTabGroup& group,
                                          TriggerSource source) {
-  SavedTabGroupUpdated(group.saved_guid());
+  UpsertSavedTabGroupButton(group.saved_guid());
 }
 
 void SavedTabGroupBar::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<LocalTabGroupID>& local_id) {
-  SavedTabGroupUpdated(sync_id);
+  UpsertSavedTabGroupButton(sync_id);
   MaybeShowClosePromo(sync_id);
 }
 
@@ -673,11 +673,10 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
 }
 
 void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {
-  std::optional<int> index = GetIndexOfGroup(guid);
-  if (!index.has_value()) {
+  if (v2_ui_enabled_) {
+    UpsertSavedTabGroupButton(guid);
     return;
   }
-  AddTabGroupButton(tab_group_service_->GetGroup(guid).value(), index.value());
 
   InvalidateLayout();
 }
@@ -688,7 +687,7 @@ void SavedTabGroupBar::SavedTabGroupRemoved(const base::Uuid& guid) {
   InvalidateLayout();
 }
 
-void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
+void SavedTabGroupBar::UpsertSavedTabGroupButton(const base::Uuid& guid) {
   std::optional<int> index = GetIndexOfGroup(guid);
   if (!index.has_value()) {
     return;
@@ -699,21 +698,24 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
   SavedTabGroupButton* button =
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
 
-  // In v2, update can trigger by pin/unpin. Add TabGroupButton for a pin tab
-  // group if not present. Remove TabGroupButton for an unpinned tab group if
-  // present.
+  bool currently_has_a_button = button != nullptr;
+  bool should_have_a_button =
+      group->is_pinned() && !group->saved_tabs().empty();
+
   if (v2_ui_enabled_) {
-    if (!button && !group->is_pinned()) {
-      return;
-    } else if (!button && group->is_pinned()) {
-      AddTabGroupButton(*group, 0);
-    } else if (button && !group->is_pinned()) {
-      RemoveChildViewT(button);
-    } else {
+    if (currently_has_a_button && should_have_a_button) {
       button->UpdateButtonData(*group);
+    } else if (!currently_has_a_button && should_have_a_button) {
+      AddTabGroupButton(*group, 0);
+    } else if (currently_has_a_button && !should_have_a_button) {
+      RemoveChildViewT(button);
     }
-  } else if (button) {
-    button->UpdateButtonData(*group);
+  } else {
+    if (button) {
+      button->UpdateButtonData(*group);
+    } else {
+      AddTabGroupButton(group.value(), index.value());
+    }
   }
 
   InvalidateLayout();

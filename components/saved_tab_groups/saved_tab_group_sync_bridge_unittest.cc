@@ -1491,4 +1491,37 @@ TEST_F(
       pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
 }
 
+TEST_F(SavedTabGroupSyncBridgeTest, NewlyOrphanedGroupsDontGetDestroyed) {
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {});
+  // position must be set or the update time will be overriden during model
+  // save.
+  group.SetPosition(0);
+  group.SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+
+  saved_tab_group_model_.Add(std::move(group));
+  EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
+
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(), {});
+
+  EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest, OldOrphanedGroupsGetDestroyed) {
+  auto id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {});
+  // position must be set or the update time will be overriden during model
+  // save.
+  group.SetPosition(0);
+
+  group.SetUpdateTimeWindowsEpochMicros(
+      (base::Time::Now() - kDiscardOrphanedTabsThreshold) - base::Days(1));
+
+  saved_tab_group_model_.Add(std::move(group));
+  EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
+
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(), {});
+
+  EXPECT_EQ(0u, saved_tab_group_model_.saved_tab_groups().size());
+}
+
 }  // namespace tab_groups
