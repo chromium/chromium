@@ -25558,10 +25558,7 @@
     "WebAuthenticationEnclaveAuthenticator": [
         {
             "platforms": [
-                "chromeos",
-                "mac",
-                "windows",
-                "linux"
+                "chromeos"
             ],
             "experiments": [
                 {
