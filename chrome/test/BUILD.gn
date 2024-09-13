@@ -4317,7 +4317,7 @@ if (!is_android) {
 
       if (is_chromeos) {
         sources += [
-          "../browser/chromeos/extensions/info_private_browser_apitest.cc",
+          "../browser/chromeos/extensions/info_private/info_private_browser_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/document_scan/document_scan_apitest.cc",
           "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
@@ -4338,7 +4338,7 @@ if (!is_android) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
-          "../browser/chromeos/extensions/info_private_apitest.cc",
+          "../browser/chromeos/extensions/info_private/info_private_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
           "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
           "../browser/chromeos/extensions/wallpaper_apitest.cc",
@@ -5447,7 +5447,7 @@ if (is_chromeos_lacros) {
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/apps/app_service/lacros_browser_shelf_lacros_browsertest.cc",
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
-      "../browser/chromeos/extensions/info_private_lacros_apitest.cc",
+      "../browser/chromeos/extensions/info_private/info_private_lacros_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
       "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",

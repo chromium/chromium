@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/info_private_api.h"
+#include "chrome/browser/chromeos/extensions/info_private/info_private_api.h"
 
 #include <string>
 #include <utility>
@@ -21,7 +21,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
+#include "chromeos/crosapi/mojom/extension_info_private.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -48,11 +48,9 @@ GetExtensionInfoPrivateRemote() {
 
 namespace extensions {
 
-ChromeosInfoPrivateGetFunction::ChromeosInfoPrivateGetFunction() {
-}
+ChromeosInfoPrivateGetFunction::ChromeosInfoPrivateGetFunction() {}
 
-ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
-}
+ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {}
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
@@ -86,11 +84,9 @@ void ChromeosInfoPrivateGetFunction::RespondWithResult(base::Value result) {
   Respond(WithArguments(std::move(result)));
 }
 
-ChromeosInfoPrivateSetFunction::ChromeosInfoPrivateSetFunction() {
-}
+ChromeosInfoPrivateSetFunction::ChromeosInfoPrivateSetFunction() {}
 
-ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() {
-}
+ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() {}
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
