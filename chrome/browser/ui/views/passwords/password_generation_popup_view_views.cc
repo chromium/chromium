@@ -158,6 +158,10 @@ class NudgePasswordButtons : public views::View {
   void UpdateFocus(bool accept_button_focused) {
     accept_button_has_focus_ = accept_button_focused;
     cancel_button_has_focus_ = !accept_button_focused;
+    accept_button_->GetViewAccessibility().SetIsSelected(
+        accept_button_has_focus_);
+    cancel_button_->GetViewAccessibility().SetIsSelected(
+        cancel_button_has_focus_);
     views::FocusRing::Get(accept_button_)->SchedulePaint();
     views::FocusRing::Get(cancel_button_)->SchedulePaint();
   }
@@ -223,18 +227,9 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
  public:
   GeneratedPasswordBox() {
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-    UpdateAccessibleDescription();
+    UpdateAccessibleNameAndDescription();
   }
   ~GeneratedPasswordBox() override = default;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    if (!controller_) {
-      return;
-    }
-
-    node_data->SetNameChecked(base::JoinString(
-        {controller_->SuggestedText(), controller_->password()}, u" "));
-  }
 
   // Fills the view with strings provided by |controller|.
   void Init(base::WeakPtr<PasswordGenerationPopupController> controller);
@@ -253,22 +248,24 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
 
   void reset_controller() {
     controller_ = nullptr;
-    UpdateAccessibleDescription();
+    UpdateAccessibleNameAndDescription();
   }
 
  private:
-  void UpdateAccessibleDescription() {
+  void UpdateAccessibleNameAndDescription() {
     if (!controller_) {
+      GetViewAccessibility().RemoveName();
       GetViewAccessibility().RemoveDescription();
       return;
     }
 
-    const std::u16string help_text = l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(base::JoinString(
+        {controller_->SuggestedText(), controller_->password()}, u" "));
+    GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
         IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
-        controller_->GetPrimaryAccountEmail());
-    GetViewAccessibility().SetDescription(help_text);
+        controller_->GetPrimaryAccountEmail()));
   }
 
   // Implements the View interface.
@@ -319,7 +316,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
-  UpdateAccessibleDescription();
+  UpdateAccessibleNameAndDescription();
 }
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseEntered(
@@ -377,6 +374,11 @@ PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
     views::Widget* parent_widget)
     : PopupBaseView(controller, parent_widget), controller_(controller) {
   CreateLayoutAndChildren();
+
+  // TODO(crbug.com/40885943): kListBox is used for the same reason as in
+  // `autofill::PopupViewViews`. See crrev.com/c/2545285 for details.
+  // Consider using a more appropriate role (e.g. kMenuListPopup or similar).
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   UpdateExpandedCollapsedAccessibleState();
 }
 
@@ -423,18 +425,18 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
-  if (password_view_) {
-    password_view_->GetViewAccessibility().SetIsSelected(
-        controller_->password_selected());
-  }
-
-  if (!GetWidget() || !password_view_) {
+  if (!password_view_) {
     return;
   }
 
-  CHECK(password_view_);
   if (controller_->password_selected()) {
     NotifyAXSelection(*this->password_view_);
+  }
+  password_view_->GetViewAccessibility().SetIsSelected(
+      controller_->password_selected());
+
+  if (!GetWidget()) {
+    return;
   }
 
   password_view_->UpdateBackground(controller_->password_selected()
@@ -507,19 +509,6 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
 }
 
-void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  // TODO(crbug.com/40885943): kListBox is used for the same reason as in
-  // `autofill::PopupViewViews`. See crrev.com/c/2545285 for details.
-  // Consider using a more appropriate role (e.g. kMenuListPopup or similar).
-  node_data->role = ax::mojom::Role::kListBox;
-
-  if (!controller_) {
-    node_data->AddState(ax::mojom::State::kInvisible);
-    return;
-  }
-}
-
 void PasswordGenerationPopupViewViews::UpdateExpandedCollapsedAccessibleState()
     const {
   if (controller_) {
@@ -527,6 +516,7 @@ void PasswordGenerationPopupViewViews::UpdateExpandedCollapsedAccessibleState()
   } else {
     GetViewAccessibility().SetIsCollapsed();
   }
+  GetViewAccessibility().SetIsInvisible(!controller_);
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize(
