@@ -143,6 +143,8 @@ std::string GetStringNameForOptimizationType(
       return "BuyNowPayLaterAllowlistZip";
     case proto::OptimizationType::SAVED_TAB_GROUP:
       return "SavedTabGroup";
+    case proto::OptimizationType::FORMS_ANNOTATIONS:
+      return "FormsAnnotations";
   }
 
   // The returned string is used to record histograms for the optimization type.

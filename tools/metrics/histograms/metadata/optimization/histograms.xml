@@ -201,6 +201,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FastHostHints"
       summary="Provides information about hosts that historically provide a
                fast and responsive user experience"/>
+  <variant name="FormsAnnotations"
+      summary="Provides information about whether a URL is eligible for
+               generating user annotations derived from forms."/>
   <variant name="HistoryClusters"
       summary="This optimization provides information for whether a page
                should be included in a history cluster."/>

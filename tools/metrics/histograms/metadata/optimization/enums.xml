@@ -720,6 +720,7 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM"/>
   <int value="70" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP"/>
   <int value="71" label="SAVED_TAB_GROUP"/>
+  <int value="73" label="FORMS_ANNOTATIONS"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

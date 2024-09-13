@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66;
+  reserved 11, 12, 16, 29, 32, 66, 72;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -288,6 +288,9 @@ enum OptimizationType {
   // Provides information about whether a URL can be synced across devices for
   // saved tab groups feature.
   SAVED_TAB_GROUP = 71;
+  // This optimization provides information about whether a URL is eligible for
+  // generating user annotations derived from forms.
+  FORMS_ANNOTATIONS = 73;
 }
 
 // Presents semantics for how page load URLs should be matched.
