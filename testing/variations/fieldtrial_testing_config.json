@@ -2407,9 +2407,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_All",
+                    "name": "Enabled_TrunkTypes_CountryCode",
                     "enable_features": [
-                        "AutofillConsiderPhoneNumberSeparatorsValidLabels",
                         "AutofillEnableSupportForPhoneNumberTrunkTypes",
                         "AutofillInferCountryCallingCode",
                         "AutofillPreferParsedPhoneNumber"
