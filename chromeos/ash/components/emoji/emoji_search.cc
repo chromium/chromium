@@ -38,6 +38,18 @@ namespace {
 
 constexpr std::string_view kDefaultLanguageCode = "en";
 
+struct PrefixMatcher {
+  std::u16string_view prefix;
+};
+
+bool operator<(PrefixMatcher a, std::u16string_view b) {
+  return a.prefix < b.substr(0, a.prefix.size());
+}
+
+bool operator<(std::u16string_view a, PrefixMatcher b) {
+  return a.substr(0, b.prefix.size()) < b.prefix;
+}
+
 // Map from keyword -> sum of position weightings
 std::map<std::u16string, double, std::less<>> CombineSearchTerms(
     base::span<const std::string_view> long_search_terms) {
@@ -115,15 +127,8 @@ std::map<std::string_view, double> GetResultsFromMap(
   std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view lowercase_word : lowercase_words) {
     std::map<std::string_view, double> word_scored_emoji;
-    std::u16string_view lower_bound = lowercase_word;
-    std::u16string upper_bound = std::u16string(lowercase_word);
-    // will break if someone searches for some very specific char, but
-    // should be fine.
-    upper_bound.back() = upper_bound.back() + 1;
-    // This should ensure we get everything that is a substring match
-    auto upper_bound_iterator = map.upper_bound(upper_bound);
-    for (auto matches = map.lower_bound(lower_bound);
-         matches != upper_bound_iterator; ++matches) {
+    for (auto [matches, end] = map.equal_range(PrefixMatcher{lowercase_word});
+         matches != end; ++matches) {
       for (const auto& match : matches->second) {
         double previous_score;
         if (scored_emoji.empty()) {
