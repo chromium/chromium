@@ -74,9 +74,8 @@
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[ExtensibleEnterpriseSSO] Attempting to get headers for " << url;
 
-  // Create a login request for `url`.
+  // Create a request for `url`.
   ASAuthorizationSingleSignOnRequest* request = [auth_provider createRequest];
-  request.requestedOperation = ASAuthorizationOperationLogin;
   _controller = [[ASAuthorizationController alloc]
       initWithAuthorizationRequests:[NSArray arrayWithObject:request]];
   _controller.delegate = self;
@@ -93,19 +92,6 @@
     didCompleteWithAuthorization:(ASAuthorization*)authorization {
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
-  ASAuthorizationSingleSignOnRequest* request =
-      (ASAuthorizationSingleSignOnRequest*)
-          controller.authorizationRequests.firstObject;
-  if (!request || request.requestedOperation != ASAuthorizationOperationLogin) {
-    VLOG_POLICY(2, EXTENSIBLE_SSO)
-        << "[ExtensibleEnterpriseSSO] Fetching headers completed for non-login "
-           "operation.";
-    std::move(_callback).Run(net::HttpRequestHeaders());
-    return;
-  }
-  VLOG_POLICY(2, EXTENSIBLE_SSO)
-      << "[ExtensibleEnterpriseSSO] Fetching headers completed for login "
-         "operation.";
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
   NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
   net::HttpRequestHeaders request_headers;
