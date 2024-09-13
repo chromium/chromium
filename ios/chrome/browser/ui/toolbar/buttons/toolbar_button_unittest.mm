@@ -47,29 +47,34 @@ class ToolbarButtonTest : public PlatformTest {
     } else {
       type = ToolbarType::kSecondary;
     }
-    ToolbarButtonVisibilityConfiguration* visibility_configuration =
+    visibility_configuration_ =
         [[ToolbarButtonVisibilityConfiguration alloc] initWithType:type];
 
     toolbar_button_ = [[ToolbarButton alloc] initWithImageLoader:image_loader_];
-    toolbar_button_.visibilityMask =
-        visibility_configuration.toolsMenuButtonVisibility;
-    [toolbar_button_ updateHiddenInCurrentSizeClass];
+    ForceLoadImage(toolbar_button_);
 
     toolbar_button_highlight_image_ = [[ToolbarButton alloc]
               initWithImageLoader:image_loader_
         IPHHighlightedImageLoader:iph_highlighted_image_loader_];
-    toolbar_button_highlight_image_.visibilityMask =
-        visibility_configuration.toolsMenuButtonVisibility;
-    [toolbar_button_highlight_image_ updateHiddenInCurrentSizeClass];
+    ForceLoadImage(toolbar_button_highlight_image_);
 
     PlatformTest::SetUp();
   }
 
   void TearDown() override { PlatformTest::TearDown(); }
 
+  // Workaround way to force the image to load from the image loader block.
+  void ForceLoadImage(ToolbarButton* toolbar_button) {
+    toolbar_button.visibilityMask =
+        visibility_configuration_.toolsMenuButtonVisibility;
+    [toolbar_button updateHiddenInCurrentSizeClass];
+  }
+
  protected:
   ToolbarButton* toolbar_button_;
   ToolbarButton* toolbar_button_highlight_image_;
+
+  ToolbarButtonVisibilityConfiguration* visibility_configuration_;
 
   ToolbarButtonImageLoader image_loader_;
   ToolbarButtonImageLoader iph_highlighted_image_loader_;
@@ -105,4 +110,66 @@ TEST_F(ToolbarButtonTest, ToolbarButtonBlueDot) {
 
   toolbar_button_.hasBlueDot = NO;
   EXPECT_EQ(FindSubViewByID(toolbar_button_, kToolbarButtonBlueDotViewID), nil);
+}
+
+// Checks that setting a new image loader block updates the image, when the
+// image was already loaded.
+TEST_F(ToolbarButtonTest, SetImageLoader_LoadedImage) {
+  // Prepare the other image loader block.
+  UIImage* other_image =
+      DefaultSymbolWithPointSize(kMailFillSymbol, kSymbolToolbarPointSize);
+  __block bool called = false;
+  auto other_image_loader = ^UIImage* {
+    called = true;
+    return other_image;
+  };
+  EXPECT_EQ(toolbar_button_.currentImage, image_loader_());
+  EXPECT_NE(toolbar_button_.currentImage, other_image);
+  EXPECT_FALSE(called);
+
+  // Set the other image loader.
+  [toolbar_button_ setImageLoader:other_image_loader];
+
+  // Check that the other image loader has been called and `currentImage` is the
+  // other image.
+  EXPECT_TRUE(called);
+  EXPECT_EQ(toolbar_button_.currentImage, other_image);
+}
+
+// Checks that setting a new image loader block doesn't update the image at
+// first, but loads correctly the new image when requested.
+TEST_F(ToolbarButtonTest, SetImageLoader_NotLoadedImage) {
+  // Create a new button, whose image has not been loaded yet.
+  UIImage* image =
+      DefaultSymbolWithPointSize(kMenuSymbol, kSymbolToolbarPointSize);
+  toolbar_button_ = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
+    return image;
+  }];
+  // Prepare the other image loader block.
+  UIImage* other_image =
+      DefaultSymbolWithPointSize(kMailFillSymbol, kSymbolToolbarPointSize);
+  __block bool called = false;
+  auto other_image_loader = ^UIImage* {
+    called = true;
+    return other_image;
+  };
+  EXPECT_EQ(toolbar_button_.currentImage, nil);
+  EXPECT_NE(toolbar_button_.currentImage, other_image);
+  EXPECT_FALSE(called);
+
+  // Set the other image loader.
+  [toolbar_button_ setImageLoader:other_image_loader];
+
+  // Check that the other image loader has not yet been called and
+  // `currentImage` is still nil.
+  EXPECT_FALSE(called);
+  EXPECT_EQ(toolbar_button_.currentImage, nil);
+
+  // Force load the image.
+  ForceLoadImage(toolbar_button_);
+
+  // Check that the other image loader has been called and `currentImage` is the
+  // other image.
+  EXPECT_TRUE(called);
+  EXPECT_EQ(toolbar_button_.currentImage, other_image);
 }

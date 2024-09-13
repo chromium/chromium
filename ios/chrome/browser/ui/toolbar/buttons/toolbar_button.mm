@@ -61,6 +61,15 @@ const CGFloat kButtonImageInset = 3;
   return self;
 }
 
+- (void)setImageLoader:(ToolbarButtonImageLoader)imageLoader {
+  CHECK(imageLoader);
+  _imageLoader = [imageLoader copy];
+  if (_image != nil) {
+    _image = nil;
+    [self updateImage];
+  }
+}
+
 #pragma mark - Public Methods
 
 - (void)updateHiddenInCurrentSizeClass {

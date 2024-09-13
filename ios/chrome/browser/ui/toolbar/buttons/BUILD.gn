@@ -18,6 +18,7 @@ source_set("buttons") {
     "toolbar_style.h",
     "toolbar_tab_grid_button.h",
     "toolbar_tab_grid_button.mm",
+    "toolbar_tab_grid_button_style.h",
   ]
   deps = [
     ":constants",

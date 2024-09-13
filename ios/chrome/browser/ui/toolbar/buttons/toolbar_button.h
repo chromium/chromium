@@ -59,6 +59,11 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // afterwards it calls setHiddenForCurrentStateAndSizeClass if needed.
 - (void)updateHiddenInCurrentSizeClass;
 
+// Sets a new image loader. If the image was previously loaded, it reloads it.
+// Otherwise, it stores the image loader block and wait for the image to be
+// lazily loaded.
+- (void)setImageLoader:(ToolbarButtonImageLoader)imageLoader;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_BUTTON_H_

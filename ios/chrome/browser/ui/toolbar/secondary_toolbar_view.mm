@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -358,6 +359,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   [self.locationBarContainer addSubview:locationBarView];
   AddSameConstraints(self.locationBarView, self.locationBarContainer);
+}
+
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
 }
 
 #pragma mark - Private

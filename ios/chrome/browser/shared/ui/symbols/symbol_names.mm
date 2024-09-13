@@ -267,6 +267,7 @@ NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
 NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
 NSString* const kPersonTwoSymbol = @"person.2";
+NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -17,9 +17,11 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupCreateButton;
 using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGroupCreationView;
 
 namespace {
@@ -36,6 +38,16 @@ id<GREYMatcher> TabGroupIndicatorViewMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// Matcher for the Tab Grid button in its kNormal style.
+id<GREYMatcher> TabGridButtonInNormalStyle() {
+  return ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS);
+}
+
+// Matcher for the Tab Grid button in its kTabGroup style.
+id<GREYMatcher> TabGridButtonInTabGroupStyle() {
+  return ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP);
+}
+
 // Returns a matcher for the tab group indicator view with `title` as title.
 id<GREYMatcher> TabGroupIndicatorViewMatcherWithGroupTitle(NSString* title) {
   return grey_allOf(
@@ -47,7 +59,7 @@ id<GREYMatcher> TabGroupIndicatorViewMatcherWithGroupTitle(NSString* title) {
 // accessibility label.
 id<GREYMatcher> MenuButtonMatcher(int accessibility_label_id) {
   return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(accessibility_label_id),
+      ButtonWithAccessibilityLabelId(accessibility_label_id),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
@@ -84,7 +96,7 @@ void CreateDefaultTabGroupAndOpenMenu(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
 
-  // Open the tab group indicator menu .
+  // Open the tab group indicator menu.
   [[EarlGrey
       selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
                                    l10n_util::GetPluralNSStringF(
@@ -127,8 +139,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // grouped.
 - (void)testTabGroupIndicatorVisibility {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
 
   // Check that the indicator is not visible.
@@ -195,8 +207,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // works.
 - (void)testTabGroupIndicatorMenuActionsOpenNewTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -217,8 +229,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that menu actions are correct.
 - (void)testTabGroupIndicatorMenuActions {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -244,8 +256,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that menu actions are correct when kTabGroupSync is disabled.
 - (void)testTabGroupIndicatorMenuActionsSyncDisabled {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -272,8 +284,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that closing a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsCloseGroup {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -299,8 +311,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that deleting a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsDeleteGroup {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -323,8 +335,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // kTabGroupSync is disabled.
 - (void)testTabGroupIndicatorMenuActionsDeleteGroupSyncDisabled {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -341,8 +353,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that renaming a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsRenameGroup {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -371,8 +383,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that ungrouping a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsUngroup {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
-                           @"the tab strip is visible.");
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
+                           @"if the tab strip is visible.");
   }
   CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
@@ -437,6 +449,45 @@ void CreateDefaultTabGroupAndOpenMenu(
       selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
                                    l10n_util::GetPluralNSStringF(
                                        IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the Tab Grid button indicator is correctly updated whether a tab
+// is grouped or not.
+- (void)testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+  // Check that the Tab Grid button is in normal style.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Create a group.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Check that the Tab Grid button is in kTabGroup style.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInTabGroupStyle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Ungroup the tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:MenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:MenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP)]
+      performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Check that the Tab Grid button is in normal style.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

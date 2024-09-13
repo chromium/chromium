@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
@@ -510,6 +511,10 @@
   [self.locationBarContainer.trailingAnchor
       constraintGreaterThanOrEqualToAnchor:self.locationBarView.trailingAnchor]
       .active = YES;
+}
+
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
 }
 
 - (NSArray<ToolbarButton*>*)allButtons {

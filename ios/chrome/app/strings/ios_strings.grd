@@ -5728,8 +5728,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLBAR_SHOW_TABS" desc="The accessibility label for the toolbar show tabs button [iOS only].">
         Show tabs
       </message>
-      <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GRID" desc="The accessibility label for the toolbar show tab grid button [iOS only].">
-        Show tab grid
+      <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GROUP" desc="The accessibility label for the toolbar show tab group button [iOS only].">
+        Show tabs in group
       </message>
       <message name="IDS_IOS_TOOLBAR_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
         You can swipe the toolbar to switch between tabs.
