@@ -2936,7 +2936,6 @@ crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-002.html [ 
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-shadow/svg-stroke.html [ Failure ]
 crbug.com/626703 external/wpt/quirks/line-height-preserved-segment-break.html [ Failure ]
-crbug.com/626703 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/svg/render/order/z-index.svg [ Failure ]
 crbug.com/626703 external/wpt/svg/styling/color-inherit-link-visited.svg [ Failure ]
 crbug.com/626703 external/wpt/webrtc/RTCIceTransport.html [ Skip Timeout ]
@@ -7022,7 +7021,6 @@ crbug.com/327434497 [ Mac ] wpt_internal/scheduler/task-signal-any-memory-abort-
 crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-img.tentative.https.sub.html [ Failure Pass Timeout ]
 
 # Gardener 2024-02-29
-crbug.com/327468395 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
 crbug.com/327468397 wpt_internal/dom/abort/abort-signal-memory-tests.https.any.html [ Failure Pass ]
 
 # Gardener 2024-02-29 (EMEA)
@@ -7031,9 +7029,6 @@ crbug.com/327590879 [ Linux ] virtual/view-transition-mpa-serialization/external
 # Gardener 2024-03-04 (EMEA)
 crbug.com/327224061 [ Win ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
 crbug.com/40253082 [ Linux ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
-
-# Gardener 2024-03-05 (APAC)
-crbug.com/327468395 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
 
 # Gardener 2024-03-06 (APAC)
 crbug.com/328303424 [ Mac ] css3/blending/svg-blend-color.html [ Failure ]
@@ -7093,7 +7088,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] virtual/text-antialias/mac-fallback-font-for-character.html [ Failure ]
 [ Mac14 ] virtual/text-antialias/mac-system-ui-weight.html [ Failure ]
 [ Mac14 ] virtual/text-antialias/mac-system-ui-width.html [ Failure ]
-[ Mac14 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
 [ Mac14 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-exit.html [ Failure ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-entry.html [ Failure ]
 [ Mac14 ] webaudio/AudioParam/worklet-warnings.html [ Failure ]
@@ -7302,7 +7296,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac15 ] virtual/disable-raster-inducing-scroll/scrollbars/hidden-scrollbars-invisible.html [ Failure ]  # Reftest image failure
 [ Mac15 ] virtual/text-antialias/justify-ideograph-complex.html [ Failure ]
 [ Mac15 ] virtual/text-antialias/justify-ideograph-simple.html [ Failure ]
-[ Mac15 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure ]
 [ Mac15-arm64 ] compositing/draws-content/webgl-simple-background.html [ Failure ]  # Reftest image failure
 [ Mac15-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]  # Reftest image failure
 [ Mac15-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]  # Reftest image failure
