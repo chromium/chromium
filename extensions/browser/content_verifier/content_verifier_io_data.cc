@@ -42,8 +42,9 @@ const ContentVerifierIOData::ExtensionData* ContentVerifierIOData::GetData(
     const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto found = data_map_.find(extension_id);
-  if (found != data_map_.end())
+  if (found != data_map_.end()) {
     return &found->second;
+  }
   return nullptr;
 }
 

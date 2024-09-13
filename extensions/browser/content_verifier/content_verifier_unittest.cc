@@ -106,8 +106,9 @@ struct FilePathVariants {
   explicit FilePathVariants(const base::FilePath& path) : original_path(path) {
     auto insert_if_non_empty_and_different =
         [&path](std::set<base::FilePath>* container, base::FilePath new_path) {
-          if (!new_path.empty() && new_path != path)
+          if (!new_path.empty() && new_path != path) {
             container->insert(new_path);
+          }
         };
 
     // 1. Case variant 1/2: All uppercase.

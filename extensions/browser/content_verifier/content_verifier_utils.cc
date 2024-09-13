@@ -19,8 +19,9 @@ bool TrimDotSpaceSuffix(const base::FilePath::StringType& path,
                 "dot-space suffix shouldn't be trimmed in current system");
   base::FilePath::StringType::size_type trim_pos =
       path.find_last_not_of(FILE_PATH_LITERAL(". "));
-  if (trim_pos == base::FilePath::StringType::npos)
+  if (trim_pos == base::FilePath::StringType::npos) {
     return false;
+  }
 
   *out_path = path.substr(0, trim_pos + 1);
   return true;
@@ -32,8 +33,9 @@ CanonicalRelativePath CanonicalizeRelativePath(
     const base::FilePath& relative_path) {
   base::FilePath::StringType canonical_path =
       relative_path.NormalizePathSeparatorsTo('/').value();
-  if (!IsFileAccessCaseSensitive())
+  if (!IsFileAccessCaseSensitive()) {
     canonical_path = base::ToLowerASCII(canonical_path);
+  }
 
 #if BUILDFLAG(IS_WIN)
   static_assert(IsDotSpaceFilenameSuffixIgnored());
