@@ -92,26 +92,27 @@ class SimpleNoticeSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return R.string.password_migration_warning_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+        // The sheet doesn't have a half height state.
+        assert false;
+        return 0;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return R.string.password_migration_warning_content_description;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/353283409): Introduce and use proper string.
-        return android.R.string.ok;
+        // TODO(crbug.com/366158726): Make the string configurable.
+        return R.string.password_migration_warning_closed;
     }
 
     @Override
