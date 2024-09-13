@@ -9,16 +9,23 @@ package chrome.on_device_translation;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// The config to initialize the TranslateKit library for Chrome's use.
-// Next ID: 3
-message TranslateKitConfig {
-  // A fully-qualified path string to the directory containing PackageInfo
-  // .binarypb files to initialize TranslateKit's SideLoadPlatformManager.
-  optional string package_info_dir = 1;
+// The language package information of the TranslateKit library for Chrome's
+// use.
+// Next ID: 4
+message TranslateKitLanguagePackage {
+  // The first language code of the language pair. This can either be both
+  // source or target language.
+  optional string language1 = 1;
+  // The second language code of the language pair. This can either be both
+  // source or target language.
+  optional string language2 = 2;
+  // The path of the language package.
+  optional string package_path = 3;
+}
 
-  // A fully-qualified path string to the root directory where translation model
-  // exist. TranslateKit's SideLoadPlatformManager will combine it with the
-  // relative path parsed from a language's PackageInfo to decide the full
-  // runtime path to the language models.
-  optional string model_root_dir = 2;
+// The list of language package information.
+// Next ID: 2
+message TranslateKitLanguagePackageConfig {
+  // The list of language packages.
+  repeated TranslateKitLanguagePackage packages = 1;
 }

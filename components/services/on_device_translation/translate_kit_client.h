@@ -14,6 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
+#include "base/types/pass_key.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {
@@ -46,24 +48,17 @@ class TranslateKitClient {
     virtual std::optional<std::string> Translate(const std::string& text) = 0;
   };
 
-  // `library_path` is the fully-qualified path to the TranslateKit binary.
-  // `package_info_dir` is the fully-qualified path to the directory where
-  // PackageInfo files exist.
-  // `model_root_dir` is the fully-qualified path to the directory where
-  // TranslateKit models exist.
-  TranslateKitClient(base::FilePath library_path,
-                     base::FilePath package_info_dir,
-                     base::FilePath model_root_dir);
+  static TranslateKitClient* Get();
+
+  TranslateKitClient(const base::FilePath& library_path,
+                     base::PassKey<TranslateKitClient>);
   ~TranslateKitClient();
 
   // Not copyable.
   TranslateKitClient(const TranslateKitClient&) = delete;
   TranslateKitClient& operator=(const TranslateKitClient&) = delete;
 
-  // Returns whether this client has been initialized.
-  bool IsInitialized() {
-    return load_lib_result_ == LoadTranslateKitResult::kSuccess;
-  }
+  void SetConfig(mojom::OnDeviceTranslationServiceConfigPtr config);
 
   // Returns if the translation from `source_lang` to `target_lang` is
   // supported.
@@ -81,9 +76,14 @@ class TranslateKitClient {
   // library and provides access to its translation functionality.
   class TranslatorImpl : public Translator {
    public:
-    TranslatorImpl(TranslateKitClient* client,
-                   const std::string& source_lang,
-                   const std::string& target_lang);
+    static std::unique_ptr<TranslatorImpl> MaybeCreate(
+        TranslateKitClient* client,
+        const std::string& source_lang,
+        const std::string& target_lang);
+
+    TranslatorImpl(base::PassKey<TranslatorImpl>,
+                   TranslateKitClient* client,
+                   std::uintptr_t translator_ptr);
     ~TranslatorImpl() override;
     // Not copyable.
     TranslatorImpl(const TranslatorImpl&) = delete;
@@ -99,15 +99,19 @@ class TranslateKitClient {
     std::uintptr_t translator_ptr_;
   };
 
+  // Initializes the TranslateKit instance only when first needed, provided the
+  // underlying library has loaded successfully. Returns true if initialization
+  // was successful, false otherwise.
+  bool MaybeInitialize();
+
   // The TranslateKit binary.
   base::ScopedNativeLibrary lib_;
+
+  std::uintptr_t kit_ptr_ = 0;
+  bool failed_to_initialize_ = false;
+
   // The results after attempting to load `lib_`.
   LoadTranslateKitResult load_lib_result_ = LoadTranslateKitResult::kUnknown;
-
-  // The absolute path to the directory containing PackageInfo files.
-  const base::FilePath package_info_dir_;
-  // The absolute path to the directory of TranslateKit models.
-  const base::FilePath model_root_dir_;
 
   using TranslatorKey = std::pair<std::string, std::string>;
   // Manages all instances of `Translator` created by this client.
@@ -116,20 +120,31 @@ class TranslateKitClient {
   // WARNING:
   // Changes to the below interfaces must be backwards compatible and
   // reflected in the Google3-side definition.
-  typedef bool (*IsLanguageSupportedFunction)(TranslateKitLanguage lang);
-  IsLanguageSupportedFunction is_language_supported_func_;
+  typedef std::uintptr_t (*CreateTranslateKitFn)();
+  CreateTranslateKitFn create_translate_kit_fnc_;
 
-  typedef std::uintptr_t (*CreateTranslatorFunction)(
-      TranslateKitTranslatorConfig);
-  CreateTranslatorFunction create_translator_func_;
+  typedef void (*DeleteTranslateKitFn)(std::uintptr_t);
+  DeleteTranslateKitFn delete_tanslate_kit_fnc_;
 
-  typedef void (*DeleteTranslatorFunction)(std::uintptr_t translator_ptr);
-  DeleteTranslatorFunction delete_translator_func_;
+  typedef bool (*TranslateKitSetLanguagePackagesFn)(
+      uintptr_t kit_ptr,
+      TranslateKitSetLanguagePackagesArgs args);
+  TranslateKitSetLanguagePackagesFn set_language_packages_func_;
 
-  typedef bool (*DoTranslationFunction)(std::uintptr_t translator_ptr,
+  typedef uintptr_t (*TranslateKitCreateTranslatorFn)(std::uintptr_t,
+                                                      TranslateKitLanguage,
+                                                      TranslateKitLanguage);
+  TranslateKitCreateTranslatorFn translate_kit_create_translator_func_;
+
+  typedef void (*DeleteTranslatorFn)(std::uintptr_t);
+  DeleteTranslatorFn delete_translator_fnc_;
+
+  typedef void (*TranslateCallbackFn)(TranslateKitOutputText, std::uintptr_t);
+  typedef bool (*TranslatorTranslateFn)(std::uintptr_t translator_ptr,
                                         TranslateKitInputText,
-                                        TranslateKitOutputText);
-  DoTranslationFunction do_translation_func_;
+                                        TranslateCallbackFn,
+                                        std::uintptr_t user_data);
+  TranslatorTranslateFn translator_translate_func_;
 };
 
 }  // namespace on_device_translation
