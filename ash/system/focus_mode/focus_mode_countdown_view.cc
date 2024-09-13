@@ -49,7 +49,8 @@ std::unique_ptr<views::View> CreateSpacerView() {
   auto spacer_view = std::make_unique<views::View>();
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   return spacer_view;
 }
