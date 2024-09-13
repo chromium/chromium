@@ -20,12 +20,14 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class NewTabPagePageLoadMetricsBrowserTest : public InProcessBrowserTest {
+class NewTabPageInitiatedPageLoadMetricsBrowserTest
+    : public InProcessBrowserTest {
  public:
-  NewTabPagePageLoadMetricsBrowserTest()
-      : prerender_helper_(base::BindRepeating(
-            &NewTabPagePageLoadMetricsBrowserTest::GetActiveWebContents,
-            base::Unretained(this))) {}
+  NewTabPageInitiatedPageLoadMetricsBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&NewTabPageInitiatedPageLoadMetricsBrowserTest::
+                                    GetActiveWebContents,
+                                base::Unretained(this))) {}
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -50,7 +52,7 @@ class NewTabPagePageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
 // This test confirms that non-NewTabPage triggers don't record metrics for
 // NewTabPage. This test uses Omnibox trigger as a non-NewTabPage trigger,.
-IN_PROC_BROWSER_TEST_F(NewTabPagePageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(NewTabPageInitiatedPageLoadMetricsBrowserTest,
                        NonNewTabPagePrerenderTriggeredByEmbedderAndActivate) {
   base::HistogramTester histogram_tester;
 
