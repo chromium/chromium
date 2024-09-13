@@ -340,8 +340,9 @@ class ArchiveBuildTest(BisectTestCase):
     build = self.create_build()
     build._launch_revision('temp-dir', 'temp-dir/linux64/chrome', [])
     mock_Popen.assert_called_once_with(
-        ['temp-dir/linux64/chrome', '--user-data-dir=profile'],
-        cwd='temp-dir',
+        'temp-dir/linux64/chrome --user-data-dir=profile',
+        cwd=None,
+        shell=True,
         bufsize=-1,
         stdout=ANY,
         stderr=ANY)
@@ -874,8 +875,9 @@ class LinuxReleaseBuildTest(BisectTestCase):
     self.assertIsInstance(build, bisect_builds.LinuxReleaseBuild)
     build._launch_revision('temp-dir', 'temp-dir/linux64/chrome', [])
     mock_Popen.assert_called_once_with(
-        ['temp-dir/linux64/chrome', '--user-data-dir=profile', '--no-sandbox'],
-        cwd='temp-dir',
+        'temp-dir/linux64/chrome --user-data-dir=profile --no-sandbox',
+        cwd=None,
+        shell=True,
         bufsize=-1,
         stdout=ANY,
         stderr=ANY)
@@ -935,6 +937,7 @@ class IOSReleaseBuildTest(BisectTestCase):
             'canary.ipa'
         ],
              cwd=None,
+             shell=False,
              bufsize=-1,
              stdout=-1,
              stderr=-1),
@@ -943,6 +946,7 @@ class IOSReleaseBuildTest(BisectTestCase):
             'Payload/canary.app/Info.plist'
         ],
              cwd=None,
+             shell=False,
              bufsize=-1,
              stdout=-1,
              stderr=-1)
@@ -966,6 +970,7 @@ class IOSReleaseBuildTest(BisectTestCase):
         'com.google.chrome.ios', 'args1', 'args2'
     ],
                                cwd=None,
+                               shell=False,
                                bufsize=-1,
                                stdout=-1,
                                stderr=-1)

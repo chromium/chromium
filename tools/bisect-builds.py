@@ -662,16 +662,24 @@ class ArchiveBuild(abc.ABC):
     """Get the pathname for extracted chrome binary"""
     return '%s/*/%s' % (tempdir, self.binary_name)
 
-  def _run(self, runcommand, cwd=None):
+  def _run(self, runcommand, cwd=None, shell=False):
     # is_verbos is a global variable.
     if is_verbose:
       print(('Running ' + str(runcommand)))
     subproc = subprocess.Popen(runcommand,
                                cwd=cwd,
+                               shell=shell,
                                bufsize=-1,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     (stdout, stderr) = subproc.communicate()
+    if is_verbose:
+      print(f'retcode:{subproc.returncode}\nstdout:\n')
+      sys.stdout.buffer.write(stdout)
+      sys.stdout.flush()
+      print('stderr:\n')
+      sys.stderr.buffer.write(stderr)
+      sys.stderr.flush()
     return subproc.returncode, stdout, stderr
 
   def _install_revision(self, download, tempdir):
@@ -690,14 +698,9 @@ class ArchiveBuild(abc.ABC):
 
   def _launch_revision(self, tempdir, executable, args=()):
     args = [*self._get_extra_args(), *args]
-    runcommand = []
-    for token in shlex.split(self.command):
-      if token == '%a':
-        runcommand.extend(args)
-      else:
-        runcommand.append(
-            token.replace('%p', executable).replace('%s', ' '.join(args)))
-    return self._run(runcommand, cwd=tempdir)
+    command = self.command.replace(r'%p', executable).replace(
+        r'%s', shlex.join(args)).replace(r'%a', shlex.join(args))
+    return self._run(command, shell=True)
 
   def run_revision(self, download, tempdir, args=()):
     """Run downloaded archive"""
