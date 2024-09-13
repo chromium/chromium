@@ -376,9 +376,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   // Only discard http(s) pages and internal pages to make sure that we don't
   // discard extensions or other PageNode that don't correspond to a tab.
   const GURL& main_frame_url = page_node->GetMainFrameUrl();
-  bool is_web_page_or_internal_page =
-      main_frame_url.SchemeIsHTTPOrHTTPS() || main_frame_url.SchemeIs("chrome");
-  if (!is_web_page_or_internal_page) {
+  bool is_web_page_or_internal_or_data_page =
+      main_frame_url.SchemeIsHTTPOrHTTPS() ||
+      main_frame_url.SchemeIs("chrome") ||
+      main_frame_url.SchemeIs(url::kDataScheme);
+  if (!is_web_page_or_internal_or_data_page) {
     return CanDiscardResult::kProtected;
   }
 
