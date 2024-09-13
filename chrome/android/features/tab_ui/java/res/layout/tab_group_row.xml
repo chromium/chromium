@@ -72,15 +72,16 @@ found in the LICENSE file.
     android:layout_width="14dp"
     android:layout_height="match_parent" />
 
-  <LinearLayout
-    android:id="@+id/tab_group_row_shared_image_tiles"
+  <FrameLayout
+    android:id="@+id/image_tiles_container"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_weight="0"
     android:gravity="center_vertical"
     android:orientation="vertical"
+    android:paddingStart="@dimen/tab_group_share_tiles_padding"
     android:visibility="gone">
-  </LinearLayout>
+  </FrameLayout>
 
   <Space
     android:layout_width="14dp"

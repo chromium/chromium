@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -38,6 +40,7 @@ public class TabGroupRowView extends LinearLayout {
     private View mColorView;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
     private TabGroupTimeAgoResolver mTimeAgoResolver;
 
@@ -53,12 +56,17 @@ public class TabGroupRowView extends LinearLayout {
         mColorView = findViewById(R.id.tab_group_color);
         mTitleTextView = findViewById(R.id.tab_group_title);
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
+        mImageTilesContainer = findViewById(R.id.image_tiles_container);
         mListMenuButton = findViewById(R.id.more);
         mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {
         mTabGroupFaviconCluster.updateCornersForClusterData(clusterData);
+    }
+
+    void setDisplayAsShared(boolean isShared) {
+        mImageTilesContainer.setVisibility(isShared ? View.VISIBLE : View.GONE);
     }
 
     void setTitleData(Pair<String, Integer> titleData) {
@@ -98,6 +106,10 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
     }
 
+    void setGetImageTileContainerCallback(Callback<FrameLayout> getImageTileContainerCallback) {
+        getImageTileContainerCallback.onResult(mImageTilesContainer);
+    }
+
     private ListMenu getListMenu(
             @Nullable Runnable openRunnable,
             @Nullable Runnable deleteRunnable,
@@ -135,15 +147,5 @@ public class TabGroupRowView extends LinearLayout {
 
     void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
         mTimeAgoResolver = timeAgoResolver;
-    }
-
-    void resetSharedState(boolean isShared) {
-        View sharedView = findViewById(R.id.tab_group_row_shared_image_tiles);
-        assert sharedView != null;
-        if (isShared) {
-            sharedView.setVisibility(View.VISIBLE);
-        } else {
-            sharedView.setVisibility(View.GONE);
-        }
     }
 }

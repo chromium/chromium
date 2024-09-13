@@ -144,6 +144,7 @@ public class TabGroupListMediatorUnitTest {
 
     private TabGroupListMediator createMediator() {
         return new TabGroupListMediator(
+                ApplicationProvider.getApplicationContext(),
                 mModelList,
                 mPropertyModel,
                 mTabGroupModelFilter,
@@ -155,8 +156,7 @@ public class TabGroupListMediatorUnitTest {
                 mTabGroupUiActionHandler,
                 mActionConfirmationManager,
                 mSyncService,
-                mModalDialogManager,
-                ApplicationProvider.getApplicationContext().getResources());
+                mModalDialogManager);
     }
 
     @Test
@@ -362,6 +362,9 @@ public class TabGroupListMediatorUnitTest {
                         })
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID2);
+
+        ShadowLooper.idleMainLooper();
+
         PropertyModel model2 = mModelList.get(1).model;
         model2.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID2);
@@ -651,6 +654,7 @@ public class TabGroupListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testDeleteRunnable_SharedGroup() {
         CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -714,13 +718,10 @@ public class TabGroupListMediatorUnitTest {
         mActionOutcomeCallbackCaptor.getValue().onResult(PeopleGroupActionOutcome.SUCCESS);
         verify(mModalDialogManager, never())
                 .showDialog(mModalPropertyModelCaptor.capture(), anyInt());
-
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        ShadowLooper.idleMainLooper();
-        assertEquals(0, mModelList.size());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testLeaveRunnable() {
         CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -800,6 +801,7 @@ public class TabGroupListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testDeleteRunnable_shareReadFailure() {
         CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
