@@ -15,15 +15,8 @@ assert(use_ozone)
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-
-    # TODO(zturner): Enable this on Windows. See
-    # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
-    # broken.
-    "../../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
-    "../../common/extensions/api/file_system_provider/file_system_provider_handler_unittest.cc",
-  ]
+  sources =
+      [ "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc" ]
 
   deps = [
     ":system_stack_sampled_metrics_status_proto",

@@ -8436,7 +8436,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/chromeos/reporting",
-      "//chrome/browser/smart_card:unit_tests",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chromeos/components/disks:prefs",
       "//chromeos/dbus/power",
@@ -8448,6 +8447,8 @@ test("unit_tests") {
 
       # Unit tests from subdirectories.
       "//chrome/browser/chromeos:unit_tests",
+      "//chrome/browser/smart_card:unit_tests",
+      "//chrome/common/extensions:unit_tests",
     ]
   }
 
