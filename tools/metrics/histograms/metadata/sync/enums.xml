@@ -937,10 +937,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SyncFeatureStatusForSyncToSigninMigration">
   <int value="0" label="Undefined"/>
-  <int value="1" label="Disabled"/>
+  <int value="1" label="(obsolete) Disabled or Paused"/>
   <int value="2" label="Initializing"/>
   <int value="3" label="Active"/>
   <int value="4" label="Paused"/>
+  <int value="5" label="Disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_feature_status_for_migrations_recorder.h:SyncFeatureStatusForSyncToSigninMigration) -->

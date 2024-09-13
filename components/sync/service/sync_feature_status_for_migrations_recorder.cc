@@ -28,7 +28,8 @@ SyncFeatureStatusForSyncToSigninMigrationFromInt(int value) {
     case SyncFeatureStatusForSyncToSigninMigration::kActive:
       return converted;
   }
-  // Unknown/invalid value; fall back to "undefined".
+  // Unknown/invalid value; fall back to "undefined". In particular the legacy
+  // kDisabledOrPaused value will fall here.
   return SyncFeatureStatusForSyncToSigninMigration::kUndefined;
 }
 

@@ -23,11 +23,12 @@ class SyncService;
 // LINT.IfChange(SyncFeatureStatusForSyncToSigninMigration)
 enum class SyncFeatureStatusForSyncToSigninMigration {
   kUndefined = 0,
-  kDisabled = 1,
+  // Deprecated: kDisabledOrPaused = 1,
   kInitializing = 2,
   kActive = 3,
   kPaused = 4,
-  kMaxValue = kPaused
+  kDisabled = 5,
+  kMaxValue = kDisabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncFeatureStatusForSyncToSigninMigration)
 

@@ -1003,7 +1003,7 @@ chromium-metrics-reviews@google.com.
     `Sync.DataTypeActiveForSyncToSigninMigration.*`.
 
     Before M130, &quot;disabled&quot; and &quot;paused&quot; were recorded to a
-    single bucket (number 1, now &quot;disabled&quot;).
+    single bucket (number 1, &quot;Disabled or Paused&quot;).
   </summary>
 </histogram>
 
