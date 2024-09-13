@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
-#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 namespace blink {
 
@@ -99,7 +98,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if (is_top_level_painter) {
     // Everything that happens after paintContents completions is considered
     // to be part of the next frame.
-    MemoryCache::Get()->UpdateFramePaintTimestamp();
     in_paint_contents_ = false;
   }
 }
